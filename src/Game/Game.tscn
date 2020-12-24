@@ -1,0 +1,72 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://src/Viewport.tscn" type="PackedScene" id=1]
+[ext_resource path="res://src/Game/Game.cs" type="Script" id=2]
+[ext_resource path="res://src/Game/GUI.cs" type="Script" id=3]
+[ext_resource path="res://src/GUI/MapObjectSummary.tscn" type="PackedScene" id=4]
+[ext_resource path="res://src/Camera2D.tscn" type="PackedScene" id=5]
+[ext_resource path="res://src/GUI/PlanetMineralsOnHand.tscn" type="PackedScene" id=6]
+[ext_resource path="res://src/GUI/PlanetStatus.tscn" type="PackedScene" id=7]
+
+[node name="Game" type="Node2D"]
+script = ExtResource( 2 )
+
+[node name="Viewport" parent="." instance=ExtResource( 1 )]
+position = Vector2( 508, 0 )
+
+[node name="Camera2D" parent="Viewport" instance=ExtResource( 5 )]
+position = Vector2( -502, 0 )
+current = true
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="GUI" type="Control" parent="CanvasLayer"]
+anchor_bottom = 1.0
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/GUI"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Controls" type="MarginContainer" parent="CanvasLayer/GUI/HBoxContainer"]
+margin_right = 504.0
+margin_bottom = 900.0
+rect_min_size = Vector2( 500, 0 )
+
+[node name="Panel" type="Panel" parent="CanvasLayer/GUI/HBoxContainer/Controls"]
+margin_right = 504.0
+margin_bottom = 900.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/GUI/HBoxContainer/Controls"]
+margin_right = 504.0
+margin_bottom = 900.0
+
+[node name="LeftCommandPane" type="VBoxContainer" parent="CanvasLayer/GUI/HBoxContainer/Controls/HBoxContainer"]
+margin_right = 250.0
+margin_bottom = 900.0
+rect_min_size = Vector2( 250, 0 )
+
+[node name="MapObjectSummary" parent="CanvasLayer/GUI/HBoxContainer/Controls/HBoxContainer/LeftCommandPane" instance=ExtResource( 4 )]
+
+[node name="PlanetMineralsOnHand" parent="CanvasLayer/GUI/HBoxContainer/Controls/HBoxContainer/LeftCommandPane" instance=ExtResource( 6 )]
+margin_top = 204.0
+margin_right = 250.0
+margin_bottom = 344.0
+
+[node name="PlanetStatus" parent="CanvasLayer/GUI/HBoxContainer/Controls/HBoxContainer/LeftCommandPane" instance=ExtResource( 7 )]
+margin_top = 348.0
+margin_right = 250.0
+margin_bottom = 538.0
+
+[node name="RightCommandPange" type="VBoxContainer" parent="CanvasLayer/GUI/HBoxContainer/Controls/HBoxContainer"]
+margin_left = 254.0
+margin_right = 504.0
+margin_bottom = 900.0
+rect_min_size = Vector2( 250, 0 )

@@ -1,0 +1,12 @@
+<Project Sdk="Godot.NET.Sdk/3.2.3">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <RootNamespace>craigstars</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Stateless">
+      <Version>5.1.2</Version>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>

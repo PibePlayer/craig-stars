@@ -1,7 +1,10 @@
-/**
- * The size of a universe
- */
-public enum Size
+namespace CraigStars
 {
-    Tiny, Small, Medium, Large, Huge
+    /// <summary>
+    /// The size of a universe
+    /// </summary>
+    public enum Size
+    {
+        Tiny, Small, Medium, Large, Huge
+    }
 }

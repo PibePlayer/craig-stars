@@ -1,119 +1,140 @@
-using Godot;
 using System;
 using System.Collections.Generic;
+using Godot;
 
-/// <summary>
-/// The Signals csharp class services as a way to bridge csharp and gdscript until 
-/// everything is rewritten in .net
-/// </summary>
-public class Signals : Node
+namespace CraigStars.Singletons
 {
-    public delegate void TurnPassed(int year);
-    public static event TurnPassed TurnPassedEvent;
-
-    #region Viewport Events
-
-    public static event Action<MapObject> MapObjectSelectedEvent;
-
-    #endregion
-
-    #region Network Events
-
-    public static event Action ServerDisconnectedEvent;
-
-    public delegate void PreStartGame(List<Player> players);
-    public static event PreStartGame PreStartGameEvent;
-
-    public static event Action PostStartGameEvent;
-
-    #endregion
-
-    #region Player Connection Events
-
-    public delegate void PlayerUpdated(Player player);
-    public static event PlayerUpdated PlayerUpdatedEvent;
-
-    public delegate void PlayerJoined(int networkId);
-    public static event PlayerJoined PlayerJoinedEvent;
-
-    public delegate void PlayerLeft(int networkId);
-    public static event PlayerLeft PlayerLeftEvent;
-
-    public delegate void PlayerReadyToStart(int networkId, bool ready);
-    public static event PlayerReadyToStart PlayerReadyToStartEvent;
-
-    public static event Action<PlayerMessage> PlayerMessageEvent;
-
-    #endregion 
-
-    // The GDScript signals object
-    public static Signals Instance { get; private set; }
-
-    Signals()
-    {
-        Instance = this;
-    }
-
-    #region Event Publishers
-
-    public static void PublishPreStartGameEvent(List<Player> players)
-    {
-        PreStartGameEvent?.Invoke(players);
-    }
-
-    public static void PublishPostStartGameEvent()
-    {
-        PostStartGameEvent?.Invoke();
-    }
-
     /// <summary>
-    /// Publish a player updated event for any listeners
+    /// The Signals csharp class services as a way to bridge csharp and gdscript until 
+    /// everything is rewritten in .net
     /// </summary>
-    /// <param name="player"></param>
-    /// <param name="notifyPeers">True if we should notify peers of this player data</param>
-    public static void PublishPlayerUpdatedEvent(Player player, bool notifyPeers = false)
+    public class Signals : Node
     {
-        PlayerUpdatedEvent?.Invoke(player);
-        if (notifyPeers)
+        public delegate void TurnPassed(int year);
+        public static event TurnPassed TurnPassedEvent;
+
+        #region Viewport Events
+
+        public static event Action<MapObject> MapObjectSelectedEvent;
+        public static event Action<MapObject> MapObjectActivatedEvent;
+        public static event Action<MapObject> MapObjectWaypointAddedEvent;
+        public static event Action<Fleet, Waypoint> FleetWaypointAddedEvent;
+
+        #endregion
+
+        #region Network Events
+
+        public static event Action ServerDisconnectedEvent;
+
+        public delegate void PreStartGame(List<Player> players);
+        public static event PreStartGame PreStartGameEvent;
+
+        public static event Action PostStartGameEvent;
+
+        #endregion
+
+        #region Player Connection Events
+
+        public delegate void PlayerUpdated(Player player);
+        public static event PlayerUpdated PlayerUpdatedEvent;
+
+        public delegate void PlayerJoined(int networkId);
+        public static event PlayerJoined PlayerJoinedEvent;
+
+        public delegate void PlayerLeft(int networkId);
+        public static event PlayerLeft PlayerLeftEvent;
+
+        public delegate void PlayerReadyToStart(int networkId, bool ready);
+        public static event PlayerReadyToStart PlayerReadyToStartEvent;
+
+        public static event Action<PlayerMessage> PlayerMessageEvent;
+
+        #endregion 
+
+        // The GDScript signals object
+        public static Signals Instance { get; private set; }
+
+        Signals()
         {
-            RPC.Instance.SendPlayerUpdated(player);
+            Instance = this;
         }
-    }
 
-    public static void PublishPlayerJoinedEvent(int networkId)
-    {
-        PlayerJoinedEvent?.Invoke(networkId);
-    }
+        #region Event Publishers
 
-    public static void PublishPlayerLeftEvent(int networkId)
-    {
-        PlayerLeftEvent?.Invoke(networkId);
-    }
+        public static void PublishPreStartGameEvent(List<Player> players)
+        {
+            PreStartGameEvent?.Invoke(players);
+        }
 
-    public static void PublishPlayerReadyToStart(int networkId, bool ready)
-    {
-        PlayerReadyToStartEvent?.Invoke(networkId, ready);
-    }
+        public static void PublishPostStartGameEvent()
+        {
+            PostStartGameEvent?.Invoke();
+        }
 
-    public static void PublishPlayerMessageEvent(PlayerMessage message)
-    {
-        PlayerMessageEvent?.Invoke(message);
-    }
+        /// <summary>
+        /// Publish a player updated event for any listeners
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="notifyPeers">True if we should notify peers of this player data</param>
+        public static void PublishPlayerUpdatedEvent(Player player, bool notifyPeers = false)
+        {
+            PlayerUpdatedEvent?.Invoke(player);
+            if (notifyPeers)
+            {
+                RPC.Instance.SendPlayerUpdated(player);
+            }
+        }
 
-    public static void PublishTurnPassedEvent(int year)
-    {
-        TurnPassedEvent?.Invoke(year);
-    }
+        public static void PublishPlayerJoinedEvent(int networkId)
+        {
+            PlayerJoinedEvent?.Invoke(networkId);
+        }
 
-    public static void PublishMapObjectSelectedEvent(MapObject mapObject)
-    {
-        MapObjectSelectedEvent?.Invoke(mapObject);
-    }
+        public static void PublishPlayerLeftEvent(int networkId)
+        {
+            PlayerLeftEvent?.Invoke(networkId);
+        }
 
-    public static void PublishServerDisconnectedEvent()
-    {
-        ServerDisconnectedEvent?.Invoke();
-    }
+        public static void PublishPlayerReadyToStart(int networkId, bool ready)
+        {
+            PlayerReadyToStartEvent?.Invoke(networkId, ready);
+        }
 
-    #endregion
+        public static void PublishPlayerMessageEvent(PlayerMessage message)
+        {
+            PlayerMessageEvent?.Invoke(message);
+        }
+
+        public static void PublishTurnPassedEvent(int year)
+        {
+            TurnPassedEvent?.Invoke(year);
+        }
+
+        public static void PublishMapObjectSelectedEvent(MapObject mapObject)
+        {
+            MapObjectSelectedEvent?.Invoke(mapObject);
+        }
+
+        public static void PublishMapObjectActivatedEvent(MapObject mapObject)
+        {
+            MapObjectActivatedEvent?.Invoke(mapObject);
+        }
+
+        public static void PublishMapObjectWaypointAddedEvent(MapObject mapObject)
+        {
+            MapObjectWaypointAddedEvent?.Invoke(mapObject);
+        }
+
+        public static void PublishFleetWaypointAddedEvent(Fleet fleet, Waypoint waypoint)
+        {
+            FleetWaypointAddedEvent?.Invoke(fleet, waypoint);
+        }
+
+        public static void PublishServerDisconnectedEvent()
+        {
+            ServerDisconnectedEvent?.Invoke();
+        }
+
+        #endregion
+    }
 }

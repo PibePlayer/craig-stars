@@ -1,56 +1,58 @@
-using Godot;
-using System;
 using System.Linq;
-using System.Collections.Generic;
+using CraigStars.Singletons;
+using Godot;
 
-public class Game : Node
+namespace CraigStars
 {
-    public UniverseSettings UniverseSettings { get; set; } = new UniverseSettings();
-    public Universe Universe { get; private set; }
-    public int Year { get; set; }
-
-    Viewport Viewport { get; set; }
-
-    public override void _Ready()
+    public class Game : Node
     {
-        // generate a new univers
-        UniverseGenerator generator = new UniverseGenerator();
-        Universe = new Universe();
-        generator.Generate(Universe, UniverseSettings, PlayersManager.Instance.Players);
+        public UniverseSettings UniverseSettings { get; set; } = new UniverseSettings();
+        public Universe Universe { get; private set; }
+        public int Year { get; set; }
 
-        // add the universe to the viewport
-        Viewport = FindNode("Viewport") as Viewport;
-        Viewport.AddUniverse(Universe);
+        Viewport Viewport { get; set; }
 
-        CallDeferred(nameof(FocusHomeworld));
-    }
-
-
-    public override void _Input(InputEvent @event)
-    {
-        if (@event.IsActionPressed("generate_turn"))
+        public override void _Ready()
         {
-            GenerateTurn();
-        }
-    }
+            // generate a new univers
+            UniverseGenerator generator = new UniverseGenerator();
+            Universe = new Universe();
+            generator.Generate(Universe, UniverseSettings, PlayersManager.Instance.Players);
 
-    /// <summary>
-    /// Focus on the current player's homeworld
-    /// </summary>
-    void FocusHomeworld()
-    {
-        var homeworld = Universe.Planets.Where(p => p.Homeworld && p.Player == PlayersManager.Instance.Me).First();
-        if (homeworld != null)
+            // add the universe to the viewport
+            Viewport = FindNode("Viewport") as Viewport;
+            Viewport.AddUniverse(Universe);
+
+            CallDeferred(nameof(FocusHomeworld));
+        }
+
+
+        public override void _Input(InputEvent @event)
         {
-            homeworld.Activate();
-            Signals.PublishMapObjectSelectedEvent(homeworld);
+            if (@event.IsActionPressed("generate_turn"))
+            {
+                GenerateTurn();
+            }
         }
-    }
 
-    void GenerateTurn()
-    {
-        TurnGenerator generator = new TurnGenerator();
-        generator.GenerateTurn(this);
-        Signals.PublishTurnPassedEvent(Year);
+        /// <summary>
+        /// Focus on the current player's homeworld
+        /// </summary>
+        void FocusHomeworld()
+        {
+            var homeworld = Universe.Planets.Where(p => p.Homeworld && p.Player == PlayersManager.Instance.Me).First();
+            if (homeworld != null)
+            {
+                homeworld.Activate();
+                Signals.PublishMapObjectSelectedEvent(homeworld);
+            }
+        }
+
+        void GenerateTurn()
+        {
+            TurnGenerator generator = new TurnGenerator();
+            generator.GenerateTurn(this);
+            Signals.PublishTurnPassedEvent(Year);
+        }
     }
 }

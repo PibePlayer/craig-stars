@@ -1,55 +1,58 @@
-/**
- * Primary Racial Traits
- */
-public enum PRT
+namespace CraigStars
 {
-    /**
-     * Hyper Expansion
-     */
-    HE,
+    /// <summary>
+    /// Primary Racial Traits
+    /// </summary>
+    public enum PRT
+    {
+        /// <summary>
+        /// Hyper Expansion
+        /// </summary>
+        HE,
 
-    /**
-     * Super Stealth
-     */
-    SS,
+        /// <summary>
+        /// Super Stealth
+        /// </summary>
+        SS,
 
-    /**
-     * Warmonger
-     */
-    WM,
+        /// <summary>
+        /// Warmonger
+        /// </summary>
+        WM,
 
-    /**
-     * Claim Adjuster
-     */
-    CA,
+        /// <summary>
+        /// Claim Adjuster
+        /// </summary>
+        CA,
 
-    /**
-     * Inner Strength
-     */
-    IS,
+        /// <summary>
+        /// Inner Strength
+        /// </summary>
+        IS,
 
-    /**
-     * Space Demolition
-     */
-    SD,
+        /// <summary>
+        /// Space Demolition
+        /// </summary>
+        SD,
 
-    /**
-     * Packet Physics
-     */
-    PP,
+        /// <summary>
+        /// Packet Physics
+        /// </summary>
+        PP,
 
-    /**
-     * Interstellar Traveler
-     */
-    IT,
+        /// <summary>
+        /// Interstellar Traveler
+        /// </summary>
+        IT,
 
-    /**
-     * Alternate Reality
-     */
-    AR,
+        /// <summary>
+        /// Alternate Reality
+        /// </summary>
+        AR,
 
-    /**
-     * Jack of All Trades
-     */
-    JoaT
+        /// <summary>
+        /// Jack of All Trades
+        /// </summary>
+        JoaT
+    }
 }

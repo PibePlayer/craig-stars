@@ -1,7 +1,10 @@
-/**
- * Density of planets in the universe
- */
-public enum Density
+namespace CraigStars
 {
-    Sparse, Normal, Dense, Packed
+    /// <summary>
+    /// Density of planets in the universe
+    /// </summary>
+    public enum Density
+    {
+        Sparse, Normal, Dense, Packed
+    }
 }

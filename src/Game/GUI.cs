@@ -1,14 +1,16 @@
 using Godot;
-using System;
 
-public class GUI : Control
+namespace CraigStars
 {
-    public override void _Ready()
+    public class GUI : Control
     {
-    }
+        public override void _Ready()
+        {
+        }
 
-    public override void _ExitTree()
-    {
-    }
+        public override void _ExitTree()
+        {
+        }
 
+    }
 }

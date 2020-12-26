@@ -1,4 +1,7 @@
-public class Cost : Mineral
+namespace CraigStars
 {
-    public int Resources { get; set; }
+    public class Cost : Mineral
+    {
+        public int Resources { get; set; }
+    }
 }

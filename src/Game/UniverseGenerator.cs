@@ -1,19 +1,25 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using CraigStars;
 
 public class UniverseGenerator
 {
     public void Generate(Universe universe, UniverseSettings settings, List<Player> players)
     {
         List<Planet> planets = GeneratePlanets(settings);
+        List<Fleet> fleets = new List<Fleet>();
         for (var i = 0; i < players.Count; i++)
         {
-            planets[i].Player = players[i];
-            MakeHomeworld(settings, players[i], planets[i], settings.StartingYear);
+            var homeworld = planets[i];
+            homeworld.Player = players[i];
+            MakeHomeworld(settings, homeworld.Player, homeworld, settings.StartingYear);
+
+            fleets.AddRange(GenerateFleets(settings, homeworld.Player, homeworld));
         }
 
         planets.ForEach(p => universe.AddChild(p));
+        fleets.ForEach(f => universe.AddChild(f));
 
         universe.Planets.AddRange(planets);
         universe.Width = settings.Area;
@@ -22,7 +28,7 @@ public class UniverseGenerator
 
     List<Planet> GeneratePlanets(UniverseSettings settings)
     {
-        List<Planet> planets = new List<Planet>();
+        var planets = new List<Planet>();
         PackedScene planetScene = ResourceLoader.Load<PackedScene>("res://src/GameObjects/Planet.tscn");
         int width, height;
         width = height = settings.Area;
@@ -53,6 +59,22 @@ public class UniverseGenerator
         }
 
         return planets;
+    }
+
+    List<Fleet> GenerateFleets(UniverseSettings settings, Player player, Planet homeworld)
+    {
+        var fleets = new List<Fleet>();
+        PackedScene fleetScene = ResourceLoader.Load<PackedScene>("res://src/GameObjects/Fleet.tscn");
+
+        var fleet = fleetScene.Instance() as Fleet;
+        fleet.Player = player;
+        fleet.Position = homeworld.Position;
+        fleet.Orbiting = homeworld;
+        homeworld.OrbitingFleets.Add(fleet);
+        fleet.ObjectName = $"{player.PlayerName} Fleet #1";
+        fleets.Add(fleet);
+
+        return fleets;
     }
 
     /**

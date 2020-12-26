@@ -1,76 +1,78 @@
-
-/**
- * Lesser Racial Traits
- */
-public enum LRT
+namespace CraigStars
 {
-    /**
-     * Improved Fuel Efficiency
-     */
-    IFE,
+    /// <summary>
+    /// Lesser Racial Traits
+    /// </summary>
+    public enum LRT
+    {
+        /// <summary>
+        /// Improved Fuel Efficiency
+        /// </summary>
+        IFE,
 
-    /**
-     * Total Terraforming
-     */
-    TT,
+        /// <summary>
+        /// Total Terraforming
+        /// </summary>
+        TT,
 
-    /**
-     * Advanced Remote Mining
-     */
-    ARM,
+        /// <summary>
+        /// Advanced Remote Mining
+        /// </summary>
+        ARM,
 
-    /**
-     * Improved Starbases
-     */
-    ISB,
+        /// <summary>
+        /// Improved Starbases
+        /// </summary>
+        ISB,
 
-    /**
-     * Generalized Research
-     */
-    GR,
+        /// <summary>
+        /// Generalized Research
+        /// </summary>
+        GR,
 
-    /**
-     * Ultimate Recycling
-     */
-    UR,
+        /// <summary>
+        /// Ultimate Recycling
+        /// </summary>
+        UR,
 
-    /**
-     * No Ramscoop Engines
-     */
-    NRSE,
+        /// <summary>
+        /// No Ramscoop Engines
+        /// </summary>
+        NRSE,
 
-    /**
-     * Only Basic Remote Mining
-     */
-    OBRM,
+        /// <summary>
+        /// Only Basic Remote Mining
+        /// </summary>
+        OBRM,
 
-    /**
-     * No Advanced Scanners
-     */
-    NAS,
+        /// <summary>
+        /// No Advanced Scanners
+        /// </summary>
+        NAS,
 
-    /**
-     * Low Starting Population
-     */
-    LSP,
+        /// <summary>
+        /// Low Starting Population
+        /// </summary>
+        LSP,
 
-    /**
-     * Bleeding Edge Technology
-     */
-    BET,
+        /// <summary>
+        /// Bleeding Edge Technology
+        /// </summary>
+        BET,
 
-    /**
-     * Regenerating Shields
-     */
-    RS,
+        /// <summary>
+        /// Regenerating Shields
+        /// </summary>
+        RS,
 
-    /**
-     * Mineral Alchemy
-     */
-    MA,
+        /// <summary>
+        /// Mineral Alchemy
+        /// </summary>
+        MA,
 
-    /**
-     * Cheap Engines
-     */
-    CE
+        /// <summary>
+        /// Cheap Engines
+        /// </summary>
+        CE
+    }
 }

@@ -1,125 +1,139 @@
-using Godot;
-using System;
 using System.Collections.Generic;
+using CraigStars.Singletons;
+using Godot;
 
-public class PlanetSprite : Node2D
+namespace CraigStars
 {
-    Sprite known;
-    Sprite unknown;
-    Sprite owned;
-    Sprite friend;
-    Sprite enemy;
-    Sprite knownActive;
-    Sprite ownedActive;
-    Sprite orbiting;
-    Sprite orbitingActive;
-    Sprite selectedIndicator;
-    Sprite activeIndicator;
-
-    List<Sprite> stateSprites = new List<Sprite>();
-
-    public override void _Ready()
+    public class PlanetSprite : Node2D
     {
-        known = GetNode<Sprite>("Known");
-        unknown = GetNode<Sprite>("Unknown");
-        owned = GetNode<Sprite>("Owned");
-        friend = GetNode<Sprite>("Friend");
-        enemy = GetNode<Sprite>("Enemy");
-        knownActive = GetNode<Sprite>("KnownActive");
-        ownedActive = GetNode<Sprite>("OwnedActive");
-        orbiting = GetNode<Sprite>("Orbiting");
-        orbitingActive = GetNode<Sprite>("OrbitingActive");
-        selectedIndicator = GetNode<Sprite>("SelectedIndicator");
-        activeIndicator = GetNode<Sprite>("ActiveIndicator");
+        Sprite known;
+        Sprite unknown;
+        Sprite owned;
+        Sprite friend;
+        Sprite enemy;
+        Sprite knownActive;
+        Sprite ownedActive;
+        Sprite orbiting;
+        Sprite orbitingActive;
+        Sprite selectedIndicator;
+        Sprite activeIndicator;
 
-        // create a list of these sprites
-        stateSprites.Add(known);
-        stateSprites.Add(unknown);
-        stateSprites.Add(owned);
-        stateSprites.Add(friend);
-        stateSprites.Add(enemy);
-        stateSprites.Add(knownActive);
-        stateSprites.Add(ownedActive);
-        stateSprites.Add(orbiting);
-        stateSprites.Add(orbitingActive);
-        stateSprites.Add(selectedIndicator);
-        stateSprites.Add(activeIndicator);
-    }
+        List<Sprite> stateSprites = new List<Sprite>();
 
-    public void UpdateVisibleSprites(Player player, MapObject.OwnerAlly ownerAllyState, Planet.States state, Planet.Orbiting orbitingState)
-    {
-        if (player != null)
+        public override void _Ready()
         {
-            if (player == PlayersManager.Instance.Me)
+            known = GetNode<Sprite>("Known");
+            unknown = GetNode<Sprite>("Unknown");
+            owned = GetNode<Sprite>("Owned");
+            friend = GetNode<Sprite>("Friend");
+            enemy = GetNode<Sprite>("Enemy");
+            knownActive = GetNode<Sprite>("KnownActive");
+            ownedActive = GetNode<Sprite>("OwnedActive");
+            orbiting = GetNode<Sprite>("Orbiting");
+            orbitingActive = GetNode<Sprite>("OrbitingActive");
+            selectedIndicator = GetNode<Sprite>("SelectedIndicator");
+            activeIndicator = GetNode<Sprite>("ActiveIndicator");
+
+            // create a list of these sprites
+            stateSprites.Add(known);
+            stateSprites.Add(unknown);
+            stateSprites.Add(owned);
+            stateSprites.Add(friend);
+            stateSprites.Add(enemy);
+            stateSprites.Add(knownActive);
+            stateSprites.Add(ownedActive);
+            stateSprites.Add(orbiting);
+            stateSprites.Add(orbitingActive);
+            stateSprites.Add(selectedIndicator);
+            stateSprites.Add(activeIndicator);
+        }
+
+        public void UpdateVisibleSprites(Player player, Planet planet)
+        {
+            var ownerAllyState = MapObject.OwnerAlly.Unknown;
+            var state = planet.State;
+            var hasActivePeer = planet.HasActivePeer();
+
+            // TODO: make this work with multiple types
+            if (planet.OrbitingFleets.Count > 0)
             {
-                ownerAllyState = MapObject.OwnerAlly.Owned;
+                planet.OrbitingState = Planet.Orbiting.Orbiting;
             }
-            else
+
+            if (player != null)
             {
-                ownerAllyState = MapObject.OwnerAlly.Enemy;
+                if (player == PlayersManager.Instance.Me)
+                {
+                    ownerAllyState = MapObject.OwnerAlly.Owned;
+                }
+                else
+                {
+                    ownerAllyState = MapObject.OwnerAlly.Enemy;
+                }
             }
-        }
-        // turn them all off
-        stateSprites.ForEach(s => s.Visible = false);
 
-        if (state == MapObject.States.Selected)
-        {
-            selectedIndicator.Visible = true;
-        }
-        else if (state == MapObject.States.Active)
-        {
-            activeIndicator.Visible = true;
-        }
+            // turn them all off
+            stateSprites.ForEach(s => s.Visible = false);
 
-        switch (ownerAllyState)
-        {
-            case MapObject.OwnerAlly.Unknown:
-                unknown.Visible = true;
-                break;
-            case MapObject.OwnerAlly.Known:
-                if (state == MapObject.States.Active)
-                {
-                    knownActive.Visible = true;
-                }
-                else
-                {
-                    known.Visible = true;
-                }
-                break;
-            case MapObject.OwnerAlly.Owned:
-                if (state == MapObject.States.Active)
-                {
-                    ownedActive.Visible = true;
-                }
-                else
-                {
-                    owned.Visible = true;
-                }
-                break;
-            case MapObject.OwnerAlly.Friend:
-                friend.Visible = true;
-                break;
-            case MapObject.OwnerAlly.Enemy:
-                enemy.Visible = true;
-                break;
-        }
+            if (state == MapObject.States.Active || hasActivePeer)
+            {
+                activeIndicator.Visible = true;
+            }
+            else if (state == MapObject.States.Selected)
+            {
+                selectedIndicator.Visible = true;
+            }
 
-        // turn on the orbiting ring
-        switch (orbitingState)
-        {
-            case Planet.Orbiting.Orbiting:
-            case Planet.Orbiting.OrbitingEnemies:
-            case Planet.Orbiting.OrbitingAlliesAndEnemies:
-                if (state == MapObject.States.Active)
-                {
-                    orbitingActive.Visible = true;
-                }
-                else
-                {
-                    orbiting.Visible = true;
-                }
-                break;
-        }
+            switch (ownerAllyState)
+            {
+                case MapObject.OwnerAlly.Unknown:
+                    unknown.Visible = true;
+                    break;
+                case MapObject.OwnerAlly.Known:
+                    if (hasActivePeer || state == MapObject.States.Active)
+                    {
+                        knownActive.Visible = true;
+                    }
+                    else
+                    {
+                        known.Visible = true;
+                    }
+                    break;
+                case MapObject.OwnerAlly.Owned:
+                    if (hasActivePeer || state == MapObject.States.Active)
+                    {
+                        ownedActive.Visible = true;
+                    }
+                    else
+                    {
+                        owned.Visible = true;
+                    }
+                    break;
+                case MapObject.OwnerAlly.Friend:
+                    friend.Visible = true;
+                    break;
+                case MapObject.OwnerAlly.Enemy:
+                    enemy.Visible = true;
+                    break;
+            }
 
+            // turn on the orbiting ring
+            switch (planet.OrbitingState)
+            {
+                case Planet.Orbiting.Orbiting:
+                case Planet.Orbiting.OrbitingEnemies:
+                case Planet.Orbiting.OrbitingAlliesAndEnemies:
+                    if (hasActivePeer || state == MapObject.States.Active)
+                    {
+                        orbitingActive.Visible = true;
+                    }
+                    else
+                    {
+                        orbiting.Visible = true;
+                    }
+                    break;
+            }
+
+        }
     }
 }

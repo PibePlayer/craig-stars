@@ -6,26 +6,74 @@ using CraigStars;
 public class FleetWaypointsTile : FleetTile
 {
     ItemList waypoints;
+    Control selectedWaypointGrid;
     Label comingFrom;
+    Label comingFromLabel;
+    Label nextWaypoint;
+    Label nextWaypointLabel;
+    Label distance;
+    Label warpFactor;
+    Label travelTime;
+    Label estimatedFuelUsage;
+
+
+    Waypoint ActiveWaypoint { get; set; }
 
     public override void _Ready()
     {
         waypoints = FindNode("Waypoints") as ItemList;
         comingFrom = FindNode("ComingFrom") as Label;
+        comingFromLabel = FindNode("ComingFromLabel") as Label;
+        nextWaypoint = FindNode("NextWaypoint") as Label;
+        nextWaypointLabel = FindNode("NextWaypointLabel") as Label;
+        distance = FindNode("Distance") as Label;
+        warpFactor = FindNode("WarpFactor") as Label;
+        travelTime = FindNode("TravelTime") as Label;
+        selectedWaypointGrid = FindNode("SelectedWaypointGrid") as Control;
+        estimatedFuelUsage = FindNode("EstimatedFuelUsage") as Label;
+
+        selectedWaypointGrid.Visible = false;
         base._Ready();
 
-        Signals.FleetWaypointAddedEvent += OnFleetWaypointAdded;
+        waypoints.Connect("item_selected", this, nameof(OnItemSelected));
 
+        Signals.FleetWaypointAddedEvent += OnFleetWaypointAdded;
+        Signals.WaypointSelectedEvent += OnWaypointSelected;
     }
 
     public override void _ExitTree()
     {
         Signals.FleetWaypointAddedEvent -= OnFleetWaypointAdded;
+        Signals.WaypointSelectedEvent -= OnWaypointSelected;
     }
 
     void OnFleetWaypointAdded(Fleet fleet, Waypoint waypoint)
     {
+        ActiveWaypoint = waypoint;
         UpdateControls();
+    }
+
+    void OnWaypointSelected(Waypoint waypoint)
+    {
+        ActiveWaypoint = waypoint;
+        UpdateControls();
+    }
+
+    void OnItemSelected(int index)
+    {
+        if (ActiveFleet != null && index >= 0 && index < ActiveFleet.Waypoints.Count)
+        {
+            // Select this waypoint and let listeners know (like ourselves and the viewport)
+            Signals.PublishWaypointSelectedEvent(ActiveFleet.Waypoints[index]);
+        }
+    }
+
+    protected override void OnNewActiveFleet()
+    {
+        base.OnNewActiveFleet();
+        // when we have a new active fleet, set the active waypoint to the
+        // first waypoint
+        ActiveWaypoint = ActiveFleet?.Waypoints[0];
     }
 
     protected override void UpdateControls()
@@ -33,9 +81,59 @@ public class FleetWaypointsTile : FleetTile
         base.UpdateControls();
         if (ActiveFleet != null)
         {
+            int index = 0;
+            int selectedIndex = 0;
             waypoints.Clear();
-            ActiveFleet.Waypoints.ForEach(wp => waypoints.AddItem(wp.Target != null ? wp.Target.ObjectName : $"Space: ({wp.TargetPos.x}, {wp.TargetPos.y})"));
-            comingFrom.Text = $"{ActiveFleet.Waypoints[0].Target.ObjectName}";
+            foreach (var wp in ActiveFleet.Waypoints)
+            {
+                waypoints.AddItem(wp.Target != null ? wp.Target.ObjectName : $"Space: ({wp.Position.x}, {wp.Position.y})");
+                if (ActiveWaypoint == wp)
+                {
+                    selectedIndex = index;
+                    waypoints.Select(index);
+                }
+                index++;
+            }
+
+            if (ActiveFleet.Waypoints.Count > 1)
+            {
+                selectedWaypointGrid.Visible = true;
+
+                // we show different controls for the first waypoint
+                // we show information about the next waypoint
+                Waypoint from;
+                Waypoint to;
+                if (selectedIndex == 0)
+                {
+                    from = ActiveFleet.Waypoints[selectedIndex];
+                    to = ActiveFleet.Waypoints[selectedIndex + 1];
+                    nextWaypointLabel.Visible = true;
+                    nextWaypoint.Visible = true;
+                    comingFromLabel.Visible = false;
+                    comingFrom.Visible = false;
+                    nextWaypoint.Text = $"{to.TargetName}";
+                    warpFactor.Text = $"{to.WarpFactor}";
+                }
+                else
+                {
+                    from = ActiveFleet.Waypoints[selectedIndex - 1];
+                    to = ActiveFleet.Waypoints[selectedIndex];
+                    nextWaypointLabel.Visible = false;
+                    nextWaypoint.Visible = false;
+                    comingFromLabel.Visible = true;
+                    comingFrom.Visible = true;
+                    comingFrom.Text = $"{from.TargetName}";
+
+                    // TODO: make a warp control
+                    warpFactor.Text = $"{to.WarpFactor}";
+                }
+
+                var waypointDistance = Math.Abs(from.Position.DistanceTo(to.Position));
+                distance.Text = $"{waypointDistance:.##} l.y.";
+                travelTime.Text = $"{Math.Ceiling(from.GetTimeToWaypoint(to))} years";
+                estimatedFuelUsage.Text = $"{ActiveFleet.GetFuelCost(to.WarpFactor, waypointDistance)}mg";
+            }
+
         }
     }
 

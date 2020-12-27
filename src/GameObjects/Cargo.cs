@@ -11,6 +11,8 @@ namespace CraigStars
         public int Population { get; set; }
         public int Fuel { get; set; }
 
+        public int Total { get => Ironium + Boranium + Germanium + Population; }
+
         public static Cargo operator +(Cargo a, Mineral b)
         {
             return new Cargo(

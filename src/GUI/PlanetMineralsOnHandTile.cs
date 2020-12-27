@@ -24,8 +24,9 @@ namespace CraigStars
             base._Ready();
         }
 
-        void UpdateControls()
+        protected override void UpdateControls()
         {
+            base.UpdateControls();
             if (ActivePlanet != null)
             {
                 ironium.Text = $"{ActivePlanet.Cargo.Ironium}kT";

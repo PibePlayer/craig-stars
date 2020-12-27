@@ -5,6 +5,6 @@ namespace CraigStars
     /// </summary>
     public enum HullSlotType
     {
-        Engine, Scanner, Mechanical, Bomb, Mining, Electrical, Shield, Armor, Cargo, SpaceDock, Weapon, Orbital, Mine;
+        Engine, Scanner, Mechanical, Bomb, Mining, Electrical, Shield, Armor, Cargo, SpaceDock, Weapon, Orbital, Mine
     }
 }

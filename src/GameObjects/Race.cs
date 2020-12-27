@@ -43,6 +43,11 @@ namespace CraigStars
         public bool ImmuneTemp { get; set; } = false;
         public bool ImmuneRad { get; set; } = false;
 
+        public bool HasLRT(LRT lrt)
+        {
+            return LRTs.Contains(lrt);
+        }
+
         /// <summary>
         /// Return whether this race is immune to a specific hab, by index
         /// </summary>

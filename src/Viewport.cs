@@ -1,18 +1,35 @@
-using System;
-using CraigStars.Singletons;
 using Godot;
+using System;
+using System.Collections.Generic;
+using CraigStars.Singletons;
 
 namespace CraigStars
 {
     public class Viewport : Node2D
     {
-        public Universe Universe { get; private set; }
+        PackedScene waypointAreaScene;
 
-        public Fleet ActiveFleet { get; set; }
+        public Universe Universe { get; private set; }
+        public List<WaypointArea> waypointAreas = new List<WaypointArea>();
+
+        public Fleet ActiveFleet
+        {
+            get => activeFleet; set
+            {
+                if (activeFleet != value)
+                {
+                    activeFleet = value;
+                    OnActiveFleetChanged();
+                }
+            }
+        }
+        Fleet activeFleet;
+
         public Planet ActivePlanet { get; set; }
 
         public override void _Ready()
         {
+            waypointAreaScene = ResourceLoader.Load<PackedScene>("res://src/GameObjects/WaypointArea.tscn");
             Signals.MapObjectActivatedEvent += OnMapObjectActivated;
             Signals.MapObjectWaypointAddedEvent += OnMapObjectWaypointAdded;
         }
@@ -20,6 +37,7 @@ namespace CraigStars
         public override void _ExitTree()
         {
             Signals.MapObjectActivatedEvent -= OnMapObjectActivated;
+            Signals.MapObjectWaypointAddedEvent -= OnMapObjectWaypointAdded;
         }
 
         void OnMapObjectActivated(MapObject mapObject)
@@ -30,9 +48,29 @@ namespace CraigStars
 
         void OnMapObjectWaypointAdded(MapObject mapObject)
         {
-            if (ActiveFleet != null) {
-                ActiveFleet.AddWaypoint(mapObject);
+            if (ActiveFleet != null)
+            {
+                var waypoint = ActiveFleet.AddWaypoint(mapObject);
+                AddWaypointArea(waypoint);
             }
+        }
+
+        /// <summary>
+        /// When the ActiveFleet changes, 
+        /// </summary>
+        void OnActiveFleetChanged()
+        {
+            waypointAreas.ForEach(wpa => { wpa.QueueFree(); });
+            waypointAreas.Clear();
+            ActiveFleet?.Waypoints.ForEach(wp => AddWaypointArea(wp));
+        }
+
+        void AddWaypointArea(Waypoint waypoint)
+        {
+            var waypointArea = waypointAreaScene.Instance() as WaypointArea;
+            waypointArea.Waypoint = waypoint;
+            waypointAreas.Add(waypointArea);
+            AddChild(waypointArea);
         }
 
         public void AddUniverse(Universe universe)

@@ -15,6 +15,7 @@ namespace CraigStars
 
         protected override void UpdateControls()
         {
+            base.UpdateControls();
             if (ActivePlanet != null)
             {
                 population.Text = $"{ActivePlanet.Population:n0}";

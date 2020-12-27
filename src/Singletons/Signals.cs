@@ -19,6 +19,7 @@ namespace CraigStars.Singletons
         public static event Action<MapObject> MapObjectActivatedEvent;
         public static event Action<MapObject> MapObjectWaypointAddedEvent;
         public static event Action<Fleet, Waypoint> FleetWaypointAddedEvent;
+        public static event Action<Waypoint> WaypointSelectedEvent;
 
         #endregion
 
@@ -128,6 +129,11 @@ namespace CraigStars.Singletons
         public static void PublishFleetWaypointAddedEvent(Fleet fleet, Waypoint waypoint)
         {
             FleetWaypointAddedEvent?.Invoke(fleet, waypoint);
+        }
+
+        public static void PublishWaypointSelectedEvent(Waypoint waypoint)
+        {
+            WaypointSelectedEvent?.Invoke(waypoint);
         }
 
         public static void PublishServerDisconnectedEvent()

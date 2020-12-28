@@ -1,16 +1,16 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Assets/GUI/planets/Planet01.jpg" type="Texture" id=1]
 [ext_resource path="res://src/GUI/MapObjectSummaryTile.cs" type="Script" id=2]
+[ext_resource path="res://src/GUI/TileTheme.tres" type="Theme" id=3]
+
+[sub_resource type="StyleBoxEmpty" id=1]
 
 [node name="MapObjectSummary" type="MarginContainer"]
 margin_right = 250.0
 margin_bottom = 200.0
 rect_min_size = Vector2( 200, 200 )
-custom_constants/margin_right = 10
-custom_constants/margin_top = 10
-custom_constants/margin_left = 10
-custom_constants/margin_bottom = 10
+theme = ExtResource( 3 )
 script = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -71,27 +71,39 @@ __meta__ = {
 modulate = Color( 0, 0, 0, 1 )
 show_behind_parent = true
 light_mask = -2147483647
-anchor_right = 1.0
-anchor_bottom = 1.0
+margin_right = 128.0
+margin_bottom = 128.0
+custom_styles/panel = SubResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/Icon"]
 margin_left = 132.0
-margin_right = 174.0
+margin_right = 230.0
 margin_bottom = 128.0
+size_flags_horizontal = 3
 
 [node name="PrevButton" type="Button" parent="VBoxContainer/Icon/VBoxContainer"]
-margin_right = 42.0
+margin_right = 98.0
 margin_bottom = 20.0
 text = "Prev"
 
 [node name="NextButton" type="Button" parent="VBoxContainer/Icon/VBoxContainer"]
 margin_top = 24.0
-margin_right = 42.0
+margin_right = 98.0
 margin_bottom = 44.0
 text = "Next"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="RenameButton" type="Button" parent="VBoxContainer/Icon/VBoxContainer"]
+visible = false
+margin_top = 48.0
+margin_right = 98.0
+margin_bottom = 68.0
+text = "Rename"
 __meta__ = {
 "_edit_use_anchors_": false
 }

@@ -1,12 +1,13 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://src/GUI/PlanetStatusTile.cs" type="Script" id=1]
-
+[ext_resource path="res://src/GUI/TileTheme.tres" type="Theme" id=2]
 
 [node name="PlanetStatus" type="MarginContainer"]
 margin_right = 207.0
 margin_bottom = 190.0
 rect_min_size = Vector2( 200, 190 )
+theme = ExtResource( 2 )
 custom_constants/margin_right = 10
 custom_constants/margin_top = 10
 custom_constants/margin_left = 10

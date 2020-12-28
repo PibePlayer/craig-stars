@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using CraigStars;
 
 public class UniverseGenerator
@@ -9,13 +10,25 @@ public class UniverseGenerator
     {
         List<Planet> planets = GeneratePlanets(settings);
         List<Fleet> fleets = new List<Fleet>();
+        List<Planet> ownedPlanets = new List<Planet>();
         for (var i = 0; i < players.Count; i++)
         {
-            var homeworld = planets[i];
-            homeworld.Player = players[i];
-            MakeHomeworld(settings, homeworld.Player, homeworld, settings.StartingYear);
+            var player = players[i];
+            var homeworld = planets.Find(p => p.Player == null && (ownedPlanets.Count == 0 || ShortestDistanceToPlanets(p, ownedPlanets) > settings.Area / 4));
+            MakeHomeworld(settings, player, homeworld, settings.StartingYear);
+            ownedPlanets.Add(homeworld);
 
-            fleets.AddRange(GenerateFleets(settings, homeworld.Player, homeworld));
+            fleets.AddRange(GenerateFleets(settings, player, homeworld));
+
+            for (var extraPlanetNum = 0; extraPlanetNum < settings.StartWithExtraPlanets; extraPlanetNum++)
+            {
+                var planet = planets.FirstOrDefault(p => p.Player == null && p.Position.DistanceTo(homeworld.Position) < 100);
+                if (planet != null)
+                {
+                    MakeExtraWorld(settings, player, planet);
+                    ownedPlanets.Add(planet);
+                }
+            }
         }
 
         planets.ForEach(p => universe.AddChild(p));
@@ -24,6 +37,17 @@ public class UniverseGenerator
         universe.Planets.AddRange(planets);
         universe.Width = settings.Area;
         universe.Height = settings.Area;
+    }
+
+    /// <summary>
+    /// Get the shortest distance from planet p to other planets
+    /// </summary>
+    /// <param name="p"></param>
+    /// <param name="ownedPlanets"></param>
+    /// <returns></returns>
+    int ShortestDistanceToPlanets(Planet p, List<Planet> otherPlanets)
+    {
+        return (int)otherPlanets.Min(otherPlanet => p.Position.DistanceTo(otherPlanet.Position));
     }
 
     List<Planet> GeneratePlanets(UniverseSettings settings)
@@ -52,6 +76,7 @@ public class UniverseGenerator
             // add a new planet
             planetLocs[loc] = true;
             Planet planet = planetScene.Instance() as Planet;
+            RandomizePlanet(settings, planet);
             planet.ObjectName = names[i];
             planet.Position = loc;
             // planet.Randomize();
@@ -122,35 +147,38 @@ public class UniverseGenerator
 
     void MakeHomeworld(UniverseSettings settings, Player player, Planet planet, int year)
     {
-        var race = player.Race;
-        var random = new Random();
 
-        int minConc = settings.MinHomeworldMineralConcentration;
-        int maxConc = settings.MaxStartingMineralConcentration;
-        planet.MineralConcentration = new Mineral()
-        {
-            Ironium = random.Next(maxConc) + minConc,
-            Boranium = random.Next(maxConc) + minConc,
-            Germanium = random.Next(maxConc) + minConc
-        };
+        var race = player.Race;
+        var random = settings.Random;
+
+        // own this planet
+        planet.Player = player;
+        planet.ReportAge = 0;
+
+        // copy the universe mineral concentrations and surface minerals
+        (
+            planet.MineralConcentration.Ironium,
+            planet.MineralConcentration.Boranium,
+            planet.MineralConcentration.Germanium
+        ) = settings.HomeWorldMineralConcentration;
+
+        (
+            planet.Cargo.Ironium,
+            planet.Cargo.Boranium,
+            planet.Cargo.Germanium
+        ) = settings.HomeWorldSurfaceMinerals;
 
         planet.Hab = new Hab(
-            race.HabHigh.Grav - race.HabLow.Grav / 2,
-            race.HabHigh.Temp - race.HabLow.Temp / 2,
-            race.HabHigh.Rad - race.HabLow.Rad / 2
+            race.HabCenter.Grav,
+            race.HabCenter.Temp,
+            race.HabCenter.Rad
         );
 
-        int minSurf = settings.MinStartingMineralSurface;
-        int maxSurf = settings.MaxStartingMineralSurface;
-
-        planet.Cargo.Ironium = random.Next(maxConc) + minConc;
-        planet.Cargo.Boranium = random.Next(maxConc) + minConc;
-        planet.Cargo.Germanium = random.Next(maxConc) + minConc;
-        planet.Cargo.Population = settings.StartingPopulation;
+        planet.Population = settings.StartingPopulation;
 
         if (race.LRTs.Contains(LRT.LSP))
         {
-            planet.Cargo.Population = (int)(planet.Cargo.Population * settings.LowStartingPopulationFactor);
+            planet.Population = (int)(planet.Population * settings.LowStartingPopulationFactor);
         }
 
         // homeworlds start with mines and factories
@@ -162,6 +190,94 @@ public class UniverseGenerator
         planet.Homeworld = true;
         planet.ContributesToResearch = true;
         planet.Scanner = true;
+    }
+
+    void MakeExtraWorld(UniverseSettings settings, Player player, Planet planet)
+    {
+        var random = settings.Random;
+        var race = player.Race;
+
+        // own this planet
+        planet.Player = player;
+        planet.ReportAge = 0;
+
+        // copy the universe mineral concentrations and surface minerals
+        (
+            planet.MineralConcentration.Ironium,
+            planet.MineralConcentration.Boranium,
+            planet.MineralConcentration.Germanium
+        ) = settings.HomeWorldMineralConcentration;
+
+        (
+            planet.Cargo.Ironium,
+            planet.Cargo.Boranium,
+            planet.Cargo.Germanium
+        ) = settings.ExtraWorldSurfaceMinerals;
+
+        planet.Hab = new Hab(
+            race.HabCenter.Grav + (race.HabWidth.Grav - random.Next(race.HabWidth.Grav - 1)) / 2,
+            race.HabCenter.Temp + (race.HabWidth.Temp - random.Next(race.HabWidth.Temp - 1)) / 2,
+            race.HabCenter.Rad + (race.HabWidth.Rad - random.Next(race.HabWidth.Rad - 1)) / 2
+        );
+
+        planet.Population = settings.StartingPopulationExtraPlanet;
+
+        if (race.LRTs.Contains(LRT.LSP))
+        {
+            planet.Population = (int)(planet.Population * settings.LowStartingPopulationFactor);
+        }
+
+        // extra worlds start with mines and factories
+        planet.Mines = settings.StartingMines;
+        planet.Factories = settings.StartingFactories;
+
+        planet.ContributesToResearch = true;
+    }
+
+    void RandomizePlanet(UniverseSettings settings, Planet planet)
+    {
+        var random = settings.Random;
+
+        int minConc = settings.MinMineralConcentration;
+        int maxConc = settings.MaxStartingMineralConcentration;
+        planet.MineralConcentration = new Mineral()
+        {
+            Ironium = random.Next(maxConc) + minConc,
+            Boranium = random.Next(maxConc) + minConc,
+            Germanium = random.Next(maxConc) + minConc
+        };
+
+        // generate hab range of this planet
+        int grav = random.Next(100);
+        if (grav > 1)
+        {
+            // this is a "normal" planet, so put it in the 10 to 89 range
+            grav = random.Next(89) + 10;
+        }
+        else
+        {
+            grav = (int)(11 - (float)(random.Next(100)) / 100.0 * 10.0);
+        }
+
+        int temp = random.Next(100);
+        if (temp > 1)
+        {
+            // this is a "normal" planet, so put it in the 10 to 89 range
+            temp = random.Next(89) + 10;
+        }
+        else
+        {
+            temp = (int)(11 - (float)(random.Next(100)) / 100.0 * 10.0);
+        }
+
+        int rad = random.Next(98) + 1;
+
+        planet.Hab = new Hab(
+            grav,
+            temp,
+            rad
+        );
+
     }
 
 }

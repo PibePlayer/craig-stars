@@ -12,7 +12,6 @@ namespace CraigStars
         FleetSprite sprite;
         CollisionShape2D collisionShape;
         Line2D waypointsLine;
-        PackedScene waypointScene;
 
         #region Planet Stats
 
@@ -42,7 +41,6 @@ namespace CraigStars
         public override void _Ready()
         {
             base._Ready();
-            waypointScene = ResourceLoader.Load<PackedScene>("res://src/GameObjects/Waypoint.tscn");
             sprite = GetNode<FleetSprite>("Sprite");
             collisionShape = GetNode<CollisionShape2D>("CollisionShape2D");
             collisionShape.Disabled = Orbiting != null;
@@ -110,13 +108,13 @@ namespace CraigStars
         /// <summary>
         /// Fuel usage calculation courtesy of m.a@stars
         /// </summary>
-        /// <param name = "speed" > The warp speed 1 to 10</param>
+        /// <param name = "warpFactor" > The warp speed 1 to 10</param>
         /// <param name = "mass" > The mass of the fleet</param>
         /// <param name = "dist" > The distance travelled</param>
         /// <param name = "ifeFactor" > The factor for improved fuel efficiency (.85 if you have the LRT)</param>
         /// <param name = "engine" > The engine being used</param>
         /// <return> The amount of mg of fuel used</return>
-        internal int GetFuelCost(int speed, int mass, double dist, double ifeFactor, TechEngine engine)
+        internal int GetFuelCost(int warpFactor, int mass, double dist, double ifeFactor, TechEngine engine)
         {
             // 1 mg of fuel will move 200 kt of weight 1 LY at a Fuel Usage Number of 100.
             // Number of engines doesn't matter. Neither number of ships with the same engine.
@@ -126,7 +124,7 @@ namespace CraigStars
 
             // IFE is applied to drive specifications, just as the helpfile hints.
             // Stars! probably does it outside here once per turn per engine to save time.
-            double engineEfficiency = Math.Ceiling(ifeFactor * engine.FuelUsage[speed - 1]);
+            double engineEfficiency = Math.Ceiling(ifeFactor * engine.FuelUsage[warpFactor - 1]);
 
             // 20000 = 200*100
             // Safe bet is Stars! does all this with integer math tricks.
@@ -146,7 +144,13 @@ namespace CraigStars
             // trip is < 1 ly. Aahh, the joys of rounding! ;o)
         }
 
-        public int GetFuelCost(int speed, double dist)
+        /// <summary>
+        /// Get the Fuel cost for this fleet to travel a certain distance at a certain speed
+        /// </summary>
+        /// <param name="warpFactor"></param>
+        /// <param name="distance"></param>
+        /// <returns></returns>
+        public int GetFuelCost(int warpFactor, double distance)
         {
             // figure out how much fuel we're going to use
             double ifeFactor = Player.Race.HasLRT(LRT.IFE) ? .85 : 1.0;
@@ -166,7 +170,7 @@ namespace CraigStars
                 {
                     mass += (int)((float)fleetCargo * ((float)stackCapacity / (float)fleetCapacity));
                 }
-                fuelCost += GetFuelCost(speed, mass, dist, ifeFactor, stack.Design.Aggregate.Engine);
+                fuelCost += GetFuelCost(warpFactor, mass, distance, ifeFactor, stack.Design.Aggregate.Engine);
             }
 
             return fuelCost;

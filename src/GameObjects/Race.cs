@@ -6,12 +6,12 @@ namespace CraigStars
     public class Race
     {
         public string Name { get; set; } = "Humanoid";
-        public string PlayerName { get; set; } = "Humanoids";
+        public string PluralName { get; set; } = "Humanoids";
         public PRT PRT { get; set; } = PRT.JoaT;
         public HashSet<LRT> LRTs { get; set; } = new HashSet<LRT>();
 
         public Hab HabLow { get => habLow; set { habLow = value; habCenter = null; } }
-        Hab habLow = new Hab(25, 25, 25);
+        Hab habLow = new Hab(15, 15, 15);
 
         public Hab HabHigh { get => habHigh; set { habHigh = value; habCenter = null; } }
         Hab habHigh = new Hab(85, 85, 85);
@@ -22,12 +22,25 @@ namespace CraigStars
             {
                 if (habCenter == null)
                 {
-                    habCenter = new Hab((HabHigh.Grav - HabLow.Grav) / 2, (HabHigh.Temp - HabLow.Temp) / 2, (HabHigh.Rad - HabLow.Rad) / 2);
+                    habCenter = new Hab((HabHigh.Grav - HabLow.Grav) / 2 + HabLow.Grav, (HabHigh.Temp - HabLow.Temp) / 2 + HabLow.Temp, (HabHigh.Rad - HabLow.Rad) / 2 + HabLow.Rad);
                 }
                 return habCenter;
             }
         }
         Hab habCenter = null;
+
+        public Hab HabWidth
+        {
+            get
+            {
+                if (habWidth == null)
+                {
+                    habWidth = new Hab((HabHigh.Grav - HabLow.Grav) / 2, (HabHigh.Temp - HabLow.Temp), (HabHigh.Rad - HabLow.Rad) / 2);
+                }
+                return habWidth;
+            }
+        }
+        Hab habWidth = null;
 
         public int GrowthRate { get; set; } = 15;
         public int ColonistsPerResource { get; set; } = 1000;
@@ -74,11 +87,11 @@ namespace CraigStars
         /// </summary>
         /// <param name="planetHab">The Hab value for a planet.</param>
         /// <returns>The habiability of this race to that planet, with 100 being the best</returns>
-        public long GetPlanetHabitability(Hab planetHab)
+        public int GetPlanetHabitability(Hab planetHab)
         {
             long planetValuePoints = 0, redValue = 0, ideality = 10000;
             int habValue, habCenter, habUpper, habLower, fromIdeal, habRadius, poorPlanetMod, habRed, tmp;
-            for (int habType = 0; habType < 3; habType++)
+            for (var habType = 0; habType < 3; habType++)
             {
                 habValue = planetHab[habType];
                 habCenter = HabCenter[habType];
@@ -132,13 +145,13 @@ namespace CraigStars
 
             if (redValue != 0)
             {
-                return -redValue;
+                return (int)-redValue;
             }
 
-            planetValuePoints = (long)(Math.Sqrt((double)planetValuePoints / 3) + 0.9);
+            planetValuePoints = (long)(Math.Sqrt((double)planetValuePoints / 3.0) + 0.9);
             planetValuePoints = planetValuePoints * ideality / 10000;
 
-            return planetValuePoints;
+            return (int)planetValuePoints;
         }
     }
 }

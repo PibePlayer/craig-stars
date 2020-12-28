@@ -1,0 +1,14 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://src/GUI/GUIColors.cs" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+GravColor = Color( 0.00784314, 0, 0.521569, 1 )
+TempColor = Color( 0.545098, 0, 0, 1 )
+RadColor = Color( 0, 0.505882, 0, 1 )
+GravValueColor = Color( 0.0352941, 0, 1, 1 )
+TempValueColor = Color( 1, 0, 0, 1 )
+RadValueColor = Color( 0, 1, 0, 1 )
+HabitablePlanetText = Color( 0, 0.505882, 0, 1 )
+UninhabitablePlanetColor = Color( 0.545098, 0, 0, 1 )

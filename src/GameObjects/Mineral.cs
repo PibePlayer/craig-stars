@@ -53,6 +53,7 @@ namespace CraigStars
 
             }
         }
+
         public static Mineral operator +(Mineral a, Mineral b)
         {
             return new Mineral(
@@ -67,6 +68,13 @@ namespace CraigStars
             Ironium += num;
             Boranium += num;
             Germanium += num;
+        }
+
+        public void Deconstruct(out int ironium, out int boranium, out int germaninum)
+        {
+            ironium = Ironium;
+            boranium = Boranium;
+            germaninum = Germanium;
         }
     }
 }

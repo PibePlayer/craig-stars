@@ -43,6 +43,9 @@ namespace CraigStars
         public bool Homeworld { get; set; }
         public bool Scanner { get; set; }
 
+        public int ReportAge { get; set; } = 0; // = -1; // -1 means unexplored
+        public bool Explored { get => ReportAge != -1; }
+
         public List<Fleet> OrbitingFleets { get; set; } = new List<Fleet>();
         #endregion
 

@@ -1,9 +1,22 @@
 using Godot;
+using System;
 
 namespace CraigStars
 {
     public class UniverseSettings
     {
+        /// <summary>
+        /// Allow setting of the random seed used
+        /// </summary>
+        /// <returns></returns>
+        public Random Random { get; set; } = new Random();
+
+        /// <summary>
+        /// For debugging, start with extra planets
+        /// </summary>
+        /// <value></value>
+        public int StartWithExtraPlanets { get; set; } = 1;
+
         public int NumPlayers = 2;
 
         public int StartingYear { get; set; } = 2400;
@@ -12,15 +25,17 @@ namespace CraigStars
 
         // Mineral settings that we don't currently modify
         public int MinHomeworldMineralConcentration { get; set; } = 30;
+        public int MinExtraPlanetMineralConcentration { get; set; } = 30;
         public int MinMineralConcentration { get; set; } = 1;
         public int MinStartingMineralConcentration { get; set; } = 3;
-        public int MaxStartingMineralConcentration { get; set; } = 200;
+        public int MaxStartingMineralConcentration { get; set; } = 100;
         public int MaxStartingMineralSurface { get; set; } = 1000;
         public int MinStartingMineralSurface { get; set; } = 300;
         public int MineralDecayFactor { get; set; } = 1500000;
 
         // Population Settings
         public int StartingPopulation { get; set; } = 25000;
+        public int StartingPopulationExtraPlanet { get; set; } = 12500;
         public float LowStartingPopulationFactor { get; set; } = .7f;
 
         // Bulding Settings
@@ -124,5 +139,73 @@ namespace CraigStars
             }
         }
 
+        /// <summary>
+        /// All homeworlds have the same starting minerals and concentrations
+        /// </summary>
+        /// <value></value>
+        public Mineral HomeWorldMineralConcentration
+        {
+            get
+            {
+                if (homeWorldMineralConcentration == null)
+                {
+                    homeWorldMineralConcentration = new Mineral()
+                    {
+                        Ironium = Random.Next(MaxStartingMineralConcentration) + MinHomeworldMineralConcentration,
+                        Boranium = Random.Next(MaxStartingMineralConcentration) + MinHomeworldMineralConcentration,
+                        Germanium = Random.Next(MaxStartingMineralConcentration) + MinHomeworldMineralConcentration
+                    };
+                }
+                return homeWorldMineralConcentration;
+            }
+        }
+        Mineral homeWorldMineralConcentration = null;
+
+        /// <summary>
+        /// All homeworlds have the same starting minerals and concentrations
+        /// </summary>
+        /// <value></value>
+        public Mineral HomeWorldSurfaceMinerals
+        {
+            get
+            {
+                if (homeWorldSurfaceMinerals == null)
+                {
+                    homeWorldSurfaceMinerals = new Mineral()
+                    {
+                        Ironium = Random.Next(MaxStartingMineralSurface) + MinStartingMineralSurface,
+                        Boranium = Random.Next(MaxStartingMineralSurface) + MinStartingMineralSurface,
+                        Germanium = Random.Next(MaxStartingMineralSurface) + MinStartingMineralSurface
+                    };
+                }
+                return homeWorldSurfaceMinerals;
+            }
+        }
+        Mineral homeWorldSurfaceMinerals = null;
+
+        /// <summary>
+        /// All extraworlds have the same starting minerals and concentrations
+        /// </summary>
+        /// <value></value>
+        public Mineral ExtraWorldSurfaceMinerals
+        {
+            get
+            {
+                if (extraWorldSurfaceMinerals == null)
+                {
+                    extraWorldSurfaceMinerals = new Mineral()
+                    {
+                        Ironium = (Random.Next(MaxStartingMineralSurface) + MinStartingMineralSurface) / 2,
+                        Boranium = (Random.Next(MaxStartingMineralSurface) + MinStartingMineralSurface) / 2,
+                        Germanium = (Random.Next(MaxStartingMineralSurface) + MinStartingMineralSurface) / 2
+                    };
+                }
+                return extraWorldSurfaceMinerals;
+            }
+        }
+        Mineral extraWorldSurfaceMinerals = null;
+
     }
+
+
 }

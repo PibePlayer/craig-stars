@@ -126,26 +126,8 @@ namespace CraigStars
             DrawRect(new Rect2(hab.RectPosition, hab.RectSize), Colors.Black, true);
             DrawRect(rect, barColor, true);
 
-            // draw a diamond shape
-            DrawPolyline(new Vector2[] {
-                new Vector2(valuePosition.x - valueSize / 2, valuePosition.y),
-                new Vector2(valuePosition.x, valuePosition.y - valueSize / 2),
-                new Vector2(valuePosition.x + valueSize / 2, valuePosition.y),
-                new Vector2(valuePosition.x, valuePosition.y + valueSize / 2),
-                new Vector2(valuePosition.x - valueSize / 2, valuePosition.y),
-            }, valueColor);
-
-            // draw a cross
-            DrawLine(
-                new Vector2(valuePosition.x - valueSize / 2, valuePosition.y),
-                new Vector2(valuePosition.x + valueSize / 2, valuePosition.y),
-                valueColor
-            );
-            DrawLine(
-                new Vector2(valuePosition.x, valuePosition.y - valueSize / 2),
-                new Vector2(valuePosition.x, valuePosition.y + valueSize / 2),
-                valueColor
-            );
+            this.DrawDiamondOutline(valuePosition, valueSize, valueColor);
+            this.DrawCross(valuePosition, valueSize, valueColor);
         }
 
         void UpdateControls()

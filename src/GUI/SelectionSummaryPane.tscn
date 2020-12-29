@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://src/GUI/HabBar.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/GUI/TileTheme.tres" type="Theme" id=2]
 [ext_resource path="res://src/GUI/SelectionSummaryPane.cs" type="Script" id=3]
 [ext_resource path="res://Assets/GUI/vector_whiteIcons.svg" type="Texture" id=4]
+[ext_resource path="res://src/GUI/MineralBar.tscn" type="PackedScene" id=5]
 
 [sub_resource type="AtlasTexture" id=1]
 atlas = ExtResource( 4 )
@@ -27,7 +28,7 @@ __meta__ = {
 margin_left = 10.0
 margin_top = 10.0
 margin_right = 390.0
-margin_bottom = 180.0
+margin_bottom = 194.0
 theme = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -37,7 +38,7 @@ __meta__ = {
 margin_left = 10.0
 margin_top = 10.0
 margin_right = 390.0
-margin_bottom = 180.0
+margin_bottom = 194.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -61,10 +62,9 @@ margin_bottom = 20.0
 text = "S"
 
 [node name="PlanetContainer" type="VBoxContainer" parent="VBoxContainer"]
-visible = false
 margin_top = 24.0
 margin_right = 380.0
-margin_bottom = 130.0
+margin_bottom = 184.0
 
 [node name="ValueContainer" type="HBoxContainer" parent="VBoxContainer/PlanetContainer"]
 margin_right = 380.0
@@ -133,7 +133,86 @@ margin_bottom = 106.0
 ShowSeparator = false
 Type = 2
 
+[node name="IroniumBar" type="HBoxContainer" parent="VBoxContainer/PlanetContainer"]
+margin_top = 110.0
+margin_right = 380.0
+margin_bottom = 124.0
+
+[node name="Title" type="Label" parent="VBoxContainer/PlanetContainer/IroniumBar"]
+margin_right = 80.0
+margin_bottom = 14.0
+rect_min_size = Vector2( 80, 0 )
+custom_colors/font_color = Color( 0.0352941, 0, 1, 1 )
+text = "Ironium"
+align = 2
+
+[node name="IroniumMineralBar" parent="VBoxContainer/PlanetContainer/IroniumBar" instance=ExtResource( 5 )]
+margin_left = 84.0
+margin_right = 326.0
+margin_bottom = 14.0
+
+[node name="OverIndicator" type="Label" parent="VBoxContainer/PlanetContainer/IroniumBar"]
+margin_left = 330.0
+margin_right = 380.0
+margin_bottom = 14.0
+rect_min_size = Vector2( 50, 0 )
+
+[node name="BoraniumBar" type="HBoxContainer" parent="VBoxContainer/PlanetContainer"]
+margin_top = 128.0
+margin_right = 380.0
+margin_bottom = 142.0
+
+[node name="Title" type="Label" parent="VBoxContainer/PlanetContainer/BoraniumBar"]
+margin_right = 80.0
+margin_bottom = 14.0
+rect_min_size = Vector2( 80, 0 )
+custom_colors/font_color = Color( 0, 0.505882, 0, 1 )
+text = "Boranium"
+align = 2
+
+[node name="BoraniumMineralBar" parent="VBoxContainer/PlanetContainer/BoraniumBar" instance=ExtResource( 5 )]
+margin_left = 84.0
+margin_right = 326.0
+margin_bottom = 14.0
+Concentration = 45
+Type = 1
+Surface = 700
+
+[node name="OverIndicator" type="Label" parent="VBoxContainer/PlanetContainer/BoraniumBar"]
+margin_left = 330.0
+margin_right = 380.0
+margin_bottom = 14.0
+rect_min_size = Vector2( 50, 0 )
+
+[node name="GermaniumBar" type="HBoxContainer" parent="VBoxContainer/PlanetContainer"]
+margin_top = 146.0
+margin_right = 380.0
+margin_bottom = 160.0
+
+[node name="Title" type="Label" parent="VBoxContainer/PlanetContainer/GermaniumBar"]
+margin_right = 80.0
+margin_bottom = 14.0
+rect_min_size = Vector2( 80, 0 )
+custom_colors/font_color = Color( 1, 1, 0, 1 )
+text = "Germanium"
+align = 2
+
+[node name="GermaniumMineralBar" parent="VBoxContainer/PlanetContainer/GermaniumBar" instance=ExtResource( 5 )]
+margin_left = 84.0
+margin_right = 326.0
+margin_bottom = 14.0
+Concentration = 75
+Type = 2
+Surface = 800
+
+[node name="OverIndicator" type="Label" parent="VBoxContainer/PlanetContainer/GermaniumBar"]
+margin_left = 330.0
+margin_right = 380.0
+margin_bottom = 14.0
+rect_min_size = Vector2( 50, 0 )
+
 [node name="UnknownPlanetContainer" type="CenterContainer" parent="VBoxContainer"]
+visible = false
 margin_top = 24.0
 margin_right = 380.0
 margin_bottom = 170.0

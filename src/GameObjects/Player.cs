@@ -12,6 +12,7 @@ namespace CraigStars
         public Boolean AIControlled { get; set; }
         public Color Color { get; set; } = Colors.Black;
         public Race Race = new Race();
+        public Planet Homeworld { get; set; }
 
         public override void _Ready()
         {

@@ -1,27 +1,30 @@
-using System.Linq;
-using CraigStars.Singletons;
 using Godot;
+using System.Collections.Generic;
+using System.Linq;
+
+using CraigStars.Singletons;
 
 namespace CraigStars
 {
     public class Game : Node
     {
         public UniverseSettings UniverseSettings { get; set; } = new UniverseSettings();
-        public Universe Universe { get; private set; }
+        public List<Planet> Planets { get; set; } = new List<Planet>();
+        public int Width { get; set; }
+        public int Height { get; set; }
         public int Year { get; set; }
 
-        Viewport Viewport { get; set; }
+        Scanner Scanner { get; set; }
 
         public override void _Ready()
         {
             // generate a new univers
             UniverseGenerator generator = new UniverseGenerator();
-            Universe = new Universe();
-            generator.Generate(Universe, UniverseSettings, PlayersManager.Instance.Players);
+            generator.Generate(this, UniverseSettings, PlayersManager.Instance.Players);
 
             // add the universe to the viewport
-            Viewport = FindNode("Viewport") as Viewport;
-            Viewport.AddUniverse(Universe);
+            Scanner = FindNode("Scanner") as Scanner;
+            Scanner.AddMapObjects(this);
 
             CallDeferred(nameof(FocusHomeworld));
         }
@@ -40,7 +43,7 @@ namespace CraigStars
         /// </summary>
         void FocusHomeworld()
         {
-            var homeworld = Universe.Planets.Where(p => p.Homeworld && p.Player == PlayersManager.Instance.Me).First();
+            var homeworld = Planets.Where(p => p.Homeworld && p.Player == PlayersManager.Instance.Me).First();
             if (homeworld != null)
             {
                 homeworld.Activate();

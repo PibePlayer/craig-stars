@@ -5,11 +5,11 @@ using CraigStars.Singletons;
 
 namespace CraigStars
 {
-    public class Viewport : Node2D
+    public class Scanner : Node2D
     {
         PackedScene waypointAreaScene;
 
-        public Universe Universe { get; private set; }
+        public List<Planet> Planets { get; set; } = new List<Planet>();
         public List<WaypointArea> waypointAreas = new List<WaypointArea>();
 
         public Fleet ActiveFleet
@@ -73,16 +73,16 @@ namespace CraigStars
             AddChild(waypointArea);
         }
 
-        public void AddUniverse(Universe universe)
+        public void AddMapObjects(Game game)
         {
-            AddChild(universe);
-            Universe = universe;
+            Planets.AddRange(game.Planets);
+            Planets.ForEach(p => AddChild(p));
             CallDeferred(nameof(UpdateViewport));
         }
 
         public void UpdateViewport()
         {
-            Universe.Planets.ForEach(p => p.UpdateVisibleSprites());
+            Planets.ForEach(p => p.UpdateVisibleSprites());
         }
 
     }

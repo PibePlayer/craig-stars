@@ -6,7 +6,7 @@ using CraigStars;
 
 public class UniverseGenerator
 {
-    public void Generate(Universe universe, UniverseSettings settings, List<Player> players)
+    public void Generate(Game game, UniverseSettings settings, List<Player> players)
     {
         List<Planet> planets = GeneratePlanets(settings);
         List<Fleet> fleets = new List<Fleet>();
@@ -15,28 +15,34 @@ public class UniverseGenerator
         {
             var player = players[i];
             var homeworld = planets.Find(p => p.Player == null && (ownedPlanets.Count == 0 || ShortestDistanceToPlanets(p, ownedPlanets) > settings.Area / 4));
+            player.Homeworld = homeworld;
             MakeHomeworld(settings, player, homeworld, settings.StartingYear);
             ownedPlanets.Add(homeworld);
 
             fleets.AddRange(GenerateFleets(settings, player, homeworld));
+        }
 
+        // add extra planets for this player
+        players.ForEach(player =>
+        {
             for (var extraPlanetNum = 0; extraPlanetNum < settings.StartWithExtraPlanets; extraPlanetNum++)
             {
-                var planet = planets.FirstOrDefault(p => p.Player == null && p.Position.DistanceTo(homeworld.Position) < 100);
+                var planet = planets.FirstOrDefault(p => p.Player == null && p.Position.DistanceTo(player.Homeworld.Position) < 100);
                 if (planet != null)
                 {
                     MakeExtraWorld(settings, player, planet);
                     ownedPlanets.Add(planet);
                 }
             }
-        }
 
-        planets.ForEach(p => universe.AddChild(p));
-        fleets.ForEach(f => universe.AddChild(f));
+        });
 
-        universe.Planets.AddRange(planets);
-        universe.Width = settings.Area;
-        universe.Height = settings.Area;
+        planets.ForEach(p => game.AddChild(p));
+        fleets.ForEach(f => game.AddChild(f));
+
+        game.Planets.AddRange(planets);
+        game.Width = settings.Area;
+        game.Height = settings.Area;
     }
 
     /// <summary>

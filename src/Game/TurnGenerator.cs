@@ -51,10 +51,12 @@ namespace CraigStars
         {
             game.Year++;
 
-            var ownedPlanets = game.Universe.Planets.Where(p => p.Player != null).ToList();
+            var ownedPlanets = game.Planets.Where(p => p.Player != null).ToList();
+
+            // Move();
             Mine(game.UniverseSettings, ownedPlanets);
-            Produce(game.Universe.Planets);
-            Grow(game.Universe.Planets);
+            Produce(game.Planets);
+            Grow(game.Planets);
         }
 
         void Mine(UniverseSettings settings, List<Planet> planets)

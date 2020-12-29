@@ -9,7 +9,8 @@ namespace CraigStars
     {
         PackedScene waypointAreaScene;
 
-        public List<Planet> Planets { get; set; } = new List<Planet>();
+        public List<Planet> Planets { get; } = new List<Planet>();
+        public List<Fleet> Fleets { get; } = new List<Fleet>();
         public List<WaypointArea> waypointAreas = new List<WaypointArea>();
 
         public Fleet ActiveFleet
@@ -76,7 +77,9 @@ namespace CraigStars
         public void AddMapObjects(Game game)
         {
             Planets.AddRange(game.Planets);
+            Fleets.AddRange(game.Fleets);
             Planets.ForEach(p => AddChild(p));
+            Fleets.ForEach(f => AddChild(f));
             CallDeferred(nameof(UpdateViewport));
         }
 

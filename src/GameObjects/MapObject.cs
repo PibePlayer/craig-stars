@@ -38,6 +38,7 @@ namespace CraigStars
         [Export]
         public OwnerAlly OwnerAllyState { get; set; } = OwnerAlly.Unknown;
 
+        public int Id { get; set; }
         public String ObjectName { get; set; } = "";
 
         StateMachine<States, Triggers> selectedMachine;
@@ -78,6 +79,7 @@ namespace CraigStars
         {
             Signals.MapObjectSelectedEvent -= OnMapObjectSelected;
         }
+
 
         /// <summary>
         /// We listen for the MapObjectSelectedEvent so we can deselect ourselves

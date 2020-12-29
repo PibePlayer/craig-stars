@@ -59,6 +59,10 @@ namespace CraigStars
             {
                 planet.OrbitingState = Planet.Orbiting.Orbiting;
             }
+            else
+            {
+                planet.OrbitingState = Planet.Orbiting.None;
+            }
 
             if (player != null)
             {

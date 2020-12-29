@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CraigStars;
+using CraigStars.Utils;
 
 public class UniverseGenerator
 {
@@ -11,6 +12,9 @@ public class UniverseGenerator
         List<Planet> planets = GeneratePlanets(settings);
         List<Fleet> fleets = new List<Fleet>();
         List<Planet> ownedPlanets = new List<Planet>();
+
+        // shuffle the planets so we don't end up with the same planet id each time
+        settings.Random.Shuffle(planets);
         for (var i = 0; i < players.Count; i++)
         {
             var player = players[i];
@@ -37,10 +41,8 @@ public class UniverseGenerator
 
         });
 
-        planets.ForEach(p => game.AddChild(p));
-        fleets.ForEach(f => game.AddChild(f));
-
         game.Planets.AddRange(planets);
+        game.Fleets.AddRange(fleets);
         game.Width = settings.Area;
         game.Height = settings.Area;
     }
@@ -83,6 +85,7 @@ public class UniverseGenerator
             planetLocs[loc] = true;
             Planet planet = planetScene.Instance() as Planet;
             RandomizePlanet(settings, planet);
+            planet.Id = i + 1;
             planet.ObjectName = names[i];
             planet.Position = loc;
             // planet.Randomize();

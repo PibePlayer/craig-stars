@@ -59,6 +59,19 @@ namespace CraigStars
                     Position = Position
                 });
             }
+
+            Signals.TurnPassedEvent += OnTurnPassed;
+        }
+
+        public override void _ExitTree()
+        {
+            base._ExitTree();
+            Signals.TurnPassedEvent -= OnTurnPassed;
+        }
+
+        void OnTurnPassed(int year)
+        {
+            sprite.UpdateVisibleSprites(Player, this);
         }
 
         public Waypoint AddWaypoint(MapObject mapObject)
@@ -67,15 +80,21 @@ namespace CraigStars
 
             Waypoints.Add(waypoint);
 
+            // draw the line for this waypoint
+            UpdateWaypointsLine();
+
+            Signals.PublishFleetWaypointAddedEvent(this, waypoint);
+            return waypoint;
+        }
+
+        void UpdateWaypointsLine()
+        {
             Vector2[] points = Waypoints
                 .Skip(1)
                 .Prepend(new Waypoint() { Position = Position })
                 .Select(wp => wp.Position - Position)
                 .ToArray();
             waypointsLine.Points = points;
-
-            Signals.PublishFleetWaypointAddedEvent(this, waypoint);
-            return waypoint;
         }
 
         internal override List<MapObject> GetPeers()
@@ -103,6 +122,66 @@ namespace CraigStars
             }
 
             return peers;
+        }
+
+        public void Move()
+        {
+            if (Waypoints.Count > 1)
+            {
+                Waypoint wp0 = Waypoints[0];
+                Waypoint wp1 = Waypoints[1];
+                float totaldist = wp0.Position.DistanceTo(wp1.Position);
+                float dist = wp1.WarpFactor * wp1.WarpFactor;
+
+                // go with the lower
+                if (totaldist < dist)
+                {
+                    dist = totaldist;
+                }
+
+                // get the cost for the fleet
+                int fuelCost = GetFuelCost(wp1.WarpFactor, dist);
+                Cargo.Fuel -= fuelCost;
+
+                // assuming we move at all, make sure we are no longer orbiting any planets
+                if (dist > 0 && Orbiting != null)
+                {
+                    Orbiting.OrbitingFleets.Remove(this);
+                    Orbiting = null;
+                }
+
+                if (totaldist == dist)
+                {
+                    Position = wp1.Position;
+                    if (wp1.Target != null && wp1.Target is Planet planet)
+                    {
+                        Orbiting = planet;
+                        planet.OrbitingFleets.Add(this);
+                    }
+
+                    // remove the previous waypoint
+                    Waypoints.RemoveAt(0);
+
+                    // TODO: we've arrived, process this waypoint
+                    /*
+                    processTask(fleet, wp1);
+                    Waypoints.remove(0);
+                    if (fleet.getWaypoints().size() == 1) {
+                        Message.fleetCompletedAssignedOrders(fleet.getOwner(), fleet);
+                    }
+                    */
+                }
+                else
+                {
+                    // move this fleet closer to the next waypoint
+                    var direction = (wp1.Position - Position).Normalized();
+                    wp0.Target = null;
+
+                    Position += direction * dist;
+                    wp0.Position = Position;
+                }
+            }
+            UpdateWaypointsLine();  
         }
 
         /// <summary>

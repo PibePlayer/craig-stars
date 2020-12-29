@@ -53,6 +53,18 @@ namespace CraigStars
         {
             base._Ready();
             sprite = GetNode<PlanetSprite>("Sprite");
+            Signals.TurnPassedEvent += OnTurnPassed;
+        }
+
+        public override void _ExitTree()
+        {
+            base._ExitTree();
+            Signals.TurnPassedEvent -= OnTurnPassed;
+        }
+
+        void OnTurnPassed(int year)
+        {
+            sprite.UpdateVisibleSprites(Player, this);
         }
 
         protected override void OnSelected()

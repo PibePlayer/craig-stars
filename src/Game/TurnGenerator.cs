@@ -53,10 +53,21 @@ namespace CraigStars
 
             var ownedPlanets = game.Planets.Where(p => p.Player != null).ToList();
 
-            // Move();
+            MoveFleets(game.Fleets);
             Mine(game.UniverseSettings, ownedPlanets);
             Produce(game.Planets);
             Grow(game.Planets);
+        }
+
+        // move fleets
+        internal void MoveFleets(List<Fleet> fleets)
+        {
+            foreach (var fleet in fleets)
+            {
+                fleet.Move();
+                // TODO: Scrap fleets
+            }
+
         }
 
         void Mine(UniverseSettings settings, List<Planet> planets)

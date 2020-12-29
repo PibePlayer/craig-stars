@@ -10,6 +10,7 @@ namespace CraigStars
     {
         public UniverseSettings UniverseSettings { get; set; } = new UniverseSettings();
         public List<Planet> Planets { get; set; } = new List<Planet>();
+        public List<Fleet> Fleets { get; set; } = new List<Fleet>();
         public int Width { get; set; }
         public int Height { get; set; }
         public int Year { get; set; }

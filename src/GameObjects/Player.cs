@@ -1,5 +1,6 @@
-using System;
 using Godot;
+using System;
+using System.Collections.Generic;
 
 namespace CraigStars
 {
@@ -13,6 +14,10 @@ namespace CraigStars
         public Color Color { get; set; } = Colors.Black;
         public Race Race = new Race();
         public Planet Homeworld { get; set; }
+
+        public List<Planet> Planets { get; set; } = new List<Planet>();
+        public List<Fleet> Fleets { get; set; } = new List<Fleet>();
+        public List<Fleet> AlienFleets { get; set; } = new List<Fleet>();
 
         public override void _Ready()
         {

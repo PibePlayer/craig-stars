@@ -175,8 +175,8 @@ margin_left = 84.0
 margin_right = 326.0
 margin_bottom = 14.0
 Concentration = 45
-Type = 1
 Surface = 700
+Type = 1
 
 [node name="OverIndicator" type="Label" parent="VBoxContainer/PlanetContainer/BoraniumBar"]
 margin_left = 330.0
@@ -202,8 +202,8 @@ margin_left = 84.0
 margin_right = 326.0
 margin_bottom = 14.0
 Concentration = 75
-Type = 2
 Surface = 800
+Type = 2
 
 [node name="OverIndicator" type="Label" parent="VBoxContainer/PlanetContainer/GermaniumBar"]
 margin_left = 330.0

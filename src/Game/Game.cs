@@ -9,16 +9,19 @@ namespace CraigStars
     public class Game : Node
     {
         public UniverseSettings UniverseSettings { get; set; } = new UniverseSettings();
+        public List<Player> Players { get; set; } = new List<Player>();
         public List<Planet> Planets { get; set; } = new List<Planet>();
         public List<Fleet> Fleets { get; set; } = new List<Fleet>();
         public int Width { get; set; }
         public int Height { get; set; }
-        public int Year { get; set; }
+        public int Year { get; set; } = 2400;
 
         Scanner Scanner { get; set; }
 
         public override void _Ready()
         {
+            Players.AddRange(PlayersManager.Instance.Players);
+            
             // generate a new univers
             UniverseGenerator generator = new UniverseGenerator();
             generator.Generate(this, UniverseSettings, PlayersManager.Instance.Players);
@@ -26,6 +29,8 @@ namespace CraigStars
             // add the universe to the viewport
             Scanner = FindNode("Scanner") as Scanner;
             Scanner.AddMapObjects(this);
+
+            Signals.PublishTurnPassedEvent(Year);
         }
 
 

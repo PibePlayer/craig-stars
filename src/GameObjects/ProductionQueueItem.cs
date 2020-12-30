@@ -31,8 +31,14 @@ namespace CraigStars
                     case QueueItemType.Starbase:
                     case QueueItemType.Fleet:
                         return ShipDesign.Name;
+                    case QueueItemType.AutoMine:
+                        return "Mine (Auto)";
+                    case QueueItemType.AutoFactory:
+                        return "Factory (Auto)";
+                    case QueueItemType.AutoDefense:
+                        return "Defenses (Auto)";
                     case QueueItemType.AutoAlchemy:
-                        return "Alchemy";
+                        return "Alchemy (Auto)";
                     default:
                         return Type.ToString();
                 }

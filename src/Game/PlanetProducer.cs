@@ -36,7 +36,7 @@ namespace CraigStars
                 int numBuilt = allocated / costPer;
 
                 // log.debug('Building item: %s cost_per: %s allocated: %s num_build: %s', item,
-                // cost_per, allocated, num_built)
+                // cost_per, allocated, numBuilt)
                 // If we can build some, but not all
                 if (0 < numBuilt && numBuilt < item.Quantity)
                 {
@@ -99,31 +99,31 @@ namespace CraigStars
          * 
          * @param allocated
          */
-        private Cost BuildItem(Planet planet, ProductionQueueItem item, int num_built, Cost allocated)
+        private Cost BuildItem(Planet planet, ProductionQueueItem item, int numBuilt, Cost allocated)
         {
             if (item.Type == QueueItemType.Mine || item.Type == QueueItemType.AutoMine)
             {
-                planet.Mines += num_built;
-                // Message.mine(planet.Owner, planet, num_built);
+                planet.Mines += numBuilt;
+                Message.Mine(planet.Player, planet, numBuilt);
             }
             else if (item.Type == QueueItemType.Factory || item.Type == QueueItemType.AutoFactory)
             {
-                planet.Factories += num_built;
-                // Message.factory(planet.Owner, planet, num_built);
+                planet.Factories += numBuilt;
+                Message.Factory(planet.Player, planet, numBuilt);
             }
             else if (item.Type == QueueItemType.Defense || item.Type == QueueItemType.AutoDefense)
             {
-                planet.Defenses += num_built;
-                // Message.defense(planet.Owner, planet, num_built);
+                planet.Defenses += numBuilt;
+                Message.Defense(planet.Player, planet, numBuilt);
             }
             else if (item.Type == QueueItemType.Alchemy || item.Type == QueueItemType.AutoAlchemy)
             {
                 // add the minerals back to our allocated amount
-                allocated += new Cost(num_built, num_built, num_built, 0);
+                allocated += new Cost(numBuilt, numBuilt, numBuilt, 0);
             }
             else if (item.Type == QueueItemType.Fleet)
             {
-                BuildFleet(planet, item, num_built);
+                BuildFleet(planet, item, numBuilt);
             }
             else if (item.Type == QueueItemType.Starbase)
             {
@@ -138,7 +138,7 @@ namespace CraigStars
          */
         private void BuildFleet(Planet planet, ProductionQueueItem item, int numBuilt)
         {
-            // planet.Owner().setNumFleetsBuilt(planet.Player.getNumFleetsBuilt + 1);
+            // planet.Player().setNumFleetsBuilt(planet.Player.getNumFleetsBuilt + 1);
             // String name = (item.FleetName() != null ? item.getFleetName() : String.format("Fleet #" + planet.Player.getNumFleetsBuilt));
             // boolean foundFleet = false;
             // // if (we have a fleetName defined for this queue item, try and append it
@@ -167,7 +167,7 @@ namespace CraigStars
             //     fleet.setOrbiting(planet);
             //     fleet.addWaypoint(fleet.X(), fleet.getY, 5, WaypointTask.None, planet);
             //     planet.OrbitingFleets.add(fleet);
-            //     planet.Owner().getGame().getFleets.add(fleet);
+            //     planet.Player().getGame().getFleets.add(fleet);
             // }
         }
 
@@ -192,7 +192,7 @@ namespace CraigStars
             //     fleet.computeAggregate();
             //     fleet.addWaypoint(planet.X(), planet.getY, 5, WaypointTask.None, planet);
             //     planet.setStarbase(fleet);
-            //     planet.Owner().getGame().getFleets.add(fleet);
+            //     planet.Player().getGame().getFleets.add(fleet);
             // }
         }
 

@@ -18,6 +18,7 @@ namespace CraigStars
         public List<Planet> Planets { get; set; } = new List<Planet>();
         public List<Fleet> Fleets { get; set; } = new List<Fleet>();
         public List<Fleet> AlienFleets { get; set; } = new List<Fleet>();
+        public List<Message> Messages { get; set; } = new List<Message>();
 
         /// <summary>
         /// The percentage of resources to spend on research

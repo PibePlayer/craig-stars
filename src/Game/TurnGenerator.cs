@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using CraigStars.Singletons;
 
 namespace CraigStars
 {
@@ -52,6 +53,7 @@ namespace CraigStars
         public void GenerateTurn(Game game)
         {
             game.Year++;
+            game.Players.ForEach(p => p.Messages.Clear());
 
             var ownedPlanets = game.Planets.Where(p => p.Player != null).ToList();
 

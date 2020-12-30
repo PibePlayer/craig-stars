@@ -45,6 +45,7 @@ public class UniverseGenerator
             ownedPlanets.Add(homeworld);
 
             fleets.AddRange(GenerateFleets(settings, player, homeworld));
+            Message.Info(player, "Welcome to the universe, go forth and conquer!");
         }
 
         // add extra planets for this player
@@ -220,6 +221,7 @@ public class UniverseGenerator
         planet.Homeworld = true;
         planet.ContributesToResearch = true;
         planet.Scanner = true;
+        Message.HomePlanet(player, planet);
     }
 
     void MakeExtraWorld(UniverseSettings settings, Player player, Planet planet)

@@ -1,0 +1,100 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://src/GUI/MessagesPane.cs" type="Script" id=1]
+[ext_resource path="res://src/GUI/TileTheme.tres" type="Theme" id=2]
+
+[node name="MessagesPane" type="MarginContainer"]
+margin_right = 400.0
+margin_bottom = 148.0
+rect_min_size = Vector2( 400, 100 )
+theme = ExtResource( 2 )
+custom_constants/margin_right = 10
+custom_constants/margin_top = 10
+custom_constants/margin_left = 10
+custom_constants/margin_bottom = 10
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Panel" type="Panel" parent="."]
+margin_left = 10.0
+margin_top = 10.0
+margin_right = 390.0
+margin_bottom = 138.0
+theme = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+margin_left = 10.0
+margin_top = 10.0
+margin_right = 390.0
+margin_bottom = 138.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Title" type="HBoxContainer" parent="VBoxContainer"]
+margin_right = 380.0
+margin_bottom = 24.0
+
+[node name="FilterMessageTypeCheckbox" type="CheckBox" parent="VBoxContainer/Title"]
+margin_right = 24.0
+margin_bottom = 24.0
+pressed = true
+
+[node name="TitleLabel" type="Label" parent="VBoxContainer/Title"]
+margin_left = 28.0
+margin_top = 5.0
+margin_right = 380.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Year: 2400* Message 1 of 3"
+align = 1
+
+[node name="ShowFilteredMessagesCheckbox" type="CheckBox" parent="VBoxContainer/Title"]
+visible = false
+margin_left = 319.0
+margin_right = 380.0
+margin_bottom = 24.0
+pressed = true
+text = "Filter"
+
+[node name="MessageContainer" type="HBoxContainer" parent="VBoxContainer"]
+margin_top = 28.0
+margin_right = 380.0
+margin_bottom = 128.0
+
+[node name="MessageText" type="TextEdit" parent="VBoxContainer/MessageContainer"]
+margin_right = 333.0
+margin_bottom = 100.0
+rect_min_size = Vector2( 0, 100 )
+size_flags_horizontal = 3
+readonly = true
+wrap_enabled = true
+
+[node name="Buttons" type="VBoxContainer" parent="VBoxContainer/MessageContainer"]
+margin_left = 337.0
+margin_right = 380.0
+margin_bottom = 100.0
+alignment = 1
+
+[node name="PrevButton" type="Button" parent="VBoxContainer/MessageContainer/Buttons"]
+margin_top = 16.0
+margin_right = 43.0
+margin_bottom = 36.0
+text = "Prev"
+
+[node name="GotoButton" type="Button" parent="VBoxContainer/MessageContainer/Buttons"]
+margin_top = 40.0
+margin_right = 43.0
+margin_bottom = 60.0
+text = "Goto"
+
+[node name="NextButton" type="Button" parent="VBoxContainer/MessageContainer/Buttons"]
+margin_top = 64.0
+margin_right = 43.0
+margin_bottom = 84.0
+text = "Next"

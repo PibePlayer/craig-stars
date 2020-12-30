@@ -78,6 +78,8 @@ namespace CraigStars.Tests
                 }
                 catch (Exception e)
                 {
+                    GD.PrintErr($"Failed test {e.ToString()}");
+                    GD.PrintStack();
                     testResult = new TestResult(method, e.InnerException ?? e, TestResult.Result.Failed);
                 }
                 finally

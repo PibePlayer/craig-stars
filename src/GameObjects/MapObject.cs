@@ -7,7 +7,7 @@ using Stateless;
 
 namespace CraigStars
 {
-    public class MapObject : Area2D
+    public abstract class MapObject : Area2D
     {
         public enum OwnerAlly
         {
@@ -25,135 +25,64 @@ namespace CraigStars
             Active,
         }
 
-        public enum Triggers
-        {
-            Select, // this node is clicked on
-            Activate, // this node is clicked on
-            Deselect, // some other node is clicked on
-        }
-
         [Export]
-        public States State { get; set; } = States.None;
+        public States State
+        {
+            get => state;
+            set
+            {
+                state = value;
+                UpdateSprite();
+            }
+        }
+        States state = States.None;
 
         [Export]
         public OwnerAlly OwnerAllyState { get; set; } = OwnerAlly.Unknown;
 
         public int Id { get; set; }
         public String ObjectName { get; set; } = "";
-
-        StateMachine<States, Triggers> selectedMachine;
+        public Player Player { get; set; }
+        public bool OwnedByMe
+        {
+            get
+            {
+                return Player != null && Player == PlayersManager.Instance?.Me;
+            }
+        }
 
         public override void _Ready()
         {
-            // hook up mouse events to our area
-            Connect("input_event", this, nameof(OnInputEvent));
-
-            selectedMachine = new StateMachine<States, Triggers>(() => State, s => State = s);
-
-            // we can transition into the None state from Selected or Active, and we deselect
-            selectedMachine.Configure(States.None)
-                .OnEntry(() => OnDeselected())
-                .Permit(Triggers.Select, States.Selected)
-                .Permit(Triggers.Activate, States.Active)
-                .PermitReentry(Triggers.Deselect);
-
-            selectedMachine.Configure(States.Selected)
-                .OnEntry(() => OnSelected())
-                .Permit(Triggers.Select, States.Active)
-                .Permit(Triggers.Activate, States.Active)
-                .Permit(Triggers.Deselect, States.None);
-
-            selectedMachine.Configure(States.Active)
-                .OnEntry(() => OnActivated())
-                .PermitReentry(Triggers.Activate)
-                .Permit(Triggers.Select, States.Selected)
-                .Permit(Triggers.Deselect, States.None);
-
-            selectedMachine.OnTransitioned(t => GD.Print($"OnTransitioned: {ObjectName} {t.Source} -> {t.Destination} via {t.Trigger}({string.Join(", ", t.Parameters)})"));
-
             // wire up signals
-            Signals.MapObjectSelectedEvent += OnMapObjectSelected;
+            Signals.MapObjectActivatedEvent += OnMapObjectActivated;
+            Signals.TurnPassedEvent += OnTurnPassed;
         }
 
         public override void _ExitTree()
         {
-            Signals.MapObjectSelectedEvent -= OnMapObjectSelected;
+            Signals.MapObjectActivatedEvent -= OnMapObjectActivated;
+            Signals.TurnPassedEvent -= OnTurnPassed;
         }
-
 
         /// <summary>
-        /// We listen for the MapObjectSelectedEvent so we can deselect ourselves
+        /// Update the sprite of this MapObject to the latest image
+        /// This is called automatically when a sprite's state changes
         /// </summary>
-        /// <param name="mapObject"></param>
-        internal virtual void OnMapObjectSelected(MapObject mapObject)
+        public abstract void UpdateSprite();
+
+        public void Select()
         {
-            // if a different map object is selected, deselect us
-            if (mapObject != this && !GetPeers().Contains(mapObject))
-            {
-                if (State != States.None)
-                {
-                    Deselect();
-                }
-                GetPeers().ForEach(mo =>
-                {
-                    if (mo.State != States.None)
-                    {
-                        mo.Deselect();
-                        Deselect();
-                    }
-                });
-            }
+            State = States.Selected;
         }
 
-        protected void ActivateNextPeer(List<MapObject> peers)
+        public virtual void Activate()
         {
-            // activate our first peer
-            peers[0].Activate();
-
-            // deselect us
-            Deselect();
+            State = States.Active;
         }
 
-        public override void _Input(InputEvent @event)
+        public virtual void Deselect()
         {
-            if (@event.IsActionPressed("ui_cancel"))
-            {
-                selectedMachine.Fire(Triggers.Deselect);
-            }
-        }
-
-        void OnInputEvent(Node viewport, InputEvent @event, int shapeIdx)
-        {
-            if (@event.IsActionPressed("viewport_select"))
-            {
-                if (@event is InputEventMouseButton eventMouseButton && eventMouseButton.Shift)
-                {
-                    // this was shift+clicked, so let the viewport know it's supposed to be added as a waypoint
-                    Signals.PublishMapObjectWaypointAddedEvent(this);
-                }
-                else
-                {
-                    // if we have an active peer, activate the next peer in the list
-                    var peers = GetPeers();
-                    var activePeer = peers.Find(p => p.State == States.Active);
-                    if (activePeer != null)
-                    {
-                        GD.Print($"{ObjectName} clicked, but has active peer. Activating next peer: of {activePeer.ObjectName} is selected");
-                        activePeer.ActivateNextPeer(activePeer.GetPeers());
-                    }
-                    else if (State == States.Active && peers.Count > 0)
-                    {
-                        // we are already active and have peers, activate the next one
-                        ActivateNextPeer(peers);
-                    }
-                    else
-                    {
-                        GD.Print($"{ObjectName} is selected");
-                        selectedMachine.Fire(Triggers.Select);
-                    }
-
-                }
-            }
+            State = States.None;
         }
 
         /// <summary>
@@ -174,25 +103,15 @@ namespace CraigStars
 
         internal virtual List<MapObject> GetPeers() { return Enumerable.Empty<MapObject>().ToList(); }
 
-        protected virtual void OnDeselected() { }
-        protected virtual void OnSelected()
+        protected virtual void OnMapObjectActivated(MapObject mapObject)
         {
-            Signals.PublishMapObjectSelectedEvent(this);
-        }
-        protected virtual void OnActivated()
-        {
-            // we became active, so publish an activated event for the UI
-            Signals.PublishMapObjectActivatedEvent(this);
+            // in case one of our peers is activated, update our sprite on activate
+            UpdateSprite();
         }
 
-        public virtual void Activate()
+        protected virtual void OnTurnPassed(int year)
         {
-            selectedMachine.Fire(Triggers.Activate);
-        }
-
-        public virtual void Deselect()
-        {
-            selectedMachine.Fire(Triggers.Deselect);
+            UpdateSprite();
         }
 
         #endregion

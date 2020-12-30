@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://src/GameObjects/Planet.cs" type="Script" id=1]
 [ext_resource path="res://Assets/viewport/planet-friend.png" type="Texture" id=2]
@@ -10,8 +10,6 @@
 [ext_resource path="res://Assets/viewport/planet-orbiting.png" type="Texture" id=8]
 [ext_resource path="res://Assets/viewport/planet-known-selected.png" type="Texture" id=9]
 [ext_resource path="res://Assets/viewport/planet-orbiting-selected.png" type="Texture" id=10]
-[ext_resource path="res://Assets/viewport/active-object-pointer-selected.png" type="Texture" id=11]
-[ext_resource path="res://Assets/viewport/active-object-pointer.png" type="Texture" id=12]
 [ext_resource path="res://src/GameObjects/PlanetSprite.cs" type="Script" id=13]
 
 [sub_resource type="CircleShape2D" id=1]
@@ -61,13 +59,3 @@ texture = ExtResource( 8 )
 [node name="OrbitingActive" type="Sprite" parent="Sprite"]
 visible = false
 texture = ExtResource( 10 )
-
-[node name="SelectedIndicator" type="Sprite" parent="Sprite"]
-visible = false
-position = Vector2( 0, 16 )
-texture = ExtResource( 12 )
-
-[node name="ActiveIndicator" type="Sprite" parent="Sprite"]
-visible = false
-position = Vector2( 0, 17 )
-texture = ExtResource( 11 )

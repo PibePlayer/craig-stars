@@ -1,0 +1,17 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://Assets/viewport/active-object-pointer-selected.png" type="Texture" id=1]
+[ext_resource path="res://Assets/viewport/active-object-pointer.png" type="Texture" id=2]
+[ext_resource path="res://src/GUI/SelectedMapObjectSprite.cs" type="Script" id=3]
+
+[node name="SelectedMapObjectSprite" type="Node2D"]
+script = ExtResource( 3 )
+
+[node name="Selected" type="Sprite" parent="."]
+texture = ExtResource( 2 )
+offset = Vector2( 0, 10 )
+
+[node name="SelectedLarge" type="Sprite" parent="."]
+visible = false
+texture = ExtResource( 1 )
+offset = Vector2( 0, 20 )

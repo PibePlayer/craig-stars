@@ -26,8 +26,6 @@ namespace CraigStars
             // add the universe to the viewport
             Scanner = FindNode("Scanner") as Scanner;
             Scanner.AddMapObjects(this);
-
-            CallDeferred(nameof(FocusHomeworld));
         }
 
 
@@ -36,19 +34,6 @@ namespace CraigStars
             if (@event.IsActionPressed("generate_turn"))
             {
                 GenerateTurn();
-            }
-        }
-
-        /// <summary>
-        /// Focus on the current player's homeworld
-        /// </summary>
-        void FocusHomeworld()
-        {
-            var homeworld = Planets.Where(p => p.Homeworld && p.Player == PlayersManager.Instance.Me).First();
-            if (homeworld != null)
-            {
-                homeworld.Activate();
-                Signals.PublishMapObjectSelectedEvent(homeworld);
             }
         }
 

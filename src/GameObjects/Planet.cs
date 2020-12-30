@@ -31,7 +31,6 @@ namespace CraigStars
         public int Population { get => Cargo.Population; set { Cargo.Population = value; } }
         public int PopulationDensity { get => Population > 0 ? Population / GetMaxPopulation() : 0; }
 
-        public Player Player { get; set; }
         public int Mines { get; set; }
         public int MaxMines { get => (Population > 0 && Player != null) ? Population / 10000 * Player.Race.NumMines : 0; }
         public int Factories { get; set; }
@@ -53,46 +52,21 @@ namespace CraigStars
         {
             base._Ready();
             sprite = GetNode<PlanetSprite>("Sprite");
-            Signals.TurnPassedEvent += OnTurnPassed;
         }
 
         public override void _ExitTree()
         {
             base._ExitTree();
-            Signals.TurnPassedEvent -= OnTurnPassed;
         }
 
-        void OnTurnPassed(int year)
+        public override void UpdateSprite()
         {
-            sprite.UpdateVisibleSprites(Player, this);
-        }
-
-        protected override void OnSelected()
-        {
-            base.OnSelected();
-            sprite.UpdateVisibleSprites(Player, this);
-        }
-
-        protected override void OnActivated()
-        {
-            base.OnActivated();
-            sprite.UpdateVisibleSprites(Player, this);
-        }
-
-        protected override void OnDeselected()
-        {
-            base.OnDeselected();
-            sprite.UpdateVisibleSprites(Player, this);
+            sprite?.UpdateSprite(Player, this);
         }
 
         internal override List<MapObject> GetPeers()
         {
-            return OrbitingFleets.Where(f => f.Player == Player).ToList<MapObject>();
-        }
-
-        public void UpdateVisibleSprites()
-        {
-            sprite.UpdateVisibleSprites(Player, this);
+            return OrbitingFleets.Where(f => f.OwnedByMe).ToList<MapObject>();
         }
 
         /// <summary>
@@ -164,5 +138,6 @@ namespace CraigStars
         {
             return (int)(((float)(mineralConcentration) / 100.0) * ((float)(mines) / 10.0) * (float)(mineOutput));
         }
+
     }
 }

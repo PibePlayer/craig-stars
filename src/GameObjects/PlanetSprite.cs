@@ -4,7 +4,7 @@ using Godot;
 
 namespace CraigStars
 {
-    public class PlanetSprite : Node2D
+    public class PlanetSprite : MapObjectSprite<Planet>
     {
         Sprite known;
         Sprite unknown;
@@ -15,8 +15,6 @@ namespace CraigStars
         Sprite ownedActive;
         Sprite orbiting;
         Sprite orbitingActive;
-        Sprite selectedIndicator;
-        Sprite activeIndicator;
 
         List<Sprite> stateSprites = new List<Sprite>();
 
@@ -31,8 +29,6 @@ namespace CraigStars
             ownedActive = GetNode<Sprite>("OwnedActive");
             orbiting = GetNode<Sprite>("Orbiting");
             orbitingActive = GetNode<Sprite>("OrbitingActive");
-            selectedIndicator = GetNode<Sprite>("SelectedIndicator");
-            activeIndicator = GetNode<Sprite>("ActiveIndicator");
 
             // create a list of these sprites
             stateSprites.Add(known);
@@ -44,11 +40,9 @@ namespace CraigStars
             stateSprites.Add(ownedActive);
             stateSprites.Add(orbiting);
             stateSprites.Add(orbitingActive);
-            stateSprites.Add(selectedIndicator);
-            stateSprites.Add(activeIndicator);
         }
 
-        public void UpdateVisibleSprites(Player player, Planet planet)
+        public override void UpdateSprite(Player player, Planet planet)
         {
             var ownerAllyState = MapObject.OwnerAlly.Unknown;
             var state = planet.State;
@@ -78,15 +72,6 @@ namespace CraigStars
 
             // turn them all off
             stateSprites.ForEach(s => s.Visible = false);
-
-            if (state == MapObject.States.Active || hasActivePeer)
-            {
-                activeIndicator.Visible = true;
-            }
-            else if (state == MapObject.States.Selected)
-            {
-                selectedIndicator.Visible = true;
-            }
 
             switch (ownerAllyState)
             {

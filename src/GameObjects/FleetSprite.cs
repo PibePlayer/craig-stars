@@ -6,12 +6,10 @@ using System.Collections.Generic;
 namespace CraigStars
 {
 
-    public class FleetSprite : Node2D
+    public class FleetSprite : MapObjectSprite<Fleet>
     {
         Sprite selected;
         Sprite active;
-        Sprite selectedIndicator;
-        Sprite activeIndicator;
 
         List<Sprite> stateSprites = new List<Sprite>();
 
@@ -19,19 +17,20 @@ namespace CraigStars
         {
             selected = GetNode<Sprite>("Selected");
             active = GetNode<Sprite>("Active");
-            selectedIndicator = GetNode<Sprite>("SelectedIndicator");
-            activeIndicator = GetNode<Sprite>("ActiveIndicator");
 
             stateSprites.Add(selected);
             stateSprites.Add(active);
-            stateSprites.Add(selectedIndicator);
-            stateSprites.Add(activeIndicator);
 
         }
 
-        public void UpdateVisibleSprites(Player player, Fleet fleet)
+        public override void UpdateSprite(Player player, Fleet fleet)
         {
+            if (player.Num == 0)
+            {
+                GD.Print($"Updating Fleet sprite {fleet.ObjectName} for player {player.Num}");
+            }
             // turn them all off
+
             stateSprites.ForEach(s => s.Visible = false);
 
             // if we are orbiting a planet, don't show any sprites
@@ -40,45 +39,32 @@ namespace CraigStars
                 return;
             }
 
+            Sprite shipSprite = fleet.State == MapObject.States.Active ? active : selected;
+            shipSprite.Visible = true;
+
             var ownerAllyState = MapObject.OwnerAlly.Unknown;
-            var state = fleet.State;
-
-            if (player != null)
+            if (fleet.OwnedByMe)
             {
-                if (player == PlayersManager.Instance.Me)
-                {
-                    ownerAllyState = MapObject.OwnerAlly.Owned;
-                }
-                else
-                {
-                    ownerAllyState = MapObject.OwnerAlly.Enemy;
-                }
+                ownerAllyState = MapObject.OwnerAlly.Owned;
             }
-
-            if (state == MapObject.States.Selected)
+            else
             {
-                selectedIndicator.Visible = true;
-                selected.Visible = true;
-            }
-            else if (state == MapObject.States.Active)
-            {
-                activeIndicator.Visible = true;
-                active.Visible = true;
+                ownerAllyState = MapObject.OwnerAlly.Enemy;
             }
 
             switch (ownerAllyState)
             {
                 case MapObject.OwnerAlly.Owned:
-                    Modulate = Colors.Blue;
+                    shipSprite.Modulate = Colors.Blue;
                     break;
                 case MapObject.OwnerAlly.Friend:
-                    Modulate = Colors.Yellow;
+                    shipSprite.Modulate = Colors.Yellow;
                     break;
                 case MapObject.OwnerAlly.Enemy:
-                    Modulate = Colors.Red;
+                    shipSprite.Modulate = Colors.Red;
                     break;
                 default:
-                    Modulate = Colors.Gray;
+                    shipSprite.Modulate = Colors.Gray;
                     break;
             }
 

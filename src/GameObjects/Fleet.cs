@@ -15,7 +15,6 @@ namespace CraigStars
 
         #region Planet Stats
 
-        public Player Player { get; set; }
         public Cargo Cargo { get; } = new Cargo();
         public Planet Orbiting
         {
@@ -60,18 +59,11 @@ namespace CraigStars
                 });
             }
 
-            Signals.TurnPassedEvent += OnTurnPassed;
         }
 
         public override void _ExitTree()
         {
             base._ExitTree();
-            Signals.TurnPassedEvent -= OnTurnPassed;
-        }
-
-        void OnTurnPassed(int year)
-        {
-            sprite.UpdateVisibleSprites(Player, this);
         }
 
         public Waypoint AddWaypoint(MapObject mapObject)
@@ -104,7 +96,7 @@ namespace CraigStars
             {
                 // add any fleets after myself
                 bool foundMe = false;
-                Orbiting.OrbitingFleets.Where(f => f.Player == Player).ToList().ForEach(f =>
+                Orbiting.OrbitingFleets.Where(f => f.OwnedByMe).ToList().ForEach(f =>
                 {
                     if (f == this)
                     {
@@ -118,7 +110,10 @@ namespace CraigStars
                 });
 
                 // add the planet as the final peer
-                peers.Add(Orbiting);
+                if (Orbiting.OwnedByMe)
+                {
+                    peers.Add(Orbiting);
+                }
             }
 
             return peers;
@@ -176,12 +171,13 @@ namespace CraigStars
                     // move this fleet closer to the next waypoint
                     var direction = (wp1.Position - Position).Normalized();
                     wp0.Target = null;
+                    sprite.LookAt(wp1.Position);
 
                     Position += direction * dist;
                     wp0.Position = Position;
                 }
             }
-            UpdateWaypointsLine();  
+            UpdateWaypointsLine();
         }
 
         /// <summary>
@@ -255,15 +251,9 @@ namespace CraigStars
             return fuelCost;
         }
 
-
-        protected override void OnSelected()
+        public override void UpdateSprite()
         {
-            sprite.UpdateVisibleSprites(Player, this);
-        }
-
-        protected override void OnDeselected()
-        {
-            sprite.UpdateVisibleSprites(Player, this);
+            sprite?.UpdateSprite(Player, this);
         }
 
     }

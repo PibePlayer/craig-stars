@@ -9,6 +9,9 @@ namespace CraigStars
 {
     public class Fleet : MapObject
     {
+        public Color WaypointLineColor { get; set; } = new Color("0900FF");
+        public Color CommandedWaypointLineColor { get; set; } = new Color("0900FF").Lightened(.2f);
+
         FleetSprite sprite;
         CollisionShape2D collisionShape;
         Line2D waypointsLine;
@@ -254,6 +257,14 @@ namespace CraigStars
         public override void UpdateSprite()
         {
             sprite?.UpdateSprite(Player, this);
+            if (State == States.Active)
+            {
+                waypointsLine.DefaultColor = CommandedWaypointLineColor;
+            }
+            else
+            {
+                waypointsLine.DefaultColor = WaypointLineColor;
+            }
         }
 
     }

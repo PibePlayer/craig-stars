@@ -3,7 +3,7 @@
 [ext_resource path="res://src/GUI/PlanetMineralsOnHandTile.cs" type="Script" id=1]
 [ext_resource path="res://src/GUI/TileTheme.tres" type="Theme" id=2]
 
-[node name="PlanetMineralsOnHand" type="MarginContainer"]
+[node name="PlanetMineralsOnHandTile" type="MarginContainer"]
 margin_right = 200.0
 margin_bottom = 140.0
 rect_min_size = Vector2( 200, 140 )

@@ -27,6 +27,7 @@ namespace CraigStars
 
         public Mineral MineYears { get; set; } = new Mineral();
         public Cargo Cargo { get; } = new Cargo();
+        public ProductionQueue ProductionQueue { get; } = new ProductionQueue();
 
         public int Population { get => Cargo.Population; set { Cargo.Population = value; } }
         public int PopulationDensity { get => Population > 0 ? Population / GetMaxPopulation() : 0; }
@@ -137,6 +138,73 @@ namespace CraigStars
         int MineralsPerYear(int mineralConcentration, int mines, int mineOutput)
         {
             return (int)(((float)(mineralConcentration) / 100.0) * ((float)(mines) / 10.0) * (float)(mineOutput));
+        }
+
+        /// <summary>
+        /// Determine the number of resources this planet generates in a year
+        /// </summary>
+        /// <value>The number of resources this planet generates in a year</value>
+        public int ResourcesPerYear
+        {
+            get
+            {
+                if (Player != null)
+                {
+                    var race = Player.Race;
+
+                    // compute resources from population
+                    int resourcesFromPop = Population / race.ColonistsPerResource;
+
+                    // compute resources from factories
+                    int resourcesFromFactories = Factories * race.FactoryOutput / 10;
+
+                    // return the sum
+                    return resourcesFromPop + resourcesFromFactories;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Determine the number of resources this planet generates in a year
+        /// </summary>
+        /// <value>The number of resources this planet will contribute per year</value>
+        public int ResourcesPerYearAvailable
+        {
+            get
+            {
+                if (Player != null && ContributesToResearch)
+                {
+                    return (int)(ResourcesPerYear * (1 - Player.ResearchAmount / 100.0));
+                }
+                else
+                {
+                    return ResourcesPerYear;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Determine the number of resources this planet generates in a year
+        /// </summary>
+        /// <value>The number of resources this planet will contribute per year</value>
+        public int ResourcesPerYearResearch
+        {
+            get
+            {
+                if (Player != null && ContributesToResearch)
+                {
+                    return (int)(ResourcesPerYear * (Player.ResearchAmount / 100.0));
+                }
+                else
+                {
+                    return ResourcesPerYear;
+                }
+
+            }
         }
 
     }

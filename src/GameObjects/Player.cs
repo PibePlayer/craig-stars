@@ -19,6 +19,12 @@ namespace CraigStars
         public List<Fleet> Fleets { get; set; } = new List<Fleet>();
         public List<Fleet> AlienFleets { get; set; } = new List<Fleet>();
 
+        /// <summary>
+        /// The percentage of resources to spend on research
+        /// </summary>
+        /// <value></value>
+        public double ResearchAmount { get; set; } = 15;
+
         public override void _Ready()
         {
 

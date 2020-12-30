@@ -18,7 +18,7 @@ shape = SubResource( 1 )
 [node name="Waypoints" type="Line2D" parent="."]
 z_as_relative = false
 width = 2.0
-default_color = Color( 1, 1, 1, 1 )
+default_color = Color( 0.0352941, 0, 1, 1 )
 
 [node name="Sprite" type="Node2D" parent="."]
 script = ExtResource( 4 )

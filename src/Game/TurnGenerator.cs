@@ -5,6 +5,8 @@ namespace CraigStars
 {
     public class TurnGenerator
     {
+        PlanetProducer planetProducer = new PlanetProducer();
+
         /// <summary>
         /// Generate a turn
         /// 
@@ -55,8 +57,8 @@ namespace CraigStars
 
             MoveFleets(game.Fleets);
             Mine(game.UniverseSettings, ownedPlanets);
-            Produce(game.Planets);
-            Grow(game.Planets);
+            Produce(game.UniverseSettings, game.Planets);
+            Grow(game.UniverseSettings, game.Planets);
         }
 
         // move fleets
@@ -111,15 +113,18 @@ namespace CraigStars
             }
         }
 
-        void Produce(List<Planet> planets)
+        void Produce(UniverseSettings settings, List<Planet> planets)
         {
-            // TODO: build stuff
+            planets.Where(p => p.Player != null).ToList().ForEach(p =>
+            {
+                planetProducer.Build(settings, p);
+            });
         }
 
         /// <summary>
         /// Grow populations on planets
         /// </summary>
-        void Grow(List<Planet> planets)
+        void Grow(UniverseSettings settings, List<Planet> planets)
         {
             planets.ForEach(p => p.Population += p.GetGrowthAmount());
         }

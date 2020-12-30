@@ -23,6 +23,12 @@ namespace CraigStars.Singletons
 
         #endregion
 
+        #region Dialog Events
+
+        public static event Action<Planet> ChangeProductionQueuePressedEvent;
+
+        #endregion
+
         #region Network Events
 
         public static event Action ServerDisconnectedEvent;
@@ -140,6 +146,15 @@ namespace CraigStars.Singletons
         {
             ServerDisconnectedEvent?.Invoke();
         }
+
+        #region Dialog Publishers
+
+        public static void PublishChangeProductionQueuePressedEvent(Planet planet)
+        {
+            ChangeProductionQueuePressedEvent?.Invoke(planet);
+        }
+
+        #endregion
 
         #endregion
     }

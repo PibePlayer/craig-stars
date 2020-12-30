@@ -53,6 +53,12 @@ namespace CraigStars
             new Color("b88628")
         };
 
+        public int FactoryCostGermanium { get; set; } = 4;
+        public Cost DefenseCost { get; set; } = new Cost(5, 5, 5, 15);
+        public int MineralAlchemyCost { get; set; } = 100;
+        public int MineralAlchemyLRTCost { get; set; } = 25;
+
+
         /// <summary>
         /// Get the Area of the universe
         /// </summary>

@@ -21,6 +21,27 @@ public class UniverseGenerator
             var homeworld = planets.Find(p => p.Player == null && (ownedPlanets.Count == 0 || ShortestDistanceToPlanets(p, ownedPlanets) > settings.Area / 4));
             player.Homeworld = homeworld;
             MakeHomeworld(settings, player, homeworld, settings.StartingYear);
+            homeworld.ProductionQueue.Items.Add(new ProductionQueueItem()
+            {
+                Type = QueueItemType.Mine,
+                Quantity = 5
+            });
+            homeworld.ProductionQueue.Items.Add(new ProductionQueueItem()
+            {
+                Type = QueueItemType.Factory,
+                Quantity = 10
+            });
+            homeworld.ProductionQueue.Items.Add(new ProductionQueueItem()
+            {
+                Type = QueueItemType.AutoMine,
+                Quantity = 5
+            });
+
+            homeworld.ProductionQueue.Items.Add(new ProductionQueueItem()
+            {
+                Type = QueueItemType.AutoFactory,
+                Quantity = 10
+            });
             ownedPlanets.Add(homeworld);
 
             fleets.AddRange(GenerateFleets(settings, player, homeworld));

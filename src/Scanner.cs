@@ -36,14 +36,21 @@ namespace CraigStars
         {
             waypointAreaScene = ResourceLoader.Load<PackedScene>("res://src/GameObjects/WaypointArea.tscn");
             selectedMapObjectSprite = GetNode<SelectedMapObjectSprite>("SelectedMapObjectSprite");
+            Signals.TurnPassedEvent += OnTurnPassed;
             Signals.MapObjectActivatedEvent += OnMapObjectActivated;
             Signals.MapObjectWaypointAddedEvent += OnMapObjectWaypointAdded;
         }
 
         public override void _ExitTree()
         {
+            Signals.TurnPassedEvent -= OnTurnPassed;
             Signals.MapObjectActivatedEvent -= OnMapObjectActivated;
             Signals.MapObjectWaypointAddedEvent -= OnMapObjectWaypointAdded;
+        }
+
+        void OnTurnPassed(int year)
+        {
+            FocusHomeworld();
         }
 
         void OnMapObjectActivated(MapObject mapObject)

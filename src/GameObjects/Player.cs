@@ -19,6 +19,7 @@ namespace CraigStars
         public List<Fleet> Fleets { get; set; } = new List<Fleet>();
         public List<Fleet> AlienFleets { get; set; } = new List<Fleet>();
         public List<Message> Messages { get; set; } = new List<Message>();
+        public TechLevel TechLevels = new TechLevel();
 
         /// <summary>
         /// The percentage of resources to spend on research

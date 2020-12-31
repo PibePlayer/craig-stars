@@ -93,6 +93,12 @@ namespace CraigStars
             player.Messages.Add(new Message(MessageType.PlanetColonized, text, planet));
         }
 
+        public static void FleetOutOfFuel(Player player, Fleet fleet)
+        {
+            String text = $"{fleet.ObjectName} has run out of fuel. The fleet's speed has been decreased to Warp 1.";
+            player.Messages.Add(new Message(MessageType.FleetOutOfFuel, text, fleet));
+        }
+
         public static void fleetScrapped(Player player, Fleet fleet, int num_minerals, Planet planet)
         {
             String text = $"{fleet.ObjectName} has been dismantled for {num_minerals}kT of minerals which have been deposited on {planet.ObjectName}.";

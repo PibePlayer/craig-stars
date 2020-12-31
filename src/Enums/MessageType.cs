@@ -16,6 +16,7 @@ namespace CraigStars
         BuiltShip,
         BuiltStarbase,
         FleetOrdersComplete,
+        FleetOutOfFuel,
         FleetScrapped,
         ColonizeOwnedPlanet,
         ColonizeNonPlanet,

@@ -123,6 +123,13 @@ public class UniverseGenerator
         PackedScene fleetScene = ResourceLoader.Load<PackedScene>("res://src/GameObjects/Fleet.tscn");
 
         var fleet = fleetScene.Instance() as Fleet;
+        fleet.ShipStacks.Add(new ShipToken()
+        {
+            Design = ShipDesigns.LongRangeScount,
+            Quantity = 1
+        });
+        fleet.ShipStacks.ForEach(ss => ss.Design.ComputeAggregate(player));
+        fleet.ComputeAggregate();
         fleet.Player = player;
         fleet.Position = homeworld.Position;
         fleet.Orbiting = homeworld;

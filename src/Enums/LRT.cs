@@ -1,78 +1,53 @@
 namespace CraigStars
 {
-    /// <summary>
-    /// Lesser Racial Traits
-    /// </summary>
+    // <summary>
+    // Lesser Racial Traits
+    // </summary>
     public enum LRT
     {
-        /// <summary>
-        /// Improved Fuel Efficiency
-        /// </summary>
+        // Improved Fuel Efficiency
         IFE,
 
-        /// <summary>
-        /// Total Terraforming
-        /// </summary>
+        // Total Terraforming
         TT,
 
-        /// <summary>
-        /// Advanced Remote Mining
-        /// </summary>
+        // Advanced Remote Mining
         ARM,
 
-        /// <summary>
-        /// Improved Starbases
-        /// </summary>
+        // Improved Starbases
         ISB,
 
-        /// <summary>
-        /// Generalized Research
-        /// </summary>
+        // Generalized Research
         GR,
 
-        /// <summary>
-        /// Ultimate Recycling
-        /// </summary>
+        // Ultimate Recycling
         UR,
 
-        /// <summary>
-        /// No Ramscoop Engines
-        /// </summary>
+        // No Ramscoop Engines
         NRSE,
 
-        /// <summary>
-        /// Only Basic Remote Mining
-        /// </summary>
+        // Only Basic Remote Mining
         OBRM,
 
-        /// <summary>
-        /// No Advanced Scanners
-        /// </summary>
+        // No Advanced Scanners
         NAS,
 
-        /// <summary>
-        /// Low Starting Population
-        /// </summary>
+        // Low Starting Population
         LSP,
 
-        /// <summary>
-        /// Bleeding Edge Technology
-        /// </summary>
+        // Bleeding Edge Technology
         BET,
 
-        /// <summary>
-        /// Regenerating Shields
-        /// </summary>
+        // Regenerating Shields
         RS,
 
-        /// <summary>
-        /// Mineral Alchemy
-        /// </summary>
+        // Mineral Alchemy
         MA,
 
-        /// <summary>
-        /// Cheap Engines
-        /// </summary>
-        CE
+        // Cheap Engines
+        CE,
+
+        // Only used for TechRequirements
+        None,
     }
 }

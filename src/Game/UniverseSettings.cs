@@ -5,6 +5,12 @@ namespace CraigStars
 {
     public class UniverseSettings
     {
+        #region Constants
+
+        public static int BuiltInScannerJoaTMultiplier = 20;
+
+        #endregion
+
         /// <summary>
         /// Allow setting of the random seed used
         /// </summary>

@@ -4,6 +4,8 @@ namespace CraigStars
 {
     public class TechHullComponent : Tech
     {
+        public const int NoScanner = -1;
+
         public HullSlotType HullSlotType { get; set; }
         public int Mass { get; set; }
         public int Armor { get; set; }
@@ -22,8 +24,8 @@ namespace CraigStars
         public int MovementBonus { get; set; }
         public int BeamDefense { get; set; }
         public int BeamBonus { get; set; }
-        public int ScanRange { get; set; }
-        public int ScanRangePen { get; set; }
+        public int ScanRange { get; set; } = NoScanner;
+        public int ScanRangePen { get; set; } = NoScanner;
         public bool StealCargo { get; set; }
         public bool Radiating { get; set; }
         public bool Smart { get; set; }
@@ -53,5 +55,13 @@ namespace CraigStars
         public int DamagePerEngineRS { get; set; }
         public int MinDamagePerFleet { get; set; }
         public int MinDamagePerFleetRS { get; set; }
+
+
+        public TechHullComponent() { }
+
+        public TechHullComponent(string name, Cost cost, TechRequirements techRequirements, int ranking, TechCategory category) : base(name, cost, techRequirements, ranking, category)
+        {
+        }
+
     }
 }

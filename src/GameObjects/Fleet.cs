@@ -34,7 +34,7 @@ namespace CraigStars
         Planet orbiting;
 
         public List<Waypoint> Waypoints { get; } = new List<Waypoint>();
-        public List<ShipStack> ShipStacks { get; } = new List<ShipStack>();
+        public List<ShipToken> ShipStacks { get; } = new List<ShipToken>();
 
         public FleetAggregate Aggregate { get; } = new FleetAggregate();
 
@@ -67,6 +67,19 @@ namespace CraigStars
         public override void _ExitTree()
         {
             base._ExitTree();
+        }
+
+        public override void UpdateSprite()
+        {
+            sprite?.UpdateSprite(Player, this);
+            if (State == States.Active)
+            {
+                waypointsLine.DefaultColor = CommandedWaypointLineColor;
+            }
+            else
+            {
+                waypointsLine.DefaultColor = WaypointLineColor;
+            }
         }
 
         public Waypoint AddWaypoint(MapObject mapObject)
@@ -254,18 +267,9 @@ namespace CraigStars
             return fuelCost;
         }
 
-        public override void UpdateSprite()
+        public void ComputeAggregate()
         {
-            sprite?.UpdateSprite(Player, this);
-            if (State == States.Active)
-            {
-                waypointsLine.DefaultColor = CommandedWaypointLineColor;
-            }
-            else
-            {
-                waypointsLine.DefaultColor = WaypointLineColor;
-            }
-        }
 
+        }
     }
 }

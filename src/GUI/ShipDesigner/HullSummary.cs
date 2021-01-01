@@ -13,10 +13,7 @@ namespace CraigStars
             set
             {
                 hull = value;
-                if (IsInsideTree())
-                {
-                    UpdateControls();
-                }
+                UpdateControls();
             }
         }
         TechHull hull;
@@ -27,10 +24,7 @@ namespace CraigStars
             set
             {
                 shipDesign = value;
-                if (IsInsideTree())
-                {
-                    UpdateControls();
-                }
+                UpdateControls();
             }
         }
         ShipDesign shipDesign;

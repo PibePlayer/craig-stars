@@ -217,6 +217,36 @@ namespace CraigStars
         }
         Mineral extraWorldSurfaceMinerals = null;
 
+        // The base cost for each tech level
+        public int[] TechBaseCost { get; set; } = {
+            0, // everyone starts on level 0
+            50,
+            80,
+            130,
+            210,
+            340,
+            550,
+            890,
+            1440,
+            2330,
+            3770,
+            6100,
+            9870,
+            13850,
+            18040,
+            22440,
+            27050,
+            31870,
+            36900,
+            42140,
+            47590,
+            53250,
+            59120,
+            65200,
+            71490,
+            77990,
+            84700
+        };
     }
 
 

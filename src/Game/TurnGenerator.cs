@@ -117,10 +117,35 @@ namespace CraigStars
 
         void Produce(UniverseSettings settings, List<Planet> planets)
         {
-            planets.Where(p => p.Player != null).ToList().ForEach(p =>
+            var inhabitedPlanets = planets.Where(p => p.Player != null).ToList();
+            inhabitedPlanets.ForEach(p =>
             {
                 planetProducer.Build(settings, p);
             });
+
+            Research(settings, inhabitedPlanets);
+        }
+
+        /// <summary>
+        /// Apply research resources from each planet to research
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <param name="inhabitedPlanets">A filtered list of inhabited planets</param>
+        void Research(UniverseSettings settings, List<Planet> inhabitedPlanets)
+        {
+            var planetsByPlayer = inhabitedPlanets.GroupBy(p => p.Player);
+            foreach (var playerPlanets in planetsByPlayer)
+            {
+                // figure out how many resoruces each planet has
+                var resourcesToSpend = 0;
+                foreach (var planet in playerPlanets)
+                {
+                    resourcesToSpend += playerPlanets.Sum(p => p.ResourcesPerYearResearch);
+                }
+
+                // research for this player
+                playerPlanets.Key.ResearchNextLevel(settings, resourcesToSpend);
+            }
         }
 
         /// <summary>

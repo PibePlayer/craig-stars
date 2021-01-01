@@ -54,7 +54,7 @@ namespace CraigStars
 
         }
 
-        public static void techLevel(Player player, TechField field, int level, TechField nextField)
+        public static void TechLevel(Player player, TechField field, int level, TechField nextField)
         {
             String text = $"Your scientists have completed research into Tech Level {level} for {field}.  They will continue their efforts in the {nextField} field.";
             player.Messages.Add(new Message(MessageType.GainTechLevel, text));

@@ -1,0 +1,171 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://src/GUI/ShipDesigner/HullComponentPanel.tscn" type="PackedScene" id=1]
+[ext_resource path="res://src/GUI/ShipDesigner/Hulls/HullComponents.cs" type="Script" id=2]
+
+[node name="ScoutHullComponents" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Container" type="Control" parent="."]
+margin_left = -96.0
+margin_top = -32.0
+margin_right = -56.0
+margin_bottom = 8.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HullComponent1" parent="Container" instance=ExtResource( 1 )]
+margin_left = 56.0
+margin_top = -128.0
+margin_right = 136.0
+margin_bottom = -48.0
+Type = 2080
+
+[node name="HullComponent2" parent="Container" instance=ExtResource( 1 )]
+margin_left = -104.0
+margin_top = 72.0
+margin_right = -24.0
+margin_bottom = 152.0
+Quantity = 32
+Index = 2
+Type = 1024
+
+[node name="HullComponent3" parent="Container" instance=ExtResource( 1 )]
+margin_left = -64.0
+margin_top = -8.0
+margin_right = 16.0
+margin_bottom = 72.0
+Quantity = 4
+Index = 3
+Type = 32
+
+[node name="HullComponent4" parent="Container" instance=ExtResource( 1 )]
+margin_left = 216.0
+margin_top = 72.0
+margin_right = 296.0
+margin_bottom = 152.0
+Quantity = 4
+Index = 4
+Type = 32
+
+[node name="HullComponent5" parent="Container" instance=ExtResource( 1 )]
+margin_left = -24.0
+margin_top = 72.0
+margin_right = 56.0
+margin_bottom = 152.0
+Quantity = 20
+Index = 5
+Type = 64
+
+[node name="HullComponent6" parent="Container" instance=ExtResource( 1 )]
+margin_left = 136.0
+margin_top = -88.0
+margin_right = 216.0
+margin_bottom = -8.0
+Quantity = 20
+Index = 6
+Type = 64
+
+[node name="HullComponent7" parent="Container" instance=ExtResource( 1 )]
+margin_left = 176.0
+margin_top = -8.0
+margin_right = 256.0
+margin_bottom = 72.0
+Quantity = 4
+Index = 7
+Type = 32
+
+[node name="HullComponent8" parent="Container" instance=ExtResource( 1 )]
+margin_left = -24.0
+margin_top = -168.0
+margin_right = 56.0
+margin_bottom = -88.0
+Quantity = 32
+Index = 8
+Type = 1024
+
+[node name="HullComponent9" parent="Container" instance=ExtResource( 1 )]
+margin_left = -24.0
+margin_top = 152.0
+margin_right = 56.0
+margin_bottom = 232.0
+Quantity = 4
+Index = 9
+Type = 32
+
+[node name="HullComponent10" parent="Container" instance=ExtResource( 1 )]
+margin_left = 216.0
+margin_top = -88.0
+margin_right = 296.0
+margin_bottom = -8.0
+Quantity = 32
+Index = 10
+Type = 1024
+
+[node name="HullComponent11" parent="Container" instance=ExtResource( 1 )]
+margin_left = 56.0
+margin_top = 105.0
+margin_right = 136.0
+margin_bottom = 185.0
+Index = 11
+Type = 2080
+
+[node name="HullComponent12" parent="Container" instance=ExtResource( 1 )]
+margin_left = 136.0
+margin_top = 72.0
+margin_right = 216.0
+margin_bottom = 152.0
+Quantity = 20
+Index = 12
+Type = 192
+
+[node name="HullComponent13" parent="Container" instance=ExtResource( 1 )]
+margin_left = -104.0
+margin_top = -88.0
+margin_right = -24.0
+margin_bottom = -8.0
+Quantity = 4
+Index = 13
+Type = 32
+
+[node name="HullComponent14" parent="Container" instance=ExtResource( 1 )]
+margin_left = -24.0
+margin_top = -88.0
+margin_right = 56.0
+margin_bottom = -8.0
+Quantity = 20
+Index = 14
+Type = 192
+
+[node name="HullComponent15" parent="Container" instance=ExtResource( 1 )]
+margin_left = 136.0
+margin_top = -168.0
+margin_right = 216.0
+margin_bottom = -88.0
+Quantity = 4
+Index = 15
+Type = 32
+
+[node name="HullComponent16" parent="Container" instance=ExtResource( 1 )]
+margin_left = 136.0
+margin_top = 152.0
+margin_right = 216.0
+margin_bottom = 232.0
+Quantity = 32
+Index = 16
+Type = 1024
+
+[node name="HullComponentSpaceDock" parent="Container" instance=ExtResource( 1 )]
+self_modulate = Color( 1.5, 1.5, 1.5, 1 )
+margin_left = 56.0
+margin_top = -8.0
+margin_right = 136.0
+margin_bottom = 72.0
+Unlimited = true
+Type = 512

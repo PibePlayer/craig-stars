@@ -8,6 +8,22 @@ namespace CraigStars
     public class HullComponentPanel : Panel
     {
 
+        /// <summary>
+        /// This is just for the ui to show the slot index when building hull designs
+        /// </summary>
+        /// <value></value>
+        [Export]
+        public int Index
+        {
+            get => index;
+            set
+            {
+                index = value;
+                UpdateControls();
+            }
+        }
+        int index = 1;
+
         [Export]
         public HullSlotType Type
         {
@@ -44,6 +60,18 @@ namespace CraigStars
         }
         bool required;
 
+        [Export]
+        public bool Unlimited
+        {
+            get => unlimited;
+            set
+            {
+                unlimited = value;
+                UpdateControls();
+            }
+        }
+        bool unlimited;
+
         public TechHullSlot TechHullSlot
         {
             get => techHullSlot; set
@@ -77,10 +105,12 @@ namespace CraigStars
 
         Label quantityLabel;
         Label typeLabel;
+        Label indexLabel;
         TextureRect hullComponentIcon;
 
         public override void _Ready()
         {
+            indexLabel = FindNode("IndexLabel") as Label;
             quantityLabel = FindNode("QuantityLabel") as Label;
             typeLabel = FindNode("TypeLabel") as Label;
             hullComponentIcon = FindNode("HullComponentIcon") as TextureRect;
@@ -96,8 +126,12 @@ namespace CraigStars
                 {
                     case HullSlotType.Mechanical:
                         return "Mech";
+                    case HullSlotType.SpaceDock:
+                        return "Space Dock";
                     case HullSlotType.ShieldArmor:
                         return "Shield \nor\n Armor";
+                    case HullSlotType.OrbitalElectrical:
+                        return "Orbital \nor\n Electrical";
                     case HullSlotType.ScannerElectricalMechanical:
                         return "Scanner Elec Mech";
                     case HullSlotType.General:
@@ -110,8 +144,21 @@ namespace CraigStars
 
         void UpdateControls()
         {
+            if (Engine.EditorHint && indexLabel != null)
+            {
+                indexLabel.Visible = true;
+                indexLabel.Text = $"Slot {Index}";
+            }
             if (quantityLabel != null)
             {
+                if (Type == HullSlotType.Cargo || Type == HullSlotType.SpaceDock)
+                {
+                    SelfModulate = new Color(1.5f, 1.5f, 1.5f);
+                }
+                else
+                {
+                    SelfModulate = Colors.White;
+                }
                 if (ShipDesignSlot != null)
                 {
                     hullComponentIcon.Visible = true;
@@ -125,13 +172,24 @@ namespace CraigStars
                     hullComponentIcon.Visible = false;
                     typeLabel.Visible = true;
                     typeLabel.Text = $"{TypeDescription}";
-                    if (required)
+                    if (Required)
                     {
                         quantityLabel.Text = $"needs {Quantity}";
                     }
+                    else if (Unlimited)
+                    {
+                        quantityLabel.Text = $"Unlimited";
+                    }
                     else
                     {
-                        quantityLabel.Text = $"up to {Quantity}";
+                        if (Type == HullSlotType.Cargo || Type == HullSlotType.SpaceDock)
+                        {
+                            quantityLabel.Text = $"{Quantity}kt";
+                        }
+                        else
+                        {
+                            quantityLabel.Text = $"up to {Quantity}";
+                        }
                     }
                 }
             }

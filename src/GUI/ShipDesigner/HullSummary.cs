@@ -71,8 +71,6 @@ namespace CraigStars
             hullComponentsContainer = FindNode("HullComponentsContainer") as Control;
             costGrid = FindNode("CostGrid") as CostGrid;
 
-            Hull = Techs.Scout;
-            ShipDesign = ShipDesigns.LongRangeScount;
             UpdateControls();
         }
 
@@ -89,11 +87,11 @@ namespace CraigStars
                         child.QueueFree();
                     }
                 }
-                var hullComponentsScene = ResourceLoader.Load<PackedScene>("res://src/GUI/ShipDesigner/Hulls/ScoutHullComponents.tscn");
-                var hullComponents = hullComponentsScene.Instance() as HullComponents;
-                hullComponents.Hull = Hull;
-                hullComponents.ShipDesign = ShipDesign;
-                hullComponentsContainer.AddChild(hullComponents);
+                // var hullComponentsScene = ResourceLoader.Load<PackedScene>("res://src/GUI/ShipDesigner/Hulls/ScoutHullComponents.tscn");
+                // var hullComponents = hullComponentsScene.Instance() as HullComponents;
+                // hullComponents.Hull = Hull;
+                // hullComponents.ShipDesign = ShipDesign;
+                // hullComponentsContainer.AddChild(hullComponents);
 
                 if (shipDesign != null)
                 {
@@ -129,7 +127,7 @@ namespace CraigStars
                     scannerRangeLabel.Visible = true;
                     scannerRangeAmountLabel.Visible = true;
                 }
-                else
+                else if (hull != null)
                 {
                     nameLabel.Text = hull.Name;
                     costTitleLabel.Text = $"Cost of one {hull.Name}";

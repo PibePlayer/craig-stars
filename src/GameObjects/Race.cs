@@ -51,10 +51,11 @@ namespace CraigStars
         public int MineOutput { get; set; } = 10;
         public int MineCost { get; set; } = 5;
         public int NumMines { get; set; } = 10;
-        public bool TechsStartHigh { get; set; } = false;
         public bool ImmuneGrav { get; set; } = false;
         public bool ImmuneTemp { get; set; } = false;
         public bool ImmuneRad { get; set; } = false;
+        public ResearchCost ResearchCost { get; set; } = new ResearchCost();
+        public bool TechsStartHigh { get; set; } = false;
 
         public bool HasLRT(LRT lrt)
         {

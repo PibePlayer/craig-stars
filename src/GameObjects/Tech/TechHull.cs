@@ -4,6 +4,7 @@ namespace CraigStars
 {
     public class TechHull : Tech
     {
+        public const int UnlimitedSpaceDock = -1;
         public int Mass { get; set; }
         public int Armor { get; set; }
         public int FuelCapacity { get; set; }
@@ -12,6 +13,7 @@ namespace CraigStars
         public bool DoubleMineEfficiency { get; set; }
         public bool BuiltInScannerForJoaT { get; set; }
         public bool Starbase { get; set; }
+        public int SpaceDock { get; set; } = UnlimitedSpaceDock;
         public int Initiative { get; set; }
         public List<TechHullSlot> Slots { get; set; } = new List<TechHullSlot>();
 

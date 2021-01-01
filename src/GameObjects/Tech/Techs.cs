@@ -185,7 +185,7 @@ namespace CraigStars
 
         #endregion
 
-        #region Hulls
+        #region ShipHulls
 
         public static readonly TechHull Scout = new TechHull("Scout", new Cost(4, 2, 4, 9), new TechRequirements(), 50, TechCategory.ShipHull)
         {
@@ -199,6 +199,17 @@ namespace CraigStars
                 new TechHullSlot(HullSlotType.Scanner, 1, false, 192, 96, 64, 64),
                 new TechHullSlot(HullSlotType.General, 1, false, 128, 96, 64, 64)
             })
+        };
+
+        #endregion
+
+        #region StarbaseHulls
+        public static readonly TechHull SpaceStation = new TechHull("Space Station", new Cost(106, 71, 220, 528), new TechRequirements(), 20, TechCategory.StarbaseHull)
+        {
+            Mass = 0,
+            Armor = 500,
+            Initiative = 14,
+            Starbase = true
         };
 
         #endregion

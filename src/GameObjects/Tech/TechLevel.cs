@@ -1,3 +1,6 @@
+using System;
+using System.Linq;
+
 namespace CraigStars
 {
     public class TechLevel
@@ -18,6 +21,87 @@ namespace CraigStars
             Construction = construction;
             Electronics = electronics;
             Biotechnology = biotechnology;
+        }
+
+        public int this[TechField index]
+        {
+            get
+            {
+                switch (index)
+                {
+                    case TechField.Energy:
+                        return Energy;
+                    case TechField.Weapons:
+                        return Weapons;
+                    case TechField.Propulsion:
+                        return Propulsion;
+                    case TechField.Construction:
+                        return Construction;
+                    case TechField.Electronics:
+                        return Electronics;
+                    case TechField.Biotechnology:
+                        return Biotechnology;
+                    default:
+                        throw new IndexOutOfRangeException($"Index {index} out of range for {this.GetType().ToString()}");
+                }
+            }
+            set
+            {
+                switch (index)
+                {
+                    case TechField.Energy:
+                        Energy = value;
+                        break;
+                    case TechField.Weapons:
+                        Weapons = value;
+                        break;
+                    case TechField.Propulsion:
+                        Propulsion = value;
+                        break;
+                    case TechField.Construction:
+                        Construction = value;
+                        break;
+                    case TechField.Electronics:
+                        Electronics = value;
+                        break;
+                    case TechField.Biotechnology:
+                        Biotechnology = value;
+                        break;
+                    default:
+                        throw new IndexOutOfRangeException($"Index {index} out of range for {this.GetType().ToString()}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get the lowest level field
+        /// </summary>
+        /// <returns></returns>
+        public TechField Lowest()
+        {
+            var lowestField = TechField.Energy;
+            var lowest = 0;
+            foreach (TechField field in Enum.GetValues(typeof(TechField)))
+            {
+                var level = this[field];
+                if (level < lowest)
+                {
+                    lowestField = field;
+                    lowest = level;
+                }
+            }
+
+            return lowestField;
+        }
+
+        public int Sum()
+        {
+            var total = 0;
+            foreach (TechField field in Enum.GetValues(typeof(TechField)))
+            {
+                total += this[field];
+            }
+            return total;
         }
     }
 }

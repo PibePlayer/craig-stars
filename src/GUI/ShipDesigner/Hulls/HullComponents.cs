@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 using CraigStars.Utils;
@@ -47,13 +48,12 @@ namespace CraigStars
         {
             if (ShipDesign != null || Hull != null)
             {
-                if (ShipDesign != null)
+                // assign ship design slots to each HullComponentPanel (other than space docs and cargo)
+                this.GetAllNodesOfType<HullComponentPanel>()
+                .Where(hcp => hcp.Type != HullSlotType.Cargo && hcp.Type != HullSlotType.SpaceDock)
+                .Each((hullComponentPanel, index) =>
                 {
-                    GD.Print($"Showing HullComponents for ShipDesign {ShipDesign.Name}");
-                }
-                this.GetAllNodesOfType<HullComponentPanel>().Each((hullComponentPanel, index) =>
-                {
-                    if (ShipDesign != null && index < ShipDesign.Slots.Count)
+                    if (index < ShipDesign.Slots.Count)
                     {
                         var slot = ShipDesign.Slots[index];
                         hullComponentPanel.ShipDesignSlot = slot;

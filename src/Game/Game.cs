@@ -21,7 +21,7 @@ namespace CraigStars
         public override void _Ready()
         {
             Players.AddRange(PlayersManager.Instance.Players);
-            
+
             // generate a new univers
             UniverseGenerator generator = new UniverseGenerator();
             generator.Generate(this, UniverseSettings, PlayersManager.Instance.Players);
@@ -33,12 +33,15 @@ namespace CraigStars
             Signals.PublishTurnPassedEvent(Year);
         }
 
-
         public override void _Input(InputEvent @event)
         {
             if (@event.IsActionPressed("generate_turn"))
             {
                 GenerateTurn();
+            }
+            if (@event.IsActionPressed("technology_browser"))
+            {
+                GetTree().ChangeScene("res://src/GUI/ShipDesigner/HullSummary.tscn");
             }
         }
 

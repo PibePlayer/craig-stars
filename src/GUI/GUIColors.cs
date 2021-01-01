@@ -53,5 +53,15 @@ namespace CraigStars
 
         [Export]
         public Color SelectedWaypointLineColor { get; set; } = new Color("0900FF").Lightened(.2f);
+
+        [Export]
+        public Color OwnedColor { get; set; } = new Color("00FF00");
+
+        [Export]
+        public Color FriendColor { get; set; } = new Color("FFFF00");
+
+        [Export]
+        public Color EnemyColor { get; set; } = new Color("FF0000");
+
     }
 }

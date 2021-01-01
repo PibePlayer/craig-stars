@@ -4,7 +4,7 @@ namespace CraigStars
 {
     public class TechHullSlot
     {
-        public HashSet<HullSlotType> Types { get; set; } = new HashSet<HullSlotType>();
+        public HullSlotType Type { get; set; }
         public int Capacity { get; set; }
         public bool Required { get; set; }
         public int X { get; set; }
@@ -14,9 +14,9 @@ namespace CraigStars
 
         public TechHullSlot() { }
 
-        public TechHullSlot(HullSlotType[] types, int capacity = 0, bool required = false, int x = 0, int y = 0, int width = 0, int height = 0)
+        public TechHullSlot(HullSlotType type, int capacity = 0, bool required = false, int x = 0, int y = 0, int width = 0, int height = 0)
         {
-            Types = new HashSet<HullSlotType>(types);
+            Type = type;
             Capacity = capacity;
             Required = required;
             X = x;

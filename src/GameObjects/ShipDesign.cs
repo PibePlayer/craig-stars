@@ -49,11 +49,11 @@ namespace CraigStars
                 // it won't add them up
 
                 TechHullSlot hullSlot = Hull.Slots[slot.HullSlotIndex];
-                if (hullSlot.Types.Contains(HullSlotType.SpaceDock))
+                if (hullSlot.Type.HasFlag(HullSlotType.SpaceDock))
                 {
                     Aggregate.SpaceDock = hullSlot.Capacity;
                 }
-                if (hullSlot.Types.Contains(HullSlotType.Cargo))
+                if (hullSlot.Type.HasFlag(HullSlotType.Cargo))
                 {
                     Aggregate.CargoCapacity = Aggregate.CargoCapacity + hullSlot.Capacity;
                 }
@@ -115,13 +115,16 @@ namespace CraigStars
             Aggregate.ScanRangePen = (int)scanRangePen;
 
             // if we have no pen scan but we have a regular scan, set the pen scan range to 0
-            if (scanRange != TechHullComponent.NoScanner)
+            if (scanRangePen == TechHullComponent.NoScanner)
             {
-                Aggregate.ScanRangePen = 0;
-            }
-            else
-            {
-                Aggregate.ScanRangePen = TechHullComponent.NoScanner;
+                if (scanRange != TechHullComponent.NoScanner)
+                {
+                    Aggregate.ScanRangePen = 0;
+                }
+                else
+                {
+                    Aggregate.ScanRangePen = TechHullComponent.NoScanner;
+                }
             }
         }
 

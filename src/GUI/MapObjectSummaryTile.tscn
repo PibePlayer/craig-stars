@@ -1,10 +1,15 @@
 [gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://Assets/GUI/planets/Planet01.jpg" type="Texture" id=1]
+[ext_resource path="res://Assets/GUI/Planet/Planet01.jpg" type="Texture" id=1]
 [ext_resource path="res://src/GUI/MapObjectSummaryTile.cs" type="Script" id=2]
 [ext_resource path="res://src/GUI/TileTheme.tres" type="Theme" id=3]
 
-[sub_resource type="StyleBoxEmpty" id=1]
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0, 0, 0, 1 )
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
 
 [node name="MapObjectSummary" type="MarginContainer"]
 margin_right = 250.0
@@ -73,6 +78,9 @@ show_behind_parent = true
 light_mask = -2147483647
 margin_right = 128.0
 margin_bottom = 128.0
+rect_min_size = Vector2( 128, 128 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
 custom_styles/panel = SubResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false

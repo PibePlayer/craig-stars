@@ -5,6 +5,23 @@ namespace CraigStars
     /// </summary>
     public enum TechCategory
     {
-        All, Armor, BeamWeapon, Bomb, Electrical, Engine, Mechanical, MineLayer, MineRobot, Orbital, PlanetaryScanner, PlanetaryDefense, Scanner, Shield, ShipHull, StarbaseHull, Terraforming, Torpedo
+        All,
+        Armor,
+        BeamWeapon,
+        Bomb,
+        Electrical,
+        Engine,
+        Mechanical,
+        MineLayer,
+        MineRobot,
+        Orbital,
+        PlanetaryScanner,
+        PlanetaryDefense,
+        Scanner,
+        Shield,
+        ShipHull,
+        StarbaseHull,
+        Terraforming,
+        Torpedo,
     }
 }

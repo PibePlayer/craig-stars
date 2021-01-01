@@ -45,7 +45,7 @@ namespace CraigStars
 
         public static readonly TechEngine LongHump6 = new TechEngine("Long Hump 6", new Cost(5, 0, 1, 6), new TechRequirements(propulsion: 3), 30)
         {
-            Mass = 4,
+            Mass = 9,
             FuelUsage = new int[] {
                 0,
                 25,
@@ -195,9 +195,9 @@ namespace CraigStars
             Initiative = 1,
             FuelCapacity = 50,
             Slots = new List<TechHullSlot>(new TechHullSlot[] {
-                new TechHullSlot(new HullSlotType[] { HullSlotType.Engine }, 1, true, 64, 96, 64, 64),
-                new TechHullSlot(new HullSlotType[] { HullSlotType.Scanner }, 1, false, 192, 96, 64, 64),
-                new TechHullSlot(new HullSlotType[] { HullSlotType.Scanner, HullSlotType.Mechanical, HullSlotType.Electrical, HullSlotType.Shield, HullSlotType.Armor, HullSlotType.Weapon, HullSlotType.Mine }, 1, false, 128, 96, 64, 64)
+                new TechHullSlot(HullSlotType.Engine, 1, true, 64, 96, 64, 64),
+                new TechHullSlot(HullSlotType.Scanner, 1, false, 192, 96, 64, 64),
+                new TechHullSlot(HullSlotType.General, 1, false, 128, 96, 64, 64)
             })
         };
 

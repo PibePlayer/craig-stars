@@ -23,11 +23,12 @@ namespace CraigStars
 
         public override void _Ready()
         {
-            planetTexture = ResourceLoader.Load<Texture>("res://Assets/GUI/planets/Planet01.jpg");
-            fleetTexture = ResourceLoader.Load<Texture>("res://Assets/GUI/hullset3/Scout.jpg");
+            planetTexture = ResourceLoader.Load<Texture>("res://Assets/GUI/Planet/Planet01.jpg");
+            fleetTexture = ResourceLoader.Load<Texture>("res://Assets/GUI/Tech/ShipHull/Scout0004.png");
 
             nameLabel = FindNode("Name") as Label;
             textureRect = FindNode("TextureRect") as TextureRect;
+
 
             Signals.MapObjectActivatedEvent += OnMapObjectActivated;
         }
@@ -36,6 +37,18 @@ namespace CraigStars
         {
             Signals.MapObjectActivatedEvent -= OnMapObjectActivated;
         }
+
+        // public override object GetDragData(Vector2 position)
+        // {
+        //     var cpb = new ColorPickerButton();
+
+        //     cpb.Color = Colors.Red;
+
+        //     cpb.RectSize = new Vector2(50, 50);
+
+        //     SetDragPreview(cpb);
+        //     return Colors.Red;
+        // }
 
         void OnMapObjectActivated(MapObject mapObject)
         {

@@ -6,45 +6,44 @@ namespace CraigStars
 {
     public class PlanetSprite : MapObjectSprite<Planet>
     {
+        GUIColors guiColors = new GUIColors();
+
         Sprite known;
         Sprite unknown;
-        Sprite owned;
-        Sprite friend;
-        Sprite enemy;
-        Sprite knownActive;
-        Sprite ownedActive;
+        Sprite inhabited;
+        Sprite inhabitedCommanded;
         Sprite orbiting;
-        Sprite orbitingActive;
+        Sprite orbitingCommanded;
 
         List<Sprite> stateSprites = new List<Sprite>();
 
         public override void _Ready()
         {
+            guiColors = GD.Load("res://src/GUI/GUIColors.tres") as GUIColors;
+            if (guiColors == null)
+            {
+                guiColors = new GUIColors();
+            }
+
             known = GetNode<Sprite>("Known");
             unknown = GetNode<Sprite>("Unknown");
-            owned = GetNode<Sprite>("Owned");
-            friend = GetNode<Sprite>("Friend");
-            enemy = GetNode<Sprite>("Enemy");
-            knownActive = GetNode<Sprite>("KnownActive");
-            ownedActive = GetNode<Sprite>("OwnedActive");
+            inhabited = GetNode<Sprite>("Inhabited");
+            inhabitedCommanded = GetNode<Sprite>("InhabitedCommanded");
             orbiting = GetNode<Sprite>("Orbiting");
-            orbitingActive = GetNode<Sprite>("OrbitingActive");
+            orbitingCommanded = GetNode<Sprite>("OrbitingActive");
 
             // create a list of these sprites
             stateSprites.Add(known);
             stateSprites.Add(unknown);
-            stateSprites.Add(owned);
-            stateSprites.Add(friend);
-            stateSprites.Add(enemy);
-            stateSprites.Add(knownActive);
-            stateSprites.Add(ownedActive);
+            stateSprites.Add(inhabited);
+            stateSprites.Add(inhabitedCommanded);
             stateSprites.Add(orbiting);
-            stateSprites.Add(orbitingActive);
+            stateSprites.Add(orbitingCommanded);
         }
 
         public override void UpdateSprite(Player player, Planet planet)
         {
-            var ownerAllyState = MapObject.OwnerAlly.Unknown;
+            var ownerAllyState = planet.ReportAge == -1 ? MapObject.OwnerAlly.Unknown : MapObject.OwnerAlly.Known;
             var state = planet.State;
             var hasActivePeer = planet.HasActivePeer();
 
@@ -81,7 +80,7 @@ namespace CraigStars
                 case MapObject.OwnerAlly.Known:
                     if (hasActivePeer || state == MapObject.States.Active)
                     {
-                        knownActive.Visible = true;
+                        inhabitedCommanded.Visible = true;
                     }
                     else
                     {
@@ -91,18 +90,38 @@ namespace CraigStars
                 case MapObject.OwnerAlly.Owned:
                     if (hasActivePeer || state == MapObject.States.Active)
                     {
-                        ownedActive.Visible = true;
+                        inhabitedCommanded.Visible = true;
+                        inhabitedCommanded.Modulate = guiColors.OwnedColor;
                     }
                     else
                     {
-                        owned.Visible = true;
+                        inhabited.Visible = true;
+                        inhabited.Modulate = guiColors.OwnedColor;
                     }
                     break;
                 case MapObject.OwnerAlly.Friend:
-                    friend.Visible = true;
+                    if (hasActivePeer || state == MapObject.States.Active)
+                    {
+                        inhabitedCommanded.Visible = true;
+                        inhabitedCommanded.Modulate = guiColors.FriendColor;
+                    }
+                    else
+                    {
+                        inhabited.Visible = true;
+                        inhabited.Modulate = guiColors.FriendColor;
+                    }
                     break;
                 case MapObject.OwnerAlly.Enemy:
-                    enemy.Visible = true;
+                    if (hasActivePeer || state == MapObject.States.Active)
+                    {
+                        inhabitedCommanded.Visible = true;
+                        inhabitedCommanded.Modulate = guiColors.EnemyColor;
+                    }
+                    else
+                    {
+                        inhabited.Visible = true;
+                        inhabited.Modulate = guiColors.EnemyColor;
+                    }
                     break;
             }
 
@@ -114,7 +133,7 @@ namespace CraigStars
                 case Planet.Orbiting.OrbitingAlliesAndEnemies:
                     if (hasActivePeer || state == MapObject.States.Active)
                     {
-                        orbitingActive.Visible = true;
+                        orbitingCommanded.Visible = true;
                     }
                     else
                     {

@@ -1,16 +1,14 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://src/GameObjects/Planet.cs" type="Script" id=1]
-[ext_resource path="res://Assets/viewport/planet-friend.png" type="Texture" id=2]
-[ext_resource path="res://Assets/viewport/planet-known.png" type="Texture" id=3]
-[ext_resource path="res://Assets/viewport/planet-enemy.png" type="Texture" id=4]
-[ext_resource path="res://Assets/viewport/planet-unknown.png" type="Texture" id=5]
-[ext_resource path="res://Assets/viewport/planet-owned-selected.png" type="Texture" id=6]
-[ext_resource path="res://Assets/viewport/planet-owned.png" type="Texture" id=7]
-[ext_resource path="res://Assets/viewport/planet-orbiting.png" type="Texture" id=8]
-[ext_resource path="res://Assets/viewport/planet-known-selected.png" type="Texture" id=9]
-[ext_resource path="res://Assets/viewport/planet-orbiting-selected.png" type="Texture" id=10]
+[ext_resource path="res://Assets/Scanner/planet-commanded.png" type="Texture" id=2]
+[ext_resource path="res://Assets/Scanner/planet-known.png" type="Texture" id=3]
+[ext_resource path="res://Assets/Scanner/planet-inhabited.png" type="Texture" id=4]
+[ext_resource path="res://Assets/Scanner/planet-unknown.png" type="Texture" id=5]
+[ext_resource path="res://Assets/Scanner/planet-orbiting.png" type="Texture" id=8]
+[ext_resource path="res://Assets/Scanner/planet-orbiting-selected.png" type="Texture" id=10]
 [ext_resource path="res://src/GameObjects/PlanetSprite.cs" type="Script" id=13]
+
 
 [sub_resource type="CircleShape2D" id=1]
 radius = 16.0
@@ -32,25 +30,13 @@ texture = ExtResource( 3 )
 [node name="Unknown" type="Sprite" parent="Sprite"]
 texture = ExtResource( 5 )
 
-[node name="Friend" type="Sprite" parent="Sprite"]
-visible = false
-texture = ExtResource( 2 )
-
-[node name="Owned" type="Sprite" parent="Sprite"]
-visible = false
-texture = ExtResource( 7 )
-
-[node name="Enemy" type="Sprite" parent="Sprite"]
+[node name="Inhabited" type="Sprite" parent="Sprite"]
 visible = false
 texture = ExtResource( 4 )
 
-[node name="KnownActive" type="Sprite" parent="Sprite"]
+[node name="InhabitedCommanded" type="Sprite" parent="Sprite"]
 visible = false
-texture = ExtResource( 9 )
-
-[node name="OwnedActive" type="Sprite" parent="Sprite"]
-visible = false
-texture = ExtResource( 6 )
+texture = ExtResource( 2 )
 
 [node name="Orbiting" type="Sprite" parent="Sprite"]
 visible = false

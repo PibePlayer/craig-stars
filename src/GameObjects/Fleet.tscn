@@ -1,9 +1,10 @@
 [gd_scene load_steps=6 format=2]
 
-[ext_resource path="res://Assets/viewport/fleet.png" type="Texture" id=1]
+[ext_resource path="res://Assets/Scanner/fleet.png" type="Texture" id=1]
 [ext_resource path="res://src/GameObjects/Fleet.cs" type="Script" id=2]
-[ext_resource path="res://Assets/viewport/fleet-active.png" type="Texture" id=3]
+[ext_resource path="res://Assets/Scanner/fleet-active.png" type="Texture" id=3]
 [ext_resource path="res://src/GameObjects/FleetSprite.cs" type="Script" id=4]
+
 
 [sub_resource type="CircleShape2D" id=1]
 radius = 16.0

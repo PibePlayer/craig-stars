@@ -3,7 +3,6 @@ using System.Linq;
 using System.Collections.Generic;
 using CraigStars.Singletons;
 using Godot;
-using Stateless;
 
 namespace CraigStars
 {

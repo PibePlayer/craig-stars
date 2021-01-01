@@ -5,27 +5,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Play in Editor",
+            "name": "Debug Main Scene",
             "type": "godot-mono",
             "mode": "playInEditor",
             "request": "launch"
         },
-        {
-            "name": "Run Tests",
-            "type": "godot-mono",
-            "request": "launch",
-            "mode": "executable",
-            "executable": "/Applications/Godot_mono.app/Contents/MacOS/Godot",
-            "executableArguments": [
-                "${workspaceRoot}/src/Tests/Tester.tscn",
-            ]
-        },
-        {
-            "name": "Attach",
-            "type": "godot-mono",
-            "request": "attach",
-            "address": "localhost",
-            "port": 23685
-        }
     ]
 }

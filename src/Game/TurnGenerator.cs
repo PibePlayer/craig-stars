@@ -80,7 +80,6 @@ namespace CraigStars
             {
                 p.Cargo.Add(p.GetMineralOutput());
                 p.MineYears.Add(p.Mines);
-                // TODO: figure out settings
                 int mineralDecayFactor = settings.MineralDecayFactor;
                 int minMineralConcentration = p.Homeworld ? settings.MinHomeworldMineralConcentration : settings.MinMineralConcentration;
                 ReduceMineralConcentration(p, mineralDecayFactor, minMineralConcentration);

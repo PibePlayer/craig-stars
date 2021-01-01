@@ -4,9 +4,6 @@
     <RootNamespace>CraigStars</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Stateless">
-      <Version>5.1.2</Version>
-    </PackageReference>
 
     <PackageReference Include="NUnit">
       <Version>3.12.0</Version>

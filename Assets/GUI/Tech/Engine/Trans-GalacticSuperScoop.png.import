@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Trans-GalacticSuperScoop.png-e4519fe0bc0f14f2bbc19dc79320f0c4.stex"
+path="res://.import/Trans-GalacticSuperScoop.png-9b77707cbbdc510b85003c593d130862.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/GUI/Tech/Engine/Trans-GalacticSuperScoop.png"
-dest_files=[ "res://.import/Trans-GalacticSuperScoop.png-e4519fe0bc0f14f2bbc19dc79320f0c4.stex" ]
+source_file="res://assets/GUI/Tech/Engine/Trans-GalacticSuperScoop.png"
+dest_files=[ "res://.import/Trans-GalacticSuperScoop.png-9b77707cbbdc510b85003c593d130862.stex" ]
 
 [params]
 

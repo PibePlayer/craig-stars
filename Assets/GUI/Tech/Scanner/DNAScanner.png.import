@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/DNAScanner.png-70e6af6b3553efb64e50d106d966ff63.stex"
+path="res://.import/DNAScanner.png-cec93d2ed8df19fed1cedfbdfd8b7bc7.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/GUI/Tech/Scanner/DNAScanner.png"
-dest_files=[ "res://.import/DNAScanner.png-70e6af6b3553efb64e50d106d966ff63.stex" ]
+source_file="res://assets/GUI/Tech/Scanner/DNAScanner.png"
+dest_files=[ "res://.import/DNAScanner.png-cec93d2ed8df19fed1cedfbdfd8b7bc7.stex" ]
 
 [params]
 

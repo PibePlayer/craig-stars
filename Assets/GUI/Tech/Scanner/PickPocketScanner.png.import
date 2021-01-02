@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/PickPocketScanner.png-3c1b0aa393d962f536334be548229c20.stex"
+path="res://.import/PickPocketScanner.png-8d5668ed03c6e3e32e5cc8a01b0ce83e.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/GUI/Tech/Scanner/PickPocketScanner.png"
-dest_files=[ "res://.import/PickPocketScanner.png-3c1b0aa393d962f536334be548229c20.stex" ]
+source_file="res://assets/GUI/Tech/Scanner/PickPocketScanner.png"
+dest_files=[ "res://.import/PickPocketScanner.png-8d5668ed03c6e3e32e5cc8a01b0ce83e.stex" ]
 
 [params]
 

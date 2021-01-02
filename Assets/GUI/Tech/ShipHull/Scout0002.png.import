@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Scout0002.png-7b6d59684b5a44a05d893ae5f028ee17.stex"
+path="res://.import/Scout0002.png-975e32847d1403108c9f417693bc5424.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/GUI/Tech/ShipHull/Scout0002.png"
-dest_files=[ "res://.import/Scout0002.png-7b6d59684b5a44a05d893ae5f028ee17.stex" ]
+source_file="res://assets/GUI/Tech/ShipHull/Scout0002.png"
+dest_files=[ "res://.import/Scout0002.png-975e32847d1403108c9f417693bc5424.stex" ]
 
 [params]
 

@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/CheetahScanner.png-296436954c8cb3a5bae69608d872351c.stex"
+path="res://.import/CheetahScanner.png-f24de8468d67ed0b3ffe21d110f3542f.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/GUI/Tech/Scanner/CheetahScanner.png"
-dest_files=[ "res://.import/CheetahScanner.png-296436954c8cb3a5bae69608d872351c.stex" ]
+source_file="res://assets/GUI/Tech/Scanner/CheetahScanner.png"
+dest_files=[ "res://.import/CheetahScanner.png-f24de8468d67ed0b3ffe21d110f3542f.stex" ]
 
 [params]
 

@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Fuel Tank.png-d010a7f1a20d24df1b46d3aa49bb1eec.stex"
+path="res://.import/Fuel Tank.png-bbbb5087959e97fc103ef94a09521aee.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/GUI/Tech/Mechanical/Fuel Tank.png"
-dest_files=[ "res://.import/Fuel Tank.png-d010a7f1a20d24df1b46d3aa49bb1eec.stex" ]
+source_file="res://assets/GUI/Tech/Mechanical/Fuel Tank.png"
+dest_files=[ "res://.import/Fuel Tank.png-bbbb5087959e97fc103ef94a09521aee.stex" ]
 
 [params]
 

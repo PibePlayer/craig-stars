@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/DaddyLongLegs7.png-190dcc4a012ad50403fcde1231696251.stex"
+path="res://.import/DaddyLongLegs7.png-5157270f751b5630ada826265964036d.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/GUI/Tech/Engine/DaddyLongLegs7.png"
-dest_files=[ "res://.import/DaddyLongLegs7.png-190dcc4a012ad50403fcde1231696251.stex" ]
+source_file="res://assets/GUI/Tech/Engine/DaddyLongLegs7.png"
+dest_files=[ "res://.import/DaddyLongLegs7.png-5157270f751b5630ada826265964036d.stex" ]
 
 [params]
 

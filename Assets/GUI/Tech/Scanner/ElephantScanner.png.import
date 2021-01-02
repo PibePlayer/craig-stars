@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/ElephantScanner.png-2b38d8b39075ecc86fd49f9b30437b82.stex"
+path="res://.import/ElephantScanner.png-ea862030e4ed2683352cadecdd3f788a.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/GUI/Tech/Scanner/ElephantScanner.png"
-dest_files=[ "res://.import/ElephantScanner.png-2b38d8b39075ecc86fd49f9b30437b82.stex" ]
+source_file="res://assets/GUI/Tech/Scanner/ElephantScanner.png"
+dest_files=[ "res://.import/ElephantScanner.png-ea862030e4ed2683352cadecdd3f788a.stex" ]
 
 [params]
 

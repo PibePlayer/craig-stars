@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/GalaxyScoop.png-cb912567ecbc73a767c839dccddd1c32.stex"
+path="res://.import/monochrome_transparent_packed.png-031f33e2df3a9a025570638d558bcd8b.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/GUI/Tech/Engine/GalaxyScoop.png"
-dest_files=[ "res://.import/GalaxyScoop.png-cb912567ecbc73a767c839dccddd1c32.stex" ]
+source_file="res://assets/GUI/monochrome_transparent_packed.png"
+dest_files=[ "res://.import/monochrome_transparent_packed.png-031f33e2df3a9a025570638d558bcd8b.stex" ]
 
 [params]
 

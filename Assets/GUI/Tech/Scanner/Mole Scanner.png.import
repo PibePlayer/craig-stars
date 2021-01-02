@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Mole Scanner.png-c1c25346b8fa9ad1445be86938ae5719.stex"
+path="res://.import/Mole Scanner.png-daa5d0c6f63b98938e74a3942adf955d.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/GUI/Tech/Scanner/Mole Scanner.png"
-dest_files=[ "res://.import/Mole Scanner.png-c1c25346b8fa9ad1445be86938ae5719.stex" ]
+source_file="res://assets/GUI/Tech/Scanner/Mole Scanner.png"
+dest_files=[ "res://.import/Mole Scanner.png-daa5d0c6f63b98938e74a3942adf955d.stex" ]
 
 [params]
 

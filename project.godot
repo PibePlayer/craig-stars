@@ -25,6 +25,7 @@ PlayersManager="*res://src/Singletons/PlayersManager.cs"
 Rpc="*res://src/Singletons/RPC.cs"
 Signals="*res://src/Singletons/Signals.cs"
 TextureLoader="*res://src/Singletons/TextureLoader.cs"
+TechStore="*res://src/Singletons/TechStore.cs"
 
 [display]
 

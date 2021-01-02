@@ -1,13 +1,15 @@
 [gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://src/GameObjects/Planet.cs" type="Script" id=1]
-[ext_resource path="res://Assets/Scanner/planet-commanded.png" type="Texture" id=2]
-[ext_resource path="res://Assets/Scanner/planet-known.png" type="Texture" id=3]
-[ext_resource path="res://Assets/Scanner/planet-inhabited.png" type="Texture" id=4]
-[ext_resource path="res://Assets/Scanner/planet-unknown.png" type="Texture" id=5]
-[ext_resource path="res://Assets/Scanner/planet-orbiting.png" type="Texture" id=8]
-[ext_resource path="res://Assets/Scanner/planet-orbiting-selected.png" type="Texture" id=10]
+[ext_resource path="res://assets/Scanner/planet-commanded.png" type="Texture" id=2]
+[ext_resource path="res://assets/Scanner/planet-known.png" type="Texture" id=3]
+[ext_resource path="res://assets/Scanner/planet-inhabited.png" type="Texture" id=4]
+[ext_resource path="res://assets/Scanner/planet-unknown.png" type="Texture" id=5]
+[ext_resource path="res://assets/Scanner/planet-orbiting.png" type="Texture" id=8]
+[ext_resource path="res://assets/Scanner/planet-orbiting-selected.png" type="Texture" id=10]
 [ext_resource path="res://src/GameObjects/PlanetSprite.cs" type="Script" id=13]
+
+
 
 
 [sub_resource type="CircleShape2D" id=1]

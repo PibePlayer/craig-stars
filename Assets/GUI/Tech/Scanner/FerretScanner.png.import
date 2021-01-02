@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/FerretScanner.png-50883c8b50d0890fdaf6437cd176a027.stex"
+path="res://.import/FerretScanner.png-93a22eb5f5e34f365acc584ca7269b1d.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/GUI/Tech/Scanner/FerretScanner.png"
-dest_files=[ "res://.import/FerretScanner.png-50883c8b50d0890fdaf6437cd176a027.stex" ]
+source_file="res://assets/GUI/Tech/Scanner/FerretScanner.png"
+dest_files=[ "res://.import/FerretScanner.png-93a22eb5f5e34f365acc584ca7269b1d.stex" ]
 
 [params]
 

@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/planet-commanded.png-05169041b7c7849619d9e6dcff2cf51b.stex"
+path="res://.import/planet-commanded.png-aa4f46b86e8006d6d42d7cd88247f2a9.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Scanner/planet-commanded.png"
-dest_files=[ "res://.import/planet-commanded.png-05169041b7c7849619d9e6dcff2cf51b.stex" ]
+source_file="res://assets/Scanner/planet-commanded.png"
+dest_files=[ "res://.import/planet-commanded.png-aa4f46b86e8006d6d42d7cd88247f2a9.stex" ]
 
 [params]
 

@@ -18,8 +18,6 @@ namespace CraigStars.Singletons
             }
         }
 
-        Dictionary<string, Texture> texturesByName = new Dictionary<string, Texture>();
-
         public override void _Ready()
         {
             // From advice in the godot forums, this is probably a good idea.
@@ -32,9 +30,9 @@ namespace CraigStars.Singletons
             Texture texture;
 
             // try loading it from the asset path like
-            // ResourceLoader.Load("res://Assets/GUI/Tech/Engine/Alpha Drive 8.png")
+            // ResourceLoader.Load("res://assets/GUI/Tech/Engine/Alpha Drive 8.png")
 
-            var assetPath = $"res://Assets/GUI/Tech/{tech.Category}/{tech.Name}.png";
+            var assetPath = $"res://assets/GUI/Tech/{tech.Category}/{tech.Name}.png";
             texture = ResourceLoader.Load<Texture>(assetPath);
 
             return texture;

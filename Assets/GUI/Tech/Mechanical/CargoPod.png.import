@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/CargoPod.png-dd220587dfe5559bc189c7b5cf7596fb.stex"
+path="res://.import/CargoPod.png-fb87fcf5ed938db7733b8c10889240fa.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/GUI/Tech/Mechanical/CargoPod.png"
-dest_files=[ "res://.import/CargoPod.png-dd220587dfe5559bc189c7b5cf7596fb.stex" ]
+source_file="res://assets/GUI/Tech/Mechanical/CargoPod.png"
+dest_files=[ "res://.import/CargoPod.png-fb87fcf5ed938db7733b8c10889240fa.stex" ]
 
 [params]
 

@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/ChameleonScanner.png-e1ec3ebfd689039881dbe7ae93a8ebc2.stex"
+path="res://.import/ChameleonScanner.png-8c2cc6f807e01d93e2a9f3ba936ac223.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/GUI/Tech/Scanner/ChameleonScanner.png"
-dest_files=[ "res://.import/ChameleonScanner.png-e1ec3ebfd689039881dbe7ae93a8ebc2.stex" ]
+source_file="res://assets/GUI/Tech/Scanner/ChameleonScanner.png"
+dest_files=[ "res://.import/ChameleonScanner.png-8c2cc6f807e01d93e2a9f3ba936ac223.stex" ]
 
 [params]
 

@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/planet-orbiting.png-7e30fabd625773736e467c7c2c7edd18.stex"
+path="res://.import/planet-orbiting.png-dc0c3825d7da6ef5186435f5b7b562a0.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Scanner/planet-orbiting.png"
-dest_files=[ "res://.import/planet-orbiting.png-7e30fabd625773736e467c7c2c7edd18.stex" ]
+source_file="res://assets/Scanner/planet-orbiting.png"
+dest_files=[ "res://.import/planet-orbiting.png-dc0c3825d7da6ef5186435f5b7b562a0.stex" ]
 
 [params]
 

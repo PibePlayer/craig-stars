@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/vector_whiteIcons.svg-27a3f76cb8625f9be2affa3c25297841.stex"
+path="res://.import/vector_whiteIcons.svg-c67f139c508ab7fb4d4592e565560560.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/GUI/vector_whiteIcons.svg"
-dest_files=[ "res://.import/vector_whiteIcons.svg-27a3f76cb8625f9be2affa3c25297841.stex" ]
+source_file="res://assets/GUI/vector_whiteIcons.svg"
+dest_files=[ "res://.import/vector_whiteIcons.svg-c67f139c508ab7fb4d4592e565560560.stex" ]
 
 [params]
 

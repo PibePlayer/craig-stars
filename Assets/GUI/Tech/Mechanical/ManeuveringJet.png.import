@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/ManeuveringJet.png-8f11cdfb9365b23e677b1f919e26b2b7.stex"
+path="res://.import/ManeuveringJet.png-a150bb0b98c0464fada30b8c4390eaaf.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/GUI/Tech/Mechanical/ManeuveringJet.png"
-dest_files=[ "res://.import/ManeuveringJet.png-8f11cdfb9365b23e677b1f919e26b2b7.stex" ]
+source_file="res://assets/GUI/Tech/Mechanical/ManeuveringJet.png"
+dest_files=[ "res://.import/ManeuveringJet.png-a150bb0b98c0464fada30b8c4390eaaf.stex" ]
 
 [params]
 

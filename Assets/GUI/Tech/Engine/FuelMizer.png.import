@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/FuelMizer.png-adc2e6f946de0c3f274bf5ff83f5461e.stex"
+path="res://.import/FuelMizer.png-19ef9414b123511ef9c1d90f1a49a81b.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/GUI/Tech/Engine/FuelMizer.png"
-dest_files=[ "res://.import/FuelMizer.png-adc2e6f946de0c3f274bf5ff83f5461e.stex" ]
+source_file="res://assets/GUI/Tech/Engine/FuelMizer.png"
+dest_files=[ "res://.import/FuelMizer.png-19ef9414b123511ef9c1d90f1a49a81b.stex" ]
 
 [params]
 

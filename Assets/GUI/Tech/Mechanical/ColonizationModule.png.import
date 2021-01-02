@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/ColonizationModule.png-1c7fdacea632c0d7fd9ec2d603917d4d.stex"
+path="res://.import/ColonizationModule.png-19b6926aa7b6b014f5cc203598426c05.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/GUI/Tech/Mechanical/ColonizationModule.png"
-dest_files=[ "res://.import/ColonizationModule.png-1c7fdacea632c0d7fd9ec2d603917d4d.stex" ]
+source_file="res://assets/GUI/Tech/Mechanical/ColonizationModule.png"
+dest_files=[ "res://.import/ColonizationModule.png-19b6926aa7b6b014f5cc203598426c05.stex" ]
 
 [params]
 

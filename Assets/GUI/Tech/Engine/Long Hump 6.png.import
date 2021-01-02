@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Long Hump 6.png-6bcd07efa9e08a4e089902384b31c595.stex"
+path="res://.import/Long Hump 6.png-02aa6cb28315cd54c790360832596bd2.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/GUI/Tech/Engine/Long Hump 6.png"
-dest_files=[ "res://.import/Long Hump 6.png-6bcd07efa9e08a4e089902384b31c595.stex" ]
+source_file="res://assets/GUI/Tech/Engine/Long Hump 6.png"
+dest_files=[ "res://.import/Long Hump 6.png-02aa6cb28315cd54c790360832596bd2.stex" ]
 
 [params]
 

@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Trans-GalacticDrive.png-98071ae28a7215478e9db911e6486cce.stex"
+path="res://.import/Trans-GalacticDrive.png-2727f0b009ee1a3e4873d57845db7842.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/GUI/Tech/Engine/Trans-GalacticDrive.png"
-dest_files=[ "res://.import/Trans-GalacticDrive.png-98071ae28a7215478e9db911e6486cce.stex" ]
+source_file="res://assets/GUI/Tech/Engine/Trans-GalacticDrive.png"
+dest_files=[ "res://.import/Trans-GalacticDrive.png-2727f0b009ee1a3e4873d57845db7842.stex" ]
 
 [params]
 

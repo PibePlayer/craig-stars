@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/JumpGate.png-7e1338248bb110bb1bdc6ea228d240ea.stex"
+path="res://.import/JumpGate.png-c3c65297b96e6da55400aa00ec568350.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/GUI/Tech/Mechanical/JumpGate.png"
-dest_files=[ "res://.import/JumpGate.png-7e1338248bb110bb1bdc6ea228d240ea.stex" ]
+source_file="res://assets/GUI/Tech/Mechanical/JumpGate.png"
+dest_files=[ "res://.import/JumpGate.png-c3c65297b96e6da55400aa00ec568350.stex" ]
 
 [params]
 

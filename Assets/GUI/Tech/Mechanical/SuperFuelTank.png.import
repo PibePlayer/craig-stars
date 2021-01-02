@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/SuperFuelTank.png-f6077209ba86baa0c3262779d042e8e2.stex"
+path="res://.import/SuperFuelTank.png-1222eef4a9f66a2e9232d900208c7cf4.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/GUI/Tech/Mechanical/SuperFuelTank.png"
-dest_files=[ "res://.import/SuperFuelTank.png-f6077209ba86baa0c3262779d042e8e2.stex" ]
+source_file="res://assets/GUI/Tech/Mechanical/SuperFuelTank.png"
+dest_files=[ "res://.import/SuperFuelTank.png-1222eef4a9f66a2e9232d900208c7cf4.stex" ]
 
 [params]
 

@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Trans-Star10.png-09dcb9584f3a1da43fc5eb0f38fe6c31.stex"
+path="res://.import/Trans-Star10.png-4a1d3d85128ff0acabe425b95d9501d8.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/GUI/Tech/Engine/Trans-Star10.png"
-dest_files=[ "res://.import/Trans-Star10.png-09dcb9584f3a1da43fc5eb0f38fe6c31.stex" ]
+source_file="res://assets/GUI/Tech/Engine/Trans-Star10.png"
+dest_files=[ "res://.import/Trans-Star10.png-4a1d3d85128ff0acabe425b95d9501d8.stex" ]
 
 [params]
 

@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/EnigmaPulsar.png-18b66468403b6a18ff6603bc8105a67b.stex"
+path="res://.import/EnigmaPulsar.png-1e0ed4084136ba29b2b4803136ce87cd.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/GUI/Tech/Engine/EnigmaPulsar.png"
-dest_files=[ "res://.import/EnigmaPulsar.png-18b66468403b6a18ff6603bc8105a67b.stex" ]
+source_file="res://assets/GUI/Tech/Engine/EnigmaPulsar.png"
+dest_files=[ "res://.import/EnigmaPulsar.png-1e0ed4084136ba29b2b4803136ce87cd.stex" ]
 
 [params]
 

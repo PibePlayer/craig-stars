@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Viewer 90.png-865d629fcfc6ea43395a1b12ddfa8b8e.stex"
+path="res://.import/Viewer 90.png-cd434cecf84dbc041b3cb38450c89b92.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/GUI/Tech/PlanetaryScanner/Viewer 90.png"
-dest_files=[ "res://.import/Viewer 90.png-865d629fcfc6ea43395a1b12ddfa8b8e.stex" ]
+source_file="res://assets/GUI/Tech/PlanetaryScanner/Viewer 90.png"
+dest_files=[ "res://.import/Viewer 90.png-cd434cecf84dbc041b3cb38450c89b92.stex" ]
 
 [params]
 

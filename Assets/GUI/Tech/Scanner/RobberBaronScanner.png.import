@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/RobberBaronScanner.png-5a69a4aefe1ea088ed6cd3118b14c017.stex"
+path="res://.import/RobberBaronScanner.png-7feaeadf5a1cb820e760adac23ea9914.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/GUI/Tech/Scanner/RobberBaronScanner.png"
-dest_files=[ "res://.import/RobberBaronScanner.png-5a69a4aefe1ea088ed6cd3118b14c017.stex" ]
+source_file="res://assets/GUI/Tech/Scanner/RobberBaronScanner.png"
+dest_files=[ "res://.import/RobberBaronScanner.png-7feaeadf5a1cb820e760adac23ea9914.stex" ]
 
 [params]
 

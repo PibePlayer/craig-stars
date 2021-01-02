@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Settler'sDelight.png-c5bfb79554eacdb4752a298b82020554.stex"
+path="res://.import/Settler'sDelight.png-eacfed8976547463dba3fd159bce60a2.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/GUI/Tech/Engine/Settler'sDelight.png"
-dest_files=[ "res://.import/Settler'sDelight.png-c5bfb79554eacdb4752a298b82020554.stex" ]
+source_file="res://assets/GUI/Tech/Engine/Settler'sDelight.png"
+dest_files=[ "res://.import/Settler'sDelight.png-eacfed8976547463dba3fd159bce60a2.stex" ]
 
 [params]
 

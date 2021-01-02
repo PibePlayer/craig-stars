@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/GazelleScanner.png-68b3b8dfb374fd07a430c989a235f367.stex"
+path="res://.import/GazelleScanner.png-36c5287fbfcda6cbcb8916906787e1cd.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/GUI/Tech/Scanner/GazelleScanner.png"
-dest_files=[ "res://.import/GazelleScanner.png-68b3b8dfb374fd07a430c989a235f367.stex" ]
+source_file="res://assets/GUI/Tech/Scanner/GazelleScanner.png"
+dest_files=[ "res://.import/GazelleScanner.png-36c5287fbfcda6cbcb8916906787e1cd.stex" ]
 
 [params]
 

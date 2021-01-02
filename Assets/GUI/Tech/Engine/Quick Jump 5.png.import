@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Quick Jump 5.png-186f6297f9bbb5abe1201856b16da03c.stex"
+path="res://.import/Quick Jump 5.png-a9fabd6e3235ac30c440b2f8be800d4d.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/GUI/Tech/Engine/Quick Jump 5.png"
-dest_files=[ "res://.import/Quick Jump 5.png-186f6297f9bbb5abe1201856b16da03c.stex" ]
+source_file="res://assets/GUI/Tech/Engine/Quick Jump 5.png"
+dest_files=[ "res://.import/Quick Jump 5.png-a9fabd6e3235ac30c440b2f8be800d4d.stex" ]
 
 [params]
 

@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/fleet-active.png-b4c01bd9cdd54baa2658085258526ce3.stex"
+path="res://.import/fleet-active.png-d51de7f951f351d843f42a76c3eb9a06.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Scanner/fleet-active.png"
-dest_files=[ "res://.import/fleet-active.png-b4c01bd9cdd54baa2658085258526ce3.stex" ]
+source_file="res://assets/Scanner/fleet-active.png"
+dest_files=[ "res://.import/fleet-active.png-d51de7f951f351d843f42a76c3eb9a06.stex" ]
 
 [params]
 

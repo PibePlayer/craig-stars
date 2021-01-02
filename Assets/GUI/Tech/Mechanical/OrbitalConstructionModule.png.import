@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/OrbitalConstructionModule.png-a5242c0d32ce2f65a1dbc4992b8dd4cd.stex"
+path="res://.import/OrbitalConstructionModule.png-aa71d86fb30a3dea3f5aa764bea21649.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/GUI/Tech/Mechanical/OrbitalConstructionModule.png"
-dest_files=[ "res://.import/OrbitalConstructionModule.png-a5242c0d32ce2f65a1dbc4992b8dd4cd.stex" ]
+source_file="res://assets/GUI/Tech/Mechanical/OrbitalConstructionModule.png"
+dest_files=[ "res://.import/OrbitalConstructionModule.png-aa71d86fb30a3dea3f5aa764bea21649.stex" ]
 
 [params]
 

@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/RNAScanner.png-b91c2ece61e5bc214c37f9e72c8258d2.stex"
+path="res://.import/RNAScanner.png-83f26dd0107b7d9527d8bdf54c9542f1.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/GUI/Tech/Scanner/RNAScanner.png"
-dest_files=[ "res://.import/RNAScanner.png-b91c2ece61e5bc214c37f9e72c8258d2.stex" ]
+source_file="res://assets/GUI/Tech/Scanner/RNAScanner.png"
+dest_files=[ "res://.import/RNAScanner.png-83f26dd0107b7d9527d8bdf54c9542f1.stex" ]
 
 [params]
 

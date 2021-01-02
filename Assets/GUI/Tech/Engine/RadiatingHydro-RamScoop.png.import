@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/RadiatingHydro-RamScoop.png-7283bf53f1ff64bda9b15e984264c9b0.stex"
+path="res://.import/RadiatingHydro-RamScoop.png-e750a4469e490e06c5ad64d7b7bdb160.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/GUI/Tech/Engine/RadiatingHydro-RamScoop.png"
-dest_files=[ "res://.import/RadiatingHydro-RamScoop.png-7283bf53f1ff64bda9b15e984264c9b0.stex" ]
+source_file="res://assets/GUI/Tech/Engine/RadiatingHydro-RamScoop.png"
+dest_files=[ "res://.import/RadiatingHydro-RamScoop.png-e750a4469e490e06c5ad64d7b7bdb160.stex" ]
 
 [params]
 

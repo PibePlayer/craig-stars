@@ -50,7 +50,7 @@ namespace CraigStars
         /// </c>
         /// </summary>
         /// <param name="game"></param>
-        public void GenerateTurn(Game game)
+        public void GenerateTurn(Game game, TechStore techStore)
         {
             game.Year++;
             game.Players.ForEach(p => p.Messages.Clear());
@@ -61,6 +61,9 @@ namespace CraigStars
             Mine(game.UniverseSettings, ownedPlanets);
             Produce(game.UniverseSettings, game.Planets);
             Grow(game.UniverseSettings, game.Planets);
+
+            UpdatePlayers(game.UniverseSettings, techStore, game.Players);
+            game.Fleets.ForEach(f => f.ComputeAggregate());
         }
 
         // move fleets
@@ -153,6 +156,21 @@ namespace CraigStars
         void Grow(UniverseSettings settings, List<Planet> planets)
         {
             planets.ForEach(p => p.Population += p.GetGrowthAmount());
+        }
+
+        /// <summary>
+        /// After a turn is generated, update some data on each player (like their current best planetary scanner)
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <param name="techStore"></param>
+        /// <param name="players"></param>
+        void UpdatePlayers(UniverseSettings settings, TechStore techStore, List<Player> players)
+        {
+            players.ForEach(p =>
+            {
+                p.PlanetaryScanner = p.GetBestPlanetaryScanner(techStore);
+                p.Fleets.ForEach(f => f.ComputeAggregate());
+            });
         }
     }
 }

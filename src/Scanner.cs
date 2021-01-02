@@ -9,13 +9,18 @@ namespace CraigStars
     public class Scanner : Node2D
     {
         PackedScene waypointAreaScene;
+        PackedScene scannerCoverageScene;
         MapObject selectedMapObject;
         MapObject commandedMapObject;
         SelectedMapObjectSprite selectedMapObjectSprite;
+        Node2D normalScannersNode;
+        Node2D penScannersNode;
 
         public List<Planet> Planets { get; } = new List<Planet>();
         public List<Fleet> Fleets { get; } = new List<Fleet>();
         public List<WaypointArea> waypointAreas = new List<WaypointArea>();
+        public List<ScannerCoverage> Scanners { get; set; } = new List<ScannerCoverage>();
+        public List<ScannerCoverage> PenScanners { get; set; } = new List<ScannerCoverage>();
 
         public Fleet ActiveFleet
         {
@@ -31,11 +36,22 @@ namespace CraigStars
         Fleet activeFleet;
 
         public Planet ActivePlanet { get; set; }
+        public Player Me { get; set; }
 
         public override void _Ready()
         {
+            // setup the current player
+            Me = PlayersManager.Instance.Me;
+
             waypointAreaScene = ResourceLoader.Load<PackedScene>("res://src/GameObjects/WaypointArea.tscn");
+            scannerCoverageScene = ResourceLoader.Load<PackedScene>("res://src/GameObjects/ScannerCoverage.tscn");
+
+            // get some nodes
             selectedMapObjectSprite = GetNode<SelectedMapObjectSprite>("SelectedMapObjectSprite");
+            normalScannersNode = GetNode<Node2D>("Scanners/Normal");
+            penScannersNode = GetNode<Node2D>("Scanners/Pen");
+
+            // wire up events
             Signals.TurnPassedEvent += OnTurnPassed;
             Signals.MapObjectActivatedEvent += OnMapObjectActivated;
             Signals.MapObjectWaypointAddedEvent += OnMapObjectWaypointAdded;
@@ -51,6 +67,7 @@ namespace CraigStars
         void OnTurnPassed(int year)
         {
             FocusHomeworld();
+            UpdateScanners();
         }
 
         void OnMapObjectActivated(MapObject mapObject)
@@ -97,25 +114,6 @@ namespace CraigStars
             Fleets.ForEach(f => f.Connect("input_event", this, nameof(OnInputEvent), new Godot.Collections.Array() { f }));
 
             CallDeferred(nameof(UpdateViewport));
-        }
-
-        /// <summary>
-        /// Focus on the current player's homeworld
-        /// </summary>
-        void FocusHomeworld()
-        {
-            var homeworld = Planets.Where(p => p.Homeworld && p.Player == PlayersManager.Instance.Me).First();
-            if (homeworld != null)
-            {
-                selectedMapObject = homeworld;
-                commandedMapObject = homeworld;
-
-                selectedMapObject.Select();
-                commandedMapObject.Activate();
-                selectedMapObjectSprite.SelectLarge(commandedMapObject.Position);
-                Signals.PublishMapObjectSelectedEvent(homeworld);
-                Signals.PublishMapObjectActivatedEvent(homeworld);
-            }
         }
 
         void OnInputEvent(Node viewport, InputEvent @event, int shapeIdx, MapObject mapObject)
@@ -228,10 +226,100 @@ namespace CraigStars
         public void UpdateViewport()
         {
             FocusHomeworld();
-
+            UpdateScanners();
             Planets.ForEach(p => p.UpdateSprite());
             Fleets.ForEach(f => f.UpdateSprite());
         }
 
+        #region New Turn functions
+
+        /// <summary>
+        /// Focus on the current player's homeworld
+        /// </summary>
+        void FocusHomeworld()
+        {
+            var homeworld = Planets.Where(p => p.Homeworld && p.Player == PlayersManager.Instance.Me).First();
+            if (homeworld != null)
+            {
+                selectedMapObject = homeworld;
+                commandedMapObject = homeworld;
+
+                selectedMapObject.Select();
+                commandedMapObject.Activate();
+                selectedMapObjectSprite.SelectLarge(commandedMapObject.Position);
+                Signals.PublishMapObjectSelectedEvent(homeworld);
+                Signals.PublishMapObjectActivatedEvent(homeworld);
+            }
+        }
+
+        void UpdateScanners()
+        {
+            // clear out the old scanners
+            Scanners.ForEach(s => s.QueueFree());
+            Scanners.Clear();
+
+            foreach (var planet in Planets)
+            {
+                var range = -1;
+                var rangePen = -1;
+
+                // if we own this planet and it has a scanner, include it
+                if (planet.Player == Me && planet.Scanner && Me.PlanetaryScanner != null)
+                {
+                    range = Me.PlanetaryScanner.ScanRange;
+                    rangePen = Me.PlanetaryScanner.ScanRangePen;
+                }
+
+                foreach (var fleet in planet.OrbitingFleets.Where(f => f.Player == Me))
+                {
+                    range = Math.Max(range, fleet.Aggregate.ScanRange);
+                    rangePen = Math.Max(rangePen, fleet.Aggregate.ScanRangePen);
+                }
+
+                if (range > 0)
+                {
+                    ScannerCoverage scanner = scannerCoverageScene.Instance() as ScannerCoverage;
+                    scanner.Position = planet.Position;
+                    normalScannersNode.AddChild(scanner);
+                    scanner.ScanRange = range;
+                    Scanners.Add(scanner);
+                }
+                if (rangePen > 0)
+                {
+                    ScannerCoverage scanner = scannerCoverageScene.Instance() as ScannerCoverage;
+                    scanner.Position = planet.Position;
+                    penScannersNode.AddChild(scanner);
+                    scanner.ScanRange = rangePen;
+                    scanner.Pen = true;
+                    Scanners.Add(scanner);
+                }
+
+            }
+
+            foreach (var fleet in Fleets.Where(f => f.Player == Me && f.Orbiting == null && f.Aggregate.ScanRange > 0))
+            {
+                var range = fleet.Aggregate.ScanRange;
+                var rangePen = fleet.Aggregate.ScanRangePen;
+                if (range > 0)
+                {
+                    ScannerCoverage scanner = scannerCoverageScene.Instance() as ScannerCoverage;
+                    scanner.Position = fleet.Position;
+                    normalScannersNode.AddChild(scanner);
+                    scanner.ScanRange = range;
+                    Scanners.Add(scanner);
+                }
+                if (rangePen > 0)
+                {
+                    ScannerCoverage scanner = scannerCoverageScene.Instance() as ScannerCoverage;
+                    scanner.Position = fleet.Position;
+                    penScannersNode.AddChild(scanner);
+                    scanner.ScanRange = rangePen;
+                    scanner.Pen = true;
+                    Scanners.Add(scanner);
+                }
+            }
+        }
+
+        #endregion
     }
 }

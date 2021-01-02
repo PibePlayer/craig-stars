@@ -48,7 +48,7 @@ namespace CraigStars
         void GenerateTurn()
         {
             TurnGenerator generator = new TurnGenerator();
-            generator.GenerateTurn(this);
+            generator.GenerateTurn(this, TechStore.Instance);
             Signals.PublishTurnPassedEvent(Year);
         }
     }

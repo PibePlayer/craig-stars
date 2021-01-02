@@ -195,9 +195,9 @@ namespace CraigStars
             Initiative = 1,
             FuelCapacity = 50,
             Slots = new List<TechHullSlot>(new TechHullSlot[] {
-                new TechHullSlot(HullSlotType.Engine, 1, true, 64, 96, 64, 64),
-                new TechHullSlot(HullSlotType.Scanner, 1, false, 192, 96, 64, 64),
-                new TechHullSlot(HullSlotType.General, 1, false, 128, 96, 64, 64)
+                new TechHullSlot(HullSlotType.Engine, 1, true),
+                new TechHullSlot(HullSlotType.Scanner, 1, false),
+                new TechHullSlot(HullSlotType.General, 1, false)
             })
         };
 
@@ -219,6 +219,12 @@ namespace CraigStars
         public static readonly TechPlanetaryScanner Viewer50 = new TechPlanetaryScanner("Viewer 50", new Cost(10, 10, 70, 100), new TechRequirements(), 0, TechCategory.PlanetaryScanner)
         {
             ScanRange = 50,
+            ScanRangePen = 0
+        };
+
+        public static readonly TechPlanetaryScanner Viewer90 = new TechPlanetaryScanner("Viewer 90", new Cost(10, 10, 70, 100), new TechRequirements(electronics: 1), 1, TechCategory.PlanetaryScanner)
+        {
+            ScanRange = 90,
             ScanRangePen = 0
         };
 
@@ -248,7 +254,21 @@ namespace CraigStars
                 EagleEyeScanner,
                 ElephantScanner,
                 PeerlessScanner,
-                RobberBaronScanner
+                RobberBaronScanner,
+
+                // mechanical
+                FuelTank,
+
+                // ship hulls,
+                Scout,
+
+                // starbases
+                SpaceStation,
+
+                // Planetary Scanner
+                Viewer50,
+                Viewer90
+
             });
         }
     }

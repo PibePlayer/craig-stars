@@ -18,7 +18,11 @@ public class UniverseGenerator
         for (var i = 0; i < players.Count; i++)
         {
             var player = players[i];
+
+            // initialize this player
             InitTechLevels(player);
+            player.PlanetaryScanner = player.GetBestPlanetaryScanner(TechStore.Instance);
+
             var homeworld = planets.Find(p => p.Player == null && (ownedPlanets.Count == 0 || ShortestDistanceToPlanets(p, ownedPlanets) > settings.Area / 4));
             player.Homeworld = homeworld;
             MakeHomeworld(settings, player, homeworld, settings.StartingYear);
@@ -51,18 +55,18 @@ public class UniverseGenerator
 
         // add extra planets for this player
         players.ForEach(player =>
-        {
-            for (var extraPlanetNum = 0; extraPlanetNum < settings.StartWithExtraPlanets; extraPlanetNum++)
             {
-                var planet = planets.FirstOrDefault(p => p.Player == null && p.Position.DistanceTo(player.Homeworld.Position) < 100);
-                if (planet != null)
+                for (var extraPlanetNum = 0; extraPlanetNum < settings.StartWithExtraPlanets; extraPlanetNum++)
                 {
-                    MakeExtraWorld(settings, player, planet);
-                    ownedPlanets.Add(planet);
+                    var planet = planets.FirstOrDefault(p => p.Player == null && p.Position.DistanceTo(player.Homeworld.Position) < 100);
+                    if (planet != null)
+                    {
+                        MakeExtraWorld(settings, player, planet);
+                        ownedPlanets.Add(planet);
+                    }
                 }
-            }
 
-        });
+            });
 
         game.Planets.AddRange(planets);
         game.Fleets.AddRange(fleets);
@@ -159,7 +163,7 @@ public class UniverseGenerator
     * @param planetLocs The locations of every planet so far
     * @param offset The offset to check for
     * @return True if this location (or near it) is not already in use
-    */
+*/
     bool IsValidLocation(Vector2 loc, Dictionary<Vector2, bool> planetLocs, int offset)
     {
         float x = loc.x;

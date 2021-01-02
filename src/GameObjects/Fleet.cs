@@ -269,8 +269,52 @@ namespace CraigStars
 
         public void ComputeAggregate()
         {
+            Aggregate.Mass = 0;
+            Aggregate.Shield = 0;
+            Aggregate.CargoCapacity = 0;
+            Aggregate.FuelCapacity = 0;
+            Aggregate.Colonizer = false;
+            Aggregate.Cost = new Cost();
+            Aggregate.SpaceDock = 0;
+
             // compute each token's 
-            Tokens.ForEach(ss => ss.Design.ComputeAggregate(Player));
+            Tokens.ForEach(token =>
+            {
+                token.Design.ComputeAggregate(Player);
+                // cost
+                Cost cost = token.Design.Aggregate.Cost * token.Quantity;
+                Aggregate.Cost += cost;
+
+                // mass
+                Aggregate.Mass += token.Design.Aggregate.Mass * token.Quantity;
+
+                // armor
+                Aggregate.Armor += token.Design.Aggregate.Armor * token.Quantity;
+
+                // shield
+                Aggregate.Shield += token.Design.Aggregate.Shield * token.Quantity;
+
+                // cargo
+                Aggregate.CargoCapacity += token.Design.Aggregate.CargoCapacity * token.Quantity;
+
+                // fuel
+                Aggregate.FuelCapacity += token.Design.Aggregate.FuelCapacity * token.Quantity;
+
+                // colonization
+                if (token.Design.Aggregate.Colonizer)
+                {
+                    Aggregate.Colonizer = true;
+                }
+
+                // We should only have one ship stack with spacdock capabilities, but for this logic just go with the max
+                Aggregate.SpaceDock = Math.Max(Aggregate.SpaceDock, token.Design.Aggregate.SpaceDock);
+
+                Aggregate.ScanRange = Math.Max(Aggregate.ScanRange, token.Design.Aggregate.ScanRange);
+                Aggregate.ScanRangePen = Math.Max(Aggregate.ScanRangePen, token.Design.Aggregate.ScanRangePen);
+
+            });
+
+
         }
     }
 }

@@ -74,6 +74,24 @@ namespace CraigStars
         }
 
         /// <summary>
+        /// Determine if this TechLevel meets a given tech requirements
+        /// </summary>
+        /// <param name="requirements"></param>
+        /// <returns></returns>
+        public bool HasRequiredLevels(TechRequirements requirements)
+        {
+            foreach (TechField field in Enum.GetValues(typeof(TechField)))
+            {
+                if (this[field] < requirements[field])
+                {
+                    return false;
+                }
+            }
+            return true;
+
+        }
+
+        /// <summary>
         /// Get the lowest level field
         /// </summary>
         /// <returns></returns>
@@ -94,6 +112,11 @@ namespace CraigStars
             return lowestField;
         }
 
+        /// <summary>
+        /// Sum up the total number of tech levels in this list.
+        /// This is used for determining research costs
+        /// </summary>
+        /// <returns></returns>
         public int Sum()
         {
             var total = 0;

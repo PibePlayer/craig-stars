@@ -63,5 +63,12 @@ namespace CraigStars
         [Export]
         public Color EnemyColor { get; set; } = new Color("FF0000");
 
+        [Export]
+        public Color ScannerColor { get; set; } = new Color("8B0000");
+
+        [Export]
+        public Color ScannerPenColor { get; set; } = new Color("7F7F00");
+
+
     }
 }

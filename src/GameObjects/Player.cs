@@ -1,3 +1,4 @@
+using CraigStars.Singletons;
 using Godot;
 using System;
 using System.Collections.Generic;
@@ -15,10 +16,21 @@ namespace CraigStars
         public Race Race = new Race();
         public Planet Homeworld { get; set; }
 
+        #region Scanner Data
+
         public List<Planet> Planets { get; set; } = new List<Planet>();
         public List<Fleet> Fleets { get; set; } = new List<Fleet>();
         public List<Fleet> AlienFleets { get; set; } = new List<Fleet>();
         public List<Message> Messages { get; set; } = new List<Message>();
+
+        #endregion
+
+        # region Research
+
+        /// <summary>
+        /// Each player has a certain level of each tech.
+        /// </summary>
+        /// <returns></returns>
         public TechLevel TechLevels = new TechLevel();
 
         /// <summary>
@@ -35,10 +47,17 @@ namespace CraigStars
         public TechField Researching { get; set; } = TechField.Energy;
         public NextResearchField NextResearchField { get; set; } = NextResearchField.SameField;
 
-        public override void _Ready()
-        {
+        #endregion
 
-        }
+        #region Calculated Values
+
+        /// <summary>
+        /// The current PlanetaryScanner tech this player has researched
+        /// </summary>
+        /// <value></value>
+        public TechPlanetaryScanner PlanetaryScanner { get; set; }
+
+        #endregion
 
         /// <summary>
         /// This function will be called recursively until no more levels are passed
@@ -176,6 +195,58 @@ namespace CraigStars
             }
 
             return nextField;
+        }
+
+        /// <summary>
+        /// Returns true if the player has this tech
+        /// </summary>
+        /// <param name="tech">The tech to check requirements for</param>
+        /// <returns>True if this player has access to this tech</returns>
+        public bool HasTech(Tech tech)
+        {
+            TechRequirements requirements = tech.Requirements;
+            if (requirements.PRTRequired != PRT.None && requirements.PRTRequired != Race.PRT)
+            {
+                return false;
+            }
+            if (requirements.PRTDenied != PRT.None && Race.PRT == requirements.PRTDenied)
+            {
+                return false;
+            }
+
+            foreach (LRT lrt in requirements.LRTsRequired)
+            {
+                if (!Race.HasLRT(lrt))
+                {
+                    return false;
+                }
+            }
+
+            foreach (LRT lrt in requirements.LRTsDenied)
+            {
+                if (Race.HasLRT(lrt))
+                {
+                    return false;
+                }
+            }
+
+            // we made it here, if we have the levels, we have the tech
+            return TechLevels.HasRequiredLevels(requirements);
+        }
+
+        /// <summary>
+        /// Get the best planetary scanner this player has access to
+        /// </summary>
+        /// <param name="techStore"></param>
+        /// <returns></returns>
+        public TechPlanetaryScanner GetBestPlanetaryScanner(TechStore techStore)
+        {
+            var planetaryScanners = techStore.TechsByCategory[TechCategory.PlanetaryScanner];
+            // sort from highest to lowest, return the first match
+            planetaryScanners.Sort((t1, t2) => t2.Ranking.CompareTo(t1.Ranking));
+            var tech = planetaryScanners.Find(t => HasTech(t));
+
+            return tech as TechPlanetaryScanner;
         }
 
     }

@@ -27,25 +27,15 @@ namespace CraigStars.Singletons
             instance = this;
         }
 
-        public Texture FindTechTexture(string name, TechCategory category = TechCategory.All, int shipIndex = -1)
+        public Texture FindTexture(Tech tech, int shipIndex = -1)
         {
             Texture texture;
-
-            var key = $"{category.ToString()}/{name}{(shipIndex != -1 ? shipIndex.ToString() : "")}";
-            if (texturesByName.TryGetValue(key, out texture))
-            {
-                return texture;
-            }
 
             // try loading it from the asset path like
             // ResourceLoader.Load("res://Assets/GUI/Tech/Engine/Alpha Drive 8.png")
 
-            var assetPath = $"res://Assets/GUI/Tech/{category}/{name}.png";
+            var assetPath = $"res://Assets/GUI/Tech/{tech.Category}/{tech.Name}.png";
             texture = ResourceLoader.Load<Texture>(assetPath);
-            if (texture != null)
-            {
-                texturesByName[key] = texture;
-            }
 
             return texture;
         }

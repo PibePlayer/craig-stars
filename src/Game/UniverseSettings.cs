@@ -8,6 +8,7 @@ namespace CraigStars
         #region Constants
 
         public static int BuiltInScannerJoaTMultiplier = 20;
+        public static int MaxPopulation = 1000000;
 
         #endregion
 

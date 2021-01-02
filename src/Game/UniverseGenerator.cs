@@ -18,6 +18,7 @@ public class UniverseGenerator
         for (var i = 0; i < players.Count; i++)
         {
             var player = players[i];
+            InitTechLevels(player);
             var homeworld = planets.Find(p => p.Player == null && (ownedPlanets.Count == 0 || ShortestDistanceToPlanets(p, ownedPlanets) > settings.Area / 4));
             player.Homeworld = homeworld;
             MakeHomeworld(settings, player, homeworld, settings.StartingYear);
@@ -119,25 +120,36 @@ public class UniverseGenerator
 
     List<Fleet> GenerateFleets(UniverseSettings settings, Player player, Planet homeworld)
     {
-        var fleets = new List<Fleet>();
+        var fleets = new List<Fleet>(new Fleet[] {
+            CreateFleet(ShipDesigns.LongRangeScount, $"Fleet #1", player, homeworld),
+            CreateFleet(ShipDesigns.LongRangeScount, $"Fleet #2", player, homeworld)
+        });
+
+        return fleets;
+    }
+
+    Fleet CreateFleet(ShipDesign shipDesign, String name, Player player, Planet planet)
+    {
         PackedScene fleetScene = ResourceLoader.Load<PackedScene>("res://src/GameObjects/Fleet.tscn");
 
         var fleet = fleetScene.Instance() as Fleet;
-        fleet.ShipStacks.Add(new ShipToken()
-        {
-            Design = ShipDesigns.LongRangeScount,
-            Quantity = 1
-        });
-        fleet.ShipStacks.ForEach(ss => ss.Design.ComputeAggregate(player));
-        fleet.ComputeAggregate();
+        fleet.Tokens.Add(
+            new ShipToken()
+            {
+                Design = ShipDesigns.LongRangeScount,
+                Quantity = 1
+            }
+        );
+        fleet.Position = planet.Position;
+        fleet.Orbiting = planet;
+        planet.OrbitingFleets.Add(fleet);
+        fleet.ObjectName = name;
         fleet.Player = player;
-        fleet.Position = homeworld.Position;
-        fleet.Orbiting = homeworld;
-        homeworld.OrbitingFleets.Add(fleet);
-        fleet.ObjectName = $"{player.PlayerName} Fleet #1";
-        fleets.Add(fleet);
 
-        return fleets;
+        // aggregate all the design data
+        fleet.ComputeAggregate();
+
+        return fleet;
     }
 
     /**
@@ -316,7 +328,79 @@ public class UniverseGenerator
             temp,
             rad
         );
-
     }
+
+    void InitTechLevels(Player player)
+    {
+        var race = player.Race;
+        switch (race.PRT)
+        {
+            case PRT.HE:
+                break;
+            case PRT.SS:
+                player.TechLevels.Electronics = 5;
+                break;
+            case PRT.WM:
+                player.TechLevels.Weapons = 6;
+                player.TechLevels.Energy = 1;
+                player.TechLevels.Propulsion = 1;
+                break;
+            case PRT.CA:
+                player.TechLevels.Energy = 1;
+                player.TechLevels.Weapons = 1;
+                player.TechLevels.Propulsion = 1;
+                player.TechLevels.Construction = 2;
+                player.TechLevels.Biotechnology = 6;
+                break;
+            case PRT.IS:
+                break;
+            case PRT.SD:
+                player.TechLevels.Propulsion = 2;
+                player.TechLevels.Biotechnology = 2;
+                break;
+            case PRT.PP:
+                player.TechLevels.Energy = 4;
+                break;
+            case PRT.IT:
+                player.TechLevels.Propulsion = 5;
+                player.TechLevels.Construction = 5;
+                break;
+            case PRT.AR:
+                player.TechLevels.Energy = 1;
+                break;
+            case PRT.JoaT:
+                player.TechLevels.Energy = 3;
+                player.TechLevels.Weapons = 3;
+                player.TechLevels.Propulsion = 3;
+                player.TechLevels.Construction = 3;
+                player.TechLevels.Electronics = 3;
+                player.TechLevels.Biotechnology = 3;
+                break;
+        }
+
+        // if a race has Techs costing exra start high, set the start level to 3
+        // for any TechField that is set to research costs extra
+        if (race.TechsStartHigh)
+        {
+            // Jack of All Trades start at 4
+            var costsExtraLevel = race.PRT == PRT.JoaT ? 4 : 3;
+            foreach (TechField field in Enum.GetValues(typeof(TechField)))
+            {
+                var level = player.TechLevels[field];
+                if (race.ResearchCost[field] == ResearchCostLevel.Extra && level < costsExtraLevel)
+                {
+                    player.TechLevels[field] = costsExtraLevel;
+                }
+            }
+        }
+
+        if (race.HasLRT(LRT.IFE) || race.HasLRT(LRT.CE))
+        {
+            // Improved Fuel Efficiency and Cheap Engines increases propulsion by 1
+            player.TechLevels.Propulsion++;
+        }
+    }
+
+
 
 }

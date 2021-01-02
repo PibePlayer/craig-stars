@@ -34,7 +34,7 @@ namespace CraigStars
         Planet orbiting;
 
         public List<Waypoint> Waypoints { get; } = new List<Waypoint>();
-        public List<ShipToken> ShipStacks { get; } = new List<ShipToken>();
+        public List<ShipToken> Tokens { get; } = new List<ShipToken>();
 
         public FleetAggregate Aggregate { get; } = new FleetAggregate();
 
@@ -249,7 +249,7 @@ namespace CraigStars
             int fuelCost = 0;
 
             // compute each ship stack separately
-            foreach (var stack in ShipStacks)
+            foreach (var stack in Tokens)
             {
                 // figure out this ship stack's mass as well as it's proportion of the cargo
                 int mass = stack.Design.Aggregate.Mass * stack.Quantity;
@@ -269,7 +269,8 @@ namespace CraigStars
 
         public void ComputeAggregate()
         {
-
+            // compute each token's 
+            Tokens.ForEach(ss => ss.Design.ComputeAggregate(Player));
         }
     }
 }

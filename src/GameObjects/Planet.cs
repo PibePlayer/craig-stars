@@ -30,7 +30,7 @@ namespace CraigStars
         public ProductionQueue ProductionQueue { get; } = new ProductionQueue();
 
         public int Population { get => Cargo.Population; set { Cargo.Population = value; } }
-        public int PopulationDensity { get => Population > 0 ? Population / GetMaxPopulation() : 0; }
+        public int PopulationDensity { get => Population > 0 ? Population / GetMaxPopulation(Player.Race) : 0; }
 
         public int Mines { get; set; }
         public int MaxMines { get => (Population > 0 && Player != null) ? Population / 10000 * Player.Race.NumMines : 0; }
@@ -75,9 +75,27 @@ namespace CraigStars
         /// TODO: support this later
         /// /// </summary>
         /// <returns></returns>
-        public int GetMaxPopulation()
+        public int GetMaxPopulation(Race race)
         {
-            return 1000000;
+            var factor = 1f;
+
+            if (race.PRT == PRT.JoaT)
+            {
+                factor += .2f;
+            }
+            else if (race.PRT == PRT.HE)
+            {
+                factor = .5f;
+            }
+
+            if (race.HasLRT(LRT.OBRM))
+            {
+                factor += .1f;
+            }
+
+            // get this player's planet habitability
+            var hab = race.GetPlanetHabitability(Hab);
+            return (int)(UniverseSettings.MaxPopulation * factor * hab / 100);
         }
 
         public void Grow()
@@ -94,7 +112,7 @@ namespace CraigStars
             var race = Player?.Race;
             if (race != null)
             {
-                double capacity = (double)(Population / GetMaxPopulation());
+                double capacity = (double)(Population / GetMaxPopulation(race));
                 int popGrowth = (int)((double)(Population) * (race.GrowthRate / 100.0) * ((double)(race.GetPlanetHabitability(Hab)) / 100.0));
 
                 if (capacity > .25)

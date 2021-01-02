@@ -162,7 +162,7 @@ namespace CraigStars
                 if (ShipDesignSlot != null)
                 {
                     hullComponentIcon.Visible = true;
-                    var texture = TextureLoader.Instance.FindTechTexture(ShipDesignSlot.HullComponent.Name, ShipDesignSlot.HullComponent.Category);
+                    var texture = TextureLoader.Instance.FindTexture(ShipDesignSlot.HullComponent);
                     hullComponentIcon.Texture = texture;
                     typeLabel.Visible = false;
                     quantityLabel.Text = $"{ShipDesignSlot.Quantity} of {Quantity}";

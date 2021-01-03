@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Rhino Scanner.png-e955ca4850682aea9306597cdbc71faf.stex"
+path="res://.import/Rhino Scanner.png-f20a08f0c1487a1bdd10d0bfde9f9aec.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/GUI/Tech/Scanner/Rhino Scanner.png"
-dest_files=[ "res://.import/Rhino Scanner.png-e955ca4850682aea9306597cdbc71faf.stex" ]
+source_file="res://assets/gui/tech/Scanner/Rhino Scanner.png"
+dest_files=[ "res://.import/Rhino Scanner.png-f20a08f0c1487a1bdd10d0bfde9f9aec.stex" ]
 
 [params]
 

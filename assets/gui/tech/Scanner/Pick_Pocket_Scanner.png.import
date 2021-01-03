@@ -9,7 +9,7 @@ metadata={
 
 [deps]
 
-source_file="res://assets/GUI/Tech/Scanner/Pick_Pocket_Scanner.png"
+source_file="res://assets/gui/tech/Scanner/Pick_Pocket_Scanner.png"
 dest_files=[ "res://.import/Pick_Pocket_Scanner.png-1808a5d7ddc197bd220ebf4e6f5ea5d7.stex" ]
 
 [params]

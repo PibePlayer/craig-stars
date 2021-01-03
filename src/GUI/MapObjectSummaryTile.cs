@@ -23,8 +23,8 @@ namespace CraigStars
 
         public override void _Ready()
         {
-            planetTexture = ResourceLoader.Load<Texture>("res://assets/GUI/Planet/Planet01.jpg");
-            fleetTexture = ResourceLoader.Load<Texture>("res://assets/GUI/Tech/ShipHull/Scout0004.png");
+            planetTexture = ResourceLoader.Load<Texture>("res://assets/gui/planet/Planet01.jpg");
+            fleetTexture = ResourceLoader.Load<Texture>("res://assets/gui/tech/ShipHull/Scout0004.png");
 
             nameLabel = FindNode("Name") as Label;
             textureRect = FindNode("TextureRect") as TextureRect;

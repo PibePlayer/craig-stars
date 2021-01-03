@@ -87,11 +87,11 @@ namespace CraigStars
                         child.QueueFree();
                     }
                 }
-                // var hullComponentsScene = ResourceLoader.Load<PackedScene>("res://src/GUI/ShipDesigner/Hulls/ScoutHullComponents.tscn");
-                // var hullComponents = hullComponentsScene.Instance() as HullComponents;
-                // hullComponents.Hull = Hull;
-                // hullComponents.ShipDesign = ShipDesign;
-                // hullComponentsContainer.AddChild(hullComponents);
+                var hullComponentsScene = ResourceLoader.Load<PackedScene>("res://src/GUI/ShipDesigner/Hulls/ScoutHullComponents.tscn");
+                var hullComponents = hullComponentsScene.Instance() as HullComponents;
+                hullComponents.Hull = Hull;
+                hullComponents.ShipDesign = ShipDesign;
+                hullComponentsContainer.AddChild(hullComponents);
 
                 if (shipDesign != null)
                 {

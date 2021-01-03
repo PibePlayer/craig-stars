@@ -30,9 +30,9 @@ namespace CraigStars.Singletons
             Texture texture;
 
             // try loading it from the asset path like
-            // ResourceLoader.Load("res://assets/GUI/Tech/Engine/Alpha Drive 8.png")
+            // ResourceLoader.Load("res://assets/gui/tech/Engine/Alpha Drive 8.png")
 
-            var assetPath = $"res://assets/GUI/Tech/{tech.Category}/{tech.Name}.png";
+            var assetPath = $"res://assets/gui/tech/{tech.Category}/{tech.Name}.png";
             texture = ResourceLoader.Load<Texture>(assetPath);
 
             return texture;

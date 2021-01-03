@@ -1,9 +1,11 @@
 [gd_scene load_steps=6 format=2]
 
-[ext_resource path="res://assets/Scanner/fleet.png" type="Texture" id=1]
+[ext_resource path="res://assets/scanner/fleet.png" type="Texture" id=1]
 [ext_resource path="res://src/GameObjects/Fleet.cs" type="Script" id=2]
-[ext_resource path="res://assets/Scanner/fleet-active.png" type="Texture" id=3]
+[ext_resource path="res://assets/scanner/fleet-active.png" type="Texture" id=3]
 [ext_resource path="res://src/GameObjects/FleetSprite.cs" type="Script" id=4]
+
+
 
 
 

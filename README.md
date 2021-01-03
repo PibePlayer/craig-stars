@@ -18,6 +18,8 @@ This version still isn't playable. In order to make a playable game, this clone 
 - Waypoint Orders (to colonize planets)
 - The rest of the Command pane tiles (for fleet management, waypoints, etc)
 - Menu system (Main menu, in game exit menu, Multiplayer lobby, etc)
+- Battles
+- Bombing
 
 # Little TODOs
 

@@ -40,8 +40,12 @@ namespace CraigStars
         public OwnerAlly OwnerAllyState { get; set; } = OwnerAlly.Unknown;
 
         public int Id { get; set; }
+        public Guid Guid { get; set; } = Guid.NewGuid();
         public String ObjectName { get; set; } = "";
         public Player Player { get; set; }
+        public String RaceName { get; set; }
+        public String RacePluralName { get; set; }
+
         public bool OwnedByMe
         {
             get

@@ -15,6 +15,17 @@ namespace CraigStars
             Rad = rad;
         }
 
+        /// <summary>
+        /// Copy values from an existing Hab
+        /// </summary>
+        /// <param name="hab"></param>
+        public void Copy(Hab hab)
+        {
+            Grav = hab.Grav;
+            Temp = hab.Temp;
+            Rad = hab.Rad;
+        }
+
         public int this[int index]
         {
             get

@@ -13,6 +13,20 @@ namespace CraigStars
 
         public int Total { get => Ironium + Boranium + Germanium + Population; }
 
+        /// <summary>
+        /// Copy values from an existing cargo
+        /// </summary>
+        /// <param name="cargo"></param>
+        public void Copy(Cargo cargo)
+        {
+            base.Copy(cargo);
+            Ironium = cargo.Ironium;
+            Boranium = cargo.Boranium;
+            Germanium = cargo.Germanium;
+            Population = cargo.Population;
+            Fuel = cargo.Fuel;
+        }
+
         public static Cargo operator +(Cargo a, Mineral b)
         {
             return new Cargo(

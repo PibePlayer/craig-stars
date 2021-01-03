@@ -7,6 +7,7 @@ namespace CraigStars
 {
     public class Planet : MapObject
     {
+        public const int Unexplored = -1;
         public enum Orbiting
         {
             None,
@@ -43,8 +44,8 @@ namespace CraigStars
         public bool Homeworld { get; set; }
         public bool Scanner { get; set; }
 
-        public int ReportAge { get; set; } = 0; // = -1; // -1 means unexplored
-        public bool Explored { get => ReportAge != -1; }
+        public int ReportAge { get; set; } = Unexplored;
+        public bool Explored { get => ReportAge != Unexplored; }
 
         public List<Fleet> OrbitingFleets { get; set; } = new List<Fleet>();
         #endregion
@@ -68,6 +69,36 @@ namespace CraigStars
         internal override List<MapObject> GetPeers()
         {
             return OrbitingFleets.Where(f => f.OwnedByMe).ToList<MapObject>();
+        }
+
+        /// <summary>
+        /// Update this planet report with data from the game planet
+        /// If this is our planet, update all stats
+        /// </summary>
+        /// <param name="planet">The game planet to copy data from</param>
+        public void UpdatePlanetReport(Planet planet)
+        {
+            MineralConcentration.Copy(planet.MineralConcentration);
+            Hab.Copy(planet.Hab);
+            Population = planet.Population;
+            ReportAge = 0;
+        }
+
+        /// <summary>
+        /// Update this player's copy of their own planet, for the UI
+        /// </summary>
+        /// <param name="planet"></param>
+        public void UpdatePlayerPlanet(Planet planet)
+        {
+            Cargo.Copy(planet.Cargo);
+            MineYears.Copy(planet.MineYears);
+            Mines = planet.Mines;
+            Factories = planet.Mines;
+            Defenses = planet.Mines;
+            Scanner = planet.Scanner;
+            Homeworld = planet.Homeworld;
+
+            ProductionQueue.Copy(planet.ProductionQueue);
         }
 
         /// <summary>

@@ -18,5 +18,11 @@ namespace CraigStars
         public int ScanRangePen { get; set; }
         public bool Colonizer { get; set; }
         public int SpaceDock { get; set; }
+
+        /// <summary>
+        /// Does this fleet have scanning capabilities? 
+        /// </summary>
+        /// <value></value>
+        public bool Scanner { get => ScanRange != TechHullComponent.NoScanner; }
     }
 }

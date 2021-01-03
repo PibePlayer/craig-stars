@@ -106,14 +106,14 @@ namespace CraigStars
                     shieldsAmountLabel.Text = $"{(shipDesign.Aggregate.Shield > 0 ? shipDesign.Aggregate.Shield.ToString() : "")}dp";
                     cloakJamAmountLabel.Text = $"0/0"; // TODO: support cloak
                     initiativeMovesAmountLabel.Text = $"0/1"; // TODO: support moves
-                    if (shipDesign.Aggregate.ScanRangePen == TechHullComponent.NoScanner)
-                    {
-                        scannerRangeLabel.Visible = scannerRangeAmountLabel.Visible = false;
-                    }
-                    else
+                    if (shipDesign.Aggregate.Scanner)
                     {
                         scannerRangeLabel.Visible = scannerRangeAmountLabel.Visible = true;
                         scannerRangeAmountLabel.Text = $"{(shipDesign.Aggregate.ScanRange >= 0 ? shipDesign.Aggregate.ScanRange.ToString() : "")}/{(shipDesign.Aggregate.ScanRangePen >= 0 ? shipDesign.Aggregate.ScanRangePen.ToString() : "")}";
+                    }
+                    else
+                    {
+                        scannerRangeLabel.Visible = scannerRangeAmountLabel.Visible = false;
                     }
 
                     shieldsLabel.Visible = true;

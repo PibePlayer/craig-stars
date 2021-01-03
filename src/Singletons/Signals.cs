@@ -10,21 +10,21 @@ namespace CraigStars.Singletons
     /// </summary>
     public class Signals : Node
     {
-        public delegate void TurnPassed(int year);
-        public static event TurnPassed TurnPassedEvent;
+        public delegate void YearUpdate(int year);
+        public static event YearUpdate TurnPassedEvent;
 
         #region Viewport Events
 
         public static event Action<MapObject> MapObjectSelectedEvent;
         public static event Action<MapObject> MapObjectActivatedEvent;
-        public static event Action<MapObject> MapObjectWaypointAddedEvent;
         public static event Action<Fleet, Waypoint> FleetWaypointAddedEvent;
         public static event Action<Waypoint> WaypointSelectedEvent;
 
         #endregion
 
-        #region Dialog Events
+        #region UI Events
 
+        public static event Action<Player> SubmitTurnEvent;
         public static event Action<Planet> ChangeProductionQueuePressedEvent;
 
         #endregion
@@ -36,7 +36,7 @@ namespace CraigStars.Singletons
         public delegate void PreStartGame(List<Player> players);
         public static event PreStartGame PreStartGameEvent;
 
-        public static event Action PostStartGameEvent;
+        public static event YearUpdate PostStartGameEvent;
 
         #endregion
 
@@ -73,11 +73,6 @@ namespace CraigStars.Singletons
             PreStartGameEvent?.Invoke(players);
         }
 
-        public static void PublishPostStartGameEvent()
-        {
-            PostStartGameEvent?.Invoke();
-        }
-
         /// <summary>
         /// Publish a player updated event for any listeners
         /// </summary>
@@ -112,6 +107,11 @@ namespace CraigStars.Singletons
             PlayerMessageEvent?.Invoke(message);
         }
 
+        public static void PublishPostStartGameEvent(int year)
+        {
+            PostStartGameEvent?.Invoke(year);
+        }
+
         public static void PublishTurnPassedEvent(int year)
         {
             TurnPassedEvent?.Invoke(year);
@@ -125,11 +125,6 @@ namespace CraigStars.Singletons
         public static void PublishMapObjectActivatedEvent(MapObject mapObject)
         {
             MapObjectActivatedEvent?.Invoke(mapObject);
-        }
-
-        public static void PublishMapObjectWaypointAddedEvent(MapObject mapObject)
-        {
-            MapObjectWaypointAddedEvent?.Invoke(mapObject);
         }
 
         public static void PublishFleetWaypointAddedEvent(Fleet fleet, Waypoint waypoint)
@@ -152,6 +147,11 @@ namespace CraigStars.Singletons
         public static void PublishChangeProductionQueuePressedEvent(Planet planet)
         {
             ChangeProductionQueuePressedEvent?.Invoke(planet);
+        }
+
+        public static void PublishSubmitTurnEvent(Player player)
+        {
+            SubmitTurnEvent?.Invoke(player);
         }
 
         #endregion

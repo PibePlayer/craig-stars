@@ -1,3 +1,5 @@
+using Godot;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using CraigStars.Singletons;
@@ -6,6 +8,22 @@ namespace CraigStars
 {
     public class TurnGenerator
     {
+        /// <summary>
+        /// Helper class for sorting scanners
+        /// </summary>
+        public class Scanner
+        {
+            public Vector2 Position { get; set; }
+            public int Range { get; set; }
+            public int RangePen { get; set; }
+            public Scanner(Vector2 position, int range = 0, int rangePen = 0)
+            {
+                Position = position;
+                Range = range;
+                RangePen = rangePen;
+            }
+        }
+
         PlanetProducer planetProducer = new PlanetProducer();
 
         /// <summary>
@@ -62,8 +80,18 @@ namespace CraigStars
             Produce(game.UniverseSettings, game.Planets);
             Grow(game.UniverseSettings, game.Planets);
 
-            UpdatePlayers(game.UniverseSettings, techStore, game.Players);
+        }
+
+        /// <summary>
+        /// Make sure each player has up to date information about the world
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="techStore"></param>
+        public void UpdatePlayerReports(Game game, TechStore techStore)
+        {
             game.Fleets.ForEach(f => f.ComputeAggregate());
+            Scan(game.Year, techStore, game.Players, game.Planets, game.Fleets, game.MineralPackets, game.MineFields);
+            UpdatePlayers(game.UniverseSettings, techStore, game.Players);
         }
 
         // move fleets
@@ -157,6 +185,104 @@ namespace CraigStars
         {
             planets.ForEach(p => p.Population += p.GetGrowthAmount());
         }
+
+        /// <summary>
+        /// For each player, discover new planets, fleets, minefields, packets, etc
+        /// </summary>
+        /// <param name="players"></param>
+        /// <param name="planets"></param>
+        /// <param name="fleets"></param>
+        /// <param name="mineralPackets"></param>
+        /// <param name="mineFields"></param>
+        void Scan(int year, TechStore techStore, List<Player> players, List<Planet> planets, List<Fleet> fleets, List<MineralPacket> mineralPackets, List<MineField> mineFields)
+        {
+            foreach (var player in players)
+            {
+                // clear out old fleets
+                // we rebuild this list each turn
+                player.Fleets.Clear();
+                player.Planets.ForEach(p => p.OrbitingFleets.Clear());
+
+                // increase the report age. We'll reset it to 0
+                // if we scan it
+                player.Planets.Where(p => p.ReportAge != Planet.Unexplored).Select(p => p.ReportAge++);
+
+                // build a list of scanners for this player
+                var scanners = new List<Scanner>();
+                var planetaryScanner = player.GetBestPlanetaryScanner(techStore);
+
+                foreach (var planet in planets.Where(p => p.Player == player && p.Scanner))
+                {
+                    // find the best scanner at this location, whether fleet or planet
+                    var scanner = new Scanner(planet.Position, planetaryScanner.ScanRange, planetaryScanner.ScanRangePen);
+                    foreach (var fleet in planet.OrbitingFleets.Where(f => f.Player == player && f.Aggregate.Scanner))
+                    {
+                        scanner.Range = Math.Max(scanner.Range, fleet.Aggregate.ScanRange);
+                        scanner.RangePen = Math.Max(scanner.RangePen, fleet.Aggregate.ScanRangePen);
+                    }
+                    // square these ranges, because we are using
+                    // the faster DistanceSquaredTo method to compare distances
+                    scanner.Range *= scanner.Range;
+                    scanner.RangePen *= scanner.RangePen;
+                    scanners.Add(scanner);
+                }
+
+                // find all our fleets that are out and about
+                foreach (var fleet in fleets.Where(f => f.Player == player && f.Aggregate.Scanner && (f.Orbiting == null || f.Orbiting.Player != player)))
+                {
+                    scanners.Add(new Scanner(fleet.Position, fleet.Aggregate.ScanRange, fleet.Aggregate.ScanRangePen));
+                }
+
+                // go through each planet and update its report if
+                // we scanned it
+                foreach (var planet in planets)
+                {
+                    // we own this planet, update the report
+                    if (planet.Player == player)
+                    {
+                        player.UpdateReport(planet);
+                        player.UpdatePlayerPlanet(planet);
+                        continue;
+                    }
+
+                    foreach (var scanner in scanners)
+                    {
+                        if (scanner.RangePen >= scanner.Position.DistanceSquaredTo(planet.Position))
+                        {
+                            player.UpdateReport(planet);
+                        }
+                    }
+                }
+
+                foreach (var fleet in fleets)
+                {
+                    // we own this fleet, update the report
+                    if (fleet.Player == player)
+                    {
+                        player.AddFleetReport(fleet, true);
+                        continue;
+                    }
+
+                    foreach (var scanner in scanners)
+                    {
+                        // if we pen scanned this, update the report
+                        if (scanner.RangePen >= scanner.Position.DistanceSquaredTo(fleet.Position))
+                        {
+                            // update the fleet report with pen scanners
+                            player.AddFleetReport(fleet, true);
+                            continue;
+                        }
+
+                        // if we aren't orbiting a planet, we can be seen with regular scanners
+                        if (fleet.Orbiting == null && scanner.Range >= scanner.Position.DistanceSquaredTo(fleet.Position))
+                        {
+                            player.AddFleetReport(fleet, false);
+                        }
+                    }
+                }
+            }
+        }
+
 
         /// <summary>
         /// After a turn is generated, update some data on each player (like their current best planetary scanner)

@@ -5,7 +5,6 @@ namespace CraigStars
 {
     public class ProductionQueue
     {
-        public Planet Planet { get; set; }
         public Cost Allocated { get; set; } = new Cost();
         public List<ProductionQueueItem> Items { get; } = new List<ProductionQueueItem>();
 
@@ -15,5 +14,12 @@ namespace CraigStars
         /// </summary>
         /// <value></value>
         public int LeftoverResources { get; set; }
+
+        public void Copy(ProductionQueue productionQueue)
+        {
+            Allocated.Copy(productionQueue.Allocated);
+            Items.Clear();
+            Items.AddRange(productionQueue.Items);
+        }
     }
 }

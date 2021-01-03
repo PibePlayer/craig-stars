@@ -36,12 +36,14 @@ namespace CraigStars
             prevButton.Connect("pressed", this, nameof(OnPrevButtonPressed));
 
             Signals.TurnPassedEvent += OnTurnPassed;
+            Signals.PostStartGameEvent += OnTurnPassed;
             UpdateControls();
         }
 
         public override void _ExitTree()
         {
             Signals.TurnPassedEvent -= OnTurnPassed;
+            Signals.PostStartGameEvent -= OnTurnPassed;
         }
 
         void OnNextButtonPressed()

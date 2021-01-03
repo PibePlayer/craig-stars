@@ -21,6 +21,7 @@ public class UniverseGenerator
 
             // initialize this player
             InitTechLevels(player);
+            InitPlayerReports(player, planets);
             player.PlanetaryScanner = player.GetBestPlanetaryScanner(TechStore.Instance);
 
             var homeworld = planets.Find(p => p.Player == null && (ownedPlanets.Count == 0 || ShortestDistanceToPlanets(p, ownedPlanets) > settings.Area / 4));
@@ -88,7 +89,6 @@ public class UniverseGenerator
     List<Planet> GeneratePlanets(UniverseSettings settings)
     {
         var planets = new List<Planet>();
-        PackedScene planetScene = ResourceLoader.Load<PackedScene>("res://src/GameObjects/Planet.tscn");
         int width, height;
         width = height = settings.Area;
 
@@ -110,7 +110,7 @@ public class UniverseGenerator
 
             // add a new planet
             planetLocs[loc] = true;
-            Planet planet = planetScene.Instance() as Planet;
+            Planet planet = new Planet();
             RandomizePlanet(settings, planet);
             planet.Id = i + 1;
             planet.ObjectName = names[i];
@@ -134,9 +134,9 @@ public class UniverseGenerator
 
     Fleet CreateFleet(ShipDesign shipDesign, String name, Player player, Planet planet)
     {
-        PackedScene fleetScene = ResourceLoader.Load<PackedScene>("res://src/GameObjects/Fleet.tscn");
 
-        var fleet = fleetScene.Instance() as Fleet;
+
+        var fleet = new Fleet();
         fleet.Tokens.Add(
             new ShipToken()
             {
@@ -146,9 +146,11 @@ public class UniverseGenerator
         );
         fleet.Position = planet.Position;
         fleet.Orbiting = planet;
+        fleet.Waypoints.Add(new Waypoint(fleet.Orbiting));
         planet.OrbitingFleets.Add(fleet);
         fleet.ObjectName = name;
         fleet.Player = player;
+        fleet.Id = player.Fleets.Count + 1;
 
         // aggregate all the design data
         fleet.ComputeAggregate();
@@ -156,14 +158,13 @@ public class UniverseGenerator
         return fleet;
     }
 
-    /**
-    * Return true if the location is not already in (or close to another planet) planet_locs
-    * 
-    * @param loc The location to check
-    * @param planetLocs The locations of every planet so far
-    * @param offset The offset to check for
-    * @return True if this location (or near it) is not already in use
-*/
+    /// <summary>
+    /// Return true if the location is not already in (or close to another planet) planet_locs
+    /// </summary>
+    /// <param name="loc">The location to check</param>
+    /// <param name="planetLocs">The locations of every planet so far</param>
+    /// <param name="offset">The offset to check for</param>
+    /// <returns>True if this location (or near it) is not already in use</returns>
     bool IsValidLocation(Vector2 loc, Dictionary<Vector2, bool> planetLocs, int offset)
     {
         float x = loc.x;
@@ -377,7 +378,7 @@ public class UniverseGenerator
                 player.TechLevels.Weapons = 3;
                 player.TechLevels.Propulsion = 3;
                 player.TechLevels.Construction = 3;
-                player.TechLevels.Electronics = 3;
+                player.TechLevels.Electronics = 13;
                 player.TechLevels.Biotechnology = 3;
                 break;
         }
@@ -405,6 +406,27 @@ public class UniverseGenerator
         }
     }
 
+    /// <summary>
+    /// Initialize the player's planet reports and for a new game generation
+    /// </summary>
+    /// <param name="player"></param>
+    /// <param name="planets"></param>
+    void InitPlayerReports(Player player, List<Planet> planets)
+    {
+        var planetScene = ResourceLoader.Load<PackedScene>("res://src/GameObjects/Planet.tscn");
+        planets.ForEach(planet =>
+        {
+            var planetReport = planetScene.Instance() as Planet;
+            planetReport.Position = planet.Position;
+            planetReport.Guid = planet.Guid;
+            planetReport.Id = planet.Id;
+            planetReport.ObjectName = planet.ObjectName;
+            planetReport.ReportAge = Planet.Unexplored;
 
+            player.Planets.Add(planetReport);
+            // build each players dictionary of planets by id
+            player.PlanetsByGuid = player.Planets.ToLookup(p => p.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
+        });
+    }
 
 }

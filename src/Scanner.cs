@@ -54,35 +54,31 @@ namespace CraigStars
             // wire up events
             Signals.TurnPassedEvent += OnTurnPassed;
             Signals.MapObjectActivatedEvent += OnMapObjectActivated;
-            Signals.MapObjectWaypointAddedEvent += OnMapObjectWaypointAdded;
         }
 
         public override void _ExitTree()
         {
             Signals.TurnPassedEvent -= OnTurnPassed;
             Signals.MapObjectActivatedEvent -= OnMapObjectActivated;
-            Signals.MapObjectWaypointAddedEvent -= OnMapObjectWaypointAdded;
         }
 
         void OnTurnPassed(int year)
         {
-            FocusHomeworld();
-            UpdateScanners();
+
+            Fleets.ForEach(f => { RemoveChild(f); f.QueueFree(); });
+            Fleets.Clear();
+            ActiveFleet = null;
+            ActivePlanet = null;
+
+            // update all the sprites
+            CallDeferred(nameof(AddFleetsToViewport));
+            CallDeferred(nameof(UpdateViewport));
         }
 
         void OnMapObjectActivated(MapObject mapObject)
         {
             ActiveFleet = mapObject as Fleet;
             ActivePlanet = mapObject as Planet;
-        }
-
-        void OnMapObjectWaypointAdded(MapObject mapObject)
-        {
-            if (ActiveFleet != null)
-            {
-                var waypoint = ActiveFleet.AddWaypoint(mapObject);
-                AddWaypointArea(waypoint);
-            }
         }
 
         /// <summary>
@@ -103,15 +99,14 @@ namespace CraigStars
             AddChild(waypointArea);
         }
 
-        public void AddMapObjects(Game game)
+        public void AddMapObjects(Player player)
         {
-            Planets.AddRange(game.Planets);
-            Fleets.AddRange(game.Fleets);
+            Planets.AddRange(player.Planets);
             Planets.ForEach(p => AddChild(p));
-            Fleets.ForEach(f => AddChild(f));
 
             Planets.ForEach(p => p.Connect("input_event", this, nameof(OnInputEvent), new Godot.Collections.Array() { p }));
-            Fleets.ForEach(f => f.Connect("input_event", this, nameof(OnInputEvent), new Godot.Collections.Array() { f }));
+
+            AddFleetsToViewport();
 
             CallDeferred(nameof(UpdateViewport));
         }
@@ -223,6 +218,16 @@ namespace CraigStars
             }
         }
 
+        void AddFleetsToViewport()
+        {
+            var player = PlayersManager.Instance.Me;
+
+            // add in new fleets
+            Fleets.AddRange(player.Fleets);
+            Fleets.ForEach(f => AddChild(f));
+            Fleets.ForEach(f => f.Connect("input_event", this, nameof(OnInputEvent), new Godot.Collections.Array() { f }));
+        }
+
         public void UpdateViewport()
         {
             FocusHomeworld();
@@ -238,7 +243,7 @@ namespace CraigStars
         /// </summary>
         void FocusHomeworld()
         {
-            var homeworld = Planets.Where(p => p.Homeworld && p.Player == PlayersManager.Instance.Me).First();
+            var homeworld = Planets.Where(p => p.Homeworld && p.Player == PlayersManager.Instance.Me).FirstOrDefault();
             if (homeworld != null)
             {
                 selectedMapObject = homeworld;

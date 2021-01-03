@@ -174,9 +174,9 @@ namespace CraigStars.Singletons
         }
 
         [RemoteSync]
-        public void PostStartGame()
+        public void PostStartGame(int year)
         {
-            Signals.PublishPostStartGameEvent();
+            Signals.PublishPostStartGameEvent(year);
         }
 
         #region Game Events

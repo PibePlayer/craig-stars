@@ -43,7 +43,7 @@ namespace CraigStars
 
         public override void UpdateSprite(Player player, Planet planet)
         {
-            var ownerAllyState = planet.ReportAge == -1 ? MapObject.OwnerAlly.Unknown : MapObject.OwnerAlly.Known;
+            var ownerAllyState = planet.ReportAge == Planet.Unexplored ? MapObject.OwnerAlly.Unknown : MapObject.OwnerAlly.Known;
             var state = planet.State;
             var hasActivePeer = planet.HasActivePeer();
 

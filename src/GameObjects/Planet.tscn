@@ -9,9 +9,6 @@
 [ext_resource path="res://assets/Scanner/planet-orbiting-selected.png" type="Texture" id=10]
 [ext_resource path="res://src/GameObjects/PlanetSprite.cs" type="Script" id=13]
 
-
-
-
 [sub_resource type="CircleShape2D" id=1]
 radius = 16.0
 

@@ -9,8 +9,8 @@ namespace CraigStars
 {
     public class Fleet : MapObject
     {
-        public Color WaypointLineColor { get; set; } = new Color("0900FF");
-        public Color CommandedWaypointLineColor { get; set; } = new Color("0900FF").Lightened(.2f);
+        public static Color WaypointLineColor { get; set; } = new Color("0900FF");
+        public static Color CommandedWaypointLineColor { get; set; } = new Color("0900FF").Lightened(.2f);
 
         FleetSprite sprite;
         CollisionShape2D collisionShape;
@@ -46,22 +46,7 @@ namespace CraigStars
             sprite = GetNode<FleetSprite>("Sprite");
             collisionShape = GetNode<CollisionShape2D>("CollisionShape2D");
             collisionShape.Disabled = Orbiting != null;
-
-            // set our starting waypoint
-            Waypoints.Clear();
             waypointsLine = GetNode<Line2D>("Waypoints");
-            if (Orbiting != null)
-            {
-                Waypoints.Add(new Waypoint(Orbiting));
-            }
-            else
-            {
-                Waypoints.Add(new Waypoint()
-                {
-                    Position = Position
-                });
-            }
-
         }
 
         public override void _ExitTree()
@@ -187,13 +172,12 @@ namespace CraigStars
                     // move this fleet closer to the next waypoint
                     var direction = (wp1.Position - Position).Normalized();
                     wp0.Target = null;
-                    sprite.LookAt(wp1.Position);
+                    // sprite.LookAt(wp1.Position);
 
                     Position += direction * dist;
                     wp0.Position = Position;
                 }
             }
-            UpdateWaypointsLine();
         }
 
         /// <summary>
@@ -276,6 +260,8 @@ namespace CraigStars
             Aggregate.Colonizer = false;
             Aggregate.Cost = new Cost();
             Aggregate.SpaceDock = 0;
+            Aggregate.ScanRange = 0;
+            Aggregate.ScanRangePen = 0;
 
             // compute each token's 
             Tokens.ForEach(token =>
@@ -314,6 +300,26 @@ namespace CraigStars
 
             });
 
+
+        }
+
+        /// <summary>
+        /// Update a player's copy of this fleet
+        /// </summary>
+        /// <param name="fleet"></param>
+        public void UpdatePlayerFleet(Fleet fleet)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Update the report for this fleet
+        /// </summary>
+        /// <param name="fleet"></param>
+        /// <param name="penScanned">True if we penscanned it</param>
+        public void UpdateReport(Fleet fleet, bool penScanned)
+        {
+            Position = fleet.Position;
 
         }
     }

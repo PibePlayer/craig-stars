@@ -105,7 +105,7 @@ namespace CraigStars
             player.Messages.Add(new Message(MessageType.FleetScrapped, text, planet));
         }
 
-        public static void planetDiscovered(Player player, Planet planet)
+        public static void PlanetDiscovered(Player player, Planet planet)
         {
             long habValue = player.Race.GetPlanetHabitability(planet.Hab);
             String text;

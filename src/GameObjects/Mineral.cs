@@ -18,6 +18,17 @@ namespace CraigStars
         public static Mineral Empty { get => empty; }
         static Mineral empty = new Mineral();
 
+        /// <summary>
+        /// Copy values from an existing mineral
+        /// </summary>
+        /// <param name="mineral"></param>
+        public void Copy(Mineral mineral)
+        {
+            Ironium = mineral.Ironium;
+            Boranium = mineral.Boranium;
+            Germanium = mineral.Germanium;
+        }
+
         public int this[int index]
         {
             get

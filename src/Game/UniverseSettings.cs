@@ -24,7 +24,10 @@ namespace CraigStars
         /// <value></value>
         public int StartWithExtraPlanets { get; set; } = 1;
 
-        public int NumPlayers = 2;
+        /// <summary>
+        /// This is just a temporary property for development.
+        /// </summary>
+        public int NumPlayers = 1;
 
         public int StartingYear { get; set; } = 2400;
         public Size Size { get; set; } = Size.Small;

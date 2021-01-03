@@ -32,10 +32,12 @@ namespace CraigStars
             UniverseGenerator generator = new UniverseGenerator();
             generator.Generate(this, UniverseSettings, PlayersManager.Instance.Players);
 
+            UpdateDictionaries();
 
             // update our player information as if we'd just generated a new turn
             TurnGenerator turnGenerator = new TurnGenerator();
             turnGenerator.UpdatePlayerReports(this, TechStore);
+
 
             // add the universe to the viewport
             Scanner = FindNode("Scanner") as Scanner;

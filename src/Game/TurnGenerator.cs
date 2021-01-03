@@ -230,7 +230,7 @@ namespace CraigStars
                 // find all our fleets that are out and about
                 foreach (var fleet in fleets.Where(f => f.Player == player && f.Aggregate.Scanner && (f.Orbiting == null || f.Orbiting.Player != player)))
                 {
-                    scanners.Add(new Scanner(fleet.Position, fleet.Aggregate.ScanRange, fleet.Aggregate.ScanRangePen));
+                    scanners.Add(new Scanner(fleet.Position, fleet.Aggregate.ScanRange * fleet.Aggregate.ScanRange, fleet.Aggregate.ScanRangePen * fleet.Aggregate.ScanRangePen));
                 }
 
                 // go through each planet and update its report if

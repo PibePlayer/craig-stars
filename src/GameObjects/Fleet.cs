@@ -47,6 +47,7 @@ namespace CraigStars
             collisionShape = GetNode<CollisionShape2D>("CollisionShape2D");
             collisionShape.Disabled = Orbiting != null;
             waypointsLine = GetNode<Line2D>("Waypoints");
+            UpdateWaypointsLine();
         }
 
         public override void _ExitTree()

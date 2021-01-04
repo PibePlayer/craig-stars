@@ -89,7 +89,6 @@ namespace CraigStars
             if (panel != null)
             {
                 var color = GUIColors.WarpColor;
-                label.Modulate = Colors.White;
                 if (WarpSpeed > 0 && WarpSpeed < MaxWarpFactor)
                 {
                     label.Text = $"Warp {WarpSpeed}";
@@ -97,7 +96,6 @@ namespace CraigStars
                     {
                         // TODO: Don't hardcode this damage
                         color = GUIColors.WarpDamageColor;
-                        label.Modulate = Colors.Black;
                     }
                 }
                 else if (WarpSpeed == 0)
@@ -108,7 +106,6 @@ namespace CraigStars
                 {
                     label.Text = $"Use Stargate";
                     color = GUIColors.StargateColor;
-                    label.Modulate = Colors.Black;
                 }
                 // get the width of our rectangle
                 // it's a percentage of the speed, minus the line widths

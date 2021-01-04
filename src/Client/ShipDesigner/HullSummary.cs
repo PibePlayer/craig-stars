@@ -102,7 +102,7 @@ namespace CraigStars
                     costGrid.Cost = shipDesign.Aggregate.Cost;
                     maxFuelAmountLabel.Text = $"{shipDesign.Aggregate.FuelCapacity}mg";
                     armorAmountLabel.Text = $"{shipDesign.Aggregate.Armor}dp";
-                    massLabel.Text = $"{shipDesign.Aggregate.Mass}kt";
+                    massLabel.Text = $"{shipDesign.Aggregate.Mass}kT";
                     shieldsAmountLabel.Text = $"{(shipDesign.Aggregate.Shield > 0 ? shipDesign.Aggregate.Shield.ToString() : "")}dp";
                     cloakJamAmountLabel.Text = $"0/0"; // TODO: support cloak
                     initiativeMovesAmountLabel.Text = $"0/1"; // TODO: support moves
@@ -134,7 +134,7 @@ namespace CraigStars
                     costGrid.Cost = hull.Cost;
                     maxFuelAmountLabel.Text = $"{hull.FuelCapacity}mg";
                     armorAmountLabel.Text = $"{hull.Armor}dp";
-                    massLabel.Text = $"{hull.Mass}kt";
+                    massLabel.Text = $"{hull.Mass}kT";
 
                     shieldsLabel.Visible = false;
                     shieldsAmountLabel.Visible = false;

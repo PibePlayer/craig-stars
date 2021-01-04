@@ -1,8 +1,8 @@
 [gd_scene load_steps=2 format=2]
 
-[ext_resource path="res://src/Client/CostGrid.cs" type="Script" id=1]
+[ext_resource path="res://src/Client/CargoGrid.cs" type="Script" id=1]
 
-[node name="CostGrid" type="GridContainer"]
+[node name="CargoGrid" type="GridContainer"]
 margin_right = 235.0
 margin_bottom = 68.0
 size_flags_horizontal = 3
@@ -19,7 +19,7 @@ size_flags_horizontal = 3
 custom_colors/font_color = Color( 0.0705882, 0.0392157, 0.996078, 1 )
 text = "Ironium"
 
-[node name="IroniumCost" type="Label" parent="."]
+[node name="IroniumAmount" type="Label" parent="."]
 margin_left = 213.0
 margin_right = 235.0
 margin_bottom = 14.0
@@ -33,7 +33,7 @@ size_flags_horizontal = 3
 custom_colors/font_color = Color( 0.0313726, 0.505882, 0.0392157, 1 )
 text = "Boranium"
 
-[node name="BoraniumCost" type="Label" parent="."]
+[node name="BoraniumAmount" type="Label" parent="."]
 margin_left = 213.0
 margin_top = 18.0
 margin_right = 235.0
@@ -48,23 +48,23 @@ size_flags_horizontal = 3
 custom_colors/font_color = Color( 0.996078, 1, 0, 1 )
 text = "Germanium"
 
-[node name="GermaniumCost" type="Label" parent="."]
+[node name="GermaniumAmount" type="Label" parent="."]
 margin_left = 213.0
 margin_top = 36.0
 margin_right = 235.0
 margin_bottom = 50.0
 text = "2kT"
 
-[node name="Resources" type="Label" parent="."]
+[node name="Colonists" type="Label" parent="."]
 margin_top = 54.0
 margin_right = 209.0
 margin_bottom = 68.0
 size_flags_horizontal = 3
-text = "Resources"
+text = "Colonists"
 
-[node name="ResourcesCost" type="Label" parent="."]
+[node name="ColonistsAmount" type="Label" parent="."]
 margin_left = 213.0
 margin_top = 54.0
 margin_right = 235.0
 margin_bottom = 68.0
-text = "8"
+text = "8kT"

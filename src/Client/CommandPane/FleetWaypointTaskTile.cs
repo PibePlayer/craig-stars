@@ -6,7 +6,7 @@ using CraigStars.Singletons;
 
 namespace CraigStars
 {
-    public class FleetWaypointTask : FleetTile
+    public class FleetWaypointTaskTile : FleetTile
     {
         OptionButton waypointTask;
         Waypoint ActiveWaypoint { get; set; }

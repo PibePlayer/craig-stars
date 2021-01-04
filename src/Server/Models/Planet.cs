@@ -13,7 +13,8 @@ namespace CraigStars
 
         public Hab Hab { get; set; } = new Hab();
         public Mineral MineralConcentration { get; set; } = new Mineral();
-        public int Population { get => Cargo.Population; set { Cargo.Population = value; } }
+        public int Population { get => population; set { population = value; Cargo.Colonists = value / 100; } }
+        int population;
         public List<Fleet> OrbitingFleets { get; set; } = new List<Fleet>();
 
         #endregion

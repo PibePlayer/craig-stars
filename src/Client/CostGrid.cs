@@ -77,9 +77,9 @@ namespace CraigStars
         {
             if (ironiumCostLabel != null)
             {
-                ironiumCostLabel.Text = $"{Ironium}kt";
-                boraniumCostLabel.Text = $"{Boranium}kt";
-                germaniumCostLabel.Text = $"{Germanium}kt";
+                ironiumCostLabel.Text = $"{Ironium}kT";
+                boraniumCostLabel.Text = $"{Boranium}kT";
+                germaniumCostLabel.Text = $"{Germanium}kT";
                 resourcesCostLabel.Text = $"{Resources}";
             }
         }

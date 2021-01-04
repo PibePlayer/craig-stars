@@ -8,7 +8,6 @@ An eponymous clone of the 4X game Stars!
 
 This version still isn't playable. In order to make a playable game, this clone requires:
 
-- Player specific knowledge (discover planets when scanned, discover enemy fleets when scanned)
 - Scanner Views (both planetary and fleet based)
 - Research Menu
 - Ship Designer

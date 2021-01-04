@@ -4,14 +4,14 @@ namespace CraigStars
     {
         public Cargo(int ironium = 0, int boranium = 0, int germaninum = 0, int population = 0, int fuel = 0) : base(ironium, boranium, germaninum)
         {
-            Population = population;
+            Colonists = population;
             Fuel = fuel;
         }
 
-        public int Population { get; set; }
+        public int Colonists { get; set; }
         public int Fuel { get; set; }
 
-        public int Total { get => Ironium + Boranium + Germanium + Population; }
+        public int Total { get => Ironium + Boranium + Germanium + Colonists; }
 
         /// <summary>
         /// Copy values from an existing cargo
@@ -23,7 +23,7 @@ namespace CraigStars
             Ironium = cargo.Ironium;
             Boranium = cargo.Boranium;
             Germanium = cargo.Germanium;
-            Population = cargo.Population;
+            Colonists = cargo.Colonists;
             Fuel = cargo.Fuel;
         }
 

@@ -12,8 +12,8 @@ namespace CraigStars
         #region Planet Stats
 
         public Cargo Cargo { get; } = new Cargo();
+        public int Fuel { get => Cargo.Fuel; set => Cargo.Fuel = value; }
         public Planet Orbiting { get; set; }
-
         public List<Waypoint> Waypoints { get; } = new List<Waypoint>();
         public List<ShipToken> Tokens { get; } = new List<ShipToken>();
 
@@ -39,7 +39,7 @@ namespace CraigStars
 
                 // get the cost for the fleet
                 int fuelCost = GetFuelCost(wp1.WarpFactor, dist);
-                Cargo.Fuel -= fuelCost;
+                Fuel -= fuelCost;
 
                 // assuming we move at all, make sure we are no longer orbiting any planets
                 if (dist > 0 && Orbiting != null)
@@ -97,7 +97,7 @@ namespace CraigStars
             {
                 return 0;
             }
-            // 1 mg of fuel will move 200 kt of weight 1 LY at a Fuel Usage Number of 100.
+            // 1 mg of fuel will move 200kT of weight 1 LY at a Fuel Usage Number of 100.
             // Number of engines doesn't matter. Neither number of ships with the same engine.
 
             double distanceCeiling = Math.Ceiling(dist); // rounding to next integer gives best graph fit

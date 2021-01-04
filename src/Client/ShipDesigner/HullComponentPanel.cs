@@ -184,7 +184,7 @@ namespace CraigStars
                     {
                         if (Type == HullSlotType.Cargo || Type == HullSlotType.SpaceDock)
                         {
-                            quantityLabel.Text = $"{Quantity}kt";
+                            quantityLabel.Text = $"{Quantity}kT";
                         }
                         else
                         {

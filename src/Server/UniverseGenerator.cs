@@ -154,6 +154,7 @@ public class UniverseGenerator
 
         // aggregate all the design data
         fleet.ComputeAggregate();
+        fleet.Fuel = fleet.Aggregate.FuelCapacity;
 
         return fleet;
     }

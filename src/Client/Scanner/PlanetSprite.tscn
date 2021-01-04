@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://src/Client/Scanner/PlanetSprite.cs" type="Script" id=1]
 [ext_resource path="res://assets/scanner/planet-orbiting-selected.png" type="Texture" id=2]
@@ -7,8 +7,7 @@
 [ext_resource path="res://assets/scanner/planet-inhabited.png" type="Texture" id=5]
 [ext_resource path="res://assets/scanner/planet-commanded.png" type="Texture" id=6]
 [ext_resource path="res://assets/scanner/planet-known.png" type="Texture" id=7]
-
-
+[ext_resource path="res://src/Client/GUIColors.tres" type="Resource" id=8]
 
 [sub_resource type="CircleShape2D" id=1]
 radius = 16.0
@@ -16,6 +15,7 @@ radius = 16.0
 [node name="Planet" type="Area2D"]
 z_index = 10
 script = ExtResource( 1 )
+GUIColors = ExtResource( 8 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource( 1 )

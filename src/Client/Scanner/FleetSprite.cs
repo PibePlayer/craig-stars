@@ -9,8 +9,8 @@ namespace CraigStars
 
     public class FleetSprite : MapObjectSprite
     {
-        public static Color WaypointLineColor { get; set; } = new Color("0900FF");
-        public static Color CommandedWaypointLineColor { get; set; } = new Color("0900FF").Lightened(.2f);
+        [Export]
+        public GUIColors GUIColors { get; set; } = new GUIColors();
 
         /// <summary>
         /// Convenience method so the code looks like Fleet.Something instead of MapObject.Something
@@ -160,11 +160,11 @@ namespace CraigStars
             // update the waypoints line 
             if (State == ScannerState.Active)
             {
-                waypointsLine.DefaultColor = CommandedWaypointLineColor;
+                waypointsLine.DefaultColor = GUIColors.CommandedWaypointLineColor;
             }
             else
             {
-                waypointsLine.DefaultColor = WaypointLineColor;
+                waypointsLine.DefaultColor = GUIColors.WaypointLineColor;
             }
         }
     }

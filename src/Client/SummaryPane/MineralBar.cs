@@ -6,7 +6,8 @@ namespace CraigStars
     [Tool]
     public class MineralBar : Control
     {
-        GUIColors guiColors = new GUIColors();
+        [Export]
+        public GUIColors GUIColors { get; set; } = new GUIColors();
 
         [Export]
         public MineralType Type
@@ -63,12 +64,6 @@ namespace CraigStars
 
         public override void _Ready()
         {
-            guiColors = GD.Load("res://src/Client/GUIColors.tres") as GUIColors;
-            if (guiColors == null)
-            {
-                guiColors = new GUIColors();
-            }
-
             Update();
         }
 
@@ -79,16 +74,16 @@ namespace CraigStars
             switch (Type)
             {
                 case MineralType.Ironium:
-                    concentrationColor = guiColors.IroniumConcentrationColor;
-                    barColor = guiColors.IroniumBarColor;
+                    concentrationColor = GUIColors.IroniumConcentrationColor;
+                    barColor = GUIColors.IroniumBarColor;
                     break;
                 case MineralType.Boranium:
-                    concentrationColor = guiColors.BoraniumConcentrationColor;
-                    barColor = guiColors.BoraniumBarColor;
+                    concentrationColor = GUIColors.BoraniumConcentrationColor;
+                    barColor = GUIColors.BoraniumBarColor;
                     break;
                 case MineralType.Germanium:
-                    concentrationColor = guiColors.GermaniumConcentrationColor;
-                    barColor = guiColors.GermaniumBarColor;
+                    concentrationColor = GUIColors.GermaniumConcentrationColor;
+                    barColor = GUIColors.GermaniumBarColor;
                     break;
             }
 

@@ -9,7 +9,7 @@ namespace CraigStars
     public class PlanetSprite : MapObjectSprite
     {
         [Export]
-        GUIColors guiColors = new GUIColors();
+        public GUIColors GUIColors { get; set; } = new GUIColors();
 
         public enum Orbiting
         {
@@ -46,12 +46,6 @@ namespace CraigStars
         public override void _Ready()
         {
             base._Ready();
-
-            guiColors = GD.Load("res://src/Client/GUIColors.tres") as GUIColors;
-            if (guiColors == null)
-            {
-                guiColors = new GUIColors();
-            }
 
             known = GetNode<Sprite>("Sprite/Known");
             unknown = GetNode<Sprite>("Sprite/Unknown");
@@ -129,36 +123,36 @@ namespace CraigStars
                     if (hasActivePeer || state == ScannerState.Active)
                     {
                         inhabitedCommanded.Visible = true;
-                        inhabitedCommanded.Modulate = guiColors.OwnedColor;
+                        inhabitedCommanded.Modulate = GUIColors.OwnedColor;
                     }
                     else
                     {
                         inhabited.Visible = true;
-                        inhabited.Modulate = guiColors.OwnedColor;
+                        inhabited.Modulate = GUIColors.OwnedColor;
                     }
                     break;
                 case ScannerOwnerAlly.Friend:
                     if (hasActivePeer || state == ScannerState.Active)
                     {
                         inhabitedCommanded.Visible = true;
-                        inhabitedCommanded.Modulate = guiColors.FriendColor;
+                        inhabitedCommanded.Modulate = GUIColors.FriendColor;
                     }
                     else
                     {
                         inhabited.Visible = true;
-                        inhabited.Modulate = guiColors.FriendColor;
+                        inhabited.Modulate = GUIColors.FriendColor;
                     }
                     break;
                 case ScannerOwnerAlly.Enemy:
                     if (hasActivePeer || state == ScannerState.Active)
                     {
                         inhabitedCommanded.Visible = true;
-                        inhabitedCommanded.Modulate = guiColors.EnemyColor;
+                        inhabitedCommanded.Modulate = GUIColors.EnemyColor;
                     }
                     else
                     {
                         inhabited.Visible = true;
-                        inhabited.Modulate = guiColors.EnemyColor;
+                        inhabited.Modulate = GUIColors.EnemyColor;
                     }
                     break;
             }

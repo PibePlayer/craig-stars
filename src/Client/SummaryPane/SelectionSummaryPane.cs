@@ -6,6 +6,8 @@ namespace CraigStars
 {
     public class SelectionSummaryPane : MarginContainer
     {
+        [Export]
+        public GUIColors GUIColors { get; set; } = new GUIColors();
 
         public MapObjectSprite MapObject
         {
@@ -19,7 +21,6 @@ namespace CraigStars
 
         Race race;
 
-        GUIColors guiColors = new GUIColors();
         Control planetContainer;
         Control unknownPlanetContainer;
         Label nameLabel;
@@ -36,12 +37,6 @@ namespace CraigStars
 
         public override void _Ready()
         {
-            guiColors = GD.Load("res://src/Client/GUIColors.tres") as GUIColors;
-            if (guiColors == null)
-            {
-                guiColors = new GUIColors();
-            }
-
             planetContainer = FindNode("PlanetContainer") as Control;
             unknownPlanetContainer = FindNode("UnknownPlanetContainer") as Control;
             nameLabel = FindNode("Name") as Label;
@@ -105,11 +100,11 @@ namespace CraigStars
                         // TODO: Add terraforming
                         if (habValue > 0)
                         {
-                            valueLabel.Modulate = guiColors.HabitablePlanetTextColor;
+                            valueLabel.Modulate = GUIColors.HabitablePlanetTextColor;
                         }
                         else
                         {
-                            valueLabel.Modulate = guiColors.UninhabitablePlanetTextColor;
+                            valueLabel.Modulate = GUIColors.UninhabitablePlanetTextColor;
                         }
 
                         if (planet.ReportAge == 0)

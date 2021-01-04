@@ -6,7 +6,8 @@ namespace CraigStars
     [Tool]
     public class HabBar : HBoxContainer
     {
-        GUIColors guiColors = new GUIColors();
+        [Export]
+        public GUIColors GUIColors { get; set; } = new GUIColors();
 
         [Export]
         public HabType Type
@@ -79,18 +80,13 @@ namespace CraigStars
             habValueLabel = FindNode("HabValueLabel") as Label;
             separator = FindNode("Separator") as HSeparator;
             hab = FindNode("Hab") as Control;
-            guiColors = GD.Load("res://src/Client/GUIColors.tres") as GUIColors;
-            if (guiColors == null)
-            {
-                guiColors = new GUIColors();
-            }
 
             UpdateControls();
         }
 
         public override void _Draw()
         {
-            if (hab == null || guiColors == null)
+            if (hab == null || GUIColors == null)
             {
                 // these are null when the scene is initialized
                 // GD.PrintErr("Hab controls are null");
@@ -102,16 +98,16 @@ namespace CraigStars
             switch (type)
             {
                 case HabType.Gravity:
-                    barColor = guiColors.GravColor;
-                    valueColor = guiColors.GravValueColor;
+                    barColor = GUIColors.GravColor;
+                    valueColor = GUIColors.GravValueColor;
                     break;
                 case HabType.Temperature:
-                    barColor = guiColors.TempColor;
-                    valueColor = guiColors.TempValueColor;
+                    barColor = GUIColors.TempColor;
+                    valueColor = GUIColors.TempValueColor;
                     break;
                 case HabType.Radiation:
-                    barColor = guiColors.RadColor;
-                    valueColor = guiColors.RadValueColor;
+                    barColor = GUIColors.RadColor;
+                    valueColor = GUIColors.RadValueColor;
                     break;
             }
             Rect2 rect = new Rect2(

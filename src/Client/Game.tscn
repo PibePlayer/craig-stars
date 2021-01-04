@@ -1,0 +1,148 @@
+[gd_scene load_steps=12 format=2]
+
+[ext_resource path="res://src/Scanner.tscn" type="PackedScene" id=1]
+[ext_resource path="res://src/Client/Scanner/ScannerSelectedStats.tscn" type="PackedScene" id=2]
+[ext_resource path="res://src/Client/Game.cs" type="Script" id=3]
+[ext_resource path="res://src/Client/CommandPane/PlanetStatusTile.tscn" type="PackedScene" id=5]
+[ext_resource path="res://src/Client/CommandPane/PlanetMineralsOnHandTile.tscn" type="PackedScene" id=6]
+[ext_resource path="res://src/Client/CommandPane/PlanetProductionTile.tscn" type="PackedScene" id=7]
+[ext_resource path="res://src/Client/MessagesPane/MessagesPane.tscn" type="PackedScene" id=8]
+[ext_resource path="res://src/Client/CommandPane/MapObjectSummaryTile.tscn" type="PackedScene" id=9]
+[ext_resource path="res://src/Client/CommandPane/FleetWaypointsTile.tscn" type="PackedScene" id=10]
+[ext_resource path="res://src/Client/SummaryPane/SelectionSummaryPane.tscn" type="PackedScene" id=11]
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0.145098, 0.145098, 0.168627, 1 )
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color( 0.223529, 0.227451, 0.266667, 1 )
+expand_margin_left = 5.0
+expand_margin_right = 5.0
+expand_margin_top = 5.0
+expand_margin_bottom = 5.0
+
+[node name="Game" type="Node2D"]
+script = ExtResource( 3 )
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="GUI" type="Control" parent="CanvasLayer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_min_size = Vector2( 514, 0 )
+mouse_filter = 2
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/GUI"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/GUI/VBoxContainer"]
+margin_right = 1440.0
+margin_bottom = 908.0
+mouse_filter = 2
+size_flags_vertical = 3
+custom_constants/separation = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Controls" type="MarginContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer"]
+margin_right = 514.0
+margin_bottom = 908.0
+rect_min_size = Vector2( 500, 0 )
+size_flags_vertical = 3
+custom_constants/margin_right = 5
+custom_constants/margin_top = 5
+custom_constants/margin_left = 5
+custom_constants/margin_bottom = 5
+
+[node name="Panel" type="Panel" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls"]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 509.0
+margin_bottom = 903.0
+custom_styles/panel = SubResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls"]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 509.0
+margin_bottom = 903.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer"]
+margin_right = 504.0
+margin_bottom = 538.0
+size_flags_vertical = 3
+
+[node name="LeftCommandPane" type="VBoxContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/HBoxContainer"]
+margin_right = 250.0
+margin_bottom = 538.0
+rect_min_size = Vector2( 250, 0 )
+
+[node name="MapObjectSummaryTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 9 )]
+
+[node name="FleetWaypointsTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 10 )]
+visible = false
+margin_top = 204.0
+margin_right = 250.0
+margin_bottom = 436.0
+
+[node name="PlanetMineralsOnHandTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 6 )]
+margin_top = 204.0
+margin_right = 250.0
+margin_bottom = 344.0
+
+[node name="PlanetStatusTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 5 )]
+margin_top = 348.0
+margin_right = 250.0
+margin_bottom = 538.0
+
+[node name="RightCommandPange" type="VBoxContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/HBoxContainer"]
+margin_left = 254.0
+margin_right = 504.0
+margin_bottom = 538.0
+rect_min_size = Vector2( 250, 0 )
+
+[node name="PlanetProductionTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 7 )]
+margin_right = 250.0
+margin_bottom = 166.0
+
+[node name="MessagesPane" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer" instance=ExtResource( 8 )]
+margin_top = 542.0
+margin_right = 504.0
+margin_bottom = 690.0
+
+[node name="SelectionSummaryPane" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer" instance=ExtResource( 11 )]
+margin_top = 694.0
+margin_right = 504.0
+margin_bottom = 898.0
+theme = null
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer"]
+margin_left = 514.0
+margin_right = 1440.0
+margin_bottom = 908.0
+mouse_filter = 2
+size_flags_horizontal = 3
+alignment = 2
+
+[node name="ScannerSelectedStats" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/VBoxContainer" instance=ExtResource( 2 )]
+margin_top = 856.0
+margin_bottom = 908.0
+
+[node name="Scanner" parent="." instance=ExtResource( 1 )]
+position = Vector2( 520, 0 )

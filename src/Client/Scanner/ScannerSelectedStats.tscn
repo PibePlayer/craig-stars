@@ -1,0 +1,70 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://src/Client/TileTheme.tres" type="Theme" id=1]
+[ext_resource path="res://src/Client/Scanner/ScannerSelectedStats.cs" type="Script" id=2]
+
+
+
+[node name="ScannerSelectedStats" type="MarginContainer"]
+margin_top = 866.0
+margin_right = 926.0
+margin_bottom = 900.0
+theme = ExtResource( 1 )
+custom_constants/margin_left = 8
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Panel" type="Panel" parent="."]
+margin_left = 8.0
+margin_top = 10.0
+margin_right = 916.0
+margin_bottom = 42.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+margin_left = 8.0
+margin_top = 10.0
+margin_right = 916.0
+margin_bottom = 42.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+margin_right = 908.0
+margin_bottom = 14.0
+
+[node name="IdLabel" type="Label" parent="VBoxContainer/HBoxContainer"]
+margin_right = 75.0
+margin_bottom = 14.0
+rect_min_size = Vector2( 75, 0 )
+text = "ID: #12"
+
+[node name="XLabel" type="Label" parent="VBoxContainer/HBoxContainer"]
+margin_left = 79.0
+margin_right = 154.0
+margin_bottom = 14.0
+rect_min_size = Vector2( 75, 0 )
+text = "X: 1234"
+
+[node name="YLabel" type="Label" parent="VBoxContainer/HBoxContainer"]
+margin_left = 158.0
+margin_right = 233.0
+margin_bottom = 14.0
+rect_min_size = Vector2( 75, 0 )
+text = "X: 2345"
+
+[node name="NameLabel" type="Label" parent="VBoxContainer/HBoxContainer"]
+margin_left = 237.0
+margin_right = 908.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+text = "Allen"
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer"]
+margin_top = 18.0
+margin_right = 908.0
+margin_bottom = 32.0
+
+[node name="DistanceLabel" type="Label" parent="VBoxContainer/HBoxContainer2"]
+margin_right = 908.0
+margin_bottom = 14.0
+size_flags_horizontal = 3

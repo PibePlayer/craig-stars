@@ -1,0 +1,27 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://src/Client/GUIColors.cs" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+GravColor = Color( 0.00784314, 0, 0.521569, 1 )
+TempColor = Color( 0.545098, 0, 0, 1 )
+RadColor = Color( 0, 0.505882, 0, 1 )
+GravValueColor = Color( 0.0352941, 0, 1, 1 )
+TempValueColor = Color( 1, 0, 0, 1 )
+RadValueColor = Color( 0, 1, 0, 1 )
+HabitablePlanetTextColor = Color( 0, 0.505882, 0, 1 )
+UninhabitablePlanetTextColor = Color( 0.545098, 0, 0, 1 )
+IroniumBarColor = Color( 0.0352941, 0, 1, 1 )
+BoraniumBarColor = Color( 0, 1, 0, 1 )
+GermaniumBarColor = Color( 1, 1, 0, 1 )
+IroniumConcentrationColor = Color( 0.00784314, 0, 0.521569, 1 )
+BoraniumConcentrationColor = Color( 0, 0.505882, 0, 1 )
+GermaniumConcentrationColor = Color( 0.498039, 0.498039, 0, 1 )
+WaypointLineColor = Color( 0.0352941, 0, 1, 1 )
+SelectedWaypointLineColor = Color( 0.228235, 0.2, 1, 1 )
+OwnedColor = Color( 0, 1, 0, 1 )
+FriendColor = Color( 1, 1, 0, 1 )
+EnemyColor = Color( 1, 0, 0, 1 )
+ScannerColor = Color( 0.545098, 0, 0, 1 )
+ScannerPenColor = Color( 0.498039, 0.498039, 0, 1 )

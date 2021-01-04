@@ -46,10 +46,10 @@ namespace CraigStars
             // setup the current player
             Me = PlayersManager.Instance.Me;
 
-            waypointAreaScene = ResourceLoader.Load<PackedScene>("res://src/GameObjects/WaypointArea.tscn");
-            scannerCoverageScene = ResourceLoader.Load<PackedScene>("res://src/GameObjects/ScannerCoverage.tscn");
-            planetScene = ResourceLoader.Load<PackedScene>("res://src/GameObjects/PlanetSprite.tscn");
-            fleetScene = ResourceLoader.Load<PackedScene>("res://src/GameObjects/FleetSprite.tscn");
+            waypointAreaScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/WaypointArea.tscn");
+            scannerCoverageScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/ScannerCoverage.tscn");
+            planetScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/PlanetSprite.tscn");
+            fleetScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/FleetSprite.tscn");
 
             // get some nodes
             selectedMapObjectSprite = GetNode<SelectedMapObjectSprite>("SelectedMapObjectSprite");

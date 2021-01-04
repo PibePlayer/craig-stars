@@ -1,0 +1,46 @@
+[gd_scene load_steps=9 format=2]
+
+[ext_resource path="res://src/Client/Scanner/PlanetSprite.cs" type="Script" id=1]
+[ext_resource path="res://assets/scanner/planet-orbiting-selected.png" type="Texture" id=2]
+[ext_resource path="res://assets/scanner/planet-unknown.png" type="Texture" id=3]
+[ext_resource path="res://assets/scanner/planet-orbiting.png" type="Texture" id=4]
+[ext_resource path="res://assets/scanner/planet-inhabited.png" type="Texture" id=5]
+[ext_resource path="res://assets/scanner/planet-commanded.png" type="Texture" id=6]
+[ext_resource path="res://assets/scanner/planet-known.png" type="Texture" id=7]
+
+
+
+[sub_resource type="CircleShape2D" id=1]
+radius = 16.0
+
+[node name="Planet" type="Area2D"]
+z_index = 10
+script = ExtResource( 1 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource( 1 )
+
+[node name="Sprite" type="Node2D" parent="."]
+
+[node name="Known" type="Sprite" parent="Sprite"]
+visible = false
+texture = ExtResource( 7 )
+
+[node name="Unknown" type="Sprite" parent="Sprite"]
+texture = ExtResource( 3 )
+
+[node name="Inhabited" type="Sprite" parent="Sprite"]
+visible = false
+texture = ExtResource( 5 )
+
+[node name="InhabitedCommanded" type="Sprite" parent="Sprite"]
+visible = false
+texture = ExtResource( 6 )
+
+[node name="Orbiting" type="Sprite" parent="Sprite"]
+visible = false
+texture = ExtResource( 4 )
+
+[node name="OrbitingActive" type="Sprite" parent="Sprite"]
+visible = false
+texture = ExtResource( 2 )

@@ -59,6 +59,7 @@ namespace CraigStars
             // wire up events
             Signals.TurnPassedEvent += OnTurnPassed;
             Signals.MapObjectActivatedEvent += OnMapObjectActivated;
+            Signals.WaypointAddedEvent += OnWaypointAdded;
         }
 
         public override void _ExitTree()
@@ -88,6 +89,17 @@ namespace CraigStars
             waypointAreas.ForEach(wpa => { wpa.QueueFree(); });
             waypointAreas.Clear();
             ActiveFleet?.Fleet?.Waypoints.ForEach(wp => AddWaypointArea(wp));
+        }
+
+        /// <summary>
+        /// When a waypoint is added, add an area for it so we can
+        /// select it
+        /// </summary>
+        /// <param name="fleet"></param>
+        /// <param name="waypoint"></param>
+        void OnWaypointAdded(Fleet fleet, Waypoint waypoint)
+        {
+            AddWaypointArea(waypoint);
         }
 
         void AddWaypointArea(Waypoint waypoint)

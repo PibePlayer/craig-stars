@@ -49,9 +49,10 @@ namespace CraigStars
         {
         }
 
-        public Waypoint(MapObject target)
+        public Waypoint(MapObject target, int warpFactor = 0)
         {
             Target = target;
+            WarpFactor = warpFactor;
         }
 
         /// <summary>

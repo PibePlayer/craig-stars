@@ -20,7 +20,29 @@ namespace CraigStars
             {
                 waypointTask.AddItem(GetLabelForWaypointTask(task));
             }
+
+            waypointTask.Connect("item_selected", this, nameof(OnWaypointTaskItemSelected));
             Signals.WaypointSelectedEvent += OnWaypointSelected;
+        }
+
+        public override void _ExitTree()
+        {
+            base._Ready();
+            Signals.WaypointSelectedEvent -= OnWaypointSelected;
+        }
+
+        void OnWaypointSelected(Waypoint waypoint)
+        {
+            ActiveWaypoint = waypoint;
+            UpdateControls();
+        }
+
+        void OnWaypointTaskItemSelected(int index)
+        {
+            if (ActiveWaypoint != null && index >= 0 && index < Enum.GetValues(typeof(WaypointTask)).Length)
+            {
+                ActiveWaypoint.Task = (WaypointTask)index;
+            }
         }
 
         string GetLabelForWaypointTask(WaypointTask task)
@@ -43,17 +65,6 @@ namespace CraigStars
 
         }
 
-        public override void _ExitTree()
-        {
-            base._Ready();
-            Signals.WaypointSelectedEvent -= OnWaypointSelected;
-        }
-
-        void OnWaypointSelected(Waypoint waypoint)
-        {
-            ActiveWaypoint = waypoint;
-            UpdateControls();
-        }
 
         protected override void UpdateControls()
         {

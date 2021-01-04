@@ -12,7 +12,8 @@ public class FleetWaypointsTile : FleetTile
     Label nextWaypoint;
     Label nextWaypointLabel;
     Label distance;
-    Label warpFactor;
+    Label warpFactorText;
+    WarpFactor warpFactor;
     Label travelTime;
     Label estimatedFuelUsage;
 
@@ -27,7 +28,8 @@ public class FleetWaypointsTile : FleetTile
         nextWaypoint = FindNode("NextWaypoint") as Label;
         nextWaypointLabel = FindNode("NextWaypointLabel") as Label;
         distance = FindNode("Distance") as Label;
-        warpFactor = FindNode("WarpFactor") as Label;
+        warpFactorText = FindNode("WarpFactorText") as Label;
+        warpFactor = FindNode("WarpFactor") as WarpFactor;
         travelTime = FindNode("TravelTime") as Label;
         selectedWaypointGrid = FindNode("SelectedWaypointGrid") as Control;
         estimatedFuelUsage = FindNode("EstimatedFuelUsage") as Label;
@@ -37,14 +39,16 @@ public class FleetWaypointsTile : FleetTile
 
         waypoints.Connect("item_selected", this, nameof(OnItemSelected));
 
-        Signals.FleetWaypointAddedEvent += OnFleetWaypointAdded;
+
+        warpFactor.WarpSpeedChangedEvent += OnWarpSpeedChanged;
+        Signals.WaypointAddedEvent += OnWaypointAdded;
         Signals.WaypointSelectedEvent += OnWaypointSelected;
         Signals.WaypointDeletedEvent += OnWaypointDeleted;
     }
 
     public override void _ExitTree()
     {
-        Signals.FleetWaypointAddedEvent -= OnFleetWaypointAdded;
+        Signals.WaypointAddedEvent -= OnWaypointAdded;
         Signals.WaypointSelectedEvent -= OnWaypointSelected;
         Signals.WaypointDeletedEvent -= OnWaypointDeleted;
     }
@@ -58,7 +62,7 @@ public class FleetWaypointsTile : FleetTile
         UpdateControls();
     }
 
-    void OnFleetWaypointAdded(Fleet fleet, Waypoint waypoint)
+    void OnWaypointAdded(Fleet fleet, Waypoint waypoint)
     {
         ActiveWaypoint = waypoint;
         UpdateControls();
@@ -69,6 +73,12 @@ public class FleetWaypointsTile : FleetTile
         ActiveWaypoint = waypoint;
         UpdateControls();
     }
+
+    void OnWarpSpeedChanged(int warpSpeed)
+    {
+        ActiveWaypoint.WarpFactor = warpSpeed;
+    }
+
 
     void OnItemSelected(int index)
     {
@@ -123,7 +133,9 @@ public class FleetWaypointsTile : FleetTile
                     comingFromLabel.Visible = false;
                     comingFrom.Visible = false;
                     nextWaypoint.Text = $"{to.TargetName}";
-                    warpFactor.Text = $"{to.WarpFactor}";
+                    warpFactorText.Visible = true;
+                    warpFactor.Visible = false;
+                    warpFactorText.Text = $"{to.WarpFactor}";
                 }
                 else
                 {
@@ -135,8 +147,9 @@ public class FleetWaypointsTile : FleetTile
                     comingFrom.Visible = true;
                     comingFrom.Text = $"{from.TargetName}";
 
-                    // TODO: make a warp control
-                    warpFactor.Text = $"{to.WarpFactor}";
+                    warpFactorText.Visible = false;
+                    warpFactor.Visible = true;
+                    warpFactor.WarpSpeed = to.WarpFactor;
                 }
 
                 var waypointDistance = Math.Abs(from.Position.DistanceTo(to.Position));

@@ -93,6 +93,10 @@ namespace CraigStars
         /// <return> The amount of mg of fuel used</return>
         internal int GetFuelCost(int warpFactor, int mass, double dist, double ifeFactor, TechEngine engine)
         {
+            if (warpFactor == 0)
+            {
+                return 0;
+            }
             // 1 mg of fuel will move 200 kt of weight 1 LY at a Fuel Usage Number of 100.
             // Number of engines doesn't matter. Neither number of ships with the same engine.
 
@@ -153,6 +157,36 @@ namespace CraigStars
             return fuelCost;
         }
 
+        /// <summary>
+        /// Get the default warp factor of this fleet.
+        /// i.e. the highest warp you can travel using only 100% normal fuel
+        /// </summary>
+        /// <returns></returns>
+        public int GetDefaultWarpFactor()
+        {
+            var warpFactor = 5;
+            // TODO:
+            if (Aggregate.Engine != null)
+            {
+                var lowestFuelUsage = 0;
+                for (int i = 1; i < Aggregate.Engine.FuelUsage.Length; i++)
+                {
+                    // find the lowest fuel usage until we use more than 100%
+                    var fuelUsage = Aggregate.Engine.FuelUsage[i];
+                    if (fuelUsage > 100)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        lowestFuelUsage = fuelUsage;
+                        warpFactor = i;
+                    }
+                }
+            }
+            return warpFactor;
+        }
+
         public void ComputeAggregate()
         {
             Aggregate.Mass = 0;
@@ -164,11 +198,15 @@ namespace CraigStars
             Aggregate.SpaceDock = 0;
             Aggregate.ScanRange = 0;
             Aggregate.ScanRangePen = 0;
+            Aggregate.Engine = null;
 
             // compute each token's 
             Tokens.ForEach(token =>
             {
                 token.Design.ComputeAggregate(Player);
+
+                // TODO: which default engine do we use for multiple fleets?
+                Aggregate.Engine = token.Design.Aggregate.Engine;
                 // cost
                 Cost cost = token.Design.Aggregate.Cost * token.Quantity;
                 Aggregate.Cost += cost;

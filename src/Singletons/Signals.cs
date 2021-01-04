@@ -17,7 +17,7 @@ namespace CraigStars.Singletons
 
         public static event Action<MapObjectSprite> MapObjectSelectedEvent;
         public static event Action<MapObjectSprite> MapObjectActivatedEvent;
-        public static event Action<Fleet, Waypoint> FleetWaypointAddedEvent;
+        public static event Action<Fleet, Waypoint> WaypointAddedEvent;
         public static event Action<Waypoint> WaypointSelectedEvent;
         public static event Action<Waypoint> WaypointDeletedEvent;
 
@@ -128,9 +128,9 @@ namespace CraigStars.Singletons
             MapObjectActivatedEvent?.Invoke(mapObjectSprite);
         }
 
-        public static void PublishFleetWaypointAddedEvent(Fleet fleet, Waypoint waypoint)
+        public static void PublishWaypointAddedEvent(Fleet fleet, Waypoint waypoint)
         {
-            FleetWaypointAddedEvent?.Invoke(fleet, waypoint);
+            WaypointAddedEvent?.Invoke(fleet, waypoint);
         }
 
         public static void PublishServerDisconnectedEvent()

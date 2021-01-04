@@ -93,7 +93,7 @@ namespace CraigStars
                                 if (PlanetsByGuid.TryGetValue(planet.Guid, out var gamePlanet))
                                 {
                                     // add the server side version of this planet as a waypoint
-                                    fleet.Waypoints.Add(new Waypoint(gamePlanet));
+                                    fleet.Waypoints.Add(new Waypoint(gamePlanet, playerWaypoint.WarpFactor));
                                 }
                             }
                         };

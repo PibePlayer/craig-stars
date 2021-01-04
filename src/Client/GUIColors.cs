@@ -70,5 +70,17 @@ namespace CraigStars
         public Color ScannerPenColor { get; set; } = new Color("7F7F00");
 
 
+        [Export]
+        public Color FuelColor { get; set; } = new Color("FF0000");
+
+        [Export]
+        public Color WarpColor { get; set; } = new Color("FF0000");
+
+        [Export]
+        public Color WarpDamageColor { get; set; } = new Color("FFFF00");
+
+        [Export]
+        public Color StargateColor { get; set; } = new Color("FFFF00");
+
     }
 }

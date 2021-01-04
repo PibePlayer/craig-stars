@@ -306,15 +306,18 @@ namespace CraigStars
                     if (wp.Target is Planet)
                     {
                         var targetedPlanetReport = PlanetsByGuid[wp.Target.Guid];
-                        fleetReport.Waypoints.Add(new Waypoint(targetedPlanetReport));
+                        fleetReport.Waypoints.Add(new Waypoint(targetedPlanetReport, wp.WarpFactor));
                     }
                     else
                     {
                         // TODO: figure out targeting other fleets
                         // we might have to add waypoint reports as a separate
                         // step
-                        var fleetReportWaypoint = new Waypoint();
-                        fleetReportWaypoint.Position = wp.Position;
+                        var fleetReportWaypoint = new Waypoint()
+                        {
+                            Position = wp.Position,
+                            WarpFactor = wp.WarpFactor
+                        };
                         fleetReport.Waypoints.Add(fleetReportWaypoint);
                     }
                 });

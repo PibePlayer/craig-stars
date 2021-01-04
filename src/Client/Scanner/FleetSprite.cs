@@ -62,13 +62,19 @@ namespace CraigStars
 
         public Waypoint AddWaypoint(MapObject mapObject)
         {
-            var waypoint = new Waypoint(mapObject);
+            int warpFactor = Fleet.GetDefaultWarpFactor();
+            if (Fleet.Waypoints.Count > 1)
+            {
+                warpFactor = Fleet.Waypoints[Fleet.Waypoints.Count - 1].WarpFactor;
+            }
+            var waypoint = new Waypoint(mapObject, warpFactor);
+
 
             Fleet.Waypoints.Add(waypoint);
 
             UpdateWaypointsLine();
 
-            Signals.PublishFleetWaypointAddedEvent(Fleet, waypoint);
+            Signals.PublishWaypointAddedEvent(Fleet, waypoint);
             return waypoint;
         }
 
@@ -168,5 +174,6 @@ namespace CraigStars
             }
         }
     }
+
 
 }

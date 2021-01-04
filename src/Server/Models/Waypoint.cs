@@ -24,6 +24,8 @@ namespace CraigStars
 
         public int WarpFactor { get; set; } = 5;
 
+        public WaypointTask Task { get; set; } = WaypointTask.None;
+
         /// <summary>
         /// A string description of the target
         /// </summary>

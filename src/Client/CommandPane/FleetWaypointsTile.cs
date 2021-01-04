@@ -39,12 +39,23 @@ public class FleetWaypointsTile : FleetTile
 
         Signals.FleetWaypointAddedEvent += OnFleetWaypointAdded;
         Signals.WaypointSelectedEvent += OnWaypointSelected;
+        Signals.WaypointDeletedEvent += OnWaypointDeleted;
     }
 
     public override void _ExitTree()
     {
         Signals.FleetWaypointAddedEvent -= OnFleetWaypointAdded;
         Signals.WaypointSelectedEvent -= OnWaypointSelected;
+        Signals.WaypointDeletedEvent -= OnWaypointDeleted;
+    }
+
+    void OnWaypointDeleted(Waypoint waypoint)
+    {
+        if (ActiveWaypoint == waypoint)
+        {
+            ActiveWaypoint = null;
+        }
+        UpdateControls();
     }
 
     void OnFleetWaypointAdded(Fleet fleet, Waypoint waypoint)

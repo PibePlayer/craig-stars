@@ -12,8 +12,8 @@ namespace CraigStars
         Label nameLabel;
         Label distanceLabel;
 
-        MapObject selectedMapObject;
-        MapObject commandedMapObject;
+        MapObjectSprite selectedMapObject;
+        MapObjectSprite commandedMapObject;
 
         public override void _Ready()
         {
@@ -34,15 +34,15 @@ namespace CraigStars
             Signals.MapObjectActivatedEvent -= OnMapObjectActivated;
         }
 
-        void OnMapObjectSelected(MapObject mapObject)
+        void OnMapObjectSelected(MapObjectSprite mapObject)
         {
             selectedMapObject = mapObject;
             if (mapObject != null)
             {
-                if (mapObject is Planet planet)
+                if (mapObject is PlanetSprite planet)
                 {
                     idLabel.Visible = true;
-                    idLabel.Text = $"ID: #{planet.Id}";
+                    idLabel.Text = $"ID: #{planet.Planet.Id}";
                 }
                 else
                 {
@@ -65,7 +65,7 @@ namespace CraigStars
             }
         }
 
-        void OnMapObjectActivated(MapObject mapObject)
+        void OnMapObjectActivated(MapObjectSprite mapObject)
         {
             commandedMapObject = mapObject;
         }

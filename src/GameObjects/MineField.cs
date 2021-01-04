@@ -15,20 +15,6 @@ namespace CraigStars
         public int NumMines { get; set; }
         public int Radius { get; set; }
 
-        public override void _Ready()
-        {
-            base._Ready();
-        }
-
-        public override void _ExitTree()
-        {
-            base._ExitTree();
-        }
-
-        public override void UpdateSprite()
-        {
-
-        }
 
     }
 }

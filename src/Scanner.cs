@@ -10,19 +10,22 @@ namespace CraigStars
     {
         PackedScene waypointAreaScene;
         PackedScene scannerCoverageScene;
-        MapObject selectedMapObject;
-        MapObject commandedMapObject;
+        PackedScene planetScene;
+        PackedScene fleetScene;
+        MapObjectSprite selectedMapObject;
+        MapObjectSprite commandedMapObject;
         SelectedMapObjectSprite selectedMapObjectSprite;
         Node2D normalScannersNode;
         Node2D penScannersNode;
 
-        public List<Planet> Planets { get; } = new List<Planet>();
-        public List<Fleet> Fleets { get; } = new List<Fleet>();
+        public List<PlanetSprite> Planets { get; } = new List<PlanetSprite>();
+        public List<FleetSprite> Fleets { get; } = new List<FleetSprite>();
+        public Dictionary<Guid, PlanetSprite> PlanetsByGuid { get; set; } = new Dictionary<Guid, PlanetSprite>();
         public List<WaypointArea> waypointAreas = new List<WaypointArea>();
         public List<ScannerCoverage> Scanners { get; set; } = new List<ScannerCoverage>();
         public List<ScannerCoverage> PenScanners { get; set; } = new List<ScannerCoverage>();
 
-        public Fleet ActiveFleet
+        public FleetSprite ActiveFleet
         {
             get => activeFleet; set
             {
@@ -33,9 +36,9 @@ namespace CraigStars
                 }
             }
         }
-        Fleet activeFleet;
+        FleetSprite activeFleet;
 
-        public Planet ActivePlanet { get; set; }
+        public PlanetSprite ActivePlanet { get; set; }
         public Player Me { get; set; }
 
         public override void _Ready()
@@ -45,6 +48,8 @@ namespace CraigStars
 
             waypointAreaScene = ResourceLoader.Load<PackedScene>("res://src/GameObjects/WaypointArea.tscn");
             scannerCoverageScene = ResourceLoader.Load<PackedScene>("res://src/GameObjects/ScannerCoverage.tscn");
+            planetScene = ResourceLoader.Load<PackedScene>("res://src/GameObjects/PlanetSprite.tscn");
+            fleetScene = ResourceLoader.Load<PackedScene>("res://src/GameObjects/FleetSprite.tscn");
 
             // get some nodes
             selectedMapObjectSprite = GetNode<SelectedMapObjectSprite>("SelectedMapObjectSprite");
@@ -67,6 +72,7 @@ namespace CraigStars
 
             Fleets.ForEach(f => { RemoveChild(f); f.QueueFree(); });
             Fleets.Clear();
+            Planets.ForEach(p => p.OrbitingFleets.Clear());
             ActiveFleet = null;
             ActivePlanet = null;
 
@@ -75,10 +81,10 @@ namespace CraigStars
             CallDeferred(nameof(UpdateViewport));
         }
 
-        void OnMapObjectActivated(MapObject mapObject)
+        void OnMapObjectActivated(MapObjectSprite mapObject)
         {
-            ActiveFleet = mapObject as Fleet;
-            ActivePlanet = mapObject as Planet;
+            ActiveFleet = mapObject as FleetSprite;
+            ActivePlanet = mapObject as PlanetSprite;
         }
 
         /// <summary>
@@ -88,7 +94,7 @@ namespace CraigStars
         {
             waypointAreas.ForEach(wpa => { wpa.QueueFree(); });
             waypointAreas.Clear();
-            ActiveFleet?.Waypoints.ForEach(wp => AddWaypointArea(wp));
+            ActiveFleet?.Fleet?.Waypoints.ForEach(wp => AddWaypointArea(wp));
         }
 
         void AddWaypointArea(Waypoint waypoint)
@@ -101,27 +107,34 @@ namespace CraigStars
 
         public void AddMapObjects(Player player)
         {
-            Planets.AddRange(player.Planets);
-            Planets.ForEach(p => AddChild(p));
 
+            Planets.AddRange(player.Planets.Select(planet =>
+            {
+                var planetSprite = planetScene.Instance() as PlanetSprite;
+                planetSprite.Planet = planet;
+                planetSprite.Position = planet.Position;
+                return planetSprite;
+            }));
+            Planets.ForEach(p => AddChild(p));
             Planets.ForEach(p => p.Connect("input_event", this, nameof(OnInputEvent), new Godot.Collections.Array() { p }));
+            PlanetsByGuid = Planets.ToLookup(p => p.Planet.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
 
             AddFleetsToViewport();
 
             CallDeferred(nameof(UpdateViewport));
         }
 
-        void OnInputEvent(Node viewport, InputEvent @event, int shapeIdx, MapObject mapObject)
+        void OnInputEvent(Node viewport, InputEvent @event, int shapeIdx, MapObjectSprite mapObject)
         {
             if (@event.IsActionPressed("viewport_select"))
             {
                 GD.Print($"Selected {mapObject.ObjectName}");
                 if (@event is InputEventMouseButton eventMouseButton && eventMouseButton.Shift)
                 {
-                    if (commandedMapObject is Fleet commandedFleet)
+                    if (commandedMapObject is FleetSprite commandedFleet)
                     {
                         // this was shift+clicked, so let the viewport know it's supposed to be added as a waypoint
-                        commandedFleet.AddWaypoint(mapObject);
+                        commandedFleet.AddWaypoint(mapObject.MapObject);
                     }
                 }
                 else
@@ -183,18 +196,18 @@ namespace CraigStars
             }
         }
 
-        internal void CommandNextPeer(MapObject mapObject)
+        internal void CommandNextPeer(MapObjectSprite mapObject)
         {
             // we selected the object we are commanding again
             // if it has peers, command the next peer
             var peers = mapObject.GetPeers();
-            var activePeer = peers.Find(p => p.State == MapObject.States.Active);
+            var activePeer = peers.Find(p => p.State == ScannerState.Active);
             if (peers.Count > 0)
             {
-                if (commandedMapObject is Planet)
+                if (commandedMapObject is PlanetSprite)
                 {
                     // leave planets selected
-                    commandedMapObject.State = MapObject.States.Selected;
+                    commandedMapObject.State = ScannerState.Selected;
                 }
                 else
                 {
@@ -207,13 +220,13 @@ namespace CraigStars
                     if (activePeerPeers.Count > 0)
                     {
                         // command the next peer
-                        commandedMapObject = activePeer.GetPeers()[0];
+                        commandedMapObject = activePeer.GetPeers()[0] as MapObjectSprite;
                     }
                 }
                 else
                 {
                     // command the first peer
-                    commandedMapObject = peers[0];
+                    commandedMapObject = peers[0] as MapObjectSprite;
                 }
             }
         }
@@ -222,8 +235,21 @@ namespace CraigStars
         {
             var player = PlayersManager.Instance.Me;
 
+
             // add in new fleets
-            Fleets.AddRange(player.Fleets);
+            Fleets.AddRange(player.Fleets.Select(fleet =>
+            {
+                var fleetSprite = fleetScene.Instance() as FleetSprite;
+                fleetSprite.Fleet = fleet;
+                fleetSprite.Position = fleet.Position;
+                if (fleet.Orbiting != null && PlanetsByGuid.TryGetValue(fleet.Orbiting.Guid, out var planetSprite))
+                {
+                    planetSprite.OrbitingFleets.Add(fleetSprite);
+                    fleetSprite.Orbiting = planetSprite;
+                }
+                return fleetSprite;
+            }));
+
             Fleets.ForEach(f => AddChild(f));
             Fleets.ForEach(f => f.Connect("input_event", this, nameof(OnInputEvent), new Godot.Collections.Array() { f }));
         }
@@ -243,7 +269,7 @@ namespace CraigStars
         /// </summary>
         void FocusHomeworld()
         {
-            var homeworld = Planets.Where(p => p.Homeworld && p.Player == PlayersManager.Instance.Me).FirstOrDefault();
+            var homeworld = Planets.Where(p => p.Planet.Homeworld && p.Planet.Player == PlayersManager.Instance.Me).FirstOrDefault();
             if (homeworld != null)
             {
                 selectedMapObject = homeworld;
@@ -269,16 +295,16 @@ namespace CraigStars
                 var rangePen = -1;
 
                 // if we own this planet and it has a scanner, include it
-                if (planet.Player == Me && planet.Scanner && Me.PlanetaryScanner != null)
+                if (planet.OwnedByMe && planet.Planet.Scanner && Me.PlanetaryScanner != null)
                 {
                     range = Me.PlanetaryScanner.ScanRange;
                     rangePen = Me.PlanetaryScanner.ScanRangePen;
                 }
 
-                foreach (var fleet in planet.OrbitingFleets.Where(f => f.Player == Me))
+                foreach (var fleet in planet.OrbitingFleets.Where(f => f.Fleet.Player == Me))
                 {
-                    range = Math.Max(range, fleet.Aggregate.ScanRange);
-                    rangePen = Math.Max(rangePen, fleet.Aggregate.ScanRangePen);
+                    range = Math.Max(range, fleet.Fleet.Aggregate.ScanRange);
+                    rangePen = Math.Max(rangePen, fleet.Fleet.Aggregate.ScanRangePen);
                 }
 
                 if (range > 0)
@@ -301,10 +327,10 @@ namespace CraigStars
 
             }
 
-            foreach (var fleet in Fleets.Where(f => f.Player == Me && f.Orbiting == null && f.Aggregate.ScanRange > 0))
+            foreach (var fleet in Fleets.Where(f => f.OwnedByMe && f.Orbiting == null && f.Fleet.Aggregate.ScanRange > 0))
             {
-                var range = fleet.Aggregate.ScanRange;
-                var rangePen = fleet.Aggregate.ScanRangePen;
+                var range = fleet.Fleet.Aggregate.ScanRange;
+                var rangePen = fleet.Fleet.Aggregate.ScanRangePen;
                 if (range > 0)
                 {
                     ScannerCoverage scanner = scannerCoverageScene.Instance() as ScannerCoverage;

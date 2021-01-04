@@ -61,11 +61,6 @@ namespace CraigStars
 
         #endregion
 
-        public override void _Ready()
-        {
-            fleetScene = ResourceLoader.Load<PackedScene>("res://src/GameObjects/Fleet.tscn");
-        }
-
         /// <summary>
         /// This function will be called recursively until no more levels are passed
         /// From starsfaq
@@ -284,12 +279,14 @@ namespace CraigStars
         /// <param name="penScanned">True if we penscanned it</param>
         public void AddFleetReport(Fleet fleet, bool penScanned)
         {
-            var fleetReport = fleetScene.Instance() as Fleet;
-            fleetReport.Guid = fleet.Guid;
-            fleetReport.Position = fleet.Position;
-            fleetReport.ObjectName = fleet.ObjectName;
-            fleetReport.RaceName = fleet.Player.Race.Name;
-            fleetReport.RacePluralName = fleet.Player.Race.PluralName;
+            var fleetReport = new Fleet()
+            {
+                Guid = fleet.Guid,
+                Position = fleet.Position,
+                ObjectName = fleet.ObjectName,
+                RaceName = fleet.Player.Race.Name,
+                RacePluralName = fleet.Player.Race.PluralName,
+            };
 
             // update orbiting information
             if (fleet.Orbiting != null)

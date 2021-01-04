@@ -61,10 +61,10 @@ public class FleetWaypointsTile : FleetTile
 
     void OnItemSelected(int index)
     {
-        if (ActiveFleet != null && index >= 0 && index < ActiveFleet.Waypoints.Count)
+        if (ActiveFleet != null && index >= 0 && index < ActiveFleet.Fleet.Waypoints.Count)
         {
             // Select this waypoint and let listeners know (like ourselves and the viewport)
-            Signals.PublishWaypointSelectedEvent(ActiveFleet.Waypoints[index]);
+            Signals.PublishWaypointSelectedEvent(ActiveFleet.Fleet.Waypoints[index]);
         }
     }
 
@@ -73,7 +73,7 @@ public class FleetWaypointsTile : FleetTile
         base.OnNewActiveFleet();
         // when we have a new active fleet, set the active waypoint to the
         // first waypoint
-        ActiveWaypoint = ActiveFleet?.Waypoints[0];
+        ActiveWaypoint = ActiveFleet?.Fleet.Waypoints[0];
     }
 
     protected override void UpdateControls()
@@ -84,7 +84,7 @@ public class FleetWaypointsTile : FleetTile
             int index = 0;
             int selectedIndex = 0;
             waypoints.Clear();
-            foreach (var wp in ActiveFleet.Waypoints)
+            foreach (var wp in ActiveFleet.Fleet.Waypoints)
             {
                 waypoints.AddItem(wp.Target != null ? wp.Target.ObjectName : $"Space: ({wp.Position.x}, {wp.Position.y})");
                 if (ActiveWaypoint == wp)
@@ -95,7 +95,7 @@ public class FleetWaypointsTile : FleetTile
                 index++;
             }
 
-            if (ActiveFleet.Waypoints.Count > 1)
+            if (ActiveFleet.Fleet.Waypoints.Count > 1)
             {
                 selectedWaypointGrid.Visible = true;
 
@@ -105,8 +105,8 @@ public class FleetWaypointsTile : FleetTile
                 Waypoint to;
                 if (selectedIndex == 0)
                 {
-                    from = ActiveFleet.Waypoints[selectedIndex];
-                    to = ActiveFleet.Waypoints[selectedIndex + 1];
+                    from = ActiveFleet.Fleet.Waypoints[selectedIndex];
+                    to = ActiveFleet.Fleet.Waypoints[selectedIndex + 1];
                     nextWaypointLabel.Visible = true;
                     nextWaypoint.Visible = true;
                     comingFromLabel.Visible = false;
@@ -116,8 +116,8 @@ public class FleetWaypointsTile : FleetTile
                 }
                 else
                 {
-                    from = ActiveFleet.Waypoints[selectedIndex - 1];
-                    to = ActiveFleet.Waypoints[selectedIndex];
+                    from = ActiveFleet.Fleet.Waypoints[selectedIndex - 1];
+                    to = ActiveFleet.Fleet.Waypoints[selectedIndex];
                     nextWaypointLabel.Visible = false;
                     nextWaypoint.Visible = false;
                     comingFromLabel.Visible = true;
@@ -131,7 +131,7 @@ public class FleetWaypointsTile : FleetTile
                 var waypointDistance = Math.Abs(from.Position.DistanceTo(to.Position));
                 distance.Text = $"{waypointDistance:.##} l.y.";
                 travelTime.Text = $"{Math.Ceiling(from.GetTimeToWaypoint(to))} years";
-                estimatedFuelUsage.Text = $"{ActiveFleet.GetFuelCost(to.WarpFactor, waypointDistance)}mg";
+                estimatedFuelUsage.Text = $"{ActiveFleet.Fleet.GetFuelCost(to.WarpFactor, waypointDistance)}mg";
             }
 
         }

@@ -5,7 +5,7 @@ using CraigStars;
 
 public class FleetTile : MarginContainer
 {
-    public Fleet ActiveFleet
+    public FleetSprite ActiveFleet
     {
         get => activeFleet; set
         {
@@ -16,7 +16,7 @@ public class FleetTile : MarginContainer
             }
         }
     }
-    Fleet activeFleet;
+    FleetSprite activeFleet;
 
     public override void _Ready()
     {
@@ -24,9 +24,9 @@ public class FleetTile : MarginContainer
         Signals.TurnPassedEvent += OnTurnPassed;
     }
 
-    protected virtual void OnMapObjectActivated(MapObject mapObject)
+    protected virtual void OnMapObjectActivated(MapObjectSprite mapObject)
     {
-        ActiveFleet = mapObject as Fleet;
+        ActiveFleet = mapObject as FleetSprite;
         UpdateControls();
     }
 

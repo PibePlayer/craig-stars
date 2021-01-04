@@ -30,9 +30,9 @@ namespace CraigStars
             base.UpdateControls();
             if (ActivePlanet != null)
             {
-                population.Text = $"{ActivePlanet.Population:n0}";
-                resources.Text = $"{ActivePlanet.ResourcesPerYearAvailable:n0} of {ActivePlanet.ResourcesPerYear:n0}";
-                defenses.Text = $"{ActivePlanet.Defenses:n0} of {ActivePlanet.MaxDefenses:n0}";
+                population.Text = $"{ActivePlanet.Planet.Population:n0}";
+                resources.Text = $"{ActivePlanet.Planet.ResourcesPerYearAvailable:n0} of {ActivePlanet.Planet.ResourcesPerYear:n0}";
+                defenses.Text = $"{ActivePlanet.Planet.Defenses:n0} of {ActivePlanet.Planet.MaxDefenses:n0}";
             }
         }
     }

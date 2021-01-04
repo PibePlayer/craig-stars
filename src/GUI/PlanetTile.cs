@@ -5,7 +5,7 @@ namespace CraigStars
 {
     public class PlanetTile : MarginContainer
     {
-        public Planet ActivePlanet { get; set; }
+        public PlanetSprite ActivePlanet { get; set; }
 
         public override void _Ready()
         {
@@ -24,9 +24,9 @@ namespace CraigStars
             UpdateControls();
         }
 
-        protected virtual void OnMapObjectActivated(MapObject mapObject)
+        protected virtual void OnMapObjectActivated(MapObjectSprite mapObject)
         {
-            ActivePlanet = mapObject as Planet;
+            ActivePlanet = mapObject as PlanetSprite;
             Visible = ActivePlanet != null;
             UpdateControls();
         }

@@ -9,29 +9,10 @@ namespace CraigStars
 {
     public class Fleet : MapObject
     {
-        public static Color WaypointLineColor { get; set; } = new Color("0900FF");
-        public static Color CommandedWaypointLineColor { get; set; } = new Color("0900FF").Lightened(.2f);
-
-        FleetSprite sprite;
-        CollisionShape2D collisionShape;
-        Line2D waypointsLine;
-
         #region Planet Stats
 
         public Cargo Cargo { get; } = new Cargo();
-        public Planet Orbiting
-        {
-            get => orbiting; set
-            {
-                orbiting = value;
-                if (collisionShape != null)
-                {
-                    // our collision shape is enabled if we are orbiting a planet
-                    collisionShape.Disabled = orbiting != null;
-                }
-            }
-        }
-        Planet orbiting;
+        public Planet Orbiting { get; set; }
 
         public List<Waypoint> Waypoints { get; } = new List<Waypoint>();
         public List<ShipToken> Tokens { get; } = new List<ShipToken>();
@@ -40,86 +21,6 @@ namespace CraigStars
 
         #endregion
 
-        public override void _Ready()
-        {
-            base._Ready();
-            sprite = GetNode<FleetSprite>("Sprite");
-            collisionShape = GetNode<CollisionShape2D>("CollisionShape2D");
-            collisionShape.Disabled = Orbiting != null;
-            waypointsLine = GetNode<Line2D>("Waypoints");
-            UpdateWaypointsLine();
-        }
-
-        public override void _ExitTree()
-        {
-            base._ExitTree();
-        }
-
-        public override void UpdateSprite()
-        {
-            sprite?.UpdateSprite(Player, this);
-            if (State == States.Active)
-            {
-                waypointsLine.DefaultColor = CommandedWaypointLineColor;
-            }
-            else
-            {
-                waypointsLine.DefaultColor = WaypointLineColor;
-            }
-        }
-
-        public Waypoint AddWaypoint(MapObject mapObject)
-        {
-            var waypoint = new Waypoint(mapObject);
-
-            Waypoints.Add(waypoint);
-
-            // draw the line for this waypoint
-            UpdateWaypointsLine();
-
-            Signals.PublishFleetWaypointAddedEvent(this, waypoint);
-            return waypoint;
-        }
-
-        void UpdateWaypointsLine()
-        {
-            Vector2[] points = Waypoints
-                .Skip(1)
-                .Prepend(new Waypoint() { Position = Position })
-                .Select(wp => wp.Position - Position)
-                .ToArray();
-            waypointsLine.Points = points;
-        }
-
-        internal override List<MapObject> GetPeers()
-        {
-            List<MapObject> peers = new List<MapObject>();
-            if (Orbiting != null)
-            {
-                // add any fleets after myself
-                bool foundMe = false;
-                Orbiting.OrbitingFleets.Where(f => f.OwnedByMe).ToList().ForEach(f =>
-                {
-                    if (f == this)
-                    {
-                        foundMe = true;
-                        return;
-                    }
-                    if (foundMe)
-                    {
-                        peers.Add(f);
-                    }
-                });
-
-                // add the planet as the final peer
-                if (Orbiting.OwnedByMe)
-                {
-                    peers.Add(Orbiting);
-                }
-            }
-
-            return peers;
-        }
 
         public void Move()
         {

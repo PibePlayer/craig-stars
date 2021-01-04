@@ -15,8 +15,8 @@ namespace CraigStars.Singletons
 
         #region Viewport Events
 
-        public static event Action<MapObject> MapObjectSelectedEvent;
-        public static event Action<MapObject> MapObjectActivatedEvent;
+        public static event Action<MapObjectSprite> MapObjectSelectedEvent;
+        public static event Action<MapObjectSprite> MapObjectActivatedEvent;
         public static event Action<Fleet, Waypoint> FleetWaypointAddedEvent;
         public static event Action<Waypoint> WaypointSelectedEvent;
 
@@ -25,7 +25,7 @@ namespace CraigStars.Singletons
         #region UI Events
 
         public static event Action<Player> SubmitTurnEvent;
-        public static event Action<Planet> ChangeProductionQueuePressedEvent;
+        public static event Action<PlanetSprite> ChangeProductionQueuePressedEvent;
 
         #endregion
 
@@ -117,14 +117,14 @@ namespace CraigStars.Singletons
             TurnPassedEvent?.Invoke(year);
         }
 
-        public static void PublishMapObjectSelectedEvent(MapObject mapObject)
+        public static void PublishMapObjectSelectedEvent(MapObjectSprite mapObjectSprite)
         {
-            MapObjectSelectedEvent?.Invoke(mapObject);
+            MapObjectSelectedEvent?.Invoke(mapObjectSprite);
         }
 
-        public static void PublishMapObjectActivatedEvent(MapObject mapObject)
+        public static void PublishMapObjectActivatedEvent(MapObjectSprite mapObjectSprite)
         {
-            MapObjectActivatedEvent?.Invoke(mapObject);
+            MapObjectActivatedEvent?.Invoke(mapObjectSprite);
         }
 
         public static void PublishFleetWaypointAddedEvent(Fleet fleet, Waypoint waypoint)
@@ -144,7 +144,7 @@ namespace CraigStars.Singletons
 
         #region Dialog Publishers
 
-        public static void PublishChangeProductionQueuePressedEvent(Planet planet)
+        public static void PublishChangeProductionQueuePressedEvent(PlanetSprite planet)
         {
             ChangeProductionQueuePressedEvent?.Invoke(planet);
         }

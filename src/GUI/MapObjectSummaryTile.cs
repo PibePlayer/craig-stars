@@ -9,7 +9,7 @@ namespace CraigStars
         Texture fleetTexture;
         TextureRect textureRect;
 
-        public MapObject MapObject
+        public MapObjectSprite MapObject
         {
             get => mapObject; set
             {
@@ -17,7 +17,7 @@ namespace CraigStars
                 UpdateControls();
             }
         }
-        MapObject mapObject;
+        MapObjectSprite mapObject;
 
         Label nameLabel;
 
@@ -50,7 +50,7 @@ namespace CraigStars
         //     return Colors.Red;
         // }
 
-        void OnMapObjectActivated(MapObject mapObject)
+        void OnMapObjectActivated(MapObjectSprite mapObject)
         {
             MapObject = mapObject;
         }
@@ -60,7 +60,7 @@ namespace CraigStars
             if (MapObject != null)
             {
                 nameLabel.Text = mapObject.ObjectName;
-                if (MapObject is Planet)
+                if (MapObject is PlanetSprite)
                 {
                     textureRect.Texture = planetTexture;
                 }

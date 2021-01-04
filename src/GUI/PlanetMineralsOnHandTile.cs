@@ -29,12 +29,12 @@ namespace CraigStars
             base.UpdateControls();
             if (ActivePlanet != null)
             {
-                ironium.Text = $"{ActivePlanet.Cargo.Ironium}kT";
-                boranium.Text = $"{ActivePlanet.Cargo.Boranium}kT";
-                germaninum.Text = $"{ActivePlanet.Cargo.Germanium}kT";
+                ironium.Text = $"{ActivePlanet.Planet.Cargo.Ironium}kT";
+                boranium.Text = $"{ActivePlanet.Planet.Cargo.Boranium}kT";
+                germaninum.Text = $"{ActivePlanet.Planet.Cargo.Germanium}kT";
 
-                mines.Text = $"{ActivePlanet.Mines} of {ActivePlanet.MaxMines}";
-                factories.Text = $"{ActivePlanet.Factories} of {ActivePlanet.MaxFactories}";
+                mines.Text = $"{ActivePlanet.Planet.Mines} of {ActivePlanet.Planet.MaxMines}";
+                factories.Text = $"{ActivePlanet.Planet.Factories} of {ActivePlanet.Planet.MaxFactories}";
             }
         }
 

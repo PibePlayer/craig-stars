@@ -413,15 +413,16 @@ public class UniverseGenerator
     /// <param name="planets"></param>
     void InitPlayerReports(Player player, List<Planet> planets)
     {
-        var planetScene = ResourceLoader.Load<PackedScene>("res://src/GameObjects/Planet.tscn");
         planets.ForEach(planet =>
         {
-            var planetReport = planetScene.Instance() as Planet;
-            planetReport.Position = planet.Position;
-            planetReport.Guid = planet.Guid;
-            planetReport.Id = planet.Id;
-            planetReport.ObjectName = planet.ObjectName;
-            planetReport.ReportAge = Planet.Unexplored;
+            var planetReport = new Planet()
+            {
+                Position = planet.Position,
+                Guid = planet.Guid,
+                Id = planet.Id,
+                ObjectName = planet.ObjectName,
+                ReportAge = Planet.Unexplored,
+            };
 
             player.Planets.Add(planetReport);
             // build each players dictionary of planets by id

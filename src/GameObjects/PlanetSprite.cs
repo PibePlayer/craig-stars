@@ -1,12 +1,38 @@
-using System.Collections.Generic;
-using CraigStars.Singletons;
 using Godot;
+using System.Collections.Generic;
+using System.Linq;
+
+using CraigStars.Singletons;
 
 namespace CraigStars
 {
-    public class PlanetSprite : MapObjectSprite<Planet>
+    public class PlanetSprite : MapObjectSprite
     {
+        [Export]
         GUIColors guiColors = new GUIColors();
+
+        public enum Orbiting
+        {
+            None,
+            Orbiting,
+            OrbitingEnemies,
+            OrbitingAlliesAndEnemies
+        }
+
+        /// <summary>
+        /// Convenience method so the code looks like Fleet.Something instead of MapObject.Something
+        /// </summary>
+        /// <value></value>
+        public Planet Planet
+        {
+            get => MapObject as Planet;
+            set
+            {
+                MapObject = value;
+            }
+        }
+
+        public List<FleetSprite> OrbitingFleets { get; set; } = new List<FleetSprite>();
 
         Sprite known;
         Sprite unknown;
@@ -19,18 +45,20 @@ namespace CraigStars
 
         public override void _Ready()
         {
+            base._Ready();
+
             guiColors = GD.Load("res://src/GUI/GUIColors.tres") as GUIColors;
             if (guiColors == null)
             {
                 guiColors = new GUIColors();
             }
 
-            known = GetNode<Sprite>("Known");
-            unknown = GetNode<Sprite>("Unknown");
-            inhabited = GetNode<Sprite>("Inhabited");
-            inhabitedCommanded = GetNode<Sprite>("InhabitedCommanded");
-            orbiting = GetNode<Sprite>("Orbiting");
-            orbitingCommanded = GetNode<Sprite>("OrbitingActive");
+            known = GetNode<Sprite>("Sprite/Known");
+            unknown = GetNode<Sprite>("Sprite/Unknown");
+            inhabited = GetNode<Sprite>("Sprite/Inhabited");
+            inhabitedCommanded = GetNode<Sprite>("Sprite/InhabitedCommanded");
+            orbiting = GetNode<Sprite>("Sprite/Orbiting");
+            orbitingCommanded = GetNode<Sprite>("Sprite/OrbitingActive");
 
             // create a list of these sprites
             stateSprites.Add(known);
@@ -41,31 +69,41 @@ namespace CraigStars
             stateSprites.Add(orbitingCommanded);
         }
 
-        public override void UpdateSprite(Player player, Planet planet)
+        public override void _ExitTree()
         {
-            var ownerAllyState = planet.ReportAge == Planet.Unexplored ? MapObject.OwnerAlly.Unknown : MapObject.OwnerAlly.Known;
-            var state = planet.State;
-            var hasActivePeer = planet.HasActivePeer();
+            base._ExitTree();
+        }
+
+
+        public override List<MapObjectSprite> GetPeers()
+        {
+            var list = new List<MapObjectSprite>();
+            list.AddRange(OrbitingFleets.Where(f => f.OwnedByMe));
+            return list;
+        }
+
+        public override void UpdateSprite()
+        {
+            var ownerAllyState = Planet.ReportAge == Planet.Unexplored ? ScannerOwnerAlly.Unknown : ScannerOwnerAlly.Known;
+            var state = State;
+            var hasActivePeer = HasActivePeer();
+            var orbitingState = Orbiting.None;
 
             // TODO: make this work with multiple types
-            if (planet.OrbitingFleets.Count > 0)
+            if (Planet.OrbitingFleets.Count > 0)
             {
-                planet.OrbitingState = Planet.Orbiting.Orbiting;
-            }
-            else
-            {
-                planet.OrbitingState = Planet.Orbiting.None;
+                orbitingState = Orbiting.Orbiting;
             }
 
-            if (player != null)
+            if (Planet.Player != null)
             {
-                if (player == PlayersManager.Instance.Me)
+                if (Planet.Player == PlayersManager.Instance.Me)
                 {
-                    ownerAllyState = MapObject.OwnerAlly.Owned;
+                    ownerAllyState = ScannerOwnerAlly.Owned;
                 }
                 else
                 {
-                    ownerAllyState = MapObject.OwnerAlly.Enemy;
+                    ownerAllyState = ScannerOwnerAlly.Enemy;
                 }
             }
 
@@ -74,11 +112,11 @@ namespace CraigStars
 
             switch (ownerAllyState)
             {
-                case MapObject.OwnerAlly.Unknown:
+                case ScannerOwnerAlly.Unknown:
                     unknown.Visible = true;
                     break;
-                case MapObject.OwnerAlly.Known:
-                    if (hasActivePeer || state == MapObject.States.Active)
+                case ScannerOwnerAlly.Known:
+                    if (hasActivePeer || state == ScannerState.Active)
                     {
                         inhabitedCommanded.Visible = true;
                     }
@@ -87,8 +125,8 @@ namespace CraigStars
                         known.Visible = true;
                     }
                     break;
-                case MapObject.OwnerAlly.Owned:
-                    if (hasActivePeer || state == MapObject.States.Active)
+                case ScannerOwnerAlly.Owned:
+                    if (hasActivePeer || state == ScannerState.Active)
                     {
                         inhabitedCommanded.Visible = true;
                         inhabitedCommanded.Modulate = guiColors.OwnedColor;
@@ -99,8 +137,8 @@ namespace CraigStars
                         inhabited.Modulate = guiColors.OwnedColor;
                     }
                     break;
-                case MapObject.OwnerAlly.Friend:
-                    if (hasActivePeer || state == MapObject.States.Active)
+                case ScannerOwnerAlly.Friend:
+                    if (hasActivePeer || state == ScannerState.Active)
                     {
                         inhabitedCommanded.Visible = true;
                         inhabitedCommanded.Modulate = guiColors.FriendColor;
@@ -111,8 +149,8 @@ namespace CraigStars
                         inhabited.Modulate = guiColors.FriendColor;
                     }
                     break;
-                case MapObject.OwnerAlly.Enemy:
-                    if (hasActivePeer || state == MapObject.States.Active)
+                case ScannerOwnerAlly.Enemy:
+                    if (hasActivePeer || state == ScannerState.Active)
                     {
                         inhabitedCommanded.Visible = true;
                         inhabitedCommanded.Modulate = guiColors.EnemyColor;
@@ -126,12 +164,12 @@ namespace CraigStars
             }
 
             // turn on the orbiting ring
-            switch (planet.OrbitingState)
+            switch (orbitingState)
             {
-                case Planet.Orbiting.Orbiting:
-                case Planet.Orbiting.OrbitingEnemies:
-                case Planet.Orbiting.OrbitingAlliesAndEnemies:
-                    if (hasActivePeer || state == MapObject.States.Active)
+                case Orbiting.Orbiting:
+                case Orbiting.OrbitingEnemies:
+                case Orbiting.OrbitingAlliesAndEnemies:
+                    if (hasActivePeer || state == ScannerState.Active)
                     {
                         orbitingCommanded.Visible = true;
                     }

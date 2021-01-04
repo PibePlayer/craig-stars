@@ -15,20 +15,5 @@ namespace CraigStars
         public Waypoint Target { get; set; } = new Waypoint();
         public Mineral Contents { get; set; }
 
-        public override void _Ready()
-        {
-            base._Ready();
-        }
-
-        public override void _ExitTree()
-        {
-            base._ExitTree();
-        }
-
-        public override void UpdateSprite()
-        {
-
-        }
-
     }
 }

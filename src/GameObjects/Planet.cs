@@ -8,29 +8,22 @@ namespace CraigStars
     public class Planet : MapObject
     {
         public const int Unexplored = -1;
-        public enum Orbiting
-        {
-            None,
-            Orbiting,
-            OrbitingEnemies,
-            OrbitingAlliesAndEnemies
-        }
 
-        [Export]
-        public Orbiting OrbitingState { get; set; } = Orbiting.None;
-
-        PlanetSprite sprite;
-
-        #region Planet Stats
+        #region Scannable Stats
 
         public Hab Hab { get; set; } = new Hab();
         public Mineral MineralConcentration { get; set; } = new Mineral();
+        public int Population { get => Cargo.Population; set { Cargo.Population = value; } }
+        public List<Fleet> OrbitingFleets { get; set; } = new List<Fleet>();
+
+        #endregion
+
+        #region Planet Makeup
 
         public Mineral MineYears { get; set; } = new Mineral();
         public Cargo Cargo { get; } = new Cargo();
         public ProductionQueue ProductionQueue { get; } = new ProductionQueue();
 
-        public int Population { get => Cargo.Population; set { Cargo.Population = value; } }
         public int PopulationDensity { get => Population > 0 ? Population / GetMaxPopulation(Player.Race) : 0; }
 
         public int Mines { get; set; }
@@ -47,29 +40,8 @@ namespace CraigStars
         public int ReportAge { get; set; } = Unexplored;
         public bool Explored { get => ReportAge != Unexplored; }
 
-        public List<Fleet> OrbitingFleets { get; set; } = new List<Fleet>();
         #endregion
 
-        public override void _Ready()
-        {
-            base._Ready();
-            sprite = GetNode<PlanetSprite>("Sprite");
-        }
-
-        public override void _ExitTree()
-        {
-            base._ExitTree();
-        }
-
-        public override void UpdateSprite()
-        {
-            sprite?.UpdateSprite(Player, this);
-        }
-
-        internal override List<MapObject> GetPeers()
-        {
-            return OrbitingFleets.Where(f => f.OwnedByMe).ToList<MapObject>();
-        }
 
         /// <summary>
         /// Update this planet report with data from the game planet

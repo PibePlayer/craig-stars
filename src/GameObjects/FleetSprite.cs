@@ -1,13 +1,39 @@
 using CraigStars.Singletons;
 using Godot;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace CraigStars
 {
 
-    public class FleetSprite : MapObjectSprite<Fleet>
+    public class FleetSprite : MapObjectSprite
     {
+        public static Color WaypointLineColor { get; set; } = new Color("0900FF");
+        public static Color CommandedWaypointLineColor { get; set; } = new Color("0900FF").Lightened(.2f);
+
+        /// <summary>
+        /// Convenience method so the code looks like Fleet.Something instead of MapObject.Something
+        /// </summary>
+        /// <value></value>
+        public Fleet Fleet
+        {
+            get => MapObject as Fleet;
+            set
+            {
+                MapObject = value;
+            }
+        }
+
+        /// <summary>
+        /// A planet sprite this fleet is orbiting
+        /// </summary>
+        /// <value></value>
+        public PlanetSprite Orbiting { get; set; }
+
+        CollisionShape2D collisionShape;
+        Line2D waypointsLine;
+
         Sprite selected;
         Sprite active;
 
@@ -15,52 +41,115 @@ namespace CraigStars
 
         public override void _Ready()
         {
-            selected = GetNode<Sprite>("Selected");
-            active = GetNode<Sprite>("Active");
+            base._Ready();
+            selected = GetNode<Sprite>("Sprite/Selected");
+            active = GetNode<Sprite>("Sprite/Active");
 
             stateSprites.Add(selected);
             stateSprites.Add(active);
 
+            collisionShape = GetNode<CollisionShape2D>("CollisionShape2D");
+            collisionShape.Disabled = Orbiting != null;
+            waypointsLine = GetNode<Line2D>("Waypoints");
+            UpdateWaypointsLine();
+
         }
 
-        public override void UpdateSprite(Player player, Fleet fleet)
+        public override void _ExitTree()
         {
-            if (player.Num == 0)
+            base._ExitTree();
+        }
+
+        public Waypoint AddWaypoint(MapObject mapObject)
+        {
+            var waypoint = new Waypoint(mapObject);
+
+            Fleet.Waypoints.Add(waypoint);
+
+            UpdateWaypointsLine();
+
+            Signals.PublishFleetWaypointAddedEvent(Fleet, waypoint);
+            return waypoint;
+        }
+
+
+        void UpdateWaypointsLine()
+        {
+            if (Fleet != null)
             {
-                GD.Print($"Updating Fleet sprite {fleet.ObjectName} for player {player.Num}");
+                Vector2[] points = Fleet.Waypoints
+                    .Skip(1)
+                    .Prepend(new Waypoint() { Position = Position })
+                    .Select(wp => wp.Position - Position)
+                    .ToArray();
+                waypointsLine.Points = points;
             }
+        }
+
+        public override List<MapObjectSprite> GetPeers()
+        {
+            List<MapObjectSprite> peers = new List<MapObjectSprite>();
+            if (Orbiting != null)
+            {
+                // add any fleets after myself
+                bool foundMe = false;
+                Orbiting.OrbitingFleets.Where(f => f.OwnedByMe).ToList().ForEach(f =>
+                {
+                    if (f == this)
+                    {
+                        foundMe = true;
+                        return;
+                    }
+                    if (foundMe)
+                    {
+                        peers.Add(f);
+                    }
+                });
+
+                // add the planet as the final peer
+                if (Orbiting.OwnedByMe)
+                {
+                    peers.Add(Orbiting);
+                }
+            }
+
+            return peers;
+        }
+
+        public override void UpdateSprite()
+        {
             // turn them all off
 
             stateSprites.ForEach(s => s.Visible = false);
 
             // if we are orbiting a planet, don't show any sprites
-            if (fleet.Orbiting != null)
+            if (Orbiting != null)
             {
                 return;
             }
 
-            Sprite shipSprite = fleet.State == MapObject.States.Active ? active : selected;
+            Sprite shipSprite = State == ScannerState.Active ? active : selected;
             shipSprite.Visible = true;
 
-            var ownerAllyState = MapObject.OwnerAlly.Unknown;
-            if (fleet.OwnedByMe)
+            var ownerAllyState = ScannerOwnerAlly.Unknown;
+            if (OwnedByMe)
             {
-                ownerAllyState = MapObject.OwnerAlly.Owned;
+                ownerAllyState = ScannerOwnerAlly.Owned;
             }
             else
             {
-                ownerAllyState = MapObject.OwnerAlly.Enemy;
+                ownerAllyState = ScannerOwnerAlly.Enemy;
             }
 
             switch (ownerAllyState)
             {
-                case MapObject.OwnerAlly.Owned:
+                case ScannerOwnerAlly.Owned:
                     shipSprite.Modulate = Colors.Blue;
                     break;
-                case MapObject.OwnerAlly.Friend:
+                case ScannerOwnerAlly.Friend:
                     shipSprite.Modulate = Colors.Yellow;
                     break;
-                case MapObject.OwnerAlly.Enemy:
+                case ScannerOwnerAlly.Enemy:
                     shipSprite.Modulate = Colors.Red;
                     break;
                 default:
@@ -68,7 +157,16 @@ namespace CraigStars
                     break;
             }
 
+            // update the waypoints line 
+            if (State == ScannerState.Active)
+            {
+                waypointsLine.DefaultColor = CommandedWaypointLineColor;
+            }
+            else
+            {
+                waypointsLine.DefaultColor = WaypointLineColor;
+            }
         }
-
     }
+
 }

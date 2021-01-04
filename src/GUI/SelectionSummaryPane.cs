@@ -7,7 +7,7 @@ namespace CraigStars
     public class SelectionSummaryPane : MarginContainer
     {
 
-        public MapObject MapObject
+        public MapObjectSprite MapObject
         {
             get => mapObject; set
             {
@@ -15,7 +15,7 @@ namespace CraigStars
                 UpdateControls();
             }
         }
-        MapObject mapObject;
+        MapObjectSprite mapObject;
 
         Race race;
 
@@ -76,7 +76,7 @@ namespace CraigStars
             Signals.TurnPassedEvent -= OnTurnPassed;
         }
 
-        void OnMapObjectSelected(MapObject mapObject)
+        void OnMapObjectSelected(MapObjectSprite mapObject)
         {
             MapObject = mapObject;
         }
@@ -92,7 +92,7 @@ namespace CraigStars
             {
                 nameLabel.Text = $"{MapObject.ObjectName} Summary";
 
-                var planet = MapObject as Planet;
+                var planet = MapObject?.MapObject as Planet;
                 if (planet != null && race != null)
                 {
                     if (planet.Explored)

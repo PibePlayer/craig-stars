@@ -110,7 +110,7 @@ namespace CraigStars
                     unknown.Visible = true;
                     break;
                 case ScannerOwnerAlly.Known:
-                    if (hasActivePeer || state == ScannerState.Active)
+                    if (hasActivePeer || state == ScannerState.Commanded)
                     {
                         inhabitedCommanded.Visible = true;
                     }
@@ -120,7 +120,7 @@ namespace CraigStars
                     }
                     break;
                 case ScannerOwnerAlly.Owned:
-                    if (hasActivePeer || state == ScannerState.Active)
+                    if (hasActivePeer || state == ScannerState.Commanded)
                     {
                         inhabitedCommanded.Visible = true;
                         inhabitedCommanded.Modulate = GUIColors.OwnedColor;
@@ -132,7 +132,7 @@ namespace CraigStars
                     }
                     break;
                 case ScannerOwnerAlly.Friend:
-                    if (hasActivePeer || state == ScannerState.Active)
+                    if (hasActivePeer || state == ScannerState.Commanded)
                     {
                         inhabitedCommanded.Visible = true;
                         inhabitedCommanded.Modulate = GUIColors.FriendColor;
@@ -144,7 +144,7 @@ namespace CraigStars
                     }
                     break;
                 case ScannerOwnerAlly.Enemy:
-                    if (hasActivePeer || state == ScannerState.Active)
+                    if (hasActivePeer || state == ScannerState.Commanded)
                     {
                         inhabitedCommanded.Visible = true;
                         inhabitedCommanded.Modulate = GUIColors.EnemyColor;
@@ -163,7 +163,7 @@ namespace CraigStars
                 case Orbiting.Orbiting:
                 case Orbiting.OrbitingEnemies:
                 case Orbiting.OrbitingAlliesAndEnemies:
-                    if (hasActivePeer || state == ScannerState.Active)
+                    if (hasActivePeer || state == ScannerState.Commanded)
                     {
                         orbitingCommanded.Visible = true;
                     }

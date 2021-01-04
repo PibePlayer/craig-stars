@@ -60,9 +60,9 @@ namespace CraigStars
             State = ScannerState.Selected;
         }
 
-        public virtual void Activate()
+        public virtual void Command()
         {
-            State = ScannerState.Active;
+            State = ScannerState.Commanded;
         }
 
         public virtual void Deselect()
@@ -81,7 +81,7 @@ namespace CraigStars
             {
                 peers = GetPeers();
             }
-            return peers.Find(p => p.State == ScannerState.Active) != null;
+            return peers.Find(p => p.State == ScannerState.Commanded) != null;
         }
 
         public virtual List<MapObjectSprite> GetPeers()

@@ -128,7 +128,7 @@ namespace CraigStars
                 return;
             }
 
-            Sprite shipSprite = State == ScannerState.Active ? active : selected;
+            Sprite shipSprite = State == ScannerState.Commanded ? active : selected;
             shipSprite.Visible = true;
 
             var ownerAllyState = ScannerOwnerAlly.Unknown;
@@ -158,7 +158,7 @@ namespace CraigStars
             }
 
             // update the waypoints line 
-            if (State == ScannerState.Active)
+            if (State == ScannerState.Commanded)
             {
                 waypointsLine.DefaultColor = GUIColors.CommandedWaypointLineColor;
             }

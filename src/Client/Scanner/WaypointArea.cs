@@ -30,7 +30,7 @@ namespace CraigStars
         {
             if (@event.IsActionPressed("viewport_select"))
             {
-                GD.Print($"Selecting waypiont {Position}");
+                GD.Print($"Selecting waypoint {Position}");
                 Signals.PublishWaypointSelectedEvent(Waypoint);
             }
         }

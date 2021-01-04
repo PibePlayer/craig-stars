@@ -41,7 +41,7 @@ namespace CraigStars
 
             // add the universe to the viewport
             Scanner = FindNode("Scanner") as Scanner;
-            Scanner.AddMapObjects(PlayersManager.Instance.Me);
+            Scanner.InitMapObjects(PlayersManager.Instance.Me);
 
             Signals.PublishPostStartGameEvent(Year);
 

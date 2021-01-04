@@ -4,7 +4,7 @@ namespace CraigStars
     {
         None,
         Selected,
-        Active
+        Commanded
     }
 }
 

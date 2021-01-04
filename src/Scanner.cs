@@ -69,16 +69,9 @@ namespace CraigStars
 
         void OnTurnPassed(int year)
         {
-
-            Fleets.ForEach(f => { RemoveChild(f); f.QueueFree(); });
-            Fleets.Clear();
-            Planets.ForEach(p => p.OrbitingFleets.Clear());
-            ActiveFleet = null;
-            ActivePlanet = null;
-
             // update all the sprites
             CallDeferred(nameof(AddFleetsToViewport));
-            CallDeferred(nameof(UpdateViewport));
+            CallDeferred(nameof(ResetScannerToHome));
         }
 
         void OnMapObjectActivated(MapObjectSprite mapObject)
@@ -105,9 +98,8 @@ namespace CraigStars
             AddChild(waypointArea);
         }
 
-        public void AddMapObjects(Player player)
+        public void InitMapObjects(Player player)
         {
-
             Planets.AddRange(player.Planets.Select(planet =>
             {
                 var planetSprite = planetScene.Instance() as PlanetSprite;
@@ -121,14 +113,20 @@ namespace CraigStars
 
             AddFleetsToViewport();
 
-            CallDeferred(nameof(UpdateViewport));
+            CallDeferred(nameof(ResetScannerToHome));
         }
 
+        /// <summary>
+        /// Respond to mouse events on our map objects in the Scanner
+        /// If the player clicks an object, it should select it. If they click it again, and the player
+        /// owns the object, it should activate it. Subsequent clicks should cycle through all mapObjects
+        /// at the same point on the scanner
+        /// </summary>
         void OnInputEvent(Node viewport, InputEvent @event, int shapeIdx, MapObjectSprite mapObject)
         {
             if (@event.IsActionPressed("viewport_select"))
             {
-                GD.Print($"Selected {mapObject.ObjectName}");
+                GD.Print($"Clicked {mapObject.ObjectName}");
                 if (@event is InputEventMouseButton eventMouseButton && eventMouseButton.Shift)
                 {
                     if (commandedMapObject is FleetSprite commandedFleet)
@@ -141,28 +139,29 @@ namespace CraigStars
                 {
                     if (mapObject != selectedMapObject)
                     {
-                        // change the selected object
-                        selectedMapObject?.Deselect();
+                        // We selected a new MapObject. Select it and update our sprite
+                        if (selectedMapObject?.State == ScannerState.Selected)
+                        {
+                            GD.Print($"Deselected map object {selectedMapObject.ObjectName}");
+                            // deselect the old one if it's selected.
+                            selectedMapObject?.Deselect();
+                        }
                         selectedMapObject = mapObject;
-                        selectedMapObject.Select();
-                        Signals.PublishMapObjectSelectedEvent(selectedMapObject);
+                        if (selectedMapObject.State != ScannerState.Commanded)
+                        {
+                            GD.Print($"Selected map object {selectedMapObject.ObjectName}");
+                            selectedMapObject.Select();
+                        }
+                        UpdateSelectedIndicator();
 
-                        // move our selection icon around
-                        if (selectedMapObject == commandedMapObject
-                        || (commandedMapObject != null && commandedMapObject.GetPeers().Contains(selectedMapObject)))
-                        {
-                            selectedMapObjectSprite.SelectLarge(selectedMapObject.Position);
-                        }
-                        else
-                        {
-                            selectedMapObjectSprite.Select(selectedMapObject.Position);
-                        }
+
+                        Signals.PublishMapObjectSelectedEvent(selectedMapObject);
                     }
                     else if (mapObject == selectedMapObject)
                     {
                         if (mapObject.OwnedByMe)
                         {
-                            if (commandedMapObject != null && commandedMapObject == mapObject)
+                            if (commandedMapObject != null && commandedMapObject == mapObject || mapObject.HasActivePeer())
                             {
                                 CommandNextPeer(commandedMapObject);
                             }
@@ -171,24 +170,18 @@ namespace CraigStars
                                 // we aren't commanding anything yet, so command this
                                 commandedMapObject?.Deselect();
                                 commandedMapObject = mapObject;
+
+                                GD.Print($"Commanded map object {commandedMapObject.ObjectName}");
                             }
                         }
-                        else
+                        else if (mapObject.GetPeers().Count > 0)
                         {
                             // this mapObject isn't owned by me.
                             CommandNextPeer(mapObject);
                         }
-                        // move our selection icon around
-                        if (selectedMapObject == commandedMapObject
-                        || (commandedMapObject != null && commandedMapObject.GetPeers().Contains(selectedMapObject)))
-                        {
-                            selectedMapObjectSprite.SelectLarge(selectedMapObject.Position);
-                        }
-                        else
-                        {
-                            selectedMapObjectSprite.Select(selectedMapObject.Position);
-                        }
-                        commandedMapObject.Activate();
+
+                        commandedMapObject.Command();
+                        UpdateSelectedIndicator();
                         Signals.PublishMapObjectActivatedEvent(commandedMapObject);
                     }
                 }
@@ -196,12 +189,28 @@ namespace CraigStars
             }
         }
 
-        internal void CommandNextPeer(MapObjectSprite mapObject)
+        /// <summary>
+        /// Update the sprite showing which object is selected. If the object is commanded, or it has a commanded fleet, we show the bigger icon
+        /// </summary>
+        void UpdateSelectedIndicator()
+        {
+            if (selectedMapObject == commandedMapObject || (commandedMapObject != null && commandedMapObject.GetPeers().Contains(selectedMapObject)))
+            {
+                selectedMapObjectSprite.SelectLarge(selectedMapObject.Position);
+            }
+            else
+            {
+                selectedMapObjectSprite.Select(selectedMapObject.Position);
+            }
+
+        }
+
+        void CommandNextPeer(MapObjectSprite mapObject)
         {
             // we selected the object we are commanding again
             // if it has peers, command the next peer
             var peers = mapObject.GetPeers();
-            var activePeer = peers.Find(p => p.State == ScannerState.Active);
+            var activePeer = peers.Find(p => p.State == ScannerState.Commanded);
             if (peers.Count > 0)
             {
                 if (commandedMapObject is PlanetSprite)
@@ -229,12 +238,23 @@ namespace CraigStars
                     commandedMapObject = peers[0] as MapObjectSprite;
                 }
             }
+
+            GD.Print($"Commanding Next Peer {commandedMapObject.ObjectName}");
         }
 
+        /// <summary>
+        /// Add new fleet data to the viewport, clearing out the old data first
+        /// </summary>
         void AddFleetsToViewport()
         {
             var player = PlayersManager.Instance.Me;
 
+            // clear out any existing fleets
+            Fleets.ForEach(f => { RemoveChild(f); f.QueueFree(); });
+            Fleets.Clear();
+            Planets.ForEach(p => p.OrbitingFleets.Clear());
+            ActiveFleet = null;
+            ActivePlanet = null;
 
             // add in new fleets
             Fleets.AddRange(player.Fleets.Select(fleet =>
@@ -254,7 +274,7 @@ namespace CraigStars
             Fleets.ForEach(f => f.Connect("input_event", this, nameof(OnInputEvent), new Godot.Collections.Array() { f }));
         }
 
-        public void UpdateViewport()
+        public void ResetScannerToHome()
         {
             FocusHomeworld();
             UpdateScanners();
@@ -272,17 +292,23 @@ namespace CraigStars
             var homeworld = Planets.Where(p => p.Planet.Homeworld && p.Planet.Player == PlayersManager.Instance.Me).FirstOrDefault();
             if (homeworld != null)
             {
+                selectedMapObject?.Deselect();
+                commandedMapObject?.Deselect();
                 selectedMapObject = homeworld;
                 commandedMapObject = homeworld;
 
                 selectedMapObject.Select();
-                commandedMapObject.Activate();
-                selectedMapObjectSprite.SelectLarge(commandedMapObject.Position);
+                commandedMapObject.Command();
+                UpdateSelectedIndicator();
                 Signals.PublishMapObjectSelectedEvent(homeworld);
                 Signals.PublishMapObjectActivatedEvent(homeworld);
             }
         }
 
+        /// <summary>
+        /// Update the scanners for a new turn.
+        /// We only create a ScannerCoverage for the largest scanner at a single location
+        /// </summary>
         void UpdateScanners()
         {
             // clear out the old scanners
@@ -309,20 +335,11 @@ namespace CraigStars
 
                 if (range > 0)
                 {
-                    ScannerCoverage scanner = scannerCoverageScene.Instance() as ScannerCoverage;
-                    scanner.Position = planet.Position;
-                    normalScannersNode.AddChild(scanner);
-                    scanner.ScanRange = range;
-                    Scanners.Add(scanner);
+                    AddScannerCoverage(planet.Position, range, false);
                 }
                 if (rangePen > 0)
                 {
-                    ScannerCoverage scanner = scannerCoverageScene.Instance() as ScannerCoverage;
-                    scanner.Position = planet.Position;
-                    penScannersNode.AddChild(scanner);
-                    scanner.ScanRange = rangePen;
-                    scanner.Pen = true;
-                    Scanners.Add(scanner);
+                    AddScannerCoverage(planet.Position, rangePen, true);
                 }
 
             }
@@ -333,23 +350,33 @@ namespace CraigStars
                 var rangePen = fleet.Fleet.Aggregate.ScanRangePen;
                 if (range > 0)
                 {
-                    ScannerCoverage scanner = scannerCoverageScene.Instance() as ScannerCoverage;
-                    scanner.Position = fleet.Position;
-                    normalScannersNode.AddChild(scanner);
-                    scanner.ScanRange = range;
-                    Scanners.Add(scanner);
+                    AddScannerCoverage(fleet.Position, range, false);
                 }
                 if (rangePen > 0)
                 {
-                    ScannerCoverage scanner = scannerCoverageScene.Instance() as ScannerCoverage;
-                    scanner.Position = fleet.Position;
-                    penScannersNode.AddChild(scanner);
-                    scanner.ScanRange = rangePen;
-                    scanner.Pen = true;
-                    Scanners.Add(scanner);
+                    AddScannerCoverage(fleet.Position, rangePen, true);
                 }
             }
         }
+
+        void AddScannerCoverage(Vector2 position, int range, bool pen)
+        {
+            ScannerCoverage scanner = scannerCoverageScene.Instance() as ScannerCoverage;
+            scanner.Position = position;
+            if (pen)
+            {
+                penScannersNode.AddChild(scanner);
+            }
+            else
+            {
+                normalScannersNode.AddChild(scanner);
+            }
+            scanner.ScanRange = range;
+            scanner.Pen = pen;
+            Scanners.Add(scanner);
+
+        }
+
 
         #endregion
     }

@@ -121,7 +121,7 @@ namespace CraigStars
                 // add the minerals back to our allocated amount
                 allocated += new Cost(numBuilt, numBuilt, numBuilt, 0);
             }
-            else if (item.Type == QueueItemType.Fleet)
+            else if (item.Type == QueueItemType.ShipToken)
             {
                 BuildFleet(planet, item, numBuilt);
             }

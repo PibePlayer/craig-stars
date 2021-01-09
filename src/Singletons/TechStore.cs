@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace CraigStars
 {
-    public class TechStore : Node
+    public class TechStore : Node, ITechStore
     {
         public List<Tech> Techs { get; set; } = new List<Tech>();
         public Dictionary<String, Tech> TechsByName { get; set; } = new Dictionary<String, Tech>();
@@ -15,7 +15,7 @@ namespace CraigStars
         /// PlayersManager is a singleton
         /// </summary>
         private static TechStore instance;
-        public static TechStore Instance
+        public static ITechStore Instance
         {
             get
             {
@@ -36,5 +36,22 @@ namespace CraigStars
             TechsByCategory = Techs.GroupBy(t => t.Category).ToDictionary(group => group.Key, group => group.ToList());
         }
 
+        public List<Tech> GetTechsByCategory(TechCategory category)
+        {
+            TechsByCategory.TryGetValue(category, out var techs);
+            return techs;
+        }
+
+        /// <summary>
+        /// Get a tech from the tech store, by name
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public T GetTechByName<T>(string name) where T : Tech
+        {
+            TechsByName.TryGetValue(name, out var tech);
+            return tech as T;
+        }
     }
 }

@@ -48,19 +48,22 @@ namespace CraigStars
         {
             if (ShipDesign != null || Hull != null)
             {
-                // assign ship design slots to each HullComponentPanel (other than space docs and cargo)
-                this.GetAllNodesOfType<HullComponentPanel>()
+                // get an array of hull component panels excluding some types
+                var hullComponentPanels = this.GetAllNodesOfType<HullComponentPanel>()
                 .Where(hcp => hcp.Type != HullSlotType.Cargo && hcp.Type != HullSlotType.SpaceDock)
-                .Each((hullComponentPanel, index) =>
+                .ToArray();
+
+                // assign ship design slots to each HullComponentPanel (other than space docs and cargo)
+                ShipDesign.Slots.ForEach(slot =>
                 {
-                    if (index < ShipDesign.Slots.Count)
+                    if (slot.HullSlotIndex > 0 && slot.HullSlotIndex < hullComponentPanels.Length)
                     {
-                        var slot = ShipDesign.Slots[index];
+                        var hullComponentPanel = hullComponentPanels[slot.HullSlotIndex];
                         hullComponentPanel.ShipDesignSlot = slot;
-                    }
-                    if (Hull != null && index < Hull.Slots.Count)
-                    {
-                        hullComponentPanel.TechHullSlot = Hull.Slots[index];
+                        if (Hull != null && slot.HullSlotIndex < Hull.Slots.Count)
+                        {
+                            hullComponentPanel.TechHullSlot = Hull.Slots[slot.HullSlotIndex];
+                        }
                     }
                 });
             }

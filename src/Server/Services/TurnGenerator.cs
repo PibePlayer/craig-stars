@@ -24,7 +24,15 @@ namespace CraigStars
             }
         }
 
+
+        Server Server { get; }
         PlanetProducer planetProducer = new PlanetProducer();
+        List<Planet> ownedPlanets = new List<Planet>();
+
+        public TurnGenerator(Server server)
+        {
+            Server = server;
+        }
 
         /// <summary>
         /// Generate a turn
@@ -67,52 +75,66 @@ namespace CraigStars
         ///     Remote Terraforming
         /// </c>
         /// </summary>
-        /// <param name="game"></param>
-        public void GenerateTurn(Game game, TechStore techStore)
+        public void GenerateTurn()
         {
-            game.Year++;
-            game.Players.ForEach(p => p.Messages.Clear());
+            Server.Year++;
 
-            var ownedPlanets = game.Planets.Where(p => p.Player != null).ToList();
+            // reset the players for a new turn
+            Server.Players.ForEach(p =>
+            {
+                p.SubmittedTurn = false;
+                p.Messages.Clear();
+            });
 
-            MoveFleets(game.Fleets);
-            Mine(game.UniverseSettings, ownedPlanets);
-            Produce(game.UniverseSettings, game.Planets);
-            Grow(game.UniverseSettings, game.Planets);
+            ownedPlanets = Server.Planets.Where(p => p.Player != null).ToList();
+
+            ProcessWaypoints();
+            MoveFleets();
+            Mine();
+            Produce();
+            Grow();
 
         }
 
         /// <summary>
         /// Make sure each player has up to date information about the world
         /// </summary>
-        /// <param name="game"></param>
-        /// <param name="techStore"></param>
-        public void UpdatePlayerReports(Game game, TechStore techStore)
+        public void UpdatePlayerReports()
         {
-            game.Fleets.ForEach(f => f.ComputeAggregate());
-            Scan(game.Year, techStore, game.Players, game.Planets, game.Fleets, game.MineralPackets, game.MineFields);
-            UpdatePlayers(game.UniverseSettings, techStore, game.Players);
+            Server.Fleets.ForEach(f => f.ComputeAggregate(Server.Settings));
+            Scan();
+            UpdatePlayers();
+        }
+
+        void ProcessWaypoints()
+        {
+            // process all WP0 tasks
+            Server.Fleets.ForEach(f => f.ProcessTask());
+
+            // remove any fleets that were scrapped
+            Server.Fleets.RemoveAll(f => f.Scrapped);
         }
 
         // move fleets
-        internal void MoveFleets(List<Fleet> fleets)
+        internal void MoveFleets()
         {
-            foreach (var fleet in fleets)
+            foreach (var fleet in Server.Fleets)
             {
                 fleet.Move();
-                // TODO: Scrap fleets
             }
 
+            // remove any fleets that were scrapped at the end
+            Server.Fleets.RemoveAll(f => f.Scrapped);
         }
 
-        void Mine(UniverseSettings settings, List<Planet> planets)
+        void Mine()
         {
-            planets.ForEach(p =>
+            ownedPlanets.ForEach(p =>
             {
                 p.Cargo.Add(p.GetMineralOutput());
                 p.MineYears.Add(p.Mines);
-                int mineralDecayFactor = settings.MineralDecayFactor;
-                int minMineralConcentration = p.Homeworld ? settings.MinHomeworldMineralConcentration : settings.MinMineralConcentration;
+                int mineralDecayFactor = Server.Settings.MineralDecayFactor;
+                int minMineralConcentration = p.Homeworld ? Server.Settings.MinHomeworldMineralConcentration : Server.Settings.MinMineralConcentration;
                 ReduceMineralConcentration(p, mineralDecayFactor, minMineralConcentration);
             });
         }
@@ -145,25 +167,22 @@ namespace CraigStars
             }
         }
 
-        void Produce(UniverseSettings settings, List<Planet> planets)
+        void Produce()
         {
-            var inhabitedPlanets = planets.Where(p => p.Player != null).ToList();
-            inhabitedPlanets.ForEach(p =>
+            ownedPlanets.ForEach(p =>
             {
-                planetProducer.Build(settings, p);
+                planetProducer.Build(Server.Settings, p);
             });
 
-            Research(settings, inhabitedPlanets);
+            Research();
         }
 
         /// <summary>
         /// Apply research resources from each planet to research
         /// </summary>
-        /// <param name="settings"></param>
-        /// <param name="inhabitedPlanets">A filtered list of inhabited planets</param>
-        void Research(UniverseSettings settings, List<Planet> inhabitedPlanets)
+        void Research()
         {
-            var planetsByPlayer = inhabitedPlanets.GroupBy(p => p.Player);
+            var planetsByPlayer = ownedPlanets.GroupBy(p => p.Player);
             foreach (var playerPlanets in planetsByPlayer)
             {
                 // figure out how many resoruces each planet has
@@ -174,29 +193,24 @@ namespace CraigStars
                 }
 
                 // research for this player
-                playerPlanets.Key.ResearchNextLevel(settings, resourcesToSpend);
+                playerPlanets.Key.ResearchNextLevel(Server.Settings, resourcesToSpend);
             }
         }
 
         /// <summary>
         /// Grow populations on planets
         /// </summary>
-        void Grow(UniverseSettings settings, List<Planet> planets)
+        void Grow()
         {
-            planets.ForEach(p => p.Population += p.GetGrowthAmount());
+            ownedPlanets.ForEach(p => p.Population += p.GetGrowthAmount(Server.Settings));
         }
 
         /// <summary>
         /// For each player, discover new planets, fleets, minefields, packets, etc
         /// </summary>
-        /// <param name="players"></param>
-        /// <param name="planets"></param>
-        /// <param name="fleets"></param>
-        /// <param name="mineralPackets"></param>
-        /// <param name="mineFields"></param>
-        void Scan(int year, TechStore techStore, List<Player> players, List<Planet> planets, List<Fleet> fleets, List<MineralPacket> mineralPackets, List<MineField> mineFields)
+        void Scan()
         {
-            foreach (var player in players)
+            foreach (var player in Server.Players)
             {
                 // clear out old fleets
                 // we rebuild this list each turn
@@ -209,9 +223,9 @@ namespace CraigStars
 
                 // build a list of scanners for this player
                 var scanners = new List<Scanner>();
-                var planetaryScanner = player.GetBestPlanetaryScanner(techStore);
+                var planetaryScanner = player.GetBestPlanetaryScanner(Server.TechStore);
 
-                foreach (var planet in planets.Where(p => p.Player == player && p.Scanner))
+                foreach (var planet in Server.Planets.Where(p => p.Player == player && p.Scanner))
                 {
                     // find the best scanner at this location, whether fleet or planet
                     var scanner = new Scanner(planet.Position, planetaryScanner.ScanRange, planetaryScanner.ScanRangePen);
@@ -228,14 +242,14 @@ namespace CraigStars
                 }
 
                 // find all our fleets that are out and about
-                foreach (var fleet in fleets.Where(f => f.Player == player && f.Aggregate.Scanner && (f.Orbiting == null || f.Orbiting.Player != player)))
+                foreach (var fleet in Server.Fleets.Where(f => f.Player == player && f.Aggregate.Scanner && (f.Orbiting == null || f.Orbiting.Player != player)))
                 {
                     scanners.Add(new Scanner(fleet.Position, fleet.Aggregate.ScanRange * fleet.Aggregate.ScanRange, fleet.Aggregate.ScanRangePen * fleet.Aggregate.ScanRangePen));
                 }
 
                 // go through each planet and update its report if
                 // we scanned it
-                foreach (var planet in planets)
+                foreach (var planet in Server.Planets)
                 {
                     // we own this planet, update the report
                     if (planet.Player == player)
@@ -254,7 +268,7 @@ namespace CraigStars
                     }
                 }
 
-                foreach (var fleet in fleets)
+                foreach (var fleet in Server.Fleets)
                 {
                     // we own this fleet, update the report
                     if (fleet.Player == player)
@@ -287,15 +301,12 @@ namespace CraigStars
         /// <summary>
         /// After a turn is generated, update some data on each player (like their current best planetary scanner)
         /// </summary>
-        /// <param name="settings"></param>
-        /// <param name="techStore"></param>
-        /// <param name="players"></param>
-        void UpdatePlayers(UniverseSettings settings, TechStore techStore, List<Player> players)
+        void UpdatePlayers()
         {
-            players.ForEach(p =>
+            Server.Players.ForEach(p =>
             {
-                p.PlanetaryScanner = p.GetBestPlanetaryScanner(techStore);
-                p.Fleets.ForEach(f => f.ComputeAggregate());
+                p.PlanetaryScanner = p.GetBestPlanetaryScanner(Server.TechStore);
+                p.Fleets.ForEach(f => f.ComputeAggregate(Server.Settings));
             });
         }
     }

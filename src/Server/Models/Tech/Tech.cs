@@ -22,5 +22,10 @@ namespace CraigStars
             Category = category;
         }
 
+        public override string ToString()
+        {
+            return $"{GetType()} - {Name}";
+        }
+
     }
 }

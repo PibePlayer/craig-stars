@@ -110,8 +110,9 @@ namespace CraigStars
             AddChild(waypointArea);
         }
 
-        public void InitMapObjects(Player player)
+        public void InitMapObjects()
         {
+            var player = PlayersManager.Instance.Me;
             Planets.AddRange(player.Planets.Select(planet =>
             {
                 var planetSprite = planetScene.Instance() as PlanetSprite;

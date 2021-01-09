@@ -6,6 +6,7 @@ namespace CraigStars.Singletons
 {
     public class TextureLoader : Node
     {
+        public const int NumPlanetImages = 9;
         /// <summary>
         /// PlayersManager is a singleton
         /// </summary>
@@ -36,6 +37,27 @@ namespace CraigStars.Singletons
             texture = ResourceLoader.Load<Texture>(assetPath);
 
             return texture;
+        }
+
+        public Texture FindTexture(ShipDesign shipDesign)
+        {
+            Texture texture;
+
+            // try loading it from the asset path like
+            // ResourceLoader.Load("res://assets/gui/tech/ShipDesign/Colony Ship0002.png")
+            var assetPath = $"res://assets/gui/tech/{shipDesign.Hull.Category}/{shipDesign.Hull.Name}{shipDesign.HullSetNumber:0000}.png";
+            texture = ResourceLoader.Load<Texture>(assetPath);
+
+            return texture;
+        }
+
+        public Texture FindTexture(Planet planet)
+        {
+            // use a unique planet image based on id
+            // we have 9 planet images currently
+            int num = (planet.Id % (NumPlanetImages - 1)) + 1;
+            var planetTextureAssetPath = $"res://assets/gui/planet/Planet0{num}.jpg";
+            return ResourceLoader.Load<Texture>(planetTextureAssetPath);
         }
 
     }

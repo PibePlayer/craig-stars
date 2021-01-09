@@ -1,12 +1,13 @@
-using CraigStars.Singletons;
 using Godot;
+using System;
+using System.Collections.Generic;
+
+using CraigStars.Singletons;
 
 namespace CraigStars
 {
     public class MapObjectSummaryTile : Control
     {
-        Texture planetTexture;
-        Texture fleetTexture;
         TextureRect textureRect;
 
         public MapObjectSprite MapObject
@@ -23,9 +24,6 @@ namespace CraigStars
 
         public override void _Ready()
         {
-            planetTexture = ResourceLoader.Load<Texture>("res://assets/gui/planet/Planet01.jpg");
-            fleetTexture = ResourceLoader.Load<Texture>("res://assets/gui/tech/ShipHull/Scout0004.png");
-
             nameLabel = FindNode("Name") as Label;
             textureRect = FindNode("TextureRect") as TextureRect;
 
@@ -60,13 +58,13 @@ namespace CraigStars
             if (MapObject != null)
             {
                 nameLabel.Text = mapObject.ObjectName;
-                if (MapObject is PlanetSprite)
+                if (MapObject is PlanetSprite planetSprite)
                 {
-                    textureRect.Texture = planetTexture;
+                    textureRect.Texture = TextureLoader.Instance.FindTexture(planetSprite.Planet);
                 }
-                else
+                else if (MapObject is FleetSprite fleetSprite)
                 {
-                    textureRect.Texture = fleetTexture;
+                    textureRect.Texture = TextureLoader.Instance.FindTexture(fleetSprite.Fleet.Tokens[0].Design);
                 }
             }
             else

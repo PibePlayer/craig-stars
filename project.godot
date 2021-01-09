@@ -26,6 +26,7 @@ Rpc="*res://src/Singletons/RPC.cs"
 Signals="*res://src/Singletons/Signals.cs"
 TextureLoader="*res://src/Singletons/TextureLoader.cs"
 TechStore="*res://src/Singletons/TechStore.cs"
+SettingsManager="*res://src/Singletons/SettingsManager.cs"
 
 [display]
 

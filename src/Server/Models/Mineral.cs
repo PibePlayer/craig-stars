@@ -8,11 +8,18 @@ namespace CraigStars
         public int Boranium { get; set; }
         public int Germanium { get; set; }
 
-        public Mineral(int ironium = 0, int boranium = 0, int germaninum = 0)
+        public Mineral() { }
+
+        public Mineral(int ironium = 0, int boranium = 0, int germanium = 0)
         {
             Ironium = ironium;
             Boranium = boranium;
-            Germanium = germaninum;
+            Germanium = germanium;
+        }
+
+        public Mineral(Mineral mineral)
+        {
+            Copy(mineral);
         }
 
         public static Mineral Empty { get => empty; }
@@ -74,6 +81,15 @@ namespace CraigStars
             );
         }
 
+        public static Mineral operator /(Mineral a, int num)
+        {
+            return new Mineral(
+                a.Ironium / num,
+                a.Boranium / num,
+                a.Germanium / num
+            );
+        }
+
         public void Add(int num)
         {
             Ironium += num;
@@ -81,11 +97,11 @@ namespace CraigStars
             Germanium += num;
         }
 
-        public void Deconstruct(out int ironium, out int boranium, out int germaninum)
+        public void Deconstruct(out int ironium, out int boranium, out int germanium)
         {
             ironium = Ironium;
             boranium = Boranium;
-            germaninum = Germanium;
+            germanium = Germanium;
         }
     }
 }

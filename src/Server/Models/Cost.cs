@@ -4,11 +4,26 @@ namespace CraigStars
 {
     public class Cost : Mineral
     {
+        private Cost cost;
+
         public int Resources { get; set; }
 
-        public Cost(int ironium = 0, int boranium = 0, int germaninum = 0, int resources = 0) : base(ironium, boranium, germaninum)
+        public Cost() { }
+
+        public Cost(int ironium = 0, int boranium = 0, int germanium = 0, int resources = 0) : base(ironium, boranium, germanium)
         {
             Resources = resources;
+        }
+
+        public Cost(Cost cost)
+        {
+            Copy(cost);
+        }
+
+        public void Copy(Cost cost)
+        {
+            base.Copy(cost);
+            Resources = cost.Resources;
         }
 
         public static Cost operator +(Cost a, Cost b)

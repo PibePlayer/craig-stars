@@ -7,72 +7,63 @@ using CraigStars.Utils;
 
 public class UniverseGenerator
 {
-    public void Generate(Game game, UniverseSettings settings, List<Player> players)
+    Server Server { get; }
+
+    public UniverseGenerator(Server server)
     {
-        List<Planet> planets = GeneratePlanets(settings);
+        Server = server;
+    }
+
+    public void Generate()
+    {
+        List<Planet> planets = GeneratePlanets(Server.Settings);
         List<Fleet> fleets = new List<Fleet>();
         List<Planet> ownedPlanets = new List<Planet>();
 
         // shuffle the planets so we don't end up with the same planet id each time
-        settings.Random.Shuffle(planets);
-        for (var i = 0; i < players.Count; i++)
+        Server.Settings.Random.Shuffle(planets);
+        for (var i = 0; i < Server.Players.Count; i++)
         {
-            var player = players[i];
+            var player = Server.Players[i];
 
             // initialize this player
             InitTechLevels(player);
             InitPlayerReports(player, planets);
+            InitShipDesigns(player);
             player.PlanetaryScanner = player.GetBestPlanetaryScanner(TechStore.Instance);
 
-            var homeworld = planets.Find(p => p.Player == null && (ownedPlanets.Count == 0 || ShortestDistanceToPlanets(p, ownedPlanets) > settings.Area / 4));
+            var homeworld = planets.Find(p => p.Player == null && (ownedPlanets.Count == 0 || ShortestDistanceToPlanets(p, ownedPlanets) > Server.Settings.Area / 4));
             player.Homeworld = homeworld;
-            MakeHomeworld(settings, player, homeworld, settings.StartingYear);
-            homeworld.ProductionQueue.Items.Add(new ProductionQueueItem()
-            {
-                Type = QueueItemType.Mine,
-                Quantity = 5
-            });
-            homeworld.ProductionQueue.Items.Add(new ProductionQueueItem()
-            {
-                Type = QueueItemType.Factory,
-                Quantity = 10
-            });
-            homeworld.ProductionQueue.Items.Add(new ProductionQueueItem()
-            {
-                Type = QueueItemType.AutoMine,
-                Quantity = 5
-            });
-
-            homeworld.ProductionQueue.Items.Add(new ProductionQueueItem()
-            {
-                Type = QueueItemType.AutoFactory,
-                Quantity = 10
-            });
+            MakeHomeworld(Server.Settings, player, homeworld, Server.Settings.StartingYear);
+            homeworld.ProductionQueue.Items.Add(new ProductionQueueItem(QueueItemType.Mine, 5));
+            homeworld.ProductionQueue.Items.Add(new ProductionQueueItem(QueueItemType.Factory, 10));
+            homeworld.ProductionQueue.Items.Add(new ProductionQueueItem(QueueItemType.AutoMine, 5));
+            homeworld.ProductionQueue.Items.Add(new ProductionQueueItem(QueueItemType.AutoFactory, 10));
             ownedPlanets.Add(homeworld);
 
-            fleets.AddRange(GenerateFleets(settings, player, homeworld));
+            fleets.AddRange(GenerateFleets(Server.Settings, player, homeworld));
             Message.Info(player, "Welcome to the universe, go forth and conquer!");
         }
 
         // add extra planets for this player
-        players.ForEach(player =>
+        Server.Players.ForEach(player =>
             {
-                for (var extraPlanetNum = 0; extraPlanetNum < settings.StartWithExtraPlanets; extraPlanetNum++)
+                for (var extraPlanetNum = 0; extraPlanetNum < Server.Settings.StartWithExtraPlanets; extraPlanetNum++)
                 {
                     var planet = planets.FirstOrDefault(p => p.Player == null && p.Position.DistanceTo(player.Homeworld.Position) < 100);
                     if (planet != null)
                     {
-                        MakeExtraWorld(settings, player, planet);
+                        MakeExtraWorld(Server.Settings, player, planet);
                         ownedPlanets.Add(planet);
                     }
                 }
 
             });
 
-        game.Planets.AddRange(planets);
-        game.Fleets.AddRange(fleets);
-        game.Width = settings.Area;
-        game.Height = settings.Area;
+        Server.Planets.AddRange(planets);
+        Server.Fleets.AddRange(fleets);
+        Server.Width = Server.Settings.Area;
+        Server.Height = Server.Settings.Area;
     }
 
     /// <summary>
@@ -113,7 +104,7 @@ public class UniverseGenerator
             Planet planet = new Planet();
             RandomizePlanet(settings, planet);
             planet.Id = i + 1;
-            planet.ObjectName = names[i];
+            planet.Name = names[i];
             planet.Position = loc;
             // planet.Randomize();
             planets.Add(planet);
@@ -125,8 +116,8 @@ public class UniverseGenerator
     List<Fleet> GenerateFleets(UniverseSettings settings, Player player, Planet homeworld)
     {
         var fleets = new List<Fleet>(new Fleet[] {
-            CreateFleet(ShipDesigns.LongRangeScount, $"Fleet #1", player, homeworld),
-            CreateFleet(ShipDesigns.LongRangeScount, $"Fleet #2", player, homeworld)
+            CreateFleet(ShipDesigns.LongRangeScount, $"Long Range Scout #1", player, homeworld),
+            CreateFleet(ShipDesigns.SantaMaria, $"Santa Maria # 1", player, homeworld)
         });
 
         return fleets;
@@ -134,13 +125,11 @@ public class UniverseGenerator
 
     Fleet CreateFleet(ShipDesign shipDesign, String name, Player player, Planet planet)
     {
-
-
         var fleet = new Fleet();
         fleet.Tokens.Add(
             new ShipToken()
             {
-                Design = ShipDesigns.LongRangeScount,
+                Design = shipDesign,
                 Quantity = 1
             }
         );
@@ -148,13 +137,19 @@ public class UniverseGenerator
         fleet.Orbiting = planet;
         fleet.Waypoints.Add(new Waypoint(fleet.Orbiting));
         planet.OrbitingFleets.Add(fleet);
-        fleet.ObjectName = name;
+        fleet.Name = name;
         fleet.Player = player;
         fleet.Id = player.Fleets.Count + 1;
 
         // aggregate all the design data
-        fleet.ComputeAggregate();
+        fleet.ComputeAggregate(Server.Settings);
         fleet.Fuel = fleet.Aggregate.FuelCapacity;
+
+        if (fleet.Aggregate.CargoCapacity > 0)
+        {
+            // TODO: Remove this when we have UI code to transfer colonists
+            fleet.Cargo.Colonists = fleet.Aggregate.CargoCapacity;
+        }
 
         return fleet;
     }
@@ -246,6 +241,26 @@ public class UniverseGenerator
         planet.Homeworld = true;
         planet.ContributesToResearch = true;
         planet.Scanner = true;
+
+        // the homeworld gets a starbase
+        planet.Starbase = new Starbase()
+        {
+            Player = player,
+            Position = planet.Position,
+            Orbiting = planet,
+            Waypoints = new List<Waypoint>
+            {
+                new Waypoint(planet)
+            },
+            Tokens = new List<ShipToken>
+            {
+                new ShipToken() {
+                    Design = ShipDesigns.Starbase,
+                    Quantity = 1,
+                }
+            }
+        };
+
         Message.HomePlanet(player, planet);
     }
 
@@ -294,6 +309,7 @@ public class UniverseGenerator
     void RandomizePlanet(UniverseSettings settings, Planet planet)
     {
         var random = settings.Random;
+        planet.InitEmptyPlanet();
 
         int minConc = settings.MinMineralConcentration;
         int maxConc = settings.MaxStartingMineralConcentration;
@@ -334,6 +350,7 @@ public class UniverseGenerator
             temp,
             rad
         );
+
     }
 
     void InitTechLevels(Player player)
@@ -408,11 +425,25 @@ public class UniverseGenerator
     }
 
     /// <summary>
+    /// Generate ship designs for this player based on their tech level and Race
+    /// </summary>
+    /// <param name="player">The player to generate ship designs for</param>
+    internal void InitShipDesigns(Player player)
+    {
+        ShipDesigner designer = new ShipDesigner();
+        player.Designs.Add(designer.DesignShip(Techs.Scout, "Long Range Scout", player, Server.TechStore));
+        player.Designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player, Server.TechStore));
+        player.Designs.Add(ShipDesigns.Starbase);
+
+        player.Designs.ForEach(design => design.ComputeAggregate(player, Server.Settings));
+    }
+
+    /// <summary>
     /// Initialize the player's planet reports and for a new game generation
     /// </summary>
     /// <param name="player"></param>
     /// <param name="planets"></param>
-    void InitPlayerReports(Player player, List<Planet> planets)
+    internal void InitPlayerReports(Player player, List<Planet> planets)
     {
         planets.ForEach(planet =>
         {
@@ -421,13 +452,13 @@ public class UniverseGenerator
                 Position = planet.Position,
                 Guid = planet.Guid,
                 Id = planet.Id,
-                ObjectName = planet.ObjectName,
+                Name = planet.Name,
                 ReportAge = Planet.Unexplored,
             };
 
             player.Planets.Add(planetReport);
             // build each players dictionary of planets by id
-            player.PlanetsByGuid = player.Planets.ToLookup(p => p.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
+            player.SetupMapObjectMappings();
         });
     }
 

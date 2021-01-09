@@ -12,6 +12,7 @@ namespace CraigStars
         public int FleetHealBonus { get; set; }
         public bool DoubleMineEfficiency { get; set; }
         public bool BuiltInScannerForJoaT { get; set; }
+        public int CargoCapacity { get; set; }
         public bool Starbase { get; set; }
         public int SpaceDock { get; set; } = UnlimitedSpaceDock;
         public int Initiative { get; set; }

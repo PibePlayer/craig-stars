@@ -7,7 +7,7 @@ namespace CraigStars
     {
         Label ironium;
         Label boranium;
-        Label germaninum;
+        Label germanium;
 
         Label mines;
         Label factories;
@@ -16,7 +16,7 @@ namespace CraigStars
         {
             ironium = FindNode("Ironium") as Label;
             boranium = FindNode("Boranium") as Label;
-            germaninum = FindNode("Germanium") as Label;
+            germanium = FindNode("Germanium") as Label;
 
             mines = FindNode("Mines") as Label;
             factories = FindNode("Factories") as Label;
@@ -31,7 +31,7 @@ namespace CraigStars
             {
                 ironium.Text = $"{ActivePlanet.Planet.Cargo.Ironium}kT";
                 boranium.Text = $"{ActivePlanet.Planet.Cargo.Boranium}kT";
-                germaninum.Text = $"{ActivePlanet.Planet.Cargo.Germanium}kT";
+                germanium.Text = $"{ActivePlanet.Planet.Cargo.Germanium}kT";
 
                 mines.Text = $"{ActivePlanet.Planet.Mines} of {ActivePlanet.Planet.MaxMines}";
                 factories.Text = $"{ActivePlanet.Planet.Factories} of {ActivePlanet.Planet.MaxFactories}";

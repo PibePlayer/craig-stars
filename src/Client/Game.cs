@@ -4,48 +4,46 @@ using System.Linq;
 
 using CraigStars.Singletons;
 using System;
+using log4net;
+using log4net.Core;
+using log4net.Appender;
 
 namespace CraigStars
 {
     public class Game : Node
     {
-        public UniverseSettings UniverseSettings { get; set; } = new UniverseSettings();
-        public TechStore TechStore { get => TechStore.Instance; }
-        public List<Player> Players { get; set; } = new List<Player>();
-        public List<Planet> Planets { get; set; } = new List<Planet>();
-        public List<Fleet> Fleets { get; set; } = new List<Fleet>();
-        public Dictionary<Guid, Planet> PlanetsByGuid { get; set; } = new Dictionary<Guid, Planet>();
-        public Dictionary<Guid, Fleet> FleetsByGuid { get; set; } = new Dictionary<Guid, Fleet>();
-        public List<MineralPacket> MineralPackets { get; set; } = new List<MineralPacket>();
-        public List<MineField> MineFields { get; set; } = new List<MineField>();
-        public int Width { get; set; }
-        public int Height { get; set; }
-        public int Year { get; set; } = 2400;
+        /// <summary>
+        /// The game node creates a server in single player or host mode
+        /// </summary>
+        public Server Server { get; set; } = new Server();
 
-        Scanner Scanner { get; set; }
+        /// <summary>
+        /// This is the main view into the universe
+        /// </summary>
+        Scanner scanner;
 
         public override void _Ready()
         {
-            Players.AddRange(PlayersManager.Instance.Players);
-
-            // generate a new univers
-            UniverseGenerator generator = new UniverseGenerator();
-            generator.Generate(this, UniverseSettings, PlayersManager.Instance.Players);
-
-            UpdateDictionaries();
-
-            // update our player information as if we'd just generated a new turn
-            TurnGenerator turnGenerator = new TurnGenerator();
-            turnGenerator.UpdatePlayerReports(this, TechStore);
-
+            Server.Init(PlayersManager.Instance.Players, SettingsManager.Settings, TechStore.Instance);
 
             // add the universe to the viewport
-            Scanner = FindNode("Scanner") as Scanner;
-            Scanner.InitMapObjects(PlayersManager.Instance.Me);
+            scanner = FindNode("Scanner") as Scanner;
+            scanner.InitMapObjects();
 
-            Signals.PublishPostStartGameEvent(Year);
+            Signals.ChangeProductionQueuePressedEvent += OnChangeProductionQueue;
+        }
 
-            Signals.SubmitTurnEvent += OnSubmitTurn;
+        public override void _ExitTree()
+        {
+            Server.Shutdown();
+            Signals.ChangeProductionQueuePressedEvent -= OnChangeProductionQueue;
+        }
+
+        private void OnChangeProductionQueue(PlanetSprite planetSprite)
+        {
+            var dialog = GetNode<ProductionQueueDialog>("CanvasLayer/ProductionQueueDialog");
+            dialog.Planet = planetSprite.Planet;
+            dialog.PopupCentered();
         }
 
         public override void _Input(InputEvent @event)
@@ -61,58 +59,5 @@ namespace CraigStars
             }
         }
 
-        void UpdateDictionaries()
-        {
-            // build each players dictionary of planets by id
-            PlanetsByGuid = Planets.ToLookup(p => p.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
-            FleetsByGuid = Fleets.ToLookup(p => p.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
-        }
-
-        /// <summary>
-        /// The player has submitted a new turn.
-        /// Copy any data from this to the main game
-        /// </summary>
-        /// <param name="player"></param>
-        void OnSubmitTurn(Player player)
-        {
-            // TODO: fix this to have turn submit data
-            foreach (var playerFleet in player.Fleets.Where(f => f.Player == player))
-            {
-                if (FleetsByGuid.TryGetValue(playerFleet.Guid, out var fleet) && fleet.Player == player)
-                {
-                    // replace each waypoint operation with whatever we got from the client
-                    fleet.Waypoints.RemoveRange(1, fleet.Waypoints.Count - 1);
-                    if (playerFleet.Waypoints != null && playerFleet.Waypoints.Count > 0)
-                    {
-                        // TODO: copy the task as well when we implement it
-                        fleet.Waypoints[0].WarpFactor = playerFleet.Waypoints[0].WarpFactor;
-                        foreach (var playerWaypoint in playerFleet.Waypoints.Skip(1))
-                        {
-                            if (playerWaypoint.Target is Planet planet)
-                            {
-                                if (PlanetsByGuid.TryGetValue(planet.Guid, out var gamePlanet))
-                                {
-                                    // add the server side version of this planet as a waypoint
-                                    fleet.Waypoints.Add(new Waypoint(gamePlanet, playerWaypoint.WarpFactor));
-                                }
-                            }
-                        };
-                    }
-                }
-            }
-
-            // TODO: support multiple players, production queues, etc
-            GenerateTurn();
-        }
-
-
-        void GenerateTurn()
-        {
-            TurnGenerator generator = new TurnGenerator();
-            generator.GenerateTurn(this, TechStore);
-            generator.UpdatePlayerReports(this, TechStore);
-            UpdateDictionaries();
-            Signals.PublishTurnPassedEvent(Year);
-        }
     }
 }

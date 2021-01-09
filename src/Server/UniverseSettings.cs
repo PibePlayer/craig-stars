@@ -5,12 +5,6 @@ namespace CraigStars
 {
     public class UniverseSettings
     {
-        #region Constants
-
-        public static int BuiltInScannerJoaTMultiplier = 20;
-        public static int MaxPopulation = 1000000;
-
-        #endregion
 
         /// <summary>
         /// Allow setting of the random seed used
@@ -67,6 +61,13 @@ namespace CraigStars
         public Cost DefenseCost { get; set; } = new Cost(5, 5, 5, 15);
         public int MineralAlchemyCost { get; set; } = 100;
         public int MineralAlchemyLRTCost { get; set; } = 25;
+
+        #region game settings
+
+        public int BuiltInScannerJoaTMultiplier = 20;
+        public int MaxPopulation = 1000000;
+
+        #endregion
 
 
         /// <summary>

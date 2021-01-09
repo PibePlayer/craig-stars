@@ -177,14 +177,412 @@ namespace CraigStars
 
         #endregion
 
+        #region Armor
+
+        public static readonly TechHullComponent Tritanium = new TechHullComponent("Tritanium", new Cost(5, 0, 0, 9), new TechRequirements(), 10, TechCategory.Armor)
+        {
+            Mass = 60,
+            Armor = 50,
+            HullSlotType = HullSlotType.Armor
+        };
+        public static readonly TechHullComponent Crobmnium = new TechHullComponent("Crobmnium", new Cost(6, 0, 0, 13), new TechRequirements(construction: 3), 20, TechCategory.Armor)
+        {
+            Mass = 56,
+            Armor = 75,
+            HullSlotType = HullSlotType.Armor
+        };
+        public static readonly TechHullComponent Carbonic = new TechHullComponent("Carbonic Armor", new Cost(5, 0, 0, 15), new TechRequirements(biotechnology: 4), 30, TechCategory.Armor)
+        {
+            Mass = 25,
+            Armor = 100,
+            HullSlotType = HullSlotType.Armor
+        };
+        public static readonly TechHullComponent Strobnium = new TechHullComponent("Strobnium", new Cost(8, 0, 0, 18), new TechRequirements(construction: 6), 40, TechCategory.Armor)
+        {
+            Mass = 54,
+            Armor = 120,
+            HullSlotType = HullSlotType.Armor
+        };
+        public static readonly TechHullComponent Organic = new TechHullComponent("Organic Armor", new Cost(0, 0, 6, 20), new TechRequirements(biotechnology: 7), 50, TechCategory.Armor)
+        {
+            Mass = 15,
+            Armor = 175,
+            HullSlotType = HullSlotType.Armor
+        };
+        public static readonly TechHullComponent Kelarium = new TechHullComponent("Kelarium", new Cost(9, 1, 0, 25), new TechRequirements(construction: 9), 60, TechCategory.Armor)
+        {
+            Mass = 50,
+            Armor = 180,
+            HullSlotType = HullSlotType.Armor
+        };
+        public static readonly TechHullComponent Fielded = new TechHullComponent("Fielded Kelarium", new Cost(10, 0, 2, 28), new TechRequirements(energy: 4, construction: 10, prtRequired: PRT.IS), 70, TechCategory.Armor)
+        {
+            Mass = 50,
+            Shield = 50,
+            Armor = 175,
+            HullSlotType = HullSlotType.Armor
+        };
+        public static readonly TechHullComponent Depleted = new TechHullComponent("Depleted Neutronium", new Cost(10, 0, 2, 28), new TechRequirements(construction: 10, electronics: 3, prtRequired: PRT.SS), 80, TechCategory.Armor)
+        {
+            Mass = 50,
+            Armor = 200,
+            Cloak = 25,
+            HullSlotType = HullSlotType.Armor
+        };
+        public static readonly TechHullComponent Neutronium = new TechHullComponent("Neutronium", new Cost(11, 2, 1, 30), new TechRequirements(construction: 12), 90, TechCategory.Armor)
+        {
+            Mass = 45,
+            Armor = 275,
+            HullSlotType = HullSlotType.Armor
+        };
+        public static readonly TechHullComponent Valanium = new TechHullComponent("Valanium", new Cost(15, 0, 0, 50), new TechRequirements(construction: 16), 100, TechCategory.Armor)
+        {
+            Mass = 40,
+            Armor = 500,
+            HullSlotType = HullSlotType.Armor
+        };
+        public static readonly TechHullComponent Superlatanium = new TechHullComponent("Superlatanium", new Cost(25, 0, 0, 100), new TechRequirements(construction: 24), 110, TechCategory.Armor)
+        {
+            Mass = 30,
+            Armor = 1500,
+            HullSlotType = HullSlotType.Armor
+        };
+        #endregion
+
         #region Mechanical
+        public static readonly TechHullComponent BeamDeflector = new TechHullComponent("Beam Deflector", new Cost(0, 0, 10, 8), new TechRequirements(energy: 6, weapons: 6, construction: 6, electronics: 6), 0, TechCategory.Mechanical)
+        {
+            Mass = 1,
+            HullSlotType = HullSlotType.Mechanical,
+            BeamDefense = 1
+        };
+        public static readonly TechHullComponent CargoPod = new TechHullComponent("Cargo Pod", new Cost(5, 0, 2, 10), new TechRequirements(construction: 3), 0, TechCategory.Mechanical)
+        {
+            Mass = 5,
+            CargoBonus = 50,
+            HullSlotType = HullSlotType.Mechanical,
+        };
+        public static readonly TechHullComponent ColonizationModule = new TechHullComponent("Colonization Module", new Cost(11, 9, 9, 9), new TechRequirements(), 0, TechCategory.Mechanical)
+        {
+            Mass = 32,
+            ColonizationModule = true,
+            HullSlotType = HullSlotType.Mechanical
+        };
         public static readonly TechHullComponent FuelTank = new TechHullComponent("Fuel Tank", new Cost(5, 0, 0, 4), new TechRequirements(), 0, TechCategory.Mechanical)
         {
             Mass = 3,
             FuelBonus = 250,
             HullSlotType = HullSlotType.Mechanical
         };
+        public static readonly TechHullComponent ManeuveringJet = new TechHullComponent("Maneuvering Jet", new Cost(5, 0, 5, 10), new TechRequirements(energy: 2, propulsion: 3), 0, TechCategory.Mechanical)
+        {
+            Mass = 5,
+            HullSlotType = HullSlotType.Mechanical,
+        };
+        public static readonly TechHullComponent OrbitalConstructionModule = new TechHullComponent("Orbital Construction Module", new Cost(18, 13, 13, 18), new TechRequirements(prtRequired: PRT.AR), 0, TechCategory.Mechanical)
+        {
+            Mass = 50,
+            MinKillRate = 2000,
+            ColonizationModule = true,
+            HullSlotType = HullSlotType.Armor
+        };
+        public static readonly TechHullComponent Overthruster = new TechHullComponent("Overthruster", new Cost(10, 0, 8, 20), new TechRequirements(energy: 5, propulsion: 12), 0, TechCategory.Mechanical)
+        {
+            Mass = 5,
+            HullSlotType = HullSlotType.Mechanical,
+        };
+        public static readonly TechHullComponent SuperCargoPod = new TechHullComponent("Super Cargo Pod", new Cost(8, 0, 2, 15), new TechRequirements(energy: 3, construction: 8), 0, TechCategory.Mechanical)
+        {
+            Mass = 7,
+            CargoBonus = 100,
+            HullSlotType = HullSlotType.Mechanical,
+        };
+        public static readonly TechHullComponent SuperFuelTank = new TechHullComponent("Super Fuel Tank", new Cost(8, 0, 0, 8), new TechRequirements(energy: 6, propulsion: 4, construction: 14), 0, TechCategory.Mechanical)
+        {
+            Mass = 8,
+            FuelBonus = 500,
+            HullSlotType = HullSlotType.Mechanical,
+        };
 
+        #endregion
+
+        #region BeamWeapons
+
+        public static readonly TechHullComponent Laser = new TechHullComponent("Laser", new Cost(0, 5, 0, 4), new TechRequirements(), 0, TechCategory.BeamWeapon)
+        {
+            Mass = 1,
+            Initiative = 9,
+            Power = 10,
+            HullSlotType = HullSlotType.Weapon,
+
+            Range = 1
+        };
+        public static readonly TechHullComponent XRayLaser = new TechHullComponent("X-Ray Laser", new Cost(0, 6, 0, 6), new TechRequirements(weapons: 3), 10, TechCategory.BeamWeapon)
+        {
+            Mass = 1,
+            Initiative = 9,
+            Power = 16,
+            HullSlotType = HullSlotType.Weapon,
+
+            Range = 1
+        };
+        public static readonly TechHullComponent MiniGun = new TechHullComponent("Mini Gun", new Cost(0, 6, 0, 6), new TechRequirements(weapons: 5), 20, TechCategory.BeamWeapon)
+        {
+            Mass = 3,
+            Initiative = 12,
+            MineSweep = 208,
+            Power = 16,
+            HitsAllTargets = true,
+            HullSlotType = HullSlotType.Weapon,
+
+            Range = 2
+        };
+        public static readonly TechHullComponent YakimoraLightPhaser = new TechHullComponent("Yakimora Light Phaser", new Cost(0, 8, 0, 7), new TechRequirements(weapons: 6), 30, TechCategory.BeamWeapon)
+        {
+            Mass = 1,
+            Initiative = 9,
+            Power = 26,
+            HullSlotType = HullSlotType.Weapon,
+
+            Range = 1
+        };
+        public static readonly TechHullComponent Blackjack = new TechHullComponent("Blackjack", new Cost(0, 16, 0, 7), new TechRequirements(weapons: 7), 40, TechCategory.BeamWeapon)
+        {
+            Mass = 10,
+            Initiative = 10,
+            Power = 90,
+            HullSlotType = HullSlotType.Weapon,
+
+            Range = 0
+        };
+        public static readonly TechHullComponent PhaserBazooka = new TechHullComponent("Phaser Bazooka", new Cost(0, 8, 0, 11), new TechRequirements(weapons: 8), 50, TechCategory.BeamWeapon)
+        {
+            Mass = 2,
+            Initiative = 7,
+            Power = 26,
+            HullSlotType = HullSlotType.Weapon,
+
+            Range = 2
+        };
+        public static readonly TechHullComponent PulsedSapper = new TechHullComponent("Pulsed Sapper", new Cost(0, 0, 4, 12), new TechRequirements(energy: 5, weapons: 9), 60, TechCategory.BeamWeapon)
+        {
+            Mass = 1,
+            Initiative = 14,
+            DamageShieldsOnly = true,
+            Power = 82,
+            HullSlotType = HullSlotType.Weapon,
+
+            Range = 3
+        };
+        public static readonly TechHullComponent ColloidalPhaser = new TechHullComponent("Colloidal Phaser", new Cost(0, 14, 0, 18), new TechRequirements(weapons: 10), 70, TechCategory.BeamWeapon)
+        {
+            Mass = 2,
+            Initiative = 5,
+            Power = 26,
+            HullSlotType = HullSlotType.Weapon,
+
+            Range = 3
+        };
+        public static readonly TechHullComponent GatlingGun = new TechHullComponent("Gatling Gun", new Cost(0, 20, 0, 13), new TechRequirements(weapons: 11), 80, TechCategory.BeamWeapon)
+        {
+            Mass = 3,
+            Initiative = 12,
+            MineSweep = 496,
+            Power = 31,
+            HitsAllTargets = true,
+            HullSlotType = HullSlotType.Weapon,
+            Range = 2
+        };
+        public static readonly TechHullComponent MiniBlaster = new TechHullComponent("Mini Blaster", new Cost(0, 10, 0, 9), new TechRequirements(weapons: 12), 90, TechCategory.BeamWeapon)
+        {
+            Mass = 1,
+            Initiative = 9,
+            Power = 66,
+            HullSlotType = HullSlotType.Weapon,
+            Range = 1
+        };
+        public static readonly TechHullComponent Bludgeon = new TechHullComponent("Bludgeon", new Cost(0, 22, 0, 9), new TechRequirements(weapons: 13), 100, TechCategory.BeamWeapon)
+        {
+            Mass = 10,
+            Initiative = 10,
+            Power = 231,
+            HullSlotType = HullSlotType.Weapon,
+            Range = 0
+        };
+        public static readonly TechHullComponent MarkIVBlaster = new TechHullComponent("Mark IV Blaster", new Cost(0, 12, 0, 15), new TechRequirements(weapons: 14), 110, TechCategory.BeamWeapon)
+        {
+            Mass = 2,
+            Initiative = 7,
+            Power = 66,
+            HullSlotType = HullSlotType.Weapon,
+            Range = 2
+        };
+        public static readonly TechHullComponent PhasedSapper = new TechHullComponent("Phased Sapper", new Cost(0, 0, 6, 16), new TechRequirements(energy: 8, weapons: 15), 120, TechCategory.BeamWeapon)
+        {
+            Mass = 1,
+            Initiative = 14,
+            DamageShieldsOnly = true,
+            Power = 211,
+            HullSlotType = HullSlotType.Weapon,
+            Range = 3
+        };
+        public static readonly TechHullComponent HeavyBlaster = new TechHullComponent("Heavy Blaster", new Cost(0, 20, 0, 25), new TechRequirements(weapons: 16), 130, TechCategory.BeamWeapon)
+        {
+            Mass = 2,
+            Initiative = 5,
+            Power = 66,
+            HullSlotType = HullSlotType.Weapon,
+            Range = 3
+        };
+        public static readonly TechHullComponent GatlingNeutrinoCannon = new TechHullComponent("Gatling Neutrino Cannon", new Cost(0, 28, 0, 17), new TechRequirements(weapons: 17, prtRequired: PRT.WM), 140, TechCategory.BeamWeapon)
+        {
+            Mass = 3,
+            Initiative = 13,
+            MineSweep = 1280,
+            Power = 80,
+            HitsAllTargets = true,
+            HullSlotType = HullSlotType.Weapon,
+            Range = 2
+        };
+        public static readonly TechHullComponent MyopicDisruptor = new TechHullComponent("Myopic Disruptor", new Cost(0, 14, 0, 12), new TechRequirements(weapons: 18), 150, TechCategory.BeamWeapon)
+        {
+            Mass = 1,
+            Initiative = 9,
+            Power = 169,
+            HullSlotType = HullSlotType.Weapon,
+            Range = 1
+        };
+        public static readonly TechHullComponent Blunderbuss = new TechHullComponent("Blunderbuss", new Cost(0, 30, 0, 13), new TechRequirements(weapons: 19, prtRequired: PRT.WM), 160, TechCategory.BeamWeapon)
+        {
+            Mass = 10,
+            Initiative = 11,
+            Power = 592,
+            HullSlotType = HullSlotType.Weapon,
+            Range = 0
+        };
+        public static readonly TechHullComponent Disruptor = new TechHullComponent("Disruptor", new Cost(0, 16, 0, 20), new TechRequirements(weapons: 20), 170, TechCategory.BeamWeapon)
+        {
+            Mass = 2,
+            Initiative = 8,
+            Power = 169,
+            HullSlotType = HullSlotType.Weapon,
+            Range = 2
+        };
+        public static readonly TechHullComponent SyncroSapper = new TechHullComponent("Syncro Sapper", new Cost(0, 0, 8, 21), new TechRequirements(energy: 11, weapons: 21), 180, TechCategory.BeamWeapon)
+        {
+            Mass = 1,
+            Initiative = 14,
+            DamageShieldsOnly = true,
+            Power = 541,
+            HullSlotType = HullSlotType.Weapon,
+            Range = 3
+        };
+        public static readonly TechHullComponent MegaDisruptor = new TechHullComponent("Mega Disruptor", new Cost(0, 30, 0, 33), new TechRequirements(weapons: 22), 190, TechCategory.BeamWeapon)
+        {
+            Mass = 2,
+            Initiative = 6,
+            Power = 169,
+            HullSlotType = HullSlotType.Weapon,
+            Range = 3
+        };
+        public static readonly TechHullComponent BigMuthaCannon = new TechHullComponent("Big Mutha Cannon", new Cost(0, 36, 0, 23), new TechRequirements(weapons: 23), 200, TechCategory.BeamWeapon)
+        {
+            Mass = 3,
+            Initiative = 13,
+            MineSweep = 3264,
+            Power = 204,
+            HitsAllTargets = true,
+            HullSlotType = HullSlotType.Weapon,
+            Range = 2
+        };
+        public static readonly TechHullComponent StreamingPulverizer = new TechHullComponent("Streaming Pulverizer", new Cost(0, 20, 0, 16), new TechRequirements(weapons: 24), 210, TechCategory.BeamWeapon)
+        {
+            Mass = 1,
+            Initiative = 9,
+            Power = 433,
+            HullSlotType = HullSlotType.Weapon,
+            Range = 1
+        };
+        public static readonly TechHullComponent AntiMatterPulverizer = new TechHullComponent("Anti-Matter Pulverizer", new Cost(0, 22, 0, 27), new TechRequirements(weapons: 26), 220, TechCategory.BeamWeapon)
+        {
+            Mass = 1,
+            Initiative = 8,
+            Power = 433,
+            HullSlotType = HullSlotType.Weapon,
+            Range = 2
+        };
+        #endregion
+
+        #region MysteryTrader
+        public static readonly TechHullComponent AntiMatterGenerator = new TechHullComponent("Anti-Matter Generator", new Cost(8, 3, 3, 10), new TechRequirements(weapons: 12, biotechnology: 7, prtRequired: PRT.IT), 0, TechCategory.Electrical)
+        {
+            Mass = 10,
+            FuelRegenerationRate = 50,
+            FuelBonus = 200,
+            HullSlotType = HullSlotType.Electrical,
+        };
+
+        #endregion
+
+        #region Shields
+        public static readonly TechHullComponent MoleSkinShield = new TechHullComponent("Mole-skin Shield", new Cost(1, 0, 1, 4), new TechRequirements(), 10, TechCategory.Shield)
+        {
+            Mass = 1,
+            Shield = 25,
+            HullSlotType = HullSlotType.Shield,
+
+
+        };
+        public static readonly TechHullComponent CowHideShield = new TechHullComponent("Cow-hide Shield", new Cost(2, 0, 2, 5), new TechRequirements(energy: 3), 20, TechCategory.Shield)
+        {
+            Mass = 1,
+            Shield = 40,
+            HullSlotType = HullSlotType.Shield,
+        };
+        public static readonly TechHullComponent WolverineDiffuseShield = new TechHullComponent("Wolverine Diffuse Shield", new Cost(3, 0, 3, 6), new TechRequirements(energy: 6), 30, TechCategory.Shield)
+        {
+            Mass = 1,
+            Shield = 60,
+            HullSlotType = HullSlotType.Shield,
+        };
+        public static readonly TechHullComponent CrobySharmor = new TechHullComponent("Croby Sharmor", new Cost(7, 0, 4, 15), new TechRequirements(energy: 7, construction: 4, prtRequired: PRT.IS), 40, TechCategory.Shield)
+        {
+            Mass = 10,
+            Shield = 60,
+            Armor = 65,
+            HullSlotType = HullSlotType.Shield,
+        };
+        public static readonly TechHullComponent ShadowShield = new TechHullComponent("Shadow Shield", new Cost(3, 0, 3, 7), new TechRequirements(energy: 7, electronics: 3, prtRequired: PRT.SS), 50, TechCategory.Shield)
+        {
+            Mass = 2,
+            Shield = 75,
+            Cloak = 35,
+            HullSlotType = HullSlotType.Shield,
+        };
+        public static readonly TechHullComponent BearNeutrinoBarrier = new TechHullComponent("Bear Neutrino Barrier", new Cost(4, 0, 4, 8), new TechRequirements(energy: 10), 60, TechCategory.Shield)
+        {
+            Mass = 1,
+            Shield = 100,
+            HullSlotType = HullSlotType.Shield,
+        };
+        public static readonly TechHullComponent GorillaDelegator = new TechHullComponent("Gorilla Delegator", new Cost(5, 0, 6, 11), new TechRequirements(energy: 14), 70, TechCategory.Shield)
+        {
+            Mass = 1,
+            Shield = 175,
+            HullSlotType = HullSlotType.Shield,
+        };
+        public static readonly TechHullComponent ElephantHideFortress = new TechHullComponent("Elephant Hide Fortress", new Cost(8, 0, 10, 15), new TechRequirements(energy: 18), 80, TechCategory.Shield)
+        {
+            Mass = 1,
+            Shield = 300,
+            HullSlotType = HullSlotType.Shield,
+        };
+        public static readonly TechHullComponent CompletePhaseShield = new TechHullComponent("Complete Phase Shield", new Cost(12, 0, 15, 20), new TechRequirements(energy: 22), 90, TechCategory.Shield)
+        {
+            Mass = 1,
+            Shield = 500,
+            HullSlotType = HullSlotType.Shield,
+        };
         #endregion
 
         #region ShipHulls
@@ -203,6 +601,18 @@ namespace CraigStars
             })
         };
 
+        public static readonly TechHull ColonyShip = new TechHull("Colony Ship", new Cost(9, 0, 13, 18), new TechRequirements(), 160, TechCategory.ShipHull)
+        {
+            Mass = 20,
+            Armor = 20,
+            FuelCapacity = 200,
+            CargoCapacity = 25,
+            Slots = new List<TechHullSlot>(new TechHullSlot[] {
+                new TechHullSlot(HullSlotType.Engine, 1, true),
+                new TechHullSlot(HullSlotType.Mechanical, 1, false)
+            })
+        };
+
         #endregion
 
         #region StarbaseHulls
@@ -211,7 +621,34 @@ namespace CraigStars
             Mass = 0,
             Armor = 500,
             Initiative = 14,
-            Starbase = true
+            Starbase = true,
+            Slots = new List<TechHullSlot>(new TechHullSlot[] {
+                new TechHullSlot(HullSlotType.OrbitalElectrical, 1, false),
+                new TechHullSlot(HullSlotType.Weapon, 16, false),
+                new TechHullSlot(HullSlotType.Shield, 16, false),
+                new TechHullSlot(HullSlotType.Weapon, 16, false),
+                new TechHullSlot(HullSlotType.ShieldArmor, 16, false),
+                new TechHullSlot(HullSlotType.Shield, 16, false),
+                new TechHullSlot(HullSlotType.Electrical, 3, false),
+                new TechHullSlot(HullSlotType.Weapon, 16, false),
+                new TechHullSlot(HullSlotType.Electrical, 3, false),
+                new TechHullSlot(HullSlotType.Weapon, 16, false),
+                new TechHullSlot(HullSlotType.OrbitalElectrical, 1, false),
+                new TechHullSlot(HullSlotType.ShieldArmor, 16, false),
+            })
+        };
+
+        #endregion
+
+        #region Defenses
+
+        public static readonly TechDefense MissileBattery = new TechDefense("Missile Battery", new Cost(5, 5, 5, 15), new TechRequirements(), 0, TechCategory.PlanetaryDefense)
+        {
+            DefenseCoverage = 199
+        };
+        public static readonly TechDefense SDI = new TechDefense("SDI", new Cost(5, 5, 5, 15), new TechRequirements(), 100, TechCategory.PlanetaryDefense)
+        {
+            DefenseCoverage = 99
         };
 
         #endregion
@@ -258,14 +695,80 @@ namespace CraigStars
                 PeerlessScanner,
                 RobberBaronScanner,
 
+                // Armor
+                Tritanium,
+                Crobmnium,
+                Carbonic,
+                Strobnium,
+                Organic,
+                Kelarium,
+                Fielded,
+                Depleted,
+                Neutronium,
+                Valanium,
+                Superlatanium,
+
                 // mechanical
+                BeamDeflector,
+                CargoPod,
+                ColonizationModule,
                 FuelTank,
+                ManeuveringJet,
+                OrbitalConstructionModule,
+                Overthruster,
+                SuperCargoPod,
+                SuperFuelTank,
+
+                // BeamWeapons
+                Laser,
+                XRayLaser,
+                MiniGun,
+                YakimoraLightPhaser,
+                Blackjack,
+                PhaserBazooka,
+                PulsedSapper,
+                ColloidalPhaser,
+                GatlingGun,
+                MiniBlaster,
+                Bludgeon,
+                MarkIVBlaster,
+                PhasedSapper,
+                HeavyBlaster,
+                GatlingNeutrinoCannon,
+                MyopicDisruptor,
+                Blunderbuss,
+                Disruptor,
+                SyncroSapper,
+                MegaDisruptor,
+                BigMuthaCannon,
+                StreamingPulverizer,
+                AntiMatterPulverizer,
+                
+                // Mystery Trader
+                AntiMatterGenerator,
+                
+                // Shields
+                MoleSkinShield,
+                CowHideShield,
+                WolverineDiffuseShield,
+                CrobySharmor,
+                ShadowShield,
+                BearNeutrinoBarrier,
+                GorillaDelegator,
+                ElephantHideFortress,
+                CompletePhaseShield,
+
 
                 // ship hulls,
                 Scout,
+                ColonyShip,
 
                 // starbases
                 SpaceStation,
+
+                // defenses
+                MissileBattery,
+                SDI,
 
                 // Planetary Scanner
                 Viewer50,

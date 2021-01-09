@@ -10,7 +10,7 @@ namespace CraigStars
     public abstract class MapObjectSprite : Area2D
     {
         public MapObject MapObject { get; set; }
-        public string ObjectName { get => MapObject != null ? MapObject.ObjectName : "Unknown"; }
+        public string ObjectName { get => MapObject != null ? MapObject.Name : "Unknown"; }
 
         public Player Me { get; set; }
 

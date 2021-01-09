@@ -1,6 +1,11 @@
 using System;
 using System.Collections.Generic;
 using Godot;
+using log4net;
+using log4net.Appender;
+using log4net.Core;
+using log4net.Layout;
+using log4net.Repository.Hierarchy;
 
 namespace CraigStars.Singletons
 {
@@ -10,6 +15,8 @@ namespace CraigStars.Singletons
     /// </summary>
     public class Signals : Node
     {
+        ILog log = LogManager.GetLogger(typeof(Signals));
+
         public delegate void YearUpdate(int year);
         public static event YearUpdate TurnPassedEvent;
 
@@ -62,9 +69,35 @@ namespace CraigStars.Singletons
         // The GDScript signals object
         public static Signals Instance { get; private set; }
 
-        Signals()
+        public override void _Ready()
         {
             Instance = this;
+            ConfigureLogging();
+        }
+
+        /// <summary>
+        /// configure the logger we will use
+        /// TODO: this should probably be in a different function
+        /// </summary>
+        void ConfigureLogging()
+        {
+            const string logLayoutPattern =
+                "[%date %timestamp][%level][%stacktracedetail{10}] %message %newline" +
+                "%exception %newline";
+
+            var logger = (Logger)log.Logger;
+            logger.Hierarchy.Root.Level = Level.All;
+
+            var consoleAppender = new ConsoleAppender
+            {
+                Name = "ConsoleAppender",
+                Layout = new PatternLayout(logLayoutPattern)
+            };
+
+            logger.Hierarchy.Root.AddAppender(consoleAppender);
+            logger.Hierarchy.Configured = true;
+
+            log.Info("Logging Configured");
         }
 
         #region Event Publishers

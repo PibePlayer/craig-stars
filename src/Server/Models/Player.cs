@@ -2,44 +2,76 @@ using CraigStars.Singletons;
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace CraigStars
 {
-    public class Player : Node
+    public class Player
     {
-        PackedScene fleetScene;
-
+        public String Name { get; set; }
         public int NetworkId { get; set; }
         public int Num { get; set; }
         public string PlayerName { get; set; }
         public Boolean Ready { get; set; } = false;
         public Boolean AIControlled { get; set; }
+        public Boolean SubmittedTurn { get; set; }
         public Color Color { get; set; } = Colors.Black;
         public Race Race = new Race();
+
+        [JsonIgnore]
         public Planet Homeworld { get; set; }
+
+        public Guid? HomeworldGuid
+        {
+            get
+            {
+                if (homeworldGuid == null)
+                {
+                    homeworldGuid = Homeworld?.Guid;
+                }
+                return homeworldGuid;
+            }
+            set
+            {
+                homeworldGuid = value;
+            }
+        }
+        Guid? homeworldGuid;
 
         #region Scanner Data
 
         public List<Planet> Planets { get; set; } = new List<Planet>();
-        public Dictionary<Guid, Planet> PlanetsByGuid { get; set; } = new Dictionary<Guid, Planet>();
         public List<Fleet> Fleets { get; set; } = new List<Fleet>();
         public List<Message> Messages { get; set; } = new List<Message>();
 
+        [JsonIgnore]
+        public Dictionary<Guid, Planet> PlanetsByGuid { get; set; } = new Dictionary<Guid, Planet>();
+
+        [JsonIgnore]
+        public Dictionary<Guid, Fleet> FleetsByGuid { get; set; } = new Dictionary<Guid, Fleet>();
+
         #endregion
 
-        # region Research
+        #region Designs
+
+        public List<ShipDesign> Designs { get; set; } = new List<ShipDesign>();
+
+        #endregion
+
+        #region Research
 
         /// <summary>
         /// Each player has a certain level of each tech.
         /// </summary>
         /// <returns></returns>
-        public TechLevel TechLevels = new TechLevel();
+        public TechLevel TechLevels { get; set; } = new TechLevel();
 
         /// <summary>
         /// The amount spent on each tech level
         /// </summary>
         /// <returns></returns>
-        public TechLevel TechLevelsSpent = new TechLevel();
+        public TechLevel TechLevelsSpent { get; set; } = new TechLevel();
 
         /// <summary>
         /// The percentage of resources to spend on research
@@ -58,6 +90,51 @@ namespace CraigStars
         /// </summary>
         /// <value></value>
         public TechPlanetaryScanner PlanetaryScanner { get; set; }
+
+        #endregion
+
+        #region Serializer Helpers
+
+        public void PreSerialize()
+        {
+            homeworldGuid = null;
+            Planets.ForEach(p => p.PreSerialize());
+            Fleets.ForEach(f => f.PreSerialize());
+            Messages.ForEach(m => m.PreSerialize());
+            Designs.ForEach(d => d.PreSerialize());
+        }
+
+        public void PostSerialize(ITechStore techStore)
+        {
+            SetupMapObjectMappings();
+
+            Designs.ForEach(d => d.PostSerialize(techStore));
+
+            if (homeworldGuid != null && PlanetsByGuid.TryGetValue(homeworldGuid.Value, out var homeworld))
+            {
+                Homeworld = homeworld;
+            }
+        }
+
+        public void WireupPlayerFields(List<Player> players)
+        {
+            Planets.ForEach(p => p.WireupPlayer(players));
+            Fleets.ForEach(f => f.WireupPlayer(players));
+            Designs.ForEach(d => d.WireupPlayer(players));
+        }
+
+        public void SetupMapObjectMappings()
+        {
+            PlanetsByGuid = Planets.ToLookup(p => p.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
+            FleetsByGuid = Fleets.ToLookup(f => f.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
+
+        }
+
+        public void ComputeAggregates(UniverseSettings settings)
+        {
+            Fleets.ForEach(f => f.ComputeAggregate(settings));
+            Designs.ForEach(d => d.ComputeAggregate(this, settings));
+        }
 
         #endregion
 
@@ -241,14 +318,94 @@ namespace CraigStars
         /// </summary>
         /// <param name="techStore"></param>
         /// <returns></returns>
-        public TechPlanetaryScanner GetBestPlanetaryScanner(TechStore techStore)
+        public TechPlanetaryScanner GetBestPlanetaryScanner(ITechStore techStore)
         {
-            var planetaryScanners = techStore.TechsByCategory[TechCategory.PlanetaryScanner];
-            // sort from highest to lowest, return the first match
-            planetaryScanners.Sort((t1, t2) => t2.Ranking.CompareTo(t1.Ranking));
-            var tech = planetaryScanners.Find(t => HasTech(t));
+            return GetBestTech<TechPlanetaryScanner>(techStore, TechCategory.PlanetaryScanner);
+        }
 
-            return tech as TechPlanetaryScanner;
+        /// <summary>
+        /// Get the best beam weapon this player has access to
+        /// </summary>
+        /// <param name="techStore"></param>
+        /// <returns></returns>
+        public TechDefense GetBestDefense(ITechStore techStore)
+        {
+            return GetBestTech<TechDefense>(techStore, TechCategory.PlanetaryDefense);
+        }
+
+        /// <summary>
+        /// Get the best engine this player has access to
+        /// </summary>
+        /// <param name="techStore"></param>
+        /// <returns></returns>
+        public TechEngine GetBestEngine(ITechStore techStore)
+        {
+            return GetBestTech<TechEngine>(techStore, TechCategory.Engine);
+        }
+
+        /// <summary>
+        /// Get the best shield this player has access to
+        /// </summary>
+        /// <param name="techStore"></param>
+        /// <returns></returns>
+        public TechHullComponent GetBestScanner(ITechStore techStore)
+        {
+            return GetBestTech<TechHullComponent>(techStore, TechCategory.Scanner);
+        }
+
+        /// <summary>
+        /// Get the best shield this player has access to
+        /// </summary>
+        /// <param name="techStore"></param>
+        /// <returns></returns>
+        public TechHullComponent GetBestShield(ITechStore techStore)
+        {
+            return GetBestTech<TechHullComponent>(techStore, TechCategory.Shield);
+        }
+
+        /// <summary>
+        /// Get the best armor this player has access to
+        /// </summary>
+        /// <param name="techStore"></param>
+        /// <returns></returns>
+        public TechHullComponent GetBestArmor(ITechStore techStore)
+        {
+            return GetBestTech<TechHullComponent>(techStore, TechCategory.Armor);
+        }
+
+        /// <summary>
+        /// Get the best beam weapon this player has access to
+        /// </summary>
+        /// <param name="techStore"></param>
+        /// <returns></returns>
+        public TechHullComponent GetBestBeamWeapon(ITechStore techStore)
+        {
+            return GetBestTech<TechHullComponent>(techStore, TechCategory.BeamWeapon);
+        }
+
+        /// <summary>
+        /// Get the best torpedo this player has access to
+        /// </summary>
+        /// <param name="techStore"></param>
+        /// <returns></returns>
+        public TechHullComponent GetBestTorpedo(ITechStore techStore)
+        {
+            return GetBestTech<TechHullComponent>(techStore, TechCategory.Torpedo);
+        }
+
+        /// <summary>
+        /// Get the best tech by category
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="techStore"></param>
+        /// <param name="category"></param>
+        /// <returns></returns>
+        public T GetBestTech<T>(ITechStore techStore, TechCategory category) where T : Tech
+        {
+            var techs = techStore.GetTechsByCategory(category);
+            techs.Sort((t1, t2) => t2.Ranking.CompareTo(t1.Ranking));
+            var tech = techs.Find(t => HasTech(t));
+            return tech as T;
         }
 
         /// <summary>
@@ -283,7 +440,7 @@ namespace CraigStars
             {
                 Guid = fleet.Guid,
                 Position = fleet.Position,
-                ObjectName = fleet.ObjectName,
+                Name = fleet.Name,
                 RaceName = fleet.Player.Race.Name,
                 RacePluralName = fleet.Player.Race.PluralName,
             };

@@ -123,13 +123,14 @@ namespace CraigStars
                 else
                 {
                     label.Text = $"{Cargo.Total} of {Capacity}{Unit}";
-                    float ironiumWidth = panel.RectSize.x * ((float)Cargo.Ironium / (float)Capacity) - (borderWidth);
-                    float boraniumWidth = panel.RectSize.x * ((float)Cargo.Boranium / (float)Capacity) - (borderWidth);
-                    float germaniumWidth = panel.RectSize.x * ((float)Cargo.Germanium / (float)Capacity) - (borderWidth);
-                    float colonistsWidth = panel.RectSize.x * ((float)Cargo.Colonists / (float)Capacity) - (borderWidth);
+                    float ironiumWidth = 0;
+                    float boraniumWidth = 0;
+                    float germaniumWidth = 0;
+                    float colonistsWidth = 0;
 
                     if (Cargo.Ironium > 0)
                     {
+                        ironiumWidth = panel.RectSize.x * ((float)Cargo.Ironium / (float)Capacity) - (borderWidth);
                         DrawRect(new Rect2(
                             panel.RectPosition,
                             new Vector2(ironiumWidth, panel.RectSize.y - (borderHeight / 2))),
@@ -138,6 +139,7 @@ namespace CraigStars
                     }
                     if (Cargo.Boranium > 0)
                     {
+                        boraniumWidth = panel.RectSize.x * ((float)Cargo.Boranium / (float)Capacity) - (borderWidth);
                         DrawRect(new Rect2(
                             new Vector2(panel.RectPosition.x + ironiumWidth, panel.RectPosition.y),
                             new Vector2(boraniumWidth, panel.RectSize.y - (borderHeight / 2))),
@@ -146,6 +148,7 @@ namespace CraigStars
                     }
                     if (Cargo.Germanium > 0)
                     {
+                        germaniumWidth = panel.RectSize.x * ((float)Cargo.Germanium / (float)Capacity) - (borderWidth);
                         DrawRect(new Rect2(
                             new Vector2(panel.RectPosition.x + ironiumWidth + boraniumWidth, panel.RectPosition.y),
                             new Vector2(germaniumWidth, panel.RectSize.y - (borderHeight / 2))),
@@ -154,6 +157,7 @@ namespace CraigStars
                     }
                     if (Cargo.Colonists > 0)
                     {
+                        colonistsWidth = panel.RectSize.x * ((float)Cargo.Colonists / (float)Capacity) - (borderWidth);
                         DrawRect(new Rect2(
                             new Vector2(panel.RectPosition.x + ironiumWidth + boraniumWidth + germaniumWidth, panel.RectPosition.y),
                             new Vector2(colonistsWidth, panel.RectSize.y - (borderHeight / 2))),

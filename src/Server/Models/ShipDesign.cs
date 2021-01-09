@@ -1,22 +1,104 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace CraigStars
 {
     public class ShipDesign
     {
         public string Name { get; set; }
+
+        [JsonIgnore]
+        public Player Player { get; set; }
+
+        [JsonIgnore]
         public TechHull Hull { get; set; } = new TechHull();
         public int HullSetNumber { get; set; }
         public List<ShipDesignSlot> Slots { get; set; } = new List<ShipDesignSlot>();
 
+        #region Serializer Helpers
+
+        /// <summary>
+        /// We use the Player's number to load players after serializing
+        /// </summary>
+        /// <value></value>
+        public int PlayerNum
+        {
+            get
+            {
+                if (Player != null && playerNum == -1)
+                {
+                    playerNum = Player.Num;
+                }
+                return playerNum;
+            }
+            set
+            {
+                playerNum = value;
+            }
+        }
+        int playerNum = -1;
+
+        public string HullName
+        {
+            get
+            {
+                if (hullName == null)
+                {
+                    hullName = Hull.Name;
+                }
+                return hullName;
+            }
+            set
+            {
+                hullName = value;
+            }
+        }
+        string hullName;
+
+        /// <summary>
+        /// Prepare this object for serialization
+        /// </summary>
+        public void PreSerialize()
+        {
+            // before serialization, null out our player number
+            playerNum = -1;
+
+            HullName = null;
+            Slots.ForEach(slot => slot.PreSerialize());
+        }
+
+        /// <summary>
+        /// After serialization, wire up values we stored by key
+        /// </summary>
+        /// <param name="techStore"></param>
+        public void PostSerialize(ITechStore techStore)
+        {
+            Hull = techStore.GetTechByName<TechHull>(HullName);
+            Slots.ForEach(slot => slot.PostSerialize(techStore));
+        }
+
+        /// <summary>
+        /// Wire up player objects to 
+        /// </summary>
+        /// <param name="players"></param>
+        public virtual void WireupPlayer(List<Player> players)
+        {
+            if (playerNum >= 0 && playerNum < players.Count)
+            {
+                Player = players[playerNum];
+            }
+        }
+
+        #endregion
         /// <summary>
         /// An aggregate of all components of a ship design
         /// </summary>
         /// <returns></returns>
+        [JsonIgnore]
         public ShipDesignAggregate Aggregate { get; } = new ShipDesignAggregate();
 
-        public void ComputeAggregate(Player player)
+        public void ComputeAggregate(Player player, UniverseSettings settings)
         {
             Aggregate.Mass = Hull.Mass;
             Aggregate.Armor = Hull.Armor;
@@ -26,6 +108,7 @@ namespace CraigStars
             Aggregate.Colonizer = false;
             Aggregate.Cost = Hull.Cost;
             Aggregate.SpaceDock = 0;
+            Aggregate.CargoCapacity += Hull.CargoCapacity;
 
             foreach (ShipDesignSlot slot in Slots)
             {
@@ -53,20 +136,16 @@ namespace CraigStars
                 {
                     Aggregate.SpaceDock = hullSlot.Capacity;
                 }
-                if (hullSlot.Type.HasFlag(HullSlotType.Cargo))
-                {
-                    Aggregate.CargoCapacity = Aggregate.CargoCapacity + hullSlot.Capacity;
-                }
             }
             // compute the scan ranges
-            ComputeScanRanges(player);
+            ComputeScanRanges(player, settings);
         }
 
         /**
          * Compute the scan ranges for this ship design The formula is: (scanner1**4 + scanner2**4 + ...
          * + scannerN**4)**(.25)
          */
-        void ComputeScanRanges(Player player)
+        void ComputeScanRanges(Player player, UniverseSettings settings)
         {
             long scanRange = TechHullComponent.NoScanner;
             long scanRangePen = TechHullComponent.NoScanner;
@@ -74,7 +153,7 @@ namespace CraigStars
             // compu thecanner as a built in JoaT scanner if it's build in
             if (player.Race.PRT == PRT.JoaT && Hull.BuiltInScannerForJoaT)
             {
-                scanRange = (long)(player.TechLevels.Electronics * UniverseSettings.BuiltInScannerJoaTMultiplier);
+                scanRange = (long)(player.TechLevels.Electronics * settings.BuiltInScannerJoaTMultiplier);
                 if (!player.Race.HasLRT(LRT.NAS))
                 {
                     scanRangePen = (long)Math.Pow(scanRange / 2, 4);

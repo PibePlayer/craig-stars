@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace CraigStars
 {
@@ -16,6 +17,7 @@ namespace CraigStars
         public Hab HabHigh { get => habHigh; set { habHigh = value; habCenter = null; } }
         Hab habHigh = new Hab(85, 85, 85);
 
+        [JsonIgnore]
         public Hab HabCenter
         {
             get
@@ -29,6 +31,7 @@ namespace CraigStars
         }
         Hab habCenter = null;
 
+        [JsonIgnore]
         public Hab HabWidth
         {
             get

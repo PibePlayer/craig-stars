@@ -1,11 +1,14 @@
 using Godot;
 using System;
 using CraigStars.Singletons;
+using System.Text.Json.Serialization;
+using System.Collections.Generic;
 
 namespace CraigStars
 {
-    public class Waypoint
+    public class Waypoint : SerializableMapObject
     {
+        [JsonIgnore]
         public MapObject Target
         {
             get => target;
@@ -26,6 +29,8 @@ namespace CraigStars
 
         public WaypointTask Task { get; set; } = WaypointTask.None;
 
+        #region Serializer Helpers
+
         /// <summary>
         /// A string description of the target
         /// </summary>
@@ -36,7 +41,7 @@ namespace CraigStars
             {
                 if (Target != null)
                 {
-                    return Target.ObjectName;
+                    return Target.Name;
                 }
                 else
                 {
@@ -45,14 +50,55 @@ namespace CraigStars
             }
         }
 
+        public Guid? TargetGuid
+        {
+            get
+            {
+                if (targetGuid == null)
+                {
+                    targetGuid = Target?.Guid;
+                }
+                return targetGuid;
+            }
+            set
+            {
+                targetGuid = value;
+            }
+        }
+        Guid? targetGuid;
+
+        /// <summary>
+        /// Prepare this object for serialization
+        /// </summary>
+        public void PreSerialize()
+        {
+            targetGuid = null;
+        }
+
+        /// <summary>
+        /// After serialization, wire up values we stored by guid
+        /// </summary>
+        /// <param name="mapObjectsByGuid"></param>
+        public void PostSerialize(Dictionary<Guid, MapObject> mapObjectsByGuid)
+        {
+            if (targetGuid.HasValue)
+            {
+                mapObjectsByGuid.TryGetValue(targetGuid.Value, out var target);
+                Target = target;
+            }
+        }
+
+        #endregion
+
         public Waypoint()
         {
         }
 
-        public Waypoint(MapObject target, int warpFactor = 0)
+        public Waypoint(MapObject target, int warpFactor = 0, WaypointTask task = WaypointTask.None)
         {
             Target = target;
             WarpFactor = warpFactor;
+            Task = task;
         }
 
         /// <summary>

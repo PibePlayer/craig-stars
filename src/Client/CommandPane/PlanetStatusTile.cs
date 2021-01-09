@@ -33,6 +33,25 @@ namespace CraigStars
                 population.Text = $"{ActivePlanet.Planet.Population:n0}";
                 resources.Text = $"{ActivePlanet.Planet.ResourcesPerYearAvailable:n0} of {ActivePlanet.Planet.ResourcesPerYear:n0}";
                 defenses.Text = $"{ActivePlanet.Planet.Defenses:n0} of {ActivePlanet.Planet.MaxDefenses:n0}";
+                if (ActivePlanet.Planet.Scanner)
+                {
+                    var scanner = ActivePlanet.Planet.Player.GetBestPlanetaryScanner(TechStore.Instance);
+                    scannerType.Text = $"{scanner.Name}";
+                    if (scanner.ScanRangePen > 0)
+                    {
+                        scannerRange.Text = $"{scanner.ScanRange}/{scanner.ScanRangePen} l.y.";
+                    }
+                    else
+                    {
+                        scannerRange.Text = $"{scanner.ScanRange} l.y.";
+                    }
+
+                }
+                else
+                {
+                    scannerType.Text = $"(non)";
+                    scannerRange.Text = $"";
+                }
             }
         }
     }

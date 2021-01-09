@@ -2,31 +2,35 @@ using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using CraigStars.Singletons;
+using System.Text.Json.Serialization;
+using System;
 
 namespace CraigStars
 {
-    public class Planet : MapObject
+    public class Planet : MapObject, SerializableMapObject
     {
         public const int Unexplored = -1;
 
         #region Scannable Stats
 
-        public Hab Hab { get; set; } = new Hab();
-        public Mineral MineralConcentration { get; set; } = new Mineral();
-        public int Population { get => population; set { population = value; Cargo.Colonists = value / 100; } }
-        int population;
+        public Hab Hab { get; set; }
+        public Mineral MineralConcentration { get; set; }
+
+        [JsonIgnore]
+        public int Population { get => Cargo?.Colonists * 100 ?? 0; set { Cargo.Colonists = value / 100; } }
+
+        [JsonIgnore]
         public List<Fleet> OrbitingFleets { get; set; } = new List<Fleet>();
+        public Starbase Starbase { get; set; }
+        public bool HasStarbase { get => Starbase != null; }
 
         #endregion
 
         #region Planet Makeup
 
-        public Mineral MineYears { get; set; } = new Mineral();
-        public Cargo Cargo { get; } = new Cargo();
-        public ProductionQueue ProductionQueue { get; } = new ProductionQueue();
-
-        public int PopulationDensity { get => Population > 0 ? Population / GetMaxPopulation(Player.Race) : 0; }
-
+        public Mineral MineYears { get; set; }
+        public Cargo Cargo { get; set; }
+        public ProductionQueue ProductionQueue { get; set; }
         public int Mines { get; set; }
         public int MaxMines { get => (Population > 0 && Player != null) ? Population / 10000 * Player.Race.NumMines : 0; }
         public int Factories { get; set; }
@@ -43,6 +47,71 @@ namespace CraigStars
 
         #endregion
 
+        #region SerializationHelpers
+
+        /// <summary>
+        /// When we serialize to json, we don't serialie the fleets, just their GUIDs
+        /// </summary>
+        public List<Guid> OrbitingFleetsGuids
+        {
+            get
+            {
+                if (orbitingFleetGuids == null)
+                {
+                    orbitingFleetGuids = OrbitingFleets.Select(f => f.Guid).ToList();
+                }
+                return orbitingFleetGuids;
+            }
+            set
+            {
+                orbitingFleetGuids = value;
+            }
+        }
+        List<Guid> orbitingFleetGuids;
+
+        /// <summary>
+        /// Prepare this object for serialization
+        /// </summary>
+        public override void PreSerialize()
+        {
+            base.PreSerialize();
+            orbitingFleetGuids = null;
+        }
+
+        /// <summary>
+        /// After serialization, wire up values we stored by guid
+        /// </summary>
+        /// <param name="mapObjectsByGuid"></param>
+        public override void PostSerialize(Dictionary<Guid, MapObject> mapObjectsByGuid)
+        {
+            base.PostSerialize(mapObjectsByGuid);
+            // convert the OrbitingFleetsByGuid list to 
+            OrbitingFleetsGuids.ForEach(guid =>
+            {
+                if (mapObjectsByGuid.TryGetValue(guid, out var mapObject))
+                {
+                    if (mapObject is Fleet fleet)
+                    {
+                        OrbitingFleets.Add(fleet);
+                    }
+                }
+            });
+        }
+
+        #endregion
+
+        /// <summary>
+        /// The client has null values for these, but the server needs to start with
+        /// an empty planet
+        /// </summary>
+        public void InitEmptyPlanet()
+        {
+            Hab = new Hab();
+            MineralConcentration = new Mineral();
+            Cargo = new Cargo();
+            ProductionQueue = new ProductionQueue();
+            MineYears = new Mineral();
+        }
 
         /// <summary>
         /// Update this planet report with data from the game planet
@@ -51,6 +120,10 @@ namespace CraigStars
         /// <param name="planet">The game planet to copy data from</param>
         public void UpdatePlanetReport(Planet planet)
         {
+            Hab = Hab ?? new Hab();
+            MineralConcentration = MineralConcentration ?? new Mineral();
+            Cargo = Cargo ?? new Cargo();
+
             MineralConcentration.Copy(planet.MineralConcentration);
             Hab.Copy(planet.Hab);
             Population = planet.Population;
@@ -63,6 +136,10 @@ namespace CraigStars
         /// <param name="planet"></param>
         public void UpdatePlayerPlanet(Planet planet)
         {
+            Cargo = Cargo ?? new Cargo();
+            MineYears = Cargo ?? new Cargo();
+            ProductionQueue = ProductionQueue ?? new ProductionQueue();
+
             Cargo.Copy(planet.Cargo);
             MineYears.Copy(planet.MineYears);
             Mines = planet.Mines;
@@ -79,7 +156,7 @@ namespace CraigStars
         /// TODO: support this later
         /// /// </summary>
         /// <returns></returns>
-        public int GetMaxPopulation(Race race)
+        public int GetMaxPopulation(Race race, UniverseSettings settings)
         {
             var factor = 1f;
 
@@ -99,24 +176,30 @@ namespace CraigStars
 
             // get this player's planet habitability
             var hab = race.GetPlanetHabitability(Hab);
-            return (int)(UniverseSettings.MaxPopulation * factor * hab / 100);
+            return (int)(settings.MaxPopulation * factor * hab / 100);
         }
 
-        public void Grow()
+
+        public int GetPopulationDensity(UniverseSettings settings)
         {
-            Population += GetGrowthAmount();
+            return Population > 0 ? Population / GetMaxPopulation(Player.Race, settings) : 0;
+        }
+
+        public void Grow(UniverseSettings settings)
+        {
+            Population += GetGrowthAmount(settings);
         }
 
         /// <summary>
         /// The amount the population for this planet will grow next turn
         /// </summary>
         /// <returns></returns>
-        public int GetGrowthAmount()
+        public int GetGrowthAmount(UniverseSettings settings)
         {
             var race = Player?.Race;
             if (race != null)
             {
-                double capacity = (double)(Population / GetMaxPopulation(race));
+                double capacity = (double)(Population / GetMaxPopulation(race, settings));
                 int popGrowth = (int)((double)(Population) * (race.GrowthRate / 100.0) * ((double)(race.GetPlanetHabitability(Hab)) / 100.0));
 
                 if (capacity > .25)

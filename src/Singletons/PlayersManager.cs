@@ -79,7 +79,6 @@ namespace CraigStars.Singletons
 
         public void Reset(UniverseSettings settings)
         {
-            Players.ForEach(p => p.QueueFree());
             Players.Clear();
             PlayersByNetworkId.Clear();
             Messages.Clear();
@@ -103,7 +102,6 @@ namespace CraigStars.Singletons
                 };
 
                 Players.Add(player);
-                AddChild(player);
 
                 Signals.PublishPlayerUpdatedEvent(Players[num]);
             }

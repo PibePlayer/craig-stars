@@ -23,7 +23,7 @@ namespace CraigStars
             }
             else if (Input.IsActionPressed("zoom_out"))
             {
-                if (Zoom <= new Vector2(1, 1) - ZoomConstant)
+                if (Zoom <= new Vector2(4, 4) - ZoomConstant)
                 {
                     Zoom += ZoomConstant;
                 }

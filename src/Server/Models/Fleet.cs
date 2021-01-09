@@ -4,23 +4,83 @@ using System.Linq;
 using CraigStars;
 using CraigStars.Singletons;
 using System;
+using System.Text.Json.Serialization;
 
 namespace CraigStars
 {
-    public class Fleet : MapObject
+    public class Fleet : MapObject, SerializableMapObject
     {
         #region Planet Stats
 
         public Cargo Cargo { get; } = new Cargo();
         public int Fuel { get => Cargo.Fuel; set => Cargo.Fuel = value; }
+
+        [JsonIgnore]
         public Planet Orbiting { get; set; }
-        public List<Waypoint> Waypoints { get; } = new List<Waypoint>();
-        public List<ShipToken> Tokens { get; } = new List<ShipToken>();
+        public bool Scrapped { get; set; }
+        public List<Waypoint> Waypoints { get; set; } = new List<Waypoint>();
+        public List<ShipToken> Tokens { get; set; } = new List<ShipToken>();
 
         public FleetAggregate Aggregate { get; } = new FleetAggregate();
 
         #endregion
 
+        #region Serializer Helpers
+
+        public Guid? OrbitingGuid
+        {
+            get
+            {
+                if (orbitingGuid == null)
+                {
+                    orbitingGuid = Orbiting?.Guid;
+                }
+                return orbitingGuid;
+            }
+            set
+            {
+                orbitingGuid = value;
+            }
+        }
+        Guid? orbitingGuid;
+
+        /// <summary>
+        /// Prepare this object for serialization
+        /// </summary>
+        public override void PreSerialize()
+        {
+            base.PreSerialize();
+            orbitingGuid = null;
+            Waypoints.ForEach(wp => wp.PreSerialize());
+        }
+
+        /// <summary>
+        /// After serialization, wire up values we stored by guid
+        /// </summary>
+        /// <param name="mapObjectsByGuid"></param>
+        public override void PostSerialize(Dictionary<Guid, MapObject> mapObjectsByGuid)
+        {
+            base.PostSerialize(mapObjectsByGuid);
+            if (orbitingGuid.HasValue)
+            {
+                mapObjectsByGuid.TryGetValue(orbitingGuid.Value, out var mapObject);
+                Orbiting = mapObject as Planet;
+            }
+
+            Waypoints.ForEach(wp => wp.PostSerialize(mapObjectsByGuid));
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Get the primary shipToken, i.e. the one that is most powerful
+        /// </summary>
+        /// <returns></returns>
+        public ShipToken GetPrimaryToken()
+        {
+            // TODO: write this code
+            return Tokens.FirstOrDefault();
+        }
 
         public void Move()
         {
@@ -57,17 +117,15 @@ namespace CraigStars
                         planet.OrbitingFleets.Add(this);
                     }
 
-                    // remove the previous waypoint
+                    // remove the previous waypoint, it's been processed already
                     Waypoints.RemoveAt(0);
 
-                    // TODO: we've arrived, process this waypoint
-                    /*
-                    processTask(fleet, wp1);
-                    Waypoints.remove(0);
-                    if (fleet.getWaypoints().size() == 1) {
-                        Message.fleetCompletedAssignedOrders(fleet.getOwner(), fleet);
+                    // we arrived, process the current task (the previous waypoint)
+                    ProcessTask();
+                    if (Waypoints.Count == 1)
+                    {
+                        Message.FleetCompletedAssignedOrders(Player, this);
                     }
-                    */
                 }
                 else
                 {
@@ -79,6 +137,131 @@ namespace CraigStars
                     Position += direction * dist;
                     wp0.Position = Position;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Process the task at the current waypoint
+        /// </summary>
+        /// <param name="wp"></param>
+        public void ProcessTask()
+        {
+            if (Waypoints.Count > 0)
+            {
+                var wp = Waypoints[0];
+                switch (wp.Task)
+                {
+                    case WaypointTask.Colonize:
+                        Colonize(wp);
+                        break;
+                    case WaypointTask.LayMineField:
+                        break;
+                    case WaypointTask.MergeWithFleet:
+                        break;
+                    case WaypointTask.Patrol:
+                        break;
+                    case WaypointTask.RemoteMining:
+                        break;
+                    case WaypointTask.Route:
+                        break;
+                    case WaypointTask.ScrapFleet:
+                        Scrap(wp);
+                        break;
+                    case WaypointTask.TransferFleet:
+                        break;
+                    case WaypointTask.Transport:
+                        break;
+
+                }
+            }
+
+        }
+
+
+        /// <summary>
+        /// Scrap this fleet, adding resources to the waypoint
+        /// from the stars wiki:
+        /// After battle, 1/3 of the mineral cost of the destroyed ships is left as salvage. If the battle took place in orbit, these minerals are deposited on the planet below.
+        /// In deep space, each type of mineral decays 10%, or 10kT per year, whichever is higher. Salvage deposited on planets does not decay.
+        /// Scrapping: (from help file)
+        /// 
+        /// A ship scrapped at a starbase deposits 80% of the original minerals on the planet, or 90% of the minerals and 70% of the resources if the LRT 'Ultimate Recycling' is selected.
+        /// A ship scrapped at a planet with no starbase leaves 33% of the original minerals on the planet, or 45% of the minerals if the LRT Ultimate Recycling is selected.
+        /// Wih UR the resources recovered is:
+        /// (resources the ship costs * resources on the planet)/(resources the ship cost + resources on the planet)
+        /// The maximum recoverable resources occurs when the cost of the scrapped ship equals the resources produced at the planet where it is scrapped.
+        /// 
+        /// A ship scrapped in space leaves no minerals behind.
+        /// When a ship design is deleted, all such ships vanish leaving nothing behind. (moral: scrap before you delete!)
+        /// </summary>
+        /// <param name="wp">The waypoint pointing to the target planet to colonize</param>    
+        void Scrap(Waypoint wp)
+        {
+            // create a new cargo instance out of our fleet cost
+            Cargo cargo = new Cargo();
+            cargo.Copy(Aggregate.Cost);
+
+            if (Player.Race.HasLRT(LRT.UR))
+            {
+                // we only recover 40% of our minerals on scrapping
+                cargo *= .45f;
+
+                // TODO: handle resource gain for an occupied planet
+            }
+            else
+            {
+                // we only recover 1/3rd of our minerals on scrapping
+                cargo /= 3;
+            }
+
+            // add in any cargo the fleet was holding
+            cargo += Cargo;
+
+            if (wp.Target is Planet planet)
+            {
+                planet.Cargo += cargo;
+                planet.OrbitingFleets.Remove(this);
+                Orbiting = null;
+                Scrapped = true;
+            }
+            else
+            {
+                // TODO: put some scrap in space...
+            }
+        }
+
+        /// <summary>
+        /// Take this fleet and have it colonize a planet
+        /// </summary>
+        /// <param name="wp">The waypoint pointing to the target planet to colonize</param>
+        void Colonize(Waypoint wp)
+        {
+            if (wp.Target is Planet planet)
+            {
+                if (planet.Player != null)
+                {
+                    Message.ColonizeOwnedPlanet(Player, this);
+                }
+                else if (!Aggregate.Colonizer)
+                {
+                    Message.ColonizeWithNoModule(Player, this);
+                }
+                else if (Cargo.Colonists <= 0)
+                {
+                    Message.ColonizeWithNoColonists(Player, this);
+                }
+                else
+                {
+                    // we own this planet now, yay!
+                    planet.Player = Player;
+                    planet.Population = Cargo.Colonists * 100;
+                    Cargo.Colonists = 0;
+                    Scrap(wp);
+                }
+            }
+            else
+            {
+                Message.ColonizeNonPlanet(Player, this);
             }
         }
 
@@ -165,7 +348,6 @@ namespace CraigStars
         public int GetDefaultWarpFactor()
         {
             var warpFactor = 5;
-            // TODO:
             if (Aggregate.Engine != null)
             {
                 var lowestFuelUsage = 0;
@@ -187,7 +369,7 @@ namespace CraigStars
             return warpFactor;
         }
 
-        public void ComputeAggregate()
+        public void ComputeAggregate(UniverseSettings settings)
         {
             Aggregate.Mass = 0;
             Aggregate.Shield = 0;
@@ -203,7 +385,7 @@ namespace CraigStars
             // compute each token's 
             Tokens.ForEach(token =>
             {
-                token.Design.ComputeAggregate(Player);
+                token.Design.ComputeAggregate(Player, settings);
 
                 // TODO: which default engine do we use for multiple fleets?
                 Aggregate.Engine = token.Design.Aggregate.Engine;

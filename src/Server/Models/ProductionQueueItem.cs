@@ -14,7 +14,7 @@ namespace CraigStars
         /// If this is a ship building item, this is the design to build
         /// </summary>
         /// <value></value>
-        public ShipDesign ShipDesign { get; set; }
+        public ShipDesign Design { get; set; }
 
         /// <summary>
         /// The name of the fleet to place this item into
@@ -29,8 +29,8 @@ namespace CraigStars
                 switch (Type)
                 {
                     case QueueItemType.Starbase:
-                    case QueueItemType.Fleet:
-                        return ShipDesign.Name;
+                    case QueueItemType.ShipToken:
+                        return Design.Name;
                     case QueueItemType.AutoMine:
                         return "Mine (Auto)";
                     case QueueItemType.AutoFactory:
@@ -52,14 +52,21 @@ namespace CraigStars
                 switch (Type)
                 {
                     case QueueItemType.Starbase:
-                    case QueueItemType.Fleet:
-                        return ShipDesign.Name;
+                    case QueueItemType.ShipToken:
+                        return Design.Name;
                     case QueueItemType.AutoAlchemy:
                         return "Alchemy (Auto Build)";
                     default:
                         return Type.ToString();
                 }
             }
+        }
+
+        public ProductionQueueItem(QueueItemType type, int quantity = 1, ShipDesign design = null)
+        {
+            Type = type;
+            Quantity = quantity;
+            Design = design;
         }
 
         public Cost GetCostOfOne(UniverseSettings settings, Race race)
@@ -93,9 +100,9 @@ namespace CraigStars
                     cost.Resources = settings.MineralAlchemyCost;
                 }
             }
-            else if (Type == QueueItemType.Fleet || Type == QueueItemType.Starbase)
+            else if (Type == QueueItemType.ShipToken || Type == QueueItemType.Starbase)
             {
-                cost = ShipDesign.Aggregate.Cost;
+                cost = Design.Aggregate.Cost;
             }
 
             return cost;

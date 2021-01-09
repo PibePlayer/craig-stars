@@ -23,15 +23,31 @@ namespace CraigStars
 
             waypointTask.Connect("item_selected", this, nameof(OnWaypointTaskItemSelected));
             Signals.WaypointSelectedEvent += OnWaypointSelected;
+            Signals.WaypointAddedEvent += OnWaypointAdded;
         }
 
         public override void _ExitTree()
         {
             base._Ready();
             Signals.WaypointSelectedEvent -= OnWaypointSelected;
+            Signals.WaypointAddedEvent -= OnWaypointAdded;
+        }
+
+        protected override void OnNewActiveFleet()
+        {
+            base.OnNewActiveFleet();
+            // when we have a new active fleet, set the active waypoint to the
+            // first waypoint
+            ActiveWaypoint = ActiveFleet?.Fleet.Waypoints[0];
         }
 
         void OnWaypointSelected(Waypoint waypoint)
+        {
+            ActiveWaypoint = waypoint;
+            UpdateControls();
+        }
+
+        void OnWaypointAdded(Fleet fleet, Waypoint waypoint)
         {
             ActiveWaypoint = waypoint;
             UpdateControls();

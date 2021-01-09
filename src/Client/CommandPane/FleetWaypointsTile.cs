@@ -49,6 +49,7 @@ namespace CraigStars
 
         public override void _ExitTree()
         {
+            base._ExitTree();
             Signals.WaypointAddedEvent -= OnWaypointAdded;
             Signals.WaypointSelectedEvent -= OnWaypointSelected;
             Signals.WaypointDeletedEvent -= OnWaypointDeleted;
@@ -78,6 +79,7 @@ namespace CraigStars
         void OnWarpSpeedChanged(int warpSpeed)
         {
             ActiveWaypoint.WarpFactor = warpSpeed;
+            UpdateControls();
         }
 
 
@@ -108,7 +110,7 @@ namespace CraigStars
                 waypoints.Clear();
                 foreach (var wp in ActiveFleet.Fleet.Waypoints)
                 {
-                    waypoints.AddItem(wp.Target != null ? wp.Target.ObjectName : $"Space: ({wp.Position.x}, {wp.Position.y})");
+                    waypoints.AddItem(wp.Target != null ? wp.Target.Name : $"Space: ({wp.Position.x}, {wp.Position.y})");
                     if (ActiveWaypoint == wp)
                     {
                         selectedIndex = index;

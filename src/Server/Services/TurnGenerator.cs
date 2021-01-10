@@ -3,11 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CraigStars.Singletons;
+using log4net;
 
 namespace CraigStars
 {
     public class TurnGenerator
     {
+        private static readonly ILog log = LogManager.GetLogger(typeof(TurnGenerator));
+
         /// <summary>
         /// Helper class for sorting scanners
         /// </summary>
@@ -88,6 +91,9 @@ namespace CraigStars
 
             ownedPlanets = Server.Planets.Where(p => p.Player != null).ToList();
 
+            ProcessCargoTransfers();
+
+            // regular turn stuff
             ProcessWaypoints();
             MoveFleets();
             Mine();
@@ -104,6 +110,37 @@ namespace CraigStars
             Server.Fleets.ForEach(f => f.ComputeAggregate(Server.Settings));
             Scan();
             UpdatePlayers();
+        }
+
+        void ProcessCargoTransfers()
+        {
+            Server.Players.ForEach(player =>
+            {
+                player.CargoTransferOrders.ForEach(cargoTransfer =>
+                {
+                    if (Server.CargoHoldersByGuid.TryGetValue(cargoTransfer.Source.Guid, out var source) &&
+                    Server.CargoHoldersByGuid.TryGetValue(cargoTransfer.Dest.Guid, out var dest))
+                    {
+                        // make sure our source can lose the cargo
+                        var result = source.AttemptTransfer(cargoTransfer.Transfer);
+                        if (result)
+                        {
+                            // make sure our dest can take the cargo
+                            result = dest.AttemptTransfer(-cargoTransfer.Transfer);
+                            if (!result)
+                            {
+                                // revert the source changes
+                                source.Cargo -= cargoTransfer.Transfer;
+                                log.Error($"Failed to transfer {cargoTransfer.Transfer} from {source.Name} to {dest.Name}. {dest.Name} rejected cargo.");
+                            }
+                        }
+                        else
+                        {
+                            log.Error($"Failed to transfer {cargoTransfer.Transfer} from {source.Name} to {dest.Name}. {source.Name} rejected cargo.");
+                        }
+                    }
+                });
+            });
         }
 
         void ProcessWaypoints()

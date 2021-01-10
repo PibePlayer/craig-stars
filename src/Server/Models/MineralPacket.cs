@@ -10,10 +10,14 @@ namespace CraigStars
     /// <summary>
     /// A mineral packet flying through space
     /// </summary>
-    public class MineralPacket : MapObject
+    public class MineralPacket : MapObject, ICargoHolder
     {
         public Waypoint Target { get; set; } = new Waypoint();
-        public Mineral Contents { get; set; }
+        public Cargo Cargo { get; set; }
 
+        public bool AttemptTransfer(Cargo transfer)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

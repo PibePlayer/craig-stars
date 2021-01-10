@@ -27,10 +27,11 @@ namespace CraigStars
         Button prevButton;
         Button nextButton;
         Button okButton;
-        CheckBox contributesToResearchCheckbox;
+        CheckBox contributesOnlyLeftoverToResearchCheckbox;
 
         CostGrid availableItemCostGrid;
         CostGrid queuedItemCostGrid;
+        Label completionEstimateLabel;
 
         List<ProductionQueueItem> availableItems = new List<ProductionQueueItem>();
         List<ProductionQueueItem> queuedItems = new List<ProductionQueueItem>();
@@ -49,10 +50,11 @@ namespace CraigStars
             prevButton = FindNode("PrevButton") as Button;
             nextButton = FindNode("NextButton") as Button;
             okButton = FindNode("OKButton") as Button;
-            contributesToResearchCheckbox = FindNode("ContributesOnlyLeftoverToResearchCheckbox") as CheckBox;
+            contributesOnlyLeftoverToResearchCheckbox = FindNode("ContributesOnlyLeftoverToResearchCheckbox") as CheckBox;
 
             availableItemCostGrid = FindNode("AvailableItemCostGrid") as CostGrid;
             queuedItemCostGrid = FindNode("QueuedItemCostGrid") as CostGrid;
+            completionEstimateLabel = FindNode("CompletionEstimateLabel") as Label;
 
             queuedItemsTree.SetColumnExpand(0, true);
             queuedItemsTree.SetColumnExpand(1, false);
@@ -114,7 +116,7 @@ namespace CraigStars
                 AddQueuedItem(item.Clone());
             });
 
-            contributesToResearchCheckbox.Pressed = Planet.ContributesOnlyLeftoverToResearch;
+            contributesOnlyLeftoverToResearchCheckbox.Pressed = Planet.ContributesOnlyLeftoverToResearch;
 
             availableItemsTree.Connect("item_selected", this, nameof(OnAvailableItemSelected));
             queuedItemsTree.Connect("item_selected", this, nameof(OnQueuedItemSelected));
@@ -147,6 +149,47 @@ namespace CraigStars
             }
             item.Select(0);
         }
+
+        void UpdateCompletionEstimate()
+        {
+            if (selectedQueueItem != null)
+            {
+                queuedItemCostGrid.Visible = true;
+                completionEstimateLabel.Visible = false;
+
+                // figure out how much this queue item costs
+                var cost = selectedQueueItem.GetCostOfOne(SettingsManager.Settings, Me.Race) * selectedQueueItem.Quantity;
+                queuedItemCostGrid.Cost = cost;
+
+                // figure out how many resources we have per year
+                int yearlyResources = 0;
+                if (contributesOnlyLeftoverToResearchCheckbox.Pressed)
+                {
+                    yearlyResources = Planet.ResourcesPerYear;
+                }
+                else
+                {
+                    yearlyResources = Planet.ResourcesPerYearAvailable;
+                }
+
+                var allocatedSoFar = Planet.ProductionQueue.Allocated;
+                var availableCost = Planet.Cargo.ToCost(yearlyResources);
+                var yearlyMinerals = Planet.GetMineralOutput();
+
+                log.Debug($"Cost: {cost} Allocated: {allocatedSoFar}, available: {availableCost}, yearlyMinerals: {yearlyMinerals}");
+
+                var remaining = cost - allocatedSoFar - availableCost - yearlyMinerals;
+
+                // TODO: figure this algorithm out...
+                log.Debug($"After year passed: {remaining}");
+            }
+            else
+            {
+                queuedItemCostGrid.Visible = false;
+                completionEstimateLabel.Visible = false;
+            }
+        }
+
 
         #region Events 
 
@@ -181,7 +224,7 @@ namespace CraigStars
         {
             Planet.ProductionQueue.Items.Clear();
             Planet.ProductionQueue.Items.AddRange(queuedItems);
-            Planet.ContributesOnlyLeftoverToResearch = contributesToResearchCheckbox.Pressed;
+            Planet.ContributesOnlyLeftoverToResearch = contributesOnlyLeftoverToResearchCheckbox.Pressed;
 
             Signals.PublishProductionQueueChangedEvent(Planet);
             Hide();
@@ -255,8 +298,9 @@ namespace CraigStars
             var index = (int)queuedItemsTree.GetSelected().GetMetadata(0);
             var item = queuedItems[index];
             selectedQueueItem = item;
-            queuedItemCostGrid.Cost = item.GetCostOfOne(SettingsManager.Settings, Me.Race) * item.Quantity;
+            UpdateCompletionEstimate();
         }
+
 
         #endregion
     }

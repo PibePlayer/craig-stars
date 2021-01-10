@@ -84,6 +84,13 @@ namespace CraigStars
 
         #endregion
 
+        #region Turn Actions
+
+        public List<CargoTransferOrder> CargoTransferOrders { get; set; } = new List<CargoTransferOrder>();
+
+        #endregion
+
+
         #region Calculated Values
 
         /// <summary>

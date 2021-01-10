@@ -17,6 +17,7 @@ namespace CraigStars
         public List<Fleet> Fleets { get; set; } = new List<Fleet>();
         public Dictionary<Guid, Planet> PlanetsByGuid { get; set; } = new Dictionary<Guid, Planet>();
         public Dictionary<Guid, Fleet> FleetsByGuid { get; set; } = new Dictionary<Guid, Fleet>();
+        public Dictionary<Guid, ICargoHolder> CargoHoldersByGuid { get; set; } = new Dictionary<Guid, ICargoHolder>();
         public List<MineralPacket> MineralPackets { get; set; } = new List<MineralPacket>();
         public List<MineField> MineFields { get; set; } = new List<MineField>();
         public int Width { get; set; }
@@ -57,6 +58,7 @@ namespace CraigStars
         {
             Fleets.Add(fleet);
             FleetsByGuid[fleet.Guid] = fleet;
+            CargoHoldersByGuid[fleet.Guid] = fleet;
         }
 
         /// <summary>
@@ -87,6 +89,11 @@ namespace CraigStars
             // build each players dictionary of planets by id
             PlanetsByGuid = Planets.ToLookup(p => p.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
             FleetsByGuid = Fleets.ToLookup(p => p.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
+            
+            CargoHoldersByGuid = new Dictionary<Guid, ICargoHolder>();
+            Planets.ForEach(p => CargoHoldersByGuid[p.Guid] = p);
+            Fleets.ForEach(f => CargoHoldersByGuid[f.Guid] = f);
+            MineralPackets.ForEach(mp => CargoHoldersByGuid[mp.Guid] = mp);
         }
 
         public void SubmitTurn(Player player)

@@ -1,10 +1,24 @@
 using Godot;
+using log4net;
 using System;
 
 namespace CraigStars
 {
     public class CargoBar : Control
     {
+        private static readonly ILog log = LogManager.GetLogger(typeof(CargoBar));
+
+        /// <summary>
+        /// delegate function called when a value on the bar is clicked, or dragged, reporting the updated value
+        /// </summary>
+        /// <param name="newValue"></param>
+        public delegate void ValueUpdated(int newValue);
+
+        /// <summary>
+        /// Event fired when the value of the bar is updated by user input
+        /// </summary>
+        public event ValueUpdated ValueUpdatedEvent;
+
         [Export]
         public GUIColors GUIColors { get; set; } = new GUIColors();
 
@@ -75,6 +89,13 @@ namespace CraigStars
             Update();
         }
 
+        public override void _UnhandledInput(InputEvent @event)
+        {
+            if (@event.IsActionReleased("viewport_select"))
+            {
+                updatingValue = false;
+            }
+        }
 
         void OnGUIInput(InputEvent @event)
         {
@@ -91,13 +112,14 @@ namespace CraigStars
                 Vector2 mousePosition = mouse.Position;
                 mousePosition = mouse.Position;
                 int valueFromClick = (int)(Math.Round(mousePosition.x / (panel.RectSize.x - borderWidth) * Capacity));
-                GD.Print($"Mouse clicked {mousePosition} for warp speed {valueFromClick}");
                 if (valueFromClick >= 0 && valueFromClick <= Capacity)
                 {
-                    // TODO: do something with this update to signal we are transferring
+                    //log.Debug($"Mouse clicked {mousePosition} for cargo value {valueFromClick}");
+                    ValueUpdatedEvent?.Invoke(valueFromClick);
                 }
             }
         }
+
 
         public override void _Draw()
         {
@@ -130,7 +152,7 @@ namespace CraigStars
 
                     if (Cargo.Ironium > 0)
                     {
-                        ironiumWidth = panel.RectSize.x * ((float)Cargo.Ironium / (float)Capacity) - (borderWidth);
+                        ironiumWidth = panel.RectSize.x * ((float)Cargo.Ironium / (float)Capacity);
                         DrawRect(new Rect2(
                             panel.RectPosition,
                             new Vector2(ironiumWidth, panel.RectSize.y - (borderHeight / 2))),
@@ -139,7 +161,7 @@ namespace CraigStars
                     }
                     if (Cargo.Boranium > 0)
                     {
-                        boraniumWidth = panel.RectSize.x * ((float)Cargo.Boranium / (float)Capacity) - (borderWidth);
+                        boraniumWidth = panel.RectSize.x * ((float)Cargo.Boranium / (float)Capacity);
                         DrawRect(new Rect2(
                             new Vector2(panel.RectPosition.x + ironiumWidth, panel.RectPosition.y),
                             new Vector2(boraniumWidth, panel.RectSize.y - (borderHeight / 2))),
@@ -148,7 +170,7 @@ namespace CraigStars
                     }
                     if (Cargo.Germanium > 0)
                     {
-                        germaniumWidth = panel.RectSize.x * ((float)Cargo.Germanium / (float)Capacity) - (borderWidth);
+                        germaniumWidth = panel.RectSize.x * ((float)Cargo.Germanium / (float)Capacity);
                         DrawRect(new Rect2(
                             new Vector2(panel.RectPosition.x + ironiumWidth + boraniumWidth, panel.RectPosition.y),
                             new Vector2(germaniumWidth, panel.RectSize.y - (borderHeight / 2))),
@@ -157,7 +179,7 @@ namespace CraigStars
                     }
                     if (Cargo.Colonists > 0)
                     {
-                        colonistsWidth = panel.RectSize.x * ((float)Cargo.Colonists / (float)Capacity) - (borderWidth);
+                        colonistsWidth = panel.RectSize.x * ((float)Cargo.Colonists / (float)Capacity);
                         DrawRect(new Rect2(
                             new Vector2(panel.RectPosition.x + ironiumWidth + boraniumWidth + germaniumWidth, panel.RectPosition.y),
                             new Vector2(colonistsWidth, panel.RectSize.y - (borderHeight / 2))),

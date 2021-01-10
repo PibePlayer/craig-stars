@@ -8,11 +8,11 @@ using System.Text.Json.Serialization;
 
 namespace CraigStars
 {
-    public class Fleet : MapObject, SerializableMapObject
+    public class Fleet : MapObject, SerializableMapObject, ICargoHolder
     {
         #region Planet Stats
 
-        public Cargo Cargo { get; } = new Cargo();
+        public Cargo Cargo { get; set; } = new Cargo();
         public int Fuel { get => Cargo.Fuel; set => Cargo.Fuel = value; }
 
         [JsonIgnore]
@@ -443,6 +443,32 @@ namespace CraigStars
         {
             Position = fleet.Position;
 
+        }
+
+        /// <summary>
+        /// Attempt to transfer cargo to/from this fleet
+        /// This is used to handle both immediate cargo transfers that the player made in the UI, and by the waypoint tasks
+        /// </summary>
+        /// <param name="transfer"></param>
+        /// <returns></returns>
+        public bool AttemptTransfer(Cargo transfer)
+        {
+            if (transfer.Fuel != 0)
+            {
+                // ignore fuel requests to planets
+                return false;
+            }
+
+            var result = Cargo + transfer;
+            if (result >= 0 && result.Total <= Aggregate.CargoCapacity && result.Fuel <= Aggregate.FuelCapacity)
+            {
+                // The transfer doesn't leave us with 0 minerals, or with so many minerals and fuel that we can't hold it
+                Cargo.Copy(result);
+                // fuel doesn't make sense for a planet, so zero it out
+                Cargo.Fuel = 0;
+                return true;
+            }
+            return false;
         }
     }
 }

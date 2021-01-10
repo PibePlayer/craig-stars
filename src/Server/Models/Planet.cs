@@ -7,7 +7,7 @@ using System;
 
 namespace CraigStars
 {
-    public class Planet : MapObject, SerializableMapObject
+    public class Planet : MapObject, SerializableMapObject, ICargoHolder
     {
         public const int Unexplored = -1;
 
@@ -32,12 +32,12 @@ namespace CraigStars
         public Cargo Cargo { get; set; }
         public ProductionQueue ProductionQueue { get; set; }
         public int Mines { get; set; }
-        public int MaxMines { get => (Population > 0 && Player != null) ? Population / 10000 * Player.Race.NumMines : 0; }
+        public int MaxMines { get => (Population > 0 && Player != null) ? Population * Player.Race.NumMines / 10000 : 0; }
         public int Factories { get; set; }
-        public int MaxFactories { get => (Population > 0 && Player != null) ? Population / 10000 * Player.Race.NumFactories : 0; }
+        public int MaxFactories { get => (Population > 0 && Player != null) ? Population * Player.Race.NumFactories / 10000 : 0; }
 
         public int Defenses { get; set; }
-        public int MaxDefenses { get => (Population > 0 && Player != null) ? Population / 10000 * 10 : 0; }
+        public int MaxDefenses { get => (Population > 0 && Player != null) ? Population * 10 / 10000 : 0; }
         public bool ContributesOnlyLeftoverToResearch { get; set; }
         public bool Homeworld { get; set; }
         public bool Scanner { get; set; }
@@ -312,6 +312,33 @@ namespace CraigStars
 
             }
         }
+
+        /// <summary>
+        /// Attempt to transfer cargo to/from this planet
+        /// </summary>
+        /// <param name="transfer"></param>
+        /// <returns>true if we have minerals we can transfer</returns>
+        public bool AttemptTransfer(Cargo transfer)
+        {
+            if (transfer.Fuel != 0)
+            {
+                // ignore fuel requests to planets
+                return false;
+            }
+
+            var result = Cargo + transfer;
+            if (result >= 0)
+            {
+                // The transfer doesn't leave us with 0 minerals, so allow it
+                Cargo.Copy(result);
+                // fuel doesn't make sense for a planet, so zero it out
+                Cargo.Fuel = 0;
+                return true;
+            }
+            return false;
+        }
+
+
 
     }
 }

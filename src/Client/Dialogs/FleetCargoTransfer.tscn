@@ -1,0 +1,120 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://src/Client/Dialogs/FleetCargoTransfer.cs" type="Script" id=1]
+[ext_resource path="res://src/Client/CargoBar.tscn" type="PackedScene" id=2]
+
+[node name="FleetCargoTransfer" type="VBoxContainer"]
+margin_right = 252.0
+margin_bottom = 266.0
+size_flags_horizontal = 3
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="NameLabel" type="Label" parent="."]
+margin_right = 252.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 0, 20 )
+text = "Santa Maria #3"
+align = 1
+valign = 1
+
+[node name="GridContainer" type="GridContainer" parent="."]
+margin_top = 24.0
+margin_right = 252.0
+margin_bottom = 164.0
+columns = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="FuelLabel" type="Label" parent="GridContainer"]
+margin_right = 100.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 100, 20 )
+text = "Fuel"
+align = 2
+valign = 1
+
+[node name="FuelBar" parent="GridContainer" instance=ExtResource( 2 )]
+margin_left = 104.0
+margin_right = 252.0
+margin_bottom = 20.0
+IsFuel = true
+Unit = "mg"
+
+[node name="CargoLabel" type="Label" parent="GridContainer"]
+margin_top = 24.0
+margin_right = 100.0
+margin_bottom = 44.0
+rect_min_size = Vector2( 0, 20 )
+text = "Cargo Hold"
+align = 2
+valign = 1
+
+[node name="CargoBar" parent="GridContainer" instance=ExtResource( 2 )]
+margin_left = 104.0
+margin_top = 24.0
+margin_right = 252.0
+margin_bottom = 44.0
+
+[node name="IronumLabel" type="Label" parent="GridContainer"]
+margin_top = 48.0
+margin_right = 100.0
+margin_bottom = 68.0
+rect_min_size = Vector2( 0, 20 )
+text = "Ironium"
+align = 2
+valign = 1
+
+[node name="IroniumBar" parent="GridContainer" instance=ExtResource( 2 )]
+margin_left = 104.0
+margin_top = 48.0
+margin_right = 252.0
+margin_bottom = 68.0
+
+[node name="BoraniumLabel" type="Label" parent="GridContainer"]
+margin_top = 72.0
+margin_right = 100.0
+margin_bottom = 92.0
+rect_min_size = Vector2( 0, 20 )
+text = "Boranium"
+align = 2
+valign = 1
+
+[node name="BoraniumBar" parent="GridContainer" instance=ExtResource( 2 )]
+margin_left = 104.0
+margin_top = 72.0
+margin_right = 252.0
+margin_bottom = 92.0
+
+[node name="GermaniumLabel" type="Label" parent="GridContainer"]
+margin_top = 96.0
+margin_right = 100.0
+margin_bottom = 116.0
+rect_min_size = Vector2( 0, 20 )
+text = "Germanium"
+align = 2
+valign = 1
+
+[node name="GermaniumBar" parent="GridContainer" instance=ExtResource( 2 )]
+margin_left = 104.0
+margin_top = 96.0
+margin_right = 252.0
+margin_bottom = 116.0
+
+[node name="ColonistsLabel" type="Label" parent="GridContainer"]
+margin_top = 120.0
+margin_right = 100.0
+margin_bottom = 140.0
+rect_min_size = Vector2( 0, 20 )
+text = "Colonists"
+align = 2
+valign = 1
+
+[node name="ColonistsBar" parent="GridContainer" instance=ExtResource( 2 )]
+margin_left = 104.0
+margin_top = 120.0
+margin_right = 252.0
+margin_bottom = 140.0

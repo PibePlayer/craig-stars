@@ -80,6 +80,12 @@ namespace CraigStars
             return new ProductionQueueItem(Type, Quantity, Design);
         }
 
+        /// <summary>
+        /// Get the cost of a single item in this ProductionQueueItem
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <param name="race"></param>
+        /// <returns></returns>
         public Cost GetCostOfOne(UniverseSettings settings, Race race)
         {
             Cost cost = new Cost();

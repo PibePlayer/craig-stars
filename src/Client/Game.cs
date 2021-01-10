@@ -23,6 +23,7 @@ namespace CraigStars
         Scanner scanner;
 
         ProductionQueueDialog productionQueueDialog;
+        CargoTransferDialog cargoTransferDialog;
 
         public override void _Ready()
         {
@@ -33,14 +34,24 @@ namespace CraigStars
             scanner.InitMapObjects();
 
             productionQueueDialog = GetNode<ProductionQueueDialog>("CanvasLayer/ProductionQueueDialog");
+            cargoTransferDialog = GetNode<CargoTransferDialog>("CanvasLayer/CargoTransferDialog");
 
             Signals.ChangeProductionQueuePressedEvent += OnChangeProductionQueue;
+            Signals.CargoTransferRequestedEvent += OnCargoTransferRequested;
         }
 
         public override void _ExitTree()
         {
             Server.Shutdown();
             Signals.ChangeProductionQueuePressedEvent -= OnChangeProductionQueue;
+            Signals.CargoTransferRequestedEvent -= OnCargoTransferRequested;
+        }
+
+        void OnCargoTransferRequested(ICargoHolder source, ICargoHolder dest)
+        {
+            cargoTransferDialog.Source = source;
+            cargoTransferDialog.Dest = dest;
+            cargoTransferDialog.PopupCentered();
         }
 
         void OnChangeProductionQueue(PlanetSprite planetSprite)

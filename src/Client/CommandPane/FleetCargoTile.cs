@@ -1,3 +1,4 @@
+using CraigStars.Singletons;
 using Godot;
 using System;
 
@@ -15,7 +16,24 @@ namespace CraigStars
             cargoBar = FindNode("CargoBar") as CargoBar;
             cargoGrid = FindNode("CargoGrid") as CargoGrid;
 
+            cargoBar.ValueUpdatedEvent += OnCargoBarPressed;
+
             base._Ready();
+        }
+
+        public override void _ExitTree()
+        {
+            cargoBar.ValueUpdatedEvent -= OnCargoBarPressed;
+            base._ExitTree();
+        }
+
+        void OnCargoBarPressed(int newValue)
+        {
+            if (ActiveFleet?.Fleet != null && ActiveFleet.Fleet.Aggregate.CargoCapacity > 0 && ActiveFleet?.Fleet?.Orbiting != null)
+            {
+                // trigger a cargo transfer event between this fleet and the planet it is orbiting
+                Signals.PublishCargoTransferRequestedEvent(ActiveFleet.Fleet, ActiveFleet.Fleet.Orbiting);
+            }
         }
 
         protected override void UpdateControls()

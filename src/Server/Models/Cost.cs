@@ -26,6 +26,11 @@ namespace CraigStars
             Resources = cost.Resources;
         }
 
+        public override string ToString()
+        {
+            return $"Cost i:{Ironium}, b:{Boranium}, g:{Germanium}, r:{Resources}";
+        }
+
         public static Cost operator +(Cost a, Cost b)
         {
             return new Cost(
@@ -46,6 +51,15 @@ namespace CraigStars
             );
         }
 
+        public static Cost operator -(Cost a, Mineral b)
+        {
+            return new Cost(
+                a.Ironium - b.Ironium,
+                a.Boranium - b.Boranium,
+                a.Germanium - b.Germanium,
+                a.Resources
+            );
+        }
 
         public static Cost operator *(Cost a, int b)
         {

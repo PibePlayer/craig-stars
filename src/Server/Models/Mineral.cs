@@ -36,6 +36,11 @@ namespace CraigStars
             Germanium = mineral.Germanium;
         }
 
+        public override string ToString()
+        {
+            return $"Mineral i:{Ironium}, b:{Boranium}, g:{Germanium}";
+        }
+
         public int this[int index]
         {
             get

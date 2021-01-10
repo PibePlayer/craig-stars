@@ -35,6 +35,8 @@ namespace CraigStars.Singletons
         public static event Action<Player> SubmitTurnEvent;
         public static event Action<PlanetSprite> ChangeProductionQueuePressedEvent;
         public static event Action<Planet> ProductionQueueChangedEvent;
+        public delegate void CargoTransferRequested(ICargoHolder source, ICargoHolder dest);
+        public static event CargoTransferRequested CargoTransferRequestedEvent;
 
         #endregion
 
@@ -204,6 +206,12 @@ namespace CraigStars.Singletons
         {
             ProductionQueueChangedEvent?.Invoke(planet);
         }
+
+        public static void PublishCargoTransferRequestedEvent(ICargoHolder source, ICargoHolder dest)
+        {
+            CargoTransferRequestedEvent?.Invoke(source, dest);
+        }
+
 
         public static void PublishSubmitTurnEvent(Player player)
         {

@@ -150,12 +150,6 @@ public class UniverseGenerator
         fleet.ComputeAggregate(Server.Settings);
         fleet.Fuel = fleet.Aggregate.FuelCapacity;
 
-        if (fleet.Aggregate.CargoCapacity > 0)
-        {
-            // TODO: Remove this when we have UI code to transfer colonists
-            fleet.Cargo.Colonists = fleet.Aggregate.CargoCapacity;
-        }
-
         return fleet;
     }
 

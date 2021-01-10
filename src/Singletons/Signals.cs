@@ -34,6 +34,13 @@ namespace CraigStars.Singletons
 
         public static event Action<Player> SubmitTurnEvent;
         public static event Action<PlanetSprite> ChangeProductionQueuePressedEvent;
+        public static event Action<Planet> ProductionQueueChangedEvent;
+
+        #endregion
+
+        #region Server Events
+
+        public static event Action<Fleet> FleetBuiltEvent;
 
         #endregion
 
@@ -193,9 +200,19 @@ namespace CraigStars.Singletons
             ChangeProductionQueuePressedEvent?.Invoke(planet);
         }
 
+        public static void PublishProductionQueueChangedEvent(Planet planet)
+        {
+            ProductionQueueChangedEvent?.Invoke(planet);
+        }
+
         public static void PublishSubmitTurnEvent(Player player)
         {
             SubmitTurnEvent?.Invoke(player);
+        }
+
+        internal static void PublishFleetBuiltEvent(Fleet fleet)
+        {
+            FleetBuiltEvent?.Invoke(fleet);
         }
 
         #endregion

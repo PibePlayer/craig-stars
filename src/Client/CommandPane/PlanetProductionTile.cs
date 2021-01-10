@@ -25,6 +25,20 @@ namespace CraigStars
             productionQueueItemList = FindNode("ProductionQueueItemList") as ItemList;
 
             changeButton.Connect("pressed", this, nameof(OnChangeButtonPressed));
+            Signals.ProductionQueueChangedEvent += OnProductionQueueChanged;
+        }
+
+        public override void _ExitTree()
+        {
+            Signals.ProductionQueueChangedEvent -= OnProductionQueueChanged;
+        }
+
+        void OnProductionQueueChanged(Planet planet)
+        {
+            if (ActivePlanet?.Planet == planet)
+            {
+                UpdateControls();
+            }
         }
 
         protected override void UpdateControls()

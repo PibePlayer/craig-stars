@@ -50,6 +50,13 @@ namespace CraigStars
 
             Signals.PublishPostStartGameEvent(Year);
             Signals.SubmitTurnEvent += OnSubmitTurn;
+            Signals.FleetBuiltEvent += OnFleetBuilt;
+        }
+
+        void OnFleetBuilt(Fleet fleet)
+        {
+            Fleets.Add(fleet);
+            FleetsByGuid[fleet.Guid] = fleet;
         }
 
         /// <summary>

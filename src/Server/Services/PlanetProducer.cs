@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
+using CraigStars.Singletons;
 
 namespace CraigStars
 {
@@ -41,7 +43,7 @@ namespace CraigStars
                 if (0 < numBuilt && numBuilt < item.Quantity)
                 {
                     // build however many we can
-                    allocated = BuildItem(planet, item, numBuilt, allocated);
+                    allocated = BuildItem(planet, item, numBuilt, allocated, settings);
 
                     // remove this cost from our allocated amount
                     allocated -= costPer * numBuilt;
@@ -59,7 +61,7 @@ namespace CraigStars
                 {
                     // only build the amount required
                     numBuilt = item.Quantity;
-                    allocated = BuildItem(planet, item, numBuilt, allocated);
+                    allocated = BuildItem(planet, item, numBuilt, allocated, settings);
 
                     // remove this cost from our allocated amount
                     allocated -= costPer * numBuilt;
@@ -99,7 +101,7 @@ namespace CraigStars
          * 
          * @param allocated
          */
-        private Cost BuildItem(Planet planet, ProductionQueueItem item, int numBuilt, Cost allocated)
+        private Cost BuildItem(Planet planet, ProductionQueueItem item, int numBuilt, Cost allocated, UniverseSettings settings)
         {
             if (item.Type == QueueItemType.Mine || item.Type == QueueItemType.AutoMine)
             {
@@ -123,7 +125,7 @@ namespace CraigStars
             }
             else if (item.Type == QueueItemType.ShipToken)
             {
-                BuildFleet(planet, item, numBuilt);
+                BuildFleet(planet, item, numBuilt, settings);
             }
             else if (item.Type == QueueItemType.Starbase)
             {
@@ -136,38 +138,38 @@ namespace CraigStars
         /**
          * Build a fleet and add it to the planet
          */
-        private void BuildFleet(Planet planet, ProductionQueueItem item, int numBuilt)
+        private void BuildFleet(Planet planet, ProductionQueueItem item, int numBuilt, UniverseSettings settings)
         {
-            // planet.Player().setNumFleetsBuilt(planet.Player.getNumFleetsBuilt + 1);
-            // String name = (item.FleetName() != null ? item.getFleetName() : String.format("Fleet #" + planet.Player.getNumFleetsBuilt));
-            // boolean foundFleet = false;
-            // // if (we have a fleetName defined for this queue item, try and append it
-            // // to that similarly named fleet if (it is orbiting this planet
-            // if (item.FleetName() != null && planet.getOrbitingFleets().Count > 0)
-            // {
-            //     for (Fleet fleet : planet.OrbitingFleets)
-            //     {
-            //         if (fleet.Name().equals(item.getFleetName))
-            //         {
-            //             fleetController.merge(fleet, new ShipStack(item.ShipDesign, numBuilt));
-            //             foundFleet = true;
-            //             break;
-            //         }
-            //     }
-            // }
+            planet.Player.Stats.NumFleetsBuilt++;
+            planet.Player.Stats.NumTokensBuilt += numBuilt;
+            String name = item.FleetName != null ? item.FleetName : $"Fleet #{planet.Player.Stats.NumFleetsBuilt}";
+            var existingFleet = planet.OrbitingFleets.Where(f => f.Name == name);
 
-            // // if (we didn't have a fleet of that name, or it wasn't defined
-            // // just add this fleet as it's own entity
-            // if (!foundFleet)
+            // if (we didn't have a fleet of that name, or it wasn't defined
+            // just add this fleet as it's own entity
+            // if (existingFleet != null)
             // {
-            //     Fleet fleet = fleetController.create(name, planet.X(), planet.getY(), planet.getOwner);
-            //     fleet.ShipStacks().add(new ShipStack(item.getShipDesign(), item.getQuantity));
-            //     fleet.computeAggregate();
-            //     fleet.setFuel(fleet.Aggregate().getFuelCapacity);
-            //     fleet.setOrbiting(planet);
-            //     fleet.addWaypoint(fleet.X(), fleet.getY, 5, WaypointTask.None, planet);
-            //     planet.OrbitingFleets.add(fleet);
-            //     planet.Player().getGame().getFleets.add(fleet);
+            //     // merge this fleet into an existing fleet
+            //     // existingFleet.Merge(item.Design, numBuilt);
+            // }
+            // else
+            // {
+            Fleet fleet = new Fleet()
+            {
+                Name = name,
+                Player = planet.Player,
+                Orbiting = planet,
+                Position = planet.Position
+            };
+            fleet.Tokens.Add(new ShipToken(item.Design, item.Quantity));
+            fleet.ComputeAggregate(settings);
+            fleet.Fuel = fleet.Aggregate.FuelCapacity;
+            fleet.Waypoints.Add(new Waypoint(planet));
+            planet.OrbitingFleets.Add(fleet);
+            Message.FleetBuilt(planet.Player, item.Design, fleet, numBuilt);
+
+            Signals.PublishFleetBuiltEvent(fleet);
+
             // }
         }
 

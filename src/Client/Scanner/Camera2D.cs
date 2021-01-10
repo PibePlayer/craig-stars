@@ -10,9 +10,10 @@ namespace CraigStars
         [Export]
         public float ScrollConstant { get; set; } = 1.5f;
 
+
         private bool pressed = false;
 
-        public override void _Input(InputEvent @event)
+        public override void _UnhandledInput(InputEvent @event)
         {
             if (@event.IsActionPressed("zoom_in"))
             {

@@ -34,6 +34,9 @@ namespace CraigStars
 
         List<ProductionQueueItem> availableItems = new List<ProductionQueueItem>();
         List<ProductionQueueItem> queuedItems = new List<ProductionQueueItem>();
+        ProductionQueueItem selectedQueueItem;
+
+        int quantityModifier = 1;
 
         public override void _Ready()
         {
@@ -56,13 +59,32 @@ namespace CraigStars
             queuedItemsTree.SetColumnMinWidth(1, 60);
 
             availableItemsTree.SetColumnExpand(0, true);
-            Connect("about_to_show", this, nameof(AboutToShow));
+            availableItemsTree.Connect("item_activated", this, nameof(OnAddItem));
+            addButton.Connect("pressed", this, nameof(OnAddItem));
+            clearButton.Connect("pressed", this, nameof(OnClear));
+            removeButton.Connect("pressed", this, nameof(OnRemoveItem));
+            okButton.Connect("pressed", this, nameof(OnOk));
+
+            Connect("about_to_show", this, nameof(OnAboutToShow));
+            Connect("popup_hide", this, nameof(OnPopupHide));
+        }
+
+        void OnPopupHide()
+        {
+            availableItems.Clear();
+            queuedItems.Clear();
+            availableItemsTree.Clear();
+            queuedItemsTree.Clear();
+            selectedQueueItem = null;
+
+            availableItemsTree.Disconnect("item_selected", this, nameof(OnAvailableItemSelected));
+            queuedItemsTree.Disconnect("item_selected", this, nameof(OnQueuedItemSelected));
         }
 
         /// <summary>
         /// Update our planet queu
         /// </summary>
-        void AboutToShow()
+        void OnAboutToShow()
         {
             availableItemsTree.Clear();
             queuedItemsTree.Clear();
@@ -89,12 +111,11 @@ namespace CraigStars
 
             Planet.ProductionQueue.Items.ForEach(item =>
             {
-                AddQueuedItem(item);
+                AddQueuedItem(item.Clone());
             });
 
             availableItemsTree.Connect("item_selected", this, nameof(OnAvailableItemSelected));
             queuedItemsTree.Connect("item_selected", this, nameof(OnQueuedItemSelected));
-            // PopupCentered();
         }
 
         void AddAvailableItem(ProductionQueueItem item)
@@ -108,6 +129,7 @@ namespace CraigStars
         {
             var index = queuedItems.Count;
             queuedItems.Add(item);
+            selectedQueueItem = item;
             AddTreeItem(queuedItemsTree, queuedItemsTreeRoot, item.FullName, index, item.Quantity);
         }
 
@@ -120,6 +142,99 @@ namespace CraigStars
             {
                 item.SetText(1, $"{quantity}");
                 item.SetTextAlign(1, TreeItem.TextAlign.Right);
+            }
+            item.Select(0);
+        }
+
+        #region Events 
+
+        /// <summary>
+        /// Set the quantity modifier for the dialog
+        /// if the user holds shift, we multipy by 10, if they press control we multiply by 100
+        /// both multiplies by 1000
+        /// </summary>
+        public override void _Input(InputEvent @event)
+        {
+            if (@event is InputEventKey key)
+            {
+                if (key.Pressed && key.Scancode == (uint)KeyList.Shift)
+                {
+                    quantityModifier *= 10;
+                }
+                else if (key.Pressed && key.Scancode == (uint)KeyList.Control)
+                {
+                    quantityModifier *= 100;
+                }
+                else
+                {
+                    quantityModifier = 1;
+                }
+            }
+        }
+
+        /// <summary>
+        /// When the ok button is pressed, save all these changes to the other players
+        /// </summary>
+        void OnOk()
+        {
+            Planet.ProductionQueue.Items.Clear();
+            Planet.ProductionQueue.Items.AddRange(queuedItems);
+            Signals.PublishProductionQueueChangedEvent(Planet);
+            Hide();
+        }
+
+        void OnAddItem()
+        {
+            var index = (int)availableItemsTree.GetSelected().GetMetadata(0);
+            var item = availableItems[index];
+
+            if (selectedQueueItem?.Type == item.Type)
+            {
+                selectedQueueItem.Quantity += quantityModifier;
+                queuedItemsTree.GetSelected().SetText(1, selectedQueueItem.Quantity.ToString());
+            }
+            else
+            {
+                var queuedItem = new ProductionQueueItem(item.Type, quantityModifier, item.Design);
+                AddQueuedItem(queuedItem);
+            }
+        }
+
+        void OnClear()
+        {
+            selectedQueueItem = null;
+            queuedItems.Clear();
+            queuedItemsTree.Clear();
+            queuedItemsTreeRoot = queuedItemsTree.CreateItem();
+        }
+
+        void OnRemoveItem()
+        {
+            if (queuedItemsTree.GetSelected() != null)
+            {
+                // Reduce the quantity or remove the selected item.
+                var index = (int)queuedItemsTree.GetSelected().GetMetadata(0);
+                var item = queuedItems[index];
+
+                item.Quantity -= quantityModifier;
+                if (item.Quantity <= 0)
+                {
+                    queuedItemsTree.GetSelected().Free();
+                    selectedQueueItem = null;
+                    queuedItems.RemoveAt(index);
+                    var queuedItem = queuedItemsTreeRoot.GetNext();
+                    int newIndex = 0;
+                    while (queuedItem != null)
+                    {
+                        queuedItem.SetMetadata(0, newIndex++);
+                    }
+                }
+                else
+                {
+                    queuedItemsTree.GetSelected().SetText(1, item.Quantity.ToString());
+                }
+                // force a UI update: https://github.com/godotengine/godot/issues/38787
+                queuedItemsTree.HideRoot = queuedItemsTree.HideRoot;
             }
         }
 
@@ -135,7 +250,10 @@ namespace CraigStars
         {
             var index = (int)queuedItemsTree.GetSelected().GetMetadata(0);
             var item = queuedItems[index];
+            selectedQueueItem = item;
             queuedItemCostGrid.Cost = item.GetCostOfOne(SettingsManager.Settings, Me.Race) * item.Quantity;
         }
+
+        #endregion
     }
 }

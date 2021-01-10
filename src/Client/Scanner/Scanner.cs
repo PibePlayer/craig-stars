@@ -17,6 +17,7 @@ namespace CraigStars
         SelectedMapObjectSprite selectedMapObjectSprite;
         Node2D normalScannersNode;
         Node2D penScannersNode;
+        Camera2D camera2D;
 
         public List<PlanetSprite> Planets { get; } = new List<PlanetSprite>();
         public List<FleetSprite> Fleets { get; } = new List<FleetSprite>();
@@ -55,6 +56,7 @@ namespace CraigStars
             selectedMapObjectSprite = GetNode<SelectedMapObjectSprite>("SelectedMapObjectSprite");
             normalScannersNode = GetNode<Node2D>("Scanners/Normal");
             penScannersNode = GetNode<Node2D>("Scanners/Pen");
+            camera2D = GetNode<Camera2D>("Camera2D");
 
             // wire up events
             Signals.TurnPassedEvent += OnTurnPassed;

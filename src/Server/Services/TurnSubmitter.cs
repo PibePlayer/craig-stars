@@ -64,6 +64,16 @@ namespace CraigStars
                     }
                 }
             }
+
+            foreach (var playerPlanet in player.Planets.Where(p => p.Player == player))
+            {
+                if (Server.PlanetsByGuid.TryGetValue(playerPlanet.Guid, out var planet) && planet.Player == player)
+                {
+                    // TODO: validate planet production queue
+                    planet.ProductionQueue.Items.Clear();
+                    playerPlanet.ProductionQueue.Items.ForEach(item => planet.ProductionQueue.Items.Add(item.Clone()));
+                }
+            }
         }
     }
 }

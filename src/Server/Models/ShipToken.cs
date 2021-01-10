@@ -12,6 +12,14 @@ namespace CraigStars
         public ShipDesign Design { get; set; } = new ShipDesign();
         public int Quantity { get; set; }
 
+        public ShipToken() { }
+
+        public ShipToken(ShipDesign design, int quantity)
+        {
+            Design = design;
+            Quantity = quantity;
+        }
+
         #region Serializer Helpers
 
         public string DesignName

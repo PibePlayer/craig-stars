@@ -56,6 +56,12 @@ namespace CraigStars
                         return Design.Name;
                     case QueueItemType.AutoAlchemy:
                         return "Alchemy (Auto Build)";
+                    case QueueItemType.AutoMine:
+                        return "Mine (Auto Build)";
+                    case QueueItemType.AutoFactory:
+                        return "Factory (Auto Build)";
+                    case QueueItemType.AutoDefense:
+                        return "Defense (Auto Build)";
                     default:
                         return Type.ToString();
                 }
@@ -67,6 +73,11 @@ namespace CraigStars
             Type = type;
             Quantity = quantity;
             Design = design;
+        }
+
+        public ProductionQueueItem Clone()
+        {
+            return new ProductionQueueItem(Type, Quantity, Design);
         }
 
         public Cost GetCostOfOne(UniverseSettings settings, Race race)

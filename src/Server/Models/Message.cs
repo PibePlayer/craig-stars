@@ -149,6 +149,20 @@ namespace CraigStars
             player.Messages.Add(new Message(MessageType.FleetScrapped, text, planet));
         }
 
+        public static void FleetBuilt(Player player, ShipDesign design, Fleet fleet, int numBuilt)
+        {
+            String text;
+            if (numBuilt == 1)
+            {
+                text = $"Your starbase at {fleet.Orbiting.Name} has built a new {design.Name}.";
+            }
+            else
+            {
+                text = $"Your starbase at {fleet.Orbiting.Name} has built {numBuilt} new {design.Name}s.";
+            }
+            player.Messages.Add(new Message(MessageType.BuiltShip, text, fleet));
+        }
+
         public static void PlanetDiscovered(Player player, Planet planet)
         {
             long habValue = player.Race.GetPlanetHabitability(planet.Hab);

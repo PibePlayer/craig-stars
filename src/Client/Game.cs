@@ -22,6 +22,8 @@ namespace CraigStars
         /// </summary>
         Scanner scanner;
 
+        ProductionQueueDialog productionQueueDialog;
+
         public override void _Ready()
         {
             Server.Init(PlayersManager.Instance.Players, SettingsManager.Settings, TechStore.Instance);
@@ -29,6 +31,8 @@ namespace CraigStars
             // add the universe to the viewport
             scanner = FindNode("Scanner") as Scanner;
             scanner.InitMapObjects();
+
+            productionQueueDialog = GetNode<ProductionQueueDialog>("CanvasLayer/ProductionQueueDialog");
 
             Signals.ChangeProductionQueuePressedEvent += OnChangeProductionQueue;
         }
@@ -39,11 +43,10 @@ namespace CraigStars
             Signals.ChangeProductionQueuePressedEvent -= OnChangeProductionQueue;
         }
 
-        private void OnChangeProductionQueue(PlanetSprite planetSprite)
+        void OnChangeProductionQueue(PlanetSprite planetSprite)
         {
-            var dialog = GetNode<ProductionQueueDialog>("CanvasLayer/ProductionQueueDialog");
-            dialog.Planet = planetSprite.Planet;
-            dialog.PopupCentered();
+            productionQueueDialog.Planet = planetSprite.Planet;
+            productionQueueDialog.PopupCentered();
         }
 
         public override void _Input(InputEvent @event)

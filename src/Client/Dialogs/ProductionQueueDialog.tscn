@@ -6,6 +6,7 @@
 [node name="ProductionQueueDialog" type="WindowDialog"]
 margin_right = 597.0
 margin_bottom = 438.0
+popup_exclusive = true
 window_title = "Production Queue for Brin"
 resizable = true
 script = ExtResource( 2 )

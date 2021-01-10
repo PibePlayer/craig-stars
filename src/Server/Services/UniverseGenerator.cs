@@ -77,6 +77,11 @@ public class UniverseGenerator
         return (int)otherPlanets.Min(otherPlanet => p.Position.DistanceTo(otherPlanet.Position));
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="settings"></param>
+    /// <returns></returns>
     List<Planet> GeneratePlanets(UniverseSettings settings)
     {
         var planets = new List<Planet>();
@@ -239,7 +244,7 @@ public class UniverseGenerator
 
         // homeworlds have a scanner
         planet.Homeworld = true;
-        planet.ContributesToResearch = true;
+        planet.ContributesOnlyLeftoverToResearch = true;
         planet.Scanner = true;
 
         // the homeworld gets a starbase
@@ -303,7 +308,7 @@ public class UniverseGenerator
         planet.Mines = settings.StartingMines;
         planet.Factories = settings.StartingFactories;
 
-        planet.ContributesToResearch = true;
+        planet.ContributesOnlyLeftoverToResearch = true;
     }
 
     void RandomizePlanet(UniverseSettings settings, Planet planet)

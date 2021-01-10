@@ -69,6 +69,7 @@ namespace CraigStars
             {
                 if (Server.PlanetsByGuid.TryGetValue(playerPlanet.Guid, out var planet) && planet.Player == player)
                 {
+                    planet.ContributesOnlyLeftoverToResearch = playerPlanet.ContributesOnlyLeftoverToResearch;
                     // TODO: validate planet production queue
                     planet.ProductionQueue.Items.Clear();
                     playerPlanet.ProductionQueue.Items.ForEach(item => planet.ProductionQueue.Items.Add(item.Clone()));

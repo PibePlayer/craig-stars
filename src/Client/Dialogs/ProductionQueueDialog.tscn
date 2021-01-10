@@ -4,9 +4,9 @@
 [ext_resource path="res://src/Client/Dialogs/ProductionQueueDialog.cs" type="Script" id=2]
 
 [node name="ProductionQueueDialog" type="WindowDialog"]
+visible = true
 margin_right = 597.0
 margin_bottom = 438.0
-popup_exclusive = true
 window_title = "Production Queue for Brin"
 resizable = true
 script = ExtResource( 2 )
@@ -125,11 +125,11 @@ margin_top = 404.0
 margin_right = 587.0
 margin_bottom = 428.0
 
-[node name="ContributesToResearchCheckbox" type="CheckBox" parent="MarginContainer/VBoxContainer/HBoxContainerButtons"]
+[node name="ContributesOnlyLeftoverToResearchCheckbox" type="CheckBox" parent="MarginContainer/VBoxContainer/HBoxContainerButtons"]
 margin_right = 335.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
-text = "Contributes to Research"
+text = "Contributes Only Leftover to Research"
 
 [node name="PrevButton" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainerButtons"]
 margin_left = 339.0

@@ -38,7 +38,7 @@ namespace CraigStars
 
         public int Defenses { get; set; }
         public int MaxDefenses { get => (Population > 0 && Player != null) ? Population / 10000 * 10 : 0; }
-        public bool ContributesToResearch { get; set; }
+        public bool ContributesOnlyLeftoverToResearch { get; set; }
         public bool Homeworld { get; set; }
         public bool Scanner { get; set; }
 
@@ -137,7 +137,7 @@ namespace CraigStars
         public void UpdatePlayerPlanet(Planet planet)
         {
             Cargo = Cargo ?? new Cargo();
-            MineYears = Cargo ?? new Cargo();
+            MineYears = MineYears ?? new Mineral();
             ProductionQueue = ProductionQueue ?? new ProductionQueue();
 
             Cargo.Copy(planet.Cargo);
@@ -147,6 +147,7 @@ namespace CraigStars
             Defenses = planet.Mines;
             Scanner = planet.Scanner;
             Homeworld = planet.Homeworld;
+            ContributesOnlyLeftoverToResearch = planet.ContributesOnlyLeftoverToResearch;
 
             ProductionQueue.Copy(planet.ProductionQueue);
         }
@@ -281,7 +282,7 @@ namespace CraigStars
         {
             get
             {
-                if (Player != null && ContributesToResearch)
+                if (Player != null && ContributesOnlyLeftoverToResearch)
                 {
                     return (int)(ResourcesPerYear * (1 - Player.ResearchAmount / 100.0));
                 }
@@ -300,7 +301,7 @@ namespace CraigStars
         {
             get
             {
-                if (Player != null && ContributesToResearch)
+                if (Player != null && ContributesOnlyLeftoverToResearch)
                 {
                     return (int)(ResourcesPerYear * (Player.ResearchAmount / 100.0));
                 }

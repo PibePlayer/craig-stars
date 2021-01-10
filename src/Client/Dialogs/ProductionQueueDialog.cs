@@ -49,7 +49,7 @@ namespace CraigStars
             prevButton = FindNode("PrevButton") as Button;
             nextButton = FindNode("NextButton") as Button;
             okButton = FindNode("OKButton") as Button;
-            contributesToResearchCheckbox = FindNode("ContributesToResearchCheckbox") as CheckBox;
+            contributesToResearchCheckbox = FindNode("ContributesOnlyLeftoverToResearchCheckbox") as CheckBox;
 
             availableItemCostGrid = FindNode("AvailableItemCostGrid") as CostGrid;
             queuedItemCostGrid = FindNode("QueuedItemCostGrid") as CostGrid;
@@ -113,6 +113,8 @@ namespace CraigStars
             {
                 AddQueuedItem(item.Clone());
             });
+
+            contributesToResearchCheckbox.Pressed = Planet.ContributesOnlyLeftoverToResearch;
 
             availableItemsTree.Connect("item_selected", this, nameof(OnAvailableItemSelected));
             queuedItemsTree.Connect("item_selected", this, nameof(OnQueuedItemSelected));
@@ -179,6 +181,8 @@ namespace CraigStars
         {
             Planet.ProductionQueue.Items.Clear();
             Planet.ProductionQueue.Items.AddRange(queuedItems);
+            Planet.ContributesOnlyLeftoverToResearch = contributesToResearchCheckbox.Pressed;
+
             Signals.PublishProductionQueueChangedEvent(Planet);
             Hide();
         }

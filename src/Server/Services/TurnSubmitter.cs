@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CraigStars.Singletons;
+using log4net;
 
 namespace CraigStars
 {
@@ -10,6 +11,8 @@ namespace CraigStars
     /// </summary>
     public class TurnSubmitter
     {
+        private static readonly ILog log = LogManager.GetLogger(typeof(TurnSubmitter));
+
         public Server Server { get; }
 
         public TurnSubmitter(Server server)
@@ -48,6 +51,7 @@ namespace CraigStars
                             {
                                 if (Server.PlanetsByGuid.TryGetValue(planet.Guid, out var gamePlanet))
                                 {
+                                    log.Debug($"Adding player defined waypoint for {fleet.Name} to {playerWaypoint.TargetName} -> {playerWaypoint.Task}");
                                     // add the server side version of this planet as a waypoint
                                     fleet.Waypoints.Add(new Waypoint(gamePlanet, playerWaypoint.WarpFactor, playerWaypoint.Task));
                                 }

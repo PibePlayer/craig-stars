@@ -3,11 +3,14 @@ using System;
 using System.Collections.Generic;
 
 using CraigStars.Singletons;
+using log4net;
 
 namespace CraigStars
 {
     public class FleetWaypointTaskTile : FleetTile
     {
+        private static readonly ILog log = LogManager.GetLogger(typeof(FleetWaypointTaskTile));
+
         OptionButton waypointTask;
         Waypoint ActiveWaypoint { get; set; }
 
@@ -57,6 +60,7 @@ namespace CraigStars
         {
             if (ActiveWaypoint != null && index >= 0 && index < Enum.GetValues(typeof(WaypointTask)).Length)
             {
+                log.Debug($"Changing waypoint {ActiveWaypoint.TargetName} from {ActiveWaypoint.Task} to {(WaypointTask)index}");
                 ActiveWaypoint.Task = (WaypointTask)index;
             }
         }

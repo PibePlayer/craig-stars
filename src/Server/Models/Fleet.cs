@@ -5,11 +5,14 @@ using CraigStars;
 using CraigStars.Singletons;
 using System;
 using System.Text.Json.Serialization;
+using log4net;
 
 namespace CraigStars
 {
     public class Fleet : MapObject, SerializableMapObject, ICargoHolder
     {
+        private static readonly ILog log = LogManager.GetLogger(typeof(Fleet));
+
         #region Planet Stats
 
         public Cargo Cargo { get; set; } = new Cargo();
@@ -149,6 +152,8 @@ namespace CraigStars
             if (Waypoints.Count > 0)
             {
                 var wp = Waypoints[0];
+                log.Debug($"Processing waypoint for {Name} at {wp.TargetName} -> {wp.Task}");
+
                 switch (wp.Task)
                 {
                     case WaypointTask.Colonize:
@@ -423,15 +428,6 @@ namespace CraigStars
             });
 
 
-        }
-
-        /// <summary>
-        /// Update a player's copy of this fleet
-        /// </summary>
-        /// <param name="fleet"></param>
-        public void UpdatePlayerFleet(Fleet fleet)
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>

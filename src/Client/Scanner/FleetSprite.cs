@@ -78,6 +78,27 @@ namespace CraigStars
             return waypoint;
         }
 
+        public Waypoint AddWaypoint(Vector2 position)
+        {
+            int warpFactor = Fleet.GetDefaultWarpFactor();
+            if (Fleet.Waypoints.Count > 1)
+            {
+                warpFactor = Fleet.Waypoints[Fleet.Waypoints.Count - 1].WarpFactor;
+            }
+            var waypoint = new Waypoint()
+            {
+                WarpFactor = warpFactor,
+                Position = position
+            };
+
+
+            Fleet.Waypoints.Add(waypoint);
+
+            UpdateWaypointsLine();
+
+            Signals.PublishWaypointAddedEvent(Fleet, waypoint);
+            return waypoint;
+        }
 
         void UpdateWaypointsLine()
         {

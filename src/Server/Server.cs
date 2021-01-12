@@ -45,6 +45,7 @@ namespace CraigStars
             // update our player information as if we'd just generated a new turn
             turnGenerator = new TurnGenerator(this);
             turnGenerator.UpdatePlayerReports();
+            turnGenerator.RunTurnProcessors();
 
             // create a new turn submitter to handle submitted turns
             turnSubmitter = new TurnSubmitter(this);
@@ -111,6 +112,7 @@ namespace CraigStars
             TurnGenerator generator = new TurnGenerator(this);
             generator.GenerateTurn();
             generator.UpdatePlayerReports();
+            turnGenerator.RunTurnProcessors();
             UpdateDictionaries();
             Signals.PublishTurnPassedEvent(Year);
         }

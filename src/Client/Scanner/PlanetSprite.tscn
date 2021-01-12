@@ -13,7 +13,6 @@
 radius = 16.0
 
 [node name="Planet" type="Area2D"]
-z_index = 10
 script = ExtResource( 1 )
 GUIColors = ExtResource( 8 )
 

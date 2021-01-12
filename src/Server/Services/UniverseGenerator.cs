@@ -35,10 +35,6 @@ public class UniverseGenerator
             var homeworld = planets.Find(p => p.Player == null && (ownedPlanets.Count == 0 || ShortestDistanceToPlanets(p, ownedPlanets) > Server.Settings.Area / 4));
             player.Homeworld = homeworld;
             MakeHomeworld(Server.Settings, player, homeworld, Server.Settings.StartingYear);
-            homeworld.ProductionQueue.Items.Add(new ProductionQueueItem(QueueItemType.Mine, 5));
-            homeworld.ProductionQueue.Items.Add(new ProductionQueueItem(QueueItemType.Factory, 10));
-            homeworld.ProductionQueue.Items.Add(new ProductionQueueItem(QueueItemType.AutoMine, 5));
-            homeworld.ProductionQueue.Items.Add(new ProductionQueueItem(QueueItemType.AutoFactory, 10));
             ownedPlanets.Add(homeworld);
 
             fleets.AddRange(GenerateFleets(Server.Settings, player, homeworld));
@@ -395,7 +391,7 @@ public class UniverseGenerator
                 player.TechLevels.Weapons = 3;
                 player.TechLevels.Propulsion = 3;
                 player.TechLevels.Construction = 3;
-                player.TechLevels.Electronics = 13;
+                player.TechLevels.Electronics = 3;
                 player.TechLevels.Biotechnology = 3;
                 break;
         }

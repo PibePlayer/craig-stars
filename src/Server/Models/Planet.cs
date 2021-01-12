@@ -31,6 +31,7 @@ namespace CraigStars
         public Mineral MineYears { get; set; }
         public Cargo Cargo { get; set; }
         public ProductionQueue ProductionQueue { get; set; }
+
         public int Mines { get; set; }
         public int MaxMines { get => (Population > 0 && Player != null) ? Population * Player.Race.NumMines / 10000 : 0; }
         public int Factories { get; set; }
@@ -150,6 +151,20 @@ namespace CraigStars
             ContributesOnlyLeftoverToResearch = planet.ContributesOnlyLeftoverToResearch;
 
             ProductionQueue.Copy(planet.ProductionQueue);
+
+            if (planet.HasStarbase)
+            {
+                Starbase = new Starbase()
+                {
+                    Guid = planet.Starbase.Guid,
+                    Position = planet.Starbase.Position,
+                    Name = planet.Starbase.Name,
+                    RaceName = planet.Starbase.Player.Race.Name,
+                    RacePluralName = planet.Starbase.Player.Race.PluralName,
+                    Player = Player,
+                };
+                Starbase.Tokens.AddRange(planet.Starbase.Tokens);
+            }
         }
 
         /// <summary>
@@ -312,6 +327,22 @@ namespace CraigStars
 
             }
         }
+
+        /// <summary>
+        /// Return true if this is a planet that the current player can build
+        /// </summary>
+        /// <param name="mass"></param>
+        /// <returns></returns>
+        public bool CanBuild(Player player, int mass)
+        {
+            if (OwnedBy(player) && HasStarbase)
+            {
+                var dockCapacity = Starbase?.DockCapacity;
+                return dockCapacity == TechHull.UnlimitedSpaceDock || dockCapacity >= mass;
+            }
+            return false;
+        }
+
 
         /// <summary>
         /// Attempt to transfer cargo to/from this planet

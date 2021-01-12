@@ -38,6 +38,24 @@ namespace CraigStars
         }
 
         /// <summary>
+        /// Run through all the turn processors for each player
+        /// </summary>
+        public void RunTurnProcessors()
+        {
+            List<TurnProcessor> processors = new List<TurnProcessor>() {
+                new ScoutTurnProcessor()
+            };
+            Server.Players.ForEach(player =>
+            {
+
+                if (player.AIControlled)
+                {
+                    processors.ForEach(processor => processor.Process(Server.Year, player));
+                }
+            });
+        }
+
+        /// <summary>
         /// Generate a turn
         /// 
         /// Stars! Order of Events

@@ -60,6 +60,7 @@ namespace CraigStars
                             {
                                 fleet.Waypoints.Add(new Waypoint()
                                 {
+                                    Position = playerWaypoint.Position,
                                     WarpFactor = playerWaypoint.WarpFactor,
                                     Task = playerWaypoint.Task
                                 });

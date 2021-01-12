@@ -28,6 +28,7 @@ namespace CraigStars.Tests
             // update our player information as if we'd just generated a new turn
             var turnGenerator = new TurnGenerator(server);
             turnGenerator.UpdatePlayerReports();
+            turnGenerator.RunTurnProcessors();
 
             string json = Serializers.SavePlayer(player);
             log.Debug($"\n{json}");

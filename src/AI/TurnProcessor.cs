@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using CraigStars.Singletons;
 
 namespace CraigStars
@@ -9,31 +10,38 @@ namespace CraigStars
     /// </summary>
     public abstract class TurnProcessor
     {
-        public Player Player { get; set; }
-
-        public TurnProcessor(Player player)
+        protected Planet ClosestPlanet(Fleet fleet, List<Planet> unknownPlanets)
         {
-            Player = player;
-        }
-
-        public void Subscribe()
-        {
-            Signals.TurnPassedEvent += OnTurnPassed;
-        }
-
-        public void Unsubscribe()
-        {
-            Signals.TurnPassedEvent -= OnTurnPassed;
-        }
-
-        void OnTurnPassed(int year)
-        {
-            Process(year);
+            Planet closest = null;
+            // find the nearest planet to this fleet
+            float dist = 0;
+            foreach (Planet planet in unknownPlanets)
+            {
+                if (closest == null)
+                {
+                    closest = planet;
+                    dist = planet.Position.DistanceSquaredTo(fleet.Position);
+                }
+                else
+                {
+                    // figure out the nearest planet to this fleet
+                    float new_dist = planet.Position.DistanceSquaredTo(fleet.Position);
+                    if (new_dist < dist)
+                    {
+                        // this planet is closer, save it
+                        // and recompute the distance
+                        dist = new_dist;
+                        closest = planet;
+                    }
+                }
+            }
+            return closest;
         }
 
         /// <summary>
         /// Process a turn
         /// </summary>
-        protected abstract void Process(int year);
+        public abstract void Process(int year, Player player);
+
     }
 }

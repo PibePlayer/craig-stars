@@ -622,6 +622,7 @@ namespace CraigStars
             Armor = 500,
             Initiative = 14,
             Starbase = true,
+            SpaceDock = TechHull.UnlimitedSpaceDock,
             Slots = new List<TechHullSlot>(new TechHullSlot[] {
                 new TechHullSlot(HullSlotType.OrbitalElectrical, 1, false),
                 new TechHullSlot(HullSlotType.Weapon, 16, false),

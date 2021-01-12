@@ -69,6 +69,7 @@ namespace CraigStars.Tests
             var tg = new TurnGenerator(server);
             server.Planets[0].Population = 120000;
             tg.UpdatePlayerReports();
+            tg.RunTurnProcessors();
 
             // our player should know about the planet updates
             Assert.AreEqual(server.Planets[0].Population, server.Players[0].Planets[0].Population);

@@ -165,7 +165,7 @@ namespace CraigStars
 
         public static void PlanetDiscovered(Player player, Planet planet)
         {
-            long habValue = player.Race.GetPlanetHabitability(planet.Hab);
+            long habValue = player.Race.GetPlanetHabitability(planet.Hab.Value);
             String text;
             if (planet.Player != null && planet.Player != player)
             {

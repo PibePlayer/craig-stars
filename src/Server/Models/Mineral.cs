@@ -2,13 +2,11 @@ using System;
 
 namespace CraigStars
 {
-    public class Mineral
+    public readonly struct Mineral
     {
-        public int Ironium { get; set; }
-        public int Boranium { get; set; }
-        public int Germanium { get; set; }
-
-        public Mineral() { }
+        public readonly int Ironium;
+        public readonly int Boranium;
+        public readonly int Germanium;
 
         public Mineral(int ironium = 0, int boranium = 0, int germanium = 0)
         {
@@ -17,24 +15,11 @@ namespace CraigStars
             Germanium = germanium;
         }
 
-        public Mineral(Mineral mineral)
-        {
-            Copy(mineral);
-        }
-
         public static Mineral Empty { get => empty; }
         static Mineral empty = new Mineral();
 
-        /// <summary>
-        /// Copy values from an existing mineral
-        /// </summary>
-        /// <param name="mineral"></param>
-        public void Copy(Mineral mineral)
-        {
-            Ironium = mineral.Ironium;
-            Boranium = mineral.Boranium;
-            Germanium = mineral.Germanium;
-        }
+        public static implicit operator int[](Mineral m) => new int[] { m.Ironium, m.Boranium, m.Germanium };
+        public static implicit operator Mineral(int[] m) => new Mineral(m[0], m[1], m[2]);
 
         public override string ToString()
         {
@@ -57,24 +42,6 @@ namespace CraigStars
                         throw new IndexOutOfRangeException($"Index {index} out of range for {this.GetType().ToString()}");
                 }
             }
-            set
-            {
-                switch (index)
-                {
-                    case 0:
-                        Ironium = value;
-                        break;
-                    case 1:
-                        Boranium = value;
-                        break;
-                    case 2:
-                        Germanium = value;
-                        break;
-                    default:
-                        throw new IndexOutOfRangeException($"Index {index} out of range for {this.GetType().ToString()}");
-                }
-
-            }
         }
 
         public static Mineral operator +(Mineral a, Mineral b)
@@ -95,11 +62,9 @@ namespace CraigStars
             );
         }
 
-        public void Add(int num)
+        public static Mineral operator +(Mineral a, int num)
         {
-            Ironium += num;
-            Boranium += num;
-            Germanium += num;
+            return new Mineral(a.Ironium + num, a.Boranium + num, a.Germanium + num);
         }
 
         public void Deconstruct(out int ironium, out int boranium, out int germanium)
@@ -108,5 +73,32 @@ namespace CraigStars
             boranium = Boranium;
             germanium = Germanium;
         }
+
+        /// <summary>
+        /// Get a copy of this, with updated Ironium
+        /// </summary>
+        /// <returns></returns>
+        public Mineral WithIronium(int ironium = 0)
+        {
+            return new Mineral(ironium, Boranium, Germanium);
+        }
+
+        /// <summary>
+        /// Get a copy of this, with updated Boranium
+        /// </summary>
+        /// <returns></returns>
+        public Mineral WithBoranium(int boranium = 0)
+        {
+            return new Mineral(Ironium, boranium, Germanium);
+        }
+
+        /// <summary>
+        /// Get a copy of this, with updated Germanium
+        /// </summary>
+        /// <returns></returns>
+        public Mineral WithGermanium(int germanium = 0)
+        {
+            return new Mineral(Ironium, Boranium, germanium);
+        }    
     }
 }

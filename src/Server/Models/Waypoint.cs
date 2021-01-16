@@ -29,6 +29,8 @@ namespace CraigStars
 
         public WaypointTask Task { get; set; } = WaypointTask.None;
 
+        public WaypointTransportTasks TransportTasks { get; set; }
+
         #region Serializer Helpers
 
         /// <summary>
@@ -94,11 +96,12 @@ namespace CraigStars
         {
         }
 
-        public Waypoint(MapObject target, int warpFactor = 0, WaypointTask task = WaypointTask.None)
+        public Waypoint(MapObject target, int warpFactor = 0, WaypointTask task = WaypointTask.None, WaypointTransportTasks transportTasks = null)
         {
             Target = target;
             WarpFactor = warpFactor;
             Task = task;
+            TransportTasks = transportTasks;
         }
 
         /// <summary>
@@ -121,7 +124,6 @@ namespace CraigStars
             var distanceTraveled = to.WarpFactor * to.WarpFactor;
             return GetDistanceToWaypoint(to) / distanceTraveled;
         }
-
 
     }
 }

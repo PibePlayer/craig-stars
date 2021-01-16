@@ -202,22 +202,13 @@ public class UniverseGenerator
         planet.ReportAge = 0;
 
         // copy the universe mineral concentrations and surface minerals
-        (
-            planet.MineralConcentration.Ironium,
-            planet.MineralConcentration.Boranium,
-            planet.MineralConcentration.Germanium
-        ) = settings.HomeWorldMineralConcentration;
-
-        (
-            planet.Cargo.Ironium,
-            planet.Cargo.Boranium,
-            planet.Cargo.Germanium
-        ) = settings.HomeWorldSurfaceMinerals;
+        planet.MineralConcentration = settings.HomeWorldMineralConcentration;
+        planet.Cargo = settings.HomeWorldSurfaceMinerals;
 
         planet.Hab = new Hab(
-            race.HabCenter.Grav,
-            race.HabCenter.Temp,
-            race.HabCenter.Rad
+            race.HabCenter.grav,
+            race.HabCenter.temp,
+            race.HabCenter.rad
         );
 
         planet.Population = settings.StartingPopulation;
@@ -269,22 +260,13 @@ public class UniverseGenerator
         planet.ReportAge = 0;
 
         // copy the universe mineral concentrations and surface minerals
-        (
-            planet.MineralConcentration.Ironium,
-            planet.MineralConcentration.Boranium,
-            planet.MineralConcentration.Germanium
-        ) = settings.HomeWorldMineralConcentration;
-
-        (
-            planet.Cargo.Ironium,
-            planet.Cargo.Boranium,
-            planet.Cargo.Germanium
-        ) = settings.ExtraWorldSurfaceMinerals;
+        planet.MineralConcentration = settings.HomeWorldMineralConcentration;
+        planet.Cargo = settings.ExtraWorldSurfaceMinerals;
 
         planet.Hab = new Hab(
-            race.HabCenter.Grav + (race.HabWidth.Grav - random.Next(race.HabWidth.Grav - 1)) / 2,
-            race.HabCenter.Temp + (race.HabWidth.Temp - random.Next(race.HabWidth.Temp - 1)) / 2,
-            race.HabCenter.Rad + (race.HabWidth.Rad - random.Next(race.HabWidth.Rad - 1)) / 2
+            race.HabCenter.grav + (race.HabWidth.grav - random.Next(race.HabWidth.grav - 1)) / 2,
+            race.HabCenter.temp + (race.HabWidth.temp - random.Next(race.HabWidth.temp - 1)) / 2,
+            race.HabCenter.rad + (race.HabWidth.rad - random.Next(race.HabWidth.rad - 1)) / 2
         );
 
         planet.Population = settings.StartingPopulationExtraPlanet;
@@ -308,12 +290,11 @@ public class UniverseGenerator
 
         int minConc = settings.MinMineralConcentration;
         int maxConc = settings.MaxStartingMineralConcentration;
-        planet.MineralConcentration = new Mineral()
-        {
-            Ironium = random.Next(maxConc) + minConc,
-            Boranium = random.Next(maxConc) + minConc,
-            Germanium = random.Next(maxConc) + minConc
-        };
+        planet.MineralConcentration = new Mineral(
+            random.Next(maxConc) + minConc,
+            random.Next(maxConc) + minConc,
+            random.Next(maxConc) + minConc
+        );
 
         // generate hab range of this planet
         int grav = random.Next(100);

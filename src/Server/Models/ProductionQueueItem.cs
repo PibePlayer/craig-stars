@@ -88,41 +88,43 @@ namespace CraigStars
         /// <returns></returns>
         public Cost GetCostOfOne(UniverseSettings settings, Race race)
         {
-            Cost cost = new Cost();
+            int resources = 0;
+            int germanium = 0;
             if (Type == QueueItemType.Mine || Type == QueueItemType.AutoMine)
             {
-                cost.Resources = race.MineCost;
+                resources = race.MineCost;
             }
             else if (Type == QueueItemType.Factory || Type == QueueItemType.AutoFactory)
             {
-                cost.Resources = race.FactoryCost;
-                cost.Germanium = settings.FactoryCostGermanium;
+                resources = race.FactoryCost;
+                germanium = settings.FactoryCostGermanium;
                 if (race.FactoriesCostLess)
                 {
-                    cost.Germanium = cost.Germanium - 1;
+                    germanium = germanium - 1;
                 }
-            }
-            else if (Type == QueueItemType.Defense || Type == QueueItemType.AutoDefense)
-            {
-                cost = settings.DefenseCost;
             }
             else if (Type == QueueItemType.Alchemy || Type == QueueItemType.AutoAlchemy)
             {
                 if (race.HasLRT(LRT.MA))
                 {
-                    cost.Resources = settings.MineralAlchemyLRTCost;
+                    resources = settings.MineralAlchemyLRTCost;
                 }
                 else
                 {
-                    cost.Resources = settings.MineralAlchemyCost;
+                    resources = settings.MineralAlchemyCost;
                 }
+            }
+            else if (Type == QueueItemType.Defense || Type == QueueItemType.AutoDefense)
+            {
+                return settings.DefenseCost;
             }
             else if (Type == QueueItemType.ShipToken || Type == QueueItemType.Starbase)
             {
-                cost = Design.Aggregate.Cost;
+                // ship designs have their own cost
+                return Design.Aggregate.Cost;
             }
 
-            return cost;
+            return new Cost(germanium: germanium, resources: resources);
         }
 
     }

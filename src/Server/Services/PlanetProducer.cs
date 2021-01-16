@@ -14,11 +14,12 @@ namespace CraigStars
             QueueItemType.AutoFactory
         };
 
-        /**
-         * Build anything in the production queue on the planet.
-         * 
-         * @param planet The planet to build.
-         */
+        /// <summary>
+        /// Build anything in the production queue on the planet.
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <param name="planet"></param>
+        /// <returns></returns>
         public int Build(UniverseSettings settings, Planet planet)
         {
 
@@ -86,21 +87,23 @@ namespace CraigStars
             }
 
             // reset surface minerals to whatever we have leftover
-            planet.Cargo.Ironium = allocated.Ironium;
-            planet.Cargo.Boranium = allocated.Boranium;
-            planet.Cargo.Germanium = allocated.Germanium;
+            planet.Cargo = new Cargo(allocated.Ironium, allocated.Boranium, allocated.Germanium, planet.Cargo.Colonists, planet.Cargo.Fuel);
 
             // return the resources we have left for research
             return allocated.Resources;
 
         }
 
-        /**
-         * Build 1 or more items of this production queue item type Adding mines, factories, defenses,
-         * etc to planets Building new fleets
-         * 
-         * @param allocated
-         */
+        /// <summary>
+        /// Build 1 or more items of this production queue item type Adding mines, factories, defenses,
+        /// etc to planets Building new fleets
+        /// </summary>
+        /// <param name="planet"></param>
+        /// <param name="item"></param>
+        /// <param name="numBuilt"></param>
+        /// <param name="allocated"></param>
+        /// <param name="settings"></param>
+        /// <returns></returns>
         private Cost BuildItem(Planet planet, ProductionQueueItem item, int numBuilt, Cost allocated, UniverseSettings settings)
         {
             if (item.Type == QueueItemType.Mine || item.Type == QueueItemType.AutoMine)
@@ -135,9 +138,13 @@ namespace CraigStars
             return allocated;
         }
 
-        /**
-         * Build a fleet and add it to the planet
-         */
+        /// <summary>
+        /// Build a fleet and add it to the planet
+        /// </summary>
+        /// <param name="planet"></param>
+        /// <param name="item"></param>
+        /// <param name="numBuilt"></param>
+        /// <param name="settings"></param>
         private void BuildFleet(Planet planet, ProductionQueueItem item, int numBuilt, UniverseSettings settings)
         {
             planet.Player.Stats.NumFleetsBuilt++;
@@ -173,9 +180,11 @@ namespace CraigStars
             // }
         }
 
-        /**
-         * Build or upgrade the starbase on the planet
-         */
+        /// <summary>
+        /// Build or upgrade the starbase on the planet
+        /// </summary>
+        /// <param name="planet"></param>
+        /// <param name="item"></param>
         private void BuildStarbase(Planet planet, ProductionQueueItem item)
         {
             // if (planet.Starbase != null)
@@ -198,19 +207,21 @@ namespace CraigStars
             // }
         }
 
-        /**
-         * <pre>
-         *  Allocate resources to the top item on this production queue
-         *  and return the leftover resources
-         *   
-         *  Costs are allocated by lowest percentage, i.e. if (we require
-         *  Cost(10, 10, 10, 100) and we only have Cost(1, 10, 10, 100)
-         *  we allocate Cost(1, 1, 1, 10)
-         *   
-         *  The min amount we have is 10 percent of the ironium, so we
-         *  apply 10 percent to each cost amount
-         * </pre>
-         */
+        /// <summary>
+        /// Allocate resources to the top item on this production queue
+        /// and return the leftover resources
+        ///  
+        /// Costs are allocated by lowest percentage, i.e. if (we require
+        /// Cost(10, 10, 10, 100) and we only have Cost(1, 10, 10, 100)
+        /// we allocate Cost(1, 1, 1, 10)
+        ///  
+        /// The min amount we have is 10 percent of the ironium, so we
+        /// apply 10 percent to each cost amount
+        /// </summary>
+        /// <param name="queue"></param>
+        /// <param name="costPer"></param>
+        /// <param name="allocated"></param>
+        /// <returns></returns>
         private Cost AllocateToQueue(ProductionQueue queue, Cost costPer, Cost allocated)
         {
             double ironiumPerc = (costPer.Ironium > 0 ? (double)(allocated.Ironium) / costPer.Ironium : 100.0);

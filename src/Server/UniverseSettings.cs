@@ -47,6 +47,9 @@ namespace CraigStars
         public int StartingFactories { get; set; } = 10;
         public int StartingDefenses { get; set; } = 10;
 
+        // Race settings
+        public int RaceStartingPoints { get; set; } = 1650;
+
         public int PlanetMinDistance { get; } = 15;
 
         public Color[] PlayerColors { get; } = new Color[] {
@@ -166,17 +169,16 @@ namespace CraigStars
             {
                 if (homeWorldMineralConcentration == null)
                 {
-                    homeWorldMineralConcentration = new Mineral()
-                    {
-                        Ironium = Random.Next(MaxStartingMineralConcentration) + MinHomeworldMineralConcentration,
-                        Boranium = Random.Next(MaxStartingMineralConcentration) + MinHomeworldMineralConcentration,
-                        Germanium = Random.Next(MaxStartingMineralConcentration) + MinHomeworldMineralConcentration
-                    };
+                    homeWorldMineralConcentration = new Mineral(
+                        Random.Next(MaxStartingMineralConcentration) + MinHomeworldMineralConcentration,
+                        Random.Next(MaxStartingMineralConcentration) + MinHomeworldMineralConcentration,
+                        Random.Next(MaxStartingMineralConcentration) + MinHomeworldMineralConcentration
+                    );
                 }
-                return homeWorldMineralConcentration;
+                return homeWorldMineralConcentration.Value;
             }
         }
-        Mineral homeWorldMineralConcentration = null;
+        Mineral? homeWorldMineralConcentration = null;
 
         /// <summary>
         /// All homeworlds have the same starting minerals and concentrations
@@ -188,17 +190,16 @@ namespace CraigStars
             {
                 if (homeWorldSurfaceMinerals == null)
                 {
-                    homeWorldSurfaceMinerals = new Mineral()
-                    {
-                        Ironium = Random.Next(MaxStartingMineralSurface) + MinStartingMineralSurface,
-                        Boranium = Random.Next(MaxStartingMineralSurface) + MinStartingMineralSurface,
-                        Germanium = Random.Next(MaxStartingMineralSurface) + MinStartingMineralSurface
-                    };
+                    homeWorldSurfaceMinerals = new Mineral(
+                        Random.Next(MaxStartingMineralSurface) + MinStartingMineralSurface,
+                        Random.Next(MaxStartingMineralSurface) + MinStartingMineralSurface,
+                        Random.Next(MaxStartingMineralSurface) + MinStartingMineralSurface
+                    );
                 }
-                return homeWorldSurfaceMinerals;
+                return homeWorldSurfaceMinerals.Value;
             }
         }
-        Mineral homeWorldSurfaceMinerals = null;
+        Mineral? homeWorldSurfaceMinerals = null;
 
         /// <summary>
         /// All extraworlds have the same starting minerals and concentrations
@@ -210,17 +211,16 @@ namespace CraigStars
             {
                 if (extraWorldSurfaceMinerals == null)
                 {
-                    extraWorldSurfaceMinerals = new Mineral()
-                    {
-                        Ironium = (Random.Next(MaxStartingMineralSurface) + MinStartingMineralSurface) / 2,
-                        Boranium = (Random.Next(MaxStartingMineralSurface) + MinStartingMineralSurface) / 2,
-                        Germanium = (Random.Next(MaxStartingMineralSurface) + MinStartingMineralSurface) / 2
-                    };
+                    extraWorldSurfaceMinerals = new Mineral(
+                        (Random.Next(MaxStartingMineralSurface) + MinStartingMineralSurface) / 2,
+                        (Random.Next(MaxStartingMineralSurface) + MinStartingMineralSurface) / 2,
+                        (Random.Next(MaxStartingMineralSurface) + MinStartingMineralSurface) / 2
+                    );
                 }
-                return extraWorldSurfaceMinerals;
+                return extraWorldSurfaceMinerals.Value;
             }
         }
-        Mineral extraWorldSurfaceMinerals = null;
+        Mineral? extraWorldSurfaceMinerals = null;
 
         // The base cost for each tech level
         public int[] TechBaseCost { get; set; } = {

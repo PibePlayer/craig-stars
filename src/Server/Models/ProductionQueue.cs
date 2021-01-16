@@ -17,7 +17,7 @@ namespace CraigStars
 
         public void Copy(ProductionQueue productionQueue)
         {
-            Allocated.Copy(productionQueue.Allocated);
+            Allocated = productionQueue.Allocated;
             Items.Clear();
             Items.AddRange(productionQueue.Items);
         }

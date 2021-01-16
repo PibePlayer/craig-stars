@@ -1,7 +1,7 @@
 // <summary>
 /// For each Transport Action, what type it refers to. 
 /// </summary>
-public enum WaypointTaskTransportType
+public enum CargoType
 {
-    Fuel, Ironium, Boranium, Germanium, Colonists
+    Ironium, Boranium, Germanium, Colonists, Fuel
 }

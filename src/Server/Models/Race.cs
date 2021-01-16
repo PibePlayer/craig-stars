@@ -8,6 +8,7 @@ namespace CraigStars
     {
         public string Name { get; set; } = "Humanoid";
         public string PluralName { get; set; } = "Humanoids";
+        public SpendLeftoverPointsOn SpendLeftoverPointsOn { get; set; } = SpendLeftoverPointsOn.SurfaceMinerals;
         public PRT PRT { get; set; } = PRT.JoaT;
         public HashSet<LRT> LRTs { get; set; } = new HashSet<LRT>();
 
@@ -24,12 +25,12 @@ namespace CraigStars
             {
                 if (habCenter == null)
                 {
-                    habCenter = new Hab((HabHigh.Grav - HabLow.Grav) / 2 + HabLow.Grav, (HabHigh.Temp - HabLow.Temp) / 2 + HabLow.Temp, (HabHigh.Rad - HabLow.Rad) / 2 + HabLow.Rad);
+                    habCenter = new Hab((HabHigh.grav - HabLow.grav) / 2 + HabLow.grav, (HabHigh.temp - HabLow.temp) / 2 + HabLow.temp, (HabHigh.rad - HabLow.rad) / 2 + HabLow.rad);
                 }
-                return habCenter;
+                return habCenter.Value;
             }
         }
-        Hab habCenter = null;
+        Hab? habCenter = null;
 
         [JsonIgnore]
         public Hab HabWidth
@@ -38,12 +39,12 @@ namespace CraigStars
             {
                 if (habWidth == null)
                 {
-                    habWidth = new Hab((HabHigh.Grav - HabLow.Grav) / 2, (HabHigh.Temp - HabLow.Temp), (HabHigh.Rad - HabLow.Rad) / 2);
+                    habWidth = new Hab((HabHigh.grav - HabLow.grav) / 2, (HabHigh.temp - HabLow.temp), (HabHigh.rad - HabLow.rad) / 2);
                 }
-                return habWidth;
+                return habWidth.Value;
             }
         }
-        Hab habWidth = null;
+        Hab? habWidth = null;
 
         public int GrowthRate { get; set; } = 15;
         public int ColonistsPerResource { get; set; } = 1000;
@@ -108,7 +109,7 @@ namespace CraigStars
                 {
                     if (habLower <= habValue && habUpper >= habValue)
                     {
-                        /* green planet */
+                        // green planet
                         fromIdeal = Math.Abs(habValue - habCenter) * 100;
                         if (habCenter > habValue)
                         {
@@ -133,7 +134,7 @@ namespace CraigStars
                     }
                     else
                     {
-                        /* red planet */
+                        // red planet
                         if (habLower <= habValue)
                             habRed = habValue - habUpper;
                         else

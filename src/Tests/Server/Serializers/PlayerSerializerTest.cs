@@ -31,7 +31,7 @@ namespace CraigStars.Tests
             turnGenerator.RunTurnProcessors();
 
             string json = Serializers.SavePlayer(player);
-            log.Debug($"\n{json}");
+            // log.Debug($"\n{json}");
 
             var loadedPlayer = Serializers.LoadPlayer(json, server.TechStore);
             Assert.AreEqual(player.Name, loadedPlayer.Name);

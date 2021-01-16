@@ -45,6 +45,7 @@ namespace CraigStars
                     {
                         fleet.Waypoints[0].WarpFactor = playerFleet.Waypoints[0].WarpFactor;
                         fleet.Waypoints[0].Task = playerFleet.Waypoints[0].Task;
+                        fleet.Waypoints[0].TransportTasks = playerFleet.Waypoints[0].TransportTasks != null ? new WaypointTransportTasks(playerFleet.Waypoints[0].TransportTasks) : null;
                         foreach (var playerWaypoint in playerFleet.Waypoints.Skip(1))
                         {
                             if (playerWaypoint.Target is Planet planet)
@@ -53,7 +54,7 @@ namespace CraigStars
                                 {
                                     log.Debug($"Adding player defined waypoint for {fleet.Name} to {playerWaypoint.TargetName} -> {playerWaypoint.Task}");
                                     // add the server side version of this planet as a waypoint
-                                    fleet.Waypoints.Add(new Waypoint(gamePlanet, playerWaypoint.WarpFactor, playerWaypoint.Task));
+                                    fleet.Waypoints.Add(new Waypoint(gamePlanet, playerWaypoint.WarpFactor, playerWaypoint.Task, playerWaypoint.TransportTasks != null ? new WaypointTransportTasks(playerWaypoint.TransportTasks) : null));
                                 }
                             }
                             else
@@ -62,7 +63,8 @@ namespace CraigStars
                                 {
                                     Position = playerWaypoint.Position,
                                     WarpFactor = playerWaypoint.WarpFactor,
-                                    Task = playerWaypoint.Task
+                                    Task = playerWaypoint.Task,
+                                    TransportTasks = playerWaypoint.TransportTasks != null ? new WaypointTransportTasks(playerWaypoint.TransportTasks) : null
                                 });
                             }
                         };

@@ -15,8 +15,8 @@ namespace CraigStars
                 WriteIndented = true,
                 IgnoreNullValues = true,
                 IncludeFields = true,
-                IgnoreReadOnlyFields = true,
                 IgnoreReadOnlyProperties = true,
+                // ReferenceHandler = ReferenceHandler.Preserve,
 
                 Converters =
                 {

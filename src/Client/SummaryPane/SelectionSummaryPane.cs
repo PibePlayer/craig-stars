@@ -49,13 +49,13 @@ namespace CraigStars
             tempHabBar = FindNode("TempHabBar") as HabBar;
             radHabBar = FindNode("RadHabBar") as HabBar;
 
-            gravHabBar.Low = race.HabLow.Grav;
-            tempHabBar.Low = race.HabLow.Temp;
-            radHabBar.Low = race.HabLow.Rad;
+            gravHabBar.Low = race.HabLow.grav;
+            tempHabBar.Low = race.HabLow.temp;
+            radHabBar.Low = race.HabLow.rad;
 
-            gravHabBar.High = race.HabHigh.Grav;
-            tempHabBar.High = race.HabHigh.Temp;
-            radHabBar.High = race.HabHigh.Rad;
+            gravHabBar.High = race.HabHigh.grav;
+            tempHabBar.High = race.HabHigh.temp;
+            radHabBar.High = race.HabHigh.rad;
 
             ironiumMineralBar = FindNode("IroniumMineralBar") as MineralBar;
             boraniumMineralBar = FindNode("BoraniumMineralBar") as MineralBar;
@@ -90,12 +90,12 @@ namespace CraigStars
                 var planet = MapObject?.MapObject as Planet;
                 if (planet != null && race != null)
                 {
-                    if (planet.Explored)
+                    if (planet.Explored && planet.Hab is Hab hab)
                     {
                         planetContainer.Visible = true;
                         unknownPlanetContainer.Visible = false;
 
-                        int habValue = race.GetPlanetHabitability(planet.Hab);
+                        int habValue = race.GetPlanetHabitability(hab);
                         valueLabel.Text = $"{habValue}%";
                         // TODO: Add terraforming
                         if (habValue > 0)
@@ -120,9 +120,9 @@ namespace CraigStars
                             reportAgeLabel.Text = $"Report {planet.ReportAge} years old";
                         }
 
-                        gravHabBar.HabValue = planet.Hab.Grav;
-                        tempHabBar.HabValue = planet.Hab.Temp;
-                        radHabBar.HabValue = planet.Hab.Rad;
+                        gravHabBar.HabValue = hab.grav;
+                        tempHabBar.HabValue = hab.temp;
+                        radHabBar.HabValue = hab.rad;
 
                         ironiumMineralBar.Concentration = planet.MineralConcentration.Ironium;
                         boraniumMineralBar.Concentration = planet.MineralConcentration.Boranium;

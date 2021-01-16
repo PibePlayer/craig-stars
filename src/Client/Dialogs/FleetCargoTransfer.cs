@@ -85,13 +85,13 @@ namespace CraigStars
         /// <param name="newValue"></param>
         void OnIroniumBarValueUpdated(int newValue)
         {
-            Cargo newCargo = Fleet.Cargo.Clone();
+            Cargo newCargo = Fleet.Cargo;
 
             // how much room we have in the hold
             var available = Fleet.Aggregate.CargoCapacity - Fleet.Cargo.Total;
 
             // make sure we only request a new cargo value between 0 and the most amount of mineral we can put in
-            newCargo.Ironium = Mathf.Clamp(newValue, 0, Fleet.Cargo.Ironium + available);
+            newCargo = newCargo.WithIronium(Mathf.Clamp(newValue, 0, Fleet.Cargo.Ironium + available));
 
             // log.Debug($"Fleet {Fleet.Name} requested a new cargo transfer: {newCargo}");
 
@@ -100,52 +100,52 @@ namespace CraigStars
 
         void OnBoraniumBarValueUpdated(int newValue)
         {
-            Cargo newCargo = Fleet.Cargo.Clone();
+            Cargo newCargo = Fleet.Cargo;
 
             // how much room we have in the hold
             var available = Fleet.Aggregate.CargoCapacity - Fleet.Cargo.Total;
 
             // make sure we only request a new cargo value between 0 and the most amount of mineral we can put in
-            newCargo.Boranium = Mathf.Clamp(newValue, 0, Fleet.Cargo.Boranium + available);
+            newCargo = newCargo.WithBoranium(Mathf.Clamp(newValue, 0, Fleet.Cargo.Boranium + available));
 
             CargoTransferRequestedEvent?.Invoke(newCargo);
         }
 
         void OnGermaniumBarValueUpdated(int newValue)
         {
-            Cargo newCargo = Fleet.Cargo.Clone();
+            Cargo newCargo = Fleet.Cargo;
 
             // how much room we have in the hold
             var available = Fleet.Aggregate.CargoCapacity - Fleet.Cargo.Total;
 
             // make sure we only request a new cargo value between 0 and the most amount of mineral we can put in
-            newCargo.Germanium = Mathf.Clamp(newValue, 0, Fleet.Cargo.Germanium + available);
+            newCargo = newCargo.WithGermanium(Mathf.Clamp(newValue, 0, Fleet.Cargo.Germanium + available));
 
             CargoTransferRequestedEvent?.Invoke(newCargo);
         }
 
         void OnColonistsBarValueUpdated(int newValue)
         {
-            Cargo newCargo = Fleet.Cargo.Clone();
+            Cargo newCargo = Fleet.Cargo;
 
             // how much room we have in the hold
             var available = Fleet.Aggregate.CargoCapacity - Fleet.Cargo.Total;
 
             // make sure we only request a new cargo value between 0 and the most amount of mineral we can put in
-            newCargo.Colonists = Mathf.Clamp(newValue, 0, Fleet.Cargo.Colonists + available);
+            newCargo = newCargo.WithColonists(Mathf.Clamp(newValue, 0, Fleet.Cargo.Colonists + available));
 
             CargoTransferRequestedEvent?.Invoke(newCargo);
         }
 
         void OnFuelBarValueUpdated(int newValue)
         {
-            Cargo newCargo = Fleet.Cargo.Clone();
+            Cargo newCargo = Fleet.Cargo;
 
             // how much room we have in the hold
             var available = Fleet.Aggregate.FuelCapacity - Fleet.Cargo.Fuel;
 
             // make sure we only request a new cargo value between 0 and the most amount of mineral we can put in
-            newCargo.Fuel = Mathf.Clamp(newValue, 0, Fleet.Cargo.Fuel + available);
+            newCargo = newCargo.WithFuel(Mathf.Clamp(newValue, 0, Fleet.Cargo.Fuel + available));
 
             CargoTransferRequestedEvent?.Invoke(newCargo);
         }
@@ -153,7 +153,7 @@ namespace CraigStars
         internal void UpdateControls()
         {
             nameLabel.Text = Fleet.Name;
-            cargoBar.Cargo.Copy(Fleet.Cargo);
+            cargoBar.Cargo = Fleet.Cargo;
             ironiumBar.Cargo = new Cargo(ironium: Fleet.Cargo.Ironium);
             boraniumBar.Cargo = new Cargo(boranium: Fleet.Cargo.Boranium);
             germaniumBar.Cargo = new Cargo(germanium: Fleet.Cargo.Germanium);
@@ -174,7 +174,7 @@ namespace CraigStars
             if (result >= 0)
             {
                 // update the cargo
-                Fleet.Cargo.Copy(result);
+                Fleet.Cargo = result;
                 return true;
             }
             return false;

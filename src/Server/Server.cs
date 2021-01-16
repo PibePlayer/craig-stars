@@ -109,9 +109,8 @@ namespace CraigStars
 
         public void GenerateTurn()
         {
-            TurnGenerator generator = new TurnGenerator(this);
-            generator.GenerateTurn();
-            generator.UpdatePlayerReports();
+            turnGenerator.GenerateTurn();
+            turnGenerator.UpdatePlayerReports();
             turnGenerator.RunTurnProcessors();
             UpdateDictionaries();
             Signals.PublishTurnPassedEvent(Year);

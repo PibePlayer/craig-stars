@@ -141,10 +141,12 @@ namespace CraigStars
             ComputeScanRanges(player, settings);
         }
 
-        /**
-         * Compute the scan ranges for this ship design The formula is: (scanner1**4 + scanner2**4 + ...
-         * + scannerN**4)**(.25)
-         */
+        /// <summary>
+        /// Compute the scan ranges for this ship design The formula is: (scanner1**4 + scanner2**4 + ...
+        /// + scannerN**4)**(.25)
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="settings"></param>
         void ComputeScanRanges(Player player, UniverseSettings settings)
         {
             long scanRange = TechHullComponent.NoScanner;

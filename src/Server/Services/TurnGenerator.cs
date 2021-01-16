@@ -43,14 +43,15 @@ namespace CraigStars
         public void RunTurnProcessors()
         {
             List<TurnProcessor> processors = new List<TurnProcessor>() {
-                new ScoutTurnProcessor()
+                new ScoutTurnProcessor(),
+                new ColonyTurnProcessor()
             };
             Server.Players.ForEach(player =>
             {
 
                 if (player.AIControlled)
                 {
-                    processors.ForEach(processor => processor.Process(Server.Year, player));
+                    processors.ForEach(processor => processor.Process(Server.Year, Server.Settings, player));
                 }
             });
         }
@@ -100,6 +101,7 @@ namespace CraigStars
         {
             Server.Year++;
 
+            log.Debug("Resetting players");
             // reset the players for a new turn
             Server.Players.ForEach(p =>
             {
@@ -109,13 +111,19 @@ namespace CraigStars
 
             ownedPlanets = Server.Planets.Where(p => p.Player != null).ToList();
 
+            log.Debug("Processing player immmediate cargo transfers");
             ProcessCargoTransfers();
 
             // regular turn stuff
+            log.Debug("Processing fleet waypoints");
             ProcessWaypoints();
+            log.Debug("Moving fleets");
             MoveFleets();
+            log.Debug("Mining");
             Mine();
+            log.Debug("Producing");
             Produce();
+            log.Debug("Growing Planets");
             Grow();
 
         }
@@ -125,8 +133,11 @@ namespace CraigStars
         /// </summary>
         public void UpdatePlayerReports()
         {
+            log.Debug("Computing fleet aggregates for new turn");
             Server.Fleets.ForEach(f => f.ComputeAggregate(Server.Settings));
+            log.Debug("Scanning");
             Scan();
+            log.Debug("Updating player reports");
             UpdatePlayers();
         }
 
@@ -186,8 +197,8 @@ namespace CraigStars
         {
             ownedPlanets.ForEach(p =>
             {
-                p.Cargo.Add(p.GetMineralOutput());
-                p.MineYears.Add(p.Mines);
+                p.Cargo += p.GetMineralOutput();
+                p.MineYears += p.Mines;
                 int mineralDecayFactor = Server.Settings.MineralDecayFactor;
                 int minMineralConcentration = p.Homeworld ? Server.Settings.MinHomeworldMineralConcentration : Server.Settings.MinMineralConcentration;
                 ReduceMineralConcentration(p, mineralDecayFactor, minMineralConcentration);
@@ -202,6 +213,8 @@ namespace CraigStars
         /// <param name="minMineralConcentration"></param>
         void ReduceMineralConcentration(Planet planet, int mineralDecayFactor, int minMineralConcentration)
         {
+            int[] planetMineYears = planet.MineYears;
+            int[] planetMineralConcentration = planet.MineralConcentration;
             for (int i = 0; i < 3; i++)
             {
                 int conc = planet.MineralConcentration[i];
@@ -216,10 +229,12 @@ namespace CraigStars
                     }
                     mineYears %= minesPer;
 
-                    planet.MineYears[i] = mineYears;
-                    planet.MineralConcentration[i] = conc;
+                    planetMineYears[i] = mineYears;
+                    planetMineralConcentration[i] = conc;
                 }
             }
+            planet.MineYears = planetMineYears;
+            planet.MineralConcentration = planetMineralConcentration;
         }
 
         void Produce()

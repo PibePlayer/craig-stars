@@ -24,6 +24,7 @@ namespace CraigStars
 
         ProductionQueueDialog productionQueueDialog;
         CargoTransferDialog cargoTransferDialog;
+        ResearchDialog researchDialog;
 
         public override void _Ready()
         {
@@ -35,9 +36,11 @@ namespace CraigStars
 
             productionQueueDialog = GetNode<ProductionQueueDialog>("CanvasLayer/ProductionQueueDialog");
             cargoTransferDialog = GetNode<CargoTransferDialog>("CanvasLayer/CargoTransferDialog");
+            researchDialog = GetNode<ResearchDialog>("CanvasLayer/ResearchDialog");
 
             Signals.ChangeProductionQueuePressedEvent += OnChangeProductionQueue;
             Signals.CargoTransferRequestedEvent += OnCargoTransferRequested;
+            Signals.ResearchDialogRequestedEvent += OnResearchDialogRequested;
         }
 
         public override void _ExitTree()
@@ -45,6 +48,12 @@ namespace CraigStars
             Server.Shutdown();
             Signals.ChangeProductionQueuePressedEvent -= OnChangeProductionQueue;
             Signals.CargoTransferRequestedEvent -= OnCargoTransferRequested;
+            Signals.ResearchDialogRequestedEvent -= OnResearchDialogRequested;
+        }
+
+        void OnResearchDialogRequested()
+        {
+            researchDialog.PopupCentered();
         }
 
         void OnCargoTransferRequested(ICargoHolder source, ICargoHolder dest)
@@ -70,6 +79,10 @@ namespace CraigStars
             if (@event.IsActionPressed("technology_browser"))
             {
                 GetTree().ChangeScene("res://src/Client/ShipDesigner/HullSummary.tscn");
+            }
+            if (@event.IsActionPressed("research"))
+            {
+                Signals.PublishResearchDialogRequestedEvent();
             }
         }
 

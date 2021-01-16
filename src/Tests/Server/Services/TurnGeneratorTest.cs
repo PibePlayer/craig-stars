@@ -24,6 +24,7 @@ namespace CraigStars.Tests
             server.Planets.Add(new Planet()
             {
                 Player = player,
+
                 Cargo = new Cargo(),
                 MineYears = new Mineral(),
                 ProductionQueue = new ProductionQueue(),
@@ -51,6 +52,7 @@ namespace CraigStars.Tests
             var server = GetSingleUnitServer();
             var tg = new TurnGenerator(server);
             tg.GenerateTurn();
+            tg.RunTurnProcessors();
 
             // make sure our planet grew pop
             Assert.IsTrue(server.Planets[0].Population > 100000);
@@ -69,7 +71,6 @@ namespace CraigStars.Tests
             var tg = new TurnGenerator(server);
             server.Planets[0].Population = 120000;
             tg.UpdatePlayerReports();
-            tg.RunTurnProcessors();
 
             // our player should know about the planet updates
             Assert.AreEqual(server.Planets[0].Population, server.Players[0].Planets[0].Population);

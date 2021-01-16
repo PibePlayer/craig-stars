@@ -34,6 +34,7 @@ namespace CraigStars.Singletons
 
         public static event Action<Player> SubmitTurnEvent;
         public static event Action<PlanetSprite> ChangeProductionQueuePressedEvent;
+        public static event Action ResearchDialogRequestedEvent;
         public static event Action<Planet> ProductionQueueChangedEvent;
         public delegate void CargoTransferRequested(ICargoHolder source, ICargoHolder dest);
         public static event CargoTransferRequested CargoTransferRequestedEvent;
@@ -91,7 +92,7 @@ namespace CraigStars.Singletons
         void ConfigureLogging()
         {
             const string logLayoutPattern =
-                "[%date %timestamp][%level][%stacktracedetail{10}] %message %newline" +
+                "[%date %timestamp][%level][%stacktracedetail{1}] %message %newline" +
                 "%exception %newline";
 
             var logger = (Logger)log.Logger;
@@ -200,6 +201,11 @@ namespace CraigStars.Singletons
         public static void PublishChangeProductionQueuePressedEvent(PlanetSprite planet)
         {
             ChangeProductionQueuePressedEvent?.Invoke(planet);
+        }
+
+        public static void PublishResearchDialogRequestedEvent()
+        {
+            ResearchDialogRequestedEvent?.Invoke();
         }
 
         public static void PublishProductionQueueChangedEvent(Planet planet)

@@ -98,7 +98,7 @@ namespace CraigStars
         public TechField Lowest()
         {
             var lowestField = TechField.Energy;
-            var lowest = 0;
+            var lowest = int.MaxValue;
             foreach (TechField field in Enum.GetValues(typeof(TechField)))
             {
                 var level = this[field];

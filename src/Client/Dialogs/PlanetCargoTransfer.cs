@@ -74,9 +74,7 @@ namespace CraigStars
             if (result >= 0)
             {
                 // update the cargo
-                Planet.Cargo.Copy(result);
-                // fuel doesn't make sense for a planet, so zero it out
-                Planet.Cargo.Fuel = 0;
+                Planet.Cargo = result;
                 UpdateControls();
                 return true;
             }

@@ -524,14 +524,117 @@ namespace CraigStars
 
         #endregion
 
+        #region Torpedos
+        public static readonly TechHullComponent AlphaTorpedo = new TechHullComponent("Alpha Torpedo", new Cost(8, 3, 3, 4), new TechRequirements(), 0, TechCategory.Torpedo)
+        {
+            Mass = 25,
+            Initiative = 0,
+            Accuracy = 35,
+            Power = 5,
+            HullSlotType = HullSlotType.Weapon,
+            Range = 4,
+        };
+        public static readonly TechHullComponent ArmageddonMissle = new TechHullComponent("Armageddon Missle", new Cost(67, 23, 16, 24), new TechRequirements(weapons: 24, propulsion: 10), 0, TechCategory.Torpedo)
+        {
+            Mass = 35,
+            Initiative = 3,
+            Accuracy = 30,
+            CapitalShipMissle = true,
+            Power = 525,
+            HullSlotType = HullSlotType.Weapon,
+            Range = 6,
+        };
+        public static readonly TechHullComponent BetaTorpedo = new TechHullComponent("Beta Torpedo", new Cost(18, 6, 4, 6), new TechRequirements(weapons: 5, propulsion: 1), 0, TechCategory.Torpedo)
+        {
+            Mass = 25,
+            Initiative = 1,
+            Accuracy = 45,
+            Power = 12,
+            HullSlotType = HullSlotType.Weapon,
+            Range = 4,
+        };
+        public static readonly TechHullComponent DeltaTorpedo = new TechHullComponent("Delta Torpedo", new Cost(22, 8, 5, 8), new TechRequirements(weapons: 10, propulsion: 2), 0, TechCategory.Torpedo)
+        {
+            Mass = 25,
+            Initiative = 1,
+            Accuracy = 60,
+            Power = 26,
+            HullSlotType = HullSlotType.Weapon,
+            Range = 4,
+        };
+        public static readonly TechHullComponent DoomsdayMissle = new TechHullComponent("Doomsday Missle", new Cost(60, 20, 13, 20), new TechRequirements(weapons: 20, propulsion: 10), 0, TechCategory.Torpedo)
+        {
+            Mass = 35,
+            Initiative = 2,
+            Accuracy = 25,
+            CapitalShipMissle = true,
+            Power = 280,
+            HullSlotType = HullSlotType.Weapon,
+            Range = 6,
+        };
+        public static readonly TechHullComponent EpsilonTorpedo = new TechHullComponent("Epsilon Torpedo", new Cost(30, 10, 6, 10), new TechRequirements(weapons: 14, propulsion: 3), 0, TechCategory.Torpedo)
+        {
+            Mass = 25,
+            Initiative = 2,
+            Accuracy = 65,
+            Power = 48,
+            HullSlotType = HullSlotType.Weapon,
+            Range = 5,
+        };
+        public static readonly TechHullComponent JihadMissle = new TechHullComponent("Jihad Missle", new Cost(37, 13, 9, 13), new TechRequirements(weapons: 12, propulsion: 6), 0, TechCategory.Torpedo)
+        {
+            Mass = 35,
+            Accuracy = 20,
+            CapitalShipMissle = true,
+            Power = 85,
+            HullSlotType = HullSlotType.Weapon,
+            Range = 5,
+        };
+        public static readonly TechHullComponent JuggernautMissle = new TechHullComponent("Juggernaut Missle", new Cost(48, 16, 11, 16), new TechRequirements(weapons: 16, propulsion: 8), 0, TechCategory.Torpedo)
+        {
+            Mass = 35,
+            Initiative = 1,
+            Accuracy = 20,
+            CapitalShipMissle = true,
+            Power = 150,
+            HullSlotType = HullSlotType.Weapon,
+            Range = 5,
+        };
+        public static readonly TechHullComponent OmegaTorpedo = new TechHullComponent("Omega Torpedo", new Cost(52, 18, 12, 18), new TechRequirements(weapons: 26, propulsion: 6), 0, TechCategory.Torpedo)
+        {
+            Mass = 25,
+            Initiative = 4,
+            Accuracy = 80,
+            Power = 316,
+            HullSlotType = HullSlotType.Weapon,
+            Range = 5,
+        };
+        public static readonly TechHullComponent RhoTorpedo = new TechHullComponent("Rho Torpedo", new Cost(34, 12, 8, 12), new TechRequirements(weapons: 18, propulsion: 4), 0, TechCategory.Torpedo)
+        {
+            Mass = 25,
+            Initiative = 2,
+            Accuracy = 75,
+            Power = 90,
+            HullSlotType = HullSlotType.Weapon,
+            Range = 5,
+        };
+        public static readonly TechHullComponent UpsilonTorpedo = new TechHullComponent("Upsilon Torpedo", new Cost(40, 14, 9, 15), new TechRequirements(weapons: 22, propulsion: 5), 0, TechCategory.Torpedo)
+        {
+            Mass = 25,
+            Initiative = 3,
+            Accuracy = 75,
+            Power = 169,
+            HullSlotType = HullSlotType.Weapon,
+            Range = 5,
+        };
+        #endregion
+
         #region Shields
         public static readonly TechHullComponent MoleSkinShield = new TechHullComponent("Mole-skin Shield", new Cost(1, 0, 1, 4), new TechRequirements(), 10, TechCategory.Shield)
         {
             Mass = 1,
             Shield = 25,
             HullSlotType = HullSlotType.Shield,
-
-
         };
         public static readonly TechHullComponent CowHideShield = new TechHullComponent("Cow-hide Shield", new Cost(2, 0, 2, 5), new TechRequirements(energy: 3), 20, TechCategory.Shield)
         {
@@ -759,6 +862,18 @@ namespace CraigStars
                 ElephantHideFortress,
                 CompletePhaseShield,
 
+                // Torpedos
+                AlphaTorpedo,
+                ArmageddonMissle,
+                BetaTorpedo,
+                DeltaTorpedo,
+                DoomsdayMissle,
+                EpsilonTorpedo,
+                JihadMissle,
+                JuggernautMissle,
+                OmegaTorpedo,
+                RhoTorpedo,
+                UpsilonTorpedo,
 
                 // ship hulls,
                 Scout,

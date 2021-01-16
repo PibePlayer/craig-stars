@@ -16,7 +16,11 @@ namespace CraigStars
         #region Planet Stats
 
         public Cargo Cargo { get; set; } = new Cargo();
-        public int Fuel { get => Cargo.Fuel; set => Cargo.Fuel = value; }
+        public int Fuel
+        {
+            get => Cargo.Fuel;
+            set => Cargo = Cargo.WithFuel(value);
+        }
 
         [JsonIgnore]
         public Planet Orbiting { get; set; }
@@ -175,6 +179,7 @@ namespace CraigStars
                     case WaypointTask.TransferFleet:
                         break;
                     case WaypointTask.Transport:
+                        Transport(wp);
                         break;
 
                 }
@@ -203,8 +208,7 @@ namespace CraigStars
         void Scrap(Waypoint wp)
         {
             // create a new cargo instance out of our fleet cost
-            Cargo cargo = new Cargo();
-            cargo.Copy(Aggregate.Cost);
+            Cargo cargo = Aggregate.Cost;
 
             if (Player.Race.HasLRT(LRT.UR))
             {
@@ -260,13 +264,41 @@ namespace CraigStars
                     // we own this planet now, yay!
                     planet.Player = Player;
                     planet.Population = Cargo.Colonists * 100;
-                    Cargo.Colonists = 0;
+                    Cargo = Cargo.WithColonists(0);
                     Scrap(wp);
                 }
             }
             else
             {
                 Message.ColonizeNonPlanet(Player, this);
+            }
+        }
+
+        void Transport(Waypoint wp)
+        {
+            if (wp.TransportTasks != null && wp.Target is ICargoHolder cargoHolder)
+            {
+                // how much space do we have available
+                var capacity = Aggregate.CargoCapacity - Cargo.Total;
+
+                foreach (CargoType taskType in Enum.GetValues(typeof(CargoType)))
+                {
+                    var task = wp.TransportTasks[taskType];
+                    switch (task.Action)
+                    {
+                        case WaypointTaskTransportAction.LoadAll:
+                            // load all available, based on our constraints
+                            var availableToLoad = cargoHolder.Cargo[task.Type];
+                            var transferAmount = Math.Min(availableToLoad, capacity);
+                            if (transferAmount > 0)
+                            {
+                                cargoHolder.AttemptTransfer(Cargo.OfAmount(taskType, -transferAmount));
+                                AttemptTransfer(Cargo.OfAmount(taskType, transferAmount));
+                            }
+                            break;
+                    }
+
+                }
             }
         }
 
@@ -383,8 +415,8 @@ namespace CraigStars
             Aggregate.Colonizer = false;
             Aggregate.Cost = new Cost();
             Aggregate.SpaceDock = 0;
-            Aggregate.ScanRange = 0;
-            Aggregate.ScanRangePen = 0;
+            Aggregate.ScanRange = TechHullComponent.NoScanner;
+            Aggregate.ScanRangePen = TechHullComponent.NoScanner;
             Aggregate.Engine = null;
 
             // compute each token's 
@@ -459,9 +491,7 @@ namespace CraigStars
             if (result >= 0 && result.Total <= Aggregate.CargoCapacity && result.Fuel <= Aggregate.FuelCapacity)
             {
                 // The transfer doesn't leave us with 0 minerals, or with so many minerals and fuel that we can't hold it
-                Cargo.Copy(result);
-                // fuel doesn't make sense for a planet, so zero it out
-                Cargo.Fuel = 0;
+                Cargo = result;
                 return true;
             }
             return false;

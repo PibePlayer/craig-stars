@@ -22,7 +22,7 @@ namespace CraigStars
             get => Cargo.Ironium;
             set
             {
-                Cargo.Ironium = value;
+                cargo = cargo.WithIronium(value);
                 UpdateControls();
             }
         }
@@ -33,7 +33,7 @@ namespace CraigStars
             get => Cargo.Boranium;
             set
             {
-                Cargo.Boranium = value;
+                cargo = cargo.WithBoranium(value);
                 UpdateControls();
             }
         }
@@ -44,7 +44,7 @@ namespace CraigStars
             get => Cargo.Germanium;
             set
             {
-                Cargo.Germanium = value;
+                cargo = cargo.WithGermanium(value);
                 UpdateControls();
             }
         }
@@ -55,7 +55,7 @@ namespace CraigStars
             get => Cargo.Colonists;
             set
             {
-                Cargo.Colonists = value;
+                cargo = cargo.WithColonists(value);
                 UpdateControls();
             }
         }

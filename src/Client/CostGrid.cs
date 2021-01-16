@@ -8,7 +8,8 @@ namespace CraigStars
     {
         public Cost Cost
         {
-            get => cost; set
+            get => cost;
+            set
             {
                 cost = value;
                 UpdateControls();
@@ -22,7 +23,7 @@ namespace CraigStars
             get => Cost.Ironium;
             set
             {
-                Cost.Ironium = value;
+                cost = cost.WithIronium(value);
                 UpdateControls();
             }
         }
@@ -33,7 +34,7 @@ namespace CraigStars
             get => Cost.Boranium;
             set
             {
-                Cost.Boranium = value;
+                cost = cost.WithBoranium(value);
                 UpdateControls();
             }
         }
@@ -44,7 +45,7 @@ namespace CraigStars
             get => Cost.Germanium;
             set
             {
-                Cost.Germanium = value;
+                cost = cost.WithGermanium(value);
                 UpdateControls();
             }
         }
@@ -55,7 +56,7 @@ namespace CraigStars
             get => Cost.Resources;
             set
             {
-                Cost.Resources = value;
+                cost = cost.WithResources(value);
                 UpdateControls();
             }
         }

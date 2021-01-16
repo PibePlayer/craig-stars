@@ -78,9 +78,9 @@ namespace CraigStars
         /// The percentage of resources to spend on research
         /// </summary>
         /// <value></value>
-        public double ResearchAmount { get; set; } = 15;
+        public int ResearchAmount { get; set; } = 15;
         public TechField Researching { get; set; } = TechField.Energy;
-        public NextResearchField NextResearchField { get; set; } = NextResearchField.SameField;
+        public NextResearchField NextResearchField { get; set; } = NextResearchField.LowestField;
 
         #endregion
 
@@ -194,7 +194,7 @@ namespace CraigStars
             // don't research more than the max on this level
             // TODO: If we get to max level, automatically switch to the lowest field
             var level = TechLevels[Researching];
-            if (level >= settings.TechBaseCost.Length)
+            if (level >= settings.TechBaseCost.Length - 1)
             {
                 Message.Info(this, $"You are already at level {level} in {Researching} and cannot research further.");
                 return;
@@ -471,7 +471,7 @@ namespace CraigStars
                     if (wp.Target is Planet)
                     {
                         var targetedPlanetReport = PlanetsByGuid[wp.Target.Guid];
-                        fleetReport.Waypoints.Add(new Waypoint(targetedPlanetReport, wp.WarpFactor, wp.Task));
+                        fleetReport.Waypoints.Add(new Waypoint(targetedPlanetReport, wp.WarpFactor, wp.Task, wp.TransportTasks != null ? new WaypointTransportTasks(wp.TransportTasks) : null));
                     }
                     else
                     {
@@ -486,7 +486,7 @@ namespace CraigStars
                         fleetReport.Waypoints.Add(fleetReportWaypoint);
                     }
                 });
-                fleetReport.Cargo.Copy(fleet.Cargo);
+                fleetReport.Cargo = fleet.Cargo;
                 // TODO: Copy ship tokens? We don't want user modified
                 // ShipDesigns to impact the server...
                 fleetReport.Tokens.AddRange(fleet.Tokens);

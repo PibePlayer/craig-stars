@@ -17,10 +17,10 @@ namespace CraigStars
         /// <summary>
         /// a new turn! build some ships
         /// </summary>
-        public override void Process(int year, Player player)
+        public override void Process(int year, UniverseSettings settings, Player player)
         {
 
-            // find the first colony ship design
+            // find the first scout ship design
             // TODO: pick the best one
             ShipDesign scoutShip = player.Designs.Find(design => design.Hull.Name == "Scout");
 

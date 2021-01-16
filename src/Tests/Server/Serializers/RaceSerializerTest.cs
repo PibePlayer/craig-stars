@@ -34,7 +34,7 @@ namespace CraigStars.Tests
             };
 
             string jsonString = JsonSerializer.Serialize(race, options);
-            log.Debug($"{jsonString}");
+            // log.Debug($"{jsonString}");
 
             var loadedRace = JsonSerializer.Deserialize<Race>(jsonString, options);
             Assert.AreEqual(race.Name, race.Name);

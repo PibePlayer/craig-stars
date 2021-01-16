@@ -13,11 +13,18 @@ namespace CraigStars
 
         #region Scannable Stats
 
-        public Hab Hab { get; set; }
+        public Hab? Hab { get; set; }
         public Mineral MineralConcentration { get; set; }
 
         [JsonIgnore]
-        public int Population { get => Cargo?.Colonists * 100 ?? 0; set { Cargo.Colonists = value / 100; } }
+        public int Population
+        {
+            get => Cargo.Colonists * 100;
+            set
+            {
+                Cargo = Cargo.WithColonists(value / 100);
+            }
+        }
 
         [JsonIgnore]
         public List<Fleet> OrbitingFleets { get; set; } = new List<Fleet>();
@@ -45,6 +52,7 @@ namespace CraigStars
 
         public int ReportAge { get; set; } = Unexplored;
         public bool Explored { get => ReportAge != Unexplored; }
+        public bool Uninhabited { get => Player == null; }
 
         #endregion
 
@@ -121,12 +129,10 @@ namespace CraigStars
         /// <param name="planet">The game planet to copy data from</param>
         public void UpdatePlanetReport(Planet planet)
         {
-            Hab = Hab ?? new Hab();
-            MineralConcentration = MineralConcentration ?? new Mineral();
-            Cargo = Cargo ?? new Cargo();
+            Cargo = Cargo.Empty;
 
-            MineralConcentration.Copy(planet.MineralConcentration);
-            Hab.Copy(planet.Hab);
+            MineralConcentration = planet.MineralConcentration;
+            Hab = planet.Hab;
             Population = planet.Population;
             ReportAge = 0;
         }
@@ -137,12 +143,10 @@ namespace CraigStars
         /// <param name="planet"></param>
         public void UpdatePlayerPlanet(Planet planet)
         {
-            Cargo = Cargo ?? new Cargo();
-            MineYears = MineYears ?? new Mineral();
             ProductionQueue = ProductionQueue ?? new ProductionQueue();
 
-            Cargo.Copy(planet.Cargo);
-            MineYears.Copy(planet.MineYears);
+            Cargo = planet.Cargo;
+            MineYears = planet.MineYears;
             Mines = planet.Mines;
             Factories = planet.Mines;
             Defenses = planet.Mines;
@@ -174,31 +178,39 @@ namespace CraigStars
         /// <returns></returns>
         public int GetMaxPopulation(Race race, UniverseSettings settings)
         {
-            var factor = 1f;
-
-            if (race.PRT == PRT.JoaT)
+            if (Hab is Hab planetHab)
             {
-                factor += .2f;
+                var factor = 1f;
+
+                if (race.PRT == PRT.JoaT)
+                {
+                    factor += .2f;
+                }
+                else if (race.PRT == PRT.HE)
+                {
+                    factor = .5f;
+                }
+
+                if (race.HasLRT(LRT.OBRM))
+                {
+                    factor += .1f;
+                }
+
+                // get this player's planet habitability
+                var hab = race.GetPlanetHabitability(planetHab);
+                return (int)(settings.MaxPopulation * factor * hab / 100);
             }
-            else if (race.PRT == PRT.HE)
+            else
             {
-                factor = .5f;
+                return 0;
             }
 
-            if (race.HasLRT(LRT.OBRM))
-            {
-                factor += .1f;
-            }
-
-            // get this player's planet habitability
-            var hab = race.GetPlanetHabitability(Hab);
-            return (int)(settings.MaxPopulation * factor * hab / 100);
         }
 
 
-        public int GetPopulationDensity(UniverseSettings settings)
+        public float GetPopulationDensity(UniverseSettings settings)
         {
-            return Population > 0 ? Population / GetMaxPopulation(Player.Race, settings) : 0;
+            return Population > 0 ? (float)Population / GetMaxPopulation(Player.Race, settings) : 0;
         }
 
         public void Grow(UniverseSettings settings)
@@ -213,10 +225,10 @@ namespace CraigStars
         public int GetGrowthAmount(UniverseSettings settings)
         {
             var race = Player?.Race;
-            if (race != null)
+            if (race != null && Hab is Hab hab)
             {
                 double capacity = (double)(Population / GetMaxPopulation(race, settings));
-                int popGrowth = (int)((double)(Population) * (race.GrowthRate / 100.0) * ((double)(race.GetPlanetHabitability(Hab)) / 100.0));
+                int popGrowth = (int)((double)(Population) * (race.GrowthRate / 100.0) * ((double)(race.GetPlanetHabitability(hab)) / 100.0));
 
                 if (capacity > .25)
                 {
@@ -361,9 +373,7 @@ namespace CraigStars
             if (result >= 0)
             {
                 // The transfer doesn't leave us with 0 minerals, so allow it
-                Cargo.Copy(result);
-                // fuel doesn't make sense for a planet, so zero it out
-                Cargo.Fuel = 0;
+                Cargo = result;
                 return true;
             }
             return false;

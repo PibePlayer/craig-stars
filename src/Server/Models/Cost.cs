@@ -2,28 +2,19 @@ using System;
 
 namespace CraigStars
 {
-    public class Cost : Mineral
+    public readonly struct Cost
     {
-        private Cost cost;
+        public readonly int Ironium;
+        public readonly int Boranium;
+        public readonly int Germanium;
+        public readonly int Resources;
 
-        public int Resources { get; set; }
-
-        public Cost() { }
-
-        public Cost(int ironium = 0, int boranium = 0, int germanium = 0, int resources = 0) : base(ironium, boranium, germanium)
+        public Cost(int ironium = 0, int boranium = 0, int germanium = 0, int resources = 0)
         {
+            Ironium = ironium;
+            Boranium = boranium;
+            Germanium = germanium;
             Resources = resources;
-        }
-
-        public Cost(Cost cost)
-        {
-            Copy(cost);
-        }
-
-        public void Copy(Cost cost)
-        {
-            base.Copy(cost);
-            Resources = cost.Resources;
         }
 
         public override string ToString()
@@ -97,5 +88,40 @@ namespace CraigStars
                     );
         }
 
+        /// <summary>
+        /// Get a copy of this, with updated Ironium
+        /// </summary>
+        /// <returns></returns>
+        public Cost WithIronium(int ironium = 0)
+        {
+            return new Cost(ironium, Boranium, Germanium, Resources);
+        }
+
+        /// <summary>
+        /// Get a copy of this, with updated Boranium
+        /// </summary>
+        /// <returns></returns>
+        public Cost WithBoranium(int boranium = 0)
+        {
+            return new Cost(Ironium, boranium, Germanium, Resources);
+        }
+
+        /// <summary>
+        /// Get a copy of this, with updated Germanium
+        /// </summary>
+        /// <returns></returns>
+        public Cost WithGermanium(int germanium = 0)
+        {
+            return new Cost(Ironium, Boranium, germanium, Resources);
+        }
+
+        /// <summary>
+        /// Get a copy of this, with updated Colonists
+        /// </summary>
+        /// <returns></returns>
+        public Cost WithResources(int resources = 0)
+        {
+            return new Cost(Ironium, Boranium, Germanium, resources);
+        }
     }
 }

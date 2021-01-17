@@ -1,9 +1,12 @@
 using Godot;
+using log4net;
 
 namespace CraigStars
 {
     public class Camera2D : Godot.Camera2D
     {
+        private static readonly ILog log = LogManager.GetLogger(typeof(Camera2D));
+
         [Export]
         public float ZoomConstant { get; set; } = .05f;
 
@@ -31,6 +34,18 @@ namespace CraigStars
             else if (Input.IsActionPressed("zoom_out"))
             {
                 UpdateZoom(ZoomConstant, GetLocalMousePosition());
+            }
+
+            if (@event is InputEventMagnifyGesture magnifyGesture)
+            {
+                UpdateZoom((1 - magnifyGesture.Factor) / 2, GetLocalMousePosition());
+            }
+
+
+            if (@event is InputEventPanGesture panGesture)
+            {
+                log.Debug($"panGesture delta: {panGesture.Delta}");
+                Position += panGesture.Delta * Zoom * 20;
             }
 
             if (@event is InputEventMouseMotion eventMouseMotion && dragging)

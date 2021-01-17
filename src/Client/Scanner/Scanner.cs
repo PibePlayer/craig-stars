@@ -108,6 +108,7 @@ namespace CraigStars
         {
             waypointAreas.ForEach(wpa => { wpa.QueueFree(); });
             waypointAreas.Clear();
+            selectedWaypoint = null;
             ActiveFleet?.Fleet?.Waypoints.ForEach(wp => AddWaypointArea(wp));
         }
 
@@ -243,6 +244,7 @@ namespace CraigStars
                         {
                             log.Debug($"Selected map object {selectedMapObject.ObjectName}");
                             selectedMapObject.Select();
+                            selectedWaypoint = null;
                         }
                         UpdateSelectedIndicator();
 
@@ -398,6 +400,7 @@ namespace CraigStars
             var homeworld = Planets.Where(p => p.Planet.Homeworld && p.Planet.Player == PlayersManager.Instance.Me).FirstOrDefault();
             if (homeworld != null)
             {
+                selectedWaypoint = null;
                 selectedMapObject?.Deselect();
                 commandedMapObject?.Deselect();
                 selectedMapObject = homeworld;

@@ -34,6 +34,11 @@ namespace CraigStars
 
         public List<FleetSprite> OrbitingFleets { get; set; } = new List<FleetSprite>();
 
+        bool hasActivePeer;
+        bool isActive;
+        Orbiting orbitingState = Orbiting.None;
+        ScannerOwnerAlly ownerAllyState = ScannerOwnerAlly.Unknown;
+
         Sprite known;
         Sprite unknown;
         Sprite inhabited;
@@ -76,12 +81,65 @@ namespace CraigStars
             return list;
         }
 
+        public override void _Draw()
+        {
+            switch (PlayersManager.Instance.Me.PlanetViewState)
+            {
+                // just use sprites
+                case PlanetViewState.None:
+                    break;
+                case PlanetViewState.Normal:
+                    if (Planet.HasStarbase)
+                    {
+                        if (isActive)
+                        {
+                            DrawCircle(new Vector2(7f, -4f), 2.5f, Colors.Yellow);
+                        }
+                        else
+                        {
+                            DrawRect(new Rect2(3f, -4, 3, 3), Colors.Yellow, true);
+                        }
+                    }
+                    break;
+                case PlanetViewState.Percent:
+                    if (Planet.Explored)
+                    {
+                        var hab = Me.Race.GetPlanetHabitability(Planet.Hab.Value);
+                        if (hab > 0)
+                        {
+                            // don't go smaller than 25%
+                            var radius = Mathf.Clamp(10 * (hab / 100.0f), 2.5f, 10);
+                            DrawCircle(Vector2.Zero, (float)(10 * (hab / 100.0)), GUIColors.HabitableOutlineColor);
+                            DrawCircle(Vector2.Zero, (float)(8 * (hab / 100.0)), GUIColors.HabitableColor);
+                        }
+                        else if (hab < 0)
+                        {
+                            // don't go smaller than 25%
+                            var radius = Mathf.Clamp(10 * (hab / 45.0f), 2.5f, 10);
+                            DrawCircle(Vector2.Zero, radius, GUIColors.UninhabitableOutlineColor);
+                            DrawCircle(Vector2.Zero, radius - 1, GUIColors.UninhabitableColor);
+                        }
+
+                        if (Planet.Player != null)
+                        {
+                            // draw a blue flag for our planet, red for other player's planet
+                            var color = Planet.OwnedBy(Me) ? Colors.Blue : Colors.Red;
+                            DrawRect(new Rect2(0, -20, 9, 8), color, true);
+                            DrawRect(new Rect2(0, -20, 9, 8), Colors.Black, false, 2);
+                            DrawLine(Vector2.Zero, new Vector2(0, -12), color, 2);
+                        }
+                    }
+                    break;
+            }
+        }
+
         public override void UpdateSprite()
         {
-            var ownerAllyState = Planet.ReportAge == Planet.Unexplored ? ScannerOwnerAlly.Unknown : ScannerOwnerAlly.Known;
-            var state = State;
-            var hasActivePeer = HasActivePeer();
-            var orbitingState = Orbiting.None;
+
+            ownerAllyState = Planet.ReportAge == Planet.Unexplored ? ScannerOwnerAlly.Unknown : ScannerOwnerAlly.Known;
+            hasActivePeer = HasActivePeer();
+            orbitingState = Orbiting.None;
+            isActive = hasActivePeer || State == ScannerState.Commanded;
 
             // TODO: make this work with multiple types
             if (Planet.OrbitingFleets.Count > 0)
@@ -104,13 +162,31 @@ namespace CraigStars
             // turn them all off
             stateSprites.ForEach(s => s.Visible = false);
 
+            // do any custom drawing
+            Update();
+
+            var planetViewState = PlayersManager.Instance.Me.PlanetViewState;
+
+            if (planetViewState == PlanetViewState.None)
+            {
+                // boring squares
+                unknown.Visible = true;
+                return;
+            }
+
+            if (Planet.Explored && planetViewState != PlanetViewState.Normal)
+            {
+                // we use the draw
+                return;
+            }
+
             switch (ownerAllyState)
             {
                 case ScannerOwnerAlly.Unknown:
                     unknown.Visible = true;
                     break;
                 case ScannerOwnerAlly.Known:
-                    if (hasActivePeer || state == ScannerState.Commanded)
+                    if (isActive)
                     {
                         inhabitedCommanded.Visible = true;
                     }
@@ -120,7 +196,7 @@ namespace CraigStars
                     }
                     break;
                 case ScannerOwnerAlly.Owned:
-                    if (hasActivePeer || state == ScannerState.Commanded)
+                    if (isActive)
                     {
                         inhabitedCommanded.Visible = true;
                         inhabitedCommanded.Modulate = GUIColors.OwnedColor;
@@ -132,7 +208,7 @@ namespace CraigStars
                     }
                     break;
                 case ScannerOwnerAlly.Friend:
-                    if (hasActivePeer || state == ScannerState.Commanded)
+                    if (isActive)
                     {
                         inhabitedCommanded.Visible = true;
                         inhabitedCommanded.Modulate = GUIColors.FriendColor;
@@ -144,7 +220,7 @@ namespace CraigStars
                     }
                     break;
                 case ScannerOwnerAlly.Enemy:
-                    if (hasActivePeer || state == ScannerState.Commanded)
+                    if (isActive)
                     {
                         inhabitedCommanded.Visible = true;
                         inhabitedCommanded.Modulate = GUIColors.EnemyColor;
@@ -163,7 +239,7 @@ namespace CraigStars
                 case Orbiting.Orbiting:
                 case Orbiting.OrbitingEnemies:
                 case Orbiting.OrbitingAlliesAndEnemies:
-                    if (hasActivePeer || state == ScannerState.Commanded)
+                    if (isActive)
                     {
                         orbitingCommanded.Visible = true;
                     }

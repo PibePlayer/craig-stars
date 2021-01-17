@@ -9,26 +9,25 @@ An eponymous clone of the 4X game Stars!
 This version still isn't playable. In order to make a playable game, this clone requires:
 
 - Scanner Views (both planetary and fleet based)
-- Research Menu
+- Research Menu (partially done)
 - Ship Designer
-- Production Queue UI
+- Production Queue UI (partially done)
 - Race Customizer
 - Tech Browser
-- Waypoint Orders (to colonize planets)
+- Waypoint Orders (to colonize planets) (partially done)
 - The rest of the Command pane tiles (for fleet management, waypoints, etc)
 - Menu system (Main menu, in game exit menu, Multiplayer lobby, etc)
 - Battles
 - Bombing
+- Invasion
 
 # Little TODOs
 
 There are loads of things to do, but this section is for tracking things I've implmented partially but not fully.
 
 - Production doesn't allocate unspent resources to research
-- Max Population on planets by race
 - Orbital ring colors for enemy, mixed, and friendly orbiting fleets
 - Research at max level just stops, should switch to lowest unless all are max
-- Research starting levels need to be verified
 - GR LRT not implemented
 - No terraforming view on hab summary
 - No cloak, jam, or initiative in ship aggregate

@@ -20,6 +20,7 @@ GUIColors = ExtResource( 8 )
 shape = SubResource( 1 )
 
 [node name="Sprite" type="Node2D" parent="."]
+show_behind_parent = true
 
 [node name="Known" type="Sprite" parent="Sprite"]
 visible = false

@@ -3,11 +3,14 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using CraigStars.Singletons;
+using log4net;
 
 namespace CraigStars
 {
     public class Scanner : Node2D
     {
+        private static readonly ILog log = LogManager.GetLogger(typeof(Scanner));
+
         PackedScene waypointAreaScene;
         PackedScene scannerCoverageScene;
         PackedScene planetScene;
@@ -62,12 +65,19 @@ namespace CraigStars
             Signals.TurnPassedEvent += OnTurnPassed;
             Signals.MapObjectActivatedEvent += OnMapObjectActivated;
             Signals.WaypointAddedEvent += OnWaypointAdded;
+            Signals.PlanetViewStateUpdatedEvent += OnPlanetViewStateUpdatedEvent;
         }
 
         public override void _ExitTree()
         {
             Signals.TurnPassedEvent -= OnTurnPassed;
             Signals.MapObjectActivatedEvent -= OnMapObjectActivated;
+            Signals.PlanetViewStateUpdatedEvent -= OnPlanetViewStateUpdatedEvent;
+        }
+
+        void OnPlanetViewStateUpdatedEvent()
+        {
+            Planets.ForEach(p => p.UpdateSprite());
         }
 
         void OnTurnPassed(int year)
@@ -141,12 +151,13 @@ namespace CraigStars
         {
             if (@event.IsActionPressed("viewport_select"))
             {
-                GD.Print($"Clicked {mapObject.ObjectName}");
+                log.Debug($"Clicked {mapObject.ObjectName}");
                 if (@event is InputEventMouseButton eventMouseButton && eventMouseButton.Shift)
                 {
                     if (commandedMapObject is FleetSprite commandedFleet)
                     {
                         // this was shift+clicked, so let the viewport know it's supposed to be added as a waypoint
+                        log.Debug($"Adding waypoint for {commandedFleet.Name} to {mapObject.Name}");
                         commandedFleet.AddWaypoint(mapObject.MapObject);
                     }
                 }
@@ -157,14 +168,14 @@ namespace CraigStars
                         // We selected a new MapObject. Select it and update our sprite
                         if (selectedMapObject?.State == ScannerState.Selected)
                         {
-                            GD.Print($"Deselected map object {selectedMapObject.ObjectName}");
+                            log.Debug($"Deselected map object {selectedMapObject.ObjectName}");
                             // deselect the old one if it's selected.
                             selectedMapObject?.Deselect();
                         }
                         selectedMapObject = mapObject;
                         if (selectedMapObject.State != ScannerState.Commanded)
                         {
-                            GD.Print($"Selected map object {selectedMapObject.ObjectName}");
+                            log.Debug($"Selected map object {selectedMapObject.ObjectName}");
                             selectedMapObject.Select();
                         }
                         UpdateSelectedIndicator();
@@ -186,7 +197,7 @@ namespace CraigStars
                                 commandedMapObject?.Deselect();
                                 commandedMapObject = mapObject;
 
-                                GD.Print($"Commanded map object {commandedMapObject.ObjectName}");
+                                log.Debug($"Commanded map object {commandedMapObject.ObjectName}");
                             }
                         }
                         else if (mapObject.GetPeers().Count > 0)
@@ -262,6 +273,7 @@ namespace CraigStars
         /// </summary>
         void AddFleetsToViewport()
         {
+            log.Debug("Resetting viewport Fleets");
             var player = PlayersManager.Instance.Me;
 
             // clear out any existing fleets
@@ -291,10 +303,13 @@ namespace CraigStars
 
         public void ResetScannerToHome()
         {
+            log.Debug("Resetting Scanner to homeview");
             FocusHomeworld();
             UpdateScanners();
+            log.Debug("Updating Sprites");
             Planets.ForEach(p => p.UpdateSprite());
             Fleets.ForEach(f => f.UpdateSprite());
+            log.Debug("Finished Updating Sprites");
         }
 
         #region New Turn functions

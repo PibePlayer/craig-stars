@@ -18,6 +18,7 @@ namespace CraigStars
         public Boolean SubmittedTurn { get; set; }
         public Color Color { get; set; } = Colors.Black;
         public Race Race = new Race();
+        public PlanetViewState PlanetViewState { get; set; }
         public PlayerStats Stats = new PlayerStats();
 
         [JsonIgnore]

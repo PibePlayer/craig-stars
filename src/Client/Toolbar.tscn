@@ -1,0 +1,95 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://src/Client/Toolbar.cs" type="Script" id=1]
+
+[sub_resource type="ButtonGroup" id=1]
+
+[node name="Toolbar" type="MarginContainer"]
+anchor_right = 1.0
+rect_min_size = Vector2( 0, 40 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Panel" type="Panel" parent="."]
+margin_right = 1440.0
+margin_bottom = 40.0
+
+[node name="HBoxContainerLeft" type="HBoxContainer" parent="Panel"]
+anchor_bottom = 1.0
+margin_right = 84.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="NormalViewToolButton" type="ToolButton" parent="Panel/HBoxContainerLeft"]
+margin_right = 40.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 40, 40 )
+toggle_mode = true
+pressed = true
+group = SubResource( 1 )
+text = "N"
+flat = false
+__meta__ = {
+"_editor_description_": "Normal View"
+}
+
+[node name="PercentViewToolButton" type="ToolButton" parent="Panel/HBoxContainerLeft"]
+margin_left = 44.0
+margin_right = 84.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 40, 40 )
+toggle_mode = true
+group = SubResource( 1 )
+text = "%"
+flat = false
+__meta__ = {
+"_editor_description_": "Percent View"
+}
+
+[node name="HBoxContainerRight" type="HBoxContainer" parent="Panel"]
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -329.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TechBrowserButton" type="Button" parent="Panel/HBoxContainerRight"]
+margin_right = 42.0
+margin_bottom = 40.0
+size_flags_horizontal = 0
+disabled = true
+text = "Tech"
+
+[node name="ShipDesignerButton" type="Button" parent="Panel/HBoxContainerRight"]
+margin_left = 46.0
+margin_right = 102.0
+margin_bottom = 40.0
+size_flags_horizontal = 0
+disabled = true
+text = "Design"
+
+[node name="ResearchButton" type="Button" parent="Panel/HBoxContainerRight"]
+margin_left = 106.0
+margin_right = 176.0
+margin_bottom = 40.0
+size_flags_horizontal = 0
+text = "Research"
+
+[node name="BattlePlansButton" type="Button" parent="Panel/HBoxContainerRight"]
+margin_left = 180.0
+margin_right = 268.0
+margin_bottom = 40.0
+size_flags_horizontal = 0
+disabled = true
+text = "Battle Plans"
+
+[node name="SubmitTurnButton" type="Button" parent="Panel/HBoxContainerRight"]
+margin_left = 272.0
+margin_right = 329.0
+margin_bottom = 40.0
+text = "Submit"

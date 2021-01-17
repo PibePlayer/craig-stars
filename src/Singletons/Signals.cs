@@ -35,6 +35,7 @@ namespace CraigStars.Singletons
         public static event Action<Player> SubmitTurnEvent;
         public static event Action<PlanetSprite> ChangeProductionQueuePressedEvent;
         public static event Action ResearchDialogRequestedEvent;
+        public static event Action PlanetViewStateUpdatedEvent;
         public static event Action<Planet> ProductionQueueChangedEvent;
         public delegate void CargoTransferRequested(ICargoHolder source, ICargoHolder dest);
         public static event CargoTransferRequested CargoTransferRequestedEvent;
@@ -74,7 +75,7 @@ namespace CraigStars.Singletons
 
         public static event Action<PlayerMessage> PlayerMessageEvent;
 
-        #endregion 
+        #endregion
 
         // The GDScript signals object
         public static Signals Instance { get; private set; }
@@ -206,6 +207,11 @@ namespace CraigStars.Singletons
         public static void PublishResearchDialogRequestedEvent()
         {
             ResearchDialogRequestedEvent?.Invoke();
+        }
+
+        public static void PublishPlanetViewStateUpdatedEvent()
+        {
+            PlanetViewStateUpdatedEvent?.Invoke();
         }
 
         public static void PublishProductionQueueChangedEvent(Planet planet)

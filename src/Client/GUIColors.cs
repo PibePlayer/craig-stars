@@ -55,6 +55,25 @@ namespace CraigStars
         public Color CommandedWaypointLineColor { get; set; } = new Color("0900FF").Lightened(.2f);
 
         [Export]
+        public Color HabitableColor { get; set; } = new Color("00FF00");
+
+        [Export]
+        public Color HabitableOutlineColor { get; set; } = new Color("008100");
+
+
+        [Export]
+        public Color UninhabitableColor { get; set; } = new Color("FF0000");
+
+        [Export]
+        public Color UninhabitableOutlineColor { get; set; } = new Color("810000");
+
+        [Export]
+        public Color TerraformableColor { get; set; } = new Color("00FF00");
+
+        [Export]
+        public Color TerraformableOutlineColor { get; set; } = new Color("008100");
+
+        [Export]
         public Color OwnedColor { get; set; } = new Color("00FF00");
 
         [Export]

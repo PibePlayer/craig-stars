@@ -3,8 +3,6 @@
 [ext_resource path="res://src/Client/TileTheme.tres" type="Theme" id=1]
 [ext_resource path="res://src/Client/Scanner/ScannerSelectedStats.cs" type="Script" id=2]
 
-
-
 [node name="ScannerSelectedStats" type="MarginContainer"]
 margin_top = 866.0
 margin_right = 926.0

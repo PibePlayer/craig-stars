@@ -5,42 +5,72 @@ namespace CraigStars
     public class Camera2D : Godot.Camera2D
     {
         [Export]
-        public Vector2 ZoomConstant { get; set; } = new Vector2(.05f, .05f);
+        public float ZoomConstant { get; set; } = .05f;
+
+        [Export]
+        public float MinZoom { get; set; } = 4f;
+
+        [Export]
+        public float MaxZoom { get; set; } = .05f;
 
         [Export]
         public float ScrollConstant { get; set; } = 1.5f;
 
+        // our current zoom level, used for updating zoom
+        float currentZoomLevel = 1;
 
-        private bool pressed = false;
+        // whether we are dragging the viewport around
+        bool dragging = false;
 
         public override void _UnhandledInput(InputEvent @event)
         {
             if (@event.IsActionPressed("zoom_in"))
             {
-                if (Zoom > ZoomConstant)
-                {
-                    Zoom -= ZoomConstant;
-                }
+                UpdateZoom(-ZoomConstant, GetLocalMousePosition());
             }
             else if (Input.IsActionPressed("zoom_out"))
             {
-                if (Zoom <= new Vector2(4, 4) - ZoomConstant)
-                {
-                    Zoom += ZoomConstant;
-                }
+                UpdateZoom(ZoomConstant, GetLocalMousePosition());
             }
 
-            if (@event is InputEventMouseMotion eventMouseMotion && pressed)
+            if (@event is InputEventMouseMotion eventMouseMotion && dragging)
             {
                 Position += eventMouseMotion.Relative * Zoom * -1;
             }
 
             if (@event is InputEventMouseButton eventMouseButton && (eventMouseButton.ButtonIndex == 3 || eventMouseButton.ButtonIndex == 2))
             {
-                pressed = eventMouseButton.Pressed;
+                dragging = eventMouseButton.Pressed;
             }
         }
 
+        /// <summary>
+        /// Update the zoom level, zooming into wherever the mouse cursor is
+        /// </summary>
+        /// <param name="increment">The amount to increment the zoom level to</param>
+        /// <param name="anchor">The anchor point to zoom in on</param>
+        void UpdateZoom(float increment, Vector2 anchor)
+        {
+            var oldZoom = currentZoomLevel;
+            currentZoomLevel += increment;
+            // for zoom, "max" is smaller, like .05 and min is greater, like 4
+            // because of camera reasons. I don't know. Camera folk are weird
+            currentZoomLevel = Mathf.Clamp(currentZoomLevel + increment, MaxZoom, MinZoom);
+            if (currentZoomLevel == oldZoom)
+            {
+                return;
+            }
+
+            var zoomCenter = anchor - Offset;
+            var ratio = 1 - currentZoomLevel / oldZoom;
+            Offset += zoomCenter * ratio;
+            Zoom = new Vector2(currentZoomLevel, currentZoomLevel);
+        }
+
+        /// <summary>
+        /// Update the camera position based on movement keys/mouse drag
+        /// </summary>
+        /// <param name="delta"></param>
         public override void _Process(float delta)
         {
             var scrollAmount = ScrollConstant * Zoom.x;

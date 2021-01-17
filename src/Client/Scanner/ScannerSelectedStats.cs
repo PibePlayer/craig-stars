@@ -12,6 +12,7 @@ namespace CraigStars
         Label nameLabel;
         Label distanceLabel;
 
+        MapObjectSprite highlightedMapObject;
         MapObjectSprite selectedMapObject;
         MapObjectSprite commandedMapObject;
 
@@ -24,19 +25,26 @@ namespace CraigStars
             distanceLabel = FindNode("DistanceLabel") as Label;
 
 
+            Signals.MapObjectHighlightedEvent += OnMapObjectHighlighted;
             Signals.MapObjectSelectedEvent += OnMapObjectSelected;
             Signals.MapObjectActivatedEvent += OnMapObjectActivated;
         }
 
         public override void _ExitTree()
         {
+            Signals.MapObjectHighlightedEvent -= OnMapObjectHighlighted;
             Signals.MapObjectSelectedEvent -= OnMapObjectSelected;
             Signals.MapObjectActivatedEvent -= OnMapObjectActivated;
         }
 
-        void OnMapObjectSelected(MapObjectSprite mapObject)
+        void OnMapObjectHighlighted(MapObjectSprite mapObject)
         {
-            selectedMapObject = mapObject;
+            highlightedMapObject = mapObject;
+            if (mapObject == null)
+            {
+                // if we don't have a highlighted map object, use the selected one
+                highlightedMapObject = selectedMapObject;
+            }
             if (mapObject != null)
             {
                 if (mapObject is PlanetSprite planet)
@@ -53,9 +61,9 @@ namespace CraigStars
                 yLabel.Text = $"Y: {mapObject.Position.y:0.#}";
                 nameLabel.Text = $"{mapObject.ObjectName}";
 
-                if (selectedMapObject != commandedMapObject && commandedMapObject != null)
+                if (highlightedMapObject != commandedMapObject && commandedMapObject != null)
                 {
-                    var dist = Math.Abs(selectedMapObject.Position.DistanceTo(commandedMapObject.Position));
+                    var dist = Math.Abs(highlightedMapObject.Position.DistanceTo(commandedMapObject.Position));
                     distanceLabel.Text = $"{dist:0.#} light years from {commandedMapObject.ObjectName}";
                 }
                 else
@@ -63,6 +71,12 @@ namespace CraigStars
                     distanceLabel.Text = $"";
                 }
             }
+        }
+
+        void OnMapObjectSelected(MapObjectSprite mapObject)
+        {
+            selectedMapObject = mapObject;
+
         }
 
         void OnMapObjectActivated(MapObjectSprite mapObject)

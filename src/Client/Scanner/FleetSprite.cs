@@ -60,17 +60,28 @@ namespace CraigStars
             base._ExitTree();
         }
 
-        public Waypoint AddWaypoint(MapObject mapObject)
+        /// <summary>
+        /// Add a waypoint (after another waypoint)
+        /// </summary>
+        /// <param name="mapObject"></param>
+        /// <param name="after"></param>
+        /// <returns></returns>
+        public Waypoint AddWaypoint(MapObject mapObject, Waypoint after = null)
         {
-            int warpFactor = Fleet.GetDefaultWarpFactor();
-            if (Fleet.Waypoints.Count > 1)
+            var index = Fleet.Waypoints.Count - 1;
+            if (after != null)
             {
-                warpFactor = Fleet.Waypoints[Fleet.Waypoints.Count - 1].WarpFactor;
+                index = Fleet.Waypoints.FindIndex(wp => wp == after);
+            }
+            int warpFactor = Fleet.GetDefaultWarpFactor();
+            if (index >= 0)
+            {
+                warpFactor = Fleet.Waypoints[index].WarpFactor;
             }
             var waypoint = new Waypoint(mapObject, warpFactor);
 
 
-            Fleet.Waypoints.Add(waypoint);
+            Fleet.Waypoints.Insert(index + 1, waypoint);
 
             UpdateWaypointsLine();
 
@@ -78,12 +89,24 @@ namespace CraigStars
             return waypoint;
         }
 
-        public Waypoint AddWaypoint(Vector2 position)
+        /// <summary>
+        /// Add a waypoint at a position, after some current selected waypoint
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="after"></param>
+        /// <returns></returns>
+        public Waypoint AddWaypoint(Vector2 position, Waypoint after = null)
         {
-            int warpFactor = Fleet.GetDefaultWarpFactor();
-            if (Fleet.Waypoints.Count > 1)
+            var index = Fleet.Waypoints.Count - 1;
+            if (after != null)
             {
-                warpFactor = Fleet.Waypoints[Fleet.Waypoints.Count - 1].WarpFactor;
+                index = Fleet.Waypoints.FindIndex(wp => wp == after);
+            }
+
+            int warpFactor = Fleet.GetDefaultWarpFactor();
+            if (index >= 0)
+            {
+                warpFactor = Fleet.Waypoints[index].WarpFactor;
             }
             var waypoint = new Waypoint()
             {
@@ -92,12 +115,29 @@ namespace CraigStars
             };
 
 
-            Fleet.Waypoints.Add(waypoint);
+            Fleet.Waypoints.Insert(index + 1, waypoint);
 
             UpdateWaypointsLine();
 
             Signals.PublishWaypointAddedEvent(Fleet, waypoint);
             return waypoint;
+        }
+
+        public void DeleteWaypoint(Waypoint waypoint)
+        {
+            var index = Fleet.Waypoints.FindIndex(wp => wp == waypoint);
+
+            // don't delete the first index
+            if (index > 0)
+            {
+                Fleet.Waypoints.RemoveAt(index);
+                UpdateWaypointsLine();
+                Signals.PublishWaypointDeletedEvent(waypoint);
+
+                // select the previous waypoint in the list
+                Signals.PublishWaypointSelectedEvent(Fleet.Waypoints[index - 1]);
+            }
+
         }
 
         void UpdateWaypointsLine()

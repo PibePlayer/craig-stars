@@ -22,6 +22,7 @@ namespace CraigStars.Singletons
 
         #region Viewport Events
 
+        public static event Action<MapObjectSprite> MapObjectHighlightedEvent;
         public static event Action<MapObjectSprite> MapObjectSelectedEvent;
         public static event Action<MapObjectSprite> MapObjectActivatedEvent;
         public static event Action<Fleet, Waypoint> WaypointAddedEvent;
@@ -162,6 +163,13 @@ namespace CraigStars.Singletons
             TurnPassedEvent?.Invoke(year);
         }
 
+        # region Scanner Objects
+
+        public static void PublishMapObjectHightlightedEvent(MapObjectSprite mapObjectSprite)
+        {
+            MapObjectHighlightedEvent?.Invoke(mapObjectSprite);
+        }
+
         public static void PublishMapObjectSelectedEvent(MapObjectSprite mapObjectSprite)
         {
             MapObjectSelectedEvent?.Invoke(mapObjectSprite);
@@ -171,6 +179,8 @@ namespace CraigStars.Singletons
         {
             MapObjectActivatedEvent?.Invoke(mapObjectSprite);
         }
+
+        #endregion
 
         public static void PublishWaypointAddedEvent(Fleet fleet, Waypoint waypoint)
         {

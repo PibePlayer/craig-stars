@@ -17,6 +17,9 @@ namespace CraigStars
         PackedScene fleetScene;
         MapObjectSprite selectedMapObject;
         MapObjectSprite commandedMapObject;
+        MapObjectSprite highlightedMapObject;
+        Waypoint selectedWaypoint;
+        List<MapObjectSprite> mapObjectsUnderMouse = new List<MapObjectSprite>();
         SelectedMapObjectSprite selectedMapObjectSprite;
         Node2D normalScannersNode;
         Node2D penScannersNode;
@@ -65,6 +68,8 @@ namespace CraigStars
             Signals.TurnPassedEvent += OnTurnPassed;
             Signals.MapObjectActivatedEvent += OnMapObjectActivated;
             Signals.WaypointAddedEvent += OnWaypointAdded;
+            Signals.WaypointSelectedEvent += OnWaypointSelected;
+            Signals.WaypointDeletedEvent += OnWaypointDeleted;
             Signals.PlanetViewStateUpdatedEvent += OnPlanetViewStateUpdatedEvent;
         }
 
@@ -72,6 +77,9 @@ namespace CraigStars
         {
             Signals.TurnPassedEvent -= OnTurnPassed;
             Signals.MapObjectActivatedEvent -= OnMapObjectActivated;
+            Signals.WaypointAddedEvent -= OnWaypointAdded;
+            Signals.WaypointSelectedEvent -= OnWaypointSelected;
+            Signals.WaypointDeletedEvent -= OnWaypointDeleted;
             Signals.PlanetViewStateUpdatedEvent -= OnPlanetViewStateUpdatedEvent;
         }
 
@@ -112,6 +120,22 @@ namespace CraigStars
         void OnWaypointAdded(Fleet fleet, Waypoint waypoint)
         {
             AddWaypointArea(waypoint);
+            selectedWaypoint = waypoint;
+            UpdateSelectedIndicator();
+        }
+
+        void OnWaypointDeleted(Waypoint waypoint)
+        {
+            if (selectedWaypoint == waypoint)
+            {
+                selectedWaypoint = null;
+            }
+        }
+
+        void OnWaypointSelected(Waypoint waypoint)
+        {
+            selectedWaypoint = waypoint;
+            UpdateSelectedIndicator();
         }
 
         void AddWaypointArea(Waypoint waypoint)
@@ -134,12 +158,54 @@ namespace CraigStars
             }));
             Planets.ForEach(p => AddChild(p));
             Planets.ForEach(p => p.Connect("input_event", this, nameof(OnInputEvent), new Godot.Collections.Array() { p }));
+            Planets.ForEach(p => p.Connect("mouse_entered", this, nameof(OnMouseEntered), new Godot.Collections.Array() { p }));
+            Planets.ForEach(p => p.Connect("mouse_exited", this, nameof(OnMouseExited), new Godot.Collections.Array() { p }));
             PlanetsByGuid = Planets.ToLookup(p => p.Planet.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
 
             AddFleetsToViewport();
 
             CallDeferred(nameof(ResetScannerToHome));
         }
+
+        /// <summary>
+        /// Handle clicks on teh scanner itself to 
+        /// </summary>
+        public override void _UnhandledInput(InputEvent @event)
+        {
+            if (@event.IsActionPressed("viewport_select"))
+            {
+                if (@event is InputEventMouseButton eventMouseButton && eventMouseButton.Shift)
+                {
+                    if (commandedMapObject is FleetSprite commandedFleet)
+                    {
+                        // don't put a waypoint in space unless it's empty space
+                        if (mapObjectsUnderMouse.Count == 0)
+                        {
+                            log.Debug($"Adding waypoint in space for {commandedFleet.Name} to {GetLocalMousePosition()}");
+                            commandedFleet?.AddWaypoint(GetLocalMousePosition(), selectedWaypoint);
+                        }
+                    }
+                }
+            }
+            if (@event.IsActionPressed("delete_waypoint") && selectedWaypoint != null && activeFleet != null)
+            {
+                activeFleet?.DeleteWaypoint(selectedWaypoint);
+            }
+        }
+
+        void OnMouseEntered(MapObjectSprite mapObject)
+        {
+            log.Debug($"Selected map object {mapObject.ObjectName}");
+            mapObjectsUnderMouse.Add(mapObject);
+            Signals.PublishMapObjectHightlightedEvent(mapObject);
+        }
+
+        void OnMouseExited(MapObjectSprite mapObject)
+        {
+            mapObjectsUnderMouse.Remove(mapObject);
+            Signals.PublishMapObjectHightlightedEvent(mapObject);
+        }
+
 
         /// <summary>
         /// Respond to mouse events on our map objects in the Scanner
@@ -158,7 +224,7 @@ namespace CraigStars
                     {
                         // this was shift+clicked, so let the viewport know it's supposed to be added as a waypoint
                         log.Debug($"Adding waypoint for {commandedFleet.Name} to {mapObject.Name}");
-                        commandedFleet.AddWaypoint(mapObject.MapObject);
+                        commandedFleet.AddWaypoint(mapObject.MapObject, selectedWaypoint);
                     }
                 }
                 else
@@ -220,13 +286,21 @@ namespace CraigStars
         /// </summary>
         void UpdateSelectedIndicator()
         {
-            if (selectedMapObject == commandedMapObject || (commandedMapObject != null && commandedMapObject.GetPeers().Contains(selectedMapObject)))
+            if (selectedWaypoint != null)
             {
-                selectedMapObjectSprite.SelectLarge(selectedMapObject.Position);
+                selectedMapObjectSprite.Select(selectedWaypoint.Position);
             }
             else
             {
-                selectedMapObjectSprite.Select(selectedMapObject.Position);
+                if (selectedMapObject == commandedMapObject || (commandedMapObject != null && commandedMapObject.GetPeers().Contains(selectedMapObject)))
+                {
+                    selectedMapObjectSprite.SelectLarge(selectedMapObject.Position);
+                }
+                else
+                {
+                    selectedMapObjectSprite.Select(selectedMapObject.Position);
+                }
+
             }
 
         }
@@ -299,6 +373,8 @@ namespace CraigStars
 
             Fleets.ForEach(f => AddChild(f));
             Fleets.ForEach(f => f.Connect("input_event", this, nameof(OnInputEvent), new Godot.Collections.Array() { f }));
+            Fleets.ForEach(f => f.Connect("mouse_entered", this, nameof(OnMouseEntered), new Godot.Collections.Array() { f }));
+            Fleets.ForEach(f => f.Connect("mouse_exited", this, nameof(OnMouseExited), new Godot.Collections.Array() { f }));
         }
 
         public void ResetScannerToHome()

@@ -24,6 +24,21 @@ namespace CraigStars
             // GlobalPosition = Target.GlobalPosition;
             // hook up mouse events to our area
             Connect("input_event", this, nameof(OnInputEvent));
+            Signals.WaypointDeletedEvent += OnWaypointDeleted;
+        }
+
+        public override void _ExitTree()
+        {
+            Signals.WaypointDeletedEvent -= OnWaypointDeleted;
+        }
+
+        void OnWaypointDeleted(Waypoint waypoint)
+        {
+            if (waypoint == Waypoint)
+            {
+                // I've been deleted, remove from queue
+                QueueFree();
+            }
         }
 
         void OnInputEvent(Node viewport, InputEvent @event, int shapeIdx)
@@ -34,5 +49,6 @@ namespace CraigStars
                 Signals.PublishWaypointSelectedEvent(Waypoint);
             }
         }
+
     }
 }

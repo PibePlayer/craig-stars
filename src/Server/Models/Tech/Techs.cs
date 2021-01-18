@@ -534,12 +534,12 @@ namespace CraigStars
             HullSlotType = HullSlotType.Weapon,
             Range = 4,
         };
-        public static readonly TechHullComponent ArmageddonMissle = new TechHullComponent("Armageddon Missle", new Cost(67, 23, 16, 24), new TechRequirements(weapons: 24, propulsion: 10), 0, TechCategory.Torpedo)
+        public static readonly TechHullComponent ArmageddonMissile = new TechHullComponent("Armageddon Missile", new Cost(67, 23, 16, 24), new TechRequirements(weapons: 24, propulsion: 10), 0, TechCategory.Torpedo)
         {
             Mass = 35,
             Initiative = 3,
             Accuracy = 30,
-            CapitalShipMissle = true,
+            CapitalShipMissile = true,
             Power = 525,
             HullSlotType = HullSlotType.Weapon,
             Range = 6,
@@ -562,12 +562,12 @@ namespace CraigStars
             HullSlotType = HullSlotType.Weapon,
             Range = 4,
         };
-        public static readonly TechHullComponent DoomsdayMissle = new TechHullComponent("Doomsday Missle", new Cost(60, 20, 13, 20), new TechRequirements(weapons: 20, propulsion: 10), 0, TechCategory.Torpedo)
+        public static readonly TechHullComponent DoomsdayMissile = new TechHullComponent("Doomsday Missile", new Cost(60, 20, 13, 20), new TechRequirements(weapons: 20, propulsion: 10), 0, TechCategory.Torpedo)
         {
             Mass = 35,
             Initiative = 2,
             Accuracy = 25,
-            CapitalShipMissle = true,
+            CapitalShipMissile = true,
             Power = 280,
             HullSlotType = HullSlotType.Weapon,
             Range = 6,
@@ -581,21 +581,21 @@ namespace CraigStars
             HullSlotType = HullSlotType.Weapon,
             Range = 5,
         };
-        public static readonly TechHullComponent JihadMissle = new TechHullComponent("Jihad Missle", new Cost(37, 13, 9, 13), new TechRequirements(weapons: 12, propulsion: 6), 0, TechCategory.Torpedo)
+        public static readonly TechHullComponent JihadMissile = new TechHullComponent("Jihad Missile", new Cost(37, 13, 9, 13), new TechRequirements(weapons: 12, propulsion: 6), 0, TechCategory.Torpedo)
         {
             Mass = 35,
             Accuracy = 20,
-            CapitalShipMissle = true,
+            CapitalShipMissile = true,
             Power = 85,
             HullSlotType = HullSlotType.Weapon,
             Range = 5,
         };
-        public static readonly TechHullComponent JuggernautMissle = new TechHullComponent("Juggernaut Missle", new Cost(48, 16, 11, 16), new TechRequirements(weapons: 16, propulsion: 8), 0, TechCategory.Torpedo)
+        public static readonly TechHullComponent JuggernautMissile = new TechHullComponent("Juggernaut Missile", new Cost(48, 16, 11, 16), new TechRequirements(weapons: 16, propulsion: 8), 0, TechCategory.Torpedo)
         {
             Mass = 35,
             Initiative = 1,
             Accuracy = 20,
-            CapitalShipMissle = true,
+            CapitalShipMissile = true,
             Power = 150,
             HullSlotType = HullSlotType.Weapon,
             Range = 5,
@@ -668,7 +668,7 @@ namespace CraigStars
             Shield = 100,
             HullSlotType = HullSlotType.Shield,
         };
-        public static readonly TechHullComponent GorillaDelegator = new TechHullComponent("Gorilla Delegator", new Cost(5, 0, 6, 11), new TechRequirements(energy: 14), 70, TechCategory.Shield)
+        public static readonly TechHullComponent GorillaDelagator = new TechHullComponent("Gorilla Delagator", new Cost(5, 0, 6, 11), new TechRequirements(energy: 14), 70, TechCategory.Shield)
         {
             Mass = 1,
             Shield = 175,
@@ -858,19 +858,19 @@ namespace CraigStars
                 CrobySharmor,
                 ShadowShield,
                 BearNeutrinoBarrier,
-                GorillaDelegator,
+                GorillaDelagator,
                 ElephantHideFortress,
                 CompletePhaseShield,
 
                 // Torpedos
                 AlphaTorpedo,
-                ArmageddonMissle,
+                ArmageddonMissile,
                 BetaTorpedo,
                 DeltaTorpedo,
-                DoomsdayMissle,
+                DoomsdayMissile,
                 EpsilonTorpedo,
-                JihadMissle,
-                JuggernautMissle,
+                JihadMissile,
+                JuggernautMissile,
                 OmegaTorpedo,
                 RhoTorpedo,
                 UpsilonTorpedo,

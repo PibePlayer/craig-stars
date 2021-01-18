@@ -62,7 +62,6 @@ __meta__ = {
 margin_right = 42.0
 margin_bottom = 40.0
 size_flags_horizontal = 0
-disabled = true
 text = "Tech"
 
 [node name="ShipDesignerButton" type="Button" parent="Panel/HBoxContainerRight"]

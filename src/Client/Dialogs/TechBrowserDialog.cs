@@ -110,7 +110,14 @@ namespace CraigStars
                 var item = techTree.CreateItem(categoryRoot);
                 item.SetMetadata(0, index);
                 item.SetText(0, tech.Name);
-                item.SetIcon(0, TextureLoader.Instance.FindTexture(tech));
+                if (tech is TechHull)
+                {
+                    item.SetIcon(0, TextureLoader.Instance.FindTexture(tech, 0));
+                }
+                else
+                {
+                    item.SetIcon(0, TextureLoader.Instance.FindTexture(tech));
+                }
             });
 
             // select the first item in the first category
@@ -138,7 +145,14 @@ namespace CraigStars
                 var tech = techs[index];
                 nameLabel.Text = tech.Name;
                 costGrid.Cost = tech.Cost;
-                iconTextureRect.Texture = TextureLoader.Instance.FindTexture(tech);
+                if (tech is TechHull)
+                {
+                    iconTextureRect.Texture = TextureLoader.Instance.FindTexture(tech, 0);
+                }
+                else
+                {
+                    iconTextureRect.Texture = TextureLoader.Instance.FindTexture(tech);
+                }
 
                 UpdateRequirements(tech);
 
@@ -163,10 +177,26 @@ namespace CraigStars
                     massAmountLabel.Visible = true;
                     massAmountLabel.Text = $"{hullComponent.Mass}kT";
 
-                    if (hullComponent.Armor > 0)
+                    if (hullComponent.Category == TechCategory.Shield && hullComponent.Armor > 0)
+                    {
+                        // if this is a shield with armor, it sounds cooler to make the armor a description
+                        AddDescription($"This shield also contains an armor component which will absorb {hullComponent.Armor} damage points.");
+                    }
+                    else if (hullComponent.Armor > 0)
                     {
                         AddStatsLabel("Armor Strength", hullComponent.Armor.ToString());
                     }
+
+                    if (hullComponent.Category == TechCategory.Armor && hullComponent.Shield > 0)
+                    {
+                        // if this is an armor with a shield, it sounds cooler to make the shield a description
+                        AddDescription($"This armor also acts as part shield which will absorb {hullComponent.Shield} damage points.");
+                    }
+                    else if (hullComponent.Shield > 0)
+                    {
+                        AddStatsLabel("Shield Strength", hullComponent.Shield.ToString());
+                    }
+
                     if (hullComponent.Power > 0)
                     {
                         AddStatsLabel("Power", hullComponent.Power.ToString());

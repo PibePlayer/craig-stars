@@ -125,7 +125,7 @@ namespace CraigStars
                     Aggregate.Shield += slot.HullComponent.Shield * slot.Quantity;
                     Aggregate.CargoCapacity += slot.HullComponent.CargoBonus * slot.Quantity;
                     Aggregate.FuelCapacity += slot.HullComponent.FuelBonus * slot.Quantity;
-                    Aggregate.Colonizer = slot.HullComponent.ColonizationModule;
+                    Aggregate.Colonizer = slot.HullComponent.ColonizationModule || slot.HullComponent.OrbitalConstructionModule;
                 }
                 // cargo and space doc that are built into the hull
                 // the space dock assumes that there is only one slot like that

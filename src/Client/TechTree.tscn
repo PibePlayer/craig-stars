@@ -1,0 +1,34 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://src/Client/TechTree.cs" type="Script" id=1]
+
+[node name="TechTree" type="VBoxContainer"]
+margin_right = 300.0
+margin_bottom = 369.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SearchLineEdit" type="LineEdit" parent="."]
+margin_right = 300.0
+margin_bottom = 24.0
+placeholder_text = "Search"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Tree" type="Tree" parent="."]
+margin_top = 28.0
+margin_right = 300.0
+margin_bottom = 325.0
+rect_min_size = Vector2( 300, 0 )
+size_flags_vertical = 3
+hide_root = true
+select_mode = 1
+
+[node name="OnlyAvailableCheckButton" type="CheckButton" parent="."]
+margin_top = 329.0
+margin_right = 300.0
+margin_bottom = 369.0
+text = "Show Only Available Technology"

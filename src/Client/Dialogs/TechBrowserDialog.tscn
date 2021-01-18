@@ -1,11 +1,11 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://src/Client/Dialogs/TechBrowserDialog.cs" type="Script" id=1]
 [ext_resource path="res://src/Client/CostGrid.tscn" type="PackedScene" id=2]
 [ext_resource path="res://assets/gui/tech/Engine/Alpha Drive8.png" type="Texture" id=3]
+[ext_resource path="res://src/Client/TechTree.tscn" type="PackedScene" id=4]
 
 [node name="TechBrowserDialog" type="WindowDialog"]
-visible = true
 margin_right = 695.0
 margin_bottom = 403.0
 window_title = "Technology Browser"
@@ -40,26 +40,7 @@ margin_right = 675.0
 margin_bottom = 369.0
 size_flags_vertical = 3
 
-[node name="VBoxContainerTechTree" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainerContent"]
-margin_right = 300.0
-margin_bottom = 369.0
-
-[node name="SearchLineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechTree"]
-margin_right = 300.0
-margin_bottom = 24.0
-placeholder_text = "Search"
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="TechTree" type="Tree" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechTree"]
-margin_top = 28.0
-margin_right = 300.0
-margin_bottom = 369.0
-rect_min_size = Vector2( 300, 0 )
-size_flags_vertical = 3
-hide_root = true
-select_mode = 1
+[node name="TechTree" parent="MarginContainer/VBoxContainer/HBoxContainerContent" instance=ExtResource( 4 )]
 
 [node name="VBoxContainerTechSummary" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainerContent"]
 margin_left = 304.0

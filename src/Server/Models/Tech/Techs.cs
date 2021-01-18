@@ -250,58 +250,60 @@ namespace CraigStars
         #endregion
 
         #region Mechanical
-        public static readonly TechHullComponent BeamDeflector = new TechHullComponent("Beam Deflector", new Cost(0, 0, 10, 8), new TechRequirements(energy: 6, weapons: 6, construction: 6, electronics: 6), 0, TechCategory.Mechanical)
-        {
-            Mass = 1,
-            HullSlotType = HullSlotType.Mechanical,
-            BeamDefense = 1
-        };
-        public static readonly TechHullComponent CargoPod = new TechHullComponent("Cargo Pod", new Cost(5, 0, 2, 10), new TechRequirements(construction: 3), 0, TechCategory.Mechanical)
-        {
-            Mass = 5,
-            CargoBonus = 50,
-            HullSlotType = HullSlotType.Mechanical,
-        };
         public static readonly TechHullComponent ColonizationModule = new TechHullComponent("Colonization Module", new Cost(11, 9, 9, 9), new TechRequirements(), 0, TechCategory.Mechanical)
         {
             Mass = 32,
             ColonizationModule = true,
             HullSlotType = HullSlotType.Mechanical
         };
-        public static readonly TechHullComponent FuelTank = new TechHullComponent("Fuel Tank", new Cost(5, 0, 0, 4), new TechRequirements(), 0, TechCategory.Mechanical)
-        {
-            Mass = 3,
-            FuelBonus = 250,
-            HullSlotType = HullSlotType.Mechanical
-        };
-        public static readonly TechHullComponent ManeuveringJet = new TechHullComponent("Maneuvering Jet", new Cost(5, 0, 5, 10), new TechRequirements(energy: 2, propulsion: 3), 0, TechCategory.Mechanical)
-        {
-            Mass = 5,
-            HullSlotType = HullSlotType.Mechanical,
-        };
-        public static readonly TechHullComponent OrbitalConstructionModule = new TechHullComponent("Orbital Construction Module", new Cost(18, 13, 13, 18), new TechRequirements(prtRequired: PRT.AR), 0, TechCategory.Mechanical)
+        public static readonly TechHullComponent OrbitalConstructionModule = new TechHullComponent("Orbital Construction Module", new Cost(18, 13, 13, 18), new TechRequirements(prtRequired: PRT.AR), 10, TechCategory.Mechanical)
         {
             Mass = 50,
             MinKillRate = 2000,
-            ColonizationModule = true,
+            OrbitalConstructionModule = true,
             HullSlotType = HullSlotType.Armor
         };
-        public static readonly TechHullComponent Overthruster = new TechHullComponent("Overthruster", new Cost(10, 0, 8, 20), new TechRequirements(energy: 5, propulsion: 12), 0, TechCategory.Mechanical)
+        public static readonly TechHullComponent CargoPod = new TechHullComponent("Cargo Pod", new Cost(5, 0, 2, 10), new TechRequirements(construction: 3), 20, TechCategory.Mechanical)
         {
             Mass = 5,
+            CargoBonus = 50,
             HullSlotType = HullSlotType.Mechanical,
         };
-        public static readonly TechHullComponent SuperCargoPod = new TechHullComponent("Super Cargo Pod", new Cost(8, 0, 2, 15), new TechRequirements(energy: 3, construction: 8), 0, TechCategory.Mechanical)
+        public static readonly TechHullComponent SuperCargoPod = new TechHullComponent("Super Cargo Pod", new Cost(8, 0, 2, 15), new TechRequirements(energy: 3, construction: 8), 30, TechCategory.Mechanical)
         {
             Mass = 7,
             CargoBonus = 100,
             HullSlotType = HullSlotType.Mechanical,
         };
-        public static readonly TechHullComponent SuperFuelTank = new TechHullComponent("Super Fuel Tank", new Cost(8, 0, 0, 8), new TechRequirements(energy: 6, propulsion: 4, construction: 14), 0, TechCategory.Mechanical)
+        public static readonly TechHullComponent FuelTank = new TechHullComponent("Fuel Tank", new Cost(5, 0, 0, 4), new TechRequirements(), 40, TechCategory.Mechanical)
+        {
+            Mass = 3,
+            FuelBonus = 250,
+            HullSlotType = HullSlotType.Mechanical
+        };
+        public static readonly TechHullComponent SuperFuelTank = new TechHullComponent("Super Fuel Tank", new Cost(8, 0, 0, 8), new TechRequirements(energy: 6, propulsion: 4, construction: 14), 50, TechCategory.Mechanical)
         {
             Mass = 8,
             FuelBonus = 500,
             HullSlotType = HullSlotType.Mechanical,
+        };
+        public static readonly TechHullComponent ManeuveringJet = new TechHullComponent("Maneuvering Jet", new Cost(5, 0, 5, 10), new TechRequirements(energy: 2, propulsion: 3), 60, TechCategory.Mechanical)
+        {
+            Mass = 5,
+            MovementBonus = .25f,
+            HullSlotType = HullSlotType.Mechanical,
+        };
+        public static readonly TechHullComponent Overthruster = new TechHullComponent("Overthruster", new Cost(10, 0, 8, 20), new TechRequirements(energy: 5, propulsion: 12), 70, TechCategory.Mechanical)
+        {
+            Mass = 5,
+            MovementBonus = .5f,
+            HullSlotType = HullSlotType.Mechanical,
+        };
+        public static readonly TechHullComponent BeamDeflector = new TechHullComponent("Beam Deflector", new Cost(0, 0, 10, 8), new TechRequirements(energy: 6, weapons: 6, construction: 6, electronics: 6), 80, TechCategory.Mechanical)
+        {
+            Mass = 1,
+            HullSlotType = HullSlotType.Mechanical,
+            BeamDefense = 1
         };
 
         #endregion
@@ -326,7 +328,7 @@ namespace CraigStars
 
             Range = 1
         };
-        public static readonly TechHullComponent MiniGun = new TechHullComponent("Mini Gun", new Cost(0, 6, 0, 6), new TechRequirements(weapons: 5), 20, TechCategory.BeamWeapon)
+        public static readonly TechHullComponent MiniGun = new TechHullComponent("Mini Gun", new Cost(0, 6, 0, 6), new TechRequirements(weapons: 5, prtRequired: PRT.IS), 20, TechCategory.BeamWeapon)
         {
             Mass = 3,
             Initiative = 12,
@@ -746,11 +748,11 @@ namespace CraigStars
 
         #region Defenses
 
-        public static readonly TechDefense MissileBattery = new TechDefense("Missile Battery", new Cost(5, 5, 5, 15), new TechRequirements(), 0, TechCategory.PlanetaryDefense)
+        public static readonly TechDefense MissileBattery = new TechDefense("Missile Battery", new Cost(5, 5, 5, 15), new TechRequirements(prtDenied: PRT.AR), 0, TechCategory.PlanetaryDefense)
         {
             DefenseCoverage = 199
         };
-        public static readonly TechDefense SDI = new TechDefense("SDI", new Cost(5, 5, 5, 15), new TechRequirements(), 100, TechCategory.PlanetaryDefense)
+        public static readonly TechDefense SDI = new TechDefense("SDI", new Cost(5, 5, 5, 15), new TechRequirements(prtDenied: PRT.AR), 100, TechCategory.PlanetaryDefense)
         {
             DefenseCoverage = 99
         };
@@ -759,13 +761,13 @@ namespace CraigStars
 
         #region Planetary Scanners
 
-        public static readonly TechPlanetaryScanner Viewer50 = new TechPlanetaryScanner("Viewer 50", new Cost(10, 10, 70, 100), new TechRequirements(), 0, TechCategory.PlanetaryScanner)
+        public static readonly TechPlanetaryScanner Viewer50 = new TechPlanetaryScanner("Viewer 50", new Cost(10, 10, 70, 100), new TechRequirements(prtDenied: PRT.AR), 0, TechCategory.PlanetaryScanner)
         {
             ScanRange = 50,
             ScanRangePen = 0
         };
 
-        public static readonly TechPlanetaryScanner Viewer90 = new TechPlanetaryScanner("Viewer 90", new Cost(10, 10, 70, 100), new TechRequirements(electronics: 1), 1, TechCategory.PlanetaryScanner)
+        public static readonly TechPlanetaryScanner Viewer90 = new TechPlanetaryScanner("Viewer 90", new Cost(10, 10, 70, 100), new TechRequirements(electronics: 1, prtDenied: PRT.AR), 1, TechCategory.PlanetaryScanner)
         {
             ScanRange = 90,
             ScanRangePen = 0

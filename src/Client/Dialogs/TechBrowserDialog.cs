@@ -9,13 +9,14 @@ namespace CraigStars
 {
     public class TechBrowserDialog : WindowDialog
     {
-        Tree techTree;
-        TreeItem root;
+        TechTree techTree;
+        Button okButton;
 
         Label nameLabel;
         TextureRect iconTextureRect;
         CostGrid costGrid;
 
+        Label massLabel;
         Label massAmountLabel;
         Label unavailableLabel;
         Label researchCostLabel;
@@ -41,17 +42,17 @@ namespace CraigStars
         Container statsContainer;
         Container descriptionContainer;
 
-        List<Tech> techs = new List<Tech>();
-
         Player me;
 
         public override void _Ready()
         {
-            techTree = FindNode("TechTree") as Tree;
+            okButton = FindNode("OKButton") as Button;
+            techTree = FindNode("TechTree") as TechTree;
             costGrid = FindNode("CostGrid") as CostGrid;
             nameLabel = FindNode("NameLabel") as Label;
             iconTextureRect = FindNode("IconTextureRect") as TextureRect;
 
+            massLabel = FindNode("MassLabel") as Label;
             massAmountLabel = FindNode("MassAmountLabel") as Label;
             researchCostLabel = FindNode("ResearchCostLabel") as Label;
 
@@ -75,55 +76,21 @@ namespace CraigStars
             unavailableLabel = FindNode("UnavailableLabel") as Label;
             labelTraitRequirement = FindNode("LabelTraitRequirement") as Label;
 
-            // this is a
+            // these containers hold information about our tech
             statsContainer = FindNode("StatsContainer") as Container;
             descriptionContainer = FindNode("DescriptionContainer") as Container;
 
             me = PlayersManager.Instance.Me;
 
-            root = techTree.CreateItem();
+            okButton.Connect("pressed", this, nameof(OnOk));
 
-            techTree.Connect("item_selected", this, nameof(OnTechSelected));
-            AddTechsToTree();
-
+            techTree.TechSelectedEvent += OnTechSelected;
+            techTree.SelectFirstTech();
         }
 
-        void AddTechsToTree()
+        public override void _ExitTree()
         {
-            techs = new List<Tech>(TechStore.Instance.Techs);
-            techs.Sort((t1, t2) => t1.Ranking.CompareTo(t2.Ranking));
-            Dictionary<TechCategory, TreeItem> categoryItemByCategory = new Dictionary<TechCategory, TreeItem>();
-
-            // get a list of categories, sorted.
-            var categories = techs.Select(tech => tech.Category).Distinct().ToList();
-            categories.Sort();
-            foreach (var category in categories)
-            {
-                var categoryTreeItem = techTree.CreateItem(root);
-                categoryTreeItem.SetText(0, category.ToString());
-                categoryItemByCategory[category] = categoryTreeItem;
-            }
-
-            techs.Each((tech, index) =>
-            {
-                var categoryRoot = categoryItemByCategory[tech.Category];
-                var item = techTree.CreateItem(categoryRoot);
-                item.SetMetadata(0, index);
-                item.SetText(0, tech.Name);
-                if (tech is TechHull)
-                {
-                    item.SetIcon(0, TextureLoader.Instance.FindTexture(tech, 0));
-                }
-                else
-                {
-                    item.SetIcon(0, TextureLoader.Instance.FindTexture(tech));
-                }
-            });
-
-            // select the first item in the first category
-            var firstCategoryTreeItem = categoryItemByCategory[categories[0]] as TreeItem;
-            firstCategoryTreeItem.GetChildren()?.Select(0);
-
+            techTree.TechSelectedEvent -= OnTechSelected;
         }
 
         /// <summary>
@@ -137,93 +104,176 @@ namespace CraigStars
         /// <summary>
         /// Change the active tech
         /// </summary>
-        void OnTechSelected()
+        void OnTechSelected(Tech tech)
         {
-            var selected = techTree.GetSelected();
-            if (selected.GetMetadata(0) is int index)
+            nameLabel.Text = tech.Name;
+            costGrid.Cost = tech.Cost;
+            if (tech is TechHull)
             {
-                var tech = techs[index];
-                nameLabel.Text = tech.Name;
-                costGrid.Cost = tech.Cost;
-                if (tech is TechHull)
-                {
-                    iconTextureRect.Texture = TextureLoader.Instance.FindTexture(tech, 0);
-                }
-                else
-                {
-                    iconTextureRect.Texture = TextureLoader.Instance.FindTexture(tech);
-                }
-
-                UpdateRequirements(tech);
-
-                // clear out any stats in the grid
-                foreach (Node child in statsContainer.GetChildren())
-                {
-                    child.QueueFree();
-                }
-
-                // clear out any descriptions
-                foreach (Node child in descriptionContainer.GetChildren())
-                {
-                    child.QueueFree();
-                }
-
-                if (tech is TechHull hull)
-                {
-                    massAmountLabel.Visible = false;
-                }
-                else if (tech is TechHullComponent hullComponent)
-                {
-                    massAmountLabel.Visible = true;
-                    massAmountLabel.Text = $"{hullComponent.Mass}kT";
-
-                    if (hullComponent.Category == TechCategory.Shield && hullComponent.Armor > 0)
-                    {
-                        // if this is a shield with armor, it sounds cooler to make the armor a description
-                        AddDescription($"This shield also contains an armor component which will absorb {hullComponent.Armor} damage points.");
-                    }
-                    else if (hullComponent.Armor > 0)
-                    {
-                        AddStatsLabel("Armor Strength", hullComponent.Armor.ToString());
-                    }
-
-                    if (hullComponent.Category == TechCategory.Armor && hullComponent.Shield > 0)
-                    {
-                        // if this is an armor with a shield, it sounds cooler to make the shield a description
-                        AddDescription($"This armor also acts as part shield which will absorb {hullComponent.Shield} damage points.");
-                    }
-                    else if (hullComponent.Shield > 0)
-                    {
-                        AddStatsLabel("Shield Strength", hullComponent.Shield.ToString());
-                    }
-
-                    if (hullComponent.Power > 0)
-                    {
-                        AddStatsLabel("Power", hullComponent.Power.ToString());
-                    }
-                    if (hullComponent.Range > 0)
-                    {
-                        AddStatsLabel("Range", hullComponent.Range.ToString());
-                    }
-                    if (hullComponent.Initiative > 0)
-                    {
-                        AddStatsLabel("Initiative", hullComponent.Initiative.ToString());
-                    }
-
-                    if (hullComponent.Cloak > 0)
-                    {
-                        if (hullComponent.CloakUnarmedOnly)
-                        {
-                            AddDescription($"Cloaks unarmed hulls, reducing the range at which scanners detect it by up to {hullComponent.Cloak}%.");
-                        }
-                        else
-                        {
-                            AddDescription($"Cloaks any ship, reducing the range at which scanners detect it by up to {hullComponent.Cloak}%.");
-                        }
-                    }
-                }
+                iconTextureRect.Texture = TextureLoader.Instance.FindTexture(tech, 0);
+            }
+            else
+            {
+                iconTextureRect.Texture = TextureLoader.Instance.FindTexture(tech);
             }
 
+            UpdateRequirements(tech);
+
+            // clear out any stats in the grid
+            foreach (Node child in statsContainer.GetChildren())
+            {
+                child.QueueFree();
+            }
+
+            // clear out any descriptions
+            foreach (Node child in descriptionContainer.GetChildren())
+            {
+                child.QueueFree();
+            }
+
+            if (tech is TechHull hull)
+            {
+                massLabel.Visible = massAmountLabel.Visible = false;
+            }
+            else if (tech is TechPlanetaryScanner planetaryScanner)
+            {
+                massLabel.Visible = massAmountLabel.Visible = false;
+                if (planetaryScanner.ScanRange > 0)
+                {
+                    AddDescription($"Enemy fleets not orbiting a planet can be detected up to {planetaryScanner.ScanRange} light years away.");
+                }
+
+                if (planetaryScanner.ScanRangePen > 0)
+                {
+                    AddDescription($"This scanner can determine a planet's basic stats from a distance up to {planetaryScanner.ScanRangePen} light years. The scanner will also spot enemy fleets attempting to hide behind planets within range.");
+                }
+
+            }
+            else if (tech is TechHullComponent hullComponent)
+            {
+                massLabel.Visible = massAmountLabel.Visible = true;
+                massAmountLabel.Text = $"{hullComponent.Mass}kT";
+
+                if (hullComponent.Category == TechCategory.Shield && hullComponent.Armor > 0)
+                {
+                    // if this is a shield with armor, it sounds cooler to make the armor a description
+                    AddDescription($"This shield also contains an armor component which will absorb {hullComponent.Armor} damage points.");
+                }
+                else if (hullComponent.Armor > 0)
+                {
+                    AddStatsLabel("Armor Strength", hullComponent.Armor.ToString());
+                }
+
+                if (hullComponent.Category == TechCategory.Armor && hullComponent.Shield > 0)
+                {
+                    // if this is an armor with a shield, it sounds cooler to make the shield a description
+                    AddDescription($"This armor also acts as part shield which will absorb {hullComponent.Shield} damage points.");
+                }
+                else if (hullComponent.Shield > 0)
+                {
+                    AddStatsLabel("Shield Strength", hullComponent.Shield.ToString());
+                }
+
+                if (hullComponent.Power > 0)
+                {
+                    AddStatsLabel("Power", hullComponent.Power.ToString());
+                }
+                if (hullComponent.Range > 0 || hullComponent.Category == TechCategory.BeamWeapon)
+                {
+                    AddStatsLabel("Range", hullComponent.Range.ToString());
+                }
+                if (hullComponent.Initiative > 0)
+                {
+                    AddStatsLabel("Initiative", hullComponent.Initiative.ToString());
+                }
+                if (hullComponent.HitsAllTargets)
+                {
+                    AddDescription($"This weapon hits all targets in range each time it is fired.");
+                }
+                if (hullComponent.MineSweep > 0)
+                {
+                    AddDescription($"This weapon also makes an excellent mine sweeper, capable of sweeping {hullComponent.MineSweep} mines per year.");
+                }
+                if (hullComponent.DamageShieldsOnly)
+                {
+                    AddDescription($"This weapon will only damage shields, it has no effect on armor.");
+                }
+
+                if (hullComponent.KillRate > 0 && !hullComponent.OrbitalConstructionModule)
+                {
+                    // we have special text for orbital construction modules.
+                    AddDescription($"This bomb will kill approimately {hullComponent.KillRate}% of a planet's populatation each year.");
+                    if (hullComponent.MinKillRate > 0)
+                    {
+                        AddDescription($"If a planet has no defenses, this bomb is guaranteed to kill at least {hullComponent.MinKillRate} colonists.");
+                    }
+                    if (hullComponent.StructureKillRate == 0)
+                    {
+                        AddDescription("This bomb will not damage a planet's mines or factories.");
+                    }
+                }
+
+                if (hullComponent.StructureKillRate > 0)
+                {
+                    AddDescription($"This bomb will destroy approximately {hullComponent.StructureKillRate} of a planet's mines, factories, and/or defenses each year.");
+                }
+
+                if (hullComponent.TerraformRate > 0)
+                {
+                    AddDescription($"This bomb does not kill colonists or destroy installations. This bomb 'unterraforms' planets toward their original state up to {hullComponent.TerraformRate}% per variable per bombing run. Planetary defenses have no effect on this bomb.");
+                }
+
+                if (hullComponent.Cloak > 0)
+                {
+                    if (hullComponent.CloakUnarmedOnly)
+                    {
+                        AddDescription($"Cloaks unarmed hulls, reducing the range at which scanners detect it by up to {hullComponent.Cloak}%.");
+                    }
+                    else
+                    {
+                        AddDescription($"Cloaks any ship, reducing the range at which scanners detect it by up to {hullComponent.Cloak}%.");
+                    }
+                }
+
+                if (hullComponent.FuelBonus > 0)
+                {
+                    AddDescription($"This part acts as a {hullComponent.FuelBonus}mg fuel tank.");
+                }
+
+                if (hullComponent.FuelRegenerationRate > 0)
+                {
+                    AddDescription($"This part generates {hullComponent.FuelRegenerationRate}mg of fuel every year.");
+                }
+
+                if (hullComponent.ColonizationModule)
+                {
+                    AddDescription("This pod allows a ship to colonize a planet and will dismantle the ship upon arrival and convert it into supplies for the colonists.");
+                }
+
+                if (hullComponent.OrbitalConstructionModule)
+                {
+                    AddDescription("This module contains an empty orbital hull which can be deployed in orbit of an uninhabited planet.");
+                    if (hullComponent.MinKillRate > 0)
+                    {
+                        AddDescription($"This pod also contains viral weapons capable of killing {hullComponent.MinKillRate} enemy colonists per attack.");
+                    }
+                }
+
+                if (hullComponent.CargoBonus > 0)
+                {
+                    AddDescription($"This pod increases the cargo capacity of the ship by {hullComponent.CargoBonus}kT");
+                }
+
+                if (hullComponent.MovementBonus > 0)
+                {
+                    AddDescription($"Increases speed in battle by {hullComponent.MovementBonus} square of movement.");
+                }
+
+                if (hullComponent.BeamDefense > 0)
+                {
+                    AddDescription($"The deflector decreases damage done by beam weapons to this ship by up to {hullComponent.BeamDefense}%");
+                }
+            }
         }
 
         /// <summary>
@@ -308,7 +358,7 @@ namespace CraigStars
             }
             if (reqs.PRTDenied != PRT.None)
             {
-                labelTraitRequirement.Text += $"This part will not be available if the Primary Racial trait '{GetPRTFullName(reqs.PRTRequired)}'";
+                labelTraitRequirement.Text += $"This part will not be available if the Primary Racial trait '{GetPRTFullName(reqs.PRTDenied)}'";
                 if (me.Race.PRT == reqs.PRTDenied)
                 {
                     labelTraitRequirement.Modulate = Colors.Red;

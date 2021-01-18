@@ -8,8 +8,72 @@ namespace CraigStars
     public class TechStore : Node, ITechStore
     {
         public List<Tech> Techs { get; set; } = new List<Tech>();
+
+        /// <summary>
+        /// A list of Hull Components
+        /// </summary>
+        /// <value></value>
+        public List<TechHullComponent> HullComponents
+        {
+            get
+            {
+                if (hullComponents?.Count == 0)
+                {
+                    hullComponents = Techs.Where(tech => tech is TechHullComponent).Cast<TechHullComponent>().ToList();
+                }
+                return hullComponents;
+            }
+        }
+        List<TechHullComponent> hullComponents;
+
+        /// <summary>
+        /// A list of Ship Hulls
+        /// </summary>
+        /// <value></value>
+        public List<TechHull> ShipHulls
+        {
+            get
+            {
+                if (shipHulls?.Count == 0)
+                {
+                    shipHulls = Techs.Where(tech => tech is TechHull && tech.Category == TechCategory.ShipHull).Cast<TechHull>().ToList();
+                }
+                return shipHulls;
+            }
+        }
+        List<TechHull> shipHulls;
+
+        /// <summary>
+        /// A list of Starbase Hulls
+        /// </summary>
+        /// <value></value>
+        public List<TechHull> StarbaseHulls
+        {
+            get
+            {
+                if (starbaseHulls?.Count == 0)
+                {
+                    starbaseHulls = Techs.Where(tech => tech is TechHull && tech.Category == TechCategory.StarbaseHull).Cast<TechHull>().ToList();
+                }
+                return starbaseHulls;
+            }
+        }
+        List<TechHull> starbaseHulls;
+
         public Dictionary<String, Tech> TechsByName { get; set; } = new Dictionary<String, Tech>();
         public Dictionary<TechCategory, List<Tech>> TechsByCategory { get; set; } = new Dictionary<TechCategory, List<Tech>>();
+        public List<TechCategory> Categories
+        {
+            get
+            {
+                if (categories == null || categories.Count == 0)
+                {
+                    categories = GetCategoriesForTechs(Techs);
+                }
+                return categories;
+            }
+        }
+        List<TechCategory> categories;
 
         /// <summary>
         /// PlayersManager is a singleton
@@ -42,6 +106,8 @@ namespace CraigStars
             return techs;
         }
 
+
+
         /// <summary>
         /// Get a tech from the tech store, by name
         /// </summary>
@@ -52,6 +118,28 @@ namespace CraigStars
         {
             TechsByName.TryGetValue(name, out var tech);
             return tech as T;
+        }
+
+        /// <summary>
+        /// Get a list of all techs available to the player
+        /// </summary>
+        /// <param name="player"></param>
+        /// <returns></returns>
+        public List<Tech> GetAvailableTechs(Player player)
+        {
+            return Techs.Where(tech => player.HasTech(tech)).ToList();
+        }
+
+        /// <summary>
+        /// Get a list of categories, sorted, for a set of techs.
+        /// </summary>
+        /// <param name="techs">The techs to get categories for</param>
+        /// <returns>A list of categories, sorted by name</returns>
+        public List<TechCategory> GetCategoriesForTechs(List<Tech> techs)
+        {
+            var categories = techs.Select(tech => tech.Category).Distinct().ToList();
+            categories.Sort();
+            return categories;
         }
     }
 }

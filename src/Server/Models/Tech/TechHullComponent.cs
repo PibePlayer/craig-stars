@@ -20,8 +20,9 @@ namespace CraigStars
         public int FuelBonus { get; set; }
         public int FuelRegenerationRate { get; set; }
         public bool ColonizationModule { get; set; }
+        public bool OrbitalConstructionModule { get; set; }
         public int CargoBonus { get; set; }
-        public int MovementBonus { get; set; }
+        public float MovementBonus { get; set; }
         public int BeamDefense { get; set; }
         public int BeamBonus { get; set; }
         public int ScanRange { get; set; } = NoScanner;
@@ -29,7 +30,7 @@ namespace CraigStars
         public bool StealCargo { get; set; }
         public bool Radiating { get; set; }
         public bool Smart { get; set; }
-        public int KillRate { get; set; }
+        public float KillRate { get; set; }
         public int MinKillRate { get; set; }
         public int StructureKillRate { get; set; }
         public int UnterraformRate { get; set; }

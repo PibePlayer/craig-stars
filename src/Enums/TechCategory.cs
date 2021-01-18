@@ -5,7 +5,6 @@ namespace CraigStars
     /// </summary>
     public enum TechCategory
     {
-        All,
         Armor,
         BeamWeapon,
         Bomb,

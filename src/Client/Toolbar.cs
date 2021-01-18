@@ -51,7 +51,7 @@ namespace CraigStars
 
         void OnTechBrowserButtonPressed()
         {
-
+            Signals.PublishTechBrowserDialogRequestedEvent();
         }
 
         void OnShipDesignerButtonPressed()

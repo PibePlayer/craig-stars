@@ -222,7 +222,7 @@ namespace CraigStars
             Armor = 175,
             HullSlotType = HullSlotType.Armor
         };
-        public static readonly TechHullComponent Depleted = new TechHullComponent("Depleted Neutronium", new Cost(10, 0, 2, 28), new TechRequirements(construction: 10, electronics: 3, prtRequired: PRT.SS), 80, TechCategory.Armor)
+        public static readonly TechHullComponent DepletedNeutronium = new TechHullComponent("Depleted Neutronium", new Cost(10, 0, 2, 28), new TechRequirements(construction: 10, electronics: 3, prtRequired: PRT.SS), 80, TechCategory.Armor)
         {
             Mass = 50,
             Armor = 200,
@@ -807,7 +807,7 @@ namespace CraigStars
                 Organic,
                 Kelarium,
                 Fielded,
-                Depleted,
+                DepletedNeutronium,
                 Neutronium,
                 Valanium,
                 Superlatanium,

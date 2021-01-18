@@ -1,0 +1,343 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://src/Client/Dialogs/TechBrowserDialog.cs" type="Script" id=1]
+[ext_resource path="res://src/Client/CostGrid.tscn" type="PackedScene" id=2]
+[ext_resource path="res://assets/gui/tech/Engine/Alpha Drive8.png" type="Texture" id=3]
+
+[node name="TechBrowserDialog" type="WindowDialog"]
+visible = true
+margin_right = 695.0
+margin_bottom = 403.0
+window_title = "Technology Browser"
+resizable = true
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_constants/margin_right = 10
+custom_constants/margin_top = 5
+custom_constants/margin_left = 10
+custom_constants/margin_bottom = 5
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+margin_left = 10.0
+margin_top = 5.0
+margin_right = 685.0
+margin_bottom = 398.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainerContent" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+margin_right = 675.0
+margin_bottom = 369.0
+size_flags_vertical = 3
+
+[node name="VBoxContainerTechTree" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainerContent"]
+margin_right = 300.0
+margin_bottom = 369.0
+
+[node name="SearchLineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechTree"]
+margin_right = 300.0
+margin_bottom = 24.0
+placeholder_text = "Search"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TechTree" type="Tree" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechTree"]
+margin_top = 28.0
+margin_right = 300.0
+margin_bottom = 369.0
+rect_min_size = Vector2( 300, 0 )
+size_flags_vertical = 3
+hide_root = true
+select_mode = 1
+
+[node name="VBoxContainerTechSummary" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainerContent"]
+margin_left = 304.0
+margin_right = 675.0
+margin_bottom = 369.0
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary"]
+margin_right = 371.0
+margin_bottom = 369.0
+size_flags_vertical = 3
+
+[node name="NameLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer"]
+margin_right = 371.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+text = "Depleted Neutronium"
+align = 1
+
+[node name="HBoxContainerCost" type="HBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer"]
+margin_top = 18.0
+margin_right = 371.0
+margin_bottom = 86.0
+size_flags_horizontal = 3
+custom_constants/separation = 5
+
+[node name="CenterContainer" type="CenterContainer" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer/HBoxContainerCost"]
+margin_right = 120.0
+margin_bottom = 68.0
+size_flags_horizontal = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="IconTextureRect" type="TextureRect" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer/HBoxContainerCost/CenterContainer"]
+margin_left = 28.0
+margin_top = 2.0
+margin_right = 92.0
+margin_bottom = 66.0
+size_flags_horizontal = 3
+texture = ExtResource( 3 )
+
+[node name="CostGrid" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer/HBoxContainerCost" instance=ExtResource( 2 )]
+margin_left = 125.0
+margin_right = 245.0
+
+[node name="MassGrid" type="GridContainer" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer/HBoxContainerCost"]
+margin_left = 250.0
+margin_right = 371.0
+margin_bottom = 68.0
+size_flags_horizontal = 3
+columns = 2
+
+[node name="MassLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer/HBoxContainerCost/MassGrid"]
+margin_right = 87.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+text = "Mass:"
+align = 2
+
+[node name="MassAmountLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer/HBoxContainerCost/MassGrid"]
+margin_left = 91.0
+margin_right = 121.0
+margin_bottom = 14.0
+text = "50kT"
+align = 2
+
+[node name="HBoxContainerStats" type="HBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer"]
+margin_top = 90.0
+margin_right = 371.0
+margin_bottom = 351.0
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer/HBoxContainerStats"]
+margin_right = 107.0
+margin_bottom = 261.0
+
+[node name="RequirementsLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer/HBoxContainerStats/VBoxContainer"]
+margin_right = 107.0
+margin_bottom = 14.0
+text = "Requirements"
+align = 1
+
+[node name="RequirementsGridContainer" type="GridContainer" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer/HBoxContainerStats/VBoxContainer"]
+margin_top = 18.0
+margin_right = 107.0
+margin_bottom = 140.0
+size_flags_horizontal = 3
+columns = 2
+
+[node name="NoneLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer/HBoxContainerStats/VBoxContainer/RequirementsGridContainer"]
+margin_right = 95.0
+margin_bottom = 14.0
+text = "-- None --"
+align = 1
+
+[node name="SpacerLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer/HBoxContainerStats/VBoxContainer/RequirementsGridContainer"]
+margin_left = 99.0
+margin_right = 107.0
+margin_bottom = 14.0
+
+[node name="EnergyLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer/HBoxContainerStats/VBoxContainer/RequirementsGridContainer"]
+margin_top = 18.0
+margin_right = 95.0
+margin_bottom = 32.0
+text = "Energy:"
+
+[node name="EnergyReqLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer/HBoxContainerStats/VBoxContainer/RequirementsGridContainer"]
+margin_left = 99.0
+margin_top = 18.0
+margin_right = 107.0
+margin_bottom = 32.0
+size_flags_horizontal = 3
+text = "3"
+align = 2
+
+[node name="WeaponsLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer/HBoxContainerStats/VBoxContainer/RequirementsGridContainer"]
+margin_top = 36.0
+margin_right = 95.0
+margin_bottom = 50.0
+text = "Weapons:"
+
+[node name="WeaponsReqLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer/HBoxContainerStats/VBoxContainer/RequirementsGridContainer"]
+margin_left = 99.0
+margin_top = 36.0
+margin_right = 107.0
+margin_bottom = 50.0
+size_flags_horizontal = 3
+text = "3"
+align = 2
+
+[node name="PropulsionLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer/HBoxContainerStats/VBoxContainer/RequirementsGridContainer"]
+margin_top = 54.0
+margin_right = 95.0
+margin_bottom = 68.0
+text = "Propulsion:"
+
+[node name="PropulsionReqLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer/HBoxContainerStats/VBoxContainer/RequirementsGridContainer"]
+margin_left = 99.0
+margin_top = 54.0
+margin_right = 107.0
+margin_bottom = 68.0
+size_flags_horizontal = 3
+text = "3"
+align = 2
+
+[node name="ConstructionLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer/HBoxContainerStats/VBoxContainer/RequirementsGridContainer"]
+margin_top = 72.0
+margin_right = 95.0
+margin_bottom = 86.0
+text = "Construction:"
+
+[node name="ConstructionReqLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer/HBoxContainerStats/VBoxContainer/RequirementsGridContainer"]
+margin_left = 99.0
+margin_top = 72.0
+margin_right = 107.0
+margin_bottom = 86.0
+size_flags_horizontal = 3
+text = "3"
+align = 2
+
+[node name="ElectronicsLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer/HBoxContainerStats/VBoxContainer/RequirementsGridContainer"]
+margin_top = 90.0
+margin_right = 95.0
+margin_bottom = 104.0
+text = "Electronics:"
+
+[node name="ElectronicsReqLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer/HBoxContainerStats/VBoxContainer/RequirementsGridContainer"]
+margin_left = 99.0
+margin_top = 90.0
+margin_right = 107.0
+margin_bottom = 104.0
+size_flags_horizontal = 3
+text = "3"
+align = 2
+
+[node name="BiotechnologyLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer/HBoxContainerStats/VBoxContainer/RequirementsGridContainer"]
+margin_top = 108.0
+margin_right = 95.0
+margin_bottom = 122.0
+text = "Biotechnology:"
+
+[node name="BiotechnologyReqLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer/HBoxContainerStats/VBoxContainer/RequirementsGridContainer"]
+margin_left = 99.0
+margin_top = 108.0
+margin_right = 107.0
+margin_bottom = 122.0
+size_flags_horizontal = 3
+text = "3"
+align = 2
+
+[node name="ResearchCostLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer/HBoxContainerStats/VBoxContainer"]
+margin_top = 144.0
+margin_right = 107.0
+margin_bottom = 158.0
+text = "Cost: 11070"
+align = 1
+
+[node name="UnavailableLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer/HBoxContainerStats/VBoxContainer"]
+self_modulate = Color( 0.992157, 0.0235294, 0.0235294, 1 )
+margin_top = 162.0
+margin_right = 107.0
+margin_bottom = 176.0
+text = "Unavailable"
+align = 1
+
+[node name="Panel" type="Panel" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer/HBoxContainerStats"]
+show_behind_parent = true
+margin_left = 111.0
+margin_right = 371.0
+margin_bottom = 261.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer/HBoxContainerStats/Panel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_constants/margin_right = 5
+custom_constants/margin_top = 10
+custom_constants/margin_left = 5
+custom_constants/margin_bottom = 5
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainerStatsLabels" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer/HBoxContainerStats/Panel/MarginContainer"]
+margin_left = 5.0
+margin_top = 10.0
+margin_right = 255.0
+margin_bottom = 256.0
+custom_constants/separation = 10
+
+[node name="StatsContainer" type="GridContainer" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer/HBoxContainerStats/Panel/MarginContainer/VBoxContainerStatsLabels"]
+margin_right = 250.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+custom_constants/hseparation = 5
+columns = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer/HBoxContainerStats/Panel/MarginContainer/VBoxContainerStatsLabels/StatsContainer"]
+margin_right = 122.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+text = "Armor Strength:"
+align = 2
+
+[node name="LabelAmount" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer/HBoxContainerStats/Panel/MarginContainer/VBoxContainerStatsLabels/StatsContainer"]
+margin_left = 127.0
+margin_right = 249.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+text = "200"
+
+[node name="DescriptionContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer/HBoxContainerStats/Panel/MarginContainer/VBoxContainerStatsLabels"]
+margin_top = 24.0
+margin_right = 250.0
+margin_bottom = 246.0
+size_flags_vertical = 3
+
+[node name="LabelTraitRequirement" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainerContent/VBoxContainerTechSummary/VBoxContainer"]
+margin_top = 355.0
+margin_right = 371.0
+margin_bottom = 369.0
+text = "This part requires the Primary Racial trait 'Super Stealth'"
+autowrap = true
+
+[node name="HBoxContainerButtons" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+margin_top = 373.0
+margin_right = 675.0
+margin_bottom = 393.0
+alignment = 2
+
+[node name="OKButton" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainerButtons"]
+margin_left = 595.0
+margin_right = 675.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 80, 0 )
+text = "OK"

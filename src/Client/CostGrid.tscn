@@ -24,6 +24,7 @@ margin_left = 213.0
 margin_right = 235.0
 margin_bottom = 14.0
 text = "3kT"
+align = 2
 
 [node name="Boranium" type="Label" parent="."]
 margin_top = 18.0
@@ -39,6 +40,7 @@ margin_top = 18.0
 margin_right = 235.0
 margin_bottom = 32.0
 text = "3kT"
+align = 2
 
 [node name="Germanium" type="Label" parent="."]
 margin_top = 36.0
@@ -54,6 +56,7 @@ margin_top = 36.0
 margin_right = 235.0
 margin_bottom = 50.0
 text = "2kT"
+align = 2
 
 [node name="Resources" type="Label" parent="."]
 margin_top = 54.0

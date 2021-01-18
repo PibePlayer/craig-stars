@@ -292,6 +292,17 @@ namespace CraigStars
         /// <returns>True if this player has access to this tech</returns>
         public bool HasTech(Tech tech)
         {
+            // we made it here, if we have the levels, we have the tech
+            return CanLearnTech(tech) && TechLevels.HasRequiredLevels(tech.Requirements);
+        }
+
+        /// <summary>
+        /// Can the player ever learn this tech?
+        /// </summary>
+        /// <param name="tech"></param>
+        /// <returns></returns>
+        public bool CanLearnTech(Tech tech)
+        {
             TechRequirements requirements = tech.Requirements;
             if (requirements.PRTRequired != PRT.None && requirements.PRTRequired != Race.PRT)
             {
@@ -317,9 +328,7 @@ namespace CraigStars
                     return false;
                 }
             }
-
-            // we made it here, if we have the levels, we have the tech
-            return TechLevels.HasRequiredLevels(requirements);
+            return true;
         }
 
         /// <summary>

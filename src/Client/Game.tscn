@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=2]
+[gd_scene load_steps=19 format=2]
 
 [ext_resource path="res://src/Client/Scanner/Scanner.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/Client/Scanner/ScannerSelectedStats.tscn" type="PackedScene" id=2]
@@ -16,6 +16,7 @@
 [ext_resource path="res://src/Client/Dialogs/CargoTransferDialog.tscn" type="PackedScene" id=14]
 [ext_resource path="res://src/Client/Dialogs/ResearchDialog.tscn" type="PackedScene" id=15]
 [ext_resource path="res://src/Client/Toolbar.tscn" type="PackedScene" id=16]
+[ext_resource path="res://src/Client/Dialogs/TechBrowserDialog.tscn" type="PackedScene" id=17]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.145098, 0.145098, 0.168627, 1 )
@@ -176,6 +177,9 @@ margin_top = 856.0
 margin_bottom = 908.0
 
 [node name="ResearchDialog" parent="CanvasLayer" instance=ExtResource( 15 )]
+visible = false
+
+[node name="TechBrowserDialog" parent="CanvasLayer" instance=ExtResource( 17 )]
 visible = false
 
 [node name="ProductionQueueDialog" parent="CanvasLayer" instance=ExtResource( 13 )]

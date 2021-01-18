@@ -31,6 +31,7 @@ There are loads of things to do, but this section is for tracking things I've im
 - GR LRT not implemented
 - No terraforming view on hab summary
 - No cloak, jam, or initiative in ship aggregate
+- Move waypoints/shift move waypoints for fine tuning
 
 # Development
 

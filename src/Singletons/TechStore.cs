@@ -17,7 +17,7 @@ namespace CraigStars
         {
             get
             {
-                if (hullComponents?.Count == 0)
+                if (hullComponents == null || hullComponents.Count == 0)
                 {
                     hullComponents = Techs.Where(tech => tech is TechHullComponent).Cast<TechHullComponent>().ToList();
                 }
@@ -30,11 +30,28 @@ namespace CraigStars
         /// A list of Ship Hulls
         /// </summary>
         /// <value></value>
+        public List<TechHull> Hulls
+        {
+            get
+            {
+                if (hulls == null || hulls.Count == 0)
+                {
+                    hulls = Techs.Where(tech => tech is TechHull).Cast<TechHull>().ToList();
+                }
+                return hulls;
+            }
+        }
+        List<TechHull> hulls;
+
+        /// <summary>
+        /// A list of Ship Hulls
+        /// </summary>
+        /// <value></value>
         public List<TechHull> ShipHulls
         {
             get
             {
-                if (shipHulls?.Count == 0)
+                if (shipHulls == null || shipHulls.Count == 0)
                 {
                     shipHulls = Techs.Where(tech => tech is TechHull && tech.Category == TechCategory.ShipHull).Cast<TechHull>().ToList();
                 }
@@ -51,7 +68,7 @@ namespace CraigStars
         {
             get
             {
-                if (starbaseHulls?.Count == 0)
+                if (starbaseHulls == null || starbaseHulls.Count == 0)
                 {
                     starbaseHulls = Techs.Where(tech => tech is TechHull && tech.Category == TechCategory.StarbaseHull).Cast<TechHull>().ToList();
                 }

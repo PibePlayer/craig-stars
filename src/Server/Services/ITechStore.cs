@@ -17,6 +17,12 @@ namespace CraigStars
         /// A list of Ship Hulls
         /// </summary>
         /// <value></value>
+        List<TechHull> Hulls { get; }
+
+        /// <summary>
+        /// A list of Ship Hulls
+        /// </summary>
+        /// <value></value>
         List<TechHull> ShipHulls { get; }
 
         /// <summary>

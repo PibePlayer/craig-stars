@@ -14,14 +14,10 @@ namespace CraigStars
         /// </summary>
         public event Action<Tech> TechSelectedEvent;
 
-        [Export]
-        public bool HullComponentsOnly { get; set; }
+        public enum DisplayType { All, HullComponents, ShipHulls, Starbases, AllHulls }
 
         [Export]
-        public bool ShipHullsOnly { get; set; }
-
-        [Export]
-        public bool StarbaseHullsOnly { get; set; }
+        public DisplayType TechsToDisplay { get; set; } = DisplayType.All;
 
         Tree techTree;
         TreeItem root;
@@ -44,15 +40,15 @@ namespace CraigStars
             searchLineEdit.Connect("text_changed", this, nameof(OnSearchLineEditTextChanged));
 
             // populate the tree
-            ClearTree();
-            AddCategoriesToTree(TechStore.Instance.Techs);
-            AddTechsToTree(TechStore.Instance.Techs);
+            UpdateTreeItems();
         }
 
         public void SelectFirstTech()
         {
             // select the first item in the first category
-            var firstCategoryTreeItem = categoryTreeItemByCategory[TechStore.Instance.Categories[0]] as TreeItem;
+            var keys = categoryTreeItemByCategory.Select(entry => entry.Key).ToList();
+            keys.Sort();
+            var firstCategoryTreeItem = categoryTreeItemByCategory[keys[0]] as TreeItem;
             firstCategoryTreeItem.GetChildren()?.Select(0);
         }
 
@@ -68,21 +64,23 @@ namespace CraigStars
         void UpdateTreeItems()
         {
             List<Tech> techsToShow;
-            if (HullComponentsOnly)
+            switch (TechsToDisplay)
             {
-                techsToShow = TechStore.Instance.HullComponents.Cast<Tech>().ToList();
-            }
-            else if (ShipHullsOnly)
-            {
-                techsToShow = TechStore.Instance.ShipHulls.Cast<Tech>().ToList();
-            }
-            else if (StarbaseHullsOnly)
-            {
-                techsToShow = TechStore.Instance.StarbaseHulls.Cast<Tech>().ToList();
-            }
-            else
-            {
-                techsToShow = TechStore.Instance.Techs;
+                case DisplayType.HullComponents:
+                    techsToShow = TechStore.Instance.HullComponents.Cast<Tech>().ToList();
+                    break;
+                case DisplayType.ShipHulls:
+                    techsToShow = TechStore.Instance.ShipHulls.Cast<Tech>().ToList();
+                    break;
+                case DisplayType.Starbases:
+                    techsToShow = TechStore.Instance.StarbaseHulls.Cast<Tech>().ToList();
+                    break;
+                case DisplayType.AllHulls:
+                    techsToShow = TechStore.Instance.Hulls.Cast<Tech>().ToList();
+                    break;
+                default:
+                    techsToShow = TechStore.Instance.Techs;
+                    break;
             }
 
             // filter techs based on search result

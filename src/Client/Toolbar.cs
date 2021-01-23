@@ -56,7 +56,7 @@ namespace CraigStars
 
         void OnShipDesignerButtonPressed()
         {
-
+            Signals.PublishShipDesignerDialogRequestedEvent();
         }
 
         void OnResearchButtonPressed()

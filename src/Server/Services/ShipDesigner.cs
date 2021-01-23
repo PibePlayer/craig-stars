@@ -26,7 +26,7 @@ namespace CraigStars
             {
                 ShipDesignSlot slot = new ShipDesignSlot()
                 {
-                    HullSlotIndex = index
+                    HullSlotIndex = index + 1
                 };
                 switch (hullSlot.Type)
                 {

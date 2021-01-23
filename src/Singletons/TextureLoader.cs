@@ -47,6 +47,12 @@ namespace CraigStars.Singletons
             return texture;
         }
 
+        public Texture FindTexture(TechHull hull)
+        {
+            return FindTexture((Tech)hull, 0);
+        }
+
+
         public Texture FindTexture(ShipDesign shipDesign)
         {
             Texture texture;

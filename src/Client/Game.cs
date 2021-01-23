@@ -26,6 +26,7 @@ namespace CraigStars
         CargoTransferDialog cargoTransferDialog;
         ResearchDialog researchDialog;
         TechBrowserDialog techBrowserDialog;
+        ShipDesignerDialog shipDesignerDialog;
 
         public override void _Ready()
         {
@@ -39,10 +40,12 @@ namespace CraigStars
             cargoTransferDialog = GetNode<CargoTransferDialog>("CanvasLayer/CargoTransferDialog");
             researchDialog = GetNode<ResearchDialog>("CanvasLayer/ResearchDialog");
             techBrowserDialog = GetNode<TechBrowserDialog>("CanvasLayer/TechBrowserDialog");
+            shipDesignerDialog = GetNode<ShipDesignerDialog>("CanvasLayer/ShipDesignerDialog");
 
             Signals.ChangeProductionQueuePressedEvent += OnChangeProductionQueue;
             Signals.CargoTransferRequestedEvent += OnCargoTransferRequested;
             Signals.ResearchDialogRequestedEvent += OnResearchDialogRequested;
+            Signals.ShipDesignerDialogRequestedEvent += OnShipDesignerDialogRequestedEvent;
             Signals.TechBrowserDialogRequestedEvent += OnTechBrowserDialogRequestedEvent;
         }
 
@@ -52,12 +55,18 @@ namespace CraigStars
             Signals.ChangeProductionQueuePressedEvent -= OnChangeProductionQueue;
             Signals.CargoTransferRequestedEvent -= OnCargoTransferRequested;
             Signals.ResearchDialogRequestedEvent -= OnResearchDialogRequested;
+            Signals.ShipDesignerDialogRequestedEvent -= OnShipDesignerDialogRequestedEvent;
             Signals.TechBrowserDialogRequestedEvent -= OnTechBrowserDialogRequestedEvent;
         }
 
         private void OnTechBrowserDialogRequestedEvent()
         {
             techBrowserDialog.PopupCentered();
+        }
+
+        private void OnShipDesignerDialogRequestedEvent()
+        {
+            shipDesignerDialog.PopupCentered();
         }
 
         void OnResearchDialogRequested()
@@ -92,6 +101,10 @@ namespace CraigStars
             if (@event.IsActionPressed("research"))
             {
                 Signals.PublishResearchDialogRequestedEvent();
+            }
+            if (@event.IsActionPressed("ship_designer"))
+            {
+                Signals.PublishShipDesignerDialogRequestedEvent();
             }
         }
 

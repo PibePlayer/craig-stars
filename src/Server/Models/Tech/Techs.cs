@@ -744,6 +744,32 @@ namespace CraigStars
             })
         };
 
+        public static readonly TechHull DeathStar = new TechHull("Death Star", new Cost(120, 80, 350, 750), new TechRequirements(construction: 17, prtRequired: PRT.AR), 40, TechCategory.StarbaseHull)
+        {
+            Mass = 0,
+            Armor = 1500,
+            Initiative = 18,
+            Starbase = true,
+            SpaceDock = TechHull.UnlimitedSpaceDock,
+            Slots = new List<TechHullSlot>(new TechHullSlot[] {
+                new TechHullSlot(HullSlotType.OrbitalElectrical, 1, false),
+                new TechHullSlot(HullSlotType.Weapon, 32, false),
+                new TechHullSlot(HullSlotType.Electrical, 4, false),
+                new TechHullSlot(HullSlotType.Electrical, 4, false),
+                new TechHullSlot(HullSlotType.Shield, 20, false),
+                new TechHullSlot(HullSlotType.Shield, 20, false),
+                new TechHullSlot(HullSlotType.Electrical, 4, false),
+                new TechHullSlot(HullSlotType.Weapon, 32, false),
+                new TechHullSlot(HullSlotType.Electrical, 4, false),
+                new TechHullSlot(HullSlotType.Weapon, 32, false),
+                new TechHullSlot(HullSlotType.OrbitalElectrical, 1, false),
+                new TechHullSlot(HullSlotType.ShieldArmor, 20, false),
+                new TechHullSlot(HullSlotType.Electrical, 4, false),
+                new TechHullSlot(HullSlotType.ShieldArmor, 20, false),
+                new TechHullSlot(HullSlotType.Electrical, 4, false),
+                new TechHullSlot(HullSlotType.Weapon, 32, false),
+            })
+        };
         #endregion
 
         #region Defenses
@@ -883,6 +909,7 @@ namespace CraigStars
 
                 // starbases
                 SpaceStation,
+                DeathStar,
 
                 // defenses
                 MissileBattery,

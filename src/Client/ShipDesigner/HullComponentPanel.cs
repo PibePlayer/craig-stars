@@ -115,6 +115,10 @@ namespace CraigStars
             typeLabel = FindNode("TypeLabel") as Label;
             hullComponentIcon = FindNode("HullComponentIcon") as TextureRect;
 
+            if (!Engine.EditorHint)
+            {
+                indexLabel.Visible = false;
+            }
             UpdateControls();
         }
 
@@ -153,7 +157,7 @@ namespace CraigStars
             {
                 if (Type == HullSlotType.Cargo || Type == HullSlotType.SpaceDock)
                 {
-                    SelfModulate = new Color(1.5f, 1.5f, 1.5f);
+                    SelfModulate = new Color(2f, 2f, 2f);
                 }
                 else
                 {

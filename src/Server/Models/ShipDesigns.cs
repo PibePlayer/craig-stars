@@ -9,15 +9,17 @@ namespace CraigStars
         {
             Name = "Starbase",
             Hull = Techs.SpaceStation,
-            HullSetNumber = 1,
+            HullSetNumber = 0,
             Slots = new List<ShipDesignSlot>()
             {
-                new ShipDesignSlot(Techs.Laser, 1, 8),
-                new ShipDesignSlot(Techs.MoleSkinShield, 2, 8),
-                new ShipDesignSlot(Techs.Laser, 3, 8),
-                new ShipDesignSlot(Techs.MoleSkinShield, 4, 8),
+                new ShipDesignSlot(Techs.Laser, 2, 8),
+                new ShipDesignSlot(Techs.MoleSkinShield, 3, 8),
+                new ShipDesignSlot(Techs.Laser, 4, 8),
                 new ShipDesignSlot(Techs.MoleSkinShield, 5, 8),
-                new ShipDesignSlot(Techs.Laser, 7, 8),
+                new ShipDesignSlot(Techs.MoleSkinShield, 6, 8),
+                new ShipDesignSlot(Techs.Laser, 8, 8),
+                new ShipDesignSlot(Techs.Laser, 10, 8),
+                new ShipDesignSlot(Techs.MoleSkinShield, 12, 8),
             }
         };
 
@@ -28,9 +30,9 @@ namespace CraigStars
             HullSetNumber = 4,
             Slots = new List<ShipDesignSlot>()
             {
-                new ShipDesignSlot(Techs.LongHump6, 0, 1),
-                new ShipDesignSlot(Techs.FuelTank, 1, 1),
-                new ShipDesignSlot(Techs.RhinoScanner, 2, 1),
+                new ShipDesignSlot(Techs.LongHump6, 1, 1),
+                new ShipDesignSlot(Techs.FuelTank, 2, 1),
+                new ShipDesignSlot(Techs.RhinoScanner, 3, 1),
             }
         };
 
@@ -41,8 +43,8 @@ namespace CraigStars
             HullSetNumber = 2,
             Slots = new List<ShipDesignSlot>()
             {
-                new ShipDesignSlot(Techs.LongHump6, 0, 1),
-                new ShipDesignSlot(Techs.ColonizationModule, 1, 1),
+                new ShipDesignSlot(Techs.LongHump6, 1, 1),
+                new ShipDesignSlot(Techs.ColonizationModule, 2, 1),
             }
         };
 

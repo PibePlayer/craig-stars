@@ -29,17 +29,18 @@ Required = true
 Type = 1
 
 [node name="HullComponent2" parent="Container" instance=ExtResource( 1 )]
-margin_left = 56.0
-margin_top = -8.0
-margin_right = 136.0
-margin_bottom = 72.0
-Index = 2
-Type = 5350
-
-[node name="HullComponent3" parent="Container" instance=ExtResource( 1 )]
 margin_left = 136.0
 margin_top = -8.0
 margin_right = 216.0
 margin_bottom = 72.0
-Index = 3
-Type = 2
+Index = 2
+
+[node name="HullComponentCargo" parent="Container" instance=ExtResource( 1 )]
+self_modulate = Color( 1.5, 1.5, 1.5, 1 )
+margin_left = 56.0
+margin_top = -8.0
+margin_right = 136.0
+margin_bottom = 72.0
+Index = 0
+Quantity = 25
+Type = 256

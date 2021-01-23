@@ -5,6 +5,7 @@
 [node name="TechTree" type="VBoxContainer"]
 margin_right = 300.0
 margin_bottom = 369.0
+rect_min_size = Vector2( 300, 0 )
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false

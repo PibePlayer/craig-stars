@@ -50,8 +50,13 @@ namespace CraigStars
         Control hullComponentsContainer;
         CostGrid costGrid;
 
+        Control hullContainer;
+        Control noHullContainer;
+
         public override void _Ready()
         {
+            hullContainer = FindNode("HullContainer") as Control;
+            noHullContainer = FindNode("NoHullContainer") as Control;
             nameLabel = FindNode("NameLabel") as Label;
             costTitleLabel = FindNode("CostTitleLabel") as Label;
             maxFuelAmountLabel = FindNode("MaxFuelAmountLabel") as Label;
@@ -77,8 +82,10 @@ namespace CraigStars
         void UpdateControls()
         {
             // make sure we have controls to update
-            if (nameLabel != null)
+            if (nameLabel != null && Hull != null)
             {
+                hullContainer.Visible = true;
+                noHullContainer.Visible = false;
                 if (hullComponentsContainer != null)
                 {
                     foreach (Node child in hullComponentsContainer.GetChildren())
@@ -87,15 +94,21 @@ namespace CraigStars
                         child.QueueFree();
                     }
                 }
-                var hullComponentsScene = ResourceLoader.Load<PackedScene>("res://src/Client/ShipDesigner/Hulls/ScoutHullComponents.tscn");
-                var hullComponents = hullComponentsScene.Instance() as HullComponents;
-                hullComponents.Hull = Hull;
-                hullComponents.ShipDesign = ShipDesign;
-                hullComponentsContainer.AddChild(hullComponents);
+                var hullNameWithoutSpaces = Hull.Name.Replace(" ", "");
+                var scenePath = $"res://src/Client/ShipDesigner/Hulls/{hullNameWithoutSpaces}HullComponents.tscn";
+                var hullComponentsScene = ResourceLoader.Load<PackedScene>(scenePath);
+                if (hullComponentsScene != null)
+                {
+                    var hullComponents = hullComponentsScene.Instance() as HullComponents;
+                    hullComponents.Hull = Hull;
+                    hullComponents.ShipDesign = ShipDesign;
+                    hullComponentsContainer.AddChild(hullComponents);
+                }
 
                 if (shipDesign != null)
                 {
                     nameLabel.Text = shipDesign.Name;
+                    icon.Texture = TextureLoader.Instance.FindTexture(shipDesign);
 
                     shipDesign.ComputeAggregate(PlayersManager.Instance.Me, SettingsManager.Settings);
                     costTitleLabel.Text = $"Cost of one {shipDesign.Name}";
@@ -129,6 +142,7 @@ namespace CraigStars
                 }
                 else if (hull != null)
                 {
+                    icon.Texture = TextureLoader.Instance.FindTexture(hull);
                     nameLabel.Text = hull.Name;
                     costTitleLabel.Text = $"Cost of one {hull.Name}";
                     costGrid.Cost = hull.Cost;
@@ -147,6 +161,12 @@ namespace CraigStars
                     scannerRangeLabel.Visible = false;
                     scannerRangeAmountLabel.Visible = false;
                 }
+            }
+            else
+            {
+                hull = null;
+                hullContainer.Visible = false;
+                noHullContainer.Visible = true;
             }
         }
     }

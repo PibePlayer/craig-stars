@@ -6,7 +6,7 @@ namespace CraigStars
     {
         [JsonIgnore]
         public TechHullComponent HullComponent { get; set; } = new TechHullComponent();
-        public int HullSlotIndex { get; set; } = 0;
+        public int HullSlotIndex { get; set; } = 1;
         public int Quantity { get; set; }
 
         #region Serializer Helpers

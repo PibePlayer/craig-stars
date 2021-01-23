@@ -54,11 +54,11 @@ namespace CraigStars
                 .ToArray();
 
                 // assign ship design slots to each HullComponentPanel (other than space docs and cargo)
-                ShipDesign.Slots.ForEach(slot =>
+                ShipDesign?.Slots?.ForEach(slot =>
                 {
-                    if (slot.HullSlotIndex > 0 && slot.HullSlotIndex < hullComponentPanels.Length)
+                    if (slot.HullSlotIndex > 0 && slot.HullSlotIndex <= hullComponentPanels.Length)
                     {
-                        var hullComponentPanel = hullComponentPanels[slot.HullSlotIndex];
+                        var hullComponentPanel = hullComponentPanels[slot.HullSlotIndex - 1];
                         hullComponentPanel.ShipDesignSlot = slot;
                         if (Hull != null && slot.HullSlotIndex < Hull.Slots.Count)
                         {

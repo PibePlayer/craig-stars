@@ -131,7 +131,7 @@ namespace CraigStars
                 // the space dock assumes that there is only one slot like that
                 // it won't add them up
 
-                TechHullSlot hullSlot = Hull.Slots[slot.HullSlotIndex];
+                TechHullSlot hullSlot = Hull.Slots[slot.HullSlotIndex - 1];
                 if (hullSlot.Type.HasFlag(HullSlotType.SpaceDock))
                 {
                     Aggregate.SpaceDock = hullSlot.Capacity;

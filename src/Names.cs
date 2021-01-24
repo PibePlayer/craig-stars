@@ -285,6 +285,7 @@ namespace CraigStars
             "Covenant",
             "Coyote Corners",
             "Crabby",
+            "Craig",
             "Cramp",
             "Crazy Horse",
             "Crisp X",

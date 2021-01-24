@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using log4net;
 
 namespace CraigStars
 {
@@ -48,6 +49,7 @@ namespace CraigStars
 
     public static class Serializers
     {
+        private static readonly ILog log = LogManager.GetLogger(typeof(HullComponentPanel));
         static JsonSerializerOptions options;
 
         static Serializers()
@@ -102,6 +104,24 @@ namespace CraigStars
         static public void WireupPlayerFields(List<Player> players)
         {
             players.ForEach(p => p.WireupPlayerFields(players));
+        }
+
+        static public string SaveDraggableTech(DraggableTech tech)
+        {
+            return JsonSerializer.Serialize(tech, options);
+        }
+
+        static public DraggableTech? LoadDraggableTech(string json)
+        {
+            try
+            {
+                return JsonSerializer.Deserialize<DraggableTech>(json, options);
+            }
+            catch (Exception e)
+            {
+                log.Error($"Failed to deserialize DraggableTech json: {json}", e);
+                return null;
+            }
         }
     }
 }

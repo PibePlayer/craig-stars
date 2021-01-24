@@ -62,6 +62,24 @@ namespace CraigStars.Utils
             foreach (var e in ie) action(e, i++);
         }
 
+        /// <summary>
+        /// Helper function to convert a Tech into a DraggableTech
+        /// </summary>
+        /// <param name="tech"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public static DraggableTech GetDraggableTech(this Tech tech, int index)
+        {
+            if (tech is TechHullComponent hullComponent)
+            {
+                return new DraggableTech(tech.Name, tech.Category, index, hullComponent.HullSlotType);
+            }
+            else
+            {
+                return new DraggableTech(tech.Name, tech.Category, index);
+            }
+        }
+
     }
 }
 

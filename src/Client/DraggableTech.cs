@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Runtime.InteropServices;
+using System.Text.Json.Serialization;
 
 namespace CraigStars
 {
@@ -11,6 +12,7 @@ namespace CraigStars
         public readonly TechCategory category;
         public readonly HullSlotType hullSlotType;
 
+        [JsonConstructor]
         public DraggableTech(string name, TechCategory category, int index, HullSlotType hullSlotType = HullSlotType.None)
         {
             this.name = name;

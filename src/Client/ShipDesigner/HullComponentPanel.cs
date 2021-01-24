@@ -127,37 +127,67 @@ namespace CraigStars
             UpdateControls();
         }
 
+        /// <summary>
+        /// This is called when a draggable item is drug over this HullComponentPanel.
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="data">Whatever data is returned from GetDragData, in this case we are expecting a serialized DraggableTech</param>
+        /// <returns></returns>
         public override bool CanDropData(Vector2 position, object data)
         {
-            if (data is Godot.Collections.Array arrayData)
+            if (data is string json)
             {
-                DraggableTech draggableTech = GodotSerializers.FromArray(arrayData);
-                if ((int)(draggableTech.hullSlotType & Type) > 0)
+                if (Serializers.LoadDraggableTech(json) is DraggableTech draggableTech)
                 {
-                    // we can drop this
-                    log.Info($"Trying to drop Draggable item {draggableTech.name}");
-                    return true;
+                    // Each HullComponentPanel only accepts certain techs, like engines or scanners. Make sure we can 
+                    // drop this tech on our panel
+                    if ((int)(draggableTech.hullSlotType & Type) > 0)
+                    {
+                        // Yay! we allow this tech to be dropped!
+                        log.Debug($"Trying to drop Draggable item {draggableTech.name}");
+                        return true;
+                    }
+                    else
+                    {
+                        // wrong type
+                        return false;
+                    }
+                }
+            }
+            // bummer, can't drop this data here
+            log.Debug($"Can't drop data {data}");
+            return false;
+        }
+
+        /// <summary>
+        /// Once the user lets go of the mouse, drop the item on our panel
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="data"></param>
+        public override void DropData(Vector2 position, object data)
+        {
+            // do another check to make sure we convert this godot array into a DraggableTech
+            if (data is string json)
+            {
+                if (Serializers.LoadDraggableTech(json) is DraggableTech draggableTech)
+                {
+                    // The DraggableTech only has the name of a tech, nothing else. Get a full tech object from the TechStore
+                    TechHullComponent hullComponent = TechStore.Instance.GetTechByName<TechHullComponent>(draggableTech.name);
+                    log.Info($"Dropped new HullComponent {hullComponent.Name} on {Index}");
+
+                    // Tell any parent nodes subscribed to our AddHullComponentEvent that we have a new hull component dropped on us
+                    AddHullComponentEvent?.Invoke(this, hullComponent);
+                }
+                else
+                {
+                    log.Error($"Unable to Deserialize json into a DraggableTech. {json}");
                 }
             }
             else
             {
-                log.Info($"Can't drop data {data}");
-            }
-            return false;
-        }
-
-        public override void DropData(Vector2 position, object data)
-        {
-            if (data is Godot.Collections.Array arrayData)
-            {
-                DraggableTech draggableTech = GodotSerializers.FromArray(arrayData);
-                TechHullComponent hullComponent = TechStore.Instance.GetTechByName<TechHullComponent>(draggableTech.name);
-                log.Info($"Dropped new HullComponent {hullComponent.Name} on {Index}");
-                AddHullComponentEvent?.Invoke(this, hullComponent);
-            }
-            else
-            {
-                log.Error("Tried to drop unknown item.");
+                // this should never be called, so log an error if we get here for some reason
+                // CanDropItem should only return true for valid drop events.
+                log.Error($"Tried to drop unknown item. {data}");
             }
         }
 

@@ -2,7 +2,7 @@
 
 ![screenshot](docs/screenshots/screenshot.png)
 
-An eponymous clone of the 4X game Stars!
+A clone of the 4X game Stars!
 
 # Mininum Viable Game
 

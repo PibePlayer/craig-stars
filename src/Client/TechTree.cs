@@ -137,7 +137,8 @@ namespace CraigStars
                 var categoryRoot = categoryTreeItemByCategory[tech.Category];
                 var item = techTree.CreateItem(categoryRoot);
                 techTreeItemByTech[tech] = item;
-                item.SetMetadata(0, tech.GetDraggableTech(index).ToArray());
+                var json = Serializers.SaveDraggableTech(tech.GetDraggableTech(index));
+                item.SetMetadata(0, json);
                 item.SetText(0, tech.Name);
                 if (tech is TechHull)
                 {
@@ -156,9 +157,9 @@ namespace CraigStars
         void OnTechSelected()
         {
             var selected = techTree.GetSelected();
-            if (selected.GetMetadata(0) is Godot.Collections.Array data)
+            if (selected.GetMetadata(0) is string json)
             {
-                DraggableTech draggableTech = GodotSerializers.FromArray(data);
+                DraggableTech draggableTech = Serializers.LoadDraggableTech(json).Value;
                 var tech = techs[draggableTech.index];
                 TechSelectedEvent?.Invoke(tech);
             }

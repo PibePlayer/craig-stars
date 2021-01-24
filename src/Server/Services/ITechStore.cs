@@ -42,5 +42,6 @@ namespace CraigStars
         /// <returns>A list of categories, sorted by name</returns>
         List<TechCategory> GetCategoriesForTechs(List<Tech> techs);
         List<Tech> GetAvailableTechs(Player player);
+
     }
 }

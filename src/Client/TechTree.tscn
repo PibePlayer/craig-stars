@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://src/Client/TechTree.cs" type="Script" id=1]
+[ext_resource path="res://src/Client/DraggableTree.cs" type="Script" id=2]
 
 [node name="TechTree" type="VBoxContainer"]
 margin_right = 300.0
@@ -27,6 +28,7 @@ rect_min_size = Vector2( 300, 0 )
 size_flags_vertical = 3
 hide_root = true
 select_mode = 1
+script = ExtResource( 2 )
 
 [node name="OnlyAvailableCheckButton" type="CheckButton" parent="."]
 margin_top = 329.0

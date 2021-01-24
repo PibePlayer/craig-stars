@@ -1,5 +1,7 @@
 using CraigStars.Singletons;
+using CraigStars.Utils;
 using Godot;
+using log4net;
 using System;
 
 namespace CraigStars
@@ -7,6 +9,9 @@ namespace CraigStars
     [Tool]
     public class HullComponentPanel : Panel
     {
+        private static readonly ILog log = LogManager.GetLogger(typeof(HullComponentPanel));
+
+        public event Action<HullComponentPanel, TechHullComponent> AddHullComponentEvent;
 
         /// <summary>
         /// This is just for the ui to show the slot index when building hull designs
@@ -120,6 +125,40 @@ namespace CraigStars
                 indexLabel.Visible = false;
             }
             UpdateControls();
+        }
+
+        public override bool CanDropData(Vector2 position, object data)
+        {
+            if (data is Godot.Collections.Array arrayData)
+            {
+                DraggableTech draggableTech = GodotSerializers.FromArray(arrayData);
+                if ((int)(draggableTech.hullSlotType & Type) > 0)
+                {
+                    // we can drop this
+                    log.Info($"Trying to drop Draggable item {draggableTech.name}");
+                    return true;
+                }
+            }
+            else
+            {
+                log.Info($"Can't drop data {data}");
+            }
+            return false;
+        }
+
+        public override void DropData(Vector2 position, object data)
+        {
+            if (data is Godot.Collections.Array arrayData)
+            {
+                DraggableTech draggableTech = GodotSerializers.FromArray(arrayData);
+                TechHullComponent hullComponent = TechStore.Instance.GetTechByName<TechHullComponent>(draggableTech.name);
+                log.Info($"Dropped new HullComponent {hullComponent.Name} on {Index}");
+                AddHullComponentEvent?.Invoke(this, hullComponent);
+            }
+            else
+            {
+                log.Error("Tried to drop unknown item.");
+            }
         }
 
         public string TypeDescription

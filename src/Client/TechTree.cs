@@ -19,7 +19,13 @@ namespace CraigStars
         [Export]
         public DisplayType TechsToDisplay { get; set; } = DisplayType.All;
 
-        Tree techTree;
+        [Export]
+        public bool OnlyAvailable { get; set; } = false;
+
+        [Export]
+        public bool DragAndDroppable { get; set; } = false;
+
+        DraggableTree techTree;
         TreeItem root;
 
         LineEdit searchLineEdit;
@@ -31,17 +37,20 @@ namespace CraigStars
 
         public override void _Ready()
         {
-            techTree = FindNode("Tree") as Tree;
+            techTree = FindNode("Tree") as DraggableTree;
             searchLineEdit = FindNode("SearchLineEdit") as LineEdit;
             onlyAvailableCheckButton = FindNode("OnlyAvailableCheckButton") as CheckButton;
 
+            techTree.DragAndDroppable = DragAndDroppable;
             techTree.Connect("item_selected", this, nameof(OnTechSelected));
             onlyAvailableCheckButton.Connect("toggled", this, nameof(OnOnlyAvailableCheckButtonToggled));
             searchLineEdit.Connect("text_changed", this, nameof(OnSearchLineEditTextChanged));
 
+            onlyAvailableCheckButton.Pressed = OnlyAvailable;
             // populate the tree
             UpdateTreeItems();
         }
+
 
         public void SelectFirstTech()
         {
@@ -89,7 +98,7 @@ namespace CraigStars
                 techsToShow = techsToShow.Where(tech => tech.Name.ToLower().Contains(searchLineEdit.Text.Trim().ToLower())).ToList();
             }
 
-            if (onlyAvailableCheckButton.Pressed)
+            if (OnlyAvailable)
             {
                 techsToShow = techsToShow.Where(tech => PlayersManager.Instance.Me.HasTech(tech)).ToList();
             }
@@ -128,7 +137,7 @@ namespace CraigStars
                 var categoryRoot = categoryTreeItemByCategory[tech.Category];
                 var item = techTree.CreateItem(categoryRoot);
                 techTreeItemByTech[tech] = item;
-                item.SetMetadata(0, index);
+                item.SetMetadata(0, tech.GetDraggableTech(index).ToArray());
                 item.SetText(0, tech.Name);
                 if (tech is TechHull)
                 {
@@ -147,9 +156,10 @@ namespace CraigStars
         void OnTechSelected()
         {
             var selected = techTree.GetSelected();
-            if (selected.GetMetadata(0) is int index)
+            if (selected.GetMetadata(0) is Godot.Collections.Array data)
             {
-                var tech = techs[index];
+                DraggableTech draggableTech = GodotSerializers.FromArray(data);
+                var tech = techs[draggableTech.index];
                 TechSelectedEvent?.Invoke(tech);
             }
         }
@@ -165,6 +175,7 @@ namespace CraigStars
         /// <param name="buttonPressed"></param>
         void OnOnlyAvailableCheckButtonToggled(bool buttonPressed)
         {
+            OnlyAvailable = buttonPressed;
             UpdateTreeItems();
             SelectFirstTech();
         }

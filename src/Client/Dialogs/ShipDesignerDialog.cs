@@ -92,6 +92,7 @@ namespace CraigStars
             {
                 Name = "New Scout",
                 Hull = Techs.Scout,
+                
             };
         }
 

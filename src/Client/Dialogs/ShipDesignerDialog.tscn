@@ -6,7 +6,6 @@
 [ext_resource path="res://src/Client/TechTree.tscn" type="PackedScene" id=4]
 
 [node name="ShipDesignerDialog" type="WindowDialog"]
-visible = true
 margin_right = 1053.0
 margin_bottom = 725.0
 window_title = "Technology Browser"
@@ -79,14 +78,13 @@ margin_right = 1025.0
 margin_bottom = 655.0
 
 [node name="StarbaseDesignTree" parent="MarginContainer/VBoxContainer/HBoxContainerContent/Starbases/HBoxContainer" instance=ExtResource( 2 )]
-margin_right = 510.0
 margin_bottom = 655.0
 ShowDesigns = 2
 
 [node name="StarbaseHullSummary" parent="MarginContainer/VBoxContainer/HBoxContainerContent/Starbases/HBoxContainer" instance=ExtResource( 3 )]
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 514.0
+margin_left = 304.0
 margin_right = 1025.0
 margin_bottom = 655.0
 size_flags_horizontal = 3
@@ -132,6 +130,8 @@ margin_bottom = 655.0
 [node name="HullComponentsTechTree" parent="MarginContainer/VBoxContainer/HBoxContainerContent/Designer/HBoxContainer" instance=ExtResource( 4 )]
 margin_bottom = 655.0
 TechsToDisplay = 1
+OnlyAvailable = true
+DragAndDroppable = true
 
 [node name="DesignerHullSummary" parent="MarginContainer/VBoxContainer/HBoxContainerContent/Designer/HBoxContainer" instance=ExtResource( 3 )]
 anchor_right = 0.0

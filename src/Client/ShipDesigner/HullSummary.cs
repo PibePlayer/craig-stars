@@ -100,6 +100,7 @@ namespace CraigStars
                 if (hullComponentsScene != null)
                 {
                     var hullComponents = hullComponentsScene.Instance() as HullComponents;
+
                     hullComponents.Hull = Hull;
                     hullComponents.ShipDesign = ShipDesign;
                     hullComponentsContainer.AddChild(hullComponents);
@@ -168,6 +169,11 @@ namespace CraigStars
                 hullContainer.Visible = false;
                 noHullContainer.Visible = true;
             }
+        }
+
+        void Blah()
+        {
+            GD.Print("blah");
         }
     }
 }

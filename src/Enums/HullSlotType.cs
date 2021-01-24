@@ -8,6 +8,7 @@ namespace CraigStars
     [Flags]
     public enum HullSlotType
     {
+        None = 0,
         Engine = 1,
         Scanner = 2,
         Mechanical = 4,

@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Godot;
 
 namespace CraigStars.Utils
 {
-    public static class Serializers
+    public static class GodotSerializers
     {
         /// <summary>
         /// Serialize a Player to an array for sending over RPC
@@ -56,5 +58,39 @@ namespace CraigStars.Utils
             m.Message = (string)data[i++];
             return m;
         }
+
+        public static DraggableTech GetDraggableTech(this Tech tech, int index)
+        {
+            if (tech is TechHullComponent hullComponent)
+            {
+                return new DraggableTech(tech.Name, tech.Category, index, hullComponent.HullSlotType);
+            }
+            else
+            {
+                return new DraggableTech(tech.Name, tech.Category, index);
+            }
+        }
+
+        public static Godot.Collections.Array ToArray(this DraggableTech tech)
+        {
+            return new Godot.Collections.Array() {
+                tech.name,
+                tech.category,
+                tech.index,
+                tech.hullSlotType
+            };
+        }
+
+        public static DraggableTech FromArray(Godot.Collections.Array data)
+        {
+            // TODO: this is unsafe.
+            return new DraggableTech(
+                (string)data[0],
+                (TechCategory)data[1],
+                (int)data[2],
+                (HullSlotType)data[3]
+            );
+        }
+
     }
 }

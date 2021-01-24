@@ -189,3 +189,4 @@ visible = false
 visible = false
 
 [node name="ShipDesignerDialog" parent="CanvasLayer" instance=ExtResource( 18 )]
+visible = false

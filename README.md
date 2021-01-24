@@ -10,10 +10,10 @@ This version still isn't playable. In order to make a playable game, this clone 
 
 - Scanner Views (both planetary and fleet based)
 - Research Menu (partially done)
-- Ship Designer
+- Ship Designer (started)
 - Production Queue UI (partially done)
 - Race Customizer
-- Tech Browser
+- Tech Browser (partially done)
 - Waypoint Orders (to colonize planets) (partially done)
 - The rest of the Command pane tiles (for fleet management, waypoints, etc)
 - Menu system (Main menu, in game exit menu, Multiplayer lobby, etc)
@@ -35,7 +35,7 @@ There are loads of things to do, but this section is for tracking things I've im
 
 # Development
 
-This clone is done using the [Godot](https://godotengine.org) game engine. To launch this project, install Godot Mono 3.2.3 or greater (and the required .net sdks), open project.godot in the editor and click the Play button.
+This clone is done using the [Godot](https://godotengine.org) game engine. To launch this project, install Godot Mono 3.2.3 or greater (and [the required .net sdks](https://docs.godotengine.org/en/stable/getting_started/scripting/c_sharp/c_sharp_basics.html?highlight=mono#setting-up-c-for-godot)), open project.godot in the editor and click the Play button.
 
 _... More to come on setting up a dev environment_
 

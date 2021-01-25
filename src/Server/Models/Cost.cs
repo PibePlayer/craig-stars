@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 
 namespace CraigStars
 {
@@ -9,6 +10,7 @@ namespace CraigStars
         public readonly int Germanium;
         public readonly int Resources;
 
+        [JsonConstructor]
         public Cost(int ironium = 0, int boranium = 0, int germanium = 0, int resources = 0)
         {
             Ironium = ironium;

@@ -1,19 +1,22 @@
+using System.Text.Json.Serialization;
+
 namespace CraigStars
 {
-    public class PlayerMessage
+    public readonly struct PlayerMessage
     {
-        public int PlayerNum { get; set; } = 1;
-        public string Message { get; set; } = "";
+        public readonly int playerNum;
+        public readonly string message;
 
-        public PlayerMessage(int playerNum = 1, string message = "")
+        [JsonConstructor]
+        public PlayerMessage(int playerNum = 0, string message = "")
         {
-            PlayerNum = playerNum;
-            Message = message;
+            this.playerNum = playerNum;
+            this.message = message;
         }
 
         public override string ToString()
         {
-            return $"{PlayerNum} - {Message}";
+            return $"{playerNum + 1} - {message}";
         }
     }
 }

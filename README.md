@@ -1,6 +1,6 @@
 # craig-stars
 
-![screenshot](docs/screenshots/screenshot.png)
+![screenshot](docs/screenshots/screenshot2.png)
 
 A clone of the 4X game Stars!
 

@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 
 namespace CraigStars
 {
@@ -8,6 +9,7 @@ namespace CraigStars
         public readonly int temp;
         public readonly int rad;
 
+        [JsonConstructor]
         public Hab(int grav = 0, int temp = 0, int rad = 0)
         {
             this.grav = grav;

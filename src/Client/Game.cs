@@ -12,6 +12,8 @@ namespace CraigStars
 {
     public class Game : Node
     {
+        ILog log = LogManager.GetLogger(typeof(Game));
+
         /// <summary>
         /// The game node creates a server in single player or host mode
         /// </summary>
@@ -30,28 +32,48 @@ namespace CraigStars
 
         public override void _Ready()
         {
-            Server.Init(PlayersManager.Instance.Players, SettingsManager.Settings, TechStore.Instance);
-
-            // add the universe to the viewport
             scanner = FindNode("Scanner") as Scanner;
-            scanner.InitMapObjects();
-
             productionQueueDialog = GetNode<ProductionQueueDialog>("CanvasLayer/ProductionQueueDialog");
             cargoTransferDialog = GetNode<CargoTransferDialog>("CanvasLayer/CargoTransferDialog");
             researchDialog = GetNode<ResearchDialog>("CanvasLayer/ResearchDialog");
             techBrowserDialog = GetNode<TechBrowserDialog>("CanvasLayer/TechBrowserDialog");
             shipDesignerDialog = GetNode<ShipDesignerDialog>("CanvasLayer/ShipDesignerDialog");
 
+            Signals.PostStartGameEvent += OnPostStartGameEvent;
             Signals.ChangeProductionQueuePressedEvent += OnChangeProductionQueue;
             Signals.CargoTransferRequestedEvent += OnCargoTransferRequested;
             Signals.ResearchDialogRequestedEvent += OnResearchDialogRequested;
             Signals.ShipDesignerDialogRequestedEvent += OnShipDesignerDialogRequestedEvent;
             Signals.TechBrowserDialogRequestedEvent += OnTechBrowserDialogRequestedEvent;
+
+            // if we are the server (or a single player game)
+            // init the server and send a notice to all players that it's time to start
+            if (this.IsServerOrSinglePlayer())
+            {
+                if (PlayersManager.Instance.Players.Count == 0)
+                {
+                    log.Warn("Resetting Players. This probably means you are executing the Game scene directly during development. If not, this is a problem.");
+                    PlayersManager.Instance.SetupPlayers();
+                }
+                Server.Init(PlayersManager.Instance.Players.Cast<Player>().ToList(), SettingsManager.Settings, TechStore.Instance);
+                if (this.IsServer())
+                {
+                    // TODO: send each player their turn data
+                }
+                // notify everyone (including ourselves) that we're ready to start
+                Signals.PublishPostStartGameEvent(Server.Year);
+            }
+            else
+            {
+                // if we aren't the server, we come here with our player data already loaded
+                OnPostStartGameEvent(PlayersManager.Instance.Me.Year);
+            }
         }
 
         public override void _ExitTree()
         {
             Server.Shutdown();
+            Signals.PostStartGameEvent -= OnPostStartGameEvent;
             Signals.ChangeProductionQueuePressedEvent -= OnChangeProductionQueue;
             Signals.CargoTransferRequestedEvent -= OnCargoTransferRequested;
             Signals.ResearchDialogRequestedEvent -= OnResearchDialogRequested;
@@ -59,12 +81,22 @@ namespace CraigStars
             Signals.TechBrowserDialogRequestedEvent -= OnTechBrowserDialogRequestedEvent;
         }
 
-        private void OnTechBrowserDialogRequestedEvent()
+        /// <summary>
+        /// When the game is ready to go, init the scanner
+        /// </summary>
+        /// <param name="year"></param>
+        void OnPostStartGameEvent(int year)
+        {
+            // add the universe to the viewport
+            scanner.InitMapObjects();
+        }
+
+        void OnTechBrowserDialogRequestedEvent()
         {
             techBrowserDialog.PopupCentered();
         }
 
-        private void OnShipDesignerDialogRequestedEvent()
+        void OnShipDesignerDialogRequestedEvent()
         {
             shipDesignerDialog.PopupCentered();
         }

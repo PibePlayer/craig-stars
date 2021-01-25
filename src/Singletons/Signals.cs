@@ -55,7 +55,7 @@ namespace CraigStars.Singletons
 
         public static event Action ServerDisconnectedEvent;
 
-        public delegate void PreStartGame(List<Player> players);
+        public delegate void PreStartGame(List<PublicPlayerInfo> players);
         public static event PreStartGame PreStartGameEvent;
 
         public static event YearUpdate PostStartGameEvent;
@@ -64,7 +64,7 @@ namespace CraigStars.Singletons
 
         #region Player Connection Events
 
-        public delegate void PlayerUpdated(Player player);
+        public delegate void PlayerUpdated(PublicPlayerInfo player);
         public static event PlayerUpdated PlayerUpdatedEvent;
 
         public delegate void PlayerJoined(int networkId);
@@ -116,7 +116,7 @@ namespace CraigStars.Singletons
 
         #region Event Publishers
 
-        public static void PublishPreStartGameEvent(List<Player> players)
+        public static void PublishPreStartGameEvent(List<PublicPlayerInfo> players)
         {
             PreStartGameEvent?.Invoke(players);
         }
@@ -126,7 +126,7 @@ namespace CraigStars.Singletons
         /// </summary>
         /// <param name="player"></param>
         /// <param name="notifyPeers">True if we should notify peers of this player data</param>
-        public static void PublishPlayerUpdatedEvent(Player player, bool notifyPeers = false)
+        public static void PublishPlayerUpdatedEvent(PublicPlayerInfo player, bool notifyPeers = false)
         {
             PlayerUpdatedEvent?.Invoke(player);
             if (notifyPeers)

@@ -48,8 +48,8 @@ namespace CraigStars
             };
             Server.Players.ForEach(player =>
             {
-
-                if (player.AIControlled)
+                // TODO: make turn processors configurable
+                if (player.AIControlled || true)
                 {
                     processors.ForEach(processor => processor.Process(Server.Year, Server.Settings, player));
                 }
@@ -375,6 +375,7 @@ namespace CraigStars
         {
             Server.Players.ForEach(p =>
             {
+                p.Year = Server.Year;
                 p.PlanetaryScanner = p.GetBestPlanetaryScanner(Server.TechStore);
                 p.Fleets.ForEach(f => f.ComputeAggregate(Server.Settings));
             });

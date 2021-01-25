@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using CraigStars.Utils;
 using Godot;
+using log4net;
 
 namespace CraigStars.Singletons
 {
     public class RPC : Node
     {
+        private static readonly ILog log = LogManager.GetLogger(typeof(HullComponentPanel));
 
         private String LogPrefix { get => this.IsServer() ? "Server:" : "Client:"; }
 
@@ -57,45 +59,55 @@ namespace CraigStars.Singletons
         public void SendMessage(string message)
         {
             var playerMessage = new PlayerMessage(PlayersManager.Instance.Me.Num, message);
-            GD.Print($"{LogPrefix} Sending Message {playerMessage}");
-            Rpc(nameof(Message), playerMessage.ToArray());
+            log.Debug($"{LogPrefix} Sending Message {playerMessage}");
+            Rpc(nameof(Message), Serializers.Save(playerMessage));
         }
 
         public void SendAllMessages(int networkId)
         {
-            GD.Print($"{LogPrefix} Sending All Messages to {networkId}");
-            PlayersManager.Instance.Messages.ForEach(m => RpcId(networkId, nameof(Message), m.ToArray()));
+            log.Debug($"{LogPrefix} Sending All Messages to {networkId}");
+            PlayersManager.Instance.Messages.ForEach(m => RpcId(networkId, nameof(Message), Serializers.Save(m)));
         }
 
         [RemoteSync]
-        public void Message(Godot.Collections.Array data)
+        public void Message(string json)
         {
-            var message = new PlayerMessage().FromArray(data);
+            var message = Serializers.Load<PlayerMessage>(json);
+            if (message.HasValue)
+            {
+                log.Debug($"{LogPrefix} Received PlayerMessage {message} from {GetTree().GetRpcSenderId()}");
 
-            GD.Print($"{LogPrefix} Received PlayerMessage {message} from {GetTree().GetRpcSenderId()}");
-
-            // notify listeners that we have updated Player
-            Signals.PublishPlayerMessageEvent(message);
+                // notify listeners that we have updated Player
+                Signals.PublishPlayerMessageEvent(message.Value);
+            }
+            else
+            {
+                log.Error($"{LogPrefix} Failed to parse json: {json}");
+            }
         }
 
-        public void SendPlayerUpdated(Player player)
+        public void SendPlayerUpdated(PublicPlayerInfo player)
         {
             // send our peers an update of a player
-            GD.Print($"{LogPrefix} Notifying clients about player update: {player}");
-            Rpc(nameof(PlayerUpdated), player.ToArray());
+            log.Debug($"{LogPrefix} Notifying clients about player update: {player}");
+            Rpc(nameof(PlayerUpdated), Serializers.Save(player));
         }
 
         [Remote]
-        public void PlayerUpdated(Godot.Collections.Array data)
+        public void PlayerUpdated(string json)
         {
-            var player = new Player().FromArray(data);
-            player.FromArray(data);
+            var player = Serializers.LoadObject<PublicPlayerInfo>(json);
+            if (player != null)
+            {
+                log.Debug($"{LogPrefix} Received PlayerUpdated event for Player {player.Num} - {player.Name} (NetworkId: {player.NetworkId}");
 
-            GD.Print($"{LogPrefix} Received PlayerUpdated event for Player {player.Num} - {player.Name} (NetworkId: {player.NetworkId}");
-
-            // notify listeners that we have updated Player
-            Signals.PublishPlayerUpdatedEvent(player);
-
+                // notify listeners that we have updated Player
+                Signals.PublishPlayerUpdatedEvent(player);
+            }
+            else
+            {
+                log.Error($"{LogPrefix} Failed to parse json: {json}");
+            }
         }
 
         /// <summary>
@@ -103,28 +115,28 @@ namespace CraigStars.Singletons
         /// </summary>
         /// <param name="players"></param>
         /// <param name="networkId"></param>
-        public void SendPlayersUpdated(List<Player> players, int networkId = 0)
+        public void SendPlayersUpdated(List<PublicPlayerInfo> players, int networkId = 0)
         {
             // servers listen for signals and notify clients
             if (this.IsServer())
             {
-                var playersArray = new Godot.Collections.Array(players.Select(p => p.ToArray()));
+                var playersArray = new Godot.Collections.Array(players.Select(p => Serializers.Save(p)).ToArray());
                 if (networkId == 0)
                 {
-                    // GD.Print($"{LogPrefix} Sending all players to all clients");
+                    // log.Debug($"{LogPrefix} Sending all players to all clients");
                     // we are a server, tell the clients we have a player update
                     Rpc(nameof(PlayersUpdated), playersArray);
                 }
                 else
                 {
-                    GD.Print($"{LogPrefix} Sending players to {networkId}");
+                    log.Debug($"{LogPrefix} Sending players to {networkId}");
                     // we are a server, tell the clients we have a player update
                     RpcId(networkId, nameof(PlayersUpdated), playersArray);
                 }
             }
             else
             {
-                GD.PrintErr("A client tried to send a list of all players over Rpc");
+                log.Error("A client tried to send a list of all players over Rpc");
             }
         }
 
@@ -133,24 +145,22 @@ namespace CraigStars.Singletons
         /// </summary>
         /// <param name="data"></param>
         [Remote]
-        public void PlayersUpdated(Godot.Collections.Array data)
+        public void PlayersUpdated(Godot.Collections.Array jsons)
         {
-            var players = new Player[data.Count];
-            for (int i = 0; i < data.Count; i++)
+            var players = new PublicPlayerInfo[jsons.Count];
+            foreach (string json in jsons)
             {
-                var Player = data[i] as Godot.Collections.Array;
-                if (Player != null)
+                var player = Serializers.LoadObject<PublicPlayerInfo>(json);
+                if (player != null)
                 {
-                    var player = new Player().FromArray(Player);
-
-                    // GD.Print($"{LogPrefix} Received PlayerUpdated event for Player {player.Num} - {player.Name} (NetworkId: {player.NetworkId}");
+                    log.Debug($"{LogPrefix} Received PlayerUpdated event for Player {player.Num} - {player.Name} (NetworkId: {player.NetworkId}");
 
                     // notify listeners that we have updated Player
                     Signals.PublishPlayerUpdatedEvent(player);
                 }
                 else
                 {
-                    GD.PrintErr("Failed to convert array of player arrays in Player: " + data[i].ToString());
+                    log.Error($"{LogPrefix} Failed to parse json: {json}");
                 }
             }
         }
@@ -160,16 +170,17 @@ namespace CraigStars.Singletons
         /// <summary>
         /// Sent by the server to notify players the game is started
         /// </summary>
+        /// <param name="year"></param>
         /// <param name="networkId"></param>
-        public void SendPostStartGame(int networkId = 0)
+        public void SendPostStartGame(int year, int networkId = 0)
         {
             if (networkId == 0)
             {
-                Rpc(nameof(PostStartGame));
+                Rpc(nameof(PostStartGame), year);
             }
             else
             {
-                RpcId(networkId, nameof(PostStartGame));
+                RpcId(networkId, nameof(PostStartGame), year);
             }
         }
 

@@ -1,16 +1,26 @@
 using System.Collections.Generic;
 using Godot;
+using log4net;
 
 namespace CraigStars.Singletons
 {
     public class PlayersManager : Node
     {
+        ILog log = LogManager.GetLogger(typeof(PlayersManager));
+
+        string[] playerNames = new string[] {
+            "Craig",
+            "Ted",
+            "Joe",
+            "Bob",
+        };
+
         /// <summary>
         /// Data for all the players in the game
         /// </summary>
         /// <typeparam name="Player"></typeparam>
         /// <returns></returns>
-        public List<Player> Players { get; } = new List<Player>();
+        public List<PublicPlayerInfo> Players { get; } = new List<PublicPlayerInfo>();
 
         /// <summary>
         /// Messages from ourselves and other players
@@ -28,14 +38,14 @@ namespace CraigStars.Singletons
             {
                 if (me == null)
                 {
-                    if (GetTree().HasNetworkPeer())
+                    if (this.IsMultiplayer())
                     {
-                        me = Players.Find(p => p.NetworkId == GetTree().GetNetworkUniqueId());
+                        me = Players.Find(p => p.NetworkId == GetTree().GetNetworkUniqueId()) as Player;
                     }
                     else
                     {
                         // no network, we are player one
-                        me = Players[0];
+                        me = Players[0] as Player;
                     }
                 }
                 return me;
@@ -61,7 +71,6 @@ namespace CraigStars.Singletons
 
         public override void _Ready()
         {
-            SetupPlayers(new UniverseSettings());
             // Subscribe to some player joined/left events
             Signals.PlayerJoinedEvent += OnPlayerJoined;
             Signals.PlayerLeftEvent += OnPlayerLeft;
@@ -77,27 +86,27 @@ namespace CraigStars.Singletons
             Signals.PlayerMessageEvent -= OnPlayerMessage;
         }
 
-        public void Reset(UniverseSettings settings)
+        public void Reset()
         {
             Players.Clear();
             PlayersByNetworkId.Clear();
             Messages.Clear();
-            SetupPlayers(settings);
         }
 
         /// <summary>
         /// Setup the initial players list with players based on color
         /// </summary>
-        public void SetupPlayers(UniverseSettings settings)
+        public void SetupPlayers()
         {
+            var settings = SettingsManager.Settings;
             for (var num = 0; num < settings.NumPlayers; num++)
             {
                 var player = new Player
                 {
                     Num = num,
-                    PlayerName = $"Player {num + 1}",
-                    Color = settings.PlayerColors[num],
-                    AIControlled = true,
+                    Name = num < playerNames.Length ? playerNames[num] : $"Player {num + 1}",
+                    Color = settings.PlayerColors.Length < num ? settings.PlayerColors[num] : Colors.White,
+                    AIControlled = num != 0,
                     Ready = true,
                 };
 
@@ -117,7 +126,9 @@ namespace CraigStars.Singletons
         private void OnPlayerJoined(int networkId)
         {
             // find an AI controlled player
-            var emptyPlayer = Players.Find(p => p.AIControlled);
+            // unless we are the server, in which case we claim player 1
+            var emptyPlayer = networkId == 1 ? Players[0] : Players.Find(p => p.AIControlled);
+
             if (emptyPlayer != null)
             {
                 // claim this player for the network user
@@ -125,12 +136,12 @@ namespace CraigStars.Singletons
                 emptyPlayer.Ready = false;
                 emptyPlayer.NetworkId = networkId;
 
-                GD.Print($"{emptyPlayer} joined and is added to the player registry");
+                log.Info($"{emptyPlayer} joined and is added to the player registry");
                 Signals.PublishPlayerUpdatedEvent(emptyPlayer);
             }
             else
             {
-                GD.PrintErr($"Player with networkId {networkId} tried to join, but we couldn't find any empty player slots!");
+                log.Error($"Player with networkId {networkId} tried to join, but we couldn't find any empty player slots!");
             }
         }
 
@@ -139,16 +150,16 @@ namespace CraigStars.Singletons
             Messages.Add(message);
         }
 
-        public Player GetPlayer(int playerNum)
+        public PublicPlayerInfo GetPlayer(int playerNum)
         {
-            if (playerNum > 0 && playerNum <= Players.Count)
+            if (playerNum >= 0 && playerNum < Players.Count)
             {
-                return Players[playerNum - 1];
+                return Players[playerNum];
             }
             return null;
         }
 
-        public Player GetNetworkPlayer(int networkId)
+        public PublicPlayerInfo GetNetworkPlayer(int networkId)
         {
             return Players.Find(p => p.NetworkId == networkId);
         }
@@ -163,23 +174,38 @@ namespace CraigStars.Singletons
             var player = Players.Find(p => p.NetworkId == networkId);
             if (player != null)
             {
-                GD.Print($"{player} left and will be removed from the player registry");
+                log.Info($"{player} left and will be removed from the player registry");
                 player.AIControlled = true;
                 player.NetworkId = 0;
                 Signals.PublishPlayerUpdatedEvent(player);
             }
             else
             {
-                GD.PrintErr($"Player with networkId {networkId} left the game, but they werne't in our player registry!");
+                log.Error($"Player with networkId {networkId} left the game, but they werne't in our player registry!");
             }
         }
 
-        private void OnPlayerUpdated(Player player)
+        private void OnPlayerUpdated(PublicPlayerInfo player)
         {
             var existingPlayer = GetPlayer(player.Num);
             if (existingPlayer != null)
             {
-                // existingPlayer.From(player);
+                existingPlayer.Update(player);
+            }
+            else
+            {
+                if (player.NetworkId == GetTree().GetNetworkUniqueId())
+                {
+                    log.Debug($"The server sent along my Player info. Registering full Player for {player} in PlayersManager.");
+                    var fullPlayer = new Player();
+                    fullPlayer.Update(player);
+                    Players.Add(fullPlayer);
+                }
+                else
+                {
+                    log.Debug($"Registering Player info for {player} in PlayersManager.");
+                    Players.Add(player);
+                }
             }
         }
 

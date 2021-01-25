@@ -15,7 +15,6 @@ namespace CraigStars
         Button gotoButton;
         Button nextButton;
 
-        int year = 2400;
         int messageNum = 0;
         bool changesMade = false;
 
@@ -65,7 +64,6 @@ namespace CraigStars
 
         void OnTurnPassed(int year)
         {
-            this.year = year;
             var player = PlayersManager.Instance.Me;
             messageNum = 0;
             if (player != null && player.Messages.Count > 0)
@@ -81,7 +79,7 @@ namespace CraigStars
             var changesMadeIndicator = changesMade ? "*" : "";
             if (player.Messages.Count > 0)
             {
-                titleLabel.Text = $"Year: {year}{changesMadeIndicator} Message {messageNum + 1} of {player.Messages.Count}";
+                titleLabel.Text = $"Year: {player.Year}{changesMadeIndicator} Message {messageNum + 1} of {player.Messages.Count}";
                 if (messageNum >= 0 && messageNum < player.Messages.Count)
                 {
                     messageText.Text = player.Messages[messageNum].Text;
@@ -95,7 +93,7 @@ namespace CraigStars
             }
             else
             {
-                titleLabel.Text = $"Year: {year}{changesMadeIndicator} No Messages";
+                titleLabel.Text = $"Year: {player.Year}{changesMadeIndicator} No Messages";
                 prevButton.Disabled = nextButton.Disabled = gotoButton.Disabled = true;
             }
 

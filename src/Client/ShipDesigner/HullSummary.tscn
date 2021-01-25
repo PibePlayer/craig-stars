@@ -46,7 +46,6 @@ __meta__ = {
 }
 
 [node name="HullContainer" type="VBoxContainer" parent="Panel/MarginContainer"]
-visible = false
 margin_left = 5.0
 margin_top = 5.0
 margin_right = 1435.0
@@ -91,7 +90,6 @@ margin_bottom = 728.0
 size_flags_vertical = 3
 
 [node name="ScoutHullComponents" parent="Panel/MarginContainer/HullContainer/HullComponentsContainer" instance=ExtResource( 3 )]
-visible = false
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_left = 715.0
@@ -236,6 +234,7 @@ margin_bottom = 158.0
 text = "Mass: 8kt"
 
 [node name="NoHullContainer" type="CenterContainer" parent="Panel/MarginContainer"]
+visible = false
 margin_left = 5.0
 margin_top = 5.0
 margin_right = 1435.0

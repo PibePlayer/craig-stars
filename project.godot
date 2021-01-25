@@ -16,17 +16,20 @@ _global_script_class_icons={
 [application]
 
 config/name="craig-stars"
-run/main_scene="res://src/Client/Game.tscn"
+run/main_scene="res://src/Client/Main.tscn"
 config/icon="res://icon.png"
 
 [autoload]
 
+SettingsManager="*res://src/Singletons/SettingsManager.cs"
 PlayersManager="*res://src/Singletons/PlayersManager.cs"
 Rpc="*res://src/Singletons/RPC.cs"
 Signals="*res://src/Singletons/Signals.cs"
 TextureLoader="*res://src/Singletons/TextureLoader.cs"
 TechStore="*res://src/Singletons/TechStore.cs"
-SettingsManager="*res://src/Singletons/SettingsManager.cs"
+GameSettings="*res://src/Singletons/GameSettings.cs"
+Client="*res://src/Singletons/Client.cs"
+Network="*res://src/Singletons/Network.cs"
 
 [display]
 

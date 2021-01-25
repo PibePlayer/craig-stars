@@ -50,6 +50,9 @@ namespace CraigStars
             // create a new turn submitter to handle submitted turns
             turnSubmitter = new TurnSubmitter(this);
 
+            // first round, we have to submit AI turns
+            SubmitAITurns();
+
             Signals.PublishPostStartGameEvent(Year);
             Signals.SubmitTurnEvent += OnSubmitTurn;
             Signals.FleetBuiltEvent += OnFleetBuilt;
@@ -90,11 +93,23 @@ namespace CraigStars
             // build each players dictionary of planets by id
             PlanetsByGuid = Planets.ToLookup(p => p.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
             FleetsByGuid = Fleets.ToLookup(p => p.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
-            
+
             CargoHoldersByGuid = new Dictionary<Guid, ICargoHolder>();
             Planets.ForEach(p => CargoHoldersByGuid[p.Guid] = p);
             Fleets.ForEach(f => CargoHoldersByGuid[f.Guid] = f);
             MineralPackets.ForEach(mp => CargoHoldersByGuid[mp.Guid] = mp);
+        }
+
+        void SubmitAITurns()
+        {
+            // submit AI turns
+            PlayersManager.Instance.Players.ForEach(p =>
+            {
+                if (p.AIControlled)
+                {
+                    SubmitTurn(p as Player);
+                }
+            });
         }
 
         public void SubmitTurn(Player player)
@@ -114,7 +129,7 @@ namespace CraigStars
             turnGenerator.RunTurnProcessors();
             UpdateDictionaries();
             Signals.PublishTurnPassedEvent(Year);
+            SubmitAITurns();
         }
-
     }
 }

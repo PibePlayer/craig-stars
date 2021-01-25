@@ -137,14 +137,15 @@ namespace CraigStars
         {
             if (data is string json)
             {
-                if (Serializers.LoadDraggableTech(json) is DraggableTech draggableTech)
+                DraggableTech? draggableTech = Serializers.Load<DraggableTech>(json);
+                if (draggableTech != null)
                 {
                     // Each HullComponentPanel only accepts certain techs, like engines or scanners. Make sure we can 
                     // drop this tech on our panel
-                    if ((int)(draggableTech.hullSlotType & Type) > 0)
+                    if ((int)(draggableTech.Value.hullSlotType & Type) > 0)
                     {
                         // Yay! we allow this tech to be dropped!
-                        log.Debug($"Trying to drop Draggable item {draggableTech.name}");
+                        log.Debug($"Trying to drop Draggable item {draggableTech.Value.name}");
                         return true;
                     }
                     else
@@ -152,6 +153,10 @@ namespace CraigStars
                         // wrong type
                         return false;
                     }
+                }
+                else
+                {
+                    log.Error($"Failed to parse dropped json: {json}");
                 }
             }
             // bummer, can't drop this data here
@@ -169,10 +174,11 @@ namespace CraigStars
             // do another check to make sure we convert this godot array into a DraggableTech
             if (data is string json)
             {
-                if (Serializers.LoadDraggableTech(json) is DraggableTech draggableTech)
+                DraggableTech? draggableTech = Serializers.Load<DraggableTech>(json);
+                if (draggableTech != null)
                 {
                     // The DraggableTech only has the name of a tech, nothing else. Get a full tech object from the TechStore
-                    TechHullComponent hullComponent = TechStore.Instance.GetTechByName<TechHullComponent>(draggableTech.name);
+                    TechHullComponent hullComponent = TechStore.Instance.GetTechByName<TechHullComponent>(draggableTech.Value.name);
                     log.Info($"Dropped new HullComponent {hullComponent.Name} on {Index}");
 
                     // Tell any parent nodes subscribed to our AddHullComponentEvent that we have a new hull component dropped on us

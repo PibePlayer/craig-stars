@@ -60,7 +60,7 @@ namespace CraigStars
                 IgnoreNullValues = true,
                 IncludeFields = true,
                 IgnoreReadOnlyProperties = true,
-                ReferenceHandler = new ReferenceHandler<GuidReferenceResolver>(),
+                // ReferenceHandler = new ReferenceHandler<GuidReferenceResolver>(),
 
                 Converters =
                 {
@@ -106,22 +106,49 @@ namespace CraigStars
             players.ForEach(p => p.WireupPlayerFields(players));
         }
 
-        static public string SaveDraggableTech(DraggableTech tech)
+        /// <summary>
+        /// Save an item as JSON
+        /// </summary>
+        /// <param name="item"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        static public string Save<T>(T item)
         {
-            return JsonSerializer.Serialize(tech, options);
+            return JsonSerializer.Serialize(item, options);
         }
 
-        static public DraggableTech? LoadDraggableTech(string json)
+        /// <summary>
+        /// Load a struct from a json string. If the json fails to parse, return null
+        /// </summary>
+        static public Nullable<T> Load<T>(string json) where T : struct
         {
             try
             {
-                return JsonSerializer.Deserialize<DraggableTech>(json, options);
+                return JsonSerializer.Deserialize<T>(json, options);
             }
             catch (Exception e)
             {
-                log.Error($"Failed to deserialize DraggableTech json: {json}", e);
+                log.Error($"Failed to deserialize json: {json} into type: {typeof(T)}", e);
                 return null;
             }
         }
+
+        /// <summary>
+        /// Load an object from a json string. If the json fails to parse, return null
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        static public T LoadObject<T>(string json) where T : class
+        {
+            try
+            {
+                return JsonSerializer.Deserialize<T>(json, options);
+            }
+            catch (Exception e)
+            {
+                log.Error($"Failed to deserialize json: {json} into type: {typeof(T)}", e);
+                return null;
+            }
+        }
+
     }
 }

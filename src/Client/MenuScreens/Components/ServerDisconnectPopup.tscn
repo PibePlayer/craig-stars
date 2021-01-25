@@ -1,0 +1,20 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://src/Client/MenuScreens/Components/ServerDisconnectPopup.cs" type="Script" id=1]
+
+[node name="Popup" type="CenterContainer"]
+margin_right = 1920.0
+margin_bottom = 1080.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ServerDisconnectedDialog" type="AcceptDialog" parent="."]
+visible = true
+margin_left = 886.0
+margin_top = 511.0
+margin_right = 1034.0
+margin_bottom = 569.0
+window_title = "Oh Noes!"
+dialog_text = "Server Disconnected"

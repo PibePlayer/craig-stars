@@ -7,16 +7,8 @@ using System.Text.Json.Serialization;
 
 namespace CraigStars
 {
-    public class Player
+    public class Player : PublicPlayerInfo
     {
-        public String Name { get; set; }
-        public int NetworkId { get; set; }
-        public int Num { get; set; }
-        public string PlayerName { get; set; }
-        public Boolean Ready { get; set; } = false;
-        public Boolean AIControlled { get; set; }
-        public Boolean SubmittedTurn { get; set; }
-        public Color Color { get; set; } = Colors.Black;
         public Race Race = new Race();
         public PlanetViewState PlanetViewState { get; set; }
         public PlayerStats Stats = new PlayerStats();
@@ -42,7 +34,7 @@ namespace CraigStars
         Guid? homeworldGuid;
 
         #region Scanner Data
-
+        public int Year { get; set; } = 2400;
         public List<Planet> Planets { get; set; } = new List<Planet>();
         public List<Fleet> Fleets { get; set; } = new List<Fleet>();
         public List<Message> Messages { get; set; } = new List<Message>();
@@ -146,6 +138,7 @@ namespace CraigStars
         }
 
         #endregion
+
 
         /// <summary>
         /// This function will be called recursively until no more levels are passed

@@ -4,11 +4,14 @@ using System.Linq;
 using System.Collections.Generic;
 using CraigStars.Utils;
 using CraigStars.Singletons;
+using log4net;
 
 namespace CraigStars
 {
     public class TechTree : VBoxContainer
     {
+        private static readonly ILog log = LogManager.GetLogger(typeof(TechTree));
+
         /// <summary>
         /// Fired when the selected tech changes
         /// </summary>
@@ -137,7 +140,7 @@ namespace CraigStars
                 var categoryRoot = categoryTreeItemByCategory[tech.Category];
                 var item = techTree.CreateItem(categoryRoot);
                 techTreeItemByTech[tech] = item;
-                var json = Serializers.SaveDraggableTech(tech.GetDraggableTech(index));
+                var json = Serializers.Save(tech.GetDraggableTech(index));
                 item.SetMetadata(0, json);
                 item.SetText(0, tech.Name);
                 if (tech is TechHull)
@@ -159,9 +162,16 @@ namespace CraigStars
             var selected = techTree.GetSelected();
             if (selected.GetMetadata(0) is string json)
             {
-                DraggableTech draggableTech = Serializers.LoadDraggableTech(json).Value;
-                var tech = techs[draggableTech.index];
-                TechSelectedEvent?.Invoke(tech);
+                DraggableTech? draggableTech = Serializers.Load<DraggableTech>(json);
+                if (draggableTech != null)
+                {
+                    var tech = techs[draggableTech.Value.index];
+                    TechSelectedEvent?.Invoke(tech);
+                }
+                else
+                {
+                    log.Error($"Failed to load DraggableTech from dropped json: {json}");
+                }
             }
         }
 

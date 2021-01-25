@@ -79,7 +79,7 @@ namespace CraigStars
                     planet.ContributesOnlyLeftoverToResearch = playerPlanet.ContributesOnlyLeftoverToResearch;
                     // TODO: validate planet production queue
                     planet.ProductionQueue.Items.Clear();
-                    playerPlanet.ProductionQueue.Items.ForEach(item => planet.ProductionQueue.Items.Add(item.Clone()));
+                    playerPlanet.ProductionQueue.Items.ForEach(item => planet.ProductionQueue.Items.Add(item));
                 }
             }
         }

@@ -33,10 +33,6 @@ namespace CraigStars
         CostGrid queuedItemCostGrid;
         Label completionEstimateLabel;
 
-        List<ProductionQueueItem> availableItems = new List<ProductionQueueItem>();
-        List<ProductionQueueItem> queuedItems = new List<ProductionQueueItem>();
-        ProductionQueueItem selectedQueueItem;
-
         int quantityModifier = 1;
 
         public override void _Ready()
@@ -73,11 +69,8 @@ namespace CraigStars
 
         void OnPopupHide()
         {
-            availableItems.Clear();
-            queuedItems.Clear();
             availableItemsTree.Clear();
             queuedItemsTree.Clear();
-            selectedQueueItem = null;
 
             availableItemsTree.Disconnect("item_selected", this, nameof(OnAvailableItemSelected));
             queuedItemsTree.Disconnect("item_selected", this, nameof(OnQueuedItemSelected));
@@ -113,7 +106,7 @@ namespace CraigStars
 
             Planet.ProductionQueue.Items.ForEach(item =>
             {
-                AddQueuedItem(item.Clone());
+                AddQueuedItem(item);
             });
 
             contributesOnlyLeftoverToResearchCheckbox.Pressed = Planet.ContributesOnlyLeftoverToResearch;
@@ -124,41 +117,41 @@ namespace CraigStars
 
         void AddAvailableItem(ProductionQueueItem item)
         {
-            var index = availableItems.Count;
-            availableItems.Add(item);
-            AddTreeItem(availableItemsTree, availableItemsTreeRoot, item.FullName, index);
+            AddTreeItem(availableItemsTree, availableItemsTreeRoot, item.FullName, item);
         }
 
         void AddQueuedItem(ProductionQueueItem item)
         {
-            var index = queuedItems.Count;
-            queuedItems.Add(item);
-            selectedQueueItem = item;
-            AddTreeItem(queuedItemsTree, queuedItemsTreeRoot, item.FullName, index, item.Quantity);
+            AddTreeItem(queuedItemsTree, queuedItemsTreeRoot, item.FullName, item);
         }
 
-        void AddTreeItem(Tree tree, TreeItem root, String text, int index, int quantity = 0)
+        void AddTreeItem(Tree tree, TreeItem root, String text, ProductionQueueItem item)
         {
-            var item = tree.CreateItem(root);
-            item.SetText(0, text);
-            item.SetMetadata(0, index);
-            if (quantity != 0)
+            var treeItem = tree.CreateItem(root);
+            treeItem.SetText(0, text);
+            treeItem.SetMetadata(0, Serializers.Save(item));
+            if (item.quantity != 0)
             {
-                item.SetText(1, $"{quantity}");
-                item.SetTextAlign(1, TreeItem.TextAlign.Right);
+                treeItem.SetText(1, $"{item.quantity}");
+                treeItem.SetTextAlign(1, TreeItem.TextAlign.Right);
             }
-            item.Select(0);
+            treeItem.Select(0);
         }
 
-        void UpdateCompletionEstimate()
+        /// <summary>
+        /// Update the time it takes to complete the selected item, or clear it if we have no item
+        /// </summary>
+        /// <param name="selectedQueueItem"></param>
+        void UpdateCompletionEstimate(ProductionQueueItem? selectedQueueItem = null)
         {
             if (selectedQueueItem != null)
             {
+                ProductionQueueItem item = selectedQueueItem.Value;
                 queuedItemCostGrid.Visible = true;
                 completionEstimateLabel.Visible = false;
 
                 // figure out how much this queue item costs
-                var cost = selectedQueueItem.GetCostOfOne(SettingsManager.Settings, Me.Race) * selectedQueueItem.Quantity;
+                var cost = item.GetCostOfOne(SettingsManager.Settings, Me.Race) * item.quantity;
                 queuedItemCostGrid.Cost = cost;
 
                 // figure out how many resources we have per year
@@ -189,7 +182,6 @@ namespace CraigStars
                 completionEstimateLabel.Visible = false;
             }
         }
-
 
         #region Events 
 
@@ -223,7 +215,15 @@ namespace CraigStars
         void OnOk()
         {
             Planet.ProductionQueue.Items.Clear();
-            Planet.ProductionQueue.Items.AddRange(queuedItems);
+            var child = queuedItemsTreeRoot.GetChildren();
+            while (child != null)
+            {
+                if (Serializers.Load<ProductionQueueItem>(child.GetMetadata(0).ToString()) is ProductionQueueItem item)
+                {
+                    Planet.ProductionQueue.Items.Add(item);
+                }
+                child = child.GetNext();
+            }
             Planet.ContributesOnlyLeftoverToResearch = contributesOnlyLeftoverToResearchCheckbox.Pressed;
 
             Signals.PublishProductionQueueChangedEvent(Planet);
@@ -232,53 +232,45 @@ namespace CraigStars
 
         void OnAddItem()
         {
-            var index = (int)availableItemsTree.GetSelected().GetMetadata(0);
-            var item = availableItems[index];
+            var itemToAdd = Serializers.Load<ProductionQueueItem>(availableItemsTree.GetSelected()?.GetMetadata(0).ToString());
+            var selectedQueueItem = Serializers.Load<ProductionQueueItem>(queuedItemsTree.GetSelected()?.GetMetadata(0).ToString());
 
-            if (selectedQueueItem?.Type == item.Type)
+            if (itemToAdd != null && selectedQueueItem != null && selectedQueueItem?.type == itemToAdd?.type)
             {
-                selectedQueueItem.Quantity += quantityModifier;
-                queuedItemsTree.GetSelected().SetText(1, selectedQueueItem.Quantity.ToString());
+                var selectedItem = selectedQueueItem.Value;
+                selectedItem.quantity += quantityModifier;
+                queuedItemsTree.GetSelected().SetText(1, selectedItem.quantity.ToString());
+                queuedItemsTree.GetSelected().SetMetadata(0, Serializers.Save(selectedItem));
             }
-            else
+            else if (itemToAdd != null)
             {
-                var queuedItem = new ProductionQueueItem(item.Type, quantityModifier, item.Design);
+                var queuedItem = new ProductionQueueItem(itemToAdd.Value.type, quantityModifier, itemToAdd.Value.Design);
                 AddQueuedItem(queuedItem);
             }
         }
 
         void OnClear()
         {
-            selectedQueueItem = null;
-            queuedItems.Clear();
             queuedItemsTree.Clear();
             queuedItemsTreeRoot = queuedItemsTree.CreateItem();
         }
 
         void OnRemoveItem()
         {
-            if (queuedItemsTree.GetSelected() != null)
+            var selectedQueueItem = GetSelectedQueueItem();
+            if (selectedQueueItem != null)
             {
-                // Reduce the quantity or remove the selected item.
-                var index = (int)queuedItemsTree.GetSelected().GetMetadata(0);
-                var item = queuedItems[index];
-
-                item.Quantity -= quantityModifier;
-                if (item.Quantity <= 0)
+                var item = selectedQueueItem.Value;
+                item.quantity -= quantityModifier;
+                if (item.quantity <= 0)
                 {
                     queuedItemsTree.GetSelected().Free();
-                    selectedQueueItem = null;
-                    queuedItems.RemoveAt(index);
-                    var queuedItem = queuedItemsTreeRoot.GetNext();
-                    int newIndex = 0;
-                    while (queuedItem != null)
-                    {
-                        queuedItem.SetMetadata(0, newIndex++);
-                    }
                 }
                 else
                 {
-                    queuedItemsTree.GetSelected().SetText(1, item.Quantity.ToString());
+                    // save the item back to our list and upate the tree
+                    queuedItemsTree.GetSelected().SetText(1, item.quantity.ToString());
+                    queuedItemsTree.GetSelected().SetMetadata(0, Serializers.Save(item));
                 }
                 // force a UI update: https://github.com/godotengine/godot/issues/38787
                 queuedItemsTree.HideRoot = queuedItemsTree.HideRoot;
@@ -287,20 +279,38 @@ namespace CraigStars
 
         void OnAvailableItemSelected()
         {
-            var index = (int)availableItemsTree.GetSelected().GetMetadata(0);
-            var item = availableItems[index];
+            var item = GetSelectedAvailableItem();
 
-            availableItemCostGrid.Cost = item.GetCostOfOne(SettingsManager.Settings, Me.Race);
+            if (item != null)
+            {
+                availableItemCostGrid.Cost = item.Value.GetCostOfOne(SettingsManager.Settings, Me.Race);
+            }
         }
 
         void OnQueuedItemSelected()
         {
-            var index = (int)queuedItemsTree.GetSelected().GetMetadata(0);
-            var item = queuedItems[index];
-            selectedQueueItem = item;
-            UpdateCompletionEstimate();
+            UpdateCompletionEstimate(GetSelectedQueueItem());
         }
 
+        ProductionQueueItem? GetSelectedQueueItem()
+        {
+            var selectedItem = queuedItemsTree.GetSelected();
+            if (selectedItem != null)
+            {
+                return Serializers.Load<ProductionQueueItem>(selectedItem.GetMetadata(0).ToString());
+            }
+            return null;
+        }
+
+        ProductionQueueItem? GetSelectedAvailableItem()
+        {
+            var selectedItem = availableItemsTree.GetSelected();
+            if (selectedItem != null)
+            {
+                return Serializers.Load<ProductionQueueItem>(selectedItem.GetMetadata(0).ToString());
+            }
+            return null;
+        }
 
         #endregion
     }

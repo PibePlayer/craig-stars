@@ -50,9 +50,6 @@ namespace CraigStars
 
         public override void _Ready()
         {
-            // setup the current player
-            Me = PlayersManager.Instance.Me;
-
             waypointAreaScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/WaypointArea.tscn");
             scannerCoverageScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/ScannerCoverage.tscn");
             planetScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/PlanetSprite.tscn");
@@ -149,8 +146,10 @@ namespace CraigStars
 
         public void InitMapObjects()
         {
-            var player = PlayersManager.Instance.Me;
-            Planets.AddRange(player.Planets.Select(planet =>
+            // setup the current player
+            Me = PlayersManager.Instance.Me;
+
+            Planets.AddRange(Me.Planets.Select(planet =>
             {
                 var planetSprite = planetScene.Instance() as PlanetSprite;
                 planetSprite.Planet = planet;

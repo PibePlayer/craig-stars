@@ -1,14 +1,21 @@
 using System;
+using System.Text.Json.Serialization;
 
 namespace CraigStars
 {
     /// <summary>
     /// An item in a ProductionQueue
     /// </summary>
-    public class ProductionQueueItem
+    public struct ProductionQueueItem
     {
-        public QueueItemType Type { get; set; }
-        public int Quantity { get; set; }
+        public readonly QueueItemType type;
+        public int quantity;
+
+        /// <summary>
+        /// The name of the fleet to place this item into
+        /// </summary>
+        /// <value></value>
+        public readonly String fleetName;
 
         /// <summary>
         /// If this is a ship building item, this is the design to build
@@ -16,17 +23,20 @@ namespace CraigStars
         /// <value></value>
         public ShipDesign Design { get; set; }
 
-        /// <summary>
-        /// The name of the fleet to place this item into
-        /// </summary>
-        /// <value></value>
-        public String FleetName { get; set; }
+        [JsonConstructor]
+        public ProductionQueueItem(QueueItemType type, int quantity = 1, ShipDesign design = null, string fleetName = null)
+        {
+            this.type = type;
+            this.quantity = quantity;
+            this.Design = design;
+            this.fleetName = fleetName;
+        }
 
         public String ShortName
         {
             get
             {
-                switch (Type)
+                switch (type)
                 {
                     case QueueItemType.Starbase:
                     case QueueItemType.ShipToken:
@@ -40,7 +50,7 @@ namespace CraigStars
                     case QueueItemType.AutoAlchemy:
                         return "Alchemy (Auto)";
                     default:
-                        return Type.ToString();
+                        return type.ToString();
                 }
             }
         }
@@ -49,7 +59,7 @@ namespace CraigStars
         {
             get
             {
-                switch (Type)
+                switch (type)
                 {
                     case QueueItemType.Starbase:
                     case QueueItemType.ShipToken:
@@ -63,21 +73,9 @@ namespace CraigStars
                     case QueueItemType.AutoDefense:
                         return "Defense (Auto Build)";
                     default:
-                        return Type.ToString();
+                        return type.ToString();
                 }
             }
-        }
-
-        public ProductionQueueItem(QueueItemType type, int quantity = 1, ShipDesign design = null)
-        {
-            Type = type;
-            Quantity = quantity;
-            Design = design;
-        }
-
-        public ProductionQueueItem Clone()
-        {
-            return new ProductionQueueItem(Type, Quantity, Design);
         }
 
         /// <summary>
@@ -90,11 +88,11 @@ namespace CraigStars
         {
             int resources = 0;
             int germanium = 0;
-            if (Type == QueueItemType.Mine || Type == QueueItemType.AutoMine)
+            if (type == QueueItemType.Mine || type == QueueItemType.AutoMine)
             {
                 resources = race.MineCost;
             }
-            else if (Type == QueueItemType.Factory || Type == QueueItemType.AutoFactory)
+            else if (type == QueueItemType.Factory || type == QueueItemType.AutoFactory)
             {
                 resources = race.FactoryCost;
                 germanium = settings.FactoryCostGermanium;
@@ -103,7 +101,7 @@ namespace CraigStars
                     germanium = germanium - 1;
                 }
             }
-            else if (Type == QueueItemType.Alchemy || Type == QueueItemType.AutoAlchemy)
+            else if (type == QueueItemType.Alchemy || type == QueueItemType.AutoAlchemy)
             {
                 if (race.HasLRT(LRT.MA))
                 {
@@ -114,11 +112,11 @@ namespace CraigStars
                     resources = settings.MineralAlchemyCost;
                 }
             }
-            else if (Type == QueueItemType.Defense || Type == QueueItemType.AutoDefense)
+            else if (type == QueueItemType.Defense || type == QueueItemType.AutoDefense)
             {
                 return settings.DefenseCost;
             }
-            else if (Type == QueueItemType.ShipToken || Type == QueueItemType.Starbase)
+            else if (type == QueueItemType.ShipToken || type == QueueItemType.Starbase)
             {
                 // ship designs have their own cost
                 return Design.Aggregate.Cost;

@@ -51,7 +51,7 @@ namespace CraigStars
                 ActivePlanet.Planet.ProductionQueue.Items.ForEach(item =>
                 {
                     productionQueueItemList.AddItem(item.ShortName);
-                    productionQueueItemList.AddItem($"{item.Quantity}", selectable: false);
+                    productionQueueItemList.AddItem($"{item.quantity}", selectable: false);
                 });
             }
         }

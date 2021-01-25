@@ -80,6 +80,7 @@ namespace CraigStars.Singletons
 
         #endregion
 
+
         // The GDScript signals object
         public static Signals Instance { get; private set; }
 

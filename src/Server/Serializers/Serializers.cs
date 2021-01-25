@@ -122,15 +122,19 @@ namespace CraigStars
         /// </summary>
         static public Nullable<T> Load<T>(string json) where T : struct
         {
-            try
+            if (json != null)
             {
-                return JsonSerializer.Deserialize<T>(json, options);
+                try
+                {
+                    return JsonSerializer.Deserialize<T>(json, options);
+                }
+                catch (Exception e)
+                {
+                    log.Error($"Failed to deserialize json: {json} into type: {typeof(T)}", e);
+                }
+
             }
-            catch (Exception e)
-            {
-                log.Error($"Failed to deserialize json: {json} into type: {typeof(T)}", e);
-                return null;
-            }
+            return null;
         }
 
         /// <summary>

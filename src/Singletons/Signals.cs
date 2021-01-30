@@ -25,9 +25,9 @@ namespace CraigStars.Singletons
         public static event Action<MapObjectSprite> MapObjectHighlightedEvent;
         public static event Action<MapObjectSprite> MapObjectSelectedEvent;
         public static event Action<MapObjectSprite> MapObjectActivatedEvent;
-        public static event Action<Fleet, Waypoint> WaypointAddedEvent;
-        public static event Action<Waypoint> WaypointSelectedEvent;
-        public static event Action<Waypoint> WaypointDeletedEvent;
+        public static event Action<Fleet, Waypoint, int> WaypointAddedEvent;
+        public static event Action<Waypoint, int> WaypointSelectedEvent;
+        public static event Action<Waypoint, int> WaypointDeletedEvent;
 
         #endregion
 
@@ -185,9 +185,9 @@ namespace CraigStars.Singletons
 
         #endregion
 
-        public static void PublishWaypointAddedEvent(Fleet fleet, Waypoint waypoint)
+        public static void PublishWaypointAddedEvent(Fleet fleet, Waypoint waypoint, int index)
         {
-            WaypointAddedEvent?.Invoke(fleet, waypoint);
+            WaypointAddedEvent?.Invoke(fleet, waypoint, index);
         }
 
         public static void PublishServerDisconnectedEvent()
@@ -197,14 +197,14 @@ namespace CraigStars.Singletons
 
         #region Waypoints
 
-        public static void PublishWaypointSelectedEvent(Waypoint waypoint)
+        public static void PublishWaypointSelectedEvent(Waypoint waypoint, int index)
         {
-            WaypointSelectedEvent?.Invoke(waypoint);
+            WaypointSelectedEvent?.Invoke(waypoint, index);
         }
 
-        public static void PublishWaypointDeletedEvent(Waypoint waypoint)
+        public static void PublishWaypointDeletedEvent(Waypoint waypoint, int index)
         {
-            WaypointDeletedEvent?.Invoke(waypoint);
+            WaypointDeletedEvent?.Invoke(waypoint, index);
         }
 
         #endregion

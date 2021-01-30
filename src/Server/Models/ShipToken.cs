@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace CraigStars
 {
@@ -8,7 +8,7 @@ namespace CraigStars
     /// </summary>
     public class ShipToken
     {
-        [JsonIgnore]
+        [JsonProperty(IsReference = true)]
         public ShipDesign Design { get; set; } = new ShipDesign();
         public int Quantity { get; set; }
 

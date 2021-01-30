@@ -2,11 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using CraigStars.Singletons;
-using System.Text.Json.Serialization;
 using System;
+using Newtonsoft.Json;
 
 namespace CraigStars
 {
+    [JsonObject(IsReference = true)]
     public class Planet : MapObject, SerializableMapObject, ICargoHolder
     {
         public const int Unexplored = -1;
@@ -56,59 +57,6 @@ namespace CraigStars
 
         #endregion
 
-        #region SerializationHelpers
-
-        /// <summary>
-        /// When we serialize to json, we don't serialie the fleets, just their GUIDs
-        /// </summary>
-        public List<Guid> OrbitingFleetsGuids
-        {
-            get
-            {
-                if (orbitingFleetGuids == null)
-                {
-                    orbitingFleetGuids = OrbitingFleets.Select(f => f.Guid).ToList();
-                }
-                return orbitingFleetGuids;
-            }
-            set
-            {
-                orbitingFleetGuids = value;
-            }
-        }
-        List<Guid> orbitingFleetGuids;
-
-        /// <summary>
-        /// Prepare this object for serialization
-        /// </summary>
-        public override void PreSerialize()
-        {
-            base.PreSerialize();
-            orbitingFleetGuids = null;
-        }
-
-        /// <summary>
-        /// After serialization, wire up values we stored by guid
-        /// </summary>
-        /// <param name="mapObjectsByGuid"></param>
-        public override void PostSerialize(Dictionary<Guid, MapObject> mapObjectsByGuid)
-        {
-            base.PostSerialize(mapObjectsByGuid);
-            // convert the OrbitingFleetsByGuid list to 
-            OrbitingFleetsGuids.ForEach(guid =>
-            {
-                if (mapObjectsByGuid.TryGetValue(guid, out var mapObject))
-                {
-                    if (mapObject is Fleet fleet)
-                    {
-                        OrbitingFleets.Add(fleet);
-                    }
-                }
-            });
-        }
-
-        #endregion
-
         /// <summary>
         /// The client has null values for these, but the server needs to start with
         /// an empty planet
@@ -143,18 +91,16 @@ namespace CraigStars
         /// <param name="planet"></param>
         public void UpdatePlayerPlanet(Planet planet)
         {
-            ProductionQueue = ProductionQueue ?? new ProductionQueue();
-
             Cargo = planet.Cargo;
             MineYears = planet.MineYears;
             Mines = planet.Mines;
-            Factories = planet.Mines;
-            Defenses = planet.Mines;
+            Factories = planet.Factories;
+            Defenses = planet.Defenses;
             Scanner = planet.Scanner;
             Homeworld = planet.Homeworld;
             ContributesOnlyLeftoverToResearch = planet.ContributesOnlyLeftoverToResearch;
 
-            ProductionQueue.Copy(planet.ProductionQueue);
+            ProductionQueue = planet.ProductionQueue;
 
             if (planet.HasStarbase)
             {

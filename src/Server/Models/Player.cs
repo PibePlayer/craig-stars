@@ -1,57 +1,16 @@
 using CraigStars.Singletons;
 using Godot;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json.Serialization;
 
 namespace CraigStars
 {
     public class Player : PublicPlayerInfo
     {
         public Race Race = new Race();
-        public PlanetViewState PlanetViewState { get; set; }
         public PlayerStats Stats = new PlayerStats();
-
-        [JsonIgnore]
-        public Planet Homeworld { get; set; }
-
-        public Guid? HomeworldGuid
-        {
-            get
-            {
-                if (homeworldGuid == null)
-                {
-                    homeworldGuid = Homeworld?.Guid;
-                }
-                return homeworldGuid;
-            }
-            set
-            {
-                homeworldGuid = value;
-            }
-        }
-        Guid? homeworldGuid;
-
-        #region Scanner Data
-        public int Year { get; set; } = 2400;
-        public List<Planet> Planets { get; set; } = new List<Planet>();
-        public List<Fleet> Fleets { get; set; } = new List<Fleet>();
-        public List<Message> Messages { get; set; } = new List<Message>();
-
-        [JsonIgnore]
-        public Dictionary<Guid, Planet> PlanetsByGuid { get; set; } = new Dictionary<Guid, Planet>();
-
-        [JsonIgnore]
-        public Dictionary<Guid, Fleet> FleetsByGuid { get; set; } = new Dictionary<Guid, Fleet>();
-
-        #endregion
-
-        #region Designs
-
-        public List<ShipDesign> Designs { get; set; } = new List<ShipDesign>();
-
-        #endregion
 
         #region Research
 
@@ -83,6 +42,37 @@ namespace CraigStars
 
         #endregion
 
+        #region Designs
+
+        [JsonProperty(ItemIsReference = true)]
+        public List<ShipDesign> Designs { get; set; } = new List<ShipDesign>();
+
+        #endregion
+
+        #region Universe Data
+        public int Year { get; set; } = 2400;
+
+        public PlanetViewState PlanetViewState { get; set; }
+
+        [JsonProperty(ItemIsReference = true)]
+        public List<Planet> Planets { get; set; } = new List<Planet>();
+
+        [JsonProperty(ItemIsReference = true)]
+        public List<Fleet> Fleets { get; set; } = new List<Fleet>();
+
+        [JsonProperty(ItemIsReference = true)]
+        public List<Message> Messages { get; set; } = new List<Message>();
+
+        [JsonProperty(IsReference = true)]
+        public Planet Homeworld { get; set; }
+
+        [JsonIgnore]
+        public Dictionary<Guid, Planet> PlanetsByGuid { get; set; } = new Dictionary<Guid, Planet>();
+
+        [JsonIgnore]
+        public Dictionary<Guid, Fleet> FleetsByGuid { get; set; } = new Dictionary<Guid, Fleet>();
+
+        #endregion
 
         #region Calculated Values
 
@@ -96,39 +86,38 @@ namespace CraigStars
 
         #region Serializer Helpers
 
-        public void PreSerialize()
-        {
-            homeworldGuid = null;
-            Planets.ForEach(p => p.PreSerialize());
-            Fleets.ForEach(f => f.PreSerialize());
-            Messages.ForEach(m => m.PreSerialize());
-            Designs.ForEach(d => d.PreSerialize());
-        }
+        // public void PreSerialize()
+        // {
+        //     homeworldGuid = null;
+        //     Planets.ForEach(p => p.PreSerialize());
+        //     Fleets.ForEach(f => f.PreSerialize());
+        //     Messages.ForEach(m => m.PreSerialize());
+        //     Designs.ForEach(d => d.PreSerialize());
+        // }
 
-        public void PostSerialize(ITechStore techStore)
-        {
-            SetupMapObjectMappings();
+        // public void PostSerialize(ITechStore techStore)
+        // {
+        //     SetupMapObjectMappings();
 
-            Designs.ForEach(d => d.PostSerialize(techStore));
+        //     Designs.ForEach(d => d.PostSerialize(techStore));
 
-            if (homeworldGuid != null && PlanetsByGuid.TryGetValue(homeworldGuid.Value, out var homeworld))
-            {
-                Homeworld = homeworld;
-            }
-        }
+        //     if (homeworldGuid != null && PlanetsByGuid.TryGetValue(homeworldGuid.Value, out var homeworld))
+        //     {
+        //         Homeworld = homeworld;
+        //     }
+        // }
 
-        public void WireupPlayerFields(List<Player> players)
-        {
-            Planets.ForEach(p => p.WireupPlayer(players));
-            Fleets.ForEach(f => f.WireupPlayer(players));
-            Designs.ForEach(d => d.WireupPlayer(players));
-        }
+        // public void WireupPlayerFields(List<Player> players)
+        // {
+        //     Planets.ForEach(p => p.WireupPlayer(players));
+        //     Fleets.ForEach(f => f.WireupPlayer(players));
+        //     Designs.ForEach(d => d.WireupPlayer(players));
+        // }
 
         public void SetupMapObjectMappings()
         {
             PlanetsByGuid = Planets.ToLookup(p => p.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
             FleetsByGuid = Fleets.ToLookup(f => f.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
-
         }
 
         public void ComputeAggregates(UniverseSettings settings)
@@ -474,19 +463,14 @@ namespace CraigStars
                     if (wp.Target is Planet)
                     {
                         var targetedPlanetReport = PlanetsByGuid[wp.Target.Guid];
-                        fleetReport.Waypoints.Add(new Waypoint(targetedPlanetReport, wp.WarpFactor, wp.Task, wp.TransportTasks != null ? new WaypointTransportTasks(wp.TransportTasks) : null));
+                        fleetReport.Waypoints.Add(Waypoint.TargetWaypoint(targetedPlanetReport, wp.WarpFactor, wp.Task, wp.TransportTasks));
                     }
                     else
                     {
                         // TODO: figure out targeting other fleets
                         // we might have to add waypoint reports as a separate
                         // step
-                        var fleetReportWaypoint = new Waypoint()
-                        {
-                            Position = wp.Position,
-                            WarpFactor = wp.WarpFactor
-                        };
-                        fleetReport.Waypoints.Add(fleetReportWaypoint);
+                        fleetReport.Waypoints.Add(Waypoint.PositionWaypoint(wp.Position, wp.WarpFactor, wp.Task, wp.TransportTasks));
                     }
                 });
                 fleetReport.Cargo = fleet.Cargo;

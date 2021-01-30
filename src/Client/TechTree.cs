@@ -140,7 +140,7 @@ namespace CraigStars
                 var categoryRoot = categoryTreeItemByCategory[tech.Category];
                 var item = techTree.CreateItem(categoryRoot);
                 techTreeItemByTech[tech] = item;
-                var json = Serializers.Save(tech.GetDraggableTech(index));
+                var json = Serializers.Serialize(tech.GetDraggableTech(index));
                 item.SetMetadata(0, json);
                 item.SetText(0, tech.Name);
                 if (tech is TechHull)
@@ -162,7 +162,7 @@ namespace CraigStars
             var selected = techTree.GetSelected();
             if (selected.GetMetadata(0) is string json)
             {
-                DraggableTech? draggableTech = Serializers.Load<DraggableTech>(json);
+                DraggableTech? draggableTech = Serializers.Deserialize<DraggableTech>(json);
                 if (draggableTech != null)
                 {
                     var tech = techs[draggableTech.Value.index];

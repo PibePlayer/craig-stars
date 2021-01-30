@@ -136,7 +136,7 @@ public class UniverseGenerator
         );
         fleet.Position = planet.Position;
         fleet.Orbiting = planet;
-        fleet.Waypoints.Add(new Waypoint(fleet.Orbiting));
+        fleet.Waypoints.Add(Waypoint.TargetWaypoint(fleet.Orbiting));
         planet.OrbitingFleets.Add(fleet);
         fleet.Name = name;
         fleet.Player = player;
@@ -199,6 +199,7 @@ public class UniverseGenerator
 
         // own this planet
         planet.Player = player;
+        planet.ProductionQueue = new ProductionQueue();
         planet.ReportAge = 0;
 
         // copy the universe mineral concentrations and surface minerals
@@ -236,7 +237,7 @@ public class UniverseGenerator
             Orbiting = planet,
             Waypoints = new List<Waypoint>
             {
-                new Waypoint(planet)
+                Waypoint.TargetWaypoint(planet)
             },
             Tokens = new List<ShipToken>
             {
@@ -257,6 +258,7 @@ public class UniverseGenerator
 
         // own this planet
         planet.Player = player;
+        planet.ProductionQueue = new ProductionQueue();
         planet.ReportAge = 0;
 
         // copy the universe mineral concentrations and surface minerals

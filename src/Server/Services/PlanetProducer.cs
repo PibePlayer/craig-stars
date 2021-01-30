@@ -28,13 +28,14 @@ namespace CraigStars
                                       planet.ResourcesPerYearAvailable);
 
             // add the production queue's last turn resources
-            allocated += planet.ProductionQueue.Allocated;
+            var queue = planet.ProductionQueue;
+            allocated += queue.Allocated;
 
             // try and build each item in the queue, in order
             int index = 0;
-            while (index < planet.ProductionQueue.Items.Count)
+            while (index < queue.Items.Count)
             {
-                ProductionQueueItem item = planet.ProductionQueue.Items[index];
+                ProductionQueueItem item = queue.Items[index];
                 Cost costPer = item.GetCostOfOne(settings, planet.Player.Race);
                 int numBuilt = allocated / costPer;
 
@@ -52,14 +53,14 @@ namespace CraigStars
                     if (!AutoBuildTypes.Contains(item.type))
                     {
                         // reduce the quantity
-                        var itemAtIndex = planet.ProductionQueue.Items[index];
-                        itemAtIndex.quantity = planet.ProductionQueue.Items[index].quantity - numBuilt;
-                        planet.ProductionQueue.Items[index] = itemAtIndex;
-
+                        var itemAtIndex = queue.Items[index];
+                        itemAtIndex.quantity = queue.Items[index].quantity - numBuilt;
+                        queue.Items[index] = itemAtIndex;
                     }
 
                     // allocate the leftover resources to the remaining items
-                    allocated = AllocateToQueue(planet.ProductionQueue, costPer, allocated);
+                    queue.Allocated = AllocateToQueue(costPer, allocated);
+                    allocated -= queue.Allocated;
                 }
                 else if (numBuilt >= item.quantity)
                 {
@@ -73,17 +74,19 @@ namespace CraigStars
                     if (!AutoBuildTypes.Contains(item.type))
                     {
                         // remove this item from the queue
-                        planet.ProductionQueue.Items.RemoveAt(index);
+                        queue.Items.RemoveAt(index);
                         index--;
                     }
                     // we built this completely, wipe out the allocated amount
-                    planet.ProductionQueue.Allocated = new Cost();
+                    queue.Allocated = new Cost();
+                    planet.ProductionQueue = queue;
                 }
                 else
                 {
                     // allocate as many minerals/resources as we can to the queue
                     // and break out of the loop, no more building will take place
-                    allocated = AllocateToQueue(planet.ProductionQueue, costPer, allocated);
+                    queue.Allocated = AllocateToQueue(costPer, allocated);
+                    allocated -= queue.Allocated;
                     break;
                 }
                 index++;
@@ -174,7 +177,7 @@ namespace CraigStars
             fleet.Tokens.Add(new ShipToken(item.Design, item.quantity));
             fleet.ComputeAggregate(settings);
             fleet.Fuel = fleet.Aggregate.FuelCapacity;
-            fleet.Waypoints.Add(new Waypoint(planet));
+            fleet.Waypoints.Add(Waypoint.TargetWaypoint(planet));
             planet.OrbitingFleets.Add(fleet);
             Message.FleetBuilt(planet.Player, item.Design, fleet, numBuilt);
 
@@ -225,7 +228,7 @@ namespace CraigStars
         /// <param name="costPer"></param>
         /// <param name="allocated"></param>
         /// <returns></returns>
-        private Cost AllocateToQueue(ProductionQueue queue, Cost costPer, Cost allocated)
+        private Cost AllocateToQueue(Cost costPer, Cost allocated)
         {
             double ironiumPerc = (costPer.Ironium > 0 ? (double)(allocated.Ironium) / costPer.Ironium : 100.0);
             double boraniumPerc = (costPer.Boranium > 0 ? (double)(allocated.Boranium) / costPer.Boranium : 100.0);
@@ -236,15 +239,15 @@ namespace CraigStars
             double minPerc = Math.Min(ironiumPerc, Math.Min(boraniumPerc, Math.Min(germaniumPerc, resourcesPerc)));
 
             // allocate the lowest percentage of each cost
-            queue.Allocated = new Cost(
+            var newAllocated = new Cost(
                 (int)(costPer.Ironium * minPerc),
                 (int)(costPer.Boranium * minPerc),
                 (int)(costPer.Germanium * minPerc),
                 (int)(costPer.Resources * minPerc)
             );
 
-            // return the leftovers
-            return allocated -= queue.Allocated;
+            // return the amount we allocate to the top queued item
+            return newAllocated;
         }
     }
 }

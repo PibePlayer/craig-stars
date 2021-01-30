@@ -100,7 +100,7 @@ namespace CraigStars
         {
             designs = new List<ShipDesign>(designsToAdd);
             // TODO: sort by power
-            designs.Sort((t1, t2) => t1.Hull.Ranking.CompareTo(t2.Hull.Ranking).CompareTo(t1.HullName.CompareTo(t2.HullName)));
+            designs.Sort((t1, t2) => t1.Hull.Ranking.CompareTo(t2.Hull.Ranking).CompareTo(t1.Hull?.Name?.CompareTo(t2.Hull?.Name)));
 
             designs.Each((design, index) =>
             {

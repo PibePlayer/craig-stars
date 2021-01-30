@@ -43,9 +43,15 @@ namespace CraigStars
                     fleet.Waypoints.RemoveRange(1, fleet.Waypoints.Count - 1);
                     if (playerFleet.Waypoints != null && playerFleet.Waypoints.Count > 0)
                     {
-                        fleet.Waypoints[0].WarpFactor = playerFleet.Waypoints[0].WarpFactor;
-                        fleet.Waypoints[0].Task = playerFleet.Waypoints[0].Task;
-                        fleet.Waypoints[0].TransportTasks = playerFleet.Waypoints[0].TransportTasks != null ? new WaypointTransportTasks(playerFleet.Waypoints[0].TransportTasks) : null;
+                        // copy player waypoint data, but reset the target/position
+                        var wp0 = playerFleet.Waypoints[0];
+                        wp0.Target = fleet.Orbiting;
+                        if (wp0.Target == null)
+                        {
+                            wp0.Position = fleet.Position;
+                        }
+                        fleet.Waypoints[0] = wp0;
+
                         foreach (var playerWaypoint in playerFleet.Waypoints.Skip(1))
                         {
                             if (playerWaypoint.Target is Planet planet)
@@ -54,18 +60,12 @@ namespace CraigStars
                                 {
                                     log.Debug($"Adding player defined waypoint for {fleet.Name} to {playerWaypoint.TargetName} -> {playerWaypoint.Task}");
                                     // add the server side version of this planet as a waypoint
-                                    fleet.Waypoints.Add(new Waypoint(gamePlanet, playerWaypoint.WarpFactor, playerWaypoint.Task, playerWaypoint.TransportTasks != null ? new WaypointTransportTasks(playerWaypoint.TransportTasks) : null));
+                                    fleet.Waypoints.Add(Waypoint.TargetWaypoint(gamePlanet, playerWaypoint.WarpFactor, playerWaypoint.Task, playerWaypoint.TransportTasks));
                                 }
                             }
                             else
                             {
-                                fleet.Waypoints.Add(new Waypoint()
-                                {
-                                    Position = playerWaypoint.Position,
-                                    WarpFactor = playerWaypoint.WarpFactor,
-                                    Task = playerWaypoint.Task,
-                                    TransportTasks = playerWaypoint.TransportTasks != null ? new WaypointTransportTasks(playerWaypoint.TransportTasks) : null
-                                });
+                                fleet.Waypoints.Add(playerWaypoint);
                             }
                         };
                     }
@@ -78,8 +78,7 @@ namespace CraigStars
                 {
                     planet.ContributesOnlyLeftoverToResearch = playerPlanet.ContributesOnlyLeftoverToResearch;
                     // TODO: validate planet production queue
-                    planet.ProductionQueue.Items.Clear();
-                    playerPlanet.ProductionQueue.Items.ForEach(item => planet.ProductionQueue.Items.Add(item));
+                    planet.ProductionQueue = playerPlanet.ProductionQueue;
                 }
             }
         }

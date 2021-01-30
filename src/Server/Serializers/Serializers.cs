@@ -1,109 +1,94 @@
 using System;
 using System.Collections.Generic;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using log4net;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 
 namespace CraigStars
 {
-    public class GuidReferenceResolver : ReferenceResolver
-    {
-        private readonly IDictionary<Guid, MapObject> mapObjects = new Dictionary<Guid, MapObject>();
+    // public class GuidReferenceResolver : ReferenceResolver
+    // {
+    //     private readonly IDictionary<Guid, MapObject> mapObjects = new Dictionary<Guid, MapObject>();
 
-        public override object ResolveReference(string referenceId)
-        {
-            Guid guid = new Guid(referenceId);
+    //     public override object ResolveReference(string referenceId)
+    //     {
+    //         Guid guid = new Guid(referenceId);
 
-            mapObjects.TryGetValue(guid, out MapObject mo);
+    //         mapObjects.TryGetValue(guid, out MapObject mo);
 
-            return mo;
-        }
+    //         return mo;
+    //     }
 
-        public override string GetReference(object value, out bool alreadyExists)
-        {
-            MapObject mo = value as MapObject;
-            if (mo != null)
-            {
-                if (!(alreadyExists = mapObjects.ContainsKey(mo.Guid)))
-                {
-                    mapObjects[mo.Guid] = mo;
-                }
+    //     public override string GetReference(object value, out bool alreadyExists)
+    //     {
+    //         MapObject mo = value as MapObject;
+    //         if (mo != null)
+    //         {
+    //             if (!(alreadyExists = mapObjects.ContainsKey(mo.Guid)))
+    //             {
+    //                 mapObjects[mo.Guid] = mo;
+    //             }
 
-                return mo.Guid.ToString();
-            }
-            else
-            {
-                alreadyExists = false;
-                return null;
-            }
-        }
+    //             return mo.Guid.ToString();
+    //         }
+    //         else
+    //         {
+    //             alreadyExists = false;
+    //             return null;
+    //         }
+    //     }
 
-        public override void AddReference(string reference, object value)
-        {
-            Guid guid = new Guid(reference);
-            MapObject MapObject = (MapObject)value;
-            MapObject.Guid = guid;
-            mapObjects[guid] = MapObject;
-        }
-    }
+    //     public override void AddReference(string reference, object value)
+    //     {
+    //         Guid guid = new Guid(reference);
+    //         MapObject MapObject = (MapObject)value;
+    //         MapObject.Guid = guid;
+    //         mapObjects[guid] = MapObject;
+    //     }
+    // }
 
     public static class Serializers
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(HullComponentPanel));
-        static JsonSerializerOptions options;
+        static ITraceWriter traceWriter = new MemoryTraceWriter();
+        static JsonSerializerSettings simpleSettings;
 
         static Serializers()
         {
-            options = new JsonSerializerOptions
+            simpleSettings = new JsonSerializerSettings()
             {
-                WriteIndented = true,
-                IgnoreNullValues = true,
-                IncludeFields = true,
-                IgnoreReadOnlyProperties = true,
-                // ReferenceHandler = new ReferenceHandler<GuidReferenceResolver>(),
+                NullValueHandling = NullValueHandling.Ignore,
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                // TraceWriter = traceWriter,
 
-                Converters =
-                {
-                    new JsonStringEnumConverter(),
+                Converters = new JsonConverter[] {
                     new ColorJsonConverter(),
+                    new StringEnumConverter()
                 }
             };
         }
 
         /// <summary>
-        /// Save player data
-        /// </summary>
-        /// <param name="player"></param>
-        /// <returns></returns>
-        static public string SavePlayer(Player player)
-        {
-            player.PreSerialize();
-            return JsonSerializer.Serialize(player, options);
-        }
-
-        /// <summary>
-        /// Load a player from json
-        /// </summary>
-        /// <param name="json">The json to load</param>
-        /// <param name="techStore">The player</param>
-        /// <returns></returns>
-        static public Player LoadPlayer(string json, ITechStore techStore)
-        {
-            var player = JsonSerializer.Deserialize<Player>(json, options);
-
-            player.PostSerialize(techStore);
-
-            return player;
-        }
-
-        /// <summary>
-        /// After all players have been loaded, we need to wire up the player
-        /// fields in all the map objects
+        /// Create a new JsonSerializerSettings for Player objects
         /// </summary>
         /// <param name="players"></param>
-        static public void WireupPlayerFields(List<Player> players)
+        /// <returns></returns>
+        static JsonSerializerSettings CreatePlayerSettings(List<PublicPlayerInfo> players, ITechStore techStore)
         {
-            players.ForEach(p => p.WireupPlayerFields(players));
+            return new JsonSerializerSettings()
+            {
+                Formatting = Formatting.Indented,
+                NullValueHandling = NullValueHandling.Ignore,
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                // TraceWriter = traceWriter,
+                ContractResolver = new PlayerContractResolver(players, techStore),
+
+                Converters = new JsonConverter[] {
+                    new ColorJsonConverter(),
+                    new StringEnumConverter()
+                }
+            };
         }
 
         /// <summary>
@@ -112,21 +97,81 @@ namespace CraigStars
         /// <param name="item"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        static public string Save<T>(T item)
+        static public string Serialize<T>(T item)
         {
-            return JsonSerializer.Serialize(item, options);
+            return JsonConvert.SerializeObject(item, simpleSettings);
         }
 
         /// <summary>
-        /// Load a struct from a json string. If the json fails to parse, return null
+        /// Save a player to JSON. 
         /// </summary>
-        static public Nullable<T> Load<T>(string json) where T : struct
+        /// <param name="player"></param>
+        /// <param name="players"></param>
+        /// <returns></returns>
+        static public string Serialize<T>(T item, List<PublicPlayerInfo> players, ITechStore techStore)
+        {
+            var json = JsonConvert.SerializeObject(item, CreatePlayerSettings(players, techStore));
+            log.Debug($"Serializing {item.GetType().Name}: \n{json}");
+            return json;
+        }
+
+        /// <summary>
+        /// Load a player from JSON
+        /// </summary>
+        /// <param name="json"></param>
+        /// <param name="players"></param>
+        /// <returns></returns>
+        static public Nullable<T> Deserialize<T>(string json, List<PublicPlayerInfo> players, ITechStore techStore) where T : struct
         {
             if (json != null)
             {
                 try
                 {
-                    return JsonSerializer.Deserialize<T>(json, options);
+                    log.Debug($"Deserializing {typeof(T).Name} \n{json}");
+                    return JsonConvert.DeserializeObject<T>(json, CreatePlayerSettings(players, techStore));
+                }
+                catch (Exception e)
+                {
+                    log.Error($"Failed to deserialize json: {json} into type: {typeof(T)}", e);
+                }
+
+            }
+            return null;
+
+        }
+
+        /// <summary>
+        /// Save a player to JSON. 
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="players"></param>
+        /// <returns></returns>
+        static public string Serialize(Player player, List<PublicPlayerInfo> players, ITechStore techStore)
+        {
+            return JsonConvert.SerializeObject(player, CreatePlayerSettings(players, techStore));
+        }
+
+        /// <summary>
+        /// Load a player from JSON
+        /// </summary>
+        /// <param name="json"></param>
+        /// <param name="players"></param>
+        /// <returns></returns>
+        static public void PopulatePlayer(string json, Player player, List<PublicPlayerInfo> players, ITechStore techStore)
+        {
+            JsonConvert.PopulateObject(json, player, CreatePlayerSettings(players, techStore));
+        }
+
+        /// <summary>
+        /// Load a struct from a json string. If the json fails to parse, return null
+        /// </summary>
+        static public Nullable<T> Deserialize<T>(string json) where T : struct
+        {
+            if (json != null)
+            {
+                try
+                {
+                    return JsonConvert.DeserializeObject<T>(json, simpleSettings);
                 }
                 catch (Exception e)
                 {
@@ -140,19 +185,21 @@ namespace CraigStars
         /// <summary>
         /// Load an object from a json string. If the json fails to parse, return null
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        static public T LoadObject<T>(string json) where T : class
+        static public T DeserializeObject<T>(string json) where T : class
         {
-            try
+            if (json != null)
             {
-                return JsonSerializer.Deserialize<T>(json, options);
-            }
-            catch (Exception e)
-            {
-                log.Error($"Failed to deserialize json: {json} into type: {typeof(T)}", e);
-                return null;
-            }
-        }
+                try
+                {
+                    return JsonConvert.DeserializeObject<T>(json, simpleSettings);
+                }
+                catch (Exception e)
+                {
+                    log.Error($"Failed to deserialize json: {json} into type: {typeof(T)}", e);
+                }
 
+            }
+            return null;
+        }
     }
 }

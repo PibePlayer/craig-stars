@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace CraigStars
 {
@@ -9,46 +9,8 @@ namespace CraigStars
         public MessageType Type { get; set; }
         public String Text { get; set; }
 
-        [JsonIgnore]
+        [JsonProperty(IsReference = true)]
         public MapObject Target { get; set; }
-
-        public Guid? TargetGuid
-        {
-            get
-            {
-                if (targetGuid == null)
-                {
-                    targetGuid = Target?.Guid;
-                }
-                return targetGuid;
-            }
-            set
-            {
-                targetGuid = value;
-            }
-        }
-        Guid? targetGuid;
-
-        /// <summary>
-        /// Prepare this object for serialization
-        /// </summary>
-        public void PreSerialize()
-        {
-            targetGuid = null;
-        }
-
-        /// <summary>
-        /// After serialization, wire up values we stored by guid
-        /// </summary>
-        /// <param name="mapObjectsByGuid"></param>
-        public void PostSerialize(Dictionary<Guid, MapObject> mapObjectsByGuid)
-        {
-            if (targetGuid.HasValue)
-            {
-                mapObjectsByGuid.TryGetValue(targetGuid.Value, out var target);
-                Target = target;
-            }
-        }
 
         public Message() { }
 

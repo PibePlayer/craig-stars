@@ -51,11 +51,11 @@ namespace CraigStars
                     // add this planet as a waypoint
                     var wp0 = fleet.Waypoints[0];
                     wp0.Task = WaypointTask.Transport;
-                    wp0.TransportTasks = new WaypointTransportTasks();
-                    wp0.TransportTasks.Colonists.Action = WaypointTaskTransportAction.LoadAll;
+                    var transportTasks = new WaypointTransportTasks(colonists: new WaypointTransportTask(WaypointTaskTransportAction.LoadAll));
+                    wp0.TransportTasks = transportTasks;
 
                     // TODO: setup waypoint transfer tasks
-                    fleet.Waypoints.Add(new Waypoint(planetToColonize, fleet.GetDefaultWarpFactor(), WaypointTask.Colonize));
+                    fleet.Waypoints.Add(Waypoint.TargetWaypoint(planetToColonize, fleet.GetDefaultWarpFactor(), WaypointTask.Colonize));
 
                     // remove this planet from our list
                     colonizablePlanets.Remove(planetToColonize);
@@ -83,7 +83,7 @@ namespace CraigStars
                 foreach (Planet planet in buildablePlanets)
                 {
                     bool isBuilding = false;
-                    foreach (ProductionQueueItem item in planet.ProductionQueue.Items)
+                    foreach (ProductionQueueItem item in planet.ProductionQueue?.Items)
                     {
                         if (item.Design != null && item.Design.Aggregate.Colonizer)
                         {
@@ -106,7 +106,7 @@ namespace CraigStars
                     // one to the queue
                     if (queuedToBeBuilt < numShipsNeeded)
                     {
-                        planet.ProductionQueue.Items.Add(new ProductionQueueItem(QueueItemType.ShipToken, 1, colonyShip));
+                        planet.ProductionQueue?.Items.Add(new ProductionQueueItem(QueueItemType.ShipToken, 1, colonyShip));
                         log.Debug($"Added scout ship to planet queue: {planet.Name}");
                         queuedToBeBuilt++;
                     }

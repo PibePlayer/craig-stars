@@ -1,5 +1,5 @@
 using System;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace CraigStars
 {
@@ -24,7 +24,7 @@ namespace CraigStars
         public ShipDesign Design { get; set; }
 
         [JsonConstructor]
-        public ProductionQueueItem(QueueItemType type, int quantity = 1, ShipDesign design = null, string fleetName = null)
+        public ProductionQueueItem(QueueItemType type, int quantity = 0, ShipDesign design = null, string fleetName = null)
         {
             this.type = type;
             this.quantity = quantity;

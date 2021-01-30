@@ -7,6 +7,12 @@ namespace CraigStars.Tests
     [TestFixture]
     public class PlanetSpriteTest
     {
+        [SetUp]
+        public void SetUp()
+        {
+            PlayersManager.Instance.SetupPlayers();
+        }
+
         [Test]
         public void TestGetPeers()
         {

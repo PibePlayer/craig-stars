@@ -1,96 +1,19 @@
 using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace CraigStars
 {
+    [JsonObject(IsReference = true)]
     public class ShipDesign
     {
         public string Name { get; set; }
 
-        [JsonIgnore]
         public Player Player { get; set; }
-
-        [JsonIgnore]
         public TechHull Hull { get; set; } = new TechHull();
         public int HullSetNumber { get; set; }
         public List<ShipDesignSlot> Slots { get; set; } = new List<ShipDesignSlot>();
 
-        #region Serializer Helpers
-
-        /// <summary>
-        /// We use the Player's number to load players after serializing
-        /// </summary>
-        /// <value></value>
-        public int PlayerNum
-        {
-            get
-            {
-                if (Player != null && playerNum == -1)
-                {
-                    playerNum = Player.Num;
-                }
-                return playerNum;
-            }
-            set
-            {
-                playerNum = value;
-            }
-        }
-        int playerNum = -1;
-
-        public string HullName
-        {
-            get
-            {
-                if (hullName == null)
-                {
-                    hullName = Hull.Name;
-                }
-                return hullName;
-            }
-            set
-            {
-                hullName = value;
-            }
-        }
-        string hullName;
-
-        /// <summary>
-        /// Prepare this object for serialization
-        /// </summary>
-        public void PreSerialize()
-        {
-            // before serialization, null out our player number
-            playerNum = -1;
-
-            HullName = null;
-            Slots.ForEach(slot => slot.PreSerialize());
-        }
-
-        /// <summary>
-        /// After serialization, wire up values we stored by key
-        /// </summary>
-        /// <param name="techStore"></param>
-        public void PostSerialize(ITechStore techStore)
-        {
-            Hull = techStore.GetTechByName<TechHull>(HullName);
-            Slots.ForEach(slot => slot.PostSerialize(techStore));
-        }
-
-        /// <summary>
-        /// Wire up player objects to 
-        /// </summary>
-        /// <param name="players"></param>
-        public virtual void WireupPlayer(List<Player> players)
-        {
-            if (playerNum >= 0 && playerNum < players.Count)
-            {
-                Player = players[playerNum];
-            }
-        }
-
-        #endregion
         /// <summary>
         /// An aggregate of all components of a ship design
         /// </summary>

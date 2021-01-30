@@ -4,7 +4,7 @@ using CraigStars.Singletons;
 
 namespace CraigStars
 {
-    public class FleetWaypointsTile : FleetTile
+    public class FleetWaypointsTile : FleetWaypointTile
     {
         ItemList waypoints;
         Control selectedWaypointGrid;
@@ -17,9 +17,6 @@ namespace CraigStars
         WarpFactor warpFactor;
         Label travelTime;
         Label estimatedFuelUsage;
-
-
-        Waypoint ActiveWaypoint { get; set; }
 
         public override void _Ready()
         {
@@ -42,43 +39,23 @@ namespace CraigStars
 
 
             warpFactor.WarpSpeedChangedEvent += OnWarpSpeedChanged;
-            Signals.WaypointAddedEvent += OnWaypointAdded;
-            Signals.WaypointSelectedEvent += OnWaypointSelected;
-            Signals.WaypointDeletedEvent += OnWaypointDeleted;
         }
 
         public override void _ExitTree()
         {
             base._ExitTree();
-            Signals.WaypointAddedEvent -= OnWaypointAdded;
-            Signals.WaypointSelectedEvent -= OnWaypointSelected;
-            Signals.WaypointDeletedEvent -= OnWaypointDeleted;
-        }
-
-        void OnWaypointDeleted(Waypoint waypoint)
-        {
-            if (ActiveWaypoint == waypoint)
-            {
-                ActiveWaypoint = null;
-            }
-            UpdateControls();
-        }
-
-        void OnWaypointAdded(Fleet fleet, Waypoint waypoint)
-        {
-            ActiveWaypoint = waypoint;
-            UpdateControls();
-        }
-
-        void OnWaypointSelected(Waypoint waypoint)
-        {
-            ActiveWaypoint = waypoint;
-            UpdateControls();
+            warpFactor.WarpSpeedChangedEvent -= OnWarpSpeedChanged;
         }
 
         void OnWarpSpeedChanged(int warpSpeed)
         {
-            ActiveWaypoint.WarpFactor = warpSpeed;
+            var wp = ActiveWaypoint;
+            if (wp != null)
+            {
+                var newWaypoint = wp.Value;
+                newWaypoint.WarpFactor = warpSpeed;
+                UpdateActiveWaypoint(newWaypoint);
+            }
             UpdateControls();
         }
 
@@ -88,7 +65,7 @@ namespace CraigStars
             if (ActiveFleet != null && index >= 0 && index < ActiveFleet.Fleet.Waypoints.Count)
             {
                 // Select this waypoint and let listeners know (like ourselves and the viewport)
-                Signals.PublishWaypointSelectedEvent(ActiveFleet.Fleet.Waypoints[index]);
+                Signals.PublishWaypointSelectedEvent(ActiveFleet.Fleet.Waypoints[index], index);
             }
         }
 
@@ -97,7 +74,7 @@ namespace CraigStars
             base.OnNewActiveFleet();
             // when we have a new active fleet, set the active waypoint to the
             // first waypoint
-            ActiveWaypoint = ActiveFleet?.Fleet.Waypoints[0];
+            ActiveWaypointIndex = 0;
         }
 
         protected override void UpdateControls()
@@ -111,7 +88,7 @@ namespace CraigStars
                 foreach (var wp in ActiveFleet.Fleet.Waypoints)
                 {
                     waypoints.AddItem(wp.Target != null ? wp.Target.Name : $"Space: ({wp.Position.x}, {wp.Position.y})");
-                    if (ActiveWaypoint == wp)
+                    if (ActiveWaypointIndex == index)
                     {
                         selectedIndex = index;
                         waypoints.Select(index);

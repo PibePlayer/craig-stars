@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using CraigStars.Singletons;
 using Godot;
 using log4net;
@@ -23,20 +21,11 @@ namespace CraigStars.Tests
                     LRT.BET
                 }
             };
-            var options = new JsonSerializerOptions
-            {
-                WriteIndented = true,
-                IgnoreNullValues = true,
-                Converters =
-                {
-                    new JsonStringEnumConverter()
-                }
-            };
 
-            string jsonString = JsonSerializer.Serialize(race, options);
+            string jsonString = Serializers.Serialize(race);
             // log.Debug($"{jsonString}");
 
-            var loadedRace = JsonSerializer.Deserialize<Race>(jsonString, options);
+            var loadedRace = Serializers.DeserializeObject<Race>(jsonString);
             Assert.AreEqual(race.Name, race.Name);
         }
 

@@ -1,7 +1,7 @@
 using Godot;
+using Newtonsoft.Json;
 using System;
 using System.Runtime.InteropServices;
-using System.Text.Json.Serialization;
 
 namespace CraigStars
 {

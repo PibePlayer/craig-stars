@@ -10,6 +10,7 @@ namespace CraigStars.Tests
 {
     public class TestRunner
     {
+        string testMethodToRun;
         bool requireTestFixture;
 
         public int currentTest { get; private set; }
@@ -38,10 +39,11 @@ namespace CraigStars.Tests
         public delegate void TestResultDelegate(TestResult testResult);
 
 
-        public TestRunner(SceneTree sceneTree, bool requireTestFixture = true)
+        public TestRunner(SceneTree sceneTree, String testMethodToRun, bool requireTestFixture = true)
         {
             this.sceneTree = sceneTree;
             this.requireTestFixture = requireTestFixture;
+            this.testMethodToRun = testMethodToRun;
 
             IterateThroughAssemblies();
         }
@@ -53,6 +55,12 @@ namespace CraigStars.Tests
             {
                 object testObject = testMethods[method];
                 TestResult testResult = new TestResult(method, null, TestResult.Result.Passed);
+
+                var name = $"{testObject.GetType().Name}.{method.Name}";
+                if (testMethodToRun != "" && testMethodToRun != name)
+                {
+                    continue;
+                }
 
                 try
                 {

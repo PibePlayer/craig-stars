@@ -1,5 +1,5 @@
 using System;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace CraigStars
 {
@@ -101,6 +101,6 @@ namespace CraigStars
         public Mineral WithGermanium(int germanium = 0)
         {
             return new Mineral(Ironium, Boranium, germanium);
-        }    
+        }
     }
 }

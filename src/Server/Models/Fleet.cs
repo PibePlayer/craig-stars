@@ -4,11 +4,12 @@ using System.Linq;
 using CraigStars;
 using CraigStars.Singletons;
 using System;
-using System.Text.Json.Serialization;
 using log4net;
+using Newtonsoft.Json;
 
 namespace CraigStars
 {
+    [JsonObject(IsReference = true)]
     public class Fleet : MapObject, SerializableMapObject, ICargoHolder
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(Fleet));
@@ -16,66 +17,22 @@ namespace CraigStars
         #region Planet Stats
 
         public Cargo Cargo { get; set; } = new Cargo();
+
+        [JsonIgnore]
         public int Fuel
         {
             get => Cargo.Fuel;
             set => Cargo = Cargo.WithFuel(value);
         }
 
-        [JsonIgnore]
+        [JsonProperty(IsReference = true)]
         public Planet Orbiting { get; set; }
         public bool Scrapped { get; set; }
         public List<Waypoint> Waypoints { get; set; } = new List<Waypoint>();
         public List<ShipToken> Tokens { get; set; } = new List<ShipToken>();
 
+        [JsonIgnore]
         public FleetAggregate Aggregate { get; } = new FleetAggregate();
-
-        #endregion
-
-        #region Serializer Helpers
-
-        public Guid? OrbitingGuid
-        {
-            get
-            {
-                if (orbitingGuid == null)
-                {
-                    orbitingGuid = Orbiting?.Guid;
-                }
-                return orbitingGuid;
-            }
-            set
-            {
-                orbitingGuid = value;
-            }
-        }
-        Guid? orbitingGuid;
-
-        /// <summary>
-        /// Prepare this object for serialization
-        /// </summary>
-        public override void PreSerialize()
-        {
-            base.PreSerialize();
-            orbitingGuid = null;
-            Waypoints.ForEach(wp => wp.PreSerialize());
-        }
-
-        /// <summary>
-        /// After serialization, wire up values we stored by guid
-        /// </summary>
-        /// <param name="mapObjectsByGuid"></param>
-        public override void PostSerialize(Dictionary<Guid, MapObject> mapObjectsByGuid)
-        {
-            base.PostSerialize(mapObjectsByGuid);
-            if (orbitingGuid.HasValue)
-            {
-                mapObjectsByGuid.TryGetValue(orbitingGuid.Value, out var mapObject);
-                Orbiting = mapObject as Planet;
-            }
-
-            Waypoints.ForEach(wp => wp.PostSerialize(mapObjectsByGuid));
-        }
 
         #endregion
 
@@ -263,6 +220,7 @@ namespace CraigStars
                 {
                     // we own this planet now, yay!
                     planet.Player = Player;
+                    planet.ProductionQueue = new ProductionQueue();
                     planet.Population = Cargo.Colonists * 100;
                     Cargo = Cargo.WithColonists(0);
                     Scrap(wp);
@@ -276,7 +234,7 @@ namespace CraigStars
 
         void Transport(Waypoint wp)
         {
-            if (wp.TransportTasks != null && wp.Target is ICargoHolder cargoHolder)
+            if (wp.Target is ICargoHolder cargoHolder)
             {
                 // how much space do we have available
                 var capacity = Aggregate.CargoCapacity - Cargo.Total;
@@ -284,11 +242,11 @@ namespace CraigStars
                 foreach (CargoType taskType in Enum.GetValues(typeof(CargoType)))
                 {
                     var task = wp.TransportTasks[taskType];
-                    switch (task.Action)
+                    switch (task.action)
                     {
                         case WaypointTaskTransportAction.LoadAll:
                             // load all available, based on our constraints
-                            var availableToLoad = cargoHolder.Cargo[task.Type];
+                            var availableToLoad = cargoHolder.Cargo[taskType];
                             var transferAmount = Math.Min(availableToLoad, capacity);
                             if (transferAmount > 0)
                             {

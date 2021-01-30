@@ -1,6 +1,6 @@
 using System;
 using CraigStars.Singletons;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 
 namespace CraigStars
@@ -8,30 +8,43 @@ namespace CraigStars
     /// <summary>
     /// Each WaypointTransport lets you specify different orders for different cargo types
     /// </summary>
-    public class WaypointTransportTasks
+    public struct WaypointTransportTasks
     {
+        public readonly WaypointTransportTask Fuel;
+        public readonly WaypointTransportTask Ironium;
+        public readonly WaypointTransportTask Boranium;
+        public readonly WaypointTransportTask Germanium;
+        public readonly WaypointTransportTask Colonists;
 
-        public WaypointTransportTask Fuel { get; set; } = new WaypointTransportTask(CargoType.Fuel);
-        public WaypointTransportTask Ironium { get; set; } = new WaypointTransportTask(CargoType.Ironium);
-        public WaypointTransportTask Boranium { get; set; } = new WaypointTransportTask(CargoType.Boranium);
-        public WaypointTransportTask Germanium { get; set; } = new WaypointTransportTask(CargoType.Germanium);
-        public WaypointTransportTask Colonists { get; set; } = new WaypointTransportTask(CargoType.Colonists);
-
-        public WaypointTransportTasks() { }
-
-        public WaypointTransportTasks(WaypointTransportTasks tasks)
+        [JsonConstructor]
+        public WaypointTransportTasks(
+            WaypointTransportTask fuel,
+            WaypointTransportTask ironium,
+            WaypointTransportTask boranium,
+            WaypointTransportTask germanium,
+            WaypointTransportTask colonists
+        )
         {
-            Fuel.Action = tasks.Fuel.Action;
-            Ironium.Action = tasks.Ironium.Action;
-            Boranium.Action = tasks.Boranium.Action;
-            Germanium.Action = tasks.Germanium.Action;
-            Colonists.Action = tasks.Colonists.Action;
+            this.Fuel = fuel;
+            this.Ironium = ironium;
+            this.Boranium = boranium;
+            this.Germanium = germanium;
+            this.Colonists = colonists;
+        }
 
-            Fuel.Amount = tasks.Fuel.Amount;
-            Ironium.Amount = tasks.Ironium.Amount;
-            Boranium.Amount = tasks.Boranium.Amount;
-            Germanium.Amount = tasks.Germanium.Amount;
-            Colonists.Amount = tasks.Colonists.Amount;
+        public WaypointTransportTasks(
+            WaypointTransportTask? fuel = null,
+            WaypointTransportTask? ironium = null,
+            WaypointTransportTask? boranium = null,
+            WaypointTransportTask? germanium = null,
+            WaypointTransportTask? colonists = null
+            )
+        {
+            this.Fuel = fuel != null ? fuel.Value : new WaypointTransportTask();
+            this.Ironium = ironium != null ? ironium.Value : new WaypointTransportTask();
+            this.Boranium = boranium != null ? boranium.Value : new WaypointTransportTask();
+            this.Germanium = germanium != null ? germanium.Value : new WaypointTransportTask();
+            this.Colonists = colonists != null ? colonists.Value : new WaypointTransportTask();
         }
 
         public WaypointTransportTask this[CargoType field]

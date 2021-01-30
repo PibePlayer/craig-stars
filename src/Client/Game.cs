@@ -60,8 +60,6 @@ namespace CraigStars
                 {
                     // TODO: send each player their turn data
                 }
-                // notify everyone (including ourselves) that we're ready to start
-                Signals.PublishPostStartGameEvent(Server.Year);
             }
             else
             {

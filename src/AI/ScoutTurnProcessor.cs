@@ -56,7 +56,7 @@ namespace CraigStars
                 if (planetToScout != null)
                 {
                     // add this planet as a waypoint
-                    fleet.Waypoints.Add(new Waypoint(planetToScout, fleet.GetDefaultWarpFactor(), WaypointTask.None));
+                    fleet.Waypoints.Add(Waypoint.TargetWaypoint(planetToScout, fleet.GetDefaultWarpFactor(), WaypointTask.None));
 
                     // remove this planet from our list
                     unknownPlanets.Remove(planetToScout);
@@ -84,7 +84,7 @@ namespace CraigStars
                 foreach (Planet planet in buildablePlanets)
                 {
                     bool isBuilding = false;
-                    foreach (ProductionQueueItem item in planet.ProductionQueue.Items)
+                    foreach (ProductionQueueItem item in planet.ProductionQueue?.Items)
                     {
                         if (item.Design != null && item.Design.Aggregate.Scanner)
                         {
@@ -107,7 +107,7 @@ namespace CraigStars
                     // one to the queue
                     if (queuedToBeBuilt < numShipsNeeded)
                     {
-                        planet.ProductionQueue.Items.Add(new ProductionQueueItem(QueueItemType.ShipToken, 1, scoutShip));
+                        planet.ProductionQueue?.Items.Add(new ProductionQueueItem(QueueItemType.ShipToken, 1, scoutShip));
                         log.Debug($"Added scout ship to planet queue: {planet.Name}");
                         queuedToBeBuilt++;
                     }

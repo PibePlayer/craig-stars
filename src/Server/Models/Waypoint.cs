@@ -1,14 +1,14 @@
 using Godot;
 using System;
 using CraigStars.Singletons;
-using System.Text.Json.Serialization;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace CraigStars
 {
-    public class Waypoint : SerializableMapObject
+    public struct Waypoint
     {
-        [JsonIgnore]
+        [JsonProperty(IsReference = true)]
         public MapObject Target
         {
             get => target;
@@ -25,13 +25,39 @@ namespace CraigStars
 
         public Vector2 Position { get; set; }
 
-        public int WarpFactor { get; set; } = 5;
+        public int WarpFactor { get; set; }
 
-        public WaypointTask Task { get; set; } = WaypointTask.None;
+        public WaypointTask Task { get; set; }
 
         public WaypointTransportTasks TransportTasks { get; set; }
 
-        #region Serializer Helpers
+        public Waypoint(MapObject target, Vector2 position, int warpFactor = 5, WaypointTask task = WaypointTask.None, WaypointTransportTasks transportTasks = new WaypointTransportTasks())
+        {
+            this.target = target;
+            if (target != null)
+            {
+                Position = target.Position;
+            }
+            else
+            {
+                // note: we must have a position or a target
+                // TODO: throw an exception here?
+                Position = position;
+            }
+            TransportTasks = transportTasks;
+            WarpFactor = warpFactor;
+            Task = task;
+        }
+
+        public static Waypoint TargetWaypoint(MapObject target, int warpFactor = 5, WaypointTask task = WaypointTask.None, WaypointTransportTasks? transportTasks = null)
+        {
+            return new Waypoint(target, Vector2.Zero, warpFactor, task, transportTasks == null ? new WaypointTransportTasks() : transportTasks.Value);
+        }
+
+        public static Waypoint PositionWaypoint(Vector2 position, int warpFactor = 5, WaypointTask task = WaypointTask.None, WaypointTransportTasks? transportTasks = null)
+        {
+            return new Waypoint(null, position, warpFactor, task, transportTasks == null ? new WaypointTransportTasks() : transportTasks.Value);
+        }
 
         /// <summary>
         /// A string description of the target
@@ -50,58 +76,6 @@ namespace CraigStars
                     return $"Space: ({Position.x}, {Position.y})";
                 }
             }
-        }
-
-        public Guid? TargetGuid
-        {
-            get
-            {
-                if (targetGuid == null)
-                {
-                    targetGuid = Target?.Guid;
-                }
-                return targetGuid;
-            }
-            set
-            {
-                targetGuid = value;
-            }
-        }
-        Guid? targetGuid;
-
-        /// <summary>
-        /// Prepare this object for serialization
-        /// </summary>
-        public void PreSerialize()
-        {
-            targetGuid = null;
-        }
-
-        /// <summary>
-        /// After serialization, wire up values we stored by guid
-        /// </summary>
-        /// <param name="mapObjectsByGuid"></param>
-        public void PostSerialize(Dictionary<Guid, MapObject> mapObjectsByGuid)
-        {
-            if (targetGuid.HasValue)
-            {
-                mapObjectsByGuid.TryGetValue(targetGuid.Value, out var target);
-                Target = target;
-            }
-        }
-
-        #endregion
-
-        public Waypoint()
-        {
-        }
-
-        public Waypoint(MapObject target, int warpFactor = 0, WaypointTask task = WaypointTask.None, WaypointTransportTasks transportTasks = null)
-        {
-            Target = target;
-            WarpFactor = warpFactor;
-            Task = task;
-            TransportTasks = transportTasks;
         }
 
         /// <summary>

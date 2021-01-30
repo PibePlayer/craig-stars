@@ -8,16 +8,19 @@ namespace CraigStars
     {
         public Waypoint Waypoint
         {
-            get => waypoint; set
+            get => waypoint;
+            set
             {
                 waypoint = value;
-                if (waypoint != null)
-                {
-                    Position = waypoint.Position;
-                }
+                Position = waypoint.Position;
             }
         }
         Waypoint waypoint;
+
+        /// <summary>
+        /// The waypoint index in the fleet waypoints
+        /// </summary>
+        public int Index { get; set; }
 
         public override void _Ready()
         {
@@ -32,9 +35,9 @@ namespace CraigStars
             Signals.WaypointDeletedEvent -= OnWaypointDeleted;
         }
 
-        void OnWaypointDeleted(Waypoint waypoint)
+        void OnWaypointDeleted(Waypoint waypoint, int index)
         {
-            if (waypoint == Waypoint)
+            if (Index == index)
             {
                 // I've been deleted, remove from queue
                 QueueFree();
@@ -46,7 +49,7 @@ namespace CraigStars
             if (@event.IsActionPressed("viewport_select"))
             {
                 GD.Print($"Selecting waypoint {Position}");
-                Signals.PublishWaypointSelectedEvent(Waypoint);
+                Signals.PublishWaypointSelectedEvent(Waypoint, Index);
             }
         }
 

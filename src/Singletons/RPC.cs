@@ -60,19 +60,19 @@ namespace CraigStars.Singletons
         {
             var playerMessage = new PlayerMessage(PlayersManager.Instance.Me.Num, message);
             log.Debug($"{LogPrefix} Sending Message {playerMessage}");
-            Rpc(nameof(Message), Serializers.Save(playerMessage));
+            Rpc(nameof(Message), Serializers.Serialize(playerMessage));
         }
 
         public void SendAllMessages(int networkId)
         {
             log.Debug($"{LogPrefix} Sending All Messages to {networkId}");
-            PlayersManager.Instance.Messages.ForEach(m => RpcId(networkId, nameof(Message), Serializers.Save(m)));
+            PlayersManager.Instance.Messages.ForEach(m => RpcId(networkId, nameof(Message), Serializers.Serialize(m)));
         }
 
         [RemoteSync]
         public void Message(string json)
         {
-            var message = Serializers.Load<PlayerMessage>(json);
+            var message = Serializers.Deserialize<PlayerMessage>(json);
             if (message.HasValue)
             {
                 log.Debug($"{LogPrefix} Received PlayerMessage {message} from {GetTree().GetRpcSenderId()}");
@@ -90,13 +90,13 @@ namespace CraigStars.Singletons
         {
             // send our peers an update of a player
             log.Debug($"{LogPrefix} Notifying clients about player update: {player}");
-            Rpc(nameof(PlayerUpdated), Serializers.Save(player));
+            Rpc(nameof(PlayerUpdated), Serializers.Serialize(player));
         }
 
         [Remote]
         public void PlayerUpdated(string json)
         {
-            var player = Serializers.LoadObject<PublicPlayerInfo>(json);
+            var player = Serializers.DeserializeObject<PublicPlayerInfo>(json);
             if (player != null)
             {
                 log.Debug($"{LogPrefix} Received PlayerUpdated event for Player {player.Num} - {player.Name} (NetworkId: {player.NetworkId}");
@@ -120,7 +120,7 @@ namespace CraigStars.Singletons
             // servers listen for signals and notify clients
             if (this.IsServer())
             {
-                var playersArray = new Godot.Collections.Array(players.Select(p => Serializers.Save(p)).ToArray());
+                var playersArray = new Godot.Collections.Array(players.Select(p => Serializers.Serialize(p)).ToArray());
                 if (networkId == 0)
                 {
                     // log.Debug($"{LogPrefix} Sending all players to all clients");
@@ -150,7 +150,7 @@ namespace CraigStars.Singletons
             var players = new PublicPlayerInfo[jsons.Count];
             foreach (string json in jsons)
             {
-                var player = Serializers.LoadObject<PublicPlayerInfo>(json);
+                var player = Serializers.DeserializeObject<PublicPlayerInfo>(json);
                 if (player != null)
                 {
                     log.Debug($"{LogPrefix} Received PlayerUpdated event for Player {player.Num} - {player.Name} (NetworkId: {player.NetworkId}");

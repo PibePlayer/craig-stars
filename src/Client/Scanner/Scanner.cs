@@ -4,6 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using CraigStars.Singletons;
 using log4net;
+using CraigStars.Utils;
 
 namespace CraigStars
 {
@@ -18,7 +19,7 @@ namespace CraigStars
         MapObjectSprite selectedMapObject;
         MapObjectSprite commandedMapObject;
         MapObjectSprite highlightedMapObject;
-        Waypoint selectedWaypoint;
+        Waypoint? selectedWaypoint;
         List<MapObjectSprite> mapObjectsUnderMouse = new List<MapObjectSprite>();
         SelectedMapObjectSprite selectedMapObjectSprite;
         Node2D normalScannersNode;
@@ -106,7 +107,7 @@ namespace CraigStars
             waypointAreas.ForEach(wpa => { wpa.QueueFree(); });
             waypointAreas.Clear();
             selectedWaypoint = null;
-            ActiveFleet?.Fleet?.Waypoints.ForEach(wp => AddWaypointArea(wp));
+            ActiveFleet?.Fleet?.Waypoints.Each((wp, index) => AddWaypointArea(wp, index));
         }
 
         /// <summary>
@@ -115,31 +116,32 @@ namespace CraigStars
         /// </summary>
         /// <param name="fleet"></param>
         /// <param name="waypoint"></param>
-        void OnWaypointAdded(Fleet fleet, Waypoint waypoint)
+        void OnWaypointAdded(Fleet fleet, Waypoint waypoint, int index)
         {
-            AddWaypointArea(waypoint);
+            AddWaypointArea(waypoint, index);
             selectedWaypoint = waypoint;
             UpdateSelectedIndicator();
         }
 
-        void OnWaypointDeleted(Waypoint waypoint)
+        void OnWaypointDeleted(Waypoint waypoint, int index)
         {
-            if (selectedWaypoint == waypoint)
+            if (selectedWaypoint?.Position == waypoint.Position)
             {
                 selectedWaypoint = null;
             }
         }
 
-        void OnWaypointSelected(Waypoint waypoint)
+        void OnWaypointSelected(Waypoint waypoint, int index)
         {
             selectedWaypoint = waypoint;
             UpdateSelectedIndicator();
         }
 
-        void AddWaypointArea(Waypoint waypoint)
+        void AddWaypointArea(Waypoint waypoint, int index)
         {
             var waypointArea = waypointAreaScene.Instance() as WaypointArea;
             waypointArea.Waypoint = waypoint;
+            waypointArea.Index = index;
             waypointAreas.Add(waypointArea);
             AddChild(waypointArea);
         }
@@ -189,7 +191,7 @@ namespace CraigStars
             }
             if (@event.IsActionPressed("delete_waypoint") && selectedWaypoint != null && activeFleet != null)
             {
-                activeFleet?.DeleteWaypoint(selectedWaypoint);
+                activeFleet?.DeleteWaypoint(selectedWaypoint.Value);
             }
         }
 
@@ -289,7 +291,7 @@ namespace CraigStars
         {
             if (selectedWaypoint != null)
             {
-                selectedMapObjectSprite.Select(selectedWaypoint.Position);
+                selectedMapObjectSprite.Select(selectedWaypoint.Value.Position);
             }
             else
             {
@@ -353,7 +355,9 @@ namespace CraigStars
 
             // clear out any existing fleets
             Fleets.ForEach(f => { RemoveChild(f); f.QueueFree(); });
+            waypointAreas.ForEach(wpa => { RemoveChild(wpa); wpa.QueueFree(); });
             Fleets.Clear();
+            waypointAreas.Clear();
             Planets.ForEach(p => p.OrbitingFleets.Clear());
             ActiveFleet = null;
             ActivePlanet = null;

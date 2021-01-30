@@ -5,9 +5,12 @@ using CraigStars.Tests;
 
 public class Tester : Node
 {
+    [Export]
+    public string TestMethodToRun { get; set; } = "";
+
     async public override void _Ready()
     {
-        TestRunner testRunner = new TestRunner(GetTree());
+        TestRunner testRunner = new TestRunner(GetTree(), TestMethodToRun);
         int passed = 0;
         int failed = 0;
 
@@ -18,10 +21,11 @@ public class Tester : Node
             if (testResult.result == TestResult.Result.Failed)
             {
                 failed++;
-                GD.Print(testResult.classType.Name + "." + testResult.testMethod.Name + "\n" + testResult.exception.Message);
+                GD.Print("FAILED: " + testResult.classType.Name + "." + testResult.testMethod.Name + "\n" + testResult.exception.Message);
             }
             else
             {
+                GD.Print("PASSED: " + testResult.classType.Name + "." + testResult.testMethod.Name);
                 passed++;
             }
         });

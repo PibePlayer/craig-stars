@@ -48,7 +48,7 @@ namespace CraigStars
             {
                 // populate the production queue
                 productionQueueItemList.Clear();
-                ActivePlanet.Planet.ProductionQueue.Items.ForEach(item =>
+                ActivePlanet.Planet.ProductionQueue?.Items.ForEach(item =>
                 {
                     productionQueueItemList.AddItem(item.ShortName);
                     productionQueueItemList.AddItem($"{item.quantity}", selectable: false);

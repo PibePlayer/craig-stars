@@ -137,7 +137,7 @@ namespace CraigStars
         {
             if (data is string json)
             {
-                DraggableTech? draggableTech = Serializers.Load<DraggableTech>(json);
+                DraggableTech? draggableTech = Serializers.Deserialize<DraggableTech>(json);
                 if (draggableTech != null)
                 {
                     // Each HullComponentPanel only accepts certain techs, like engines or scanners. Make sure we can 
@@ -174,7 +174,7 @@ namespace CraigStars
             // do another check to make sure we convert this godot array into a DraggableTech
             if (data is string json)
             {
-                DraggableTech? draggableTech = Serializers.Load<DraggableTech>(json);
+                DraggableTech? draggableTech = Serializers.Deserialize<DraggableTech>(json);
                 if (draggableTech != null)
                 {
                     // The DraggableTech only has the name of a tech, nothing else. Get a full tech object from the TechStore

@@ -91,7 +91,7 @@ namespace CraigStars
             // add each design
             Me.Designs.ForEach(design =>
             {
-                AddAvailableItem(new ProductionQueueItem(QueueItemType.ShipToken, 1, design));
+                AddAvailableItem(new ProductionQueueItem(QueueItemType.ShipToken, design: design));
             });
 
             // add each type of item.
@@ -104,7 +104,7 @@ namespace CraigStars
             AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoDefense));
             AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoAlchemy));
 
-            Planet.ProductionQueue.Items.ForEach(item =>
+            Planet.ProductionQueue?.Items.ForEach(item =>
             {
                 AddQueuedItem(item);
             });
@@ -129,7 +129,7 @@ namespace CraigStars
         {
             var treeItem = tree.CreateItem(root);
             treeItem.SetText(0, text);
-            treeItem.SetMetadata(0, Serializers.Save(item));
+            treeItem.SetMetadata(0, Serializers.Serialize(item, PlayersManager.Instance.Players, TechStore.Instance));
             if (item.quantity != 0)
             {
                 treeItem.SetText(1, $"{item.quantity}");
@@ -214,15 +214,22 @@ namespace CraigStars
         /// </summary>
         void OnOk()
         {
-            Planet.ProductionQueue.Items.Clear();
-            var child = queuedItemsTreeRoot.GetChildren();
-            while (child != null)
+            if (Planet.ProductionQueue != null)
             {
-                if (Serializers.Load<ProductionQueueItem>(child.GetMetadata(0).ToString()) is ProductionQueueItem item)
+                Planet.ProductionQueue.Items.Clear();
+                var child = queuedItemsTreeRoot.GetChildren();
+                while (child != null)
                 {
-                    Planet.ProductionQueue.Items.Add(item);
+                    if (Serializers.Deserialize<ProductionQueueItem>(child.GetMetadata(0).ToString(), PlayersManager.Instance.Players, TechStore.Instance) is ProductionQueueItem item)
+                    {
+                        Planet.ProductionQueue.Items.Add(item);
+                    }
+                    child = child.GetNext();
                 }
-                child = child.GetNext();
+            }
+            else
+            {
+                log.Error($"ProductionQueue for planet {Planet.Name} is null");
             }
             Planet.ContributesOnlyLeftoverToResearch = contributesOnlyLeftoverToResearchCheckbox.Pressed;
 
@@ -232,15 +239,15 @@ namespace CraigStars
 
         void OnAddItem()
         {
-            var itemToAdd = Serializers.Load<ProductionQueueItem>(availableItemsTree.GetSelected()?.GetMetadata(0).ToString());
-            var selectedQueueItem = Serializers.Load<ProductionQueueItem>(queuedItemsTree.GetSelected()?.GetMetadata(0).ToString());
+            var itemToAdd = Serializers.Deserialize<ProductionQueueItem>(availableItemsTree.GetSelected()?.GetMetadata(0).ToString(), PlayersManager.Instance.Players, TechStore.Instance);
+            var selectedQueueItem = Serializers.Deserialize<ProductionQueueItem>(queuedItemsTree.GetSelected()?.GetMetadata(0).ToString(), PlayersManager.Instance.Players, TechStore.Instance);
 
             if (itemToAdd != null && selectedQueueItem != null && selectedQueueItem?.type == itemToAdd?.type)
             {
                 var selectedItem = selectedQueueItem.Value;
                 selectedItem.quantity += quantityModifier;
                 queuedItemsTree.GetSelected().SetText(1, selectedItem.quantity.ToString());
-                queuedItemsTree.GetSelected().SetMetadata(0, Serializers.Save(selectedItem));
+                queuedItemsTree.GetSelected().SetMetadata(0, Serializers.Serialize(selectedItem, PlayersManager.Instance.Players, TechStore.Instance));
             }
             else if (itemToAdd != null)
             {
@@ -270,7 +277,7 @@ namespace CraigStars
                 {
                     // save the item back to our list and upate the tree
                     queuedItemsTree.GetSelected().SetText(1, item.quantity.ToString());
-                    queuedItemsTree.GetSelected().SetMetadata(0, Serializers.Save(item));
+                    queuedItemsTree.GetSelected().SetMetadata(0, Serializers.Serialize(item, PlayersManager.Instance.Players, TechStore.Instance));
                 }
                 // force a UI update: https://github.com/godotengine/godot/issues/38787
                 queuedItemsTree.HideRoot = queuedItemsTree.HideRoot;
@@ -297,7 +304,7 @@ namespace CraigStars
             var selectedItem = queuedItemsTree.GetSelected();
             if (selectedItem != null)
             {
-                return Serializers.Load<ProductionQueueItem>(selectedItem.GetMetadata(0).ToString());
+                return Serializers.Deserialize<ProductionQueueItem>(selectedItem.GetMetadata(0).ToString(), PlayersManager.Instance.Players, TechStore.Instance);
             }
             return null;
         }
@@ -307,7 +314,7 @@ namespace CraigStars
             var selectedItem = availableItemsTree.GetSelected();
             if (selectedItem != null)
             {
-                return Serializers.Load<ProductionQueueItem>(selectedItem.GetMetadata(0).ToString());
+                return Serializers.Deserialize<ProductionQueueItem>(selectedItem.GetMetadata(0).ToString(), PlayersManager.Instance.Players, TechStore.Instance);
             }
             return null;
         }

@@ -66,26 +66,26 @@ namespace CraigStars
         /// <param name="mapObject"></param>
         /// <param name="after"></param>
         /// <returns></returns>
-        public Waypoint AddWaypoint(MapObject mapObject, Waypoint after = null)
+        public Waypoint AddWaypoint(MapObject mapObject, Waypoint? after = null)
         {
             var index = Fleet.Waypoints.Count - 1;
             if (after != null)
             {
-                index = Fleet.Waypoints.FindIndex(wp => wp == after);
+                index = Fleet.Waypoints.FindIndex(wp => wp.Position == after.Value.Position);
             }
             int warpFactor = Fleet.GetDefaultWarpFactor();
             if (index >= 0)
             {
                 warpFactor = Fleet.Waypoints[index].WarpFactor;
             }
-            var waypoint = new Waypoint(mapObject, warpFactor);
+            var waypoint = Waypoint.TargetWaypoint(mapObject, warpFactor);
 
 
             Fleet.Waypoints.Insert(index + 1, waypoint);
 
             UpdateWaypointsLine();
 
-            Signals.PublishWaypointAddedEvent(Fleet, waypoint);
+            Signals.PublishWaypointAddedEvent(Fleet, waypoint, index + 1);
             return waypoint;
         }
 
@@ -95,12 +95,12 @@ namespace CraigStars
         /// <param name="position"></param>
         /// <param name="after"></param>
         /// <returns></returns>
-        public Waypoint AddWaypoint(Vector2 position, Waypoint after = null)
+        public Waypoint AddWaypoint(Vector2 position, Waypoint? after = null)
         {
             var index = Fleet.Waypoints.Count - 1;
             if (after != null)
             {
-                index = Fleet.Waypoints.FindIndex(wp => wp == after);
+                index = Fleet.Waypoints.FindIndex(wp => wp.Position == after?.Position);
             }
 
             int warpFactor = Fleet.GetDefaultWarpFactor();
@@ -119,23 +119,23 @@ namespace CraigStars
 
             UpdateWaypointsLine();
 
-            Signals.PublishWaypointAddedEvent(Fleet, waypoint);
+            Signals.PublishWaypointAddedEvent(Fleet, waypoint, index + 1);
             return waypoint;
         }
 
         public void DeleteWaypoint(Waypoint waypoint)
         {
-            var index = Fleet.Waypoints.FindIndex(wp => wp == waypoint);
+            var index = Fleet.Waypoints.FindIndex(wp => wp.Position == waypoint.Position);
 
             // don't delete the first index
             if (index > 0)
             {
                 Fleet.Waypoints.RemoveAt(index);
                 UpdateWaypointsLine();
-                Signals.PublishWaypointDeletedEvent(waypoint);
+                Signals.PublishWaypointDeletedEvent(waypoint, index);
 
                 // select the previous waypoint in the list
-                Signals.PublishWaypointSelectedEvent(Fleet.Waypoints[index - 1]);
+                Signals.PublishWaypointSelectedEvent(Fleet.Waypoints[index - 1], index - 1);
             }
 
         }

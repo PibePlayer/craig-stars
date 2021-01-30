@@ -1,6 +1,6 @@
 using System;
 using CraigStars.Singletons;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 
 namespace CraigStars
@@ -9,19 +9,16 @@ namespace CraigStars
     /// If a waypoint has Transport as the task, we can specify a different task per
     /// mineral type
     /// </summary>
-    public class WaypointTransportTask
+    public readonly struct WaypointTransportTask
     {
-        public CargoType Type { get; set; }
-        public WaypointTaskTransportAction Action { get; set; }
-        public int Amount { get; set; }
+        public readonly WaypointTaskTransportAction action;
+        public readonly int amount;
 
-        public WaypointTransportTask() { }
-
-        public WaypointTransportTask(CargoType type, WaypointTaskTransportAction action = WaypointTaskTransportAction.None, int amount = 0)
+        [JsonConstructor]
+        public WaypointTransportTask(WaypointTaskTransportAction action = WaypointTaskTransportAction.None, int amount = 0)
         {
-            Type = type;
-            Action = action;
-            Amount = amount;
+            this.action = action;
+            this.amount = amount;
         }
     }
 }

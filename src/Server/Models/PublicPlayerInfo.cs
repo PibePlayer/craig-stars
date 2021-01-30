@@ -1,15 +1,16 @@
 
 using CraigStars.Singletons;
 using Godot;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json.Serialization;
 
 namespace CraigStars
 {
     public class PublicPlayerInfo
     {
+        [JsonIgnore]
         public int NetworkId { get; set; }
         public int Num { get; set; }
         public string Name { get; set; }

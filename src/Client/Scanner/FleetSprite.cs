@@ -66,12 +66,12 @@ namespace CraigStars
         /// <param name="mapObject"></param>
         /// <param name="after"></param>
         /// <returns></returns>
-        public Waypoint AddWaypoint(MapObject mapObject, Waypoint? after = null)
+        public Waypoint AddWaypoint(MapObject mapObject, Waypoint after = null)
         {
             var index = Fleet.Waypoints.Count - 1;
             if (after != null)
             {
-                index = Fleet.Waypoints.FindIndex(wp => wp.Position == after.Value.Position);
+                index = Fleet.Waypoints.FindIndex(wp => wp == after);
             }
             int warpFactor = Fleet.GetDefaultWarpFactor();
             if (index >= 0)
@@ -95,7 +95,7 @@ namespace CraigStars
         /// <param name="position"></param>
         /// <param name="after"></param>
         /// <returns></returns>
-        public Waypoint AddWaypoint(Vector2 position, Waypoint? after = null)
+        public Waypoint AddWaypoint(Vector2 position, Waypoint after = null)
         {
             var index = Fleet.Waypoints.Count - 1;
             if (after != null)
@@ -125,7 +125,7 @@ namespace CraigStars
 
         public void DeleteWaypoint(Waypoint waypoint)
         {
-            var index = Fleet.Waypoints.FindIndex(wp => wp.Position == waypoint.Position);
+            var index = Fleet.Waypoints.FindIndex(wp => wp == waypoint);
 
             // don't delete the first index
             if (index > 0)

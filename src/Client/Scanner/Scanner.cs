@@ -19,7 +19,7 @@ namespace CraigStars
         MapObjectSprite selectedMapObject;
         MapObjectSprite commandedMapObject;
         MapObjectSprite highlightedMapObject;
-        Waypoint? selectedWaypoint;
+        Waypoint selectedWaypoint;
         List<MapObjectSprite> mapObjectsUnderMouse = new List<MapObjectSprite>();
         SelectedMapObjectSprite selectedMapObjectSprite;
         Node2D normalScannersNode;
@@ -125,7 +125,7 @@ namespace CraigStars
 
         void OnWaypointDeleted(Waypoint waypoint, int index)
         {
-            if (selectedWaypoint?.Position == waypoint.Position)
+            if (selectedWaypoint == waypoint)
             {
                 selectedWaypoint = null;
             }
@@ -191,7 +191,7 @@ namespace CraigStars
             }
             if (@event.IsActionPressed("delete_waypoint") && selectedWaypoint != null && activeFleet != null)
             {
-                activeFleet?.DeleteWaypoint(selectedWaypoint.Value);
+                activeFleet.DeleteWaypoint(selectedWaypoint);
             }
         }
 
@@ -291,7 +291,7 @@ namespace CraigStars
         {
             if (selectedWaypoint != null)
             {
-                selectedMapObjectSprite.Select(selectedWaypoint.Value.Position);
+                selectedMapObjectSprite.Select(selectedWaypoint.Position);
             }
             else
             {

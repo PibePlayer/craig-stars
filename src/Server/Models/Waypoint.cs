@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace CraigStars
 {
-    public struct Waypoint
+    public class Waypoint
     {
         [JsonProperty(IsReference = true)]
         public MapObject Target
@@ -30,6 +30,8 @@ namespace CraigStars
         public WaypointTask Task { get; set; }
 
         public WaypointTransportTasks TransportTasks { get; set; }
+
+        public Waypoint() { }
 
         public Waypoint(MapObject target, Vector2 position, int warpFactor = 5, WaypointTask task = WaypointTask.None, WaypointTransportTasks transportTasks = new WaypointTransportTasks())
         {

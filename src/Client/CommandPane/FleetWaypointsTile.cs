@@ -49,12 +49,9 @@ namespace CraigStars
 
         void OnWarpSpeedChanged(int warpSpeed)
         {
-            var wp = ActiveWaypoint;
-            if (wp != null)
+            if (ActiveWaypoint != null)
             {
-                var newWaypoint = wp.Value;
-                newWaypoint.WarpFactor = warpSpeed;
-                UpdateActiveWaypoint(newWaypoint);
+                ActiveWaypoint.WarpFactor = warpSpeed;
             }
             UpdateControls();
         }
@@ -74,7 +71,7 @@ namespace CraigStars
             base.OnNewActiveFleet();
             // when we have a new active fleet, set the active waypoint to the
             // first waypoint
-            ActiveWaypointIndex = 0;
+            ActiveWaypoint = ActiveFleet?.Fleet.Waypoints[0];
         }
 
         protected override void UpdateControls()
@@ -88,7 +85,7 @@ namespace CraigStars
                 foreach (var wp in ActiveFleet.Fleet.Waypoints)
                 {
                     waypoints.AddItem(wp.Target != null ? wp.Target.Name : $"Space: ({wp.Position.x}, {wp.Position.y})");
-                    if (ActiveWaypointIndex == index)
+                    if (ActiveWaypoint == wp)
                     {
                         selectedIndex = index;
                         waypoints.Select(index);

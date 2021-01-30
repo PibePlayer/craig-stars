@@ -36,22 +36,16 @@ namespace CraigStars
             base.OnNewActiveFleet();
             // when we have a new active fleet, set the active waypoint to the
             // first waypoint
-            ActiveWaypointIndex = 0;
+            ActiveWaypoint = ActiveFleet?.Fleet.Waypoints[0];
         }
 
 
         void OnWaypointTaskItemSelected(int index)
         {
-            if (ActiveWaypointIndex != -1 && index >= 0 && index < Enum.GetValues(typeof(WaypointTask)).Length)
+            if (ActiveWaypoint != null && index >= 0 && index < Enum.GetValues(typeof(WaypointTask)).Length)
             {
-                var wp = ActiveWaypoint;
-                if (wp != null)
-                {
-                    var newWaypoint = wp.Value;
-                    log.Debug($"Changing waypoint {newWaypoint.TargetName} from {newWaypoint.Task} to {(WaypointTask)index}");
-                    newWaypoint.Task = (WaypointTask)index;
-                    UpdateActiveWaypoint(newWaypoint);
-                }
+                log.Debug($"Changing waypoint {ActiveWaypoint.TargetName} from {ActiveWaypoint.Task} to {(WaypointTask)index}");
+                ActiveWaypoint.Task = (WaypointTask)index;
             }
         }
 
@@ -82,7 +76,7 @@ namespace CraigStars
             var wp = ActiveWaypoint;
             if (waypointTask != null && wp != null)
             {
-                waypointTask.Selected = (int)wp.Value.Task;
+                waypointTask.Selected = (int)wp.Task;
             }
         }
 

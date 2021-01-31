@@ -2,9 +2,9 @@
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "craig-stars", "craig-stars.csproj", "{07385AED-DF6F-47EE-9B87-55ED48E3AC3C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "src\Server\Server.csproj", "{D80D74BF-B026-4E66-B0DA-9060FC60E531}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "src\Core\Core.csproj", "{D80D74BF-B026-4E66-B0DA-9060FC60E531}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "src\Tests\Tests.csproj", "{D58FC96B-B3DF-4AF9-AB58-553E2E635958}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Tests", "src\Core.Tests\Core.Tests.csproj", "{D58FC96B-B3DF-4AF9-AB58-553E2E635958}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

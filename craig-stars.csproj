@@ -16,31 +16,33 @@
 
   <ItemGroup>
     <None Include="**/*.tscn" />
-    <None Remove="Server\**" />
-    <None Remove="Tests\**" />
-    <None Remove="src\Tests\Tester.tscn" />
+    <None Remove="Core\**" />
+    <None Remove="Core.Tests\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="src\Server\**" />
-    <Compile Remove="src\Tests\**" />
-    <Compile Remove="Server\**" />
-    <Compile Remove="Tests\**" />
+    <Compile Remove="src\Core\**" />
+    <Compile Remove="src\Core.Tests\**" />
+    <Compile Remove="Core\**" />
+    <Compile Remove="Core.Tests\**" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Remove="src\Server\**" />
-    <EmbeddedResource Remove="src\Tests\**" />
-    <EmbeddedResource Remove="Server\**" />
-    <EmbeddedResource Remove="Tests\**" />
+    <EmbeddedResource Remove="src\Core\**" />
+    <EmbeddedResource Remove="src\Core.Tests\**" />
+    <EmbeddedResource Remove="Core\**" />
+    <EmbeddedResource Remove="Core.Tests\**" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="src\Server\Server.csproj" />
+    <ProjectReference Include="src\Core\Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
 
     <PackageReference Include="log4net" Version="2.0.12"></PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3"></PackageReference>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
+    <PackageReference Include="NUnit" Version="3.9.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.9.0" />
 
   </ItemGroup>
 </Project>

@@ -1,7 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>CraigStars.Tests</RootNamespace>
+    <IsTestProject>true</IsTestProject>
+    <GenerateProgramFile>false</GenerateProgramFile>
+
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,21 +17,15 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
-    <PackageReference Include="NUnit" Version="3.9.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.9.0" />
+    <PackageReference Include="NUnit" Version="3.11.0" />
+    <PackageReference Include="NUnitLite" Version="3.11.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
     <PackageReference Include="log4net" Version="2.0.12"></PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3"></PackageReference>
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Server\Models\TechFieldTest.cs" />
-    <Compile Remove="Server\Serializers\RaceSerializerTest.cs" />
-    <Compile Remove="Server\Services\ShipDesignerTest.cs" />
-    <Compile Remove="Server\Services\RacePointsCalculatorTest.cs" />
-    <Compile Remove="Server\Services\TurnGeneratorTest.cs" />
-    <Compile Remove="Server\Services\UniverseGeneratorTest.cs" />
+    <ProjectReference Include="..\Core\Core.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Server\Server.csproj" />
-  </ItemGroup>
+
 </Project>

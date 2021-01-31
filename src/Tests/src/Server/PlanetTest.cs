@@ -6,6 +6,7 @@ namespace CraigStars.Tests
     public class PlanetTest
     {
         UniverseSettings settings = new UniverseSettings();
+        
         [Test]
         public void TestGetMaxMines()
         {
@@ -19,6 +20,21 @@ namespace CraigStars.Tests
             planet.ProductionQueue = new ProductionQueue();
             planet.Population = 10000;
             Assert.AreEqual(10, planet.MaxMines);
+        }
+
+        [Test]
+        public void TestGetMaxFactories()
+        {
+            var planet = new Planet();
+            planet.InitEmptyPlanet();
+
+            Assert.AreEqual(0, planet.MaxFactories);
+
+            var player = new Player();
+            planet.Player = player;
+            planet.ProductionQueue = new ProductionQueue();
+            planet.Population = 10000;
+            Assert.AreEqual(10, planet.MaxFactories);
         }
 
         [Test]

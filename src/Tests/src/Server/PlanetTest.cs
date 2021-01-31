@@ -1,5 +1,3 @@
-using CraigStars.Singletons;
-using Godot;
 using NUnit.Framework;
 
 namespace CraigStars.Tests

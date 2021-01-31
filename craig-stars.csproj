@@ -2,25 +2,45 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <RootNamespace>CraigStars</RootNamespace>
-    <LangVersion>8.0</LangVersion>
+    <GodotUseNETFrameworkRefAssemblies>true</GodotUseNETFrameworkRefAssemblies>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="**/*.tscn" />
+    <None Remove="Server\**" />
+    <None Remove="Tests\**" />
+    <None Remove="src\Tests\Tester.tscn" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="src\Server\**" />
+    <Compile Remove="src\Tests\**" />
+    <Compile Remove="Server\**" />
+    <Compile Remove="Tests\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="src\Server\**" />
+    <EmbeddedResource Remove="src\Tests\**" />
+    <EmbeddedResource Remove="Server\**" />
+    <EmbeddedResource Remove="Tests\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="src\Server\Server.csproj" />
+  </ItemGroup>
+
   <ItemGroup>
 
-    <PackageReference Include="log4net">
-      <Version>2.0.12</Version>
-    </PackageReference>
-    <PackageReference Include="Newtonsoft.Json">
-      <Version>12.0.3</Version>
-    </PackageReference>
-    <PackageReference Include="NUnit">
-      <Version>3.12.0</Version>
-    </PackageReference>
-    <PackageReference Include="NUnit3TestAdapter">
-      <Version>3.16.1</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.NET.Test.Sdk">
-      <Version>16.5.0</Version>
-    </PackageReference>
+    <PackageReference Include="log4net" Version="2.0.12"></PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3"></PackageReference>
 
   </ItemGroup>
 </Project>

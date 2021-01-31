@@ -16,7 +16,7 @@ namespace CraigStars.Tests
         public void TestDesignShip()
         {
             var player = new Player();
-            var techStore = TechStore.Instance;
+            var techStore = StaticTechStore.Instance;
 
             // design a simple scout
             var designer = new ShipDesigner();

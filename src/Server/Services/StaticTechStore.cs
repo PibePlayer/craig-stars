@@ -1,11 +1,10 @@
-using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace CraigStars
 {
-    public class TechStore : Node, ITechStore
+    public class StaticTechStore : ITechStore
     {
         public List<Tech> Techs { get; set; } = new List<Tech>();
 
@@ -95,7 +94,7 @@ namespace CraigStars
         /// <summary>
         /// PlayersManager is a singleton
         /// </summary>
-        private static TechStore instance;
+        private static StaticTechStore instance = new StaticTechStore();
         public static ITechStore Instance
         {
             get
@@ -104,7 +103,7 @@ namespace CraigStars
             }
         }
 
-        public override void _Ready()
+        StaticTechStore()
         {
             // From advice in the godot forums, this is probably a good idea.
             // It's possible that godot will use reflection to instantiate us twice
@@ -122,8 +121,6 @@ namespace CraigStars
             TechsByCategory.TryGetValue(category, out var techs);
             return techs;
         }
-
-
 
         /// <summary>
         /// Get a tech from the tech store, by name

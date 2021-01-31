@@ -17,7 +17,7 @@ namespace CraigStars.Tests
         Server GetSingleUnitServer()
         {
             var server = new Server();
-            server.TechStore = TechStore.Instance;
+            server.TechStore = StaticTechStore.Instance;
             var player = new Player();
             server.Players.Add(player);
 

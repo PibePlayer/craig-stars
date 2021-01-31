@@ -1,4 +1,3 @@
-using CraigStars.Singletons;
 using Godot;
 using Newtonsoft.Json;
 using System;

@@ -15,7 +15,7 @@ namespace CraigStars.Tests
         public void TestGenerateTurn()
         {
             var server = new Server();
-            server.Init(new List<Player>() { new Player() { AIControlled = true } }, new UniverseSettings(), TechStore.Instance);
+            server.Init(new List<Player>() { new Player() { AIControlled = true } }, new UniverseSettings(), StaticTechStore.Instance);
 
             var ug = new UniverseGenerator(server);
             ug.Generate();

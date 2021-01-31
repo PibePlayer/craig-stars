@@ -1,8 +1,6 @@
 using Godot;
 using System.Collections.Generic;
 using System.Linq;
-using CraigStars;
-using CraigStars.Singletons;
 using System;
 using log4net;
 using Newtonsoft.Json;

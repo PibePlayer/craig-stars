@@ -21,15 +21,14 @@ config/icon="res://icon.png"
 
 [autoload]
 
-SettingsManager="*res://src/Singletons/SettingsManager.cs"
-PlayersManager="*res://src/Singletons/PlayersManager.cs"
-Rpc="*res://src/Singletons/RPC.cs"
-Signals="*res://src/Singletons/Signals.cs"
-TextureLoader="*res://src/Singletons/TextureLoader.cs"
-TechStore="*res://src/Singletons/TechStore.cs"
-GameSettings="*res://src/Singletons/GameSettings.cs"
-Client="*res://src/Singletons/Client.cs"
-Network="*res://src/Singletons/Network.cs"
+SettingsManager="*res://src/Client/Singletons/SettingsManager.cs"
+PlayersManager="*res://src/Client/Singletons/PlayersManager.cs"
+Rpc="*res://src/Client/Singletons/RPC.cs"
+TextureLoader="*res://src/Client/Singletons/TextureLoader.cs"
+TechStore="*res://src/Client/Singletons/TechStore.cs"
+GameSettings="*res://src/Client/Singletons/GameSettings.cs"
+Client="*res://src/Client/Singletons/Client.cs"
+Network="*res://src/Client/Singletons/Network.cs"
 
 [display]
 

@@ -56,10 +56,13 @@ namespace CraigStars
                     PlayersManager.Instance.SetupPlayers();
                 }
                 Server.Init(PlayersManager.Instance.Players.Cast<Player>().ToList(), SettingsManager.Settings, TechStore.Instance);
+                Signals.PublishPostStartGameEvent(Server.Year);
                 if (this.IsServer())
                 {
                     // TODO: send each player their turn data
                 }
+
+                Signals.SubmitTurnEvent += OnSubmitTurn;
             }
             else
             {
@@ -77,6 +80,27 @@ namespace CraigStars
             Signals.ResearchDialogRequestedEvent -= OnResearchDialogRequested;
             Signals.ShipDesignerDialogRequestedEvent -= OnShipDesignerDialogRequestedEvent;
             Signals.TechBrowserDialogRequestedEvent -= OnTechBrowserDialogRequestedEvent;
+
+            if (this.IsServerOrSinglePlayer())
+            {
+                Signals.SubmitTurnEvent -= OnSubmitTurn;
+            }
+        }
+
+        /// <summary>
+        /// The player has submitted a new turn.
+        /// Copy any data from this to the main game
+        /// </summary>
+        /// <param name="player"></param>
+        void OnSubmitTurn(Player player)
+        {
+            Server.SubmitTurn(player);
+            if (Server.AllPlayersSubmitted())
+            {
+                // once everyone is submitted, generate a new turn
+                Server.GenerateTurn();
+                Signals.PublishTurnPassedEvent(Server.Year);
+            }
         }
 
         /// <summary>

@@ -104,7 +104,14 @@ namespace CraigStars
         /// </summary>
         void OnActiveFleetChanged()
         {
-            waypointAreas.ForEach(wpa => { wpa.QueueFree(); });
+            try
+            {
+                waypointAreas.ForEach(wpa => { wpa.QueueFree(); });
+            }
+            catch (ObjectDisposedException e)
+            {
+                log.Error("Failed to free disposed WaypointArea.", e);
+            }
             waypointAreas.Clear();
             selectedWaypoint = null;
             ActiveFleet?.Fleet?.Waypoints.Each((wp, index) => AddWaypointArea(wp, index));
@@ -197,7 +204,7 @@ namespace CraigStars
 
         void OnMouseEntered(MapObjectSprite mapObject)
         {
-            log.Debug($"Selected map object {mapObject.ObjectName}");
+            log.Debug($"Highlighted map object {mapObject.ObjectName}");
             mapObjectsUnderMouse.Add(mapObject);
             Signals.PublishMapObjectHightlightedEvent(mapObject);
         }

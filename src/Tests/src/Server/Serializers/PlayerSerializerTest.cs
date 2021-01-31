@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-using CraigStars.Singletons;
 using Godot;
 using log4net;
 using Newtonsoft.Json;
@@ -11,22 +9,6 @@ using NUnit.Framework;
 
 namespace CraigStars.Tests
 {
-
-    public class MapObjectGuidConverter : JsonConverter<MapObject>
-    {
-        public Dictionary<Guid, MapObject> MapObjectsByGuid { get; set; } = new Dictionary<Guid, MapObject>();
-
-        public override MapObject ReadJson(JsonReader reader, Type objectType, MapObject existingValue, bool hasExistingValue, JsonSerializer serializer)
-        {
-            Guid guid = new Guid(reader.ReadAsString());
-            return MapObjectsByGuid[guid];
-        }
-
-        public override void WriteJson(JsonWriter writer, MapObject value, JsonSerializer serializer)
-        {
-            writer.WriteValue(value.Guid);
-        }
-    }
 
     [TestFixture]
     public class PlayerSerializerTest
@@ -89,12 +71,12 @@ namespace CraigStars.Tests
             // add a message
             Message.Info(player, "Test message");
 
-            var json = Serializers.Serialize(player, new List<PublicPlayerInfo>() { player }, TechStore.Instance);
+            var json = Serializers.Serialize(player, new List<PublicPlayerInfo>() { player }, StaticTechStore.Instance);
             log.Debug($"\n{json}");
 
             // populate this player object
             var loadedPlayer = new Player();
-            Serializers.PopulatePlayer(json, loadedPlayer, new List<PublicPlayerInfo>() { loadedPlayer }, TechStore.Instance);
+            Serializers.PopulatePlayer(json, loadedPlayer, new List<PublicPlayerInfo>() { loadedPlayer }, StaticTechStore.Instance);
 
             Assert.AreEqual(player.Name, loadedPlayer.Name);
             Assert.AreEqual(player.Designs.Count, loadedPlayer.Designs.Count);

@@ -158,7 +158,7 @@ namespace CraigStars
             Update();
         }
 
-        internal static String GetGravString(int grav)
+        public static String GetGravString(int grav)
         {
             int result, tmp = Math.Abs(grav - 50);
             if (tmp <= 25)
@@ -172,7 +172,7 @@ namespace CraigStars
             return $"{value:0.00}g";
         }
 
-        internal static string GetTempString(int temp)
+        public static string GetTempString(int temp)
         {
             int result;
             result = (temp - 50) * 4;
@@ -180,7 +180,7 @@ namespace CraigStars
             return $"{result}°C";
         }
 
-        internal static string GetRadString(int rad)
+        public static string GetRadString(int rad)
         {
             return rad + "mR";
         }

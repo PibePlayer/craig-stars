@@ -13,9 +13,9 @@ namespace CraigStars.Singletons
     /// The Signals csharp class services as a way to bridge csharp and gdscript until 
     /// everything is rewritten in .net
     /// </summary>
-    public class Signals : Node
+    public static class Signals
     {
-        ILog log = LogManager.GetLogger(typeof(Signals));
+        static ILog log = LogManager.GetLogger(typeof(Signals));
 
         public delegate void YearUpdate(int year);
         public static event YearUpdate TurnPassedEvent;
@@ -42,12 +42,6 @@ namespace CraigStars.Singletons
         public static event Action<Planet> ProductionQueueChangedEvent;
         public delegate void CargoTransferRequested(ICargoHolder source, ICargoHolder dest);
         public static event CargoTransferRequested CargoTransferRequestedEvent;
-
-        #endregion
-
-        #region Server Events
-
-        public static event Action<Fleet> FleetBuiltEvent;
 
         #endregion
 
@@ -79,41 +73,6 @@ namespace CraigStars.Singletons
         public static event Action<PlayerMessage> PlayerMessageEvent;
 
         #endregion
-
-
-        // The GDScript signals object
-        public static Signals Instance { get; private set; }
-
-        public override void _Ready()
-        {
-            Instance = this;
-            ConfigureLogging();
-        }
-
-        /// <summary>
-        /// configure the logger we will use
-        /// TODO: this should probably be in a different function
-        /// </summary>
-        void ConfigureLogging()
-        {
-            const string logLayoutPattern =
-                "[%date %timestamp][%level][%stacktracedetail{1}] %message %newline" +
-                "%exception %newline";
-
-            var logger = (Logger)log.Logger;
-            logger.Hierarchy.Root.Level = Level.All;
-
-            var consoleAppender = new ConsoleAppender
-            {
-                Name = "ConsoleAppender",
-                Layout = new PatternLayout(logLayoutPattern)
-            };
-
-            logger.Hierarchy.Root.AddAppender(consoleAppender);
-            logger.Hierarchy.Configured = true;
-
-            log.Info("Logging Configured");
-        }
 
         #region Event Publishers
 
@@ -251,11 +210,6 @@ namespace CraigStars.Singletons
         public static void PublishSubmitTurnEvent(Player player)
         {
             SubmitTurnEvent?.Invoke(player);
-        }
-
-        internal static void PublishFleetBuiltEvent(Fleet fleet)
-        {
-            FleetBuiltEvent?.Invoke(fleet);
         }
 
         #endregion

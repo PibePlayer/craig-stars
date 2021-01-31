@@ -30,7 +30,7 @@ public class UniverseGenerator
             InitTechLevels(player);
             InitPlayerReports(player, planets);
             InitShipDesigns(player);
-            player.PlanetaryScanner = player.GetBestPlanetaryScanner(TechStore.Instance);
+            player.PlanetaryScanner = player.GetBestPlanetaryScanner(Server.TechStore);
 
             var homeworld = planets.Find(p => p.Player == null && (ownedPlanets.Count == 0 || ShortestDistanceToPlanets(p, ownedPlanets) > Server.Settings.Area / 4));
             player.Homeworld = homeworld;
@@ -421,7 +421,7 @@ public class UniverseGenerator
     /// </summary>
     /// <param name="player"></param>
     /// <param name="planets"></param>
-    internal void InitPlayerReports(Player player, List<Planet> planets)
+    public void InitPlayerReports(Player player, List<Planet> planets)
     {
         planets.ForEach(planet =>
         {

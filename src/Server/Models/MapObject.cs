@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using CraigStars.Singletons;
 using Godot;
 
 namespace CraigStars

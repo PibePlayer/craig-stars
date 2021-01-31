@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Godot;
-using CraigStars.Singletons;
 using System;
 using Newtonsoft.Json;
 

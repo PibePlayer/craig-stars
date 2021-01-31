@@ -53,9 +53,7 @@ namespace CraigStars
             // first round, we have to submit AI turns
             SubmitAITurns();
 
-            Signals.PublishPostStartGameEvent(Year);
-            Signals.SubmitTurnEvent += OnSubmitTurn;
-            Signals.FleetBuiltEvent += OnFleetBuilt;
+            EventManager.FleetBuiltEvent += OnFleetBuilt;
         }
 
         void OnFleetBuilt(Fleet fleet)
@@ -70,22 +68,7 @@ namespace CraigStars
         /// </summary>
         public void Shutdown()
         {
-            Signals.SubmitTurnEvent -= OnSubmitTurn;
-        }
-
-        /// <summary>
-        /// The player has submitted a new turn.
-        /// Copy any data from this to the main game
-        /// </summary>
-        /// <param name="player"></param>
-        void OnSubmitTurn(Player player)
-        {
-            SubmitTurn(player);
-            if (AllPlayersSubmitted())
-            {
-                // once everyone is submitted, generate a new turn
-                GenerateTurn();
-            }
+            EventManager.FleetBuiltEvent -= OnFleetBuilt;
         }
 
         void UpdateDictionaries()
@@ -103,7 +86,7 @@ namespace CraigStars
         void SubmitAITurns()
         {
             // submit AI turns
-            PlayersManager.Instance.Players.ForEach(p =>
+            Players.ForEach(p =>
             {
                 if (p.AIControlled)
                 {
@@ -128,7 +111,6 @@ namespace CraigStars
             turnGenerator.UpdatePlayerReports();
             turnGenerator.RunTurnProcessors();
             UpdateDictionaries();
-            Signals.PublishTurnPassedEvent(Year);
             SubmitAITurns();
         }
     }

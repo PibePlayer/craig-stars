@@ -1,7 +1,5 @@
 using System;
-using CraigStars.Singletons;
 using Newtonsoft.Json;
-using System.Collections.Generic;
 
 namespace CraigStars
 {

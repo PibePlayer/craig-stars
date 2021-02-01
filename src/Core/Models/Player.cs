@@ -122,6 +122,7 @@ namespace CraigStars
         {
             Fleets.ForEach(f => f.ComputeAggregate(settings));
             Designs.ForEach(d => d.ComputeAggregate(this, settings));
+            Planets.ForEach(p => p.Starbase?.ComputeAggregate(settings));
         }
 
         #endregion
@@ -486,11 +487,11 @@ namespace CraigStars
         /// etc
         /// </summary>
         /// <param name="planet"></param>
-        public void UpdatePlayerPlanet(Planet planet)
+        public void UpdatePlayerPlanet(Planet planet, UniverseSettings settings)
         {
             var planetReport = PlanetsByGuid[planet.Guid];
             planetReport.Player = this;
-            planetReport.UpdatePlayerPlanet(planet);
+            planetReport.UpdatePlayerPlanet(planet, settings);
         }
 
     }

@@ -88,7 +88,7 @@ namespace CraigStars
         /// Update this player's copy of their own planet, for the UI
         /// </summary>
         /// <param name="planet"></param>
-        public void UpdatePlayerPlanet(Planet planet)
+        public void UpdatePlayerPlanet(Planet planet, UniverseSettings settings)
         {
             Cargo = planet.Cargo;
             MineYears = planet.MineYears;
@@ -113,6 +113,7 @@ namespace CraigStars
                     Player = Player,
                 };
                 Starbase.Tokens.AddRange(planet.Starbase.Tokens);
+                Starbase.ComputeAggregate(settings);
             }
         }
 
@@ -312,7 +313,7 @@ namespace CraigStars
         {
             if (Defenses > 0 && defense != null)
             {
-                return (float)(1.0 - (Math.Pow((1 - (defense.DefenseCoverage / 100)), Mathf.Clamp(Defenses, 0, MaxDefenses)));
+                return (float)(1.0 - (Math.Pow((1 - (defense.DefenseCoverage / 100)), Mathf.Clamp(Defenses, 0, MaxDefenses))));
             }
             return 0;
         }

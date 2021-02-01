@@ -1,0 +1,169 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://src/Client/CommandPane/PlanetStarbaseTile.cs" type="Script" id=1]
+[ext_resource path="res://src/Client/TileTheme.tres" type="Theme" id=2]
+
+[node name="PlanetStarbaseTile" type="MarginContainer"]
+margin_right = 207.0
+margin_bottom = 180.0
+rect_min_size = Vector2( 200, 180 )
+theme = ExtResource( 2 )
+custom_constants/margin_right = 10
+custom_constants/margin_top = 10
+custom_constants/margin_left = 10
+custom_constants/margin_bottom = 10
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Panel" type="Panel" parent="."]
+margin_left = 10.0
+margin_top = 10.0
+margin_right = 197.0
+margin_bottom = 170.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+margin_left = 10.0
+margin_top = 10.0
+margin_right = 197.0
+margin_bottom = 170.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Title" type="HBoxContainer" parent="VBoxContainer"]
+margin_right = 187.0
+margin_bottom = 20.0
+
+[node name="Name" type="Label" parent="VBoxContainer/Title"]
+margin_top = 3.0
+margin_right = 164.0
+margin_bottom = 17.0
+size_flags_horizontal = 3
+text = "Starbase"
+align = 1
+
+[node name="Button" type="Button" parent="VBoxContainer/Title"]
+margin_left = 168.0
+margin_right = 187.0
+margin_bottom = 20.0
+text = "^"
+
+[node name="StatsContainer" type="VBoxContainer" parent="VBoxContainer"]
+margin_top = 24.0
+margin_right = 187.0
+margin_bottom = 160.0
+
+[node name="StatsGrid" type="GridContainer" parent="VBoxContainer/StatsContainer"]
+margin_right = 187.0
+margin_bottom = 68.0
+size_flags_horizontal = 3
+columns = 2
+
+[node name="DockCapacityLabel" type="Label" parent="VBoxContainer/StatsContainer/StatsGrid"]
+margin_right = 119.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+text = "Dock Capacity"
+
+[node name="DockCapacity" type="Label" parent="VBoxContainer/StatsContainer/StatsGrid"]
+margin_left = 123.0
+margin_right = 187.0
+margin_bottom = 14.0
+text = "Unlimited"
+align = 2
+
+[node name="ArmorLabel" type="Label" parent="VBoxContainer/StatsContainer/StatsGrid"]
+margin_top = 18.0
+margin_right = 119.0
+margin_bottom = 32.0
+size_flags_horizontal = 3
+text = "Armor"
+
+[node name="Armor" type="Label" parent="VBoxContainer/StatsContainer/StatsGrid"]
+margin_left = 123.0
+margin_top = 18.0
+margin_right = 187.0
+margin_bottom = 32.0
+text = "500dp"
+align = 2
+
+[node name="ShieldsLabel" type="Label" parent="VBoxContainer/StatsContainer/StatsGrid"]
+margin_top = 36.0
+margin_right = 119.0
+margin_bottom = 50.0
+size_flags_horizontal = 3
+text = "Shields"
+
+[node name="Shields" type="Label" parent="VBoxContainer/StatsContainer/StatsGrid"]
+margin_left = 123.0
+margin_top = 36.0
+margin_right = 187.0
+margin_bottom = 50.0
+text = "800dp"
+align = 2
+
+[node name="DamageLabel" type="Label" parent="VBoxContainer/StatsContainer/StatsGrid"]
+margin_top = 54.0
+margin_right = 119.0
+margin_bottom = 68.0
+size_flags_horizontal = 3
+text = "Damage"
+
+[node name="Damage" type="Label" parent="VBoxContainer/StatsContainer/StatsGrid"]
+margin_left = 123.0
+margin_top = 54.0
+margin_right = 187.0
+margin_bottom = 68.0
+text = "none"
+align = 2
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer/StatsContainer"]
+margin_top = 72.0
+margin_right = 187.0
+margin_bottom = 76.0
+
+[node name="MassDriverGrid" type="GridContainer" parent="VBoxContainer/StatsContainer"]
+margin_top = 80.0
+margin_right = 187.0
+margin_bottom = 136.0
+size_flags_horizontal = 3
+columns = 2
+
+[node name="MassDriverLabel" type="Label" parent="VBoxContainer/StatsContainer/MassDriverGrid"]
+margin_right = 151.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+text = "Mass Driver"
+
+[node name="MassDriver" type="Label" parent="VBoxContainer/StatsContainer/MassDriverGrid"]
+margin_left = 155.0
+margin_right = 187.0
+margin_bottom = 14.0
+text = "none"
+align = 2
+
+[node name="DestinationLabel" type="Label" parent="VBoxContainer/StatsContainer/MassDriverGrid"]
+margin_top = 18.0
+margin_right = 151.0
+margin_bottom = 32.0
+size_flags_horizontal = 3
+text = "Destination"
+
+[node name="Destination" type="Label" parent="VBoxContainer/StatsContainer/MassDriverGrid"]
+margin_left = 155.0
+margin_top = 18.0
+margin_right = 187.0
+margin_bottom = 32.0
+text = "none"
+align = 2
+
+[node name="SetDestinationButton" type="Button" parent="VBoxContainer/StatsContainer/MassDriverGrid"]
+margin_top = 36.0
+margin_right = 151.0
+margin_bottom = 56.0
+text = "Set Destination"

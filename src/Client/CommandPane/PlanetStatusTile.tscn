@@ -3,7 +3,7 @@
 [ext_resource path="res://src/Client/CommandPane/PlanetStatusTile.cs" type="Script" id=1]
 [ext_resource path="res://src/Client/TileTheme.tres" type="Theme" id=2]
 
-[node name="PlanetStatus" type="MarginContainer"]
+[node name="PlanetStatusTile" type="MarginContainer"]
 margin_right = 207.0
 margin_bottom = 190.0
 rect_min_size = Vector2( 200, 190 )

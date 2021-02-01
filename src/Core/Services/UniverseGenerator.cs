@@ -247,6 +247,7 @@ public class UniverseGenerator
                 }
             }
         };
+        planet.Starbase.ComputeAggregate(settings);
 
         Message.HomePlanet(player, planet);
     }

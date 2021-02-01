@@ -135,6 +135,7 @@ namespace CraigStars
         {
             log.Debug("Computing fleet aggregates for new turn");
             Server.Fleets.ForEach(f => f.ComputeAggregate(Server.Settings));
+            Server.Planets.ForEach(p => p.Starbase?.ComputeAggregate(Server.Settings));
             log.Debug("Scanning");
             Scan();
             log.Debug("Updating player reports");
@@ -325,7 +326,7 @@ namespace CraigStars
                     if (planet.Player == player)
                     {
                         player.UpdateReport(planet);
-                        player.UpdatePlayerPlanet(planet);
+                        player.UpdatePlayerPlanet(planet, Server.Settings);
                         continue;
                     }
 

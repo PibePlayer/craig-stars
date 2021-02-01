@@ -22,6 +22,8 @@ namespace CraigStars
             set => Cargo = Cargo.WithFuel(value);
         }
 
+        public int Damage { get; set; }
+
         [JsonProperty(IsReference = true)]
         public Planet Orbiting { get; set; }
         public bool Scrapped { get; set; }

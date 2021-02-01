@@ -6,7 +6,7 @@ namespace CraigStars.Tests
     public class PlanetTest
     {
         UniverseSettings settings = new UniverseSettings();
-        
+
         [Test]
         public void TestGetMaxMines()
         {
@@ -55,6 +55,21 @@ namespace CraigStars.Tests
             player.Race.PRT = PRT.HE;
             Assert.AreEqual(500000, planet.GetMaxPopulation(player.Race, settings));
 
+        }
+
+        [Test]
+        public void TestGetPopulationDensity()
+        {
+            var player = new Player();
+            player.Race.PRT = PRT.IS;
+
+            var planet = new Planet();
+            planet.InitEmptyPlanet();
+            planet.Hab = new Hab(50, 50, 50);
+            planet.Player = player;
+            planet.Population = 100000;
+
+            Assert.AreEqual(.1f, planet.GetPopulationDensity(settings));
         }
     }
 

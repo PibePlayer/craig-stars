@@ -41,9 +41,9 @@ _... More to come on setting up a dev environment_
 
 # Credits
 
-The artwork comes from ForceUser on the [Home World Forum](https://starsautohost.org/sahforum2/index.php?t=index&rid=479)
-The calculations for various formulas come from [The Stars! FAQ](http://starsfaq.com), FreeStars, Nova, and the Home World Forum.
-Help setting up a multi-module c#+godot project came from [van800](https://github.com/van800/godot-demo-projects/tree/nunit/mono). Thanks!
+* The artwork comes from ForceUser on the [Home World Forum](https://starsautohost.org/sahforum2/index.php?t=index&rid=479)
+* The calculations for various formulas come from [The Stars! FAQ](http://starsfaq.com), FreeStars, Nova, and the Home World Forum.
+* Help setting up a multi-module c#+godot project came from [van800](https://github.com/van800/godot-demo-projects/tree/nunit/mono). Thanks!
 
 # License
 

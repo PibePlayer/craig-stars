@@ -33,6 +33,9 @@ namespace CraigStars
                 population.Text = $"{ActivePlanet.Planet.Population:n0}";
                 resources.Text = $"{ActivePlanet.Planet.ResourcesPerYearAvailable:n0} of {ActivePlanet.Planet.ResourcesPerYear:n0}";
                 defenses.Text = $"{ActivePlanet.Planet.Defenses:n0} of {ActivePlanet.Planet.MaxDefenses:n0}";
+                var defense = ActivePlanet.Planet.Player?.GetBestDefense(TechStore.Instance);
+                defenseType.Text = defense?.Name;
+                defenseCoverage.Text = $"{ActivePlanet.Planet?.GetDefenseCoverage(TechStore.Instance):P1}";
                 if (ActivePlanet.Planet.Scanner)
                 {
                     var scanner = ActivePlanet.Planet.Player.GetBestPlanetaryScanner(TechStore.Instance);

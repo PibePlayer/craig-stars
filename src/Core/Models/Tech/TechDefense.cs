@@ -3,7 +3,7 @@ namespace CraigStars
     public class TechDefense : Tech
     {
 
-        public int DefenseCoverage { get; set; }
+        public float DefenseCoverage { get; set; }
 
         public TechDefense()
         {

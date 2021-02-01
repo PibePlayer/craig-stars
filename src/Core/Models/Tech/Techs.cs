@@ -774,13 +774,25 @@ namespace CraigStars
 
         #region Defenses
 
-        public static readonly TechDefense MissileBattery = new TechDefense("Missile Battery", new Cost(5, 5, 5, 15), new TechRequirements(prtDenied: PRT.AR), 0, TechCategory.PlanetaryDefense)
+        public static readonly TechDefense SDI = new TechDefense("SDI", new Cost(5, 5, 5, 15), new TechRequirements(prtDenied: PRT.AR), 0, TechCategory.PlanetaryDefense)
         {
-            DefenseCoverage = 199
+            DefenseCoverage = .99f
         };
-        public static readonly TechDefense SDI = new TechDefense("SDI", new Cost(5, 5, 5, 15), new TechRequirements(prtDenied: PRT.AR), 100, TechCategory.PlanetaryDefense)
+        public static readonly TechDefense MissileBattery = new TechDefense("Missile Battery", new Cost(5, 5, 5, 15), new TechRequirements(energy: 5, prtDenied: PRT.AR), 10, TechCategory.PlanetaryDefense)
         {
-            DefenseCoverage = 99
+            DefenseCoverage = 1.99f
+        };
+        public static readonly TechDefense LaserBattery = new TechDefense("Laser Battery", new Cost(5, 5, 5, 15), new TechRequirements(energy: 10, prtDenied: PRT.AR), 10, TechCategory.PlanetaryDefense)
+        {
+            DefenseCoverage = 2.39f
+        };
+        public static readonly TechDefense PlanetaryShield = new TechDefense("Planetary Shield", new Cost(5, 5, 5, 15), new TechRequirements(energy: 16, prtDenied: PRT.AR), 10, TechCategory.PlanetaryDefense)
+        {
+            DefenseCoverage = 2.99f
+        };
+        public static readonly TechDefense NeutronShield = new TechDefense("Neutron Shield", new Cost(5, 5, 5, 15), new TechRequirements(energy: 23, prtDenied: PRT.AR), 10, TechCategory.PlanetaryDefense)
+        {
+            DefenseCoverage = 3.79f
         };
 
         #endregion

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using Newtonsoft.Json;
+using Godot;
 
 namespace CraigStars
 {
@@ -290,6 +291,30 @@ namespace CraigStars
                 }
 
             }
+        }
+
+        /// <summary>
+        /// Get the defense coverage for this planet, assuming it has a player
+        /// </summary>
+        /// <param name="techStore"></param>
+        /// <returns></returns>
+        public float GetDefenseCoverage(ITechStore techStore)
+        {
+            return GetDefenseCoverage(Player?.GetBestDefense(techStore));
+        }
+
+        /// <summary>
+        /// Get the defense coverage for this planet for a given defense type
+        /// </summary>
+        /// <param name="techStore"></param>
+        /// <returns></returns>
+        public float GetDefenseCoverage(TechDefense defense)
+        {
+            if (Defenses > 0 && defense != null)
+            {
+                return (float)(1.0 - (Math.Pow((1 - (defense.DefenseCoverage / 100)), Mathf.Clamp(Defenses, 0, MaxDefenses)));
+            }
+            return 0;
         }
 
         /// <summary>

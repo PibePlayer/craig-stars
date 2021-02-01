@@ -71,6 +71,17 @@ namespace CraigStars.Tests
 
             Assert.AreEqual(.1f, planet.GetPopulationDensity(settings));
         }
+
+        [Test]
+        public void TestGetDefenseCoverage()
+        {
+            var defense = new TechDefense() { DefenseCoverage = 10 };
+
+            var planet = new Planet();
+            planet.Defenses = 10;
+
+            Assert.AreEqual(.6513f, planet.GetDefenseCoverage(defense), .0001);
+        }
     }
 
 }

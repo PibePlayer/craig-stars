@@ -5,7 +5,6 @@
 [ext_resource path="res://src/Client/Dialogs/FleetCargoTransfer.tscn" type="PackedScene" id=3]
 
 [node name="CargoTransferDialog" type="WindowDialog"]
-visible = true
 margin_right = 597.0
 margin_bottom = 300.0
 window_title = "Cargo Transfver"

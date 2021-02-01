@@ -175,6 +175,7 @@ namespace CraigStars
             {
                 // update the cargo
                 Fleet.Cargo = result;
+                UpdateControls();
                 return true;
             }
             return false;

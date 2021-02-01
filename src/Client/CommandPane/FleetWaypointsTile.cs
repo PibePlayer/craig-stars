@@ -12,11 +12,14 @@ namespace CraigStars
         Label comingFromLabel;
         Label nextWaypoint;
         Label nextWaypointLabel;
+        Label distanceLabel;
         Label distance;
         Label warpFactorText;
         WarpFactor warpFactor;
         Label travelTime;
+        Label travelTimeLabel;
         Label estimatedFuelUsage;
+        Label estimatedFuelUsageLabel;
 
         public override void _Ready()
         {
@@ -25,12 +28,15 @@ namespace CraigStars
             comingFromLabel = FindNode("ComingFromLabel") as Label;
             nextWaypoint = FindNode("NextWaypoint") as Label;
             nextWaypointLabel = FindNode("NextWaypointLabel") as Label;
+            distanceLabel = FindNode("DistanceLabel") as Label;
             distance = FindNode("Distance") as Label;
             warpFactorText = FindNode("WarpFactorText") as Label;
             warpFactor = FindNode("WarpFactor") as WarpFactor;
             travelTime = FindNode("TravelTime") as Label;
             selectedWaypointGrid = FindNode("SelectedWaypointGrid") as Control;
             estimatedFuelUsage = FindNode("EstimatedFuelUsage") as Label;
+            travelTimeLabel = FindNode("TravelTimeLabel") as Label;
+            estimatedFuelUsageLabel = FindNode("EstimatedFuelUsageLabel") as Label;
 
             selectedWaypointGrid.Visible = false;
             base._Ready();
@@ -62,7 +68,7 @@ namespace CraigStars
             if (ActiveFleet != null && index >= 0 && index < ActiveFleet.Fleet.Waypoints.Count)
             {
                 // Select this waypoint and let listeners know (like ourselves and the viewport)
-                Signals.PublishWaypointSelectedEvent(ActiveFleet.Fleet.Waypoints[index], index);
+                Signals.PublishWaypointSelectedEvent(ActiveFleet.Fleet.Waypoints[index]);
             }
         }
 
@@ -96,6 +102,15 @@ namespace CraigStars
                 if (ActiveFleet.Fleet.Waypoints.Count > 1)
                 {
                     selectedWaypointGrid.Visible = true;
+                    distanceLabel.Visible = true;
+                    distance.Visible = true;
+                    warpFactorText.Visible = true;
+                    warpFactor.Visible = true;
+                    travelTime.Visible = true;
+                    selectedWaypointGrid.Visible = true;
+                    estimatedFuelUsage.Visible = true;
+                    travelTimeLabel.Visible = true;
+                    estimatedFuelUsageLabel.Visible = true;
 
                     // we show different controls for the first waypoint
                     // we show information about the next waypoint
@@ -133,6 +148,24 @@ namespace CraigStars
                     distance.Text = $"{waypointDistance:.##} l.y.";
                     travelTime.Text = $"{Math.Ceiling(from.GetTimeToWaypoint(to))} years";
                     estimatedFuelUsage.Text = $"{ActiveFleet.Fleet.GetFuelCost(to.WarpFactor, waypointDistance)}mg";
+                }
+                else
+                {
+                    nextWaypointLabel.Visible = false;
+                    nextWaypoint.Visible = false;
+                    comingFromLabel.Visible = true;
+                    comingFrom.Visible = true;
+                    comingFrom.Text = $"{ActiveFleet.Fleet.Waypoints[0].TargetName}";
+
+                    distanceLabel.Visible = false;
+                    distance.Visible = false;
+                    warpFactorText.Visible = false;
+                    warpFactor.Visible = false;
+                    travelTime.Visible = false;
+                    selectedWaypointGrid.Visible = false;
+                    estimatedFuelUsage.Visible = false;
+                    travelTimeLabel.Visible = false;
+                    estimatedFuelUsageLabel.Visible = false;
                 }
 
             }

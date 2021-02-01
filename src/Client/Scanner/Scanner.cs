@@ -106,7 +106,7 @@ namespace CraigStars
         {
             try
             {
-                waypointAreas.ForEach(wpa => { wpa.QueueFree(); });
+                waypointAreas.ForEach(wpa => { RemoveChild(wpa); wpa.QueueFree(); });
             }
             catch (ObjectDisposedException e)
             {
@@ -114,7 +114,7 @@ namespace CraigStars
             }
             waypointAreas.Clear();
             selectedWaypoint = null;
-            ActiveFleet?.Fleet?.Waypoints.Each((wp, index) => AddWaypointArea(wp, index));
+            ActiveFleet?.Fleet?.Waypoints.Each((wp, index) => AddWaypointArea(wp));
         }
 
         /// <summary>
@@ -123,14 +123,14 @@ namespace CraigStars
         /// </summary>
         /// <param name="fleet"></param>
         /// <param name="waypoint"></param>
-        void OnWaypointAdded(Fleet fleet, Waypoint waypoint, int index)
+        void OnWaypointAdded(Fleet fleet, Waypoint waypoint)
         {
-            AddWaypointArea(waypoint, index);
+            AddWaypointArea(waypoint);
             selectedWaypoint = waypoint;
             UpdateSelectedIndicator();
         }
 
-        void OnWaypointDeleted(Waypoint waypoint, int index)
+        void OnWaypointDeleted(Waypoint waypoint)
         {
             if (selectedWaypoint == waypoint)
             {
@@ -138,18 +138,18 @@ namespace CraigStars
             }
         }
 
-        void OnWaypointSelected(Waypoint waypoint, int index)
+        void OnWaypointSelected(Waypoint waypoint)
         {
             selectedWaypoint = waypoint;
             UpdateSelectedIndicator();
         }
 
-        void AddWaypointArea(Waypoint waypoint, int index)
+        void AddWaypointArea(Waypoint waypoint)
         {
             var waypointArea = waypointAreaScene.Instance() as WaypointArea;
             waypointArea.Waypoint = waypoint;
-            waypointArea.Index = index;
             waypointAreas.Add(waypointArea);
+            // waypointArea.Connect("input_event", this, nameof(OnInputEvent));
             AddChild(waypointArea);
         }
 
@@ -166,7 +166,7 @@ namespace CraigStars
                 return planetSprite;
             }));
             Planets.ForEach(p => AddChild(p));
-            Planets.ForEach(p => p.Connect("input_event", this, nameof(OnInputEvent), new Godot.Collections.Array() { p }));
+            Planets.ForEach(p => p.Connect("input_event", this, nameof(OnInputEvent)));
             Planets.ForEach(p => p.Connect("mouse_entered", this, nameof(OnMouseEntered), new Godot.Collections.Array() { p }));
             Planets.ForEach(p => p.Connect("mouse_exited", this, nameof(OnMouseExited), new Godot.Collections.Array() { p }));
             PlanetsByGuid = Planets.ToLookup(p => p.Planet.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
@@ -222,23 +222,26 @@ namespace CraigStars
         /// owns the object, it should activate it. Subsequent clicks should cycle through all mapObjects
         /// at the same point on the scanner
         /// </summary>
-        void OnInputEvent(Node viewport, InputEvent @event, int shapeIdx, MapObjectSprite mapObject)
+        void OnInputEvent(Node viewport, InputEvent @event, int shapeIdx)
         {
             if (@event.IsActionPressed("viewport_select"))
             {
-                log.Debug($"Clicked {mapObject.ObjectName}");
+                var localMousePosition = GetLocalMousePosition();
+                MapObjectSprite closest = mapObjectsUnderMouse.Aggregate((curMin, mo) => (curMin == null || (mo.Position.DistanceSquaredTo(localMousePosition)) < curMin.Position.DistanceSquaredTo(localMousePosition) ? mo : curMin));
+
+                log.Debug($"Clicked {closest.ObjectName}");
                 if (@event is InputEventMouseButton eventMouseButton && eventMouseButton.Shift)
                 {
                     if (commandedMapObject is FleetSprite commandedFleet)
                     {
                         // this was shift+clicked, so let the viewport know it's supposed to be added as a waypoint
-                        log.Debug($"Adding waypoint for {commandedFleet.Name} to {mapObject.Name}");
-                        commandedFleet.AddWaypoint(mapObject.MapObject, selectedWaypoint);
+                        log.Debug($"Adding waypoint for {commandedFleet.Name} to {closest.Name}");
+                        commandedFleet.AddWaypoint(closest.MapObject, selectedWaypoint);
                     }
                 }
                 else
                 {
-                    if (mapObject != selectedMapObject)
+                    if (closest != selectedMapObject)
                     {
                         // We selected a new MapObject. Select it and update our sprite
                         if (selectedMapObject?.State == ScannerState.Selected)
@@ -247,7 +250,7 @@ namespace CraigStars
                             // deselect the old one if it's selected.
                             selectedMapObject?.Deselect();
                         }
-                        selectedMapObject = mapObject;
+                        selectedMapObject = closest;
                         if (selectedMapObject.State != ScannerState.Commanded)
                         {
                             log.Debug($"Selected map object {selectedMapObject.ObjectName}");
@@ -259,11 +262,11 @@ namespace CraigStars
 
                         Signals.PublishMapObjectSelectedEvent(selectedMapObject);
                     }
-                    else if (mapObject == selectedMapObject)
+                    else if (closest == selectedMapObject)
                     {
-                        if (mapObject.OwnedByMe)
+                        if (closest.OwnedByMe)
                         {
-                            if (commandedMapObject != null && commandedMapObject == mapObject || mapObject.HasActivePeer())
+                            if (commandedMapObject != null && commandedMapObject == closest || closest.HasActivePeer())
                             {
                                 CommandNextPeer(commandedMapObject);
                             }
@@ -271,15 +274,15 @@ namespace CraigStars
                             {
                                 // we aren't commanding anything yet, so command this
                                 commandedMapObject?.Deselect();
-                                commandedMapObject = mapObject;
+                                commandedMapObject = closest;
 
                                 log.Debug($"Commanded map object {commandedMapObject.ObjectName}");
                             }
                         }
-                        else if (mapObject.GetPeers().Count > 0)
+                        else if (closest.GetPeers().Count > 0)
                         {
-                            // this mapObject isn't owned by me.
-                            CommandNextPeer(mapObject);
+                            // this closest isn't owned by me.
+                            CommandNextPeer(closest);
                         }
 
                         commandedMapObject.Command();
@@ -431,7 +434,7 @@ namespace CraigStars
         void UpdateScanners()
         {
             // clear out the old scanners
-            Scanners.ForEach(s => s.QueueFree());
+            Scanners.ForEach(s => { RemoveChild(s); s.QueueFree(); });
             Scanners.Clear();
 
             foreach (var planet in Planets)

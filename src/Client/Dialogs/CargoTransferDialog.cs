@@ -19,7 +19,21 @@ namespace CraigStars
         FleetCargoTransfer destFleetCargoTransfer;
         PlanetCargoTransfer destPlanetCargoTransfer;
 
+        Button ironiumSourceButton;
+        Button boraniumSourceButton;
+        Button germaniumSourceButton;
+        Button colonistsSourceButton;
+        Button fuelSourceButton;
+
+        Button ironiumDestButton;
+        Button boraniumDestButton;
+        Button germaniumDestButton;
+        Button colonistsDestButton;
+        Button fuelDestButton;
+
         Button okButton;
+
+        int quantityModifier = 1;
 
         /// <summary>
         /// This is the net cargo difference we record when the OK button is pressed
@@ -32,6 +46,19 @@ namespace CraigStars
             sourcePlanetCargoTransfer = FindNode("SourcePlanetCargoTransfer") as PlanetCargoTransfer;
             destFleetCargoTransfer = FindNode("DestFleetCargoTransfer") as FleetCargoTransfer;
             destPlanetCargoTransfer = FindNode("DestPlanetCargoTransfer") as PlanetCargoTransfer;
+
+            ironiumSourceButton = FindNode("IroniumSourceButton") as Button;
+            boraniumSourceButton = FindNode("BoraniumSourceButton") as Button;
+            germaniumSourceButton = FindNode("GermaniumSourceButton") as Button;
+            colonistsSourceButton = FindNode("ColonistsSourceButton") as Button;
+            fuelSourceButton = FindNode("FuelSourceButton") as Button;
+            ironiumDestButton = FindNode("IroniumDestButton") as Button;
+            boraniumDestButton = FindNode("BoraniumDestButton") as Button;
+            germaniumDestButton = FindNode("GermaniumDestButton") as Button;
+            colonistsDestButton = FindNode("ColonistsDestButton") as Button;
+            fuelDestButton = FindNode("FuelDestButton") as Button;
+
+
             okButton = FindNode("OKButton") as Button;
 
             if (Source == null)
@@ -41,9 +68,55 @@ namespace CraigStars
                 Dest = destPlanetCargoTransfer.Planet;
             }
 
+            ironiumSourceButton.Connect("pressed", this, nameof(OnSourceButtonPressed), new Godot.Collections.Array() { CargoType.Ironium });
+            boraniumSourceButton.Connect("pressed", this, nameof(OnSourceButtonPressed), new Godot.Collections.Array() { CargoType.Boranium });
+            germaniumSourceButton.Connect("pressed", this, nameof(OnSourceButtonPressed), new Godot.Collections.Array() { CargoType.Germanium });
+            colonistsSourceButton.Connect("pressed", this, nameof(OnSourceButtonPressed), new Godot.Collections.Array() { CargoType.Colonists });
+            fuelSourceButton.Connect("pressed", this, nameof(OnSourceButtonPressed), new Godot.Collections.Array() { CargoType.Fuel });
+            ironiumDestButton.Connect("pressed", this, nameof(OnDestButtonPressed), new Godot.Collections.Array() { CargoType.Ironium });
+            boraniumDestButton.Connect("pressed", this, nameof(OnDestButtonPressed), new Godot.Collections.Array() { CargoType.Boranium });
+            germaniumDestButton.Connect("pressed", this, nameof(OnDestButtonPressed), new Godot.Collections.Array() { CargoType.Germanium });
+            colonistsDestButton.Connect("pressed", this, nameof(OnDestButtonPressed), new Godot.Collections.Array() { CargoType.Colonists });
+            fuelDestButton.Connect("pressed", this, nameof(OnDestButtonPressed), new Godot.Collections.Array() { CargoType.Fuel });
+
             Connect("about_to_show", this, nameof(OnAboutToShow));
             Connect("popup_hide", this, nameof(OnPopupHide));
             okButton.Connect("pressed", this, nameof(OnOK));
+        }
+
+        /// <summary>
+        /// Set the quantity modifier for the dialog
+        /// if the user holds shift, we multipy by 10, if they press control we multiply by 100
+        /// both multiplies by 1000
+        /// </summary>
+        public override void _Input(InputEvent @event)
+        {
+            if (@event is InputEventKey key)
+            {
+                if (key.Pressed && key.Scancode == (uint)KeyList.Shift)
+                {
+                    quantityModifier *= 10;
+                }
+                else if (key.Pressed && key.Scancode == (uint)KeyList.Control)
+                {
+                    quantityModifier *= 100;
+                }
+                else
+                {
+                    quantityModifier = 1;
+                }
+            }
+        }
+
+
+        void OnSourceButtonPressed(CargoType type)
+        {
+            AttemptSourceTransfer(Cargo.OfAmount(type, -quantityModifier));
+        }
+
+        void OnDestButtonPressed(CargoType type)
+        {
+            AttemptDestTransfer(Cargo.OfAmount(type, -quantityModifier));
         }
 
         /// <summary>
@@ -111,11 +184,16 @@ namespace CraigStars
         void OnSourceCargoTransferRequested(Cargo newCargo)
         {
             var cargoDiff = sourceCargoTransfer.Cargo - newCargo;
+            AttemptSourceTransfer(cargoDiff);
+        }
+
+        void AttemptSourceTransfer(Cargo cargoDiff)
+        {
             if (destCargoTransfer.AttemptTransfer(cargoDiff))
             {
                 // the cargo transfer was successful, so update the source cargo
                 // with their requested value
-                sourceCargoTransfer.Cargo = newCargo;
+                sourceCargoTransfer.Cargo = sourceCargoTransfer.Cargo - cargoDiff;
                 netCargoDiff -= cargoDiff;
             }
         }
@@ -123,13 +201,19 @@ namespace CraigStars
         void OnDestCargoTransferRequested(Cargo newCargo)
         {
             var cargoDiff = destCargoTransfer.Cargo - newCargo;
+            AttemptDestTransfer(cargoDiff);
+        }
+
+        void AttemptDestTransfer(Cargo cargoDiff)
+        {
             if (sourceCargoTransfer.AttemptTransfer(cargoDiff))
             {
                 // the cargo transfer was successful, so update the source cargo
                 // with their requested value
-                destCargoTransfer.Cargo = newCargo;
+                destCargoTransfer.Cargo = destCargoTransfer.Cargo - cargoDiff;
                 netCargoDiff += cargoDiff;
             }
+
         }
 
 

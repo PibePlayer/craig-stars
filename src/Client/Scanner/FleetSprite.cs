@@ -85,7 +85,7 @@ namespace CraigStars
 
             UpdateWaypointsLine();
 
-            Signals.PublishWaypointAddedEvent(Fleet, waypoint, index + 1);
+            Signals.PublishWaypointAddedEvent(Fleet, waypoint);
             return waypoint;
         }
 
@@ -100,7 +100,7 @@ namespace CraigStars
             var index = Fleet.Waypoints.Count - 1;
             if (after != null)
             {
-                index = Fleet.Waypoints.FindIndex(wp => wp.Position == after?.Position);
+                index = Fleet.Waypoints.FindIndex(wp => wp == after);
             }
 
             int warpFactor = Fleet.GetDefaultWarpFactor();
@@ -119,7 +119,7 @@ namespace CraigStars
 
             UpdateWaypointsLine();
 
-            Signals.PublishWaypointAddedEvent(Fleet, waypoint, index + 1);
+            Signals.PublishWaypointAddedEvent(Fleet, waypoint);
             return waypoint;
         }
 
@@ -132,10 +132,10 @@ namespace CraigStars
             {
                 Fleet.Waypoints.RemoveAt(index);
                 UpdateWaypointsLine();
-                Signals.PublishWaypointDeletedEvent(waypoint, index);
+                Signals.PublishWaypointDeletedEvent(waypoint);
 
                 // select the previous waypoint in the list
-                Signals.PublishWaypointSelectedEvent(Fleet.Waypoints[index - 1], index - 1);
+                Signals.PublishWaypointSelectedEvent(Fleet.Waypoints[index - 1]);
             }
 
         }

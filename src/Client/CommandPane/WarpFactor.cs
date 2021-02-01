@@ -1,4 +1,5 @@
 using Godot;
+using log4net;
 using System;
 
 namespace CraigStars
@@ -6,6 +7,7 @@ namespace CraigStars
     [Tool]
     public class WarpFactor : Control
     {
+        private static readonly ILog log = LogManager.GetLogger(typeof(WarpFactor));
         public event Action<int> WarpSpeedChangedEvent;
 
         [Export]
@@ -75,7 +77,7 @@ namespace CraigStars
                 Vector2 mousePosition = mouse.Position;
                 mousePosition = mouse.Position;
                 int warpSpeedFromClick = (int)(Math.Round(mousePosition.x / (panel.RectSize.x - borderWidth) * MaxWarpFactor));
-                GD.Print($"Mouse clicked {mousePosition} for warp speed {warpSpeedFromClick}");
+                log.Debug($"Mouse clicked {mousePosition} for warp speed {warpSpeedFromClick}");
                 if (warpSpeedFromClick >= 0 && warpSpeedFromClick <= MaxWarpFactor)
                 {
                     WarpSpeed = warpSpeedFromClick;
@@ -115,19 +117,10 @@ namespace CraigStars
                     new Vector2(width, panel.RectSize.y - (borderHeight))),
                     color
                 );
-                if (width < 1)
-                {
-                    GD.Print("width is small, won't draw");
-                }
-                else
-                {
-                    GD.Print($"Drawing warp factor {WarpSpeed} in color: {color.ToHtml()}");
-                }
-
             }
             else
             {
-                GD.Print("panel is null, can't draw");
+                log.Debug("panel is null, can't draw");
             }
         }
 

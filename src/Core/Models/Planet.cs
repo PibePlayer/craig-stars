@@ -151,12 +151,20 @@ namespace CraigStars
 
         }
 
-
+        /// <summary>
+        /// Get the population density of this planet, as a float, i.e. 100k out of 1 million max is .1f density
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <returns></returns>
         public float GetPopulationDensity(UniverseSettings settings)
         {
             return Population > 0 ? (float)Population / GetMaxPopulation(Player.Race, settings) : 0;
         }
 
+        /// <summary>
+        /// Grow the planet by some grow amount
+        /// </summary>
+        /// <param name="settings"></param>
         public void Grow(UniverseSettings settings)
         {
             Population += GetGrowthAmount(settings);

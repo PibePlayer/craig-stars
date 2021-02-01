@@ -28,23 +28,23 @@ namespace CraigStars
             Signals.WaypointDeletedEvent -= OnWaypointDeleted;
         }
 
-        void OnWaypointSelected(Waypoint waypoint, int index)
+        void OnWaypointSelected(Waypoint waypoint)
         {
-            log.Debug($"Selected waypoint {waypoint.TargetName} index: {index}");
+            log.Debug($"Selected waypoint {waypoint.TargetName}");
             ActiveWaypoint = waypoint;
             UpdateControls();
         }
 
-        void OnWaypointAdded(Fleet fleet, Waypoint waypoint, int index)
+        void OnWaypointAdded(Fleet fleet, Waypoint waypoint)
         {
-            log.Debug($"Added waypoint {waypoint.TargetName} index: {index}");
+            log.Debug($"Added waypoint {waypoint.TargetName}");
             ActiveWaypoint = waypoint;
             UpdateControls();
         }
 
-        void OnWaypointDeleted(Waypoint waypoint, int index)
+        void OnWaypointDeleted(Waypoint waypoint)
         {
-            log.Debug($"Deleted waypoint {waypoint.TargetName} index: {index}");
+            log.Debug($"Deleted waypoint {waypoint.TargetName}");
             if (ActiveWaypoint == waypoint)
             {
                 ActiveWaypoint = null;

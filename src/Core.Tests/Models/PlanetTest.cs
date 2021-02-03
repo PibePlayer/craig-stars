@@ -5,7 +5,7 @@ namespace CraigStars.Tests
     [TestFixture]
     public class PlanetTest
     {
-        UniverseSettings settings = new UniverseSettings();
+        Rules rules = new Rules();
 
         [Test]
         public void TestGetMaxMines()
@@ -17,7 +17,6 @@ namespace CraigStars.Tests
 
             var player = new Player();
             planet.Player = player;
-            planet.ProductionQueue = new ProductionQueue();
             planet.Population = 10000;
             Assert.AreEqual(10, planet.MaxMines);
         }
@@ -32,9 +31,22 @@ namespace CraigStars.Tests
 
             var player = new Player();
             planet.Player = player;
-            planet.ProductionQueue = new ProductionQueue();
             planet.Population = 10000;
             Assert.AreEqual(10, planet.MaxFactories);
+        }
+
+        [Test]
+        public void TestGetMaxDefenses()
+        {
+            var planet = new Planet();
+            planet.InitEmptyPlanet();
+
+            Assert.AreEqual(0, planet.MaxDefenses);
+
+            var player = new Player();
+            planet.Player = player;
+            planet.Population = 10000;
+            Assert.AreEqual(10, planet.MaxDefenses);
         }
 
         [Test]
@@ -47,13 +59,13 @@ namespace CraigStars.Tests
             var player = new Player();
 
             player.Race.PRT = PRT.IS;
-            Assert.AreEqual(1000000, planet.GetMaxPopulation(player.Race, settings));
+            Assert.AreEqual(1000000, planet.GetMaxPopulation(player.Race, rules));
 
             player.Race.PRT = PRT.JoaT;
-            Assert.AreEqual(1200000, planet.GetMaxPopulation(player.Race, settings));
+            Assert.AreEqual(1200000, planet.GetMaxPopulation(player.Race, rules));
 
             player.Race.PRT = PRT.HE;
-            Assert.AreEqual(500000, planet.GetMaxPopulation(player.Race, settings));
+            Assert.AreEqual(500000, planet.GetMaxPopulation(player.Race, rules));
 
         }
 
@@ -69,18 +81,23 @@ namespace CraigStars.Tests
             planet.Player = player;
             planet.Population = 100000;
 
-            Assert.AreEqual(.1f, planet.GetPopulationDensity(settings));
+            Assert.AreEqual(.1f, planet.GetPopulationDensity(rules));
         }
 
         [Test]
         public void TestGetDefenseCoverage()
         {
-            var defense = new TechDefense() { DefenseCoverage = 10 };
+            var defense = new TechDefense() { DefenseCoverage = .99f };
 
-            var planet = new Planet();
-            planet.Defenses = 10;
+            var planet = new Planet()
+            {
+                Player = new Player(),
+                Defenses = 10,
+                Population = 10000
+            };
 
-            Assert.AreEqual(.6513f, planet.GetDefenseCoverage(defense), .0001);
+            // should be about 9.5%
+            Assert.AreEqual(.095f, planet.GetDefenseCoverage(defense), .001);
         }
     }
 

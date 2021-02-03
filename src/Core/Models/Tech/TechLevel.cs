@@ -73,6 +73,37 @@ namespace CraigStars
             }
         }
 
+        public override bool Equals(object obj)
+        {
+            if (obj is TechLevel cargo)
+            {
+                return Equals(cargo);
+            }
+            return false;
+        }
+
+        public bool Equals(TechLevel other)
+        {
+            return
+                Energy == other.Energy &&
+                Weapons == other.Weapons &&
+                Propulsion == other.Propulsion &&
+                Construction == other.Construction &&
+                Electronics == other.Electronics &&
+                Biotechnology == other.Biotechnology;
+        }
+
+        public override int GetHashCode()
+        {
+            return
+            Energy.GetHashCode() ^
+            Weapons.GetHashCode() ^
+            Propulsion.GetHashCode() ^
+            Construction.GetHashCode() ^
+            Electronics.GetHashCode() ^
+            Biotechnology.GetHashCode();
+        }
+
         /// <summary>
         /// Determine if this TechLevel meets a given tech requirements
         /// </summary>

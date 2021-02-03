@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using Godot;
 using log4net;
 using log4net.Appender;
 using log4net.Core;
@@ -9,14 +9,46 @@ using log4net.Repository.Hierarchy;
 namespace CraigStars.Singletons
 {
     /// <summary>
-    /// The Signals csharp class services as a way to bridge csharp and gdscript until 
-    /// everything is rewritten in .net
+    /// The currently active rules for this game
     /// </summary>
-    public static class EventManager
+    public class RulesManager : Node
     {
-        static ILog log = LogManager.GetLogger(typeof(EventManager));
+        static ILog log = LogManager.GetLogger(typeof(RulesManager));
 
-        static EventManager()
+        // setup logging with a static initializer
+        static RulesManager()
+        {
+            InitLogging();
+        }
+
+        private Rules rules = new Rules();
+        public static Rules Rules
+        {
+            get
+            {
+                return Instance.rules;
+            }
+        }
+
+        /// <summary>
+        /// PlayersManager is a singleton
+        /// </summary>
+        private static RulesManager instance;
+        public static RulesManager Instance
+        {
+            get
+            {
+                return instance;
+            }
+        }
+
+        RulesManager()
+        {
+            instance = this;
+        }
+
+
+        static void InitLogging()
         {
             /// configure the logger we will use
             /// TODO: this should probably be in a different function
@@ -38,22 +70,5 @@ namespace CraigStars.Singletons
 
             log.Info("Logging Configured");
         }
-
-        #region Server Events
-
-        public static event Action<Fleet> FleetBuiltEvent;
-
-        #endregion
-
-
-        #region Event Publishers
-
-        internal static void PublishFleetBuiltEvent(Fleet fleet)
-        {
-            FleetBuiltEvent?.Invoke(fleet);
-        }
-
-        #endregion
-
     }
 }

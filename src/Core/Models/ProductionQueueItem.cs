@@ -81,10 +81,10 @@ namespace CraigStars
         /// <summary>
         /// Get the cost of a single item in this ProductionQueueItem
         /// </summary>
-        /// <param name="settings"></param>
+        /// <param name="rules"></param>
         /// <param name="race"></param>
         /// <returns></returns>
-        public Cost GetCostOfOne(UniverseSettings settings, Race race)
+        public Cost GetCostOfOne(Rules rules, Race race)
         {
             int resources = 0;
             int germanium = 0;
@@ -95,7 +95,7 @@ namespace CraigStars
             else if (type == QueueItemType.Factory || type == QueueItemType.AutoFactory)
             {
                 resources = race.FactoryCost;
-                germanium = settings.FactoryCostGermanium;
+                germanium = rules.FactoryCostGermanium;
                 if (race.FactoriesCostLess)
                 {
                     germanium = germanium - 1;
@@ -105,16 +105,16 @@ namespace CraigStars
             {
                 if (race.HasLRT(LRT.MA))
                 {
-                    resources = settings.MineralAlchemyLRTCost;
+                    resources = rules.MineralAlchemyLRTCost;
                 }
                 else
                 {
-                    resources = settings.MineralAlchemyCost;
+                    resources = rules.MineralAlchemyCost;
                 }
             }
             else if (type == QueueItemType.Defense || type == QueueItemType.AutoDefense)
             {
-                return settings.DefenseCost;
+                return rules.DefenseCost;
             }
             else if (type == QueueItemType.ShipToken || type == QueueItemType.Starbase)
             {

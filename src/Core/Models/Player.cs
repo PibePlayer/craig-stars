@@ -7,8 +7,9 @@ namespace CraigStars
 {
     public class Player : PublicPlayerInfo
     {
-        public Race Race = new Race();
-        public PlayerStats Stats = new PlayerStats();
+        public Rules Rules { get; set; }
+        public Race Race { get; set; } = new Race();
+        public PlayerStats Stats { get; set; } = new PlayerStats();
 
         #region Research
 
@@ -118,11 +119,11 @@ namespace CraigStars
             FleetsByGuid = Fleets.ToLookup(f => f.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
         }
 
-        public void ComputeAggregates(UniverseSettings settings)
+        public void ComputeAggregates(Rules rules)
         {
-            Fleets.ForEach(f => f.ComputeAggregate(settings));
-            Designs.ForEach(d => d.ComputeAggregate(this, settings));
-            Planets.ForEach(p => p.Starbase?.ComputeAggregate(settings));
+            Fleets.ForEach(f => f.ComputeAggregate(rules));
+            Designs.ForEach(d => d.ComputeAggregate(this, rules));
+            Planets.ForEach(p => p.Starbase?.ComputeAggregate(rules));
         }
 
         #endregion
@@ -167,7 +168,7 @@ namespace CraigStars
         /// 
         /// </summary>
         /// <param name="resourcesToSpend">The amount of resources to spend on research</param>
-        public void ResearchNextLevel(UniverseSettings settings, int resourcesToSpend)
+        public void ResearchNextLevel(Rules rules, int resourcesToSpend)
         {
             // add the resourcesToSpend to how much we've currently spent
             TechLevelsSpent[Researching] += resourcesToSpend;
@@ -176,7 +177,7 @@ namespace CraigStars
             // don't research more than the max on this level
             // TODO: If we get to max level, automatically switch to the lowest field
             var level = TechLevels[Researching];
-            if (level >= settings.TechBaseCost.Length - 1)
+            if (level >= rules.TechBaseCost.Length - 1)
             {
                 Message.Info(this, $"You are already at level {level} in {Researching} and cannot research further.");
                 return;
@@ -186,7 +187,7 @@ namespace CraigStars
             var totalLevels = TechLevels.Sum();
 
             // figure out the cost to advance to the next level
-            var baseCost = settings.TechBaseCost[level + 1];
+            var baseCost = rules.TechBaseCost[level + 1];
             var researchCost = Race.ResearchCost[Researching];
             var costFactor = 1f;
             switch (researchCost)
@@ -226,7 +227,7 @@ namespace CraigStars
                 {
                     // we have leftover resources, so call ourselves again
                     // to apply them to the next level
-                    ResearchNextLevel(settings, leftoverResources);
+                    ResearchNextLevel(rules, leftoverResources);
                 }
             }
         }
@@ -487,11 +488,11 @@ namespace CraigStars
         /// etc
         /// </summary>
         /// <param name="planet"></param>
-        public void UpdatePlayerPlanet(Planet planet, UniverseSettings settings)
+        public void UpdatePlayerPlanet(Planet planet, Rules rules)
         {
             var planetReport = PlanetsByGuid[planet.Guid];
             planetReport.Player = this;
-            planetReport.UpdatePlayerPlanet(planet, settings);
+            planetReport.UpdatePlayerPlanet(planet, rules);
         }
 
     }

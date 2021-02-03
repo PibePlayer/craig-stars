@@ -30,6 +30,19 @@ namespace CraigStars
         TechBrowserDialog techBrowserDialog;
         ShipDesignerDialog shipDesignerDialog;
 
+        /// <summary>
+        /// When this node enters the tree, setup any server/player stuff
+        /// </summary>
+        public override void _EnterTree()
+        {
+            if (PlayersManager.Instance.Players.Count == 0)
+            {
+                log.Warn("Resetting Players. This probably means you are executing the Game scene directly during development. If not, this is a problem.");
+                PlayersManager.Instance.SetupPlayers();
+            }
+
+        }
+
         public override void _Ready()
         {
             scanner = FindNode("Scanner") as Scanner;
@@ -50,12 +63,8 @@ namespace CraigStars
             // init the server and send a notice to all players that it's time to start
             if (this.IsServerOrSinglePlayer())
             {
-                if (PlayersManager.Instance.Players.Count == 0)
-                {
-                    log.Warn("Resetting Players. This probably means you are executing the Game scene directly during development. If not, this is a problem.");
-                    PlayersManager.Instance.SetupPlayers();
-                }
-                Server.Init(PlayersManager.Instance.Players.Cast<Player>().ToList(), SettingsManager.Settings, TechStore.Instance);
+                Server.Init(PlayersManager.Instance.Players.Cast<Player>().ToList(), RulesManager.Rules, TechStore.Instance);
+                Server.GenerateUniverse();
                 Signals.PublishPostStartGameEvent(Server.Year);
                 if (this.IsServer())
                 {
@@ -69,6 +78,7 @@ namespace CraigStars
                 // if we aren't the server, we come here with our player data already loaded
                 OnPostStartGameEvent(PlayersManager.Instance.Me.Year);
             }
+
         }
 
         public override void _ExitTree()

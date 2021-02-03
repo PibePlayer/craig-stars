@@ -51,7 +51,7 @@ namespace CraigStars
                 // TODO: make turn processors configurable
                 if (player.AIControlled || true)
                 {
-                    processors.ForEach(processor => processor.Process(Server.Year, Server.Settings, player));
+                    processors.ForEach(processor => processor.Process(Server.Year, Server.Rules, player));
                 }
             });
         }
@@ -134,8 +134,8 @@ namespace CraigStars
         public void UpdatePlayerReports()
         {
             log.Debug("Computing fleet aggregates for new turn");
-            Server.Fleets.ForEach(f => f.ComputeAggregate(Server.Settings));
-            Server.Planets.ForEach(p => p.Starbase?.ComputeAggregate(Server.Settings));
+            Server.Fleets.ForEach(f => f.ComputeAggregate(Server.Rules));
+            Server.Planets.ForEach(p => p.Starbase?.ComputeAggregate(Server.Rules));
             log.Debug("Scanning");
             Scan();
             log.Debug("Updating player reports");
@@ -200,8 +200,8 @@ namespace CraigStars
             {
                 p.Cargo += p.GetMineralOutput();
                 p.MineYears += p.Mines;
-                int mineralDecayFactor = Server.Settings.MineralDecayFactor;
-                int minMineralConcentration = p.Homeworld ? Server.Settings.MinHomeworldMineralConcentration : Server.Settings.MinMineralConcentration;
+                int mineralDecayFactor = Server.Rules.MineralDecayFactor;
+                int minMineralConcentration = p.Homeworld ? Server.Rules.MinHomeworldMineralConcentration : Server.Rules.MinMineralConcentration;
                 ReduceMineralConcentration(p, mineralDecayFactor, minMineralConcentration);
             });
         }
@@ -242,7 +242,7 @@ namespace CraigStars
         {
             ownedPlanets.ForEach(p =>
             {
-                planetProducer.Build(Server.Settings, p);
+                planetProducer.Build(Server.Rules, p);
             });
 
             Research();
@@ -264,7 +264,7 @@ namespace CraigStars
                 }
 
                 // research for this player
-                playerPlanets.Key.ResearchNextLevel(Server.Settings, resourcesToSpend);
+                playerPlanets.Key.ResearchNextLevel(Server.Rules, resourcesToSpend);
             }
         }
 
@@ -273,7 +273,7 @@ namespace CraigStars
         /// </summary>
         void Grow()
         {
-            ownedPlanets.ForEach(p => p.Population += p.GetGrowthAmount(Server.Settings));
+            ownedPlanets.ForEach(p => p.Population += p.GetGrowthAmount(Server.Rules));
         }
 
         /// <summary>
@@ -326,7 +326,7 @@ namespace CraigStars
                     if (planet.Player == player)
                     {
                         player.UpdateReport(planet);
-                        player.UpdatePlayerPlanet(planet, Server.Settings);
+                        player.UpdatePlayerPlanet(planet, Server.Rules);
                         continue;
                     }
 
@@ -378,7 +378,7 @@ namespace CraigStars
             {
                 p.Year = Server.Year;
                 p.PlanetaryScanner = p.GetBestPlanetaryScanner(Server.TechStore);
-                p.Fleets.ForEach(f => f.ComputeAggregate(Server.Settings));
+                p.Fleets.ForEach(f => f.ComputeAggregate(Server.Rules));
             });
         }
     }

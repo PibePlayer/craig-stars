@@ -111,7 +111,7 @@ namespace CraigStars
                     nameLabel.Text = shipDesign.Name;
                     icon.Texture = TextureLoader.Instance.FindTexture(shipDesign);
 
-                    shipDesign.ComputeAggregate(PlayersManager.Instance.Me, SettingsManager.Settings);
+                    shipDesign.ComputeAggregate(PlayersManager.Instance.Me, RulesManager.Rules);
                     costTitleLabel.Text = $"Cost of one {shipDesign.Name}";
                     costGrid.Cost = shipDesign.Aggregate.Cost;
                     maxFuelAmountLabel.Text = $"{shipDesign.Aggregate.FuelCapacity}mg";

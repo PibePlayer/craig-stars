@@ -40,7 +40,7 @@ namespace CraigStars
         /// <summary>
         /// Get the Advantage points for a race
         /// </summary>
-        /// <param name="settings"></param>
+        /// <param name="rules"></param>
         /// <returns>The advantage points for this race, negative means an invalid race.</returns>
         public int GetAdvantagePoints(Race race, int startingPoints)
         {

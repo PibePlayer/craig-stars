@@ -37,26 +37,26 @@ __meta__ = {
 
 [node name="Title" type="HBoxContainer" parent="VBoxContainer"]
 margin_right = 187.0
-margin_bottom = 20.0
+margin_bottom = 14.0
 
 [node name="Name" type="Label" parent="VBoxContainer/Title"]
-margin_top = 3.0
-margin_right = 164.0
-margin_bottom = 17.0
+margin_right = 187.0
+margin_bottom = 14.0
 size_flags_horizontal = 3
 text = "Status"
 align = 1
 
 [node name="Button" type="Button" parent="VBoxContainer/Title"]
+visible = false
 margin_left = 168.0
 margin_right = 187.0
 margin_bottom = 20.0
 text = "^"
 
 [node name="PopulationGrid" type="GridContainer" parent="VBoxContainer"]
-margin_top = 24.0
+margin_top = 18.0
 margin_right = 187.0
-margin_bottom = 56.0
+margin_bottom = 50.0
 size_flags_horizontal = 3
 columns = 2
 
@@ -89,14 +89,14 @@ text = "181 of 213"
 align = 2
 
 [node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
-margin_top = 60.0
+margin_top = 54.0
 margin_right = 187.0
-margin_bottom = 64.0
+margin_bottom = 58.0
 
 [node name="ScannerGrid" type="GridContainer" parent="VBoxContainer"]
-margin_top = 68.0
+margin_top = 62.0
 margin_right = 187.0
-margin_bottom = 100.0
+margin_bottom = 94.0
 size_flags_horizontal = 3
 columns = 2
 
@@ -129,14 +129,14 @@ text = "150 l.y."
 align = 2
 
 [node name="HSeparator2" type="HSeparator" parent="VBoxContainer"]
-margin_top = 104.0
+margin_top = 98.0
 margin_right = 187.0
-margin_bottom = 108.0
+margin_bottom = 102.0
 
 [node name="DefensesGrid" type="GridContainer" parent="VBoxContainer"]
-margin_top = 112.0
+margin_top = 106.0
 margin_right = 187.0
-margin_bottom = 162.0
+margin_bottom = 156.0
 size_flags_horizontal = 3
 columns = 2
 

@@ -65,6 +65,8 @@ namespace CraigStars
             // wire up events
             Signals.TurnPassedEvent += OnTurnPassed;
             Signals.MapObjectActivatedEvent += OnMapObjectActivated;
+            Signals.ActiveNextMapObjectEvent += OnActiveNextMapObject;
+            Signals.ActivePrevMapObjectEvent += OnActivePrevMapObject;
             Signals.WaypointAddedEvent += OnWaypointAdded;
             Signals.WaypointSelectedEvent += OnWaypointSelected;
             Signals.WaypointDeletedEvent += OnWaypointDeleted;
@@ -75,6 +77,8 @@ namespace CraigStars
         {
             Signals.TurnPassedEvent -= OnTurnPassed;
             Signals.MapObjectActivatedEvent -= OnMapObjectActivated;
+            Signals.ActiveNextMapObjectEvent -= OnActiveNextMapObject;
+            Signals.ActivePrevMapObjectEvent -= OnActivePrevMapObject;
             Signals.WaypointAddedEvent -= OnWaypointAdded;
             Signals.WaypointSelectedEvent -= OnWaypointSelected;
             Signals.WaypointDeletedEvent -= OnWaypointDeleted;
@@ -97,6 +101,66 @@ namespace CraigStars
         {
             ActiveFleet = mapObject as FleetSprite;
             ActivePlanet = mapObject as PlanetSprite;
+        }
+
+        // Find the next object in a list after our currently active object. This loops back to the beginning
+        MapObjectSprite FindNextObject<T>(IEnumerable<T> items, T currentlyActive) where T : MapObjectSprite
+        {
+            var first = items.First();
+            var next = items.SkipWhile(item => item != currentlyActive).Skip(1).FirstOrDefault();
+            return next != null ? next : first;
+        }
+
+        void OnActiveNextMapObject()
+        {
+            MapObjectSprite mapObjectToActivate = null;
+            if (ActivePlanet != null)
+            {
+                mapObjectToActivate = FindNextObject(Planets.Where(p => p.Planet.Player == Me), ActivePlanet);
+            }
+            else if (ActiveFleet != null)
+            {
+                mapObjectToActivate = FindNextObject(Fleets.Where(f => f.Fleet.Player == Me), ActiveFleet);
+            }
+
+            // activate this object
+            if (mapObjectToActivate != null && mapObjectToActivate != ActivePlanet && mapObjectToActivate != ActiveFleet)
+            {
+                CommandMapObject(mapObjectToActivate);
+            }
+        }
+
+        void OnActivePrevMapObject()
+        {
+            MapObjectSprite mapObjectToActivate = null;
+            if (ActivePlanet != null)
+            {
+                mapObjectToActivate = FindNextObject(Planets.Where(p => p.Planet.Player == Me).Reverse(), ActivePlanet);
+            }
+            else if (ActiveFleet != null)
+            {
+                mapObjectToActivate = FindNextObject(Fleets.Where(f => f.Fleet.Player == Me).Reverse(), ActiveFleet);
+            }
+
+            // activate this object
+            if (mapObjectToActivate != null && mapObjectToActivate != ActivePlanet && mapObjectToActivate != ActiveFleet)
+            {
+                CommandMapObject(mapObjectToActivate);
+            }
+        }
+
+        // TODO: We need to share this functionality with the various mouse click stuff
+        // It's not good for it to be all over
+        void CommandMapObject(MapObjectSprite mapObjectToActivate)
+        {
+            selectedMapObject.Deselect();
+            selectedMapObject = mapObjectToActivate;
+            commandedMapObject = mapObjectToActivate;
+            commandedMapObject.Command();
+            commandedMapObject.UpdateSprite();
+            Signals.PublishMapObjectSelectedEvent(mapObjectToActivate);
+            Signals.PublishMapObjectActivatedEvent(mapObjectToActivate);
+            UpdateSelectedIndicator();
         }
 
         /// <summary>
@@ -434,7 +498,7 @@ namespace CraigStars
         void UpdateScanners()
         {
             // clear out the old scanners
-            Scanners.ForEach(s => { RemoveChild(s); s.QueueFree(); });
+            Scanners.ForEach(s => { s.GetParent()?.RemoveChild(s); s.QueueFree(); });
             Scanners.Clear();
 
             foreach (var planet in Planets)

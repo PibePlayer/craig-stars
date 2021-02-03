@@ -37,34 +37,34 @@ __meta__ = {
 
 [node name="Title" type="HBoxContainer" parent="VBoxContainer"]
 margin_right = 180.0
-margin_bottom = 20.0
+margin_bottom = 14.0
 
 [node name="Name" type="Label" parent="VBoxContainer/Title"]
-margin_top = 3.0
-margin_right = 157.0
-margin_bottom = 17.0
+margin_right = 180.0
+margin_bottom = 14.0
 size_flags_horizontal = 3
 text = "Production"
 align = 1
 
 [node name="Button" type="Button" parent="VBoxContainer/Title"]
+visible = false
 margin_left = 161.0
 margin_right = 180.0
 margin_bottom = 20.0
 text = "^"
 
 [node name="ProductionQueueItemList" type="ItemList" parent="VBoxContainer"]
-margin_top = 24.0
+margin_top = 18.0
 margin_right = 180.0
-margin_bottom = 104.0
+margin_bottom = 98.0
 rect_min_size = Vector2( 0, 80 )
 max_columns = 2
 same_column_width = true
 
 [node name="RouteToContainer" type="HBoxContainer" parent="VBoxContainer"]
-margin_top = 108.0
+margin_top = 102.0
 margin_right = 180.0
-margin_bottom = 122.0
+margin_bottom = 116.0
 
 [node name="RouteToLabel" type="Label" parent="VBoxContainer/RouteToContainer"]
 margin_right = 56.0
@@ -80,9 +80,9 @@ text = "none"
 align = 2
 
 [node name="ButtonsContainer" type="HBoxContainer" parent="VBoxContainer"]
-margin_top = 126.0
+margin_top = 120.0
 margin_right = 180.0
-margin_bottom = 146.0
+margin_bottom = 140.0
 alignment = 1
 
 [node name="ChangeButton" type="Button" parent="VBoxContainer/ButtonsContainer"]

@@ -115,7 +115,7 @@ namespace CraigStars
         {
             ConnectServerEvents();
             var peer = new NetworkedMultiplayerENet();
-            var error = peer.CreateServer(port, SettingsManager.Settings.NumPlayers);
+            var error = peer.CreateServer(port, PlayersManager.Instance.NumPlayers);
             if (error != Error.Ok)
             {
                 GD.PrintErr($"Failed to create network server: Error: {error.ToString()}");

@@ -16,12 +16,12 @@ _global_script_class_icons={
 [application]
 
 config/name="craig-stars"
-run/main_scene="res://src/Client/Main.tscn"
+run/main_scene="res://src/Client/Game.tscn"
 config/icon="res://icon.png"
 
 [autoload]
 
-SettingsManager="*res://src/Client/Singletons/SettingsManager.cs"
+RulesManager="*res://src/Client/Singletons/RulesManager.cs"
 PlayersManager="*res://src/Client/Singletons/PlayersManager.cs"
 Rpc="*res://src/Client/Singletons/RPC.cs"
 TextureLoader="*res://src/Client/Singletons/TextureLoader.cs"

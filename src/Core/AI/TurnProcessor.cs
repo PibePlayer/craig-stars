@@ -40,7 +40,7 @@ namespace CraigStars
         /// <summary>
         /// Process a turn
         /// </summary>
-        public abstract void Process(int year, UniverseSettings settings, Player player);
+        public abstract void Process(int year, Rules rules, Player player);
 
     }
 }

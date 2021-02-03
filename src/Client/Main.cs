@@ -83,7 +83,7 @@ namespace CraigStars
 
         void OnSettingsButtonPressed()
         {
-            GetTree().ChangeScene("res://src/Client/MenuScreens/Settings.tscn");
+            GetTree().ChangeScene("res://src/Client/MenuScreens/Rules.tscn");
         }
 
         void OnHostGameButtonPressed()

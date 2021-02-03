@@ -151,7 +151,7 @@ namespace CraigStars
                 completionEstimateLabel.Visible = false;
 
                 // figure out how much this queue item costs
-                var cost = item.GetCostOfOne(SettingsManager.Settings, Me.Race) * item.quantity;
+                var cost = item.GetCostOfOne(RulesManager.Rules, Me.Race) * item.quantity;
                 queuedItemCostGrid.Cost = cost;
 
                 // figure out how many resources we have per year
@@ -290,7 +290,7 @@ namespace CraigStars
 
             if (item != null)
             {
-                availableItemCostGrid.Cost = item.Value.GetCostOfOne(SettingsManager.Settings, Me.Race);
+                availableItemCostGrid.Cost = item.Value.GetCostOfOne(RulesManager.Rules, Me.Race);
             }
         }
 

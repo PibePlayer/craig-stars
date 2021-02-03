@@ -93,7 +93,7 @@ namespace CraigStars
 
         public bool Equals(Cargo other)
         {
-            return Ironium == other.Ironium || Boranium == other.Boranium || Germanium == other.Germanium || Colonists == other.Colonists || Fuel == other.Fuel;
+            return Ironium == other.Ironium && Boranium == other.Boranium && Germanium == other.Germanium && Colonists == other.Colonists && Fuel == other.Fuel;
         }
 
         public static bool operator ==(Cargo a, Cargo b)

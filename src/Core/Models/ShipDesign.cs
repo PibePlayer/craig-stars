@@ -21,7 +21,7 @@ namespace CraigStars
         [JsonIgnore]
         public ShipDesignAggregate Aggregate { get; } = new ShipDesignAggregate();
 
-        public void ComputeAggregate(Player player, UniverseSettings settings)
+        public void ComputeAggregate(Player player, Rules rules)
         {
             Aggregate.Mass = Hull.Mass;
             Aggregate.Armor = Hull.Armor;
@@ -61,7 +61,7 @@ namespace CraigStars
                 }
             }
             // compute the scan ranges
-            ComputeScanRanges(player, settings);
+            ComputeScanRanges(player, rules);
         }
 
         /// <summary>
@@ -69,8 +69,8 @@ namespace CraigStars
         /// + scannerN**4)**(.25)
         /// </summary>
         /// <param name="player"></param>
-        /// <param name="settings"></param>
-        void ComputeScanRanges(Player player, UniverseSettings settings)
+        /// <param name="rules"></param>
+        void ComputeScanRanges(Player player, Rules rules)
         {
             long scanRange = TechHullComponent.NoScanner;
             long scanRangePen = TechHullComponent.NoScanner;
@@ -78,7 +78,7 @@ namespace CraigStars
             // compu thecanner as a built in JoaT scanner if it's build in
             if (player.Race.PRT == PRT.JoaT && Hull.BuiltInScannerForJoaT)
             {
-                scanRange = (long)(player.TechLevels.Electronics * settings.BuiltInScannerJoaTMultiplier);
+                scanRange = (long)(player.TechLevels.Electronics * rules.BuiltInScannerJoaTMultiplier);
                 if (!player.Race.HasLRT(LRT.NAS))
                 {
                     scanRangePen = (long)Math.Pow(scanRange / 2, 4);

@@ -37,26 +37,26 @@ __meta__ = {
 
 [node name="Title" type="HBoxContainer" parent="VBoxContainer"]
 margin_right = 187.0
-margin_bottom = 20.0
+margin_bottom = 14.0
 
 [node name="Name" type="Label" parent="VBoxContainer/Title"]
-margin_top = 3.0
-margin_right = 164.0
-margin_bottom = 17.0
+margin_right = 187.0
+margin_bottom = 14.0
 size_flags_horizontal = 3
 text = "Starbase"
 align = 1
 
 [node name="Button" type="Button" parent="VBoxContainer/Title"]
+visible = false
 margin_left = 168.0
 margin_right = 187.0
 margin_bottom = 20.0
 text = "^"
 
 [node name="StatsContainer" type="VBoxContainer" parent="VBoxContainer"]
-margin_top = 24.0
+margin_top = 18.0
 margin_right = 187.0
-margin_bottom = 160.0
+margin_bottom = 154.0
 
 [node name="StatsGrid" type="GridContainer" parent="VBoxContainer/StatsContainer"]
 margin_right = 187.0

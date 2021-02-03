@@ -88,7 +88,7 @@ namespace CraigStars
         /// Update this player's copy of their own planet, for the UI
         /// </summary>
         /// <param name="planet"></param>
-        public void UpdatePlayerPlanet(Planet planet, UniverseSettings settings)
+        public void UpdatePlayerPlanet(Planet planet, Rules rules)
         {
             Cargo = planet.Cargo;
             MineYears = planet.MineYears;
@@ -113,7 +113,7 @@ namespace CraigStars
                     Player = Player,
                 };
                 Starbase.Tokens.AddRange(planet.Starbase.Tokens);
-                Starbase.ComputeAggregate(settings);
+                Starbase.ComputeAggregate(rules);
             }
         }
 
@@ -122,7 +122,7 @@ namespace CraigStars
         /// TODO: support this later
         /// /// </summary>
         /// <returns></returns>
-        public int GetMaxPopulation(Race race, UniverseSettings settings)
+        public int GetMaxPopulation(Race race, Rules rules)
         {
             if (Hab is Hab planetHab)
             {
@@ -144,7 +144,7 @@ namespace CraigStars
 
                 // get this player's planet habitability
                 var hab = race.GetPlanetHabitability(planetHab);
-                return (int)(settings.MaxPopulation * factor * hab / 100);
+                return (int)(rules.MaxPopulation * factor * hab / 100);
             }
             else
             {
@@ -156,32 +156,32 @@ namespace CraigStars
         /// <summary>
         /// Get the population density of this planet, as a float, i.e. 100k out of 1 million max is .1f density
         /// </summary>
-        /// <param name="settings"></param>
+        /// <param name="rules"></param>
         /// <returns></returns>
-        public float GetPopulationDensity(UniverseSettings settings)
+        public float GetPopulationDensity(Rules rules)
         {
-            return Population > 0 ? (float)Population / GetMaxPopulation(Player.Race, settings) : 0;
+            return Population > 0 ? (float)Population / GetMaxPopulation(Player.Race, rules) : 0;
         }
 
         /// <summary>
         /// Grow the planet by some grow amount
         /// </summary>
-        /// <param name="settings"></param>
-        public void Grow(UniverseSettings settings)
+        /// <param name="rules"></param>
+        public void Grow(Rules rules)
         {
-            Population += GetGrowthAmount(settings);
+            Population += GetGrowthAmount(rules);
         }
 
         /// <summary>
         /// The amount the population for this planet will grow next turn
         /// </summary>
         /// <returns></returns>
-        public int GetGrowthAmount(UniverseSettings settings)
+        public int GetGrowthAmount(Rules rules)
         {
             var race = Player?.Race;
             if (race != null && Hab is Hab hab)
             {
-                double capacity = (double)(Population / GetMaxPopulation(race, settings));
+                double capacity = (double)(Population / GetMaxPopulation(race, rules));
                 int popGrowth = (int)((double)(Population) * (race.GrowthRate / 100.0) * ((double)(race.GetPlanetHabitability(hab)) / 100.0));
 
                 if (capacity > .25)

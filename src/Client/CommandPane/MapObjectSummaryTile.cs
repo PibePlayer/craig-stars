@@ -8,9 +8,7 @@ namespace CraigStars
 {
     public class MapObjectSummaryTile : Control
     {
-        TextureRect textureRect;
-
-        public MapObjectSprite MapObject
+        public MapObjectSprite ActiveMapObject
         {
             get => mapObject; set
             {
@@ -21,12 +19,22 @@ namespace CraigStars
         MapObjectSprite mapObject;
 
         Label nameLabel;
+        TextureRect textureRect;
+        Button nextButton;
+        Button prevButton;
+        Button renameButton;
 
         public override void _Ready()
         {
             nameLabel = FindNode("Name") as Label;
             textureRect = FindNode("TextureRect") as TextureRect;
+            nextButton = FindNode("NextButton") as Button;
+            prevButton = FindNode("PrevButton") as Button;
+            renameButton = FindNode("RenameButton") as Button;
 
+            nextButton.Connect("pressed", this, nameof(OnNextButtonPressed));
+            prevButton.Connect("pressed", this, nameof(OnPrevButtonPressed));
+            renameButton.Connect("pressed", this, nameof(OnRenameButtonPressed));
 
             Signals.MapObjectActivatedEvent += OnMapObjectActivated;
         }
@@ -36,33 +44,39 @@ namespace CraigStars
             Signals.MapObjectActivatedEvent -= OnMapObjectActivated;
         }
 
-        // public override object GetDragData(Vector2 position)
-        // {
-        //     var cpb = new ColorPickerButton();
+        void OnNextButtonPressed()
+        {
+            Signals.PublishActiveNextMapObjectEvent();
+        }
 
-        //     cpb.Color = Colors.Red;
+        void OnPrevButtonPressed()
+        {
+            Signals.PublishActivePrevMapObjectEvent();
+        }
 
-        //     cpb.RectSize = new Vector2(50, 50);
-
-        //     SetDragPreview(cpb);
-        //     return Colors.Red;
-        // }
+        void OnRenameButtonPressed()
+        {
+            if (ActiveMapObject is FleetSprite fleetSprite)
+            {
+                Signals.PublishRenameFleetRequestedEvent(fleetSprite);
+            }
+        }
 
         void OnMapObjectActivated(MapObjectSprite mapObject)
         {
-            MapObject = mapObject;
+            ActiveMapObject = mapObject;
         }
 
         void UpdateControls()
         {
-            if (MapObject != null)
+            if (ActiveMapObject != null)
             {
                 nameLabel.Text = mapObject.ObjectName;
-                if (MapObject is PlanetSprite planetSprite)
+                if (ActiveMapObject is PlanetSprite planetSprite)
                 {
                     textureRect.Texture = TextureLoader.Instance.FindTexture(planetSprite.Planet);
                 }
-                else if (MapObject is FleetSprite fleetSprite)
+                else if (ActiveMapObject is FleetSprite fleetSprite)
                 {
                     textureRect.Texture = TextureLoader.Instance.FindTexture(fleetSprite.Fleet.Tokens[0].Design);
                 }

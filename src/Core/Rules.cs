@@ -1,77 +1,96 @@
-using Godot;
 using System;
+using System.ComponentModel;
+using Newtonsoft.Json;
 
 namespace CraigStars
 {
-    public class UniverseSettings
+    public class Rules
     {
+
+        public Size Size { get; set; } = Size.Small;
+        public Density Density { get; set; } = Density.Normal;
+
+        [DefaultValue(15)]
+        public int PlanetMinDistance { get; } = 15;
 
         /// <summary>
         /// Allow setting of the random seed used
         /// </summary>
         /// <returns></returns>
+        [JsonIgnore]
         public Random Random { get; set; } = new Random();
 
         /// <summary>
         /// For debugging, start with extra planets
         /// </summary>
         /// <value></value>
+        [DefaultValue(0)]
         public int StartWithExtraPlanets { get; set; } = 1;
 
-        /// <summary>
-        /// This is just a temporary property for development.
-        /// </summary>
-        public int NumPlayers = 1;
 
+        [DefaultValue(2400)]
         public int StartingYear { get; set; } = 2400;
-        public Size Size { get; set; } = Size.Small;
-        public Density Density { get; set; } = Density.Normal;
 
-        // Mineral settings that we don't currently modify
+        // Mineral rules that we don't currently modify
+        [DefaultValue(30)]
         public int MinHomeworldMineralConcentration { get; set; } = 30;
+
+        [DefaultValue(30)]
         public int MinExtraPlanetMineralConcentration { get; set; } = 30;
+
+        [DefaultValue(1)]
         public int MinMineralConcentration { get; set; } = 1;
+
+        [DefaultValue(3)]
         public int MinStartingMineralConcentration { get; set; } = 3;
+
+        [DefaultValue(100)]
         public int MaxStartingMineralConcentration { get; set; } = 100;
+
+        [DefaultValue(1000)]
         public int MaxStartingMineralSurface { get; set; } = 1000;
+
+        [DefaultValue(300)]
         public int MinStartingMineralSurface { get; set; } = 300;
+
+        [DefaultValue(1500000)]
         public int MineralDecayFactor { get; set; } = 1500000;
 
-        // Population Settings
+        // Population Rules
+        [DefaultValue(25000)]
         public int StartingPopulation { get; set; } = 25000;
+        [DefaultValue(12500)]
         public int StartingPopulationExtraPlanet { get; set; } = 12500;
+        [DefaultValue(.7f)]
         public float LowStartingPopulationFactor { get; set; } = .7f;
 
-        // Bulding Settings
+        // Bulding Rules
+        [DefaultValue(10)]
         public int StartingMines { get; set; } = 10;
+        [DefaultValue(10)]
         public int StartingFactories { get; set; } = 10;
+        [DefaultValue(10)]
         public int StartingDefenses { get; set; } = 10;
 
-        // Race settings
+        // Race rules
+        [DefaultValue(1650)]
         public int RaceStartingPoints { get; set; } = 1650;
 
-        public int PlanetMinDistance { get; } = 15;
-
-        public Color[] PlayerColors { get; } = new Color[] {
-            new Color("c33232"),
-            new Color("1f8ba7"),
-            new Color("43a43e"),
-            new Color("8d29cb"),
-            new Color("b88628")
-        };
-
+        [DefaultValue(4)]
         public int FactoryCostGermanium { get; set; } = 4;
         public Cost DefenseCost { get; set; } = new Cost(5, 5, 5, 15);
+
+        [DefaultValue(100)]
         public int MineralAlchemyCost { get; set; } = 100;
+
+        [DefaultValue(25)]
         public int MineralAlchemyLRTCost { get; set; } = 25;
 
-        #region game settings
-
+        [DefaultValue(20)]
         public int BuiltInScannerJoaTMultiplier = 20;
+
+        [DefaultValue(1000000)]
         public int MaxPopulation = 1000000;
-
-        #endregion
-
 
         /// <summary>
         /// Get the Area of the universe
@@ -159,68 +178,7 @@ namespace CraigStars
             }
         }
 
-        /// <summary>
-        /// All homeworlds have the same starting minerals and concentrations
-        /// </summary>
-        /// <value></value>
-        public Mineral HomeWorldMineralConcentration
-        {
-            get
-            {
-                if (homeWorldMineralConcentration == null)
-                {
-                    homeWorldMineralConcentration = new Mineral(
-                        Random.Next(MaxStartingMineralConcentration) + MinHomeworldMineralConcentration,
-                        Random.Next(MaxStartingMineralConcentration) + MinHomeworldMineralConcentration,
-                        Random.Next(MaxStartingMineralConcentration) + MinHomeworldMineralConcentration
-                    );
-                }
-                return homeWorldMineralConcentration.Value;
-            }
-        }
-        Mineral? homeWorldMineralConcentration = null;
 
-        /// <summary>
-        /// All homeworlds have the same starting minerals and concentrations
-        /// </summary>
-        /// <value></value>
-        public Mineral HomeWorldSurfaceMinerals
-        {
-            get
-            {
-                if (homeWorldSurfaceMinerals == null)
-                {
-                    homeWorldSurfaceMinerals = new Mineral(
-                        Random.Next(MaxStartingMineralSurface) + MinStartingMineralSurface,
-                        Random.Next(MaxStartingMineralSurface) + MinStartingMineralSurface,
-                        Random.Next(MaxStartingMineralSurface) + MinStartingMineralSurface
-                    );
-                }
-                return homeWorldSurfaceMinerals.Value;
-            }
-        }
-        Mineral? homeWorldSurfaceMinerals = null;
-
-        /// <summary>
-        /// All extraworlds have the same starting minerals and concentrations
-        /// </summary>
-        /// <value></value>
-        public Mineral ExtraWorldSurfaceMinerals
-        {
-            get
-            {
-                if (extraWorldSurfaceMinerals == null)
-                {
-                    extraWorldSurfaceMinerals = new Mineral(
-                        (Random.Next(MaxStartingMineralSurface) + MinStartingMineralSurface) / 2,
-                        (Random.Next(MaxStartingMineralSurface) + MinStartingMineralSurface) / 2,
-                        (Random.Next(MaxStartingMineralSurface) + MinStartingMineralSurface) / 2
-                    );
-                }
-                return extraWorldSurfaceMinerals.Value;
-            }
-        }
-        Mineral? extraWorldSurfaceMinerals = null;
 
         // The base cost for each tech level
         public int[] TechBaseCost { get; set; } = {

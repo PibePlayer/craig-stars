@@ -16,7 +16,7 @@ namespace CraigStars
         /// <summary>
         /// a new turn! build some ships
         /// </summary>
-        public override void Process(int year, UniverseSettings settings, Player player)
+        public override void Process(int year, Rules rules, Player player)
         {
 
             // find the first scout ship design

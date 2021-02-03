@@ -6,7 +6,20 @@ namespace CraigStars.Singletons
 {
     public class PlayersManager : Node
     {
+        /// <summary>
+        /// This is just a temporary property for development.
+        /// </summary>
+        public int NumPlayers = 1;
+
         ILog log = LogManager.GetLogger(typeof(PlayersManager));
+
+        public Color[] PlayerColors { get; } = new Color[] {
+            new Color("c33232"),
+            new Color("1f8ba7"),
+            new Color("43a43e"),
+            new Color("8d29cb"),
+            new Color("b88628")
+        };
 
         string[] playerNames = new string[] {
             "Craig",
@@ -98,14 +111,14 @@ namespace CraigStars.Singletons
         /// </summary>
         public void SetupPlayers()
         {
-            var settings = SettingsManager.Settings;
-            for (var num = 0; num < settings.NumPlayers; num++)
+            var rules = RulesManager.Rules;
+            for (var num = 0; num < NumPlayers; num++)
             {
                 var player = new Player
                 {
                     Num = num,
                     Name = num < playerNames.Length ? playerNames[num] : $"Player {num + 1}",
-                    Color = settings.PlayerColors.Length < num ? settings.PlayerColors[num] : Colors.White,
+                    Color = PlayerColors.Length < num ? PlayerColors[num] : Colors.White,
                     AIControlled = num != 0,
                     Ready = true,
                 };
@@ -197,7 +210,10 @@ namespace CraigStars.Singletons
                 if (player.NetworkId == GetTree().GetNetworkUniqueId())
                 {
                     log.Debug($"The server sent along my Player info. Registering full Player for {player} in PlayersManager.");
-                    var fullPlayer = new Player();
+                    var fullPlayer = new Player()
+                    {
+                        Rules = RulesManager.Rules
+                    };
                     fullPlayer.Update(player);
                     Players.Add(fullPlayer);
                 }

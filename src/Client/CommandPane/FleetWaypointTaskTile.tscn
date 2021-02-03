@@ -37,23 +37,23 @@ __meta__ = {
 
 [node name="Title" type="HBoxContainer" parent="VBoxContainer"]
 margin_right = 180.0
-margin_bottom = 20.0
+margin_bottom = 14.0
 
 [node name="Name" type="Label" parent="VBoxContainer/Title"]
-margin_top = 3.0
-margin_right = 157.0
-margin_bottom = 17.0
+margin_right = 180.0
+margin_bottom = 14.0
 size_flags_horizontal = 3
 text = "Waypoint Task"
 align = 1
 
 [node name="Button" type="Button" parent="VBoxContainer/Title"]
+visible = false
 margin_left = 161.0
 margin_right = 180.0
 margin_bottom = 20.0
 text = "^"
 
 [node name="WaypointTask" type="OptionButton" parent="VBoxContainer"]
-margin_top = 24.0
+margin_top = 18.0
 margin_right = 180.0
-margin_bottom = 44.0
+margin_bottom = 38.0

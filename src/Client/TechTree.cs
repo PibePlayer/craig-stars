@@ -50,8 +50,7 @@ namespace CraigStars
             searchLineEdit.Connect("text_changed", this, nameof(OnSearchLineEditTextChanged));
 
             onlyAvailableCheckButton.Pressed = OnlyAvailable;
-            // populate the tree
-            UpdateTreeItems();
+            Connect("visibility_changed", this, nameof(OnVisible));
         }
 
 
@@ -152,6 +151,12 @@ namespace CraigStars
                     item.SetIcon(0, TextureLoader.Instance.FindTexture(tech));
                 }
             });
+        }
+
+        void OnVisible()
+        {
+            // populate the tree
+            UpdateTreeItems();
         }
 
         /// <summary>

@@ -85,12 +85,17 @@ namespace CraigStars
             okButton.Connect("pressed", this, nameof(OnOk));
 
             techTree.TechSelectedEvent += OnTechSelected;
-            techTree.SelectFirstTech();
+            Connect("visibility_changed", this, nameof(OnVisible));
         }
 
         public override void _ExitTree()
         {
             techTree.TechSelectedEvent -= OnTechSelected;
+        }
+
+        void OnVisible()
+        {
+            techTree.SelectFirstTech();
         }
 
         /// <summary>

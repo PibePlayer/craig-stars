@@ -24,5 +24,11 @@ namespace CraigStars
         /// </summary>
         /// <value></value>
         public bool Scanner { get => ScanRange != TechHullComponent.NoScanner; }
+
+        /// <summary>
+        /// True if this ship design is in active use
+        /// </summary>
+        /// <value></value>
+        public bool InUse { get; set; }
     }
 }

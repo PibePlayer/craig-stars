@@ -9,7 +9,7 @@ using CraigStars.Singletons;
 namespace CraigStars.Tests
 {
     [TestFixture]
-    public class ShipDesignerTest
+    public class ShipDesignGeneratorTest
     {
 
         [Test]
@@ -19,7 +19,7 @@ namespace CraigStars.Tests
             var techStore = StaticTechStore.Instance;
 
             // design a simple scout
-            var designer = new ShipDesigner();
+            var designer = new ShipDesignGenerator();
             var design = designer.DesignShip(Techs.Scout, "Name", player, techStore);
             Assert.IsNotNull(design);
             Assert.AreEqual(Techs.QuickJump5, design.Slots[0].HullComponent);

@@ -11,6 +11,9 @@ namespace CraigStars
 
     public class HullComponents : Control
     {
+
+        public event Action<ShipDesignSlot> SlotUpdatedEvent;
+
         public TechHull Hull
         {
             get => hull;
@@ -40,6 +43,7 @@ namespace CraigStars
         ShipDesign shipDesign;
 
         List<HullComponentPanel> hullComponentPanels;
+        int quantityModifier = 1;
 
         public override void _Ready()
         {
@@ -48,6 +52,30 @@ namespace CraigStars
 
         public override void _ExitTree()
         {
+        }
+
+        /// <summary>
+        /// Set the quantity modifier for the dialog
+        /// if the user holds shift, we multipy by 10, if they press control we multiply by 100
+        /// both multiplies by 1000
+        /// </summary>
+        public override void _Input(InputEvent @event)
+        {
+            if (@event is InputEventKey key)
+            {
+                if (key.Pressed && key.Scancode == (uint)KeyList.Shift)
+                {
+                    quantityModifier *= 10;
+                }
+                else if (key.Pressed && key.Scancode == (uint)KeyList.Control)
+                {
+                    quantityModifier *= 100;
+                }
+                else
+                {
+                    quantityModifier = 1;
+                }
+            }
         }
 
         void UnsubscribeHullComponentEvents()
@@ -67,19 +95,26 @@ namespace CraigStars
                 var slot = ShipDesign.Slots.Find(s => s.HullSlotIndex == hullComponentPanel.Index);
                 if (slot == null)
                 {
-                    ShipDesign.Slots.Add(new ShipDesignSlot()
+                    slot = new ShipDesignSlot()
                     {
                         HullComponent = hullComponent,
                         HullSlotIndex = hullComponentPanel.Index,
-                        Quantity = 1
-                    });
+                        Quantity = Mathf.Clamp(quantityModifier, 1, hullComponentPanel.TechHullSlot.Capacity)
+                    };
+                    ShipDesign.Slots.Add(slot);
+                }
+                else if (slot.HullComponent != hullComponent)
+                {
+                    slot.HullComponent = hullComponent;
+                    slot.Quantity = Mathf.Clamp(quantityModifier, 1, hullComponentPanel.TechHullSlot.Capacity);
                 }
                 else
                 {
                     // add a slot
-                    slot.Quantity = Mathf.Clamp(slot.Quantity + 1, 0, hullComponentPanel.TechHullSlot.Capacity);
+                    slot.Quantity = Mathf.Clamp(slot.Quantity + quantityModifier, 1, hullComponentPanel.TechHullSlot.Capacity);
                 }
                 hullComponentPanel.ShipDesignSlot = slot;
+                SlotUpdatedEvent?.Invoke(slot);
                 UpdateControls();
             }
         }
@@ -89,7 +124,7 @@ namespace CraigStars
             // make sure we clear out any events
             UnsubscribeHullComponentEvents();
 
-            if (ShipDesign != null || Hull != null)
+            if (Hull != null)
             {
                 // get an array of hull component panels excluding some types
                 hullComponentPanels = this.GetAllNodesOfType<HullComponentPanel>()
@@ -99,6 +134,13 @@ namespace CraigStars
                 // subscribe to events for these new hull  components
                 SubscribeHullComponentEvents();
 
+                // assign each slot a TechHullSlot from the Hull
+                Hull.Slots.Each((slot, index) =>
+                {
+                    var hullComponentPanel = hullComponentPanels[index];
+                    hullComponentPanel.TechHullSlot = slot;
+                });
+
                 // assign ship design slots to each HullComponentPanel (other than space docs and cargo)
                 ShipDesign?.Slots?.ForEach(slot =>
                 {
@@ -106,10 +148,6 @@ namespace CraigStars
                     {
                         var hullComponentPanel = hullComponentPanels[slot.HullSlotIndex - 1];
                         hullComponentPanel.ShipDesignSlot = slot;
-                        if (Hull != null && slot.HullSlotIndex < Hull.Slots.Count)
-                        {
-                            hullComponentPanel.TechHullSlot = Hull.Slots[slot.HullSlotIndex];
-                        }
                     }
                 });
             }

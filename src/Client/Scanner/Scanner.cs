@@ -103,12 +103,19 @@ namespace CraigStars
             ActivePlanet = mapObject as PlanetSprite;
         }
 
-        // Find the next object in a list after our currently active object. This loops back to the beginning
-        MapObjectSprite FindNextObject<T>(IEnumerable<T> items, T currentlyActive) where T : MapObjectSprite
+        /// <summary>
+        /// Find the next object in a list after our currently active object. This loops back to the beginning
+        /// </summary>
+        /// <typeparam name="T">The type of MapObjectSprite</typeparam>
+        /// <param name="items">A list of items  to iterate over</param>
+        /// <param name="current">The current item to find the "next" item for</param>
+        /// <returns>The next item in a list, looping back </returns>
+        T FindNextObject<T>(IEnumerable<T> items, T current) where T : MapObjectSprite
         {
-            var first = items.First();
-            var next = items.SkipWhile(item => item != currentlyActive).Skip(1).FirstOrDefault();
-            return next != null ? next : first;
+            return items
+              .SkipWhile(item => item != current)
+              .FirstOrDefault(item => item != current)
+              ?? items.First();
         }
 
         void OnActiveNextMapObject()

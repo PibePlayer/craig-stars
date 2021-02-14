@@ -9,15 +9,16 @@ namespace CraigStars
     /// <summary>
     /// Class to generate designs for players
     /// </summary>
-    public class ShipDesigner
+    public class ShipDesignGenerator
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(ShipDesigner));
+        private static readonly ILog log = LogManager.GetLogger(typeof(ShipDesignGenerator));
 
         public ShipDesign DesignShip(TechHull hull, String name, Player player, ITechStore techStore)
         {
             var design = new ShipDesign()
             {
                 Name = name,
+                Player = player,
                 Hull = hull
             };
 

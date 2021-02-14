@@ -7,6 +7,8 @@ namespace CraigStars
 {
     public class HullSummary : Control
     {
+        public event Action<ShipDesignSlot> SlotUpdatedEvent;
+
         public TechHull Hull
         {
             get => hull;
@@ -79,6 +81,43 @@ namespace CraigStars
             UpdateControls();
         }
 
+        public void ResetHullComponents()
+        {
+            if (hullComponentsContainer != null)
+            {
+                foreach (Node child in hullComponentsContainer.GetChildren())
+                {
+                    if (child is HullComponents hullComponents)
+                    {
+                        hullComponents.SlotUpdatedEvent -= OnSlotUpdated;
+                    }
+                    hullComponentsContainer.RemoveChild(child);
+                    child.QueueFree();
+                }
+            }
+            var hullNameWithoutSpaces = Hull.Name.Replace(" ", "");
+            var scenePath = $"res://src/Client/ShipDesigner/Hulls/{hullNameWithoutSpaces}HullComponents.tscn";
+            var hullComponentsScene = ResourceLoader.Load<PackedScene>(scenePath);
+            if (hullComponentsScene != null)
+            {
+                var hullComponents = hullComponentsScene.Instance() as HullComponents;
+
+                hullComponents.Hull = Hull;
+                hullComponents.ShipDesign = ShipDesign;
+                hullComponents.SlotUpdatedEvent += OnSlotUpdated;
+                hullComponentsContainer.AddChild(hullComponents);
+            }
+        }
+
+        /// <summary>
+        /// Propogate slot update events up to any listeners
+        /// </summary>
+        /// <param name="slot"></param>
+        void OnSlotUpdated(ShipDesignSlot slot)
+        {
+            SlotUpdatedEvent?.Invoke(slot);
+        }
+
         void UpdateControls()
         {
             // make sure we have controls to update
@@ -86,25 +125,8 @@ namespace CraigStars
             {
                 hullContainer.Visible = true;
                 noHullContainer.Visible = false;
-                if (hullComponentsContainer != null)
-                {
-                    foreach (Node child in hullComponentsContainer.GetChildren())
-                    {
-                        hullComponentsContainer.RemoveChild(child);
-                        child.QueueFree();
-                    }
-                }
-                var hullNameWithoutSpaces = Hull.Name.Replace(" ", "");
-                var scenePath = $"res://src/Client/ShipDesigner/Hulls/{hullNameWithoutSpaces}HullComponents.tscn";
-                var hullComponentsScene = ResourceLoader.Load<PackedScene>(scenePath);
-                if (hullComponentsScene != null)
-                {
-                    var hullComponents = hullComponentsScene.Instance() as HullComponents;
 
-                    hullComponents.Hull = Hull;
-                    hullComponents.ShipDesign = ShipDesign;
-                    hullComponentsContainer.AddChild(hullComponents);
-                }
+                ResetHullComponents();
 
                 if (shipDesign != null)
                 {
@@ -171,9 +193,5 @@ namespace CraigStars
             }
         }
 
-        void Blah()
-        {
-            GD.Print("blah");
-        }
     }
 }

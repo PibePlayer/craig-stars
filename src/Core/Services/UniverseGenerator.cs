@@ -119,8 +119,8 @@ namespace CraigStars
         List<Fleet> GenerateFleets(Rules rules, Player player, Planet homeworld)
         {
             var fleets = new List<Fleet>(new Fleet[] {
-            CreateFleet(ShipDesigns.LongRangeScount, $"Long Range Scout #1", player, homeworld),
-            CreateFleet(ShipDesigns.SantaMaria, $"Santa Maria # 1", player, homeworld)
+            CreateFleet(player.GetDesign(ShipDesigns.LongRangeScount.Name), $"Long Range Scout #1", player, homeworld),
+            CreateFleet(player.GetDesign(ShipDesigns.SantaMaria.Name), $"Santa Maria # 1", player, homeworld)
         });
 
             return fleets;
@@ -244,7 +244,7 @@ namespace CraigStars
                 Tokens = new List<ShipToken>
             {
                 new ShipToken() {
-                    Design = ShipDesigns.Starbase,
+                    Design = player.GetDesign("Starbase"),
                     Quantity = 1,
                 }
             }
@@ -411,10 +411,13 @@ namespace CraigStars
         /// <param name="player">The player to generate ship designs for</param>
         internal void InitShipDesigns(Player player)
         {
-            ShipDesigner designer = new ShipDesigner();
+            ShipDesignGenerator designer = new ShipDesignGenerator();
             player.Designs.Add(designer.DesignShip(Techs.Scout, "Long Range Scout", player, Server.TechStore));
             player.Designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player, Server.TechStore));
-            player.Designs.Add(ShipDesigns.Starbase);
+            var starbase = ShipDesigns.Starbase.Clone();
+            starbase.Name = "Starbase";
+            starbase.Player = player;
+            player.Designs.Add(starbase);
 
             player.Designs.ForEach(design => design.ComputeAggregate(player, Server.Rules));
         }

@@ -7,7 +7,8 @@ public class FleetTile : MarginContainer
 {
     public FleetSprite ActiveFleet
     {
-        get => activeFleet; set
+        get => activeFleet; 
+        set
         {
             if (activeFleet != value)
             {

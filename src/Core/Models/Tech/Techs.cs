@@ -718,6 +718,18 @@ namespace CraigStars
             })
         };
 
+        public static readonly TechHull LargeFreighter = new TechHull("Large Freighter", new Cost(35, 0, 21, 100), new TechRequirements(construction: 8), 160, TechCategory.ShipHull)
+        {
+            Mass = 125,
+            Armor = 150,
+            FuelCapacity = 2600,
+            CargoCapacity = 1200,
+            Slots = new List<TechHullSlot>(new TechHullSlot[] {
+                new TechHullSlot(HullSlotType.Engine, 2, true),
+                new TechHullSlot(HullSlotType.ScannerElectricalMechanical, 2, false),
+                new TechHullSlot(HullSlotType.ShieldArmor, 2, false)
+            })
+        };
         #endregion
 
         #region StarbaseHulls
@@ -918,6 +930,7 @@ namespace CraigStars
                 // ship hulls,
                 Scout,
                 ColonyShip,
+                LargeFreighter,
 
                 // starbases
                 SpaceStation,

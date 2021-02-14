@@ -1,0 +1,64 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://src/Client/TechTree.tscn" type="PackedScene" id=1]
+[ext_resource path="res://src/Client/ShipDesigner/HullSummary.tscn" type="PackedScene" id=2]
+[ext_resource path="res://src/Client/ShipDesigner/ShipDesigner.cs" type="Script" id=3]
+
+[node name="ShipDesigner" type="HBoxContainer"]
+margin_right = 1157.0
+margin_bottom = 738.0
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HullComponentsTechTree" parent="." instance=ExtResource( 1 )]
+margin_bottom = 738.0
+TechsToDisplay = 1
+OnlyAvailable = true
+DragAndDroppable = true
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+margin_left = 304.0
+margin_right = 1157.0
+margin_bottom = 738.0
+size_flags_horizontal = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+margin_right = 853.0
+margin_bottom = 24.0
+alignment = 2
+
+[node name="DesignNameLineEdit" type="LineEdit" parent="VBoxContainer/HBoxContainer"]
+margin_right = 702.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+placeholder_text = "Enter a design name"
+
+[node name="SaveDesignButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+margin_left = 706.0
+margin_right = 795.0
+margin_bottom = 24.0
+text = "Save Design"
+
+[node name="CancelDesignButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+margin_left = 799.0
+margin_right = 853.0
+margin_bottom = 24.0
+text = "Cancel"
+
+[node name="ErrorLabel" type="Label" parent="VBoxContainer"]
+modulate = Color( 1, 0, 0, 1 )
+margin_top = 28.0
+margin_right = 853.0
+margin_bottom = 42.0
+text = "Name must be unique"
+
+[node name="DesignerHullSummary" parent="VBoxContainer" instance=ExtResource( 2 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 46.0
+margin_right = 853.0
+margin_bottom = 738.0
+size_flags_horizontal = 3
+size_flags_vertical = 3

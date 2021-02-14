@@ -79,7 +79,8 @@ namespace CraigStars
 
         public TechHullSlot TechHullSlot
         {
-            get => techHullSlot; set
+            get => techHullSlot;
+            set
             {
                 techHullSlot = value;
                 if (techHullSlot != null)
@@ -99,10 +100,6 @@ namespace CraigStars
             set
             {
                 shipDesignSlot = value;
-                if (shipDesignSlot != null)
-                {
-                    quantity = shipDesignSlot.Quantity;
-                }
                 UpdateControls();
             }
         }
@@ -225,11 +222,22 @@ namespace CraigStars
         {
             if (Engine.EditorHint && indexLabel != null)
             {
+                // the slot index is useful to see when designing hull designs in the editor, but we don't
+                // want it during actual gameplay
                 indexLabel.Visible = true;
                 indexLabel.Text = $"Slot {Index}";
             }
             if (quantityLabel != null)
             {
+                if (Required && (ShipDesignSlot == null || Quantity > ShipDesignSlot.Quantity))
+                {
+                    quantityLabel.AddColorOverride("font_color", Colors.Red);
+                }
+                else
+                {
+                    quantityLabel.AddColorOverride("font_color", Colors.Black);
+                }
+
                 if (Type == HullSlotType.Cargo || Type == HullSlotType.SpaceDock)
                 {
                     SelfModulate = new Color(2f, 2f, 2f);

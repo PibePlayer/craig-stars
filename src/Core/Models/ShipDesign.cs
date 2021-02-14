@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using CraigStars.Utils;
+using log4net;
 using Newtonsoft.Json;
 
 namespace CraigStars
@@ -7,6 +10,7 @@ namespace CraigStars
     [JsonObject(IsReference = true)]
     public class ShipDesign
     {
+        private static readonly ILog log = LogManager.GetLogger(typeof(ShipDesign));
         public string Name { get; set; }
 
         public Player Player { get; set; }
@@ -20,6 +24,52 @@ namespace CraigStars
         /// <returns></returns>
         [JsonIgnore]
         public ShipDesignAggregate Aggregate { get; } = new ShipDesignAggregate();
+
+        /// <summary>
+        /// Create a clone of this ship design with no name
+        /// </summary>
+        /// <returns></returns>
+        public ShipDesign Clone()
+        {
+            var clone = new ShipDesign()
+            {
+                Player = Player,
+                Hull = Hull,
+                HullSetNumber = HullSetNumber,
+                Slots = Slots.Select(s => new ShipDesignSlot(s.HullComponent, s.HullSlotIndex, s.Quantity)).ToList()
+            };
+            return clone;
+        }
+
+        /// <summary>
+        /// Return true if this is a valid design.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsValid()
+        {
+            var requiredHullSlotByIndex = new Dictionary<int, TechHullSlot>();
+            for (int i = 0; i < Hull.Slots.Count; i++)
+            {
+                if (Hull.Slots[i].Required)
+                {
+                    requiredHullSlotByIndex[i + 1] = Hull.Slots[i];
+                }
+            }
+            int filledRequiredSlots = 0;
+            foreach (var slot in Slots)
+            {
+                if (requiredHullSlotByIndex.TryGetValue(slot.HullSlotIndex, out var hullSlot))
+                {
+                    if (slot.Quantity == hullSlot.Capacity)
+                    {
+                        filledRequiredSlots++;
+                    }
+                }
+            }
+
+            // return true if we have filled all required slots
+            return filledRequiredSlots == requiredHullSlotByIndex.Count;
+        }
 
         public void ComputeAggregate(Player player, Rules rules)
         {
@@ -60,6 +110,25 @@ namespace CraigStars
                     Aggregate.SpaceDock = hullSlot.Capacity;
                 }
             }
+
+            // this ship design is in use if any fleets use it
+            if (Player != null)
+            {
+                if (Hull.Starbase)
+                {
+                    // look for starbases in use
+                    Aggregate.InUse = Player.Planets.Any(planet => planet.Starbase?.Tokens[0].Design == this);
+                }
+                else
+                {
+                    // look for fleets in use
+                    Aggregate.InUse = Player.Fleets.Any(fleet => fleet.Tokens.Any(token =>
+                    {
+                        return token.Design == this;
+                    }));
+                }
+            }
+
             // compute the scan ranges
             ComputeScanRanges(player, rules);
         }

@@ -408,6 +408,11 @@ namespace CraigStars
             return tech as T;
         }
 
+        public ShipDesign GetDesign(string name)
+        {
+            return Designs.Find(d => d.Name == name);
+        }
+
         /// <summary>
         /// Update our report of this planet
         /// Note: This should never be an RPC call, it should always

@@ -42,6 +42,19 @@ namespace CraigStars
         }
         ShipDesign shipDesign;
 
+        [Export]
+        public bool Editable
+        {
+            get => editable;
+            set
+            {
+                editable = value;
+                hullComponentPanels?.ForEach(hcp => hcp.Editable = value);
+            }
+        }
+        bool editable = false;
+
+
         List<HullComponentPanel> hullComponentPanels;
         int quantityModifier = 1;
 
@@ -78,14 +91,34 @@ namespace CraigStars
             }
         }
 
-        void UnsubscribeHullComponentEvents()
-        {
-            hullComponentPanels?.ForEach(hc => hc.AddHullComponentEvent -= OnAddHullComponent);
-        }
-
         void SubscribeHullComponentEvents()
         {
             hullComponentPanels?.ForEach(hc => hc.AddHullComponentEvent += OnAddHullComponent);
+            hullComponentPanels?.ForEach(hc => hc.RemoveHullComponentEvent += OnRemoveHullComponent);
+            hullComponentPanels?.ForEach(hc => hc.PressedEvent += OnHullComponentPressed);
+        }
+
+        void UnsubscribeHullComponentEvents()
+        {
+            hullComponentPanels?.ForEach(hc => hc.AddHullComponentEvent -= OnAddHullComponent);
+            hullComponentPanels?.ForEach(hc => hc.RemoveHullComponentEvent -= OnRemoveHullComponent);
+            hullComponentPanels?.ForEach(hc => hc.PressedEvent -= OnHullComponentPressed);
+        }
+
+        private void OnHullComponentPressed(HullComponentPanel hullComponentPanel, TechHullComponent hullComponent)
+        {
+            hullComponentPanels?.ForEach(hcp =>
+            {
+                if (hcp == hullComponentPanel)
+                {
+                    hcp.Selected = true;
+                }
+                else
+                {
+                    hcp.Selected = false;
+                }
+            });
+
         }
 
         void OnAddHullComponent(HullComponentPanel hullComponentPanel, TechHullComponent hullComponent)
@@ -116,6 +149,20 @@ namespace CraigStars
                 hullComponentPanel.ShipDesignSlot = slot;
                 SlotUpdatedEvent?.Invoke(slot);
                 UpdateControls();
+            }
+        }
+
+        void OnRemoveHullComponent(HullComponentPanel hullComponentPanel, TechHullComponent hullComponent)
+        {
+            if (ShipDesign != null && Hull != null)
+            {
+                var slot = ShipDesign.Slots.Find(s => s.HullSlotIndex == hullComponentPanel.Index);
+                if (slot != null)
+                {
+                    ShipDesign.Slots.Remove(slot);
+                    SlotUpdatedEvent?.Invoke(slot);
+                    UpdateControls();
+                }
             }
         }
 

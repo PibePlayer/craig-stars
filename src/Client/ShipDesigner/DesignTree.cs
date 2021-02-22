@@ -67,7 +67,7 @@ namespace CraigStars
             root = tree.CreateItem();
         }
 
-        void UpdateTreeItems()
+        public void UpdateTreeItems()
         {
             List<ShipDesign> designsToShow = me.Designs;
             switch (ShowDesigns)

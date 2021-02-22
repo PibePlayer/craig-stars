@@ -7,7 +7,15 @@ namespace CraigStars
 {
     public class HullSummary : Control
     {
+        // TODO: if we ever get more than 99 hull sets, make this smarter.
+        public static int MaxHullSets = 99;
         public event Action<ShipDesignSlot> SlotUpdatedEvent;
+
+        [Export]
+        public bool ShowIconSelector { get; set; } = false;
+
+        [Export]
+        public bool Editable { get; set; }
 
         public TechHull Hull
         {
@@ -46,6 +54,11 @@ namespace CraigStars
         Label scannerRangeLabel;
         Label scannerRangeAmountLabel;
         Label massLabel;
+
+        // icon
+        Control iconButtonContainer;
+        Button prevIconButton;
+        Button nextIconButton;
         TextureRect icon;
 
         // used to set the hull components drawings
@@ -54,6 +67,8 @@ namespace CraigStars
 
         Control hullContainer;
         Control noHullContainer;
+
+
 
         public override void _Ready()
         {
@@ -77,6 +92,14 @@ namespace CraigStars
             icon = FindNode("Icon") as TextureRect;
             hullComponentsContainer = FindNode("HullComponentsContainer") as Control;
             costGrid = FindNode("CostGrid") as CostGrid;
+
+            // icon controls
+            iconButtonContainer = FindNode("IconButtonContainer") as Control;
+            prevIconButton = FindNode("PrevIconButton") as Button;
+            nextIconButton = FindNode("NextIconButton") as Button;
+
+            prevIconButton.Connect("pressed", this, nameof(OnPrevIconButtonPressed));
+            nextIconButton.Connect("pressed", this, nameof(OnNextIconButtonPressed));
 
             UpdateControls();
         }
@@ -104,6 +127,7 @@ namespace CraigStars
 
                 hullComponents.Hull = Hull;
                 hullComponents.ShipDesign = ShipDesign;
+                hullComponents.Editable = Editable;
                 hullComponents.SlotUpdatedEvent += OnSlotUpdated;
                 hullComponentsContainer.AddChild(hullComponents);
             }
@@ -118,8 +142,59 @@ namespace CraigStars
             SlotUpdatedEvent?.Invoke(slot);
         }
 
+        /// <summary>
+        /// Cycle backwards through hull set images, returning the latest hull set if we go before 0
+        /// </summary>
+        void OnPrevIconButtonPressed()
+        {
+            if (ShipDesign != null)
+            {
+                int hullSetIndex = ShipDesign.HullSetNumber;
+                if (ShipDesign.HullSetNumber > 0)
+                {
+                    ShipDesign.HullSetNumber--;
+                }
+                else
+                {
+                    // find the last hullset
+                    for (int i = 0; i < 99; i++)
+                    {
+                        var texture = TextureLoader.Instance.FindTexture(Hull, i);
+                        if (texture == null && i > 0)
+                        {
+                            ShipDesign.HullSetNumber = i - 1;
+                            break;
+                        }
+                    }
+                }
+                UpdateControls();
+            }
+        }
+
+        /// <summary>
+        /// Cycle through hull set images, resetting to 0 if we pass the last available hull set image
+        /// </summary>
+        void OnNextIconButtonPressed()
+        {
+            if (ShipDesign != null)
+            {
+                int hullSetIndex = ShipDesign.HullSetNumber;
+                var texture = TextureLoader.Instance.FindTexture(Hull, ShipDesign.HullSetNumber + 1);
+                if (texture != null)
+                {
+                    ShipDesign.HullSetNumber++;
+                }
+                else
+                {
+                    ShipDesign.HullSetNumber = 0;
+                }
+                UpdateControls();
+            }
+        }
+
         void UpdateControls()
         {
+            iconButtonContainer.Visible = ShowIconSelector;
             // make sure we have controls to update
             if (nameLabel != null && Hull != null)
             {

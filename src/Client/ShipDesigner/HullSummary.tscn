@@ -58,16 +58,20 @@ __meta__ = {
 
 [node name="TitleContainer" type="HBoxContainer" parent="Panel/MarginContainer/HullContainer"]
 margin_right = 490.0
-margin_bottom = 96.0
+margin_bottom = 120.0
 
-[node name="Icon" type="TextureRect" parent="Panel/MarginContainer/HullContainer/TitleContainer"]
+[node name="IconContainer" type="VBoxContainer" parent="Panel/MarginContainer/HullContainer/TitleContainer"]
+margin_right = 96.0
+margin_bottom = 120.0
+
+[node name="Icon" type="TextureRect" parent="Panel/MarginContainer/HullContainer/TitleContainer/IconContainer"]
 margin_right = 96.0
 margin_bottom = 96.0
 rect_min_size = Vector2( 96, 96 )
 texture = ExtResource( 1 )
 stretch_mode = 4
 
-[node name="Panel" type="Panel" parent="Panel/MarginContainer/HullContainer/TitleContainer/Icon"]
+[node name="Panel" type="Panel" parent="Panel/MarginContainer/HullContainer/TitleContainer/IconContainer/Icon"]
 show_behind_parent = true
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -76,17 +80,35 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="IconButtonContainer" type="HBoxContainer" parent="Panel/MarginContainer/HullContainer/TitleContainer/IconContainer"]
+margin_top = 100.0
+margin_right = 96.0
+margin_bottom = 120.0
+alignment = 1
+
+[node name="PrevIconButton" type="Button" parent="Panel/MarginContainer/HullContainer/TitleContainer/IconContainer/IconButtonContainer"]
+margin_left = 26.0
+margin_right = 46.0
+margin_bottom = 20.0
+text = "<"
+
+[node name="NextIconButton" type="Button" parent="Panel/MarginContainer/HullContainer/TitleContainer/IconContainer/IconButtonContainer"]
+margin_left = 50.0
+margin_right = 70.0
+margin_bottom = 20.0
+text = ">"
+
 [node name="NameLabel" type="Label" parent="Panel/MarginContainer/HullContainer/TitleContainer"]
 margin_left = 100.0
 margin_right = 490.0
-margin_bottom = 96.0
+margin_bottom = 120.0
 size_flags_horizontal = 3
 size_flags_vertical = 7
 text = "Scout"
 align = 1
 
 [node name="HullComponentsContainer" type="CenterContainer" parent="Panel/MarginContainer/HullContainer"]
-margin_top = 100.0
+margin_top = 124.0
 margin_right = 490.0
 margin_bottom = 478.0
 size_flags_vertical = 3
@@ -95,9 +117,9 @@ size_flags_vertical = 3
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_left = 245.0
-margin_top = 189.0
+margin_top = 177.0
 margin_right = 245.0
-margin_bottom = 189.0
+margin_bottom = 177.0
 
 [node name="CostContainer" type="VBoxContainer" parent="Panel/MarginContainer/HullContainer"]
 margin_top = 482.0

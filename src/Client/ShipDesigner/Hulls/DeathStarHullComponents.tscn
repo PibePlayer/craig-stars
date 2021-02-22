@@ -162,7 +162,7 @@ Quantity = 32
 Type = 1024
 
 [node name="HullComponentSpaceDock" parent="Container" instance=ExtResource( 1 )]
-self_modulate = Color( 1.5, 1.5, 1.5, 1 )
+self_modulate = Color( 2, 2, 2, 1 )
 margin_left = -20.0
 margin_top = -20.0
 margin_right = 60.0

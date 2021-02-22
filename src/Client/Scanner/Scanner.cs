@@ -267,7 +267,7 @@ namespace CraigStars
                     }
                 }
             }
-            if (@event.IsActionPressed("delete_waypoint") && selectedWaypoint != null && activeFleet != null)
+            if (@event.IsActionPressed("delete") && selectedWaypoint != null && activeFleet != null)
             {
                 activeFleet.DeleteWaypoint(selectedWaypoint);
             }

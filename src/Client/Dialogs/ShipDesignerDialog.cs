@@ -1,6 +1,7 @@
 using CraigStars.Singletons;
 using Godot;
 using System;
+using System.Threading.Tasks;
 
 namespace CraigStars
 {
@@ -9,6 +10,8 @@ namespace CraigStars
 
         Button okButton;
         Player me;
+
+        CSConfirmDialog confirmationDialog;
 
         TabContainer tabContainer;
 
@@ -36,6 +39,7 @@ namespace CraigStars
             me = PlayersManager.Instance.Me;
             okButton = FindNode("OKButton") as Button;
             tabContainer = FindNode("TabContainer") as TabContainer;
+            confirmationDialog = FindNode("ConfirmationDialog") as CSConfirmDialog;
 
             // ships tab
             shipDesignTree = FindNode("ShipDesignTree") as DesignTree;
@@ -155,7 +159,17 @@ namespace CraigStars
 
         void OnDeleteDesignButtonPressed()
         {
-
+            // TODO: handle deleting designs with existing fleets.
+            confirmationDialog.Show(
+                $"Are you sure you want to delete the design {shipHullSummary.ShipDesign.Name}?",
+                () =>
+                {
+                    var designIndex = me.Designs.FindIndex(d => d == shipHullSummary.ShipDesign);
+                    me.DeletedDesigns.Add(me.Designs[designIndex]);
+                    me.Designs.RemoveAt(designIndex);
+                    shipDesignTree.UpdateTreeItems();
+                }
+            );
         }
 
         void OnCopyStarbaseDesignButtonPressed()

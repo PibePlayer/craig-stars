@@ -1,13 +1,13 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://src/Client/Dialogs/ShipDesignerDialog.cs" type="Script" id=1]
 [ext_resource path="res://src/Client/ShipDesigner/DesignTree.tscn" type="PackedScene" id=2]
 [ext_resource path="res://src/Client/ShipDesigner/HullSummary.tscn" type="PackedScene" id=3]
 [ext_resource path="res://src/Client/TechTree.tscn" type="PackedScene" id=4]
 [ext_resource path="res://src/Client/ShipDesigner/ShipDesigner.tscn" type="PackedScene" id=5]
+[ext_resource path="res://src/Client/Dialogs/CSConfirmDialog.cs" type="Script" id=6]
 
 [node name="ShipDesignerDialog" type="WindowDialog"]
-visible = true
 margin_right = 1075.0
 margin_bottom = 767.0
 window_title = "Ship Designer"
@@ -43,7 +43,6 @@ margin_bottom = 733.0
 size_flags_vertical = 3
 
 [node name="Ships" type="MarginContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
-visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 4.0
@@ -226,3 +225,9 @@ margin_right = 1055.0
 margin_bottom = 20.0
 rect_min_size = Vector2( 80, 0 )
 text = "OK"
+
+[node name="ConfirmationDialog" type="ConfirmationDialog" parent="."]
+margin_right = 400.0
+margin_bottom = 140.0
+rect_min_size = Vector2( 400, 140 )
+script = ExtResource( 6 )

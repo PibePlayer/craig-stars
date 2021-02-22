@@ -12,6 +12,8 @@ namespace CraigStars
         private static readonly ILog log = LogManager.GetLogger(typeof(HullComponentPanel));
 
         public event Action<HullComponentPanel, TechHullComponent> AddHullComponentEvent;
+        public event Action<HullComponentPanel, TechHullComponent> RemoveHullComponentEvent;
+        public event Action<HullComponentPanel, TechHullComponent> PressedEvent;
 
         /// <summary>
         /// This is just for the ui to show the slot index when building hull designs
@@ -41,7 +43,7 @@ namespace CraigStars
         }
         HullSlotType type = HullSlotType.Mechanical;
 
-        [Export(PropertyHint.Range, "1,512")]
+        [Export(PropertyHint.Range, "1,65000")]
         public int Quantity
         {
             get => quantity;
@@ -77,6 +79,22 @@ namespace CraigStars
         }
         bool unlimited;
 
+        [Export]
+        public bool Editable { get; set; }
+
+        [Export]
+        public bool Selected
+        {
+            get => selectedPanel != null && selectedPanel.Visible;
+            set
+            {
+                if (selectedPanel != null)
+                {
+                    selectedPanel.Visible = value;
+                }
+            }
+        }
+
         public TechHullSlot TechHullSlot
         {
             get => techHullSlot;
@@ -109,6 +127,7 @@ namespace CraigStars
         Label typeLabel;
         Label indexLabel;
         TextureRect hullComponentIcon;
+        Panel selectedPanel;
 
         public override void _Ready()
         {
@@ -116,12 +135,45 @@ namespace CraigStars
             quantityLabel = FindNode("QuantityLabel") as Label;
             typeLabel = FindNode("TypeLabel") as Label;
             hullComponentIcon = FindNode("HullComponentIcon") as TextureRect;
+            selectedPanel = FindNode("SelectedPanel") as Panel;
 
             if (!Engine.EditorHint)
             {
                 indexLabel.Visible = false;
             }
+
+            Connect("gui_input", this, nameof(OnGuiInput));
+
             UpdateControls();
+        }
+
+        public override void _UnhandledInput(InputEvent @event)
+        {
+            if (Editable && Selected && @event.IsActionPressed("delete"))
+            {
+                RemoveHullComponent();
+                GetTree().SetInputAsHandled();
+            }
+        }
+
+        void OnGuiInput(InputEvent @event)
+        {
+            if (ShipDesignSlot != null && @event.IsActionPressed("hullcomponent_select"))
+            {
+                PressedEvent?.Invoke(this, ShipDesignSlot?.HullComponent);
+                GetTree().SetInputAsHandled();
+            }
+        }
+
+        public void RemoveHullComponent()
+        {
+            if (ShipDesignSlot != null)
+            {
+                RemoveHullComponentEvent?.Invoke(this, ShipDesignSlot.HullComponent);
+                ShipDesignSlot = null;
+                Selected = false;
+                UpdateControls();
+            }
         }
 
         /// <summary>

@@ -28,7 +28,7 @@ namespace CraigStars.Singletons
 
         public Texture FindTexture(Tech tech, int shipIndex = -1)
         {
-            Texture texture;
+            Texture texture = null;
 
             // try loading it from the asset path like
             // ResourceLoader.Load("res://assets/gui/tech/Engine/Alpha Drive 8.png")
@@ -36,12 +36,18 @@ namespace CraigStars.Singletons
             if (shipIndex != -1)
             {
                 var assetPath = $"res://assets/gui/tech/{tech.Category}/{tech.Name}{shipIndex:0000}.png";
-                texture = ResourceLoader.Load<Texture>(assetPath);
+                if (ResourceLoader.Exists(assetPath))
+                {
+                    texture = ResourceLoader.Load<Texture>(assetPath);
+                }
             }
             else
             {
                 var assetPath = $"res://assets/gui/tech/{tech.Category}/{tech.Name}.png";
-                texture = ResourceLoader.Load<Texture>(assetPath);
+                if (ResourceLoader.Exists(assetPath))
+                {
+                    texture = ResourceLoader.Load<Texture>(assetPath);
+                }
             }
 
             return texture;

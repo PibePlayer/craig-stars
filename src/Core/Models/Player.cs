@@ -46,6 +46,9 @@ namespace CraigStars
         [JsonProperty(ItemIsReference = true)]
         public List<ShipDesign> Designs { get; set; } = new List<ShipDesign>();
 
+        [JsonProperty(ItemIsReference = true)]
+        public List<ShipDesign> DeletedDesigns { get; set; } = new List<ShipDesign>();
+
         #endregion
 
         #region Universe Data

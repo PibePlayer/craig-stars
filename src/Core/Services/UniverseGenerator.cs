@@ -376,7 +376,7 @@ namespace CraigStars
                     player.TechLevels.Energy = 3;
                     player.TechLevels.Weapons = 3;
                     player.TechLevels.Propulsion = 3;
-                    player.TechLevels.Construction = 3;
+                    player.TechLevels.Construction = 13;
                     player.TechLevels.Electronics = 3;
                     player.TechLevels.Biotechnology = 3;
                     break;

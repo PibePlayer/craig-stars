@@ -122,7 +122,7 @@ namespace CraigStars
         /// Delete this design and also delete any tokens that use the design
         /// </summary>
         /// <param name="design"></param>
-        public void DeletedDesign(ShipDesign design)
+        public void DeleteDesign(ShipDesign design)
         {
             var designIndex = Designs.FindIndex(d => d == design);
 

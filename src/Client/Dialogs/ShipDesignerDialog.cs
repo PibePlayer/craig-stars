@@ -174,7 +174,7 @@ namespace CraigStars
                     message,
                     () =>
                     {
-                        me.DeletedDesign(design);
+                        me.DeleteDesign(design);
                         shipDesignTree.UpdateTreeItems();
                     }
                 );

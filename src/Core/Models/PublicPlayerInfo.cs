@@ -7,6 +7,7 @@ using System.Linq;
 
 namespace CraigStars
 {
+    // [JsonObject(IsReference = true)]
     public class PublicPlayerInfo
     {
         [JsonIgnore]
@@ -36,7 +37,7 @@ namespace CraigStars
         public override string ToString()
         {
             var networkDescription = AIControlled ? "AI Controlled" : $"NetworkId: {NetworkId}";
-            return $"Player {Num + 1} {Name} ({networkDescription})";
+            return $"Player {Num} {Name} ({networkDescription})";
         }
 
     }

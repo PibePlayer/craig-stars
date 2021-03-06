@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://src/Client/Main.cs" type="Script" id=1]
+[ext_resource path="res://src/Client/MainMenu.cs" type="Script" id=1]
 [ext_resource path="res://assets/gui/DroidSans.ttf" type="DynamicFontData" id=2]
 [ext_resource path="res://src/Client/NumLineEdit.tscn" type="PackedScene" id=3]
 
@@ -8,7 +8,7 @@
 size = 50
 font_data = ExtResource( 2 )
 
-[node name="Main" type="MarginContainer"]
+[node name="MainMenu" type="MarginContainer"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 custom_constants/margin_right = 0

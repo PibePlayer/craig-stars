@@ -13,7 +13,7 @@ namespace CraigStars
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(ShipDesignGenerator));
 
-        public ShipDesign DesignShip(TechHull hull, String name, Player player, ITechStore techStore)
+        public ShipDesign DesignShip(TechHull hull, String name, Player player)
         {
             var design = new ShipDesign()
             {
@@ -32,24 +32,24 @@ namespace CraigStars
                 switch (hullSlot.Type)
                 {
                     case HullSlotType.Engine:
-                        slot.HullComponent = player.GetBestEngine(techStore);
+                        slot.HullComponent = player.GetBestEngine();
                         slot.Quantity = hullSlot.Capacity;
                         break;
                     case HullSlotType.Scanner:
-                        slot.HullComponent = player.GetBestScanner(techStore);
+                        slot.HullComponent = player.GetBestScanner();
                         slot.Quantity = hullSlot.Capacity;
                         break;
                     case HullSlotType.Shield:
-                        slot.HullComponent = player.GetBestShield(techStore);
+                        slot.HullComponent = player.GetBestShield();
                         slot.Quantity = hullSlot.Capacity;
                         break;
                     case HullSlotType.Armor:
                     case HullSlotType.ShieldArmor:
-                        slot.HullComponent = player.GetBestArmor(techStore);
+                        slot.HullComponent = player.GetBestArmor();
                         slot.Quantity = hullSlot.Capacity;
                         break;
                     case HullSlotType.Weapon:
-                        slot.HullComponent = player.GetBestBeamWeapon(techStore);
+                        slot.HullComponent = player.GetBestBeamWeapon();
                         slot.Quantity = hullSlot.Capacity;
                         break;
                     case HullSlotType.General:

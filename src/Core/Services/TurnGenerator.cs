@@ -11,6 +11,8 @@ namespace CraigStars
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(TurnGenerator));
 
+        public event Action<TurnGeneratorState> TurnGeneratorAdvancedEvent;
+
         /// <summary>
         /// Helper class for sorting scanners
         /// </summary>
@@ -28,33 +30,15 @@ namespace CraigStars
         }
 
 
-        Server Server { get; }
+        Game Game { get; }
         PlanetProducer planetProducer = new PlanetProducer();
         List<Planet> ownedPlanets = new List<Planet>();
 
-        public TurnGenerator(Server server)
+        public TurnGenerator(Game game)
         {
-            Server = server;
+            Game = game;
         }
 
-        /// <summary>
-        /// Run through all the turn processors for each player
-        /// </summary>
-        public void RunTurnProcessors()
-        {
-            List<TurnProcessor> processors = new List<TurnProcessor>() {
-                new ScoutTurnProcessor(),
-                new ColonyTurnProcessor()
-            };
-            Server.Players.ForEach(player =>
-            {
-                // TODO: make turn processors configurable
-                if (player.AIControlled || true)
-                {
-                    processors.ForEach(processor => processor.Process(Server.Year, Server.Rules, player));
-                }
-            });
-        }
 
         /// <summary>
         /// Generate a turn
@@ -99,31 +83,37 @@ namespace CraigStars
         /// </summary>
         public void GenerateTurn()
         {
-            Server.Year++;
+            PublishTurnGeneratorAdvancedEvent(TurnGeneratorState.Scrapping);
+            Game.Year++;
 
             log.Debug("Resetting players");
             // reset the players for a new turn
-            Server.Players.ForEach(p =>
+            Game.Players.ForEach(p =>
             {
                 p.SubmittedTurn = false;
                 p.Messages.Clear();
             });
 
-            ownedPlanets = Server.Planets.Where(p => p.Player != null).ToList();
+            ownedPlanets = Game.Planets.Where(p => p.Player != null).ToList();
 
             log.Debug("Processing player immmediate cargo transfers");
             ProcessCargoTransfers();
 
             // regular turn stuff
+            PublishTurnGeneratorAdvancedEvent(TurnGeneratorState.Waypoint0);
             log.Debug("Processing fleet waypoints");
             ProcessWaypoints();
             log.Debug("Moving fleets");
+            PublishTurnGeneratorAdvancedEvent(TurnGeneratorState.MoveFleets);
             MoveFleets();
             log.Debug("Mining");
+            PublishTurnGeneratorAdvancedEvent(TurnGeneratorState.Mining);
             Mine();
             log.Debug("Producing");
+            PublishTurnGeneratorAdvancedEvent(TurnGeneratorState.Production);
             Produce();
             log.Debug("Growing Planets");
+            PublishTurnGeneratorAdvancedEvent(TurnGeneratorState.Grow);
             Grow();
 
         }
@@ -134,8 +124,8 @@ namespace CraigStars
         public void UpdatePlayerReports()
         {
             log.Debug("Computing fleet aggregates for new turn");
-            Server.Fleets.ForEach(f => f.ComputeAggregate(Server.Rules));
-            Server.Planets.ForEach(p => p.Starbase?.ComputeAggregate(Server.Rules));
+            Game.Fleets.ForEach(f => f.ComputeAggregate());
+            Game.Planets.ForEach(p => p.Starbase?.ComputeAggregate());
             log.Debug("Scanning");
             Scan();
             log.Debug("Updating player reports");
@@ -144,12 +134,12 @@ namespace CraigStars
 
         void ProcessCargoTransfers()
         {
-            Server.Players.ForEach(player =>
+            Game.Players.ForEach(player =>
             {
                 player.CargoTransferOrders.ForEach(cargoTransfer =>
                 {
-                    if (Server.CargoHoldersByGuid.TryGetValue(cargoTransfer.Source.Guid, out var source) &&
-                    Server.CargoHoldersByGuid.TryGetValue(cargoTransfer.Dest.Guid, out var dest))
+                    if (Game.CargoHoldersByGuid.TryGetValue(cargoTransfer.Source.Guid, out var source) &&
+                    Game.CargoHoldersByGuid.TryGetValue(cargoTransfer.Dest.Guid, out var dest))
                     {
                         // make sure our source can lose the cargo
                         var result = source.AttemptTransfer(cargoTransfer.Transfer);
@@ -176,32 +166,32 @@ namespace CraigStars
         void ProcessWaypoints()
         {
             // process all WP0 tasks
-            Server.Fleets.ForEach(f => f.ProcessTask());
+            Game.Fleets.ForEach(f => f.ProcessTask());
 
             // remove any fleets that were scrapped
-            Server.Fleets.RemoveAll(f => f.Scrapped);
+            Game.Fleets.RemoveAll(f => f.Scrapped);
         }
 
         // move fleets
         internal void MoveFleets()
         {
-            foreach (var fleet in Server.Fleets)
+            foreach (var fleet in Game.Fleets)
             {
                 fleet.Move();
             }
 
             // remove any fleets that were scrapped at the end
-            Server.Fleets.RemoveAll(f => f.Scrapped);
+            Game.Fleets.RemoveAll(f => f.Scrapped);
         }
 
         void Mine()
         {
             ownedPlanets.ForEach(p =>
             {
-                p.Cargo += p.GetMineralOutput();
+                p.Cargo += p.MineralOutput;
                 p.MineYears += p.Mines;
-                int mineralDecayFactor = Server.Rules.MineralDecayFactor;
-                int minMineralConcentration = p.Homeworld ? Server.Rules.MinHomeworldMineralConcentration : Server.Rules.MinMineralConcentration;
+                int mineralDecayFactor = Game.Rules.MineralDecayFactor;
+                int minMineralConcentration = p.Homeworld ? Game.Rules.MinHomeworldMineralConcentration : Game.Rules.MinMineralConcentration;
                 ReduceMineralConcentration(p, mineralDecayFactor, minMineralConcentration);
             });
         }
@@ -242,7 +232,7 @@ namespace CraigStars
         {
             ownedPlanets.ForEach(p =>
             {
-                planetProducer.Build(Server.Rules, p);
+                planetProducer.Build(p);
             });
 
             Research();
@@ -264,7 +254,7 @@ namespace CraigStars
                 }
 
                 // research for this player
-                playerPlanets.Key.ResearchNextLevel(Server.Rules, resourcesToSpend);
+                playerPlanets.Key.ResearchNextLevel(resourcesToSpend);
             }
         }
 
@@ -273,7 +263,7 @@ namespace CraigStars
         /// </summary>
         void Grow()
         {
-            ownedPlanets.ForEach(p => p.Population += p.GetGrowthAmount(Server.Rules));
+            ownedPlanets.ForEach(p => p.Population += p.GrowthAmount);
         }
 
         /// <summary>
@@ -281,7 +271,7 @@ namespace CraigStars
         /// </summary>
         void Scan()
         {
-            foreach (var player in Server.Players)
+            foreach (var player in Game.Players)
             {
                 // clear out old fleets
                 // we rebuild this list each turn
@@ -294,9 +284,9 @@ namespace CraigStars
 
                 // build a list of scanners for this player
                 var scanners = new List<Scanner>();
-                var planetaryScanner = player.GetBestPlanetaryScanner(Server.TechStore);
+                var planetaryScanner = player.GetBestPlanetaryScanner();
 
-                foreach (var planet in Server.Planets.Where(p => p.Player == player && p.Scanner))
+                foreach (var planet in Game.Planets.Where(p => p.Player == player && p.Scanner))
                 {
                     // find the best scanner at this location, whether fleet or planet
                     var scanner = new Scanner(planet.Position, planetaryScanner.ScanRange, planetaryScanner.ScanRangePen);
@@ -313,20 +303,20 @@ namespace CraigStars
                 }
 
                 // find all our fleets that are out and about
-                foreach (var fleet in Server.Fleets.Where(f => f.Player == player && f.Aggregate.Scanner && (f.Orbiting == null || f.Orbiting.Player != player)))
+                foreach (var fleet in Game.Fleets.Where(f => f.Player == player && f.Aggregate.Scanner && (f.Orbiting == null || f.Orbiting.Player != player)))
                 {
                     scanners.Add(new Scanner(fleet.Position, fleet.Aggregate.ScanRange * fleet.Aggregate.ScanRange, fleet.Aggregate.ScanRangePen * fleet.Aggregate.ScanRangePen));
                 }
 
                 // go through each planet and update its report if
                 // we scanned it
-                foreach (var planet in Server.Planets)
+                foreach (var planet in Game.Planets)
                 {
                     // we own this planet, update the report
                     if (planet.Player == player)
                     {
                         player.UpdateReport(planet);
-                        player.UpdatePlayerPlanet(planet, Server.Rules);
+                        player.UpdatePlayerPlanet(planet);
                         continue;
                     }
 
@@ -339,7 +329,7 @@ namespace CraigStars
                     }
                 }
 
-                foreach (var fleet in Server.Fleets)
+                foreach (var fleet in Game.Fleets)
                 {
                     // we own this fleet, update the report
                     if (fleet.Player == player)
@@ -374,12 +364,42 @@ namespace CraigStars
         /// </summary>
         void UpdatePlayers()
         {
-            Server.Players.ForEach(p =>
+            Game.Players.ForEach(p =>
             {
-                p.Year = Server.Year;
-                p.PlanetaryScanner = p.GetBestPlanetaryScanner(Server.TechStore);
-                p.Fleets.ForEach(f => f.ComputeAggregate(Server.Rules));
+                p.Year = Game.Year;
+                p.PlanetaryScanner = p.GetBestPlanetaryScanner();
+                p.Fleets.ForEach(f => f.ComputeAggregate());
             });
         }
+
+        /// <summary>
+        /// Run through all the turn processors for each player
+        /// </summary>
+        public void RunTurnProcessors()
+        {
+            List<TurnProcessor> processors = new List<TurnProcessor>() {
+                new ScoutTurnProcessor(),
+                new ColonyTurnProcessor()
+            };
+            Game.Players.ForEach(player =>
+            {
+                // TODO: make turn processors configurable
+                if (player.AIControlled || true)
+                {
+                    processors.ForEach(processor => processor.Process(Game.Year, player));
+                }
+            });
+
+            PublishTurnGeneratorAdvancedEvent(TurnGeneratorState.Finished);
+        }
+
+        #region Event Publishers
+
+        public void PublishTurnGeneratorAdvancedEvent(TurnGeneratorState state)
+        {
+            TurnGeneratorAdvancedEvent?.Invoke(state);
+        }
+
+        #endregion
     }
 }

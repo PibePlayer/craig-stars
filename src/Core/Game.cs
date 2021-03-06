@@ -2,40 +2,51 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using CraigStars.Singletons;
 using log4net;
+using Newtonsoft.Json;
 
 namespace CraigStars
 {
     /// <summary>
     /// This class manages handling player turn submittals
     /// </summary>
-    public class Server
+    public class Game
     {
-        static ILog log = LogManager.GetLogger(typeof(Server));
+        static ILog log = LogManager.GetLogger(typeof(Game));
 
+        public String Name { get; set; } = "A Barefoot Jaywalk";
         public Rules Rules { get; private set; } = new Rules();
-        public ITechStore TechStore { get; set; }
-        public List<Player> Players { get; set; } = new List<Player>();
+
+        [JsonIgnore] public ITechStore TechStore { get; set; }
+        [JsonProperty(ItemConverterType = typeof(PublicPlayerInfoConverter))] public List<Player> Players { get; set; } = new List<Player>();
         public List<Planet> Planets { get; set; } = new List<Planet>();
         public List<Fleet> Fleets { get; set; } = new List<Fleet>();
-        public Dictionary<Guid, Planet> PlanetsByGuid { get; set; } = new Dictionary<Guid, Planet>();
-        public Dictionary<Guid, Fleet> FleetsByGuid { get; set; } = new Dictionary<Guid, Fleet>();
-        public Dictionary<Guid, ICargoHolder> CargoHoldersByGuid { get; set; } = new Dictionary<Guid, ICargoHolder>();
         public List<MineralPacket> MineralPackets { get; set; } = new List<MineralPacket>();
         public List<MineField> MineFields { get; set; } = new List<MineField>();
         public int Width { get; set; }
         public int Height { get; set; }
         public int Year { get; set; } = 2400;
 
+        #region Computed Members
+
+        [JsonIgnore] public Dictionary<Guid, Planet> PlanetsByGuid { get; set; } = new Dictionary<Guid, Planet>();
+        [JsonIgnore] public Dictionary<Guid, Fleet> FleetsByGuid { get; set; } = new Dictionary<Guid, Fleet>();
+        [JsonIgnore] public Dictionary<Guid, ICargoHolder> CargoHoldersByGuid { get; set; } = new Dictionary<Guid, ICargoHolder>();
+
+        #endregion
+
         TurnGenerator turnGenerator;
         TurnSubmitter turnSubmitter;
+        GameSaver gameSaver;
 
         public void Init(List<Player> players, Rules rules, ITechStore techStore)
         {
             TechStore = techStore;
             turnGenerator = new TurnGenerator(this);
             turnSubmitter = new TurnSubmitter(this);
+            gameSaver = new GameSaver();
 
             Players.AddRange(players);
             Rules = rules;
@@ -51,8 +62,8 @@ namespace CraigStars
             // generate a new univers
             UniverseGenerator generator = new UniverseGenerator(this);
             generator.Generate();
-            UpdateDictionaries();
             AfterTurnGeneration();
+
         }
 
         /// <summary>
@@ -76,23 +87,22 @@ namespace CraigStars
         /// <summary>
         /// Generate a new turn
         /// </summary>
-        public void GenerateTurn()
+        public async Task GenerateTurn()
         {
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
+            await Task.Factory.StartNew(() =>
+            {
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
 
-            turnGenerator.GenerateTurn();
+                turnGenerator.GenerateTurn();
 
-            // Update our dictionaries 
-            UpdateDictionaries();
+                // do any post-turn generation steps
+                AfterTurnGeneration();
 
-            // do any post-turn generation steps
-            AfterTurnGeneration();
+                stopwatch.Stop();
 
-            stopwatch.Stop();
-
-            log.Debug($"Turn Generated ({stopwatch.ElapsedMilliseconds}ms)");
-
+                log.Debug($"Turn Generated ({stopwatch.ElapsedMilliseconds}ms)");
+            });
         }
 
         /// <summary>
@@ -101,12 +111,18 @@ namespace CraigStars
         /// </summary>
         internal void AfterTurnGeneration()
         {
+            // Update the Game dictionaries used for lookups, like PlanetsByGuid, FleetsByGuid, etc.
+            UpdateDictionaries();
+
             // update our player information as if we'd just generated a new turn
             turnGenerator.UpdatePlayerReports();
             turnGenerator.RunTurnProcessors();
 
             // first round, we have to submit AI turns
             SubmitAITurns();
+
+            // save the game to disk
+            gameSaver.SaveGame(this);
         }
 
 

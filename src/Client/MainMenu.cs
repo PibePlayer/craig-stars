@@ -4,7 +4,7 @@ using System;
 
 namespace CraigStars
 {
-    public class Main : MarginContainer
+    public class MainMenu : MarginContainer
     {
 
         WindowDialog hostWindow;

@@ -1,3 +1,4 @@
+using log4net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Collections.Generic;
@@ -5,22 +6,24 @@ using System.Reflection;
 
 namespace CraigStars
 {
+
     /// <summary>
     /// This contract resolver is for saving players. It automatically converts PublicPlayerInfo objects
     /// into whatever the reference is from the list of Players passed in (from a PlayersManager).
     /// 
     /// It also converts all techs to names and back
     /// </summary>
-    public class PlayerContractResolver : DefaultContractResolver
+    public class PlayerContractResolver<T> : DefaultContractResolver where T : PublicPlayerInfo
     {
-        List<PublicPlayerInfo> players = new List<PublicPlayerInfo>();
-        PlayerNumConverter playerNumConverter;
+        private static readonly ILog log = LogManager.GetLogger(typeof(PlayerContractResolver<T>));
+        List<T> players;
+        PlayerNumConverter<T> playerNumConverter;
         TechNameConverter techNameConverter;
 
-        public PlayerContractResolver(List<PublicPlayerInfo> players, ITechStore techStore)
+        public PlayerContractResolver(List<T> players, ITechStore techStore)
         {
             this.players = players;
-            playerNumConverter = new PlayerNumConverter(players);
+            playerNumConverter = new PlayerNumConverter<T>(players);
             techNameConverter = new TechNameConverter(techStore);
         }
 
@@ -28,7 +31,7 @@ namespace CraigStars
         {
             var property = base.CreateProperty(member, memberSerialization);
 
-            if (property.PropertyType.IsSubclassOf(typeof(PublicPlayerInfo)))
+            if (!property.Ignored && (property.PropertyType == typeof(PublicPlayerInfo) || property.PropertyType.IsSubclassOf(typeof(PublicPlayerInfo))))
             {
                 property.Converter = playerNumConverter;
             }

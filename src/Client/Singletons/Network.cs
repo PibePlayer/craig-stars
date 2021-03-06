@@ -11,7 +11,7 @@ namespace CraigStars
     {
 
         public bool Started { get; private set; } = false;
-        public Server Server { get; set; } = new Server();
+        public Game Game { get; set; } = new Game();
 
         /// <summary>
         /// If any player isn't ready to start, the server isn't ready

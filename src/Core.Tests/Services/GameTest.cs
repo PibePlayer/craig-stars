@@ -8,26 +8,27 @@ using log4net;
 using System.Diagnostics;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
+using System.Threading.Tasks;
 
 namespace CraigStars.Tests
 {
     [TestFixture]
-    public class ServerTest
+    public class GameTest
     {
-        static ILog log = LogManager.GetLogger(typeof(ServerTest));
+        static ILog log = LogManager.GetLogger(typeof(GameTest));
 
         /// <summary>
-        /// Test helper method to return a simple server
+        /// Test helper method to return a simple game
         /// </summary>
-        /// <returns>A server with one planet, one player, one fleet</returns>
-        Server GetSingleUnitServer()
+        /// <returns>A game with one planet, one player, one fleet</returns>
+        Game GetSingleUnitGame()
         {
-            var server = new Server();
-            server.TechStore = StaticTechStore.Instance;
+            var game = new Game();
+            game.TechStore = StaticTechStore.Instance;
             var player = new Player();
-            server.Players.Add(player);
+            game.Players.Add(player);
 
-            server.Planets.Add(new Planet()
+            game.Planets.Add(new Planet()
             {
                 Player = player,
 
@@ -39,7 +40,7 @@ namespace CraigStars.Tests
                 MineralConcentration = new Mineral(100, 100, 100),
                 Scanner = true
             });
-            server.Fleets.Add(new Fleet()
+            game.Fleets.Add(new Fleet()
             {
                 Player = player,
                 Tokens = new List<ShipToken>(new ShipToken[] {
@@ -50,37 +51,37 @@ namespace CraigStars.Tests
                     }
                 })
             });
-            return server;
+            return game;
         }
 
         [Test]
         public void TestGenerateUniverse()
         {
-            var server = new Server();
+            var game = new Game();
             var rules = new Rules();
-            server.Init(new List<Player>() { new Player() }, rules, StaticTechStore.Instance);
-            server.GenerateUniverse();
+            game.Init(new List<Player>() { new Player() }, rules, StaticTechStore.Instance);
+            game.GenerateUniverse();
 
-            Assert.AreEqual(rules.NumPlanets, server.Planets.Count);
-            Assert.AreEqual(rules.NumPlanets, server.Players[0].Planets.Count);
-            Assert.AreEqual(server.Fleets.Count, server.Players[0].Fleets.Count);
+            Assert.AreEqual(rules.NumPlanets, game.Planets.Count);
+            Assert.AreEqual(rules.NumPlanets, game.Players[0].Planets.Count);
+            Assert.AreEqual(game.Fleets.Count, game.Players[0].Fleets.Count);
         }
 
         [Test]
-        public void TestGenerateTurn()
+        public async Task TestGenerateTurn()
         {
-            // create a new server with universe
-            var server = new Server();
+            // create a new game with universe
+            var game = new Game();
             var player = new Player();
             var rules = new Rules();
-            server.Init(new List<Player>() { player }, rules, StaticTechStore.Instance);
-            server.GenerateUniverse();
+            game.Init(new List<Player>() { player }, rules, StaticTechStore.Instance);
+            game.GenerateUniverse();
 
             // submit the player
-            server.SubmitTurn(player);
+            game.SubmitTurn(player);
 
             // generate the turn
-            server.GenerateTurn();
+            await game.GenerateTurn();
 
             // make sure our turn was generated and the player's report was updated
             Assert.Greater(player.Homeworld.Population, rules.StartingPopulation);
@@ -91,10 +92,10 @@ namespace CraigStars.Tests
         /// Test generating multiple turns with an AI and Human player
         /// </summary>
         [Test]
-        public void TestGenerateManyTurns()
+        public async Task TestGenerateManyTurns()
         {
-            // create a new server with universe
-            var server = new Server();
+            // create a new game with universe
+            var game = new Game();
             var player = new Player();
             var aiPlayer = new Player() { AIControlled = true };
             var rules = new Rules()
@@ -102,8 +103,8 @@ namespace CraigStars.Tests
                 Size = Size.Huge,
                 Density = Density.Packed
             };
-            server.Init(new List<Player>() { player, aiPlayer }, rules, StaticTechStore.Instance);
-            server.GenerateUniverse();
+            game.Init(new List<Player>() { player, aiPlayer }, rules, StaticTechStore.Instance);
+            game.GenerateUniverse();
 
             // turn off logging but for errors
             var logger = (Logger)log.Logger;
@@ -118,10 +119,10 @@ namespace CraigStars.Tests
             for (int i = 0; i < numTurns; i++)
             {
                 // submit the player
-                server.SubmitTurn(player);
+                game.SubmitTurn(player);
 
                 // generate the turn
-                server.GenerateTurn();
+                await game.GenerateTurn();
             }
             stopwatch.Stop();
 
@@ -132,7 +133,7 @@ namespace CraigStars.Tests
             // make sure our turn was generated and the player's report was updated
             Assert.Greater(player.Homeworld.Population, rules.StartingPopulation);
             Assert.AreEqual(0, player.Homeworld.ReportAge);
-            Assert.AreEqual(rules.StartingYear + numTurns, server.Year);
+            Assert.AreEqual(rules.StartingYear + numTurns, game.Year);
         }
     }
 

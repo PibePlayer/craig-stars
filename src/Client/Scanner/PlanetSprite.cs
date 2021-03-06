@@ -120,7 +120,7 @@ namespace CraigStars
                             DrawCircle(Vector2.Zero, radius - 1, GUIColors.UninhabitableColor);
                         }
 
-                        if (Planet.Player != null)
+                        if (Planet.Owner != null)
                         {
                             // draw a blue flag for our planet, red for other player's planet
                             var color = Planet.OwnedBy(Me) ? Colors.Blue : Colors.Red;
@@ -147,9 +147,9 @@ namespace CraigStars
                 orbitingState = Orbiting.Orbiting;
             }
 
-            if (Planet.Player != null)
+            if (Planet.Owner != null)
             {
-                if (Planet.Player == PlayersManager.Instance.Me)
+                if (Planet.Owner == PlayersManager.Instance.Me)
                 {
                     ownerAllyState = ScannerOwnerAlly.Owned;
                 }

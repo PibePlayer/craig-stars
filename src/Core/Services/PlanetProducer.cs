@@ -17,12 +17,12 @@ namespace CraigStars
         /// <summary>
         /// Build anything in the production queue on the planet.
         /// </summary>
-        /// <param name="rules"></param>
         /// <param name="planet"></param>
         /// <returns></returns>
-        public int Build(Rules rules, Planet planet)
+        public int Build(Planet planet)
         {
 
+            var rules = planet.Player.Rules;
             // allocate surface minerals + resources not going to research
             Cost allocated = new Cost(planet.Cargo.Ironium, planet.Cargo.Boranium, planet.Cargo.Germanium,
                                       planet.ResourcesPerYearAvailable);
@@ -45,7 +45,7 @@ namespace CraigStars
                 if (0 < numBuilt && numBuilt < item.quantity)
                 {
                     // build however many we can
-                    allocated = BuildItem(planet, item, numBuilt, allocated, rules);
+                    allocated = BuildItem(planet, item, numBuilt, allocated);
 
                     // remove this cost from our allocated amount
                     allocated -= costPer * numBuilt;
@@ -66,7 +66,7 @@ namespace CraigStars
                 {
                     // only build the amount required
                     numBuilt = item.quantity;
-                    allocated = BuildItem(planet, item, numBuilt, allocated, rules);
+                    allocated = BuildItem(planet, item, numBuilt, allocated);
 
                     // remove this cost from our allocated amount
                     allocated -= costPer * numBuilt;
@@ -110,7 +110,7 @@ namespace CraigStars
         /// <param name="allocated"></param>
         /// <param name="rules"></param>
         /// <returns></returns>
-        private Cost BuildItem(Planet planet, ProductionQueueItem item, int numBuilt, Cost allocated, Rules rules)
+        private Cost BuildItem(Planet planet, ProductionQueueItem item, int numBuilt, Cost allocated)
         {
             if (item.type == QueueItemType.Mine || item.type == QueueItemType.AutoMine)
             {
@@ -134,7 +134,7 @@ namespace CraigStars
             }
             else if (item.type == QueueItemType.ShipToken)
             {
-                BuildFleet(planet, item, numBuilt, rules);
+                BuildFleet(planet, item, numBuilt);
             }
             else if (item.type == QueueItemType.Starbase)
             {
@@ -151,7 +151,7 @@ namespace CraigStars
         /// <param name="item"></param>
         /// <param name="numBuilt"></param>
         /// <param name="rules"></param>
-        private void BuildFleet(Planet planet, ProductionQueueItem item, int numBuilt, Rules rules)
+        private void BuildFleet(Planet planet, ProductionQueueItem item, int numBuilt)
         {
             planet.Player.Stats.NumFleetsBuilt++;
             planet.Player.Stats.NumTokensBuilt += numBuilt;
@@ -175,7 +175,7 @@ namespace CraigStars
                 Position = planet.Position
             };
             fleet.Tokens.Add(new ShipToken(item.Design, item.quantity));
-            fleet.ComputeAggregate(rules);
+            fleet.ComputeAggregate();
             fleet.Fuel = fleet.Aggregate.FuelCapacity;
             fleet.Waypoints.Add(Waypoint.TargetWaypoint(planet));
             planet.OrbitingFleets.Add(fleet);

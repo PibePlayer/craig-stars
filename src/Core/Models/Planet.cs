@@ -52,7 +52,7 @@ namespace CraigStars
 
         public int ReportAge { get; set; } = Unexplored;
         public bool Explored { get => ReportAge != Unexplored; }
-        public bool Uninhabited { get => Player == null; }
+        public bool Uninhabited { get => Owner == null; }
 
         #endregion
 
@@ -88,8 +88,9 @@ namespace CraigStars
         /// Update this player's copy of their own planet, for the UI
         /// </summary>
         /// <param name="planet"></param>
-        public void UpdatePlayerPlanet(Planet planet, Rules rules)
+        public void UpdatePlayerPlanet(Planet planet)
         {
+            Player = planet.Player;
             Cargo = planet.Cargo;
             MineYears = planet.MineYears;
             Mines = planet.Mines;
@@ -113,7 +114,7 @@ namespace CraigStars
                     Player = Player,
                 };
                 Starbase.Tokens.AddRange(planet.Starbase.Tokens);
-                Starbase.ComputeAggregate(rules);
+                Starbase.ComputeAggregate();
             }
         }
 
@@ -156,63 +157,79 @@ namespace CraigStars
         /// <summary>
         /// Get the population density of this planet, as a float, i.e. 100k out of 1 million max is .1f density
         /// </summary>
-        /// <param name="rules"></param>
         /// <returns></returns>
-        public float GetPopulationDensity(Rules rules)
+        public float PopulationDensity
         {
-            return Population > 0 ? (float)Population / GetMaxPopulation(Player.Race, rules) : 0;
+            get
+            {
+                if (Player != null)
+                {
+                    var rules = Player.Rules;
+                    return Population > 0 ? (float)Population / GetMaxPopulation(Player.Race, rules) : 0;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
         }
 
         /// <summary>
         /// Grow the planet by some grow amount
         /// </summary>
-        /// <param name="rules"></param>
-        public void Grow(Rules rules)
+        public void Grow()
         {
-            Population += GetGrowthAmount(rules);
+            Population += GrowthAmount;
         }
 
         /// <summary>
         /// The amount the population for this planet will grow next turn
         /// </summary>
         /// <returns></returns>
-        public int GetGrowthAmount(Rules rules)
+        public int GrowthAmount
         {
-            var race = Player?.Race;
-            if (race != null && Hab is Hab hab)
+            get
             {
-                double capacity = (double)(Population / GetMaxPopulation(race, rules));
-                int popGrowth = (int)((double)(Population) * (race.GrowthRate / 100.0) * ((double)(race.GetPlanetHabitability(hab)) / 100.0));
-
-                if (capacity > .25)
+                var race = Player?.Race;
+                var rules = Player?.Rules;
+                if (race != null && rules != null && Hab is Hab hab)
                 {
-                    double crowdingFactor = 16.0 / 9.0 * (1.0 - capacity) * (1.0 - capacity);
-                    popGrowth = (int)((double)(popGrowth) * crowdingFactor);
+                    double capacity = (double)(Population / GetMaxPopulation(race, rules));
+                    int popGrowth = (int)((double)(Population) * (race.GrowthRate / 100.0) * ((double)(race.GetPlanetHabitability(hab)) / 100.0));
+
+                    if (capacity > .25)
+                    {
+                        double crowdingFactor = 16.0 / 9.0 * (1.0 - capacity) * (1.0 - capacity);
+                        popGrowth = (int)((double)(popGrowth) * crowdingFactor);
+                    }
+
+                    return popGrowth;
+
                 }
-
-                return popGrowth;
-
+                return 0;
             }
-            return 0;
         }
 
         /// <summary>
         /// The mineral output of this planet if it is owned
         /// </summary>
         /// <returns></returns>
-        public Mineral GetMineralOutput()
+        public Mineral MineralOutput
         {
-            var race = Player?.Race;
-            if (race != null)
+            get
             {
-                var mineOutput = race.MineOutput;
-                return new Mineral(
-                    MineralsPerYear(MineralConcentration.Ironium, Mines, mineOutput),
-                    MineralsPerYear(MineralConcentration.Boranium, Mines, mineOutput),
-                    MineralsPerYear(MineralConcentration.Germanium, Mines, mineOutput)
-                );
+                var race = Player?.Race;
+                if (race != null)
+                {
+                    var mineOutput = race.MineOutput;
+                    return new Mineral(
+                        MineralsPerYear(MineralConcentration.Ironium, Mines, mineOutput),
+                        MineralsPerYear(MineralConcentration.Boranium, Mines, mineOutput),
+                        MineralsPerYear(MineralConcentration.Germanium, Mines, mineOutput)
+                    );
+                }
+                return Mineral.Empty;
             }
-            return Mineral.Empty;
         }
 
         /// <summary>
@@ -299,9 +316,16 @@ namespace CraigStars
         /// </summary>
         /// <param name="techStore"></param>
         /// <returns></returns>
-        public float GetDefenseCoverage(ITechStore techStore)
+        public float DefenseCoverage
         {
-            return GetDefenseCoverage(Player?.GetBestDefense(techStore));
+            get
+            {
+                if (Player != null)
+                {
+                    return GetDefenseCoverage(Player.GetBestDefense());
+                }
+                return 0;
+            }
         }
 
         /// <summary>

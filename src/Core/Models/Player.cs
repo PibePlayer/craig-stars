@@ -7,7 +7,19 @@ namespace CraigStars
 {
     public class Player : PublicPlayerInfo
     {
-        public Rules Rules { get; set; }
+        /// <summary>
+        /// Each player gets a copy of rules from the server. These rules are used
+        /// for computing various values both for the UI and during turn generation
+        /// </summary>
+        public Rules Rules { get; set; } = new Rules();
+
+        /// <summary>
+        /// Each player gets a TechStore from the server (or client)
+        /// Note: this defaults to StaticTechStore for testing
+        /// </summary>
+        [JsonIgnore]
+        public ITechStore TechStore { get; set; } = StaticTechStore.Instance;
+        
         public Race Race { get; set; } = new Race();
         public PlayerStats Stats { get; set; } = new PlayerStats();
 
@@ -63,6 +75,9 @@ namespace CraigStars
         public List<Fleet> Fleets { get; set; } = new List<Fleet>();
 
         [JsonProperty(ItemIsReference = true)]
+        public List<Fleet> DeletedFleets { get; set; } = new List<Fleet>();
+
+        [JsonProperty(ItemIsReference = true)]
         public List<Message> Messages { get; set; } = new List<Message>();
 
         [JsonProperty(IsReference = true)]
@@ -88,49 +103,37 @@ namespace CraigStars
 
         #region Serializer Helpers
 
-        // public void PreSerialize()
-        // {
-        //     homeworldGuid = null;
-        //     Planets.ForEach(p => p.PreSerialize());
-        //     Fleets.ForEach(f => f.PreSerialize());
-        //     Messages.ForEach(m => m.PreSerialize());
-        //     Designs.ForEach(d => d.PreSerialize());
-        // }
-
-        // public void PostSerialize(ITechStore techStore)
-        // {
-        //     SetupMapObjectMappings();
-
-        //     Designs.ForEach(d => d.PostSerialize(techStore));
-
-        //     if (homeworldGuid != null && PlanetsByGuid.TryGetValue(homeworldGuid.Value, out var homeworld))
-        //     {
-        //         Homeworld = homeworld;
-        //     }
-        // }
-
-        // public void WireupPlayerFields(List<Player> players)
-        // {
-        //     Planets.ForEach(p => p.WireupPlayer(players));
-        //     Fleets.ForEach(f => f.WireupPlayer(players));
-        //     Designs.ForEach(d => d.WireupPlayer(players));
-        // }
-
         public void SetupMapObjectMappings()
         {
             PlanetsByGuid = Planets.ToLookup(p => p.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
             FleetsByGuid = Fleets.ToLookup(f => f.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
         }
 
-        public void ComputeAggregates(Rules rules)
+        public void ComputeAggregates()
         {
-            Fleets.ForEach(f => f.ComputeAggregate(rules));
-            Designs.ForEach(d => d.ComputeAggregate(this, rules));
-            Planets.ForEach(p => p.Starbase?.ComputeAggregate(rules));
+            Fleets.ForEach(f => f.ComputeAggregate());
+            Designs.ForEach(d => d.ComputeAggregate(this));
+            Planets.ForEach(p => p.Starbase?.ComputeAggregate());
         }
 
         #endregion
 
+        /// <summary>
+        /// Delete this design and also delete any tokens that use the design
+        /// </summary>
+        /// <param name="design"></param>
+        public void DeletedDesign(ShipDesign design)
+        {
+            var designIndex = Designs.FindIndex(d => d == design);
+
+            DeletedDesigns.Add(Designs[designIndex]);
+            Designs.RemoveAt(designIndex);
+
+            foreach (var fleet in Fleets.Where(f => f.OwnedBy(this)))
+            {
+                fleet.Tokens = fleet.Tokens.Where(token => token.Design != design).ToList();
+            }
+        }
 
         /// <summary>
         /// This function will be called recursively until no more levels are passed
@@ -171,7 +174,7 @@ namespace CraigStars
         /// 
         /// </summary>
         /// <param name="resourcesToSpend">The amount of resources to spend on research</param>
-        public void ResearchNextLevel(Rules rules, int resourcesToSpend)
+        public void ResearchNextLevel(int resourcesToSpend)
         {
             // add the resourcesToSpend to how much we've currently spent
             TechLevelsSpent[Researching] += resourcesToSpend;
@@ -180,7 +183,7 @@ namespace CraigStars
             // don't research more than the max on this level
             // TODO: If we get to max level, automatically switch to the lowest field
             var level = TechLevels[Researching];
-            if (level >= rules.TechBaseCost.Length - 1)
+            if (level >= Rules.TechBaseCost.Length - 1)
             {
                 Message.Info(this, $"You are already at level {level} in {Researching} and cannot research further.");
                 return;
@@ -190,7 +193,7 @@ namespace CraigStars
             var totalLevels = TechLevels.Sum();
 
             // figure out the cost to advance to the next level
-            var baseCost = rules.TechBaseCost[level + 1];
+            var baseCost = Rules.TechBaseCost[level + 1];
             var researchCost = Race.ResearchCost[Researching];
             var costFactor = 1f;
             switch (researchCost)
@@ -230,7 +233,7 @@ namespace CraigStars
                 {
                     // we have leftover resources, so call ourselves again
                     // to apply them to the next level
-                    ResearchNextLevel(rules, leftoverResources);
+                    ResearchNextLevel(leftoverResources);
                 }
             }
         }
@@ -321,9 +324,9 @@ namespace CraigStars
         /// </summary>
         /// <param name="techStore"></param>
         /// <returns></returns>
-        public TechPlanetaryScanner GetBestPlanetaryScanner(ITechStore techStore)
+        public TechPlanetaryScanner GetBestPlanetaryScanner()
         {
-            return GetBestTech<TechPlanetaryScanner>(techStore, TechCategory.PlanetaryScanner);
+            return GetBestTech<TechPlanetaryScanner>(TechStore, TechCategory.PlanetaryScanner);
         }
 
         /// <summary>
@@ -331,9 +334,9 @@ namespace CraigStars
         /// </summary>
         /// <param name="techStore"></param>
         /// <returns></returns>
-        public TechDefense GetBestDefense(ITechStore techStore)
+        public TechDefense GetBestDefense()
         {
-            return GetBestTech<TechDefense>(techStore, TechCategory.PlanetaryDefense);
+            return GetBestTech<TechDefense>(TechStore, TechCategory.PlanetaryDefense);
         }
 
         /// <summary>
@@ -341,9 +344,9 @@ namespace CraigStars
         /// </summary>
         /// <param name="techStore"></param>
         /// <returns></returns>
-        public TechEngine GetBestEngine(ITechStore techStore)
+        public TechEngine GetBestEngine()
         {
-            return GetBestTech<TechEngine>(techStore, TechCategory.Engine);
+            return GetBestTech<TechEngine>(TechStore, TechCategory.Engine);
         }
 
         /// <summary>
@@ -351,9 +354,9 @@ namespace CraigStars
         /// </summary>
         /// <param name="techStore"></param>
         /// <returns></returns>
-        public TechHullComponent GetBestScanner(ITechStore techStore)
+        public TechHullComponent GetBestScanner()
         {
-            return GetBestTech<TechHullComponent>(techStore, TechCategory.Scanner);
+            return GetBestTech<TechHullComponent>(TechStore, TechCategory.Scanner);
         }
 
         /// <summary>
@@ -361,9 +364,9 @@ namespace CraigStars
         /// </summary>
         /// <param name="techStore"></param>
         /// <returns></returns>
-        public TechHullComponent GetBestShield(ITechStore techStore)
+        public TechHullComponent GetBestShield()
         {
-            return GetBestTech<TechHullComponent>(techStore, TechCategory.Shield);
+            return GetBestTech<TechHullComponent>(TechStore, TechCategory.Shield);
         }
 
         /// <summary>
@@ -371,9 +374,9 @@ namespace CraigStars
         /// </summary>
         /// <param name="techStore"></param>
         /// <returns></returns>
-        public TechHullComponent GetBestArmor(ITechStore techStore)
+        public TechHullComponent GetBestArmor()
         {
-            return GetBestTech<TechHullComponent>(techStore, TechCategory.Armor);
+            return GetBestTech<TechHullComponent>(TechStore, TechCategory.Armor);
         }
 
         /// <summary>
@@ -381,9 +384,9 @@ namespace CraigStars
         /// </summary>
         /// <param name="techStore"></param>
         /// <returns></returns>
-        public TechHullComponent GetBestBeamWeapon(ITechStore techStore)
+        public TechHullComponent GetBestBeamWeapon()
         {
-            return GetBestTech<TechHullComponent>(techStore, TechCategory.BeamWeapon);
+            return GetBestTech<TechHullComponent>(TechStore, TechCategory.BeamWeapon);
         }
 
         /// <summary>
@@ -391,9 +394,9 @@ namespace CraigStars
         /// </summary>
         /// <param name="techStore"></param>
         /// <returns></returns>
-        public TechHullComponent GetBestTorpedo(ITechStore techStore)
+        public TechHullComponent GetBestTorpedo()
         {
-            return GetBestTech<TechHullComponent>(techStore, TechCategory.Torpedo);
+            return GetBestTech<TechHullComponent>(TechStore, TechCategory.Torpedo);
         }
 
         /// <summary>
@@ -496,11 +499,11 @@ namespace CraigStars
         /// etc
         /// </summary>
         /// <param name="planet"></param>
-        public void UpdatePlayerPlanet(Planet planet, Rules rules)
+        public void UpdatePlayerPlanet(Planet planet)
         {
             var planetReport = PlanetsByGuid[planet.Guid];
             planetReport.Player = this;
-            planetReport.UpdatePlayerPlanet(planet, rules);
+            planetReport.UpdatePlayerPlanet(planet);
         }
 
     }

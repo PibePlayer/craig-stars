@@ -10,7 +10,7 @@ namespace CraigStars
         [Export]
         public PackedScene PlayerReadyContainerScene { get; set; }
 
-        public Server Server { get; set; } = new Server();
+        public Game Game { get; set; } = new Game();
 
         TextEdit chat;
         LineEdit chatMessage;

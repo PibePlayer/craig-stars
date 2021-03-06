@@ -21,7 +21,7 @@ namespace CraigStars
         /// <summary>
         /// a new turn! build some ships
         /// </summary>
-        public override void Process(int year, Rules rules, Player player)
+        public override void Process(int year, Player player)
         {
             // find the first colony ship design
             // TODO: pick the best one
@@ -41,7 +41,7 @@ namespace CraigStars
             }
 
             // go through each unassigned colonizer fleet and find it a new planet to colonize
-            foreach (var fleet in colonizerFleets.Where(f => f.Waypoints.Count == 1 && f.Orbiting?.Player == player && f.Orbiting.GetPopulationDensity(rules) >= PopulationDensityRequired))
+            foreach (var fleet in colonizerFleets.Where(f => f.Waypoints.Count == 1 && f.Orbiting?.Player == player && f.Orbiting.PopulationDensity >= PopulationDensityRequired))
             {
 
                 Planet planetToColonize = ClosestPlanet(fleet, colonizablePlanets);

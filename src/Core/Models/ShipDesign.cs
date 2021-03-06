@@ -13,6 +13,24 @@ namespace CraigStars
         private static readonly ILog log = LogManager.GetLogger(typeof(ShipDesign));
         public string Name { get; set; }
 
+        public PublicPlayerInfo Owner
+        {
+            get
+            {
+                if (Player != null)
+                {
+                    owner = Player;
+                }
+                return owner;
+            }
+            set
+            {
+                owner = value;
+            }
+        }
+        PublicPlayerInfo owner;
+
+        [JsonProperty(IsReference = true)]
         public Player Player { get; set; }
         public TechHull Hull { get; set; } = new TechHull();
         public int HullSetNumber { get; set; }
@@ -71,8 +89,9 @@ namespace CraigStars
             return filledRequiredSlots == requiredHullSlotByIndex.Count;
         }
 
-        public void ComputeAggregate(Player player, Rules rules)
+        public void ComputeAggregate(Player player)
         {
+            var rules = player.Rules;
             Aggregate.Mass = Hull.Mass;
             Aggregate.Armor = Hull.Armor;
             Aggregate.Shield = 0;
@@ -130,7 +149,7 @@ namespace CraigStars
             }
 
             // compute the scan ranges
-            ComputeScanRanges(player, rules);
+            ComputeScanRanges(player);
         }
 
         /// <summary>
@@ -139,7 +158,7 @@ namespace CraigStars
         /// </summary>
         /// <param name="player"></param>
         /// <param name="rules"></param>
-        void ComputeScanRanges(Player player, Rules rules)
+        void ComputeScanRanges(Player player)
         {
             long scanRange = TechHullComponent.NoScanner;
             long scanRangePen = TechHullComponent.NoScanner;
@@ -147,7 +166,7 @@ namespace CraigStars
             // compu thecanner as a built in JoaT scanner if it's build in
             if (player.Race.PRT == PRT.JoaT && Hull.BuiltInScannerForJoaT)
             {
-                scanRange = (long)(player.TechLevels.Electronics * rules.BuiltInScannerJoaTMultiplier);
+                scanRange = (long)(player.TechLevels.Electronics * player.Rules.BuiltInScannerJoaTMultiplier);
                 if (!player.Race.HasLRT(LRT.NAS))
                 {
                     scanRangePen = (long)Math.Pow(scanRange / 2, 4);

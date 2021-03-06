@@ -9,8 +9,7 @@ using log4net.Repository.Hierarchy;
 namespace CraigStars.Singletons
 {
     /// <summary>
-    /// The Signals csharp class services as a way to bridge csharp and gdscript until 
-    /// everything is rewritten in .net
+    /// 
     /// </summary>
     public static class EventManager
     {

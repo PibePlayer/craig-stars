@@ -7,7 +7,8 @@ namespace CraigStars
 {
     public class Waypoint
     {
-        [JsonProperty(IsReference = true)]
+        // [JsonProperty(IsReference = true)]
+        [JsonIgnore]
         public MapObject Target
         {
             get => target;

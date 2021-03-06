@@ -81,7 +81,7 @@ namespace CraigStars.Tests
             planet.Player = player;
             planet.Population = 100000;
 
-            Assert.AreEqual(.1f, planet.GetPopulationDensity(rules));
+            Assert.AreEqual(.1f, planet.PopulationDensity);
         }
 
         [Test]

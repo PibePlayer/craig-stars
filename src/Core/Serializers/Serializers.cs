@@ -48,6 +48,9 @@ namespace CraigStars
     //     }
     // }
 
+    /// <summary>
+    /// Serializers contains a group of static methods for converting game objects to/from json
+    /// </summary>
     public static class Serializers
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(Serializers));
@@ -72,19 +75,43 @@ namespace CraigStars
 
         /// <summary>
         /// Create a new JsonSerializerSettings for Player objects
+        /// It is best to re-use this if possible
         /// </summary>
         /// <param name="players"></param>
         /// <returns></returns>
-        static JsonSerializerSettings CreatePlayerSettings(List<PublicPlayerInfo> players, ITechStore techStore)
+        public static JsonSerializerSettings CreatePlayerSettings(List<PublicPlayerInfo> players, ITechStore techStore)
         {
             return new JsonSerializerSettings()
             {
                 Formatting = Formatting.Indented,
                 NullValueHandling = NullValueHandling.Ignore,
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
                 DefaultValueHandling = DefaultValueHandling.Ignore,
-                // TraceWriter = traceWriter,
-                ContractResolver = new PlayerContractResolver(players, techStore),
+                TraceWriter = traceWriter,
+                ContractResolver = new PlayerContractResolver<PublicPlayerInfo>(players, techStore),
+
+                Converters = new JsonConverter[] {
+                    new ColorJsonConverter(),
+                    new StringEnumConverter()
+                }
+            };
+        }
+
+        /// <summary>
+        /// Create a new JsonSerializerSettings for Game objects
+        /// </summary>
+        /// <param name="game">The game to create a serializer for</param>
+        /// <returns></returns>
+        public static JsonSerializerSettings CreateGameSettings(Game game)
+        {
+            return new JsonSerializerSettings()
+            {
+                Formatting = Formatting.Indented,
+                NullValueHandling = NullValueHandling.Ignore,
+                ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+                DefaultValueHandling = DefaultValueHandling.Ignore,
+                TraceWriter = traceWriter,
+                ContractResolver = new PlayerContractResolver<Player>(game.Players, game.TechStore),
 
                 Converters = new JsonConverter[] {
                     new ColorJsonConverter(),
@@ -129,7 +156,6 @@ namespace CraigStars
             {
                 try
                 {
-                    log.Debug($"Deserializing {typeof(T).Name} \n{json}");
                     return JsonConvert.DeserializeObject<T>(json, CreatePlayerSettings(players, techStore));
                 }
                 catch (Exception e)
@@ -148,9 +174,33 @@ namespace CraigStars
         /// <param name="player"></param>
         /// <param name="players"></param>
         /// <returns></returns>
-        static public string Serialize(Player player, List<PublicPlayerInfo> players, ITechStore techStore)
+        static public string Serialize(Player player, JsonSerializerSettings settings)
         {
-            return JsonConvert.SerializeObject(player, CreatePlayerSettings(players, techStore));
+            return JsonConvert.SerializeObject(player, settings);
+        }
+
+        /// <summary>
+        /// Save a game to JSON. 
+        /// </summary>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        static public string SerializeGame(Game game)
+        {
+            try
+            {
+                var json = JsonConvert.SerializeObject(game, CreateGameSettings(game));
+                log.Debug($"Serialized Game:\n {traceWriter.ToString()} \n{json}");
+                return json;
+            }
+            catch (Exception e)
+            {
+                log.Error("Failed to serialize game into json: ", e);
+            }
+            finally
+            {
+                log.Info($"TraceWriter: \n{traceWriter.ToString()}");
+            }
+            return null;
         }
 
         /// <summary>
@@ -159,9 +209,46 @@ namespace CraigStars
         /// <param name="json"></param>
         /// <param name="players"></param>
         /// <returns></returns>
-        static public void PopulatePlayer(string json, Player player, List<PublicPlayerInfo> players, ITechStore techStore)
+        static public Game DeserializeGame(string json, ITechStore techStore)
         {
-            JsonConvert.PopulateObject(json, player, CreatePlayerSettings(players, techStore));
+            if (json != null)
+            {
+                try
+                {
+                    Game game = new Game() { TechStore = techStore };
+                    JsonConvert.PopulateObject(json, game, CreateGameSettings(game));
+                    return game;
+                }
+                catch (Exception e)
+                {
+                    log.Error($"Failed to deserialize json: {json} into type: {typeof(Game)}", e);
+                }
+
+            }
+            return null;
+
+        }
+
+        /// <summary>
+        /// Load a player from JSON
+        /// </summary>
+        /// <param name="json"></param>
+        /// <param name="players"></param>
+        /// <returns></returns>
+        static public void PopulatePlayer(string json, Player player, JsonSerializerSettings settings)
+        {
+            try
+            {
+                JsonConvert.PopulateObject(json, player, settings);
+            }
+            catch (Exception e)
+            {
+                log.Error($"Failed to PopulationPlayer from json: \n{json}", e);
+            }
+            finally
+            {
+                log.Info($"TraceWriter: \n{traceWriter.ToString()}");
+            }
         }
 
         /// <summary>

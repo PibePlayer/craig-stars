@@ -10,14 +10,14 @@ using log4net.Appender;
 
 namespace CraigStars
 {
-    public class Game : Node
+    public class GameView : Node
     {
-        ILog log = LogManager.GetLogger(typeof(Game));
+        ILog log = LogManager.GetLogger(typeof(GameView));
 
         /// <summary>
         /// The game node creates a server in single player or host mode
         /// </summary>
-        public Server Server { get; set; } = new Server();
+        public Game Game { get; set; } = new Game();
 
         /// <summary>
         /// This is the main view into the universe
@@ -63,9 +63,9 @@ namespace CraigStars
             // init the server and send a notice to all players that it's time to start
             if (this.IsServerOrSinglePlayer())
             {
-                Server.Init(PlayersManager.Instance.Players.Cast<Player>().ToList(), RulesManager.Rules, TechStore.Instance);
-                Server.GenerateUniverse();
-                Signals.PublishPostStartGameEvent(Server.Year);
+                Game.Init(PlayersManager.Instance.Players.Cast<Player>().ToList(), RulesManager.Rules, TechStore.Instance);
+                Game.GenerateUniverse();
+                Signals.PublishPostStartGameEvent(Game.Year);
                 if (this.IsServer())
                 {
                     // TODO: send each player their turn data
@@ -83,7 +83,7 @@ namespace CraigStars
 
         public override void _ExitTree()
         {
-            Server.Shutdown();
+            Game.Shutdown();
             Signals.PostStartGameEvent -= OnPostStartGameEvent;
             Signals.ChangeProductionQueuePressedEvent -= OnChangeProductionQueue;
             Signals.CargoTransferRequestedEvent -= OnCargoTransferRequested;
@@ -102,14 +102,15 @@ namespace CraigStars
         /// Copy any data from this to the main game
         /// </summary>
         /// <param name="player"></param>
-        void OnSubmitTurn(Player player)
+        async void OnSubmitTurn(Player player)
         {
-            Server.SubmitTurn(player);
-            if (Server.AllPlayersSubmitted())
+            Game.SubmitTurn(player);
+            if (Game.AllPlayersSubmitted())
             {
                 // once everyone is submitted, generate a new turn
-                Server.GenerateTurn();
-                Signals.PublishTurnPassedEvent(Server.Year);
+                Signals.PublishTurnGeneratingEvent();
+                await Game.GenerateTurn();
+                Signals.PublishTurnPassedEvent(Game.Year);
             }
         }
 
@@ -149,27 +150,6 @@ namespace CraigStars
         {
             productionQueueDialog.Planet = planetSprite.Planet;
             productionQueueDialog.PopupCentered();
-        }
-
-        public override void _Input(InputEvent @event)
-        {
-            if (@event.IsActionPressed("submit_turn"))
-            {
-                // submit our turn
-                Signals.PublishSubmitTurnEvent(PlayersManager.Instance.Me);
-            }
-            if (@event.IsActionPressed("technology_browser"))
-            {
-                Signals.PublishTechBrowserDialogRequestedEvent();
-            }
-            if (@event.IsActionPressed("research"))
-            {
-                Signals.PublishResearchDialogRequestedEvent();
-            }
-            if (@event.IsActionPressed("ship_designer"))
-            {
-                Signals.PublishShipDesignerDialogRequestedEvent();
-            }
         }
 
     }

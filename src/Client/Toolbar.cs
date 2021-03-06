@@ -34,6 +34,25 @@ namespace CraigStars
             researchButton.Connect("pressed", this, nameof(OnResearchButtonPressed));
             battlePlansButton.Connect("pressed", this, nameof(OnBattlePlansButtonPressed));
             submitTurnButton.Connect("pressed", this, nameof(OnSubmitTurnButtonPressed));
+
+            Signals.TurnGeneratingEvent += OnTurnGenerating;
+            Signals.TurnPassedEvent += OnTurnPassed;
+        }
+
+        public override void _ExitTree()
+        {
+            Signals.TurnGeneratingEvent -= OnTurnGenerating;
+            Signals.TurnPassedEvent -= OnTurnPassed;
+        }
+
+        private void OnTurnPassed(int year)
+        {
+            submitTurnButton.Disabled = false;
+        }
+
+        private void OnTurnGenerating()
+        {
+            submitTurnButton.Disabled = true;
         }
 
         void OnNormalViewToolButtonPressed()
@@ -72,6 +91,27 @@ namespace CraigStars
         void OnSubmitTurnButtonPressed()
         {
             Signals.PublishSubmitTurnEvent(PlayersManager.Instance.Me);
+        }
+
+        public override void _Input(InputEvent @event)
+        {
+            if (!submitTurnButton.Disabled && @event.IsActionPressed("submit_turn"))
+            {
+                // submit our turn
+                Signals.PublishSubmitTurnEvent(PlayersManager.Instance.Me);
+            }
+            if (@event.IsActionPressed("technology_browser"))
+            {
+                Signals.PublishTechBrowserDialogRequestedEvent();
+            }
+            if (@event.IsActionPressed("research"))
+            {
+                Signals.PublishResearchDialogRequestedEvent();
+            }
+            if (@event.IsActionPressed("ship_designer"))
+            {
+                Signals.PublishShipDesignerDialogRequestedEvent();
+            }
         }
 
     }

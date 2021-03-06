@@ -13,11 +13,11 @@ namespace CraigStars
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(TurnSubmitter));
 
-        public Server Server { get; }
+        public Game Game { get; }
 
-        public TurnSubmitter(Server server)
+        public TurnSubmitter(Game game)
         {
-            Server = server;
+            Game = game;
         }
 
         public void SubmitTurn(Player player)
@@ -36,7 +36,7 @@ namespace CraigStars
         {
             foreach (var playerFleet in player.Fleets.Where(f => f.Player == player))
             {
-                if (Server.FleetsByGuid.TryGetValue(playerFleet.Guid, out var fleet) && fleet.Player == player)
+                if (Game.FleetsByGuid.TryGetValue(playerFleet.Guid, out var fleet) && fleet.Player == player)
                 {
                     // Keep waypoint 0 so the client can't move the fleet
                     // remove all the other waypoints for this fleet and replace them with what was sent by the player
@@ -56,7 +56,7 @@ namespace CraigStars
                         {
                             if (playerWaypoint.Target is Planet planet)
                             {
-                                if (Server.PlanetsByGuid.TryGetValue(planet.Guid, out var gamePlanet))
+                                if (Game.PlanetsByGuid.TryGetValue(planet.Guid, out var gamePlanet))
                                 {
                                     log.Debug($"Adding player defined waypoint for {fleet.Name} to {playerWaypoint.TargetName} -> {playerWaypoint.Task}");
                                     // add the server side version of this planet as a waypoint
@@ -74,7 +74,7 @@ namespace CraigStars
 
             foreach (var playerPlanet in player.Planets.Where(p => p.Player == player))
             {
-                if (Server.PlanetsByGuid.TryGetValue(playerPlanet.Guid, out var planet) && planet.Player == player)
+                if (Game.PlanetsByGuid.TryGetValue(playerPlanet.Guid, out var planet) && planet.Player == player)
                 {
                     planet.ContributesOnlyLeftoverToResearch = playerPlanet.ContributesOnlyLeftoverToResearch;
                     // TODO: validate planet production queue

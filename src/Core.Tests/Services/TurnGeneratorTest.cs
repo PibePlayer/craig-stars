@@ -11,17 +11,17 @@ namespace CraigStars.Tests
     public class TurnGeneratorTest
     {
         /// <summary>
-        /// Test helper method to return a simple server
+        /// Test helper method to return a simple game
         /// </summary>
-        /// <returns>A server with one planet, one player, one fleet</returns>
-        Server GetSingleUnitServer()
+        /// <returns>A game with one planet, one player, one fleet</returns>
+        Game GetSingleUnitGame()
         {
-            var server = new Server();
-            server.TechStore = StaticTechStore.Instance;
+            var game = new Game();
+            game.TechStore = StaticTechStore.Instance;
             var player = new Player();
-            server.Players.Add(player);
+            game.Players.Add(player);
 
-            server.Planets.Add(new Planet()
+            game.Planets.Add(new Planet()
             {
                 Player = player,
 
@@ -33,7 +33,7 @@ namespace CraigStars.Tests
                 MineralConcentration = new Mineral(100, 100, 100),
                 Scanner = true
             });
-            server.Fleets.Add(new Fleet()
+            game.Fleets.Add(new Fleet()
             {
                 Player = player,
                 Tokens = new List<ShipToken>(new ShipToken[] {
@@ -44,37 +44,37 @@ namespace CraigStars.Tests
                     }
                 })
             });
-            return server;
+            return game;
         }
         [Test]
         public void TestGenerateTurn()
         {
-            var server = GetSingleUnitServer();
-            var tg = new TurnGenerator(server);
+            var game = GetSingleUnitGame();
+            var tg = new TurnGenerator(game);
             tg.GenerateTurn();
             tg.RunTurnProcessors();
 
             // make sure our planet grew pop
-            Assert.IsTrue(server.Planets[0].Population > 100000);
+            Assert.IsTrue(game.Planets[0].Population > 100000);
 
         }
 
         [Test]
         public void TestUpdatePlayerReports()
         {
-            var server = GetSingleUnitServer();
+            var game = GetSingleUnitGame();
 
             // setup initial player knowledge
-            var ug = new UniverseGenerator(server);
-            ug.InitPlayerReports(server.Players[0], server.Planets);
+            var ug = new UniverseGenerator(game);
+            ug.InitPlayerReports(game.Players[0], game.Planets);
 
-            var tg = new TurnGenerator(server);
-            server.Planets[0].Population = 120000;
+            var tg = new TurnGenerator(game);
+            game.Planets[0].Population = 120000;
             tg.UpdatePlayerReports();
 
             // our player should know about the planet updates
-            Assert.AreEqual(server.Planets[0].Population, server.Players[0].Planets[0].Population);
-            Assert.IsTrue(server.Players[0].Fleets.Count > 0);
+            Assert.AreEqual(game.Planets[0].Population, game.Players[0].Planets[0].Population);
+            Assert.IsTrue(game.Players[0].Fleets.Count > 0);
         }
 
     }

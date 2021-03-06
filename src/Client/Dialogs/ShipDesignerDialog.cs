@@ -159,18 +159,28 @@ namespace CraigStars
 
         void OnDeleteDesignButtonPressed()
         {
-            // TODO: handle deleting designs with existing fleets.
-            confirmationDialog.Show(
-                $"Are you sure you want to delete the design {shipHullSummary.ShipDesign.Name}?",
-                () =>
+            var designIndex = me.Designs.FindIndex(d => d == shipHullSummary.ShipDesign);
+            if (designIndex != -1)
+            {
+                var design = me.Designs[designIndex];
+
+                var message = $"Are you sure you want to delete the design {shipHullSummary.ShipDesign.Name}?";
+                if (design.Aggregate.InUse)
                 {
-                    var designIndex = me.Designs.FindIndex(d => d == shipHullSummary.ShipDesign);
-                    me.DeletedDesigns.Add(me.Designs[designIndex]);
-                    me.Designs.RemoveAt(designIndex);
-                    shipDesignTree.UpdateTreeItems();
+                    message = $"{shipHullSummary.ShipDesign.Name} is in use. All fleet tokens with this design will be immediately deleted. Are you sure you want to delete the design {shipHullSummary.ShipDesign.Name}?";
                 }
-            );
+                // TODO: handle deleting designs with existing fleets.
+                confirmationDialog.Show(
+                    message,
+                    () =>
+                    {
+                        me.DeletedDesign(design);
+                        shipDesignTree.UpdateTreeItems();
+                    }
+                );
+            }
         }
+
 
         void OnCopyStarbaseDesignButtonPressed()
         {

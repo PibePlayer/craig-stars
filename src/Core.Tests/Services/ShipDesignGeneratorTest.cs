@@ -20,19 +20,19 @@ namespace CraigStars.Tests
 
             // design a simple scout
             var designer = new ShipDesignGenerator();
-            var design = designer.DesignShip(Techs.Scout, "Name", player, techStore);
+            var design = designer.DesignShip(Techs.Scout, "Name", player);
             Assert.IsNotNull(design);
             Assert.AreEqual(Techs.QuickJump5, design.Slots[0].HullComponent);
             Assert.AreEqual(Techs.BatScanner, design.Slots[1].HullComponent);
             Assert.AreEqual(Techs.FuelTank, design.Slots[2].HullComponent);
 
             // design a colony ship
-            design = designer.DesignShip(Techs.ColonyShip, "Name", player, techStore);
+            design = designer.DesignShip(Techs.ColonyShip, "Name", player);
             Assert.AreEqual(Techs.QuickJump5, design.Slots[0].HullComponent);
             Assert.AreEqual(Techs.ColonizationModule, design.Slots[1].HullComponent);
 
             // design a starbase
-            design = designer.DesignShip(Techs.SpaceStation, "Name", player, techStore);
+            design = designer.DesignShip(Techs.SpaceStation, "Name", player);
             Assert.IsNotNull(design);
 
         }

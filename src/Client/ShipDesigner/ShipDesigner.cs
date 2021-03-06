@@ -64,7 +64,7 @@ namespace CraigStars
         void ResetDesignerShipDesignFromSource()
         {
             var design = SourceShipDesign.Clone();
-            design.ComputeAggregate(PlayersManager.Instance.Me, RulesManager.Rules);
+            design.ComputeAggregate(PlayersManager.Instance.Me);
 
             designerHullSummary.ShipDesign = design;
 
@@ -101,7 +101,7 @@ namespace CraigStars
         {
             // TODO, support updates
             designerHullSummary.ShipDesign.Name = designNameLineEdit.Text;
-            designerHullSummary.ShipDesign.ComputeAggregate(PlayersManager.Instance.Me, RulesManager.Rules);
+            designerHullSummary.ShipDesign.ComputeAggregate(PlayersManager.Instance.Me);
             if (EditingExisting)
             {
                 // remove the old design and add the new one

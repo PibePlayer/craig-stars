@@ -19,6 +19,8 @@ namespace CraigStars.Singletons
 
         public delegate void YearUpdate(int year);
         public static event YearUpdate TurnPassedEvent;
+        public static event Action TurnGeneratingEvent;
+        public static void PublishTurnGeneratingEvent() => TurnGeneratingEvent?.Invoke();
 
         #region Viewport Events
 

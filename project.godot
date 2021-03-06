@@ -8,19 +8,23 @@
 
 config_version=4
 
+_global_script_classes=[  ]
+_global_script_class_icons={
+}
+
 [application]
 
 config/name="craig-stars"
-run/main_scene="res://src/Client/Game.tscn"
+run/main_scene="res://src/Client/GameView.tscn"
 config/icon="res://icon.png"
 
 [autoload]
 
 RulesManager="*res://src/Client/Singletons/RulesManager.cs"
+TechStore="*res://src/Client/Singletons/TechStore.cs"
 PlayersManager="*res://src/Client/Singletons/PlayersManager.cs"
 Rpc="*res://src/Client/Singletons/RPC.cs"
 TextureLoader="*res://src/Client/Singletons/TextureLoader.cs"
-TechStore="*res://src/Client/Singletons/TechStore.cs"
 GameSettings="*res://src/Client/Singletons/GameSettings.cs"
 Client="*res://src/Client/Singletons/Client.cs"
 Network="*res://src/Client/Singletons/Network.cs"

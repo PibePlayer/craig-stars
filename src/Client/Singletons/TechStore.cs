@@ -37,7 +37,7 @@ namespace CraigStars
             }
         }
 
-        public override void _Ready()
+        public override void _EnterTree()
         {
             // From advice in the godot forums, this is probably a good idea.
             // It's possible that godot will use reflection to instantiate us twice

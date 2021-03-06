@@ -167,7 +167,7 @@ namespace CraigStars
 
                 var allocatedSoFar = Planet.ProductionQueue.Allocated;
                 var availableCost = Planet.Cargo.ToCost(yearlyResources);
-                var yearlyMinerals = Planet.GetMineralOutput();
+                var yearlyMinerals = Planet.MineralOutput;
 
                 log.Debug($"Cost: {cost} Allocated: {allocatedSoFar}, available: {availableCost}, yearlyMinerals: {yearlyMinerals}");
 

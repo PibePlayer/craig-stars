@@ -363,7 +363,7 @@ namespace CraigStars
             return warpFactor;
         }
 
-        public void ComputeAggregate(Rules rules)
+        public void ComputeAggregate()
         {
             Aggregate.Mass = 0;
             Aggregate.Shield = 0;
@@ -379,7 +379,7 @@ namespace CraigStars
             // compute each token's 
             Tokens.ForEach(token =>
             {
-                token.Design.ComputeAggregate(Player, rules);
+                token.Design.ComputeAggregate(Player);
 
                 // TODO: which default engine do we use for multiple fleets?
                 Aggregate.Engine = token.Design.Aggregate.Engine;

@@ -2,7 +2,7 @@
 
 [ext_resource path="res://src/Client/Scanner/Scanner.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/Client/Scanner/ScannerSelectedStats.tscn" type="PackedScene" id=2]
-[ext_resource path="res://src/Client/Game.cs" type="Script" id=3]
+[ext_resource path="res://src/Client/GameView.cs" type="Script" id=3]
 [ext_resource path="res://src/Client/CommandPane/FleetWaypointTaskTile.tscn" type="PackedScene" id=4]
 [ext_resource path="res://src/Client/CommandPane/PlanetStarbaseTile.tscn" type="PackedScene" id=5]
 [ext_resource path="res://src/Client/CommandPane/PlanetMineralsOnHandTile.tscn" type="PackedScene" id=6]
@@ -32,7 +32,7 @@ expand_margin_right = 5.0
 expand_margin_top = 5.0
 expand_margin_bottom = 5.0
 
-[node name="Game" type="Node2D"]
+[node name="GameView" type="Node2D"]
 script = ExtResource( 3 )
 
 [node name="Scanner" parent="." instance=ExtResource( 1 )]
@@ -194,4 +194,3 @@ visible = false
 [node name="CargoTransferDialog" parent="CanvasLayer" instance=ExtResource( 14 )]
 
 [node name="ShipDesignerDialog" parent="CanvasLayer" instance=ExtResource( 18 )]
-visible = false

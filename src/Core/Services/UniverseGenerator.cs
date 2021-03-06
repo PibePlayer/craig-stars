@@ -9,59 +9,59 @@ namespace CraigStars
 {
     public class UniverseGenerator
     {
-        Server Server { get; }
+        Game Game { get; }
 
-        public UniverseGenerator(Server server)
+        public UniverseGenerator(Game game)
         {
-            Server = server;
+            Game = game;
         }
 
         public void Generate()
         {
-            List<Planet> planets = GeneratePlanets(Server.Rules);
+            List<Planet> planets = GeneratePlanets(Game.Rules);
             List<Fleet> fleets = new List<Fleet>();
             List<Planet> ownedPlanets = new List<Planet>();
 
             // shuffle the planets so we don't end up with the same planet id each time
-            Server.Rules.Random.Shuffle(planets);
-            for (var i = 0; i < Server.Players.Count; i++)
+            Game.Rules.Random.Shuffle(planets);
+            for (var i = 0; i < Game.Players.Count; i++)
             {
-                var player = Server.Players[i];
+                var player = Game.Players[i];
 
                 // initialize this player
                 InitTechLevels(player);
                 InitPlayerReports(player, planets);
                 InitShipDesigns(player);
-                player.PlanetaryScanner = player.GetBestPlanetaryScanner(Server.TechStore);
+                player.PlanetaryScanner = player.GetBestPlanetaryScanner();
 
-                var homeworld = planets.Find(p => p.Player == null && (ownedPlanets.Count == 0 || ShortestDistanceToPlanets(p, ownedPlanets) > Server.Rules.Area / 4));
+                var homeworld = planets.Find(p => p.Player == null && (ownedPlanets.Count == 0 || ShortestDistanceToPlanets(p, ownedPlanets) > Game.Rules.Area / 4));
                 player.Homeworld = homeworld;
-                MakeHomeworld(Server.Rules, player, homeworld, Server.Rules.StartingYear);
+                MakeHomeworld(Game.Rules, player, homeworld, Game.Rules.StartingYear);
                 ownedPlanets.Add(homeworld);
 
-                fleets.AddRange(GenerateFleets(Server.Rules, player, homeworld));
+                fleets.AddRange(GenerateFleets(Game.Rules, player, homeworld));
                 Message.Info(player, "Welcome to the universe, go forth and conquer!");
             }
 
             // add extra planets for this player
-            Server.Players.ForEach(player =>
+            Game.Players.ForEach(player =>
                 {
-                    for (var extraPlanetNum = 0; extraPlanetNum < Server.Rules.StartWithExtraPlanets; extraPlanetNum++)
+                    for (var extraPlanetNum = 0; extraPlanetNum < Game.Rules.StartWithExtraPlanets; extraPlanetNum++)
                     {
                         var planet = planets.FirstOrDefault(p => p.Player == null && p.Position.DistanceTo(player.Homeworld.Position) < 100);
                         if (planet != null)
                         {
-                            MakeExtraWorld(Server.Rules, player, planet);
+                            MakeExtraWorld(Game.Rules, player, planet);
                             ownedPlanets.Add(planet);
                         }
                     }
 
                 });
 
-            Server.Planets.AddRange(planets);
-            Server.Fleets.AddRange(fleets);
-            Server.Width = Server.Rules.Area;
-            Server.Height = Server.Rules.Area;
+            Game.Planets.AddRange(planets);
+            Game.Fleets.AddRange(fleets);
+            Game.Width = Game.Rules.Area;
+            Game.Height = Game.Rules.Area;
         }
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace CraigStars
             fleet.Id = player.Fleets.Count + 1;
 
             // aggregate all the design data
-            fleet.ComputeAggregate(Server.Rules);
+            fleet.ComputeAggregate();
             fleet.Fuel = fleet.Aggregate.FuelCapacity;
 
             return fleet;
@@ -249,7 +249,7 @@ namespace CraigStars
                 }
             }
             };
-            planet.Starbase.ComputeAggregate(rules);
+            planet.Starbase.ComputeAggregate();
 
             Message.HomePlanet(player, planet);
         }
@@ -376,7 +376,7 @@ namespace CraigStars
                     player.TechLevels.Energy = 3;
                     player.TechLevels.Weapons = 3;
                     player.TechLevels.Propulsion = 3;
-                    player.TechLevels.Construction = 13;
+                    player.TechLevels.Construction = 3;
                     player.TechLevels.Electronics = 3;
                     player.TechLevels.Biotechnology = 3;
                     break;
@@ -412,14 +412,14 @@ namespace CraigStars
         internal void InitShipDesigns(Player player)
         {
             ShipDesignGenerator designer = new ShipDesignGenerator();
-            player.Designs.Add(designer.DesignShip(Techs.Scout, "Long Range Scout", player, Server.TechStore));
-            player.Designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player, Server.TechStore));
+            player.Designs.Add(designer.DesignShip(Techs.Scout, "Long Range Scout", player));
+            player.Designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player));
             var starbase = ShipDesigns.Starbase.Clone();
             starbase.Name = "Starbase";
             starbase.Player = player;
             player.Designs.Add(starbase);
 
-            player.Designs.ForEach(design => design.ComputeAggregate(player, Server.Rules));
+            player.Designs.ForEach(design => design.ComputeAggregate(player));
         }
 
         /// <summary>
@@ -459,9 +459,9 @@ namespace CraigStars
                 if (homeWorldMineralConcentration == null)
                 {
                     homeWorldMineralConcentration = new Mineral(
-                        Server.Rules.Random.Next(Server.Rules.MaxStartingMineralConcentration) + Server.Rules.MinHomeworldMineralConcentration,
-                        Server.Rules.Random.Next(Server.Rules.MaxStartingMineralConcentration) + Server.Rules.MinHomeworldMineralConcentration,
-                        Server.Rules.Random.Next(Server.Rules.MaxStartingMineralConcentration) + Server.Rules.MinHomeworldMineralConcentration
+                        Game.Rules.Random.Next(Game.Rules.MaxStartingMineralConcentration) + Game.Rules.MinHomeworldMineralConcentration,
+                        Game.Rules.Random.Next(Game.Rules.MaxStartingMineralConcentration) + Game.Rules.MinHomeworldMineralConcentration,
+                        Game.Rules.Random.Next(Game.Rules.MaxStartingMineralConcentration) + Game.Rules.MinHomeworldMineralConcentration
                     );
                 }
                 return homeWorldMineralConcentration.Value;
@@ -480,9 +480,9 @@ namespace CraigStars
                 if (homeWorldSurfaceMinerals == null)
                 {
                     homeWorldSurfaceMinerals = new Mineral(
-                        Server.Rules.Random.Next(Server.Rules.MaxStartingMineralSurface) + Server.Rules.MinStartingMineralSurface,
-                        Server.Rules.Random.Next(Server.Rules.MaxStartingMineralSurface) + Server.Rules.MinStartingMineralSurface,
-                        Server.Rules.Random.Next(Server.Rules.MaxStartingMineralSurface) + Server.Rules.MinStartingMineralSurface
+                        Game.Rules.Random.Next(Game.Rules.MaxStartingMineralSurface) + Game.Rules.MinStartingMineralSurface,
+                        Game.Rules.Random.Next(Game.Rules.MaxStartingMineralSurface) + Game.Rules.MinStartingMineralSurface,
+                        Game.Rules.Random.Next(Game.Rules.MaxStartingMineralSurface) + Game.Rules.MinStartingMineralSurface
                     );
                 }
                 return homeWorldSurfaceMinerals.Value;
@@ -501,9 +501,9 @@ namespace CraigStars
                 if (extraWorldSurfaceMinerals == null)
                 {
                     extraWorldSurfaceMinerals = new Mineral(
-                        (Server.Rules.Random.Next(Server.Rules.MaxStartingMineralSurface) + Server.Rules.MinStartingMineralSurface) / 2,
-                        (Server.Rules.Random.Next(Server.Rules.MaxStartingMineralSurface) + Server.Rules.MinStartingMineralSurface) / 2,
-                        (Server.Rules.Random.Next(Server.Rules.MaxStartingMineralSurface) + Server.Rules.MinStartingMineralSurface) / 2
+                        (Game.Rules.Random.Next(Game.Rules.MaxStartingMineralSurface) + Game.Rules.MinStartingMineralSurface) / 2,
+                        (Game.Rules.Random.Next(Game.Rules.MaxStartingMineralSurface) + Game.Rules.MinStartingMineralSurface) / 2,
+                        (Game.Rules.Random.Next(Game.Rules.MaxStartingMineralSurface) + Game.Rules.MinStartingMineralSurface) / 2
                     );
                 }
                 return extraWorldSurfaceMinerals.Value;

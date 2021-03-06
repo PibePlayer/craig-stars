@@ -91,7 +91,7 @@ namespace CraigStars
                     readyLabel.Modulate = color;
                     if (!Engine.EditorHint)
                     {
-                        var me = PlayersManager.Instance.Me?.Num == PlayerNum ? " (me)" : "";
+                        var me = PlayersManager.Me?.Num == PlayerNum ? " (me)" : "";
                         nameLabel.Text = $"{PlayersManager.Instance.GetPlayer(PlayerNum).Name}{me}";
                     }
                     else

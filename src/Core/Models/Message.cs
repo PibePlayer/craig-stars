@@ -35,28 +35,28 @@ namespace CraigStars
         public static void HomePlanet(Player player, Planet planet)
         {
             String text = $"Your home planet is {planet.Name}.  Your people are ready to leave the nest and explore the universe.  Good luck.";
-            player.Messages.Add(new Message(MessageType.HomePlanet, text, planet));
+            player.Messages.Add(new Message(MessageType.HomePlanet, text, player.PlanetsByGuid[planet.Guid]));
 
         }
 
         public static void Mine(Player player, Planet planet, int numMines)
         {
             String text = $"You have built {numMines} mine(s) on {planet.Name}.";
-            player.Messages.Add(new Message(MessageType.BuiltMine, text, planet));
+            player.Messages.Add(new Message(MessageType.BuiltMine, text, player.PlanetsByGuid[planet.Guid]));
 
         }
 
         public static void Factory(Player player, Planet planet, int numFactories)
         {
             String text = $"You have built {numFactories} factory(s) on {planet.Name}.";
-            player.Messages.Add(new Message(MessageType.BuiltFactory, text, planet));
+            player.Messages.Add(new Message(MessageType.BuiltFactory, text, player.PlanetsByGuid[planet.Guid]));
 
         }
 
         public static void Defense(Player player, Planet planet, int numDefenses)
         {
             String text = $"You have built {numDefenses} defense(s) on {planet.Name}.";
-            player.Messages.Add(new Message(MessageType.BuiltDefense, text, planet));
+            player.Messages.Add(new Message(MessageType.BuiltDefense, text, player.PlanetsByGuid[planet.Guid]));
 
         }
 
@@ -96,7 +96,7 @@ namespace CraigStars
         public static void planetColonized(Player player, Planet planet)
         {
             String text = $"Your colonists are now in control of {planet.Name}";
-            player.Messages.Add(new Message(MessageType.PlanetColonized, text, planet));
+            player.Messages.Add(new Message(MessageType.PlanetColonized, text, player.PlanetsByGuid[planet.Guid]));
         }
 
         public static void FleetOutOfFuel(Player player, Fleet fleet)
@@ -108,7 +108,7 @@ namespace CraigStars
         public static void fleetScrapped(Player player, Fleet fleet, int num_minerals, Planet planet)
         {
             String text = $"{fleet.Name} has been dismantled for {num_minerals}kT of minerals which have been deposited on {planet.Name}.";
-            player.Messages.Add(new Message(MessageType.FleetScrapped, text, planet));
+            player.Messages.Add(new Message(MessageType.FleetScrapped, text, player.PlanetsByGuid[planet.Guid]));
         }
 
         public static void FleetBuilt(Player player, ShipDesign design, Fleet fleet, int numBuilt)
@@ -146,7 +146,7 @@ namespace CraigStars
                 }
             }
 
-            player.Messages.Add(new Message(MessageType.PlanetDiscovery, text, planet));
+            player.Messages.Add(new Message(MessageType.PlanetDiscovery, text, player.PlanetsByGuid[planet.Guid]));
         }
 
         public static void FleetCompletedAssignedOrders(Player player, Fleet fleet)

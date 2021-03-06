@@ -47,7 +47,7 @@ namespace CraigStars
         FleetSprite activeFleet;
 
         public PlanetSprite ActivePlanet { get; set; }
-        public Player Me { get; set; }
+        Player Me { get => PlayersManager.Me; }
 
         public override void _Ready()
         {
@@ -226,9 +226,6 @@ namespace CraigStars
 
         public void InitMapObjects()
         {
-            // setup the current player
-            Me = PlayersManager.Instance.Me;
-
             Planets.AddRange(Me.Planets.Select(planet =>
             {
                 var planetSprite = planetScene.Instance() as PlanetSprite;
@@ -432,7 +429,6 @@ namespace CraigStars
         void AddFleetsToViewport()
         {
             log.Debug("Resetting viewport Fleets");
-            var player = PlayersManager.Instance.Me;
 
             // clear out any existing fleets
             Fleets.ForEach(f => { RemoveChild(f); f.QueueFree(); });
@@ -444,7 +440,7 @@ namespace CraigStars
             ActivePlanet = null;
 
             // add in new fleets
-            Fleets.AddRange(player.Fleets.Select(fleet =>
+            Fleets.AddRange(Me.Fleets.Select(fleet =>
             {
                 var fleetSprite = fleetScene.Instance() as FleetSprite;
                 fleetSprite.Fleet = fleet;
@@ -481,7 +477,7 @@ namespace CraigStars
         /// </summary>
         void FocusHomeworld()
         {
-            var homeworld = Planets.Where(p => p.Planet.Homeworld && p.Planet.Player == PlayersManager.Instance.Me).FirstOrDefault();
+            var homeworld = Planets.Where(p => p.Planet.Homeworld && p.Planet.Player == Me).FirstOrDefault();
             if (homeworld != null)
             {
                 selectedWaypoint = null;

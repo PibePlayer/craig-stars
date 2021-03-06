@@ -83,7 +83,7 @@ namespace CraigStars
 
         public override void _Draw()
         {
-            switch (PlayersManager.Instance.Me.PlanetViewState)
+            switch (PlayersManager.Me.PlanetViewState)
             {
                 // just use sprites
                 case PlanetViewState.None:
@@ -149,7 +149,7 @@ namespace CraigStars
 
             if (Planet.Owner != null)
             {
-                if (Planet.Owner == PlayersManager.Instance.Me)
+                if (Planet.Owner == PlayersManager.Me)
                 {
                     ownerAllyState = ScannerOwnerAlly.Owned;
                 }
@@ -165,7 +165,7 @@ namespace CraigStars
             // do any custom drawing
             Update();
 
-            var planetViewState = PlayersManager.Instance.Me.PlanetViewState;
+            var planetViewState = PlayersManager.Me.PlanetViewState;
 
             if (planetViewState == PlanetViewState.None)
             {

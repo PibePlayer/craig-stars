@@ -15,7 +15,7 @@ _global_script_class_icons={
 [application]
 
 config/name="craig-stars"
-run/main_scene="res://src/Client/GameView.tscn"
+run/main_scene="res://src/Client/MainMenu.tscn"
 config/icon="res://icon.png"
 
 [autoload]

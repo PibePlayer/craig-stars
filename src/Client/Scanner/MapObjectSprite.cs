@@ -12,7 +12,7 @@ namespace CraigStars
         public MapObject MapObject { get; set; }
         public string ObjectName { get => MapObject != null ? MapObject.Name : "Unknown"; }
 
-        public Player Me { get; set; }
+        protected Player Me { get => PlayersManager.Me; }
 
         public ScannerState State
         {
@@ -31,13 +31,12 @@ namespace CraigStars
         {
             get
             {
-                return MapObject?.Player != null && MapObject.Player == PlayersManager.Instance?.Me;
+                return MapObject?.Player != null && MapObject.Player == PlayersManager.Me;
             }
         }
 
         public override void _Ready()
         {
-            Me = PlayersManager.Instance?.Me;
             // wire up signals
             Signals.MapObjectActivatedEvent += OnMapObjectActivated;
             Signals.TurnPassedEvent += OnTurnPassed;

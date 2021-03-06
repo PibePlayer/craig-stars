@@ -41,17 +41,24 @@ namespace CraigStars
         TurnSubmitter turnSubmitter;
         GameSaver gameSaver;
 
-        public void Init(List<Player> players, Rules rules, ITechStore techStore)
+        public Game()
         {
-            TechStore = techStore;
             turnGenerator = new TurnGenerator(this);
             turnSubmitter = new TurnSubmitter(this);
             gameSaver = new GameSaver();
+            EventManager.FleetBuiltEvent += OnFleetBuilt;
+        }
 
+        ~Game()
+        {
+            EventManager.FleetBuiltEvent -= OnFleetBuilt;
+        }
+
+        public void Init(List<Player> players, Rules rules, ITechStore techStore)
+        {
+            TechStore = techStore;
             Players.AddRange(players);
             Rules = rules;
-
-            EventManager.FleetBuiltEvent += OnFleetBuilt;
         }
 
         /// <summary>
@@ -63,15 +70,6 @@ namespace CraigStars
             UniverseGenerator generator = new UniverseGenerator(this);
             generator.Generate();
             AfterTurnGeneration();
-
-        }
-
-        /// <summary>
-        /// Tell the server to Unsubscribe from events so it won't trigger any unecessary calls
-        /// </summary>
-        public void Shutdown()
-        {
-            EventManager.FleetBuiltEvent -= OnFleetBuilt;
         }
 
         public void SubmitTurn(Player player)
@@ -131,7 +129,7 @@ namespace CraigStars
         /// </summary>
         void UpdateDictionaries()
         {
-            // build each players dictionary of planets by id
+            // build game dictionaries by guid
             PlanetsByGuid = Planets.ToLookup(p => p.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
             FleetsByGuid = Fleets.ToLookup(p => p.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
 
@@ -139,6 +137,7 @@ namespace CraigStars
             Planets.ForEach(p => CargoHoldersByGuid[p.Guid] = p);
             Fleets.ForEach(f => CargoHoldersByGuid[f.Guid] = f);
             MineralPackets.ForEach(mp => CargoHoldersByGuid[mp.Guid] = mp);
+
         }
 
         /// <summary>

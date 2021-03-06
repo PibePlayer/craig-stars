@@ -23,7 +23,7 @@ namespace CraigStars
         Tree tree;
         TreeItem root;
 
-        Player me;
+        Player Me { get => PlayersManager.Me; }
 
         List<ShipDesign> designs = new List<ShipDesign>();
         Dictionary<ShipDesign, TreeItem> techTreeItemByTech = new Dictionary<ShipDesign, TreeItem>();
@@ -52,7 +52,6 @@ namespace CraigStars
         {
             if (Visible)
             {
-                me = PlayersManager.Instance.Me;
                 UpdateTreeItems();
                 SelectFirstItem();
             }
@@ -69,17 +68,17 @@ namespace CraigStars
 
         public void UpdateTreeItems()
         {
-            List<ShipDesign> designsToShow = me.Designs;
+            List<ShipDesign> designsToShow = Me.Designs;
             switch (ShowDesigns)
             {
                 case DesignsToShow.Ships:
-                    designsToShow = me.Designs.Where(design => !design.Hull.Starbase).ToList();
+                    designsToShow = Me.Designs.Where(design => !design.Hull.Starbase).ToList();
                     break;
                 case DesignsToShow.Starbases:
-                    designsToShow = me.Designs.Where(design => design.Hull.Starbase).ToList();
+                    designsToShow = Me.Designs.Where(design => design.Hull.Starbase).ToList();
                     break;
                 default:
-                    designsToShow = me.Designs;
+                    designsToShow = Me.Designs;
                     break;
             }
 

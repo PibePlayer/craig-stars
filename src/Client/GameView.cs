@@ -63,9 +63,18 @@ namespace CraigStars
             // init the server and send a notice to all players that it's time to start
             if (this.IsServerOrSinglePlayer())
             {
-                Game.Init(PlayersManager.Instance.Players.Cast<Player>().ToList(), RulesManager.Rules, TechStore.Instance);
-                Game.GenerateUniverse();
-                Signals.PublishPostStartGameEvent(Game.Year);
+                if (GameSettings.Instance.ShouldContinueGame)
+                {
+                    GameSaver saver = new GameSaver();
+                    Game = saver.LoadGame(GameSettings.Instance.ContinueGame, GameSettings.Instance.ContinueYear, TechStore.Instance);
+                    PlayersManager.Instance.InitPlayersFromGame(Game.Players);
+                }
+                else
+                {
+                    Game.Init(PlayersManager.Instance.Players.Cast<Player>().ToList(), RulesManager.Rules, TechStore.Instance);
+                    Game.GenerateUniverse();
+                }
+                Signals.PublishPostStartGameEvent(Game.Name, Game.Year);
                 if (this.IsServer())
                 {
                     // TODO: send each player their turn data
@@ -76,14 +85,14 @@ namespace CraigStars
             else
             {
                 // if we aren't the server, we come here with our player data already loaded
-                OnPostStartGameEvent(PlayersManager.Instance.Me.Year);
+                // TODO: we need public game data
+                OnPostStartGameEvent(Game.Name, PlayersManager.Me.Year);
             }
 
         }
 
         public override void _ExitTree()
         {
-            Game.Shutdown();
             Signals.PostStartGameEvent -= OnPostStartGameEvent;
             Signals.ChangeProductionQueuePressedEvent -= OnChangeProductionQueue;
             Signals.CargoTransferRequestedEvent -= OnCargoTransferRequested;
@@ -118,7 +127,7 @@ namespace CraigStars
         /// When the game is ready to go, init the scanner
         /// </summary>
         /// <param name="year"></param>
-        void OnPostStartGameEvent(int year)
+        void OnPostStartGameEvent(String name, int year)
         {
             // add the universe to the viewport
             scanner.InitMapObjects();

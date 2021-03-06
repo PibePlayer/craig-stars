@@ -19,7 +19,7 @@ namespace CraigStars.Tests
             var f = new FleetSprite();
             f.Fleet = new Fleet()
             {
-                Player = PlayersManager.Instance.Me
+                Player = PlayersManager.Me
             };
             Assert.AreEqual(0, f.GetPeers().Count);
 
@@ -28,14 +28,14 @@ namespace CraigStars.Tests
             p.OrbitingFleets.Add(f);
             p.Planet = new Planet()
             {
-                Player = PlayersManager.Instance.Me
+                Player = PlayersManager.Me
             };
             Assert.AreEqual(1, f.GetPeers().Count);
 
             var f2 = new FleetSprite();
             f2.Fleet = new Fleet()
             {
-                Player = PlayersManager.Instance.Me
+                Player = PlayersManager.Me
             };
             p.OrbitingFleets.Add(f2);
             Assert.AreEqual(2, f.GetPeers().Count);
@@ -44,7 +44,7 @@ namespace CraigStars.Tests
             var f3 = new FleetSprite();
             f2.Fleet = new Fleet()
             {
-                Player = PlayersManager.Instance.Me
+                Player = PlayersManager.Me
             };
             p.OrbitingFleets.Insert(0, f3);
             Assert.AreEqual(2, f.GetPeers().Count);

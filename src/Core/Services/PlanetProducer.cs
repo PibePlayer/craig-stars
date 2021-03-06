@@ -179,8 +179,8 @@ namespace CraigStars
             fleet.Fuel = fleet.Aggregate.FuelCapacity;
             fleet.Waypoints.Add(Waypoint.TargetWaypoint(planet));
             planet.OrbitingFleets.Add(fleet);
-            Message.FleetBuilt(planet.Player, item.Design, fleet, numBuilt);
 
+            Message.FleetBuilt(planet.Player, item.Design, fleet, numBuilt);
             EventManager.PublishFleetBuiltEvent(fleet);
 
             // }

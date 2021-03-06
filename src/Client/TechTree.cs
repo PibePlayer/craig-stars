@@ -102,7 +102,7 @@ namespace CraigStars
 
             if (OnlyAvailable)
             {
-                techsToShow = techsToShow.Where(tech => PlayersManager.Instance.Me.HasTech(tech)).ToList();
+                techsToShow = techsToShow.Where(tech => PlayersManager.Me.HasTech(tech)).ToList();
             }
 
             ClearTree();

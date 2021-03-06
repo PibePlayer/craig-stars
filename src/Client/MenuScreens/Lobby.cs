@@ -103,9 +103,9 @@ namespace CraigStars
         /// Clients receive this event so they know to switch to the Game scene
         /// </summary>
         /// <param name="year"></param>
-        void OnPostStartGame(int year)
+        void OnPostStartGame(string name, int year)
         {
-            GetTree().ChangeScene("res://src/Client/Game.tscn");
+            GetTree().ChangeScene("res://src/Client/GameView.tscn");
         }
 
         void OnPlayerMessage(PlayerMessage message)
@@ -136,7 +136,7 @@ namespace CraigStars
 
         void OnReadyButtonPressed()
         {
-            var me = PlayersManager.Instance.Me;
+            var me = PlayersManager.Me;
             me.Ready = !me.Ready;
 
             Signals.PublishPlayerUpdatedEvent(me, notifyPeers: true);
@@ -145,7 +145,7 @@ namespace CraigStars
         void OnStartGameButtonPressed()
         {
             GD.Print("Server: All players ready, starting the game!");
-            GetTree().ChangeScene("res://src/Client/Game.tscn");
+            GetTree().ChangeScene("res://src/Client/GameView.tscn");
         }
 
         #endregion

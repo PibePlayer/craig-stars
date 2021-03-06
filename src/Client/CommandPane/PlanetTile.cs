@@ -6,11 +6,10 @@ namespace CraigStars
     public class PlanetTile : MarginContainer
     {
         public PlanetSprite ActivePlanet { get; set; }
-        public Player Me { get; set; }
+        public Player Me { get => PlayersManager.Me; }
 
         public override void _Ready()
         {
-            Me = PlayersManager.Instance.Me;
             Signals.MapObjectActivatedEvent += OnMapObjectActivated;
             Signals.TurnPassedEvent += OnTurnPassed;
         }

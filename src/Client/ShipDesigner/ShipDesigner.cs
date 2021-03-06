@@ -64,7 +64,7 @@ namespace CraigStars
         void ResetDesignerShipDesignFromSource()
         {
             var design = SourceShipDesign.Clone();
-            design.ComputeAggregate(PlayersManager.Instance.Me);
+            design.ComputeAggregate(PlayersManager.Me);
 
             designerHullSummary.ShipDesign = design;
 
@@ -101,18 +101,18 @@ namespace CraigStars
         {
             // TODO, support updates
             designerHullSummary.ShipDesign.Name = designNameLineEdit.Text;
-            designerHullSummary.ShipDesign.ComputeAggregate(PlayersManager.Instance.Me);
+            designerHullSummary.ShipDesign.ComputeAggregate(PlayersManager.Me);
             if (EditingExisting)
             {
                 // remove the old design and add the new one
-                var designs = PlayersManager.Instance.Me.Designs;
+                var designs = PlayersManager.Me.Designs;
                 int index = designs.FindIndex(sd => sd == SourceShipDesign);
                 designs.RemoveAt(index);
                 designs.Insert(index, designerHullSummary.ShipDesign);
             }
             else
             {
-                PlayersManager.Instance.Me.Designs.Add(designerHullSummary.ShipDesign);
+                PlayersManager.Me.Designs.Add(designerHullSummary.ShipDesign);
             }
             saveDesignButton.Text = "Saved";
             EditingExisting = true;
@@ -139,7 +139,7 @@ namespace CraigStars
         {
             var name = designNameLineEdit.Text;
             // Check if we have a ship design by this name already. If we 
-            var nameAlreadyExists = PlayersManager.Instance.Me.Designs
+            var nameAlreadyExists = PlayersManager.Me.Designs
                 // If we are not editing existing, check all ship designs for name conflicts
                 // if we ARE editing an existing design, remove it from the ships to check for name conflicts
                 .Where(sd => !EditingExisting || sd != SourceShipDesign)

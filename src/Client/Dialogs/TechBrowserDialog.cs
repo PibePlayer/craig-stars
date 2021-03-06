@@ -42,7 +42,7 @@ namespace CraigStars
         Container statsContainer;
         Container descriptionContainer;
 
-        Player me;
+        Player Me { get => PlayersManager.Me; }
 
         public override void _Ready()
         {
@@ -79,8 +79,6 @@ namespace CraigStars
             // these containers hold information about our tech
             statsContainer = FindNode("StatsContainer") as Container;
             descriptionContainer = FindNode("DescriptionContainer") as Container;
-
-            me = PlayersManager.Instance.Me;
 
             okButton.Connect("pressed", this, nameof(OnOk));
 
@@ -321,7 +319,7 @@ namespace CraigStars
         void UpdateRequirements(Tech tech)
         {
             // if this tech is never learnable by us, make it invisible
-            unavailableLabel.Visible = !me.CanLearnTech(tech);
+            unavailableLabel.Visible = !Me.CanLearnTech(tech);
 
             var reqs = tech.Requirements;
             // We only show things > 0
@@ -356,7 +354,7 @@ namespace CraigStars
             if (reqs.PRTRequired != PRT.None)
             {
                 labelTraitRequirement.Text += $"This part requires the Primary Racial trait '{GetPRTFullName(reqs.PRTRequired)}'  ";
-                if (me.Race.PRT != reqs.PRTRequired)
+                if (Me.Race.PRT != reqs.PRTRequired)
                 {
                     labelTraitRequirement.Modulate = Colors.Red;
                 }
@@ -364,7 +362,7 @@ namespace CraigStars
             if (reqs.PRTDenied != PRT.None)
             {
                 labelTraitRequirement.Text += $"This part will not be available if the Primary Racial trait '{GetPRTFullName(reqs.PRTDenied)}'";
-                if (me.Race.PRT == reqs.PRTDenied)
+                if (Me.Race.PRT == reqs.PRTDenied)
                 {
                     labelTraitRequirement.Modulate = Colors.Red;
                 }
@@ -374,7 +372,7 @@ namespace CraigStars
             {
                 labelTraitRequirement.Text += $"This part requires the Lesser Racial trait '{GetLRTFullName(lrt)}'";
 
-                if (!me.Race.HasLRT(lrt))
+                if (!Me.Race.HasLRT(lrt))
                 {
                     labelTraitRequirement.Modulate = Colors.Red;
                 }
@@ -384,7 +382,7 @@ namespace CraigStars
             {
                 labelTraitRequirement.Text += $"This part will be unavailable if you have the Lesser Racial trait '{GetLRTFullName(lrt)}'";
 
-                if (me.Race.HasLRT(lrt))
+                if (Me.Race.HasLRT(lrt))
                 {
                     labelTraitRequirement.Modulate = Colors.Red;
                 }

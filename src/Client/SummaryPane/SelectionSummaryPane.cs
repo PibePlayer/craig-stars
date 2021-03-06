@@ -43,7 +43,7 @@ namespace CraigStars
             valueLabel = FindNode("Value") as Label;
             reportAgeLabel = FindNode("ReportAge") as Label;
 
-            race = PlayersManager.Instance.Me.Race;
+            race = PlayersManager.Me.Race;
 
             gravHabBar = FindNode("GravHabBar") as HabBar;
             tempHabBar = FindNode("TempHabBar") as HabBar;

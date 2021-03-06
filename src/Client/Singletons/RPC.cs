@@ -58,7 +58,7 @@ namespace CraigStars.Singletons
 
         public void SendMessage(string message)
         {
-            var playerMessage = new PlayerMessage(PlayersManager.Instance.Me.Num, message);
+            var playerMessage = new PlayerMessage(PlayersManager.Me.Num, message);
             log.Debug($"{LogPrefix} Sending Message {playerMessage}");
             Rpc(nameof(Message), Serializers.Serialize(playerMessage));
         }
@@ -172,22 +172,22 @@ namespace CraigStars.Singletons
         /// </summary>
         /// <param name="year"></param>
         /// <param name="networkId"></param>
-        public void SendPostStartGame(int year, int networkId = 0)
+        public void SendPostStartGame(String name, int year, int networkId = 0)
         {
             if (networkId == 0)
             {
-                Rpc(nameof(PostStartGame), year);
+                Rpc(nameof(PostStartGame), name, year);
             }
             else
             {
-                RpcId(networkId, nameof(PostStartGame), year);
+                RpcId(networkId, nameof(PostStartGame), name, year);
             }
         }
 
         [RemoteSync]
-        public void PostStartGame(int year)
+        public void PostStartGame(String name, int year)
         {
-            Signals.PublishPostStartGameEvent(year);
+            Signals.PublishPostStartGameEvent(name, year);
         }
 
         #region Game Events

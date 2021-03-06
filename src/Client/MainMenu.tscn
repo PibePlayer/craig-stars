@@ -65,6 +65,33 @@ margin_bottom = 212.0
 size_flags_horizontal = 3
 text = "New Game"
 
+[node name="ContinueGameButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MenuButtons"]
+visible = false
+margin_top = 204.0
+margin_right = 400.0
+margin_bottom = 224.0
+size_flags_horizontal = 3
+text = "Continue Game"
+
+[node name="ContinueGameInfo" type="HBoxContainer" parent="VBoxContainer/CenterContainer/Panel/MenuButtons"]
+visible = false
+margin_top = 219.0
+margin_right = 400.0
+margin_bottom = 233.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ContinueGameNameLabel" type="Label" parent="VBoxContainer/CenterContainer/Panel/MenuButtons/ContinueGameInfo"]
+margin_bottom = 14.0
+
+[node name="ContinueGameYearLabel" type="Label" parent="VBoxContainer/CenterContainer/Panel/MenuButtons/ContinueGameInfo"]
+margin_left = 4.0
+margin_right = 400.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+align = 2
+
 [node name="HostGameButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MenuButtons"]
 margin_top = 216.0
 margin_right = 400.0

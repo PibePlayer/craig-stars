@@ -84,6 +84,8 @@ namespace CraigStars
                         playerSave.Open(GetSaveGamePlayerPath(name, year, player.Num), File.ModeFlags.Read);
                         var json = playerSave.GetAsText();
                         Serializers.PopulatePlayer(json, player, settings);
+                        player.SetupMapObjectMappings();
+                        player.ComputeAggregates();
                     }
                 }
             }

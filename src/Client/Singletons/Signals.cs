@@ -18,6 +18,7 @@ namespace CraigStars.Singletons
         static ILog log = LogManager.GetLogger(typeof(Signals));
 
         public delegate void YearUpdate(int year);
+        public delegate void GameStart(String name, int year);
         public static event YearUpdate TurnPassedEvent;
         public static event Action TurnGeneratingEvent;
         public static void PublishTurnGeneratingEvent() => TurnGeneratingEvent?.Invoke();
@@ -59,7 +60,9 @@ namespace CraigStars.Singletons
         public delegate void PreStartGame(List<PublicPlayerInfo> players);
         public static event PreStartGame PreStartGameEvent;
 
-        public static event YearUpdate PostStartGameEvent;
+        public static event GameStart PostStartGameEvent;
+        public static void PublishPostStartGameEvent(string name, int year) => PostStartGameEvent?.Invoke(name, year);
+
 
         #endregion
 
@@ -120,11 +123,6 @@ namespace CraigStars.Singletons
         public static void PublishPlayerMessageEvent(PlayerMessage message)
         {
             PlayerMessageEvent?.Invoke(message);
-        }
-
-        public static void PublishPostStartGameEvent(int year)
-        {
-            PostStartGameEvent?.Invoke(year);
         }
 
         public static void PublishTurnPassedEvent(int year)

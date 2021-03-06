@@ -45,23 +45,23 @@ namespace CraigStars.Singletons
         public Dictionary<int, Player> PlayersByNetworkId { get; } = new Dictionary<int, Player>();
 
         private Player me;
-        public Player Me
+        public static Player Me
         {
             get
             {
-                if (me == null)
+                if (Instance.me == null)
                 {
-                    if (this.IsMultiplayer())
+                    if (Instance.IsMultiplayer())
                     {
-                        me = Players.Find(p => p.NetworkId == GetTree().GetNetworkUniqueId()) as Player;
+                        Instance.me = Instance.Players.Find(p => p.NetworkId == Instance.GetTree().GetNetworkUniqueId()) as Player;
                     }
                     else
                     {
                         // no network, we are player one
-                        me = Players[0] as Player;
+                        Instance.me = Instance.Players[0] as Player;
                     }
                 }
-                return me;
+                return Instance.me;
             }
         }
 
@@ -101,6 +101,7 @@ namespace CraigStars.Singletons
 
         public void Reset()
         {
+            me = null;
             Players.Clear();
             PlayersByNetworkId.Clear();
             Messages.Clear();
@@ -111,6 +112,7 @@ namespace CraigStars.Singletons
         /// </summary>
         public void SetupPlayers()
         {
+            me = null;
             var rules = RulesManager.Rules;
             for (var num = 0; num < NumPlayers; num++)
             {
@@ -129,6 +131,19 @@ namespace CraigStars.Singletons
 
                 Signals.PublishPlayerUpdatedEvent(Players[num]);
             }
+        }
+
+        /// <summary>
+        /// After loading a game, setup the PlayersManager with the players from the game
+        /// </summary>
+        /// <param name="players"></param>
+        public void InitPlayersFromGame(List<Player> players)
+        {
+            me = null;
+            Players.Clear();
+            PlayersByNetworkId.Clear();
+            Messages.Clear();
+            Players.AddRange(players);
         }
 
         #region Event Listeners
@@ -216,7 +231,7 @@ namespace CraigStars.Singletons
                     {
                         Rules = RulesManager.Rules,
                         TechStore = TechStore.Instance
-                        
+
                     };
                     fullPlayer.Update(player);
                     Players.Add(fullPlayer);

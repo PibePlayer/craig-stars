@@ -32,6 +32,46 @@ namespace CraigStars
             this.fleetName = fleetName;
         }
 
+        public override bool Equals(object obj)
+        {
+            if (obj is ProductionQueueItem item)
+            {
+                return Equals(item);
+            }
+            return false;
+        }
+
+        public bool Equals(ProductionQueueItem other)
+        {
+            return type == other.type && quantity == other.quantity && Design == other.Design && fleetName == other.fleetName;
+        }
+
+        public static bool operator ==(ProductionQueueItem a, ProductionQueueItem b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(ProductionQueueItem a, ProductionQueueItem b)
+        {
+            return !a.Equals(b);
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = type.GetHashCode() ^ quantity.GetHashCode();
+            if (fleetName != null)
+            {
+                hashCode ^= fleetName.GetHashCode();
+
+            }
+            if (Design != null)
+            {
+                hashCode ^= Design.GetHashCode();
+            }
+            return hashCode;
+        }
+
+
         public String ShortName
         {
             get

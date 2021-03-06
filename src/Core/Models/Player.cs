@@ -1,3 +1,4 @@
+using log4net;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,8 @@ namespace CraigStars
 {
     public class Player : PublicPlayerInfo
     {
+        static ILog log = LogManager.GetLogger(typeof(Player));
+
         /// <summary>
         /// Each player gets a copy of rules from the server. These rules are used
         /// for computing various values both for the UI and during turn generation
@@ -19,7 +22,7 @@ namespace CraigStars
         /// </summary>
         [JsonIgnore]
         public ITechStore TechStore { get; set; } = StaticTechStore.Instance;
-        
+
         public Race Race { get; set; } = new Race();
         public PlayerStats Stats { get; set; } = new PlayerStats();
 
@@ -111,8 +114,8 @@ namespace CraigStars
 
         public void ComputeAggregates()
         {
-            Fleets.ForEach(f => f.ComputeAggregate());
             Designs.ForEach(d => d.ComputeAggregate(this));
+            Fleets.ForEach(f => f.ComputeAggregate());
             Planets.ForEach(p => p.Starbase?.ComputeAggregate());
         }
 
@@ -491,6 +494,7 @@ namespace CraigStars
             }
 
             Fleets.Add(fleetReport);
+            FleetsByGuid[fleet.Guid] = fleetReport;
         }
 
         /// <summary>
@@ -505,6 +509,40 @@ namespace CraigStars
             planetReport.Player = this;
             planetReport.UpdatePlayerPlanet(planet);
         }
+
+        /// <summary>
+        /// Go through each message and update the target to a value from our reports
+        /// </summary>
+        public void UpdateMessageTargets()
+        {
+            foreach (var message in Messages)
+            {
+                if (message.Target != null)
+                {
+                    if (message.Target is Fleet)
+                    {
+                        if (FleetsByGuid.TryGetValue(message.Target.Guid, out var fleet))
+                        {
+                            message.Target = fleet;
+                        }
+                        else
+                        {
+                            log.Error($"Found a Message Target with a fleet the player hasn't discovered: {message.Target.Name}");
+                        }
+                    }
+                    else if (message.Target is Planet)
+                    {
+                        message.Target = PlanetsByGuid[message.Target.Guid];
+                    }
+                    else
+                    {
+                        log.Error("Found a Message Target with an unknown type, setting to null.");
+                        message.Target = null;
+                    }
+                }
+            }
+        }
+
 
     }
 }

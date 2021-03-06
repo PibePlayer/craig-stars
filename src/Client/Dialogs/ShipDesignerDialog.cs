@@ -9,7 +9,7 @@ namespace CraigStars
     {
 
         Button okButton;
-        Player me;
+        Player Me { get => PlayersManager.Me; }
 
         CSConfirmDialog confirmationDialog;
 
@@ -36,7 +36,6 @@ namespace CraigStars
 
         public override void _Ready()
         {
-            me = PlayersManager.Instance.Me;
             okButton = FindNode("OKButton") as Button;
             tabContainer = FindNode("TabContainer") as TabContainer;
             confirmationDialog = FindNode("ConfirmationDialog") as CSConfirmDialog;
@@ -117,7 +116,7 @@ namespace CraigStars
         /// </summary>
         void OnAboutToShow()
         {
-            var design = new ShipDesign { Hull = Techs.Scout, Player = me };
+            var design = new ShipDesign { Hull = Techs.Scout, Player = Me };
             shipDesigner.Hull = Techs.Scout;
         }
 
@@ -159,10 +158,10 @@ namespace CraigStars
 
         void OnDeleteDesignButtonPressed()
         {
-            var designIndex = me.Designs.FindIndex(d => d == shipHullSummary.ShipDesign);
+            var designIndex = Me.Designs.FindIndex(d => d == shipHullSummary.ShipDesign);
             if (designIndex != -1)
             {
-                var design = me.Designs[designIndex];
+                var design = Me.Designs[designIndex];
 
                 var message = $"Are you sure you want to delete the design {shipHullSummary.ShipDesign.Name}?";
                 if (design.Aggregate.InUse)
@@ -174,7 +173,7 @@ namespace CraigStars
                     message,
                     () =>
                     {
-                        me.DeleteDesign(design);
+                        Me.DeleteDesign(design);
                         shipDesignTree.UpdateTreeItems();
                     }
                 );

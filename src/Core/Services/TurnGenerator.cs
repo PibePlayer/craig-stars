@@ -92,6 +92,13 @@ namespace CraigStars
             {
                 p.SubmittedTurn = false;
                 p.Messages.Clear();
+                p.ComputeAggregates();
+            });
+
+            Game.Fleets.ForEach(f =>
+            {
+                f.Tokens.ForEach(t => t.Design.ComputeAggregate(f.Player));
+                f.ComputeAggregate();
             });
 
             ownedPlanets = Game.Planets.Where(p => p.Player != null).ToList();
@@ -369,6 +376,8 @@ namespace CraigStars
                 p.Year = Game.Year;
                 p.PlanetaryScanner = p.GetBestPlanetaryScanner();
                 p.Fleets.ForEach(f => f.ComputeAggregate());
+                p.SetupMapObjectMappings();
+                p.UpdateMessageTargets();
             });
         }
 
@@ -379,7 +388,8 @@ namespace CraigStars
         {
             List<TurnProcessor> processors = new List<TurnProcessor>() {
                 new ScoutTurnProcessor(),
-                new ColonyTurnProcessor()
+                new ColonyTurnProcessor(),
+                new PlanetProductionTurnProcessor()
             };
             Game.Players.ForEach(player =>
             {

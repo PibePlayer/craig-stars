@@ -86,7 +86,7 @@ namespace CraigStars
             availableItemsTreeRoot = availableItemsTree.CreateItem();
             queuedItemsTreeRoot = queuedItemsTree.CreateItem();
 
-            Me = PlayersManager.Instance.Me;
+            Me = PlayersManager.Me;
 
             // add each design
             Me.Designs.ForEach(design =>

@@ -7,7 +7,7 @@ namespace CraigStars
 
     public class ResearchDialog : WindowDialog
     {
-        Player me;
+        Player Me { get => PlayersManager.Me; }
 
         CheckBox energyCheckBox;
         CheckBox weaponsCheckBox;
@@ -31,7 +31,6 @@ namespace CraigStars
 
         public override void _Ready()
         {
-            me = PlayersManager.Instance.Me;
             energyCheckBox = FindNode("EnergyCheckBox") as CheckBox;
             weaponsCheckBox = FindNode("WeaponsCheckBox") as CheckBox;
             propulsionCheckBox = FindNode("PropulsionCheckBox") as CheckBox;
@@ -89,39 +88,39 @@ namespace CraigStars
         {
             if (energyCheckBox.Pressed)
             {
-                me.Researching = TechField.Energy;
+                Me.Researching = TechField.Energy;
             }
             else if (weaponsCheckBox.Pressed)
             {
-                me.Researching = TechField.Weapons;
+                Me.Researching = TechField.Weapons;
             }
             else if (propulsionCheckBox.Pressed)
             {
-                me.Researching = TechField.Propulsion;
+                Me.Researching = TechField.Propulsion;
             }
             else if (constructionCheckBox.Pressed)
             {
-                me.Researching = TechField.Construction;
+                Me.Researching = TechField.Construction;
             }
             else if (electronicsCheckBox.Pressed)
             {
-                me.Researching = TechField.Electronics;
+                Me.Researching = TechField.Electronics;
             }
             else if (biotechnologyCheckBox.Pressed)
             {
-                me.Researching = TechField.Biotechnology;
+                Me.Researching = TechField.Biotechnology;
             }
 
-            me.ResearchAmount = (int)resourcesBudgetedAmount.Value;
-            me.NextResearchField = (NextResearchField)nextFieldToResearchMenuButton.Selected;
+            Me.ResearchAmount = (int)resourcesBudgetedAmount.Value;
+            Me.NextResearchField = (NextResearchField)nextFieldToResearchMenuButton.Selected;
 
             Hide();
         }
 
         void UpdateControls()
         {
-            nextFieldToResearchMenuButton.Select((int)me.NextResearchField);
-            switch (me.Researching)
+            nextFieldToResearchMenuButton.Select((int)Me.NextResearchField);
+            switch (Me.Researching)
             {
                 case TechField.Energy:
                     energyCheckBox.Pressed = true;
@@ -143,14 +142,14 @@ namespace CraigStars
                     break;
             }
 
-            energyLabel.Text = $"{me.TechLevels.Energy}";
-            weaponsLabel.Text = $"{me.TechLevels.Weapons}";
-            propulsionLabel.Text = $"{me.TechLevels.Propulsion}";
-            constructionLabel.Text = $"{me.TechLevels.Construction}";
-            electronicsLabel.Text = $"{me.TechLevels.Electronics}";
-            biotechnologyLabel.Text = $"{me.TechLevels.Biotechnology}";
+            energyLabel.Text = $"{Me.TechLevels.Energy}";
+            weaponsLabel.Text = $"{Me.TechLevels.Weapons}";
+            propulsionLabel.Text = $"{Me.TechLevels.Propulsion}";
+            constructionLabel.Text = $"{Me.TechLevels.Construction}";
+            electronicsLabel.Text = $"{Me.TechLevels.Electronics}";
+            biotechnologyLabel.Text = $"{Me.TechLevels.Biotechnology}";
 
-            resourcesBudgetedAmount.Value = me.ResearchAmount;
+            resourcesBudgetedAmount.Value = Me.ResearchAmount;
 
         }
     }

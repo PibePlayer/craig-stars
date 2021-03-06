@@ -13,6 +13,11 @@ namespace CraigStars
         LineEdit hostPortEdit;
         LineEdit joinPortEdit;
 
+        Control continueGameInfo;
+        Button continueGameButton;
+        Label continueGameNameLabel;
+        Label continueGameYearLabel;
+
         private bool joining = false;
 
         public override void _Ready()
@@ -23,9 +28,23 @@ namespace CraigStars
             joinHostEdit = (LineEdit)joinWindow.FindNode("HostEdit");
             joinPortEdit = (LineEdit)joinWindow.FindNode("PortEdit");
 
+            continueGameInfo = (Control)FindNode("ContinueGameInfo");
+            continueGameButton = (Button)FindNode("ContinueGameButton");
+            continueGameNameLabel = (Label)FindNode("ContinueGameNameLabel");
+            continueGameYearLabel = (Label)FindNode("ContinueGameYearLabel");
+
             hostPortEdit.Text = GameSettings.Instance.ServerPort.ToString();
             joinHostEdit.Text = GameSettings.Instance.ClientHost;
             joinPortEdit.Text = GameSettings.Instance.ClientPort.ToString();
+
+            if (GameSettings.Instance.ContinueGame != null)
+            {
+                continueGameButton.Visible = continueGameInfo.Visible = true;
+                continueGameNameLabel.Text = GameSettings.Instance.ContinueGame;
+                continueGameYearLabel.Text = $"{GameSettings.Instance.ContinueYear}";
+
+                continueGameButton.Connect("pressed", this, nameof(OnContinueGameButtonPressed));
+            }
 
             FindNode("ExitButton").Connect("pressed", this, nameof(OnExitButtonPressed));
             FindNode("SettingsButton").Connect("pressed", this, nameof(OnSettingsButtonPressed));
@@ -78,12 +97,19 @@ namespace CraigStars
         {
             PlayersManager.Instance.Reset();
             PlayersManager.Instance.SetupPlayers();
-            GetTree().ChangeScene("res://src/Client/Game.tscn");
+            GetTree().ChangeScene("res://src/Client/GameView.tscn");
+        }
+
+        void OnContinueGameButtonPressed()
+        {
+            // like a new game, but we continue
+            GameSettings.Instance.ShouldContinueGame = true;
+            OnNewGameButtonPressed();
         }
 
         void OnSettingsButtonPressed()
         {
-            GetTree().ChangeScene("res://src/Client/MenuScreens/Rules.tscn");
+            GetTree().ChangeScene("res://src/Client/MenuScreens/Settings.tscn");
         }
 
         void OnHostGameButtonPressed()

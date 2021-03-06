@@ -164,7 +164,7 @@ namespace CraigStars
         {
             if (netCargoDiff != Cargo.Empty)
             {
-                var me = PlayersManager.Instance.Me;
+                var me = PlayersManager.Me;
                 var source = sourceCargoTransfer.CargoHolder;
                 var dest = destCargoTransfer.CargoHolder;
                 me.CargoTransferOrders.Add(new CargoTransferOrder()

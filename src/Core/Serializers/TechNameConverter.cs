@@ -1,3 +1,4 @@
+using log4net;
 using Newtonsoft.Json;
 using System;
 
@@ -5,6 +6,7 @@ namespace CraigStars
 {
     public class TechNameConverter : JsonConverter<Tech>
     {
+        static ILog log = LogManager.GetLogger(typeof(TechNameConverter));
         public ITechStore TechStore { get; set; }
 
         public TechNameConverter(ITechStore techStore)
@@ -15,7 +17,12 @@ namespace CraigStars
         public override Tech ReadJson(JsonReader reader, Type objectType, Tech existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             string name = reader.Value as String;
-            return TechStore.GetTechByName<Tech>(name);
+            var tech = TechStore.GetTechByName<Tech>(name);
+            if (tech == null)
+            {
+                log.Error($"Unable to load tech from TechStore by name: {name}");
+            }
+            return tech;
         }
 
         public override void WriteJson(JsonWriter writer, Tech value, JsonSerializer serializer)

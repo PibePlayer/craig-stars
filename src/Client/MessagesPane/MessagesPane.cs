@@ -35,14 +35,14 @@ namespace CraigStars
             prevButton.Connect("pressed", this, nameof(OnPrevButtonPressed));
 
             Signals.TurnPassedEvent += OnTurnPassed;
-            Signals.PostStartGameEvent += OnTurnPassed;
+            Signals.PostStartGameEvent += OnPostStartGame;
             UpdateControls();
         }
 
         public override void _ExitTree()
         {
             Signals.TurnPassedEvent -= OnTurnPassed;
-            Signals.PostStartGameEvent -= OnTurnPassed;
+            Signals.PostStartGameEvent -= OnPostStartGame;
         }
 
         void OnNextButtonPressed()
@@ -62,9 +62,14 @@ namespace CraigStars
             UpdateControls();
         }
 
+        void OnPostStartGame(string name, int year)
+        {
+            OnTurnPassed(year);
+        }
+
         void OnTurnPassed(int year)
         {
-            var player = PlayersManager.Instance.Me;
+            var player = PlayersManager.Me;
             messageNum = 0;
             if (player != null && player.Messages.Count > 0)
             {
@@ -75,7 +80,7 @@ namespace CraigStars
 
         void UpdateControls()
         {
-            var player = PlayersManager.Instance.Me;
+            var player = PlayersManager.Me;
             var changesMadeIndicator = changesMade ? "*" : "";
             if (player.Messages.Count > 0)
             {

@@ -3,12 +3,14 @@ using System.Linq;
 using System;
 using Newtonsoft.Json;
 using Godot;
+using log4net;
 
 namespace CraigStars
 {
     [JsonObject(IsReference = true)]
     public class Planet : MapObject, SerializableMapObject, ICargoHolder
     {
+        private static readonly ILog log = LogManager.GetLogger(typeof(Planet));
         public const int Unexplored = -1;
 
         #region Scannable Stats
@@ -100,7 +102,29 @@ namespace CraigStars
             Homeworld = planet.Homeworld;
             ContributesOnlyLeftoverToResearch = planet.ContributesOnlyLeftoverToResearch;
 
-            ProductionQueue = planet.ProductionQueue;
+            if (ProductionQueue == null)
+            {
+                ProductionQueue = new ProductionQueue();
+            }
+            ProductionQueue.Allocated = planet.ProductionQueue.Allocated;
+            ProductionQueue.LeftoverResources = planet.ProductionQueue.LeftoverResources;
+            ProductionQueue.Items.Clear();
+            ProductionQueue.Items.AddRange(planet.ProductionQueue.Items);
+            ProductionQueue.Items.ForEach(item =>
+            {
+                if (item.Design != null)
+                {
+                    if (Player.DesignsByGuid.TryGetValue(item.Design.Guid, out var design))
+                    {
+                        // use the Game design, not the player one
+                        item.Design = design;
+                    }
+                    else
+                    {
+                        log.Error($"Player ProductionQueueItem has unknown design: {Player} - {design.Name}");
+                    }
+                }
+            });
 
             if (planet.HasStarbase)
             {

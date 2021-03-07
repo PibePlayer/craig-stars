@@ -197,3 +197,5 @@ visible = false
 [node name="ShipDesignerDialog" parent="CanvasLayer" instance=ExtResource( 18 )]
 
 [node name="TurnGenerationDialog" parent="CanvasLayer" instance=ExtResource( 20 )]
+pause_mode = 2
+visible = false

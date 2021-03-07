@@ -87,6 +87,9 @@ namespace CraigStars
         public Planet Homeworld { get; set; }
 
         [JsonIgnore]
+        public Dictionary<Guid, ShipDesign> DesignsByGuid { get; set; } = new Dictionary<Guid, ShipDesign>();
+
+        [JsonIgnore]
         public Dictionary<Guid, Planet> PlanetsByGuid { get; set; } = new Dictionary<Guid, Planet>();
 
         [JsonIgnore]
@@ -108,6 +111,7 @@ namespace CraigStars
 
         public void SetupMapObjectMappings()
         {
+            DesignsByGuid = Designs.ToLookup(d => d.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
             PlanetsByGuid = Planets.ToLookup(p => p.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
             FleetsByGuid = Fleets.ToLookup(f => f.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
         }
@@ -423,12 +427,44 @@ namespace CraigStars
         }
 
         /// <summary>
+        /// Update the player with design information
+        /// </summary>
+        /// <param name="design"></param>
+        /// <param name="penScanned"></param>
+        public void UpdateDesignReport(ShipDesign design, bool penScanned)
+        {
+            if (DesignsByGuid.TryGetValue(design.Guid, out var playerDesign))
+            {
+                playerDesign.Name = design.Name;
+                playerDesign.Owner = design.Owner;
+                playerDesign.Hull = design.Hull;
+                playerDesign.HullSetNumber = design.HullSetNumber;
+                if (penScanned && playerDesign.Slots.Count == 0)
+                {
+                    // copy all the slot data so our player knows about it
+                    playerDesign.Slots.AddRange(design.Slots.Select(slot => new ShipDesignSlot(slot.HullComponent, slot.HullSlotIndex, slot.Quantity)));
+                }
+            }
+            else
+            {
+                var newDesign = design.Clone();
+                Designs.Add(newDesign);
+                DesignsByGuid[newDesign.Guid] = newDesign;
+                if (!penScanned)
+                {
+                    // don't show the player slots if it was scanned with penetrating scanners
+                    newDesign.Slots.Clear();
+                }
+            }
+        }
+
+        /// <summary>
         /// Update our report of this planet
         /// Note: This should never be an RPC call, it should always
         /// be called on the server
         /// </summary>
         /// <param name="planet"></param>
-        public void UpdateReport(Planet planet)
+        public void UpdatePlanetReport(Planet planet)
         {
             var planetReport = PlanetsByGuid[planet.Guid];
             if (planetReport.ReportAge > 0)
@@ -440,7 +476,19 @@ namespace CraigStars
                 planetReport.UpdatePlanetReport(planet);
                 Message.PlanetDiscovered(this, planetReport);
             }
+        }
 
+        /// <summary>
+        /// Called by the server to update the player's copy
+        /// of their own planets. This will copy mines, factories, production queues
+        /// etc
+        /// </summary>
+        /// <param name="planet"></param>
+        public void UpdatePlayerPlanet(Planet planet)
+        {
+            var planetReport = PlanetsByGuid[planet.Guid];
+            planetReport.Player = this;
+            planetReport.UpdatePlayerPlanet(planet);
         }
 
         /// <summary>
@@ -491,23 +539,15 @@ namespace CraigStars
                 // TODO: Copy ship tokens? We don't want user modified
                 // ShipDesigns to impact the server...
                 fleetReport.Tokens.AddRange(fleet.Tokens);
+
+                foreach (var token in fleetReport.Tokens)
+                {
+                    token.Design = DesignsByGuid[token.Design.Guid];
+                }
             }
 
             Fleets.Add(fleetReport);
             FleetsByGuid[fleet.Guid] = fleetReport;
-        }
-
-        /// <summary>
-        /// Called by the server to update the player's copy
-        /// of their own planets. This will copy mines, factories, production queues
-        /// etc
-        /// </summary>
-        /// <param name="planet"></param>
-        public void UpdatePlayerPlanet(Planet planet)
-        {
-            var planetReport = PlanetsByGuid[planet.Guid];
-            planetReport.Player = this;
-            planetReport.UpdatePlayerPlanet(planet);
         }
 
         /// <summary>

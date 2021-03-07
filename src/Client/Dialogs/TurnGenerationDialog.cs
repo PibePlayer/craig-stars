@@ -65,12 +65,12 @@ namespace CraigStars
 
         void OnAboutToShow()
         {
-
+            GetTree().Paused = true;
         }
 
         void OnPopupHide()
         {
-            // nothing to do here, we don't want to save
+            GetTree().Paused = false;
         }
 
         void OnCancel()

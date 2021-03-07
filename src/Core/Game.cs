@@ -26,6 +26,7 @@ namespace CraigStars
 
         [JsonIgnore] public ITechStore TechStore { get; set; }
         [JsonProperty(ItemConverterType = typeof(PublicPlayerInfoConverter))] public List<Player> Players { get; set; } = new List<Player>();
+        public List<ShipDesign> Designs { get; set; } = new List<ShipDesign>();
         public List<Planet> Planets { get; set; } = new List<Planet>();
         public List<Fleet> Fleets { get; set; } = new List<Fleet>();
         public List<MineralPacket> MineralPackets { get; set; } = new List<MineralPacket>();
@@ -37,6 +38,7 @@ namespace CraigStars
         #region Computed Members
 
         [JsonIgnore] public Dictionary<Guid, Planet> PlanetsByGuid { get; set; } = new Dictionary<Guid, Planet>();
+        [JsonIgnore] public Dictionary<Guid, ShipDesign> DesignsByGuid { get; set; } = new Dictionary<Guid, ShipDesign>();
         [JsonIgnore] public Dictionary<Guid, Fleet> FleetsByGuid { get; set; } = new Dictionary<Guid, Fleet>();
         [JsonIgnore] public Dictionary<Guid, ICargoHolder> CargoHoldersByGuid { get; set; } = new Dictionary<Guid, ICargoHolder>();
 
@@ -152,6 +154,7 @@ namespace CraigStars
         void UpdateDictionaries()
         {
             // build game dictionaries by guid
+            DesignsByGuid = Designs.ToLookup(d => d.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
             PlanetsByGuid = Planets.ToLookup(p => p.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
             FleetsByGuid = Fleets.ToLookup(p => p.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
 

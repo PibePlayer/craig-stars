@@ -17,7 +17,9 @@ namespace CraigStars
         /// <summary>
         /// The game node creates a server in single player or host mode
         /// </summary>
-        public Game Game { get; private set; }
+        Game Game { get; set; }
+
+        string projectName;
 
         /// <summary>
         /// This is the main view into the universe
@@ -53,8 +55,10 @@ namespace CraigStars
             researchDialog = GetNode<ResearchDialog>("CanvasLayer/ResearchDialog");
             techBrowserDialog = GetNode<TechBrowserDialog>("CanvasLayer/TechBrowserDialog");
             shipDesignerDialog = GetNode<ShipDesignerDialog>("CanvasLayer/ShipDesignerDialog");
+            projectName = ProjectSettings.GetSetting("application/config/name").ToString();
 
             Signals.PostStartGameEvent += OnPostStartGameEvent;
+            Signals.TurnPassedEvent += OnTurnPassedEvent;
             Signals.ChangeProductionQueuePressedEvent += OnChangeProductionQueue;
             Signals.CargoTransferRequestedEvent += OnCargoTransferRequested;
             Signals.ResearchDialogRequestedEvent += OnResearchDialogRequested;
@@ -101,6 +105,7 @@ namespace CraigStars
         public override void _ExitTree()
         {
             Signals.PostStartGameEvent -= OnPostStartGameEvent;
+            Signals.TurnPassedEvent -= OnTurnPassedEvent;
             Signals.ChangeProductionQueuePressedEvent -= OnChangeProductionQueue;
             Signals.CargoTransferRequestedEvent -= OnCargoTransferRequested;
             Signals.ResearchDialogRequestedEvent -= OnResearchDialogRequested;
@@ -151,9 +156,17 @@ namespace CraigStars
         /// <param name="year"></param>
         void OnPostStartGameEvent(String name, int year)
         {
+            Game.Name = name;
+            OS.SetWindowTitle($"{projectName} - {name}: Year {year}");
             // add the universe to the viewport
             scanner.InitMapObjects();
         }
+
+        void OnTurnPassedEvent(int year)
+        {
+            OS.SetWindowTitle($"{projectName} - {Game.Name}: Year {year}");
+        }
+
 
         void OnTechBrowserDialogRequestedEvent()
         {

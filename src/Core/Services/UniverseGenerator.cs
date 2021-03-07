@@ -126,13 +126,14 @@ namespace CraigStars
             return fleets;
         }
 
-        Fleet CreateFleet(ShipDesign shipDesign, String name, Player player, Planet planet)
+        Fleet CreateFleet(ShipDesign playerDesign, String name, Player player, Planet planet)
         {
+            var design = Game.DesignsByGuid[playerDesign.Guid];
             var fleet = new Fleet();
             fleet.Tokens.Add(
                 new ShipToken()
                 {
-                    Design = shipDesign,
+                    Design = design,
                     Quantity = 1
                 }
             );
@@ -412,14 +413,22 @@ namespace CraigStars
         internal void InitShipDesigns(Player player)
         {
             ShipDesignGenerator designer = new ShipDesignGenerator();
-            player.Designs.Add(designer.DesignShip(Techs.Scout, "Long Range Scout", player));
-            player.Designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player));
-            var starbase = ShipDesigns.Starbase.Clone();
+            Game.Designs.Add(designer.DesignShip(Techs.Scout, "Long Range Scout", player));
+            Game.Designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player));
+            var starbase = ShipDesigns.Starbase.Copy();
             starbase.Name = "Starbase";
             starbase.Player = player;
-            player.Designs.Add(starbase);
+            Game.Designs.Add(starbase);
 
-            player.Designs.ForEach(design => design.ComputeAggregate(player));
+            Game.Designs.ForEach(design =>
+            {
+                if (design.Player == player)
+                {
+                    design.ComputeAggregate(player);
+                    Game.DesignsByGuid[design.Guid] = design;
+                    player.UpdateDesignReport(design, true);
+                }
+            });
         }
 
         /// <summary>
@@ -441,9 +450,9 @@ namespace CraigStars
                 };
 
                 player.Planets.Add(planetReport);
-                // build each players dictionary of planets by id
-                player.SetupMapObjectMappings();
             });
+            // build each players dictionary of planets by id
+            player.SetupMapObjectMappings();
         }
 
         #region Starting Minerals

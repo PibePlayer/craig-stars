@@ -12,6 +12,7 @@ namespace CraigStars
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(ShipDesign));
         public string Name { get; set; }
+        public Guid Guid { get; set; } = Guid.NewGuid();
 
         public PublicPlayerInfo Owner
         {
@@ -44,10 +45,23 @@ namespace CraigStars
         public ShipDesignAggregate Aggregate { get; } = new ShipDesignAggregate();
 
         /// <summary>
-        /// Create a clone of this ship design with no name
+        /// Create a clone of this ship design
         /// </summary>
         /// <returns></returns>
         public ShipDesign Clone()
+        {
+            var design = Copy();
+            design.Owner = Owner;
+            design.Name = Name;
+            design.Guid = Guid;
+            return design;
+        }
+
+        /// <summary>
+        /// Create a copy of this ship design with no name
+        /// </summary>
+        /// <returns></returns>
+        public ShipDesign Copy()
         {
             var clone = new ShipDesign()
             {

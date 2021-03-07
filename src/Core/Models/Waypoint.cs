@@ -74,7 +74,7 @@ namespace CraigStars
                 }
                 else
                 {
-                    return $"Space: ({Position.x}, {Position.y})";
+                    return $"Space: ({Position.x:.##}, {Position.y:.##})";
                 }
             }
         }

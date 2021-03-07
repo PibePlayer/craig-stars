@@ -127,6 +127,13 @@ namespace CraigStars.Singletons
                     TechStore = TechStore.Instance
                 };
 
+                if (num > 0)
+                {
+                    // TODO: this is just for testing with an AI player
+                    player.Race.Name = "The Other";
+                    player.Race.PluralName = "The Others";
+                }
+
                 Players.Add(player);
 
                 Signals.PublishPlayerUpdatedEvent(Players[num]);

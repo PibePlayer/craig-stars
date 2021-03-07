@@ -315,6 +315,11 @@ namespace CraigStars
                     scanners.Add(new Scanner(fleet.Position, fleet.Aggregate.ScanRange * fleet.Aggregate.ScanRange, fleet.Aggregate.ScanRangePen * fleet.Aggregate.ScanRangePen));
                 }
 
+                foreach (var design in Game.Designs.Where(d => d.Player == player))
+                {
+                    player.UpdateDesignReport(design, true);
+                }
+
                 // go through each planet and update its report if
                 // we scanned it
                 foreach (var planet in Game.Planets)
@@ -322,7 +327,7 @@ namespace CraigStars
                     // we own this planet, update the report
                     if (planet.Player == player)
                     {
-                        player.UpdateReport(planet);
+                        player.UpdatePlanetReport(planet);
                         player.UpdatePlayerPlanet(planet);
                         continue;
                     }
@@ -331,7 +336,7 @@ namespace CraigStars
                     {
                         if (scanner.RangePen >= scanner.Position.DistanceSquaredTo(planet.Position))
                         {
-                            player.UpdateReport(planet);
+                            player.UpdatePlanetReport(planet);
                         }
                     }
                 }
@@ -352,6 +357,10 @@ namespace CraigStars
                         {
                             // update the fleet report with pen scanners
                             player.AddFleetReport(fleet, true);
+                            foreach (var token in fleet.Tokens)
+                            {
+                                player.UpdateDesignReport(token.Design, true);
+                            }
                             continue;
                         }
 
@@ -359,6 +368,10 @@ namespace CraigStars
                         if (fleet.Orbiting == null && scanner.Range >= scanner.Position.DistanceSquaredTo(fleet.Position))
                         {
                             player.AddFleetReport(fleet, false);
+                            foreach (var token in fleet.Tokens)
+                            {
+                                player.UpdateDesignReport(token.Design, false);
+                            }
                         }
                     }
                 }

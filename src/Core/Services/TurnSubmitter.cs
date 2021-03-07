@@ -23,8 +23,53 @@ namespace CraigStars
         public void SubmitTurn(Player player)
         {
             UpdateFleetActions(player);
+            UpdateShipDesigns(player);
+            UpdateProductionQueues(player);
 
             player.SubmittedTurn = true;
+        }
+
+        /// <summary>
+        /// Copy the player's ship designs to the game
+        /// </summary>
+        /// <param name="player"></param>
+        void UpdateShipDesigns(Player player)
+        {
+            foreach (var playerDesign in player.Designs.Where(d => d.Player == player))
+            {
+                if (Game.DesignsByGuid.TryGetValue(playerDesign.Guid, out var design))
+                {
+                    if (design.Player != player)
+                    {
+                        log.Error($"Player {player} is trying to update design {design.Name}, owned by {design.Player}");
+                        continue;
+                    }
+                    // see if this design can be updated
+                    if (design.Aggregate.InUse)
+                    {
+                        log.Debug($"Not updating Player Design: {player} - {design.Name}. It is in use");
+                    }
+                    // TODO: update design name, slots, etc
+                }
+                else
+                {
+                    // this is a new design
+                    log.Debug($"Adding new Player Design: {player} - {playerDesign.Name}.");
+                    var newDesign = playerDesign.Copy();
+                    newDesign.Name = playerDesign.Name;
+                    newDesign.Guid = playerDesign.Guid;
+                    Game.Designs.Add(newDesign);
+                    Game.DesignsByGuid[newDesign.Guid] = newDesign;
+                }
+            }
+            foreach (var design in Game.Designs.Where(d => d.Player == player))
+            {
+                if (!player.DesignsByGuid.ContainsKey(design.Guid))
+                {
+                    // the player doesn't have this design
+
+                }
+            }
         }
 
         /// <summary>
@@ -32,7 +77,7 @@ namespace CraigStars
         /// This method makes sure the player client doesnt' try and move the fleet around by updating waypoint 0's position
         /// </summary>
         /// <param name="player"></param>
-        internal void UpdateFleetActions(Player player)
+        void UpdateFleetActions(Player player)
         {
             foreach (var playerFleet in player.Fleets.Where(f => f.Player == player))
             {
@@ -50,6 +95,10 @@ namespace CraigStars
                         {
                             wp0.Position = fleet.Position;
                         }
+                        var playerWp0 = playerFleet.Waypoints[0];
+                        wp0.Task = playerWp0.Task;
+                        wp0.WarpFactor = playerWp0.WarpFactor;
+                        wp0.TransportTasks = playerWp0.TransportTasks;
 
                         foreach (var playerWaypoint in playerFleet.Waypoints.Skip(1))
                         {
@@ -75,15 +124,38 @@ namespace CraigStars
                 }
             }
 
+        }
+
+        void UpdateProductionQueues(Player player)
+        {
             foreach (var playerPlanet in player.Planets.Where(p => p.Player == player))
             {
                 if (Game.PlanetsByGuid.TryGetValue(playerPlanet.Guid, out var planet) && planet.Player == player)
                 {
                     planet.ContributesOnlyLeftoverToResearch = playerPlanet.ContributesOnlyLeftoverToResearch;
-                    // TODO: validate planet production queue
-                    planet.ProductionQueue = playerPlanet.ProductionQueue;
+                    // copy each production queue item from the player planet
+                    // replacing the player's design with our game design
+
+                    planet.ProductionQueue.Items.Clear();
+                    planet.ProductionQueue.Items.AddRange(playerPlanet.ProductionQueue.Items);
+                    planet.ProductionQueue.Items.ForEach(item =>
+                    {
+                        if (item.Design != null)
+                        {
+                            if (Game.DesignsByGuid.TryGetValue(item.Design.Guid, out var design))
+                            {
+                                // use the Game design, not the player one
+                                item.Design = design;
+                            }
+                            else
+                            {
+                                log.Error($"Player ProductionQueueItem has unknown design: {player} - {design.Name}");
+                            }
+                        }
+                    });
                 }
             }
         }
+
     }
 }

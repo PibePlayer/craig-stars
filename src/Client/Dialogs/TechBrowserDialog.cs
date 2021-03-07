@@ -93,7 +93,7 @@ namespace CraigStars
 
         void OnVisible()
         {
-            techTree.SelectFirstTech();
+            // nothing to do here yet
         }
 
         /// <summary>

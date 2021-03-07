@@ -72,7 +72,7 @@ namespace CraigStars
             root = techTree.CreateItem();
         }
 
-        void UpdateTreeItems()
+        public void UpdateTreeItems()
         {
             List<Tech> techsToShow;
             switch (TechsToDisplay)
@@ -157,6 +157,7 @@ namespace CraigStars
         {
             // populate the tree
             UpdateTreeItems();
+            SelectFirstTech();
         }
 
         /// <summary>

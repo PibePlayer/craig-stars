@@ -63,7 +63,7 @@ namespace CraigStars
         /// </summary>
         void ResetDesignerShipDesignFromSource()
         {
-            var design = SourceShipDesign.Clone();
+            var design = SourceShipDesign.Copy();
             design.ComputeAggregate(PlayersManager.Me);
 
             designerHullSummary.ShipDesign = design;

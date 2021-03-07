@@ -168,6 +168,67 @@ namespace CraigStars.Singletons
         #endregion
 
         /// <summary>
+        /// This is called by the server to send each player their player information
+        /// </summary>
+        /// <param name="player"></param>
+        public void SendPlayerDataUpdated(Game game)
+        {
+            var settings = Serializers.CreatePlayerSettings(game.Players.Cast<PublicPlayerInfo>().ToList(), game.TechStore);
+            foreach (var player in game.Players)
+            {
+                if (player.NetworkId != 1)
+                {
+                    log.Info($"Server: Sending {player} updated player data");
+                    var json = Serializers.Serialize(player, settings);
+                    RpcId(player.NetworkId, nameof(PlayerDataUpdated), json);
+                }
+            }
+
+        }
+
+        [Remote]
+        public void PlayerDataUpdated(string playerJson)
+        {
+            log.Info("Client: Server sent player data, updated Me");
+            Serializers.PopulatePlayer(playerJson, PlayersManager.Me, Serializers.CreatePlayerSettings(PlayersManager.Instance.Players, TechStore.Instance));
+            PlayersManager.Me.SetupMapObjectMappings();
+            PlayersManager.Me.ComputeAggregates();
+
+        }
+
+        /// <summary>
+        /// This is called by clients to submit turns to the server
+        /// </summary>
+        /// <param name="player">The player (probably PlayersManager.Me) submitting the turn</param>
+        public void SendSubmitTurn(Player player)
+        {
+            var settings = Serializers.CreatePlayerSettings(PlayersManager.Instance.Players, player.TechStore);
+            log.Info($"Client: Submitting turn to server");
+            var json = Serializers.Serialize(player, settings);
+            RpcId(1, nameof(SubmitTurn), json);
+        }
+
+        [Remote]
+        public void SubmitTurn(string playerJson)
+        {
+            var networkId = GetTree().GetRpcSenderId();
+            var player = PlayersManager.Instance.GetNetworkPlayer(networkId) as Player;
+            if (player != null)
+            {
+                log.Info($"Server: {player} submitted turn");
+                Serializers.PopulatePlayer(playerJson, player, Serializers.CreatePlayerSettings(PlayersManager.Instance.Players, TechStore.Instance));
+                player.SetupMapObjectMappings();
+                player.ComputeAggregates();
+                Signals.PublishSubmitTurnEvent(player);
+            }
+            else
+            {
+                log.Error($"Player for networkId: {networkId} not found");
+            }
+
+        }
+
+        /// <summary>
         /// Sent by the server to notify players the game is started
         /// </summary>
         /// <param name="year"></param>
@@ -184,7 +245,7 @@ namespace CraigStars.Singletons
             }
         }
 
-        [RemoteSync]
+        [Remote]
         public void PostStartGame(String name, int year)
         {
             Signals.PublishPostStartGameEvent(name, year);

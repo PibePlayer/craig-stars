@@ -45,7 +45,8 @@ namespace CraigStars
 
         public override void _Ready()
         {
-            Game = new Game() { TechStore = TechStore.Instance };
+            // TODO: figure this out for server side...
+            Game = new Game();
             scanner = FindNode("Scanner") as Scanner;
             productionQueueDialog = GetNode<ProductionQueueDialog>("CanvasLayer/ProductionQueueDialog");
             cargoTransferDialog = GetNode<CargoTransferDialog>("CanvasLayer/CargoTransferDialog");
@@ -64,6 +65,7 @@ namespace CraigStars
             // init the server and send a notice to all players that it's time to start
             if (this.IsServerOrSinglePlayer())
             {
+                Game = new Game() { TechStore = TechStore.Instance };
                 if (GameSettings.Instance.ShouldContinueGame)
                 {
                     GameSaver saver = new GameSaver(Game);
@@ -78,7 +80,10 @@ namespace CraigStars
                 Signals.PublishPostStartGameEvent(Game.Name, Game.Year);
                 if (this.IsServer())
                 {
-                    // TODO: send each player their turn data
+                    // send players their data
+                    RPC.Instance.SendPlayerDataUpdated(Game);
+                    // tell everyone to start the game
+                    RPC.Instance.SendPostStartGame(Game.Name, Game.Year);
                 }
 
                 Signals.SubmitTurnEvent += OnSubmitTurn;
@@ -120,6 +125,14 @@ namespace CraigStars
                 // once everyone is submitted, generate a new turn
                 Signals.PublishTurnGeneratingEvent();
                 await Game.GenerateTurn();
+
+                if (this.IsServer())
+                {
+                    // send players their data
+                    RPC.Instance.SendPlayerDataUpdated(Game);
+                    RPC.Instance.SendTurnPassed(Game.Year);
+                }
+
                 Signals.PublishTurnPassedEvent(Game.Year);
             }
         }

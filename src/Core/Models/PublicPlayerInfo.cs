@@ -10,7 +10,6 @@ namespace CraigStars
     // [JsonObject(IsReference = true)]
     public class PublicPlayerInfo
     {
-        [JsonIgnore]
         public int NetworkId { get; set; }
         public int Num { get; set; }
         public string Name { get; set; }

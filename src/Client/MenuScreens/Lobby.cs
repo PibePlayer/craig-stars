@@ -1,5 +1,6 @@
 using CraigStars.Singletons;
 using Godot;
+using log4net;
 using System;
 using System.Collections.Generic;
 
@@ -7,6 +8,8 @@ namespace CraigStars
 {
     public class Lobby : MarginContainer
     {
+        private static readonly ILog log = LogManager.GetLogger(typeof(Lobby));
+
         [Export]
         public PackedScene PlayerReadyContainerScene { get; set; }
 
@@ -144,7 +147,7 @@ namespace CraigStars
 
         void OnStartGameButtonPressed()
         {
-            GD.Print("Server: All players ready, starting the game!");
+            log.Info("Server: All players ready, starting the game!");
             GetTree().ChangeScene("res://src/Client/GameView.tscn");
         }
 

@@ -400,15 +400,11 @@ namespace CraigStars
                 }
             });
 
-            PublishTurnGeneratorAdvancedEvent(TurnGeneratorState.Finished);
         }
 
         #region Event Publishers
 
-        public void PublishTurnGeneratorAdvancedEvent(TurnGeneratorState state)
-        {
-            TurnGeneratorAdvancedEvent?.Invoke(state);
-        }
+        public void PublishTurnGeneratorAdvancedEvent(TurnGeneratorState state) => TurnGeneratorAdvancedEvent?.Invoke(state);
 
         #endregion
     }

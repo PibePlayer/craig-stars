@@ -20,6 +20,8 @@ namespace CraigStars
         Transfer,
         MineSweeping,
         Repair,
+        UpdatingPlayers,
+        Saving,
         Finished,
     }
 }

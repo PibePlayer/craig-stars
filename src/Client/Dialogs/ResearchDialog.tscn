@@ -331,7 +331,6 @@ margin_top = 36.0
 margin_right = 361.0
 margin_bottom = 56.0
 align = 1
-selected = 0
 
 [node name="VBoxContainerResourceAlocation" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2"]
 margin_top = 186.0

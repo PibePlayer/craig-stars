@@ -190,10 +190,17 @@ namespace CraigStars.Singletons
         public void PlayerDataUpdated(string playerJson)
         {
             log.Info("Client: Server sent player data, updated Me");
+            PlayersManager.Me.Fleets.Clear();
+            PlayersManager.Me.Planets.Clear();
+            PlayersManager.Me.Designs.Clear();
+            PlayersManager.Me.Messages.Clear();
+            PlayersManager.Me.DeletedDesigns.Clear();
+            PlayersManager.Me.CargoTransferOrders.Clear();
+
             Serializers.PopulatePlayer(playerJson, PlayersManager.Me, Serializers.CreatePlayerSettings(PlayersManager.Instance.Players, TechStore.Instance));
             PlayersManager.Me.SetupMapObjectMappings();
             PlayersManager.Me.ComputeAggregates();
-
+            log.Info("Client: Done recieving updated player data");
         }
 
         /// <summary>
@@ -253,15 +260,16 @@ namespace CraigStars.Singletons
 
         #region Game Events
 
-        public void SendTurnPassed(int day)
+        public void SendTurnPassed(int year)
         {
-            Rpc(nameof(TurnPassed), day);
+            Rpc(nameof(TurnPassed), year);
         }
 
         [Remote]
-        public void TurnPassed(int day)
+        public void TurnPassed(int year)
         {
-            Signals.PublishTurnPassedEvent(day);
+            Signals.PublishTurnPassedEvent(year);
+            log.Info("Client: PublishedTurnPassedEvent for UI");
         }
 
         #endregion

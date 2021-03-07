@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=2]
+[gd_scene load_steps=22 format=2]
 
 [ext_resource path="res://src/Client/Scanner/Scanner.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/Client/Scanner/ScannerSelectedStats.tscn" type="PackedScene" id=2]
@@ -19,6 +19,7 @@
 [ext_resource path="res://src/Client/Dialogs/TechBrowserDialog.tscn" type="PackedScene" id=17]
 [ext_resource path="res://src/Client/Dialogs/ShipDesignerDialog.tscn" type="PackedScene" id=18]
 [ext_resource path="res://src/Client/CommandPane/PlanetStatusTile.tscn" type="PackedScene" id=19]
+[ext_resource path="res://src/Client/Dialogs/TurnGenerationDialog.tscn" type="PackedScene" id=20]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.145098, 0.145098, 0.168627, 1 )
@@ -194,3 +195,5 @@ visible = false
 [node name="CargoTransferDialog" parent="CanvasLayer" instance=ExtResource( 14 )]
 
 [node name="ShipDesignerDialog" parent="CanvasLayer" instance=ExtResource( 18 )]
+
+[node name="TurnGenerationDialog" parent="CanvasLayer" instance=ExtResource( 20 )]

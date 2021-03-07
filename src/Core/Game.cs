@@ -16,6 +16,11 @@ namespace CraigStars
     {
         static ILog log = LogManager.GetLogger(typeof(Game));
 
+        /// <summary>
+        /// This event is triggered when turn events happen
+        /// </summary>
+        public event Action<TurnGeneratorState> TurnGeneratorAdvancedEvent;
+
         public String Name { get; set; } = "A Barefoot Jaywalk";
         public Rules Rules { get; private set; } = new Rules();
 
@@ -46,12 +51,15 @@ namespace CraigStars
             turnGenerator = new TurnGenerator(this);
             turnSubmitter = new TurnSubmitter(this);
             gameSaver = new GameSaver(this);
+
+            turnGenerator.TurnGeneratorAdvancedEvent += OnTurnGeneratedAdvanced;
             EventManager.FleetBuiltEvent += OnFleetBuilt;
         }
 
         ~Game()
         {
             EventManager.FleetBuiltEvent -= OnFleetBuilt;
+            turnGenerator.TurnGeneratorAdvancedEvent -= OnTurnGeneratedAdvanced;
         }
 
         public void Init(List<Player> players, Rules rules, ITechStore techStore)
@@ -84,6 +92,15 @@ namespace CraigStars
         }
 
         /// <summary>
+        /// Propogate turn generator events up to clients
+        /// </summary>
+        /// <param name="state"></param>
+        void OnTurnGeneratedAdvanced(TurnGeneratorState state)
+        {
+            TurnGeneratorAdvancedEvent?.Invoke(state);
+        }
+
+        /// <summary>
         /// Generate a new turn
         /// </summary>
         public async Task GenerateTurn()
@@ -98,6 +115,8 @@ namespace CraigStars
                 // do any post-turn generation steps
                 AfterTurnGeneration();
 
+                TurnGeneratorAdvancedEvent?.Invoke(TurnGeneratorState.Finished);
+
                 stopwatch.Stop();
 
                 log.Debug($"Turn Generated ({stopwatch.ElapsedMilliseconds}ms)");
@@ -110,6 +129,7 @@ namespace CraigStars
         /// </summary>
         internal void AfterTurnGeneration()
         {
+            TurnGeneratorAdvancedEvent?.Invoke(TurnGeneratorState.UpdatingPlayers);
             // Update the Game dictionaries used for lookups, like PlanetsByGuid, FleetsByGuid, etc.
             UpdateDictionaries();
 
@@ -120,6 +140,7 @@ namespace CraigStars
             // first round, we have to submit AI turns
             SubmitAITurns();
 
+            TurnGeneratorAdvancedEvent?.Invoke(TurnGeneratorState.Saving);
             // save the game to disk
             gameSaver.SaveGame(this);
         }

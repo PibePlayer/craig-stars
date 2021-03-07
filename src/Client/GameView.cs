@@ -86,6 +86,7 @@ namespace CraigStars
                     RPC.Instance.SendPostStartGame(Game.Name, Game.Year);
                 }
 
+                Game.TurnGeneratorAdvancedEvent += OnTurnGeneratorAdvanced;
                 Signals.SubmitTurnEvent += OnSubmitTurn;
             }
             else
@@ -106,10 +107,17 @@ namespace CraigStars
             Signals.ShipDesignerDialogRequestedEvent -= OnShipDesignerDialogRequestedEvent;
             Signals.TechBrowserDialogRequestedEvent -= OnTechBrowserDialogRequestedEvent;
 
+
             if (this.IsServerOrSinglePlayer())
             {
+                Game.TurnGeneratorAdvancedEvent -= OnTurnGeneratorAdvanced;
                 Signals.SubmitTurnEvent -= OnSubmitTurn;
             }
+        }
+
+        void OnTurnGeneratorAdvanced(TurnGeneratorState state)
+        {
+            Signals.PublishTurnGeneratorAdvancedEvent(state);
         }
 
         /// <summary>

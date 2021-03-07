@@ -21,7 +21,7 @@ namespace CraigStars.Singletons
         public delegate void GameStart(String name, int year);
         public static event YearUpdate TurnPassedEvent;
         public static event Action TurnGeneratingEvent;
-        public static void PublishTurnGeneratingEvent() => TurnGeneratingEvent?.Invoke();
+        public static event Action<TurnGeneratorState> TurnGeneratorAdvancedEvent;
 
         #region Viewport Events
 
@@ -85,6 +85,9 @@ namespace CraigStars.Singletons
         #endregion
 
         #region Event Publishers
+
+        public static void PublishTurnGeneratorAdvancedEvent(TurnGeneratorState state) => TurnGeneratorAdvancedEvent?.Invoke(state);
+        public static void PublishTurnGeneratingEvent() => TurnGeneratingEvent?.Invoke();
 
         public static void PublishPreStartGameEvent(List<PublicPlayerInfo> players)
         {

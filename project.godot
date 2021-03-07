@@ -10,6 +10,7 @@ config_version=4
 
 _global_script_classes=[  ]
 _global_script_class_icons={
+
 }
 
 [application]
@@ -28,6 +29,10 @@ TextureLoader="*res://src/Client/Singletons/TextureLoader.cs"
 GameSettings="*res://src/Client/Singletons/GameSettings.cs"
 Client="*res://src/Client/Singletons/Client.cs"
 Network="*res://src/Client/Singletons/Network.cs"
+
+[debug]
+
+settings/stdout/verbose_stdout=true
 
 [display]
 

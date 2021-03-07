@@ -9,7 +9,7 @@ namespace CraigStars.Singletons
         /// <summary>
         /// This is just a temporary property for development.
         /// </summary>
-        public int NumPlayers = 1;
+        public int NumPlayers = 2;
 
         ILog log = LogManager.GetLogger(typeof(PlayersManager));
 

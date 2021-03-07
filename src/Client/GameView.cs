@@ -17,7 +17,7 @@ namespace CraigStars
         /// <summary>
         /// The game node creates a server in single player or host mode
         /// </summary>
-        public Game Game { get; set; } = new Game();
+        public Game Game { get; private set; }
 
         /// <summary>
         /// This is the main view into the universe
@@ -45,6 +45,7 @@ namespace CraigStars
 
         public override void _Ready()
         {
+            Game = new Game() { TechStore = TechStore.Instance };
             scanner = FindNode("Scanner") as Scanner;
             productionQueueDialog = GetNode<ProductionQueueDialog>("CanvasLayer/ProductionQueueDialog");
             cargoTransferDialog = GetNode<CargoTransferDialog>("CanvasLayer/CargoTransferDialog");
@@ -65,8 +66,8 @@ namespace CraigStars
             {
                 if (GameSettings.Instance.ShouldContinueGame)
                 {
-                    GameSaver saver = new GameSaver();
-                    Game = saver.LoadGame(GameSettings.Instance.ContinueGame, GameSettings.Instance.ContinueYear, TechStore.Instance);
+                    GameSaver saver = new GameSaver(Game);
+                    saver.LoadGame(GameSettings.Instance.ContinueGame, GameSettings.Instance.ContinueYear, TechStore.Instance);
                     PlayersManager.Instance.InitPlayersFromGame(Game.Players);
                 }
                 else

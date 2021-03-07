@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Godot;
+using Newtonsoft.Json;
 
 namespace CraigStars
 {
@@ -26,6 +27,17 @@ namespace CraigStars
             return $"user://saves/{gameName}/{year}/player-{playerNum}.json";
         }
 
+        JsonSerializerSettings gameSerializerSettings;
+        JsonSerializerSettings playerSerializerSettings;
+        Game game;
+
+        public GameSaver(Game game)
+        {
+            this.game = game;
+            playerSerializerSettings = Serializers.CreatePlayerSettings(game.Players.Cast<PublicPlayerInfo>().ToList(), game.TechStore);
+            gameSerializerSettings = Serializers.CreateGameSettings(game);
+        }
+
         /// <summary>
         /// Save this game to disk
         /// </summary>
@@ -40,17 +52,16 @@ namespace CraigStars
             {
                 saveGame.Open(GetSaveGamePath(game.Name, game.Year), File.ModeFlags.Write);
 
-                var gameJson = Serializers.SerializeGame(game);
+                var gameJson = Serializers.SerializeGame(game, gameSerializerSettings);
                 saveGame.StoreString(gameJson);
                 saveGame.Close();
 
-                var settings = Serializers.CreatePlayerSettings(game.Players.Cast<PublicPlayerInfo>().ToList(), game.TechStore);
                 foreach (var player in game.Players)
                 {
                     using (var playerSave = new File())
                     {
                         playerSave.Open(GetSaveGamePlayerPath(game.Name, game.Year, player.Num), File.ModeFlags.Write);
-                        var json = Serializers.Serialize(player, settings);
+                        var json = Serializers.Serialize(player, playerSerializerSettings);
                         playerSave.StoreString(json);
                         playerSave.Close();
                     }
@@ -64,7 +75,6 @@ namespace CraigStars
         /// <param name="game"></param>
         public Game LoadGame(String name, int year, ITechStore techStore)
         {
-            Game game = null;
             using (var saveGame = new File())
             {
                 var path = GetSaveGamePath(name, year);
@@ -75,7 +85,7 @@ namespace CraigStars
                 saveGame.Open(path, File.ModeFlags.Read);
                 var gameJson = saveGame.GetAsText();
 
-                game = Serializers.DeserializeGame(gameJson, techStore);
+                Serializers.PopulateGame(gameJson, game, gameSerializerSettings);
                 var settings = Serializers.CreatePlayerSettings(game.Players.Cast<PublicPlayerInfo>().ToList(), game.TechStore);
                 foreach (var player in game.Players)
                 {

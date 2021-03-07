@@ -193,24 +193,17 @@ namespace CraigStars
         /// <param name="item"></param>
         private void BuildStarbase(Planet planet, ProductionQueueItem item)
         {
-            // if (planet.Starbase != null)
-            // {
-            //     // upgrade the existing starbase
-            //     planet.Starbase().getShipStacks().clear;
-            //     planet.Starbase().getShipStacks().add(new ShipStack(item.getShipDesign, 1));
-            //     planet.Starbase.setDamage(0);
-            //     planet.Starbase().computeAggregate;
-            // }
-            // else
-            // {
-            //     // create a new starbase
-            //     Fleet fleet = fleetController.create(planet.Name() + "-starbase", planet.getX(), planet.getY(), planet.getOwner);
-            //     fleet.ShipStacks().add(new ShipStack(item.getShipDesign, 1));
-            //     fleet.computeAggregate();
-            //     fleet.addWaypoint(planet.X(), planet.getY, 5, WaypointTask.None, planet);
-            //     planet.setStarbase(fleet);
-            //     planet.Player().getGame().getFleets.add(fleet);
-            // }
+            if (planet.Starbase != null)
+            {
+                // remove the existing starbase
+                planet.Starbase.Tokens.Clear();
+            }
+            else
+            {
+                planet.Starbase = new Starbase();
+            }
+            planet.Starbase.Tokens.Add(new ShipToken(item.Design, 1));
+
         }
 
         /// <summary>

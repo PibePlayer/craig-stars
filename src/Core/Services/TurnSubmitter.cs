@@ -44,13 +44,12 @@ namespace CraigStars
                     if (playerFleet.Waypoints != null && playerFleet.Waypoints.Count > 0)
                     {
                         // copy player waypoint data, but reset the target/position
-                        var wp0 = playerFleet.Waypoints[0];
+                        var wp0 = fleet.Waypoints[0];
                         wp0.Target = fleet.Orbiting;
                         if (wp0.Target == null)
                         {
                             wp0.Position = fleet.Position;
                         }
-                        fleet.Waypoints[0] = wp0;
 
                         foreach (var playerWaypoint in playerFleet.Waypoints.Skip(1))
                         {
@@ -69,6 +68,10 @@ namespace CraigStars
                             }
                         };
                     }
+                }
+                else
+                {
+                    log.Error($"Could not find Game Fleet for Player Fleet: {playerFleet.Name}, Guid: {playerFleet.Guid}");
                 }
             }
 

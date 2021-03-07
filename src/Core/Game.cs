@@ -45,7 +45,7 @@ namespace CraigStars
         {
             turnGenerator = new TurnGenerator(this);
             turnSubmitter = new TurnSubmitter(this);
-            gameSaver = new GameSaver();
+            gameSaver = new GameSaver(this);
             EventManager.FleetBuiltEvent += OnFleetBuilt;
         }
 
@@ -56,8 +56,9 @@ namespace CraigStars
 
         public void Init(List<Player> players, Rules rules, ITechStore techStore)
         {
-            TechStore = techStore;
+            Players.Clear();
             Players.AddRange(players);
+            TechStore = techStore;
             Rules = rules;
         }
 

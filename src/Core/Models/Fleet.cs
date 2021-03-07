@@ -3,6 +3,7 @@ using System.Linq;
 using System;
 using log4net;
 using Newtonsoft.Json;
+using System.Runtime.Serialization;
 
 namespace CraigStars
 {
@@ -32,6 +33,16 @@ namespace CraigStars
 
         [JsonIgnore]
         public FleetAggregate Aggregate { get; } = new FleetAggregate();
+
+        #endregion
+
+        #region Serializer callbacks
+
+        [OnDeserialized]
+        internal void OnDeserialized(StreamingContext context)
+        {
+            Orbiting?.OrbitingFleets.Add(this);
+        }
 
         #endregion
 

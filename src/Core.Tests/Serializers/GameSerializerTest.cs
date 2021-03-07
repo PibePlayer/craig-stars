@@ -98,7 +98,8 @@ namespace CraigStars.Tests
             var json = Serializers.Serialize(game);
             log.Info($"\n{json}");
 
-            Game loaded = Serializers.DeserializeGame(json, StaticTechStore.Instance);
+            Game loaded = new Game() { TechStore = StaticTechStore.Instance };
+            Serializers.PopulateGame(json, game, Serializers.CreateGameSettings(loaded));
 
             Assert.AreEqual(game.Players.Count, loaded.Players.Count);
             Assert.AreEqual(game.Players[0].Name, loaded.Players[0].Name);
@@ -136,7 +137,8 @@ namespace CraigStars.Tests
             log.Info($"Player2: \n{player2Json}");
 
             // reload the game
-            Game loaded = Serializers.DeserializeGame(gameJson, StaticTechStore.Instance);
+            Game loaded = new Game() { TechStore = StaticTechStore.Instance };
+            Serializers.PopulateGame(gameJson, game, Serializers.CreateGameSettings(loaded));
             var loadSettings = Serializers.CreatePlayerSettings(loaded.Players.Cast<PublicPlayerInfo>().ToList(), loaded.TechStore);
             Serializers.PopulatePlayer(player1Json, loaded.Players[0], loadSettings);
             Serializers.PopulatePlayer(player2Json, loaded.Players[1], loadSettings);

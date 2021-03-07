@@ -93,6 +93,8 @@ namespace CraigStars
         void OnTurnPassed(int year)
         {
             // update all the sprites
+            mapObjectsUnderMouse.Clear();
+            waypointAreas.Clear();
             CallDeferred(nameof(AddFleetsToViewport));
             CallDeferred(nameof(ResetScannerToHome));
         }
@@ -175,17 +177,12 @@ namespace CraigStars
         /// </summary>
         void OnActiveFleetChanged()
         {
-            try
-            {
-                waypointAreas.ForEach(wpa => { RemoveChild(wpa); wpa.QueueFree(); });
-            }
-            catch (ObjectDisposedException e)
-            {
-                log.Error("Failed to free disposed WaypointArea.", e);
-            }
+            log.Info("ActiveFleetChanged begin");
+            waypointAreas.ForEach(wpa => { RemoveChild(wpa); wpa.DisconnectAll(); wpa.QueueFree(); });
             waypointAreas.Clear();
             selectedWaypoint = null;
             ActiveFleet?.Fleet?.Waypoints.Each((wp, index) => AddWaypointArea(wp));
+            log.Info("ActiveFleetChanged end");
         }
 
         /// <summary>
@@ -220,7 +217,6 @@ namespace CraigStars
             var waypointArea = waypointAreaScene.Instance() as WaypointArea;
             waypointArea.Waypoint = waypoint;
             waypointAreas.Add(waypointArea);
-            // waypointArea.Connect("input_event", this, nameof(OnInputEvent));
             AddChild(waypointArea);
         }
 
@@ -272,15 +268,29 @@ namespace CraigStars
 
         void OnMouseEntered(MapObjectSprite mapObject)
         {
-            log.Debug($"Highlighted map object {mapObject.ObjectName}");
-            mapObjectsUnderMouse.Add(mapObject);
-            Signals.PublishMapObjectHightlightedEvent(mapObject);
+            if (IsInstanceValid(mapObject))
+            {
+                log.Debug($"Highlighted map object {mapObject.ObjectName}");
+                mapObjectsUnderMouse.Add(mapObject);
+                Signals.PublishMapObjectHightlightedEvent(mapObject);
+            }
+            else
+            {
+                log.Error("OnMouseEntered called for invalid mapObject");
+            }
         }
 
         void OnMouseExited(MapObjectSprite mapObject)
         {
-            mapObjectsUnderMouse.Remove(mapObject);
-            Signals.PublishMapObjectHightlightedEvent(mapObject);
+            if (IsInstanceValid(mapObject))
+            {
+                mapObjectsUnderMouse.Remove(mapObject);
+                Signals.PublishMapObjectHightlightedEvent(mapObject);
+            }
+            else
+            {
+                log.Error("OnMouseExited called for invalid mapObject");
+            }
         }
 
 
@@ -420,7 +430,7 @@ namespace CraigStars
                 }
             }
 
-            GD.Print($"Commanding Next Peer {commandedMapObject.ObjectName}");
+            log.Debug($"Commanding Next Peer {commandedMapObject.ObjectName}");
         }
 
         /// <summary>
@@ -431,9 +441,17 @@ namespace CraigStars
             log.Debug("Resetting viewport Fleets");
 
             // clear out any existing fleets
-            Fleets.ForEach(f => { RemoveChild(f); f.QueueFree(); });
-            waypointAreas.ForEach(wpa => { RemoveChild(wpa); wpa.QueueFree(); });
+            Fleets.ForEach(f =>
+            {
+                RemoveChild(f);
+                f.Disconnect("input_event", this, nameof(OnInputEvent));
+                f.Disconnect("mouse_entered", this, nameof(OnMouseEntered));
+                f.Disconnect("mouse_exited", this, nameof(OnMouseExited));
+                f.QueueFree();
+            });
             Fleets.Clear();
+
+            waypointAreas.ForEach(wpa => { RemoveChild(wpa); wpa.DisconnectAll(); wpa.QueueFree(); });
             waypointAreas.Clear();
             Planets.ForEach(p => p.OrbitingFleets.Clear());
             ActiveFleet = null;
@@ -454,7 +472,7 @@ namespace CraigStars
             }));
 
             Fleets.ForEach(f => AddChild(f));
-            Fleets.ForEach(f => f.Connect("input_event", this, nameof(OnInputEvent), new Godot.Collections.Array() { f }));
+            Fleets.ForEach(f => f.Connect("input_event", this, nameof(OnInputEvent)));
             Fleets.ForEach(f => f.Connect("mouse_entered", this, nameof(OnMouseEntered), new Godot.Collections.Array() { f }));
             Fleets.ForEach(f => f.Connect("mouse_exited", this, nameof(OnMouseExited), new Godot.Collections.Array() { f }));
         }

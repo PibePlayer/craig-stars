@@ -42,8 +42,6 @@ namespace CraigStars
             base._Ready();
 
             waypoints.Connect("item_selected", this, nameof(OnItemSelected));
-
-
             warpFactor.WarpSpeedChangedEvent += OnWarpSpeedChanged;
         }
 

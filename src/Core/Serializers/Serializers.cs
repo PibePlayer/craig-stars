@@ -184,20 +184,16 @@ namespace CraigStars
         /// </summary>
         /// <param name="game"></param>
         /// <returns></returns>
-        static public string SerializeGame(Game game)
+        static public string SerializeGame(Game game, JsonSerializerSettings settings)
         {
             try
             {
-                var json = JsonConvert.SerializeObject(game, CreateGameSettings(game));
-                log.Debug($"Serialized Game:\n {traceWriter.ToString()} \n{json}");
+                var json = JsonConvert.SerializeObject(game, settings);
                 return json;
             }
             catch (Exception e)
             {
                 log.Error("Failed to serialize game into json: ", e);
-            }
-            finally
-            {
                 log.Info($"TraceWriter: \n{traceWriter.ToString()}");
             }
             return null;
@@ -209,14 +205,13 @@ namespace CraigStars
         /// <param name="json"></param>
         /// <param name="players"></param>
         /// <returns></returns>
-        static public Game DeserializeGame(string json, ITechStore techStore)
+        static public Game PopulateGame(string json, Game game, JsonSerializerSettings settings)
         {
             if (json != null)
             {
                 try
                 {
-                    Game game = new Game() { TechStore = techStore };
-                    JsonConvert.PopulateObject(json, game, CreateGameSettings(game));
+                    JsonConvert.PopulateObject(json, game, settings);
                     return game;
                 }
                 catch (Exception e)
@@ -244,9 +239,6 @@ namespace CraigStars
             catch (Exception e)
             {
                 log.Error($"Failed to PopulationPlayer from json: \n{json}", e);
-            }
-            finally
-            {
                 log.Info($"TraceWriter: \n{traceWriter.ToString()}");
             }
         }

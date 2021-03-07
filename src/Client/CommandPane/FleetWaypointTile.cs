@@ -1,3 +1,4 @@
+using System;
 using CraigStars.Singletons;
 using log4net;
 

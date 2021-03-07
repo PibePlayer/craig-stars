@@ -16,7 +16,7 @@ namespace CraigStars
         public override void _Ready()
         {
             base._Ready();
-            waypointTask = FindNode("WaypointTask") as OptionButton;
+            waypointTask = (OptionButton)FindNode("WaypointTask");
 
             foreach (WaypointTask task in Enum.GetValues(typeof(WaypointTask)))
             {
@@ -26,10 +26,10 @@ namespace CraigStars
             waypointTask.Connect("item_selected", this, nameof(OnWaypointTaskItemSelected));
         }
 
-        public override void _ExitTree()
-        {
-            base._Ready();
-        }
+        // public override void _ExitTree()
+        // {
+        //     base._Ready();
+        // }
 
         protected override void OnNewActiveFleet()
         {

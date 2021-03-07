@@ -21,7 +21,7 @@ namespace CraigStars
             var num = reader.Value;
             if (reader.Value != null)
             {
-                log.Info($"Loading player number {num}");
+                // log.Debug($"Loading player number {num}");
 
                 // make sure we have enough players for this player number
                 int playerNum = Convert.ToInt32(num);
@@ -40,7 +40,7 @@ namespace CraigStars
             }
             else
             {
-                log.Info($"Player Number not found {num}");
+                log.Error($"Player Number not found {num}");
                 return Players[0];
             }
         }

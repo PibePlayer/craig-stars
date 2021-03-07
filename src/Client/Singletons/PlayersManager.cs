@@ -242,6 +242,7 @@ namespace CraigStars.Singletons
                     };
                     fullPlayer.Update(player);
                     Players.Add(fullPlayer);
+                    me = null;
                 }
                 else
                 {

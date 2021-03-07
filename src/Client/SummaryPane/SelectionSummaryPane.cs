@@ -19,7 +19,6 @@ namespace CraigStars
         }
         MapObjectSprite mapObject;
 
-        Race race;
 
         Control planetContainer;
         Control unknownPlanetContainer;
@@ -43,19 +42,9 @@ namespace CraigStars
             valueLabel = FindNode("Value") as Label;
             reportAgeLabel = FindNode("ReportAge") as Label;
 
-            race = PlayersManager.Me.Race;
-
             gravHabBar = FindNode("GravHabBar") as HabBar;
             tempHabBar = FindNode("TempHabBar") as HabBar;
             radHabBar = FindNode("RadHabBar") as HabBar;
-
-            gravHabBar.Low = race.HabLow.grav;
-            tempHabBar.Low = race.HabLow.temp;
-            radHabBar.Low = race.HabLow.rad;
-
-            gravHabBar.High = race.HabHigh.grav;
-            tempHabBar.High = race.HabHigh.temp;
-            radHabBar.High = race.HabHigh.rad;
 
             ironiumMineralBar = FindNode("IroniumMineralBar") as MineralBar;
             boraniumMineralBar = FindNode("BoraniumMineralBar") as MineralBar;
@@ -83,8 +72,18 @@ namespace CraigStars
 
         void UpdateControls()
         {
+
             if (MapObject != null)
             {
+                var race = PlayersManager.Me.Race;
+                gravHabBar.Low = race.HabLow.grav;
+                tempHabBar.Low = race.HabLow.temp;
+                radHabBar.Low = race.HabLow.rad;
+
+                gravHabBar.High = race.HabHigh.grav;
+                tempHabBar.High = race.HabHigh.temp;
+                radHabBar.High = race.HabHigh.rad;
+
                 nameLabel.Text = $"{MapObject.ObjectName} Summary";
 
                 var planet = MapObject?.MapObject as Planet;

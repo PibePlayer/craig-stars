@@ -4,6 +4,7 @@ using System;
 using Newtonsoft.Json;
 using Godot;
 using log4net;
+using System.ComponentModel;
 
 namespace CraigStars
 {
@@ -52,6 +53,7 @@ namespace CraigStars
         public bool Homeworld { get; set; }
         public bool Scanner { get; set; }
 
+        [DefaultValue(Unexplored)]
         public int ReportAge { get; set; } = Unexplored;
         public bool Explored { get => ReportAge != Unexplored; }
         public bool Uninhabited { get => Owner == null; }

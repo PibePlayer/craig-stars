@@ -1,0 +1,23 @@
+[gd_scene format=2]
+
+[node name="Table" type="VBoxContainer"]
+margin_right = 1047.0
+margin_bottom = 697.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SearchLineEdit" type="LineEdit" parent="."]
+margin_right = 1047.0
+margin_bottom = 24.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Tree" type="Tree" parent="."]
+margin_top = 28.0
+margin_right = 1047.0
+margin_bottom = 697.0
+size_flags_vertical = 3
+hide_folding = true
+hide_root = true

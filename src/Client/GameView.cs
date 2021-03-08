@@ -29,6 +29,7 @@ namespace CraigStars
         ProductionQueueDialog productionQueueDialog;
         CargoTransferDialog cargoTransferDialog;
         ResearchDialog researchDialog;
+        ReportsDialog reportsDialog;
         TechBrowserDialog techBrowserDialog;
         ShipDesignerDialog shipDesignerDialog;
 
@@ -53,6 +54,7 @@ namespace CraigStars
             productionQueueDialog = GetNode<ProductionQueueDialog>("CanvasLayer/ProductionQueueDialog");
             cargoTransferDialog = GetNode<CargoTransferDialog>("CanvasLayer/CargoTransferDialog");
             researchDialog = GetNode<ResearchDialog>("CanvasLayer/ResearchDialog");
+            reportsDialog = GetNode<ReportsDialog>("CanvasLayer/ReportsDialog");
             techBrowserDialog = GetNode<TechBrowserDialog>("CanvasLayer/TechBrowserDialog");
             shipDesignerDialog = GetNode<ShipDesignerDialog>("CanvasLayer/ShipDesignerDialog");
             projectName = ProjectSettings.GetSetting("application/config/name").ToString();
@@ -62,6 +64,7 @@ namespace CraigStars
             Signals.ChangeProductionQueuePressedEvent += OnChangeProductionQueue;
             Signals.CargoTransferRequestedEvent += OnCargoTransferRequested;
             Signals.ResearchDialogRequestedEvent += OnResearchDialogRequested;
+            Signals.ReportsDialogRequestedEvent += OnReportsDialogRequested;
             Signals.ShipDesignerDialogRequestedEvent += OnShipDesignerDialogRequestedEvent;
             Signals.TechBrowserDialogRequestedEvent += OnTechBrowserDialogRequestedEvent;
 
@@ -109,6 +112,7 @@ namespace CraigStars
             Signals.ChangeProductionQueuePressedEvent -= OnChangeProductionQueue;
             Signals.CargoTransferRequestedEvent -= OnCargoTransferRequested;
             Signals.ResearchDialogRequestedEvent -= OnResearchDialogRequested;
+            Signals.ReportsDialogRequestedEvent -= OnReportsDialogRequested;
             Signals.ShipDesignerDialogRequestedEvent -= OnShipDesignerDialogRequestedEvent;
             Signals.TechBrowserDialogRequestedEvent -= OnTechBrowserDialogRequestedEvent;
 
@@ -171,6 +175,11 @@ namespace CraigStars
         void OnTechBrowserDialogRequestedEvent()
         {
             techBrowserDialog.PopupCentered();
+        }
+
+        void OnReportsDialogRequested()
+        {
+            reportsDialog.PopupCentered();
         }
 
         void OnShipDesignerDialogRequestedEvent()

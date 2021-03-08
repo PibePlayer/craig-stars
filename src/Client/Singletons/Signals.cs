@@ -28,6 +28,7 @@ namespace CraigStars.Singletons
         public static event Action<MapObjectSprite> MapObjectHighlightedEvent;
         public static event Action<MapObjectSprite> MapObjectSelectedEvent;
         public static event Action<MapObjectSprite> MapObjectActivatedEvent;
+        public static event Action<MapObject> CommandMapObjectEvent;
         public static event Action<Fleet, Waypoint> WaypointAddedEvent;
         public static event Action<Waypoint> WaypointSelectedEvent;
         public static event Action<Waypoint> WaypointDeletedEvent;
@@ -39,6 +40,7 @@ namespace CraigStars.Singletons
         public static event Action<Player> SubmitTurnEvent;
         public static event Action<PlanetSprite> ChangeProductionQueuePressedEvent;
         public static event Action ResearchDialogRequestedEvent;
+        public static event Action ReportsDialogRequestedEvent;
         public static event Action TechBrowserDialogRequestedEvent;
         public static event Action ShipDesignerDialogRequestedEvent;
 
@@ -135,40 +137,14 @@ namespace CraigStars.Singletons
 
         # region Scanner Objects
 
-        public static void PublishMapObjectHightlightedEvent(MapObjectSprite mapObjectSprite)
-        {
-            MapObjectHighlightedEvent?.Invoke(mapObjectSprite);
-        }
-
-        public static void PublishMapObjectSelectedEvent(MapObjectSprite mapObjectSprite)
-        {
-            MapObjectSelectedEvent?.Invoke(mapObjectSprite);
-        }
-
-        public static void PublishMapObjectActivatedEvent(MapObjectSprite mapObjectSprite)
-        {
-            MapObjectActivatedEvent?.Invoke(mapObjectSprite);
-        }
-
-        public static void PublishActiveNextMapObjectEvent()
-        {
-            ActiveNextMapObjectEvent?.Invoke();
-        }
-
-        public static void PublishActivePrevMapObjectEvent()
-        {
-            ActivePrevMapObjectEvent?.Invoke();
-        }
-
-        public static void PublishRenameFleetRequestedEvent(FleetSprite fleetSprite)
-        {
-            RenameFleetRequestedEvent?.Invoke(fleetSprite);
-        }
-
-        public static void PublishGotoMapObjectEvent(MapObjectSprite mapObjectSprite)
-        {
-            GotoMapObjectEvent?.Invoke(mapObjectSprite);
-        }
+        public static void PublishMapObjectHightlightedEvent(MapObjectSprite mapObjectSprite) => MapObjectHighlightedEvent?.Invoke(mapObjectSprite);
+        public static void PublishMapObjectSelectedEvent(MapObjectSprite mapObjectSprite) => MapObjectSelectedEvent?.Invoke(mapObjectSprite);
+        public static void PublishMapObjectActivatedEvent(MapObjectSprite mapObjectSprite) => MapObjectActivatedEvent?.Invoke(mapObjectSprite);
+        public static void PublishCommandMapObjectEvent(MapObject mapObject) => CommandMapObjectEvent?.Invoke(mapObject);
+        public static void PublishActiveNextMapObjectEvent() => ActiveNextMapObjectEvent?.Invoke();
+        public static void PublishActivePrevMapObjectEvent() => ActivePrevMapObjectEvent?.Invoke();
+        public static void PublishRenameFleetRequestedEvent(FleetSprite fleetSprite) => RenameFleetRequestedEvent?.Invoke(fleetSprite);
+        public static void PublishGotoMapObjectEvent(MapObjectSprite mapObjectSprite) => GotoMapObjectEvent?.Invoke(mapObjectSprite);
 
         #endregion
 
@@ -199,46 +175,15 @@ namespace CraigStars.Singletons
 
         #region Dialog Publishers
 
-        public static void PublishChangeProductionQueuePressedEvent(PlanetSprite planet)
-        {
-            ChangeProductionQueuePressedEvent?.Invoke(planet);
-        }
-
-        public static void PublishResearchDialogRequestedEvent()
-        {
-            ResearchDialogRequestedEvent?.Invoke();
-        }
-
-        public static void PublishShipDesignerDialogRequestedEvent()
-        {
-            ShipDesignerDialogRequestedEvent?.Invoke();
-        }
-
-        public static void PublishTechBrowserDialogRequestedEvent()
-        {
-            TechBrowserDialogRequestedEvent?.Invoke();
-        }
-
-        public static void PublishPlanetViewStateUpdatedEvent()
-        {
-            PlanetViewStateUpdatedEvent?.Invoke();
-        }
-
-        public static void PublishProductionQueueChangedEvent(Planet planet)
-        {
-            ProductionQueueChangedEvent?.Invoke(planet);
-        }
-
-        public static void PublishCargoTransferRequestedEvent(ICargoHolder source, ICargoHolder dest)
-        {
-            CargoTransferRequestedEvent?.Invoke(source, dest);
-        }
-
-
-        public static void PublishSubmitTurnEvent(Player player)
-        {
-            SubmitTurnEvent?.Invoke(player);
-        }
+        public static void PublishChangeProductionQueuePressedEvent(PlanetSprite planet) => ChangeProductionQueuePressedEvent?.Invoke(planet);
+        public static void PublishResearchDialogRequestedEvent() => ResearchDialogRequestedEvent?.Invoke();
+        public static void PublishReportsDialogRequestedEvent() => ReportsDialogRequestedEvent?.Invoke();
+        public static void PublishShipDesignerDialogRequestedEvent() => ShipDesignerDialogRequestedEvent?.Invoke();
+        public static void PublishTechBrowserDialogRequestedEvent() => TechBrowserDialogRequestedEvent?.Invoke();
+        public static void PublishPlanetViewStateUpdatedEvent() => PlanetViewStateUpdatedEvent?.Invoke();
+        public static void PublishProductionQueueChangedEvent(Planet planet) => ProductionQueueChangedEvent?.Invoke(planet);
+        public static void PublishCargoTransferRequestedEvent(ICargoHolder source, ICargoHolder dest) => CargoTransferRequestedEvent?.Invoke(source, dest);
+        public static void PublishSubmitTurnEvent(Player player) => SubmitTurnEvent?.Invoke(player);
 
         #endregion
 

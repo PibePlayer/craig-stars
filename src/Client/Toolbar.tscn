@@ -53,7 +53,7 @@ __meta__ = {
 anchor_left = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -329.0
+margin_left = -394.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -86,8 +86,15 @@ size_flags_horizontal = 0
 disabled = true
 text = "Battle Plans"
 
-[node name="SubmitTurnButton" type="Button" parent="Panel/HBoxContainerRight"]
+[node name="ReportsButton" type="Button" parent="Panel/HBoxContainerRight"]
 margin_left = 272.0
-margin_right = 329.0
+margin_right = 333.0
+margin_bottom = 40.0
+size_flags_horizontal = 0
+text = "Reports"
+
+[node name="SubmitTurnButton" type="Button" parent="Panel/HBoxContainerRight"]
+margin_left = 337.0
+margin_right = 394.0
 margin_bottom = 40.0
 text = "Submit"

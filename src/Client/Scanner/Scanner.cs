@@ -29,6 +29,7 @@ namespace CraigStars
         public List<PlanetSprite> Planets { get; } = new List<PlanetSprite>();
         public List<FleetSprite> Fleets { get; } = new List<FleetSprite>();
         public Dictionary<Guid, PlanetSprite> PlanetsByGuid { get; set; } = new Dictionary<Guid, PlanetSprite>();
+        public Dictionary<Guid, FleetSprite> FleetsByGuid { get; set; } = new Dictionary<Guid, FleetSprite>();
         public List<WaypointArea> waypointAreas = new List<WaypointArea>();
         public List<ScannerCoverage> Scanners { get; set; } = new List<ScannerCoverage>();
         public List<ScannerCoverage> PenScanners { get; set; } = new List<ScannerCoverage>();
@@ -67,6 +68,7 @@ namespace CraigStars
             Signals.MapObjectActivatedEvent += OnMapObjectActivated;
             Signals.ActiveNextMapObjectEvent += OnActiveNextMapObject;
             Signals.ActivePrevMapObjectEvent += OnActivePrevMapObject;
+            Signals.CommandMapObjectEvent += OnCommandMapObject;
             Signals.WaypointAddedEvent += OnWaypointAdded;
             Signals.WaypointSelectedEvent += OnWaypointSelected;
             Signals.WaypointDeletedEvent += OnWaypointDeleted;
@@ -79,6 +81,7 @@ namespace CraigStars
             Signals.MapObjectActivatedEvent -= OnMapObjectActivated;
             Signals.ActiveNextMapObjectEvent -= OnActiveNextMapObject;
             Signals.ActivePrevMapObjectEvent -= OnActivePrevMapObject;
+            Signals.CommandMapObjectEvent -= OnCommandMapObject;
             Signals.WaypointAddedEvent -= OnWaypointAdded;
             Signals.WaypointSelectedEvent -= OnWaypointSelected;
             Signals.WaypointDeletedEvent -= OnWaypointDeleted;
@@ -157,6 +160,31 @@ namespace CraigStars
                 CommandMapObject(mapObjectToActivate);
             }
         }
+
+        /// <summary>
+        /// If an external source asks us to command a map object, look up the sprite by guid and command it
+        /// This is published by the Reports dialog
+        /// </summary>
+        /// <param name="mapObject"></param>
+        void OnCommandMapObject(MapObject mapObject)
+        {
+            MapObjectSprite mapObjectToActivate = null;
+            if (mapObject is Planet planet && PlanetsByGuid.TryGetValue(planet.Guid, out var planetSprite))
+            {
+                mapObjectToActivate = planetSprite;
+            }
+            else if (mapObject is Fleet fleet && FleetsByGuid.TryGetValue(fleet.Guid, out var fleetSprite))
+            {
+                mapObjectToActivate = fleetSprite;
+            }
+
+            // activate this object
+            if (mapObjectToActivate != null && mapObjectToActivate != ActivePlanet && mapObjectToActivate != ActiveFleet)
+            {
+                CommandMapObject(mapObjectToActivate);
+            }
+        }
+
 
         // TODO: We need to share this functionality with the various mouse click stuff
         // It's not good for it to be all over
@@ -450,6 +478,7 @@ namespace CraigStars
                 f.QueueFree();
             });
             Fleets.Clear();
+            FleetsByGuid.Clear();
 
             waypointAreas.ForEach(wpa => { RemoveChild(wpa); wpa.DisconnectAll(); wpa.QueueFree(); });
             waypointAreas.Clear();
@@ -475,6 +504,7 @@ namespace CraigStars
             Fleets.ForEach(f => f.Connect("input_event", this, nameof(OnInputEvent)));
             Fleets.ForEach(f => f.Connect("mouse_entered", this, nameof(OnMouseEntered), new Godot.Collections.Array() { f }));
             Fleets.ForEach(f => f.Connect("mouse_exited", this, nameof(OnMouseExited), new Godot.Collections.Array() { f }));
+            FleetsByGuid = Fleets.ToLookup(f => f.Fleet.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
         }
 
         public void ResetScannerToHome()

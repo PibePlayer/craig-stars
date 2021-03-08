@@ -200,7 +200,7 @@ namespace CraigStars
             }
             else
             {
-                planet.Starbase = new Starbase();
+                planet.Starbase = new Starbase() { Name = item.Design.Name };
             }
             planet.Starbase.Tokens.Add(new ShipToken(item.Design, 1));
 

@@ -5,7 +5,6 @@
 [sub_resource type="ButtonGroup" id=1]
 
 [node name="ResearchDialog" type="WindowDialog"]
-visible = true
 margin_right = 695.0
 margin_bottom = 403.0
 window_title = "Cargo Transfver"

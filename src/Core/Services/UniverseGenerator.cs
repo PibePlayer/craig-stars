@@ -233,9 +233,12 @@ namespace CraigStars
             planet.Scanner = true;
 
             // the homeworld gets a starbase
+            var starbaseDesign = player.GetDesign("Starbase");
+
             planet.Starbase = new Starbase()
             {
                 Player = player,
+                Name = starbaseDesign.Name,
                 Position = planet.Position,
                 Orbiting = planet,
                 Waypoints = new List<Waypoint>

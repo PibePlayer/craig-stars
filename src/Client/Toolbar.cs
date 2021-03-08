@@ -13,18 +13,20 @@ namespace CraigStars
         Button shipDesignerButton;
         Button researchButton;
         Button battlePlansButton;
+        Button reportsButton;
         Button submitTurnButton;
 
         public override void _Ready()
         {
-            normalViewToolButton = FindNode("NormalViewToolButton") as ToolButton;
-            percentViewToolButton = FindNode("PercentViewToolButton") as ToolButton;
+            normalViewToolButton = (ToolButton)FindNode("NormalViewToolButton");
+            percentViewToolButton = (ToolButton)FindNode("PercentViewToolButton");
 
-            techBrowserButton = FindNode("TechBrowserButton") as Button;
-            shipDesignerButton = FindNode("ShipDesignerButton") as Button;
-            researchButton = FindNode("ResearchButton") as Button;
-            battlePlansButton = FindNode("BattlePlansButton") as Button;
-            submitTurnButton = FindNode("SubmitTurnButton") as Button;
+            techBrowserButton = (Button)FindNode("TechBrowserButton");
+            shipDesignerButton = (Button)FindNode("ShipDesignerButton");
+            researchButton = (Button)FindNode("ResearchButton");
+            battlePlansButton = (Button)FindNode("BattlePlansButton");
+            reportsButton = (Button)FindNode("ReportsButton");
+            submitTurnButton = (Button)FindNode("SubmitTurnButton");
 
             normalViewToolButton.Connect("pressed", this, nameof(OnNormalViewToolButtonPressed));
             percentViewToolButton.Connect("pressed", this, nameof(OnPercentViewToolButtonPressed));
@@ -33,6 +35,7 @@ namespace CraigStars
             shipDesignerButton.Connect("pressed", this, nameof(OnShipDesignerButtonPressed));
             researchButton.Connect("pressed", this, nameof(OnResearchButtonPressed));
             battlePlansButton.Connect("pressed", this, nameof(OnBattlePlansButtonPressed));
+            reportsButton.Connect("pressed", this, nameof(OnReportsButtonPressed));
             submitTurnButton.Connect("pressed", this, nameof(OnSubmitTurnButtonPressed));
 
             Signals.TurnGeneratingEvent += OnTurnGenerating;
@@ -67,7 +70,6 @@ namespace CraigStars
             Signals.PublishPlanetViewStateUpdatedEvent();
         }
 
-
         void OnTechBrowserButtonPressed()
         {
             Signals.PublishTechBrowserDialogRequestedEvent();
@@ -81,6 +83,11 @@ namespace CraigStars
         void OnResearchButtonPressed()
         {
             Signals.PublishResearchDialogRequestedEvent();
+        }
+
+        void OnReportsButtonPressed()
+        {
+            Signals.PublishReportsDialogRequestedEvent();
         }
 
         void OnBattlePlansButtonPressed()

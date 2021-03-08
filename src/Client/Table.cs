@@ -18,6 +18,9 @@ namespace CraigStars
         protected int sortColumn = 0;
         protected SortDirection sortDirection;
 
+        ToolButton showOwnedButton;
+        ToolButton showAllButton;
+
         public readonly struct ColumnData
         {
             public readonly string text;
@@ -58,7 +61,10 @@ namespace CraigStars
         public override void _Ready()
         {
             tree = GetNode<Tree>("Tree");
-            searchLineEdit = GetNode<LineEdit>("SearchLineEdit");
+            searchLineEdit = (LineEdit)FindNode("SearchLineEdit");
+
+            showOwnedButton = (ToolButton)FindNode("ShowOwnedButton");
+            showAllButton = (ToolButton)FindNode("ShowAllButton");
 
             // our tree has visible columns
             tree.SetColumnTitlesVisible(true);
@@ -66,10 +72,17 @@ namespace CraigStars
             searchLineEdit.Connect("text_changed", this, nameof(OnSearchLineEditTextChanged));
             tree.Connect("column_title_pressed", this, nameof(OnColumnTitlePressed));
             tree.Connect("cell_selected", this, nameof(OnCellSelected));
+            showOwnedButton.Connect("pressed", this, nameof(OnShowOwnedPressed));
+            showAllButton.Connect("pressed", this, nameof(OnShowAllPressed));
             Connect("visibility_changed", this, nameof(OnVisible));
         }
 
         protected void OnVisible()
+        {
+            UpdateItems();
+        }
+
+        protected void UpdateItems()
         {
             ClearTree();
             AddHeader();
@@ -91,6 +104,16 @@ namespace CraigStars
             ClearTree();
             AddHeader();
             AddRows(searchLineEdit.Text, sortColumn, sortDirection);
+        }
+
+        protected virtual void OnShowOwnedPressed()
+        {
+
+        }
+
+        protected virtual void OnShowAllPressed()
+        {
+
         }
 
         void OnCellSelected()

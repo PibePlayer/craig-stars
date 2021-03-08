@@ -7,21 +7,15 @@ namespace CraigStars
 {
     public class ReportsDialog : WindowDialog
     {
-        /// <summary>
-        /// Show the admin view, which shows all planets and fleets from the game
-        /// </summary>
-        /// <value></value>
-        public bool AdminView { get; set; }
+        Button okButton;
 
         public override void _Ready()
         {
-
+            okButton = FindNode("OKButton") as Button;
+            okButton.Connect("pressed", this, nameof(OnOK));
         }
 
-        void ShowMe()
-        {
-            PopupCentered();
-        }
+        void OnOK() => Hide();
 
     }
 }

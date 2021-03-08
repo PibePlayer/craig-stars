@@ -12,7 +12,18 @@ namespace CraigStars
     {
         ILog log = LogManager.GetLogger(typeof(PlanetsTable));
 
+        public bool ShowAll { get; set; }
+
         public override void _Ready()
+        {
+            ResetColumns();
+            base._Ready();
+        }
+
+        protected override void OnShowOwnedPressed() { ShowAll = false; UpdateItems(); }
+        protected override void OnShowAllPressed() { ShowAll = true; UpdateItems(); }
+
+        void ResetColumns()
         {
             Columns.Clear();
             Columns.AddRange(new List<string>() {
@@ -25,8 +36,7 @@ namespace CraigStars
             "Mine",
             "Factory",
             "Defense",
-        });
-            base._Ready();
+            });
         }
 
         /// <summary>
@@ -39,10 +49,17 @@ namespace CraigStars
             var player = PlayersManager.Me;
             var race = player.Race;
 
-            var capacity = item.Population / (float)item.GetMaxPopulation(race, player.Rules);
-            var habitability = race.GetPlanetHabitability(item.Hab.Value);
+            var capacity = 0.0;
+            var habitability = 0;
+            var habitabilityText = "Unknown";
+            if (item.Explored)
+            {
+                capacity = item.Population / (float)item.GetMaxPopulation(race, player.Rules);
+                habitability = race.GetPlanetHabitability(item.Hab.Value);
+                habitabilityText = $"{habitability:.#}%";
+            }
             var production = "--";
-            if (item?.ProductionQueue.Items.Count > 0)
+            if (item.ProductionQueue?.Items.Count > 0)
             {
                 production = $"{item.ProductionQueue.Items[0].ShortName}";
             }
@@ -52,17 +69,25 @@ namespace CraigStars
                 new ColumnData($"{(item.Starbase != null ? item.Starbase.Name : "--")}"),
                 new ColumnData($"{item.Population}", item.Population),
                 new ColumnData($"{capacity*100:.#}%", capacity),
-                new ColumnData($"{habitability:.#}%", habitability),
+                new ColumnData(habitabilityText, habitability),
                 new ColumnData(production),
-                new ColumnData(item.Mines),
-                new ColumnData(item.Factories),
-                new ColumnData(item.Defenses),
+                item.Explored ? new ColumnData(item.Mines) : new ColumnData("--", -1),
+                item.Explored ? new ColumnData(item.Factories) : new ColumnData("--", -1),
+                item.Explored ? new ColumnData(item.Defenses) : new ColumnData("--", -1),
             };
+
         }
 
         protected override IEnumerable<Planet> GetItems()
         {
-            return PlayersManager.Me.Planets.Where(p => p.Player == PlayersManager.Me);
+            if (ShowAll)
+            {
+                return PlayersManager.Me.Planets;
+            }
+            else
+            {
+                return PlayersManager.Me.Planets.Where(p => p.Player == PlayersManager.Me);
+            }
         }
 
         protected override void ItemSelected(TreeItem row, int col)

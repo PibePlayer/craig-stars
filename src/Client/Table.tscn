@@ -1,4 +1,6 @@
-[gd_scene format=2]
+[gd_scene load_steps=2 format=2]
+
+[sub_resource type="ButtonGroup" id=1]
 
 [node name="Table" type="VBoxContainer"]
 margin_right = 1047.0
@@ -7,15 +9,50 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="SearchLineEdit" type="LineEdit" parent="."]
+[node name="Panel" type="Panel" parent="."]
+show_behind_parent = true
 margin_right = 1047.0
-margin_bottom = 24.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 0, 40 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ShowOwnedButton" type="ToolButton" parent="Panel/HBoxContainer"]
+margin_right = 57.0
+margin_bottom = 40.0
+toggle_mode = true
+pressed = true
+group = SubResource( 1 )
+text = "Owned"
+flat = false
+
+[node name="ShowAllButton" type="ToolButton" parent="Panel/HBoxContainer"]
+margin_left = 61.0
+margin_right = 90.0
+margin_bottom = 40.0
+toggle_mode = true
+group = SubResource( 1 )
+text = "All"
+flat = false
+
+[node name="SearchLineEdit" type="LineEdit" parent="Panel/HBoxContainer"]
+margin_left = 94.0
+margin_right = 1047.0
+margin_bottom = 40.0
+size_flags_horizontal = 3
+align = 2
+placeholder_text = "Search..."
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Tree" type="Tree" parent="."]
-margin_top = 28.0
+margin_top = 44.0
 margin_right = 1047.0
 margin_bottom = 697.0
 size_flags_vertical = 3

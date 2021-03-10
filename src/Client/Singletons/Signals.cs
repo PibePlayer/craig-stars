@@ -17,11 +17,15 @@ namespace CraigStars.Singletons
     {
         static ILog log = LogManager.GetLogger(typeof(Signals));
 
-        public delegate void YearUpdate(int year);
-        public delegate void GameStart(String name, int year);
+        public delegate void YearUpdate(PublicGameInfo gameInfo);
+        public delegate void GameStart(PublicGameInfo gameInfo);
         public static event YearUpdate TurnPassedEvent;
         public static event Action TurnGeneratingEvent;
         public static event Action<TurnGeneratorState> TurnGeneratorAdvancedEvent;
+
+        public static void PublishTurnPassedEvent(PublicGameInfo gameInfo) => TurnPassedEvent?.Invoke(gameInfo);
+        public static void PublishTurnGeneratorAdvancedEvent(TurnGeneratorState state) => TurnGeneratorAdvancedEvent?.Invoke(state);
+        public static void PublishTurnGeneratingEvent() => TurnGeneratingEvent?.Invoke();
 
         #region Viewport Events
 
@@ -29,6 +33,7 @@ namespace CraigStars.Singletons
         public static event Action<MapObjectSprite> MapObjectSelectedEvent;
         public static event Action<MapObjectSprite> MapObjectActivatedEvent;
         public static event Action<MapObject> CommandMapObjectEvent;
+        public static event Action<MapObject> SelectMapObjectEvent;
         public static event Action<Fleet, Waypoint> WaypointAddedEvent;
         public static event Action<Waypoint> WaypointSelectedEvent;
         public static event Action<Waypoint> WaypointDeletedEvent;
@@ -63,7 +68,7 @@ namespace CraigStars.Singletons
         public static event PreStartGame PreStartGameEvent;
 
         public static event GameStart PostStartGameEvent;
-        public static void PublishPostStartGameEvent(string name, int year) => PostStartGameEvent?.Invoke(name, year);
+        public static void PublishPostStartGameEvent(PublicGameInfo gameInfo) => PostStartGameEvent?.Invoke(gameInfo);
 
 
         #endregion
@@ -88,13 +93,7 @@ namespace CraigStars.Singletons
 
         #region Event Publishers
 
-        public static void PublishTurnGeneratorAdvancedEvent(TurnGeneratorState state) => TurnGeneratorAdvancedEvent?.Invoke(state);
-        public static void PublishTurnGeneratingEvent() => TurnGeneratingEvent?.Invoke();
-
-        public static void PublishPreStartGameEvent(List<PublicPlayerInfo> players)
-        {
-            PreStartGameEvent?.Invoke(players);
-        }
+        public static void PublishPreStartGameEvent(List<PublicPlayerInfo> players) => PreStartGameEvent?.Invoke(players);
 
         /// <summary>
         /// Publish a player updated event for any listeners
@@ -110,30 +109,11 @@ namespace CraigStars.Singletons
             }
         }
 
-        public static void PublishPlayerJoinedEvent(int networkId)
-        {
-            PlayerJoinedEvent?.Invoke(networkId);
-        }
+        public static void PublishPlayerJoinedEvent(int networkId) => PlayerJoinedEvent?.Invoke(networkId);
+        public static void PublishPlayerLeftEvent(int networkId) => PlayerLeftEvent?.Invoke(networkId);
+        public static void PublishPlayerReadyToStart(int networkId, bool ready) => PlayerReadyToStartEvent?.Invoke(networkId, ready);
+        public static void PublishPlayerMessageEvent(PlayerMessage message) => PlayerMessageEvent?.Invoke(message);
 
-        public static void PublishPlayerLeftEvent(int networkId)
-        {
-            PlayerLeftEvent?.Invoke(networkId);
-        }
-
-        public static void PublishPlayerReadyToStart(int networkId, bool ready)
-        {
-            PlayerReadyToStartEvent?.Invoke(networkId, ready);
-        }
-
-        public static void PublishPlayerMessageEvent(PlayerMessage message)
-        {
-            PlayerMessageEvent?.Invoke(message);
-        }
-
-        public static void PublishTurnPassedEvent(int year)
-        {
-            TurnPassedEvent?.Invoke(year);
-        }
 
         # region Scanner Objects
 
@@ -141,6 +121,7 @@ namespace CraigStars.Singletons
         public static void PublishMapObjectSelectedEvent(MapObjectSprite mapObjectSprite) => MapObjectSelectedEvent?.Invoke(mapObjectSprite);
         public static void PublishMapObjectActivatedEvent(MapObjectSprite mapObjectSprite) => MapObjectActivatedEvent?.Invoke(mapObjectSprite);
         public static void PublishCommandMapObjectEvent(MapObject mapObject) => CommandMapObjectEvent?.Invoke(mapObject);
+        public static void PublishSelectMapObjectEvent(MapObject mapObject) => SelectMapObjectEvent?.Invoke(mapObject);
         public static void PublishActiveNextMapObjectEvent() => ActiveNextMapObjectEvent?.Invoke();
         public static void PublishActivePrevMapObjectEvent() => ActivePrevMapObjectEvent?.Invoke();
         public static void PublishRenameFleetRequestedEvent(FleetSprite fleetSprite) => RenameFleetRequestedEvent?.Invoke(fleetSprite);

@@ -48,7 +48,7 @@ namespace CraigStars
             Signals.TurnPassedEvent -= OnTurnPassed;
         }
 
-        private void OnTurnPassed(int year)
+        private void OnTurnPassed(PublicGameInfo gameInfo)
         {
             submitTurnButton.Disabled = false;
         }

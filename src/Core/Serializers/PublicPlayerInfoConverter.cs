@@ -29,10 +29,25 @@ namespace CraigStars
                         switch (propertyName)
                         {
                             case "Name":
-                                player.Name = reader.Value as String;
+                                player.Name = reader.Value as string;
                                 break;
                             case "Num":
                                 player.Num = Convert.ToInt32(reader.Value);
+                                break;
+                            case "NetworkId":
+                                player.NetworkId = Convert.ToInt32(reader.Value);
+                                break;
+                            case "Ready":
+                                player.Ready = Convert.ToBoolean(reader.Value);
+                                break;
+                            case "AIControlled":
+                                player.AIControlled = Convert.ToBoolean(reader.Value);
+                                break;
+                            case "SubmittedTurn":
+                                player.SubmittedTurn = Convert.ToBoolean(reader.Value);
+                                break;
+                            case "Color":
+                                player.Color = new Color(reader.Value as string);
                                 break;
                         }
                     }
@@ -54,6 +69,16 @@ namespace CraigStars
             writer.WriteValue(value.Name);
             writer.WritePropertyName("Num");
             writer.WriteValue(value.Num);
+            writer.WritePropertyName("NetworkId");
+            writer.WriteValue(value.NetworkId);
+            writer.WritePropertyName("Ready");
+            writer.WriteValue(value.Ready);
+            writer.WritePropertyName("AIControlled");
+            writer.WriteValue(value.AIControlled);
+            writer.WritePropertyName("SubmittedTurn");
+            writer.WriteValue(value.SubmittedTurn);
+            writer.WritePropertyName("Color");
+            writer.WriteValue(value.Color.ToHtml());
             writer.WriteEndObject();
         }
     }

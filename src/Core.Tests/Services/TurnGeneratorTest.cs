@@ -44,6 +44,10 @@ namespace CraigStars.Tests
                     }
                 })
             });
+
+            // make sure the player has a copy of this design
+            player.Designs.Add(ShipDesigns.LongRangeScount.Clone());
+
             return game;
         }
         [Test]

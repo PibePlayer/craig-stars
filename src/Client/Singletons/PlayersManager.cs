@@ -120,10 +120,9 @@ namespace CraigStars.Singletons
                 {
                     Num = num,
                     Name = num < playerNames.Length ? playerNames[num] : $"Player {num + 1}",
-                    Color = PlayerColors.Length < num ? PlayerColors[num] : Colors.White,
+                    Color = num < PlayerColors.Length ? PlayerColors[num] : Colors.White,
                     AIControlled = num != 0,
                     Ready = true,
-                    Rules = RulesManager.Rules,
                     TechStore = TechStore.Instance
                 };
 
@@ -236,9 +235,7 @@ namespace CraigStars.Singletons
                     log.Debug($"The server sent along my Player info. Registering full Player for {player} in PlayersManager.");
                     var fullPlayer = new Player()
                     {
-                        Rules = RulesManager.Rules,
                         TechStore = TechStore.Instance
-
                     };
                     fullPlayer.Update(player);
                     Players.Add(fullPlayer);

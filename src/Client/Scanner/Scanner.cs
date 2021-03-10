@@ -69,6 +69,7 @@ namespace CraigStars
             Signals.ActiveNextMapObjectEvent += OnActiveNextMapObject;
             Signals.ActivePrevMapObjectEvent += OnActivePrevMapObject;
             Signals.CommandMapObjectEvent += OnCommandMapObject;
+            Signals.SelectMapObjectEvent += OnSelectMapObject;
             Signals.WaypointAddedEvent += OnWaypointAdded;
             Signals.WaypointSelectedEvent += OnWaypointSelected;
             Signals.WaypointDeletedEvent += OnWaypointDeleted;
@@ -82,6 +83,7 @@ namespace CraigStars
             Signals.ActiveNextMapObjectEvent -= OnActiveNextMapObject;
             Signals.ActivePrevMapObjectEvent -= OnActivePrevMapObject;
             Signals.CommandMapObjectEvent -= OnCommandMapObject;
+            Signals.SelectMapObjectEvent -= OnSelectMapObject;
             Signals.WaypointAddedEvent -= OnWaypointAdded;
             Signals.WaypointSelectedEvent -= OnWaypointSelected;
             Signals.WaypointDeletedEvent -= OnWaypointDeleted;
@@ -93,7 +95,7 @@ namespace CraigStars
             Planets.ForEach(p => p.UpdateSprite());
         }
 
-        void OnTurnPassed(int year)
+        void OnTurnPassed(PublicGameInfo gameInfo)
         {
             // update all the sprites
             mapObjectsUnderMouse.Clear();
@@ -185,18 +187,51 @@ namespace CraigStars
             }
         }
 
+        /// <summary>
+        /// If an external source asks us to command a map object, look up the sprite by guid and command it
+        /// This is published by the Reports dialog
+        /// </summary>
+        /// <param name="mapObject"></param>
+        void OnSelectMapObject(MapObject mapObject)
+        {
+            MapObjectSprite mapObjectToSelect = null;
+            if (mapObject is Planet planet && PlanetsByGuid.TryGetValue(planet.Guid, out var planetSprite))
+            {
+                mapObjectToSelect = planetSprite;
+            }
+            else if (mapObject is Fleet fleet && FleetsByGuid.TryGetValue(fleet.Guid, out var fleetSprite))
+            {
+                mapObjectToSelect = fleetSprite;
+            }
+
+            // activate this object
+            if (mapObjectToSelect != null && mapObjectToSelect != ActivePlanet && mapObjectToSelect != ActiveFleet)
+            {
+                SelectMapObject(mapObjectToSelect);
+            }
+        }
+
+        void SelectMapObject(MapObjectSprite mapObject)
+        {
+            selectedMapObject.Deselect();
+            selectedMapObject = mapObject;
+            selectedMapObject.Select();
+            selectedMapObject.UpdateSprite();
+            Signals.PublishMapObjectSelectedEvent(mapObject);
+            UpdateSelectedIndicator();
+        }
 
         // TODO: We need to share this functionality with the various mouse click stuff
         // It's not good for it to be all over
-        void CommandMapObject(MapObjectSprite mapObjectToActivate)
+        void CommandMapObject(MapObjectSprite mapObject)
         {
             selectedMapObject.Deselect();
-            selectedMapObject = mapObjectToActivate;
-            commandedMapObject = mapObjectToActivate;
+            selectedMapObject = mapObject;
+            commandedMapObject = mapObject;
             commandedMapObject.Command();
             commandedMapObject.UpdateSprite();
-            Signals.PublishMapObjectSelectedEvent(mapObjectToActivate);
-            Signals.PublishMapObjectActivatedEvent(mapObjectToActivate);
+            Signals.PublishMapObjectSelectedEvent(mapObject);
+            Signals.PublishMapObjectActivatedEvent(mapObject);
             UpdateSelectedIndicator();
         }
 
@@ -250,7 +285,7 @@ namespace CraigStars
 
         public void InitMapObjects()
         {
-            Planets.AddRange(Me.Planets.Select(planet =>
+            Planets.AddRange(Me.AllPlanets.Select(planet =>
             {
                 var planetSprite = planetScene.Instance() as PlanetSprite;
                 planetSprite.Planet = planet;
@@ -487,7 +522,7 @@ namespace CraigStars
             ActivePlanet = null;
 
             // add in new fleets
-            Fleets.AddRange(Me.Fleets.Select(fleet =>
+            Fleets.AddRange(Me.AllFleets.Select(fleet =>
             {
                 var fleetSprite = fleetScene.Instance() as FleetSprite;
                 fleetSprite.Fleet = fleet;

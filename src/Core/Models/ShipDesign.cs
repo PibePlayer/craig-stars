@@ -115,6 +115,7 @@ namespace CraigStars
             Aggregate.Cost = Hull.Cost;
             Aggregate.SpaceDock = 0;
             Aggregate.CargoCapacity += Hull.CargoCapacity;
+            Aggregate.MineSweep = 0;
 
             foreach (ShipDesignSlot slot in Slots)
             {
@@ -123,6 +124,18 @@ namespace CraigStars
                     if (slot.HullComponent is TechEngine engine)
                     {
                         Aggregate.Engine = engine;
+                    }
+                    if (slot.HullComponent.Category == TechCategory.BeamWeapon && slot.HullComponent.Power > 0 && slot.HullComponent.Range > 0)
+                    {
+                        // mine sweep is power * (range)^2
+                        var gattlingMultiplier = 1;
+                        if (slot.HullComponent.Gattling)
+                        {
+                            // gattlings are 4x more mine-sweepery
+                            // lol, 4x, get it?
+                            gattlingMultiplier = 4;
+                        }
+                        Aggregate.MineSweep += slot.Quantity * slot.HullComponent.Power * (slot.HullComponent.Range * slot.HullComponent.Range) * gattlingMultiplier;
                     }
                     Cost cost = slot.HullComponent.Cost * slot.Quantity;
                     Aggregate.Cost += cost;
@@ -150,14 +163,14 @@ namespace CraigStars
                 if (Hull.Starbase)
                 {
                     // look for starbases in use
-                    Aggregate.InUse = Player.Planets.Any(planet => planet.Starbase?.Tokens[0].Design == this);
+                    Aggregate.InUse = Player.Planets.Any(planet => planet.Starbase?.Tokens[0].Design.Guid == this.Guid);
                 }
                 else
                 {
                     // look for fleets in use
                     Aggregate.InUse = Player.Fleets.Any(fleet => fleet.Tokens.Any(token =>
                     {
-                        return token.Design == this;
+                        return token.Design.Guid == this.Guid;
                     }));
                 }
             }

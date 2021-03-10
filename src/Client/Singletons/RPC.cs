@@ -191,8 +191,11 @@ namespace CraigStars.Singletons
         {
             log.Info("Client: Server sent player data, updated Me");
             PlayersManager.Me.Fleets.Clear();
+            PlayersManager.Me.ForeignFleets.Clear();
             PlayersManager.Me.Planets.Clear();
+            PlayersManager.Me.ForeignPlanets.Clear();
             PlayersManager.Me.Designs.Clear();
+            PlayersManager.Me.ForeignDesigns.Clear();
             PlayersManager.Me.Messages.Clear();
             PlayersManager.Me.DeletedDesigns.Clear();
             PlayersManager.Me.CargoTransferOrders.Clear();
@@ -240,35 +243,40 @@ namespace CraigStars.Singletons
         /// </summary>
         /// <param name="year"></param>
         /// <param name="networkId"></param>
-        public void SendPostStartGame(String name, int year, int networkId = 0)
+        public void SendPostStartGame(PublicGameInfo gameInfo, int networkId = 0)
         {
+            string json = Serializers.Serialize(gameInfo);
             if (networkId == 0)
             {
-                Rpc(nameof(PostStartGame), name, year);
+                Rpc(nameof(PostStartGame), json);
             }
             else
             {
-                RpcId(networkId, nameof(PostStartGame), name, year);
+                RpcId(networkId, nameof(PostStartGame), json);
             }
         }
 
         [Remote]
-        public void PostStartGame(String name, int year)
+        public void PostStartGame(string gameInfoJson)
         {
-            Signals.PublishPostStartGameEvent(name, year);
+            PublicGameInfo gameInfo = Serializers.DeserializeObject<PublicGameInfo>(gameInfoJson);
+            log.Info($"Client: PostStartGameEvent for UI: {gameInfo.Name}");
+
+            Signals.PublishPostStartGameEvent(gameInfo);
         }
 
         #region Game Events
 
-        public void SendTurnPassed(int year)
+        public void SendTurnPassed(PublicGameInfo gameInfo)
         {
-            Rpc(nameof(TurnPassed), year);
+            Rpc(nameof(TurnPassed), Serializers.Serialize(gameInfo));
         }
 
         [Remote]
-        public void TurnPassed(int year)
+        public void TurnPassed(string gameInfoJson)
         {
-            Signals.PublishTurnPassedEvent(year);
+            PublicGameInfo gameInfo = Serializers.DeserializeObject<PublicGameInfo>(gameInfoJson);
+            Signals.PublishTurnPassedEvent(gameInfo);
             log.Info("Client: PublishedTurnPassedEvent for UI");
         }
 

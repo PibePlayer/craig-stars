@@ -13,8 +13,6 @@ namespace CraigStars
         [Export]
         public PackedScene PlayerReadyContainerScene { get; set; }
 
-        public Game Game { get; set; } = new Game();
-
         TextEdit chat;
         LineEdit chatMessage;
         Button startGameButton;
@@ -106,7 +104,7 @@ namespace CraigStars
         /// Clients receive this event so they know to switch to the Game scene
         /// </summary>
         /// <param name="year"></param>
-        void OnPostStartGame(string name, int year)
+        void OnPostStartGame(PublicGameInfo gameInfo)
         {
             GetTree().ChangeScene("res://src/Client/GameView.tscn");
         }

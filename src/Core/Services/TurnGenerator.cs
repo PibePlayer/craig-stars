@@ -283,11 +283,17 @@ namespace CraigStars
                 // clear out old fleets
                 // we rebuild this list each turn
                 player.Fleets.Clear();
-                player.Planets.ForEach(p => p.OrbitingFleets.Clear());
-
-                // increase the report age. We'll reset it to 0
-                // if we scan it
-                player.Planets.Where(p => p.ReportAge != Planet.Unexplored).Select(p => p.ReportAge++);
+                player.ForeignFleets.Clear();
+                foreach (var planet in player.AllPlanets)
+                {
+                    planet.OrbitingFleets.Clear();
+                    if (planet.ReportAge != Planet.Unexplored)
+                    {
+                        // increase the report age. We'll reset it to 0
+                        // if we scan it
+                        planet.ReportAge++;
+                    }
+                }
 
                 // build a list of scanners for this player
                 var scanners = new List<Scanner>();

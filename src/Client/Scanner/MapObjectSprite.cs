@@ -96,7 +96,7 @@ namespace CraigStars
             UpdateSprite();
         }
 
-        protected virtual void OnTurnPassed(int year)
+        protected virtual void OnTurnPassed(PublicGameInfo gameInfo)
         {
             UpdateSprite();
         }

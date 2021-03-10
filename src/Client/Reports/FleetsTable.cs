@@ -11,7 +11,18 @@ namespace CraigStars
     {
         ILog log = LogManager.GetLogger(typeof(PlanetsTable));
 
+        public bool ShowAll { get; set; }
+
         public override void _Ready()
+        {
+            ResetColumns();
+            base._Ready();
+        }
+
+        protected override void OnShowOwnedPressed() { ShowAll = false; ResetColumns(); UpdateItems(); }
+        protected override void OnShowAllPressed() { ShowAll = true; ResetColumns(); UpdateItems(); }
+
+        void ResetColumns()
         {
             Columns.Clear();
             Columns.AddRange(new List<string>() {
@@ -24,7 +35,11 @@ namespace CraigStars
             "Cargo",
             "Mass",
         });
-            base._Ready();
+            // maybe we need a column header class with a "hidden" field?
+            if (ShowAll)
+            {
+                Columns.Insert(1, "Owner");
+            }
         }
 
         /// <summary>
@@ -37,14 +52,26 @@ namespace CraigStars
             var player = PlayersManager.Me;
             var race = player.Race;
 
-            var wp0 = item.Waypoints[0];
+            var owner = "--";
+            var location = $"Space: ({item.Position.x:.##}, {item.Position.y:.##})"; ;
             var destination = "--";
             var etaText = "--";
             var eta = double.MaxValue;
             var task = "(no task here)";
 
-            if (item.Waypoints.Count > 1)
+            if (item.Owner != null)
             {
+                owner = $"{item.Owner.RacePluralName}";
+            }
+            else
+            {
+                owner = "--";
+            }
+
+            if (item.Waypoints?.Count > 1)
+            {
+                var wp0 = item.Waypoints[0];
+                location = wp0.TargetName;
                 var nextWaypoint = item.Waypoints[1];
                 destination = nextWaypoint.TargetName;
                 eta = Math.Ceiling(wp0.GetTimeToWaypoint(nextWaypoint));
@@ -54,7 +81,8 @@ namespace CraigStars
 
             return new ColumnData[] {
                 new ColumnData(item.Name, guid: item.Guid),
-                new ColumnData(wp0.TargetName),
+                new ColumnData(owner, hidden: !ShowAll),
+                new ColumnData(location),
                 new ColumnData(destination),
                 new ColumnData(etaText, eta),
                 new ColumnData(task),
@@ -66,7 +94,14 @@ namespace CraigStars
 
         protected override IEnumerable<Fleet> GetItems()
         {
-            return PlayersManager.Me.Fleets.Where(f => f.Player == PlayersManager.Me);
+            if (ShowAll)
+            {
+                return PlayersManager.Me.AllFleets;
+            }
+            else
+            {
+                return PlayersManager.Me.Fleets;
+            }
         }
 
         protected override void ItemSelected(TreeItem row, int col)
@@ -74,7 +109,14 @@ namespace CraigStars
             Guid guid = Guid.Parse(row.GetMetadata(0).ToString());
             if (PlayersManager.Me.FleetsByGuid.TryGetValue(guid, out var fleet))
             {
-                Signals.PublishCommandMapObjectEvent(fleet);
+                if (fleet.OwnedBy(PlayersManager.Me))
+                {
+                    Signals.PublishCommandMapObjectEvent(fleet);
+                }
+                else
+                {
+                    Signals.PublishSelectMapObjectEvent(fleet);
+                }
             }
             else
             {

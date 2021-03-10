@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace CraigStars
 {
@@ -25,7 +26,9 @@ namespace CraigStars
         public float MovementBonus { get; set; }
         public int BeamDefense { get; set; }
         public int BeamBonus { get; set; }
+        [DefaultValue(NoScanner)]
         public int ScanRange { get; set; } = NoScanner;
+        [DefaultValue(NoScanner)]
         public int ScanRangePen { get; set; } = NoScanner;
         public bool StealCargo { get; set; }
         public bool Radiating { get; set; }
@@ -39,6 +42,7 @@ namespace CraigStars
         public int Initiative { get; set; }
         public int Accuracy { get; set; }
         public int MineSweep { get; set; }
+        public bool Gattling { get; set; }
         public bool HitsAllTargets { get; set; }
         public bool DamageShieldsOnly { get; set; }
         public bool CapitalShipMissile { get; set; }

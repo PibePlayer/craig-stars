@@ -33,15 +33,15 @@ namespace CraigStars
             continueGameNameLabel = (Label)FindNode("ContinueGameNameLabel");
             continueGameYearLabel = (Label)FindNode("ContinueGameYearLabel");
 
-            hostPortEdit.Text = GameSettings.Instance.ServerPort.ToString();
-            joinHostEdit.Text = GameSettings.Instance.ClientHost;
-            joinPortEdit.Text = GameSettings.Instance.ClientPort.ToString();
+            hostPortEdit.Text = Settings.Instance.ServerPort.ToString();
+            joinHostEdit.Text = Settings.Instance.ClientHost;
+            joinPortEdit.Text = Settings.Instance.ClientPort.ToString();
 
-            if (GameSettings.Instance.ContinueGame != null)
+            if (Settings.Instance.ContinueGame != null)
             {
                 continueGameButton.Visible = continueGameInfo.Visible = true;
-                continueGameNameLabel.Text = GameSettings.Instance.ContinueGame;
-                continueGameYearLabel.Text = $"{GameSettings.Instance.ContinueYear}";
+                continueGameNameLabel.Text = Settings.Instance.ContinueGame;
+                continueGameYearLabel.Text = $"{Settings.Instance.ContinueYear}";
 
                 continueGameButton.Connect("pressed", this, nameof(OnContinueGameButtonPressed));
             }
@@ -83,8 +83,8 @@ namespace CraigStars
             ((Button)joinWindow.FindNode("JoinButton")).Text = "Joining...";
             var host = ((LineEdit)joinWindow.FindNode("HostEdit")).Text;
             var port = int.Parse(((LineEdit)joinWindow.FindNode("PortEdit")).Text);
-            GameSettings.Instance.ClientHost = host;
-            GameSettings.Instance.ClientPort = port;
+            Settings.Instance.ClientHost = host;
+            Settings.Instance.ClientPort = port;
             Client.Instance.JoinGame(host, port);
         }
 
@@ -103,13 +103,13 @@ namespace CraigStars
         void OnContinueGameButtonPressed()
         {
             // like a new game, but we continue
-            GameSettings.Instance.ShouldContinueGame = true;
+            Settings.Instance.ShouldContinueGame = true;
             OnNewGameButtonPressed();
         }
 
         void OnSettingsButtonPressed()
         {
-            GetTree().ChangeScene("res://src/Client/MenuScreens/Settings.tscn");
+            GetTree().ChangeScene("res://src/Client/MenuScreens/SettingsMenu.tscn");
         }
 
         void OnHostGameButtonPressed()
@@ -138,8 +138,8 @@ namespace CraigStars
         {
             PlayersManager.Instance.Reset();
             PlayersManager.Instance.SetupPlayers();
-            GameSettings.Instance.ServerPort = int.Parse(hostPortEdit.Text);
-            Network.Instance.HostGame(GameSettings.Instance.ServerPort);
+            Settings.Instance.ServerPort = int.Parse(hostPortEdit.Text);
+            Network.Instance.HostGame(Settings.Instance.ServerPort);
             Network.Instance.BeginGame();
             GetTree().ChangeScene("res://src/Client/MenuScreens/Lobby.tscn");
         }

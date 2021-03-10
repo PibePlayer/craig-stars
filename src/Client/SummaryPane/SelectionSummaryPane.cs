@@ -9,6 +9,8 @@ namespace CraigStars
         [Export]
         public GUIColors GUIColors { get; set; } = new GUIColors();
 
+        Player Me { get => PlayersManager.Me; }
+
         public MapObjectSprite MapObject
         {
             get => mapObject; set
@@ -20,35 +22,17 @@ namespace CraigStars
         MapObjectSprite mapObject;
 
 
-        Control planetContainer;
+        PlanetSummaryContainer planetSummaryContainer;
         Control unknownPlanetContainer;
+        Control fleetSummaryContainer;
         Label nameLabel;
-        Label valueLabel;
-        Label reportAgeLabel;
-
-        HabBar gravHabBar;
-        HabBar tempHabBar;
-        HabBar radHabBar;
-
-        MineralBar ironiumMineralBar;
-        MineralBar boraniumMineralBar;
-        MineralBar germaniumMineralBar;
 
         public override void _Ready()
         {
-            planetContainer = FindNode("PlanetContainer") as Control;
-            unknownPlanetContainer = FindNode("UnknownPlanetContainer") as Control;
-            nameLabel = FindNode("Name") as Label;
-            valueLabel = FindNode("Value") as Label;
-            reportAgeLabel = FindNode("ReportAge") as Label;
-
-            gravHabBar = FindNode("GravHabBar") as HabBar;
-            tempHabBar = FindNode("TempHabBar") as HabBar;
-            radHabBar = FindNode("RadHabBar") as HabBar;
-
-            ironiumMineralBar = FindNode("IroniumMineralBar") as MineralBar;
-            boraniumMineralBar = FindNode("BoraniumMineralBar") as MineralBar;
-            germaniumMineralBar = FindNode("GermaniumMineralBar") as MineralBar;
+            planetSummaryContainer = (PlanetSummaryContainer)FindNode("PlanetSummaryContainer");
+            unknownPlanetContainer = (Control)FindNode("UnknownPlanetContainer");
+            fleetSummaryContainer = (Control)FindNode("FleetSummaryContainer");
+            nameLabel = (Label)FindNode("Name");
 
             Signals.MapObjectSelectedEvent += OnMapObjectSelected;
             Signals.TurnPassedEvent += OnTurnPassed;
@@ -65,7 +49,7 @@ namespace CraigStars
             MapObject = mapObject;
         }
 
-        void OnTurnPassed(int year)
+        void OnTurnPassed(PublicGameInfo gameInfo)
         {
             UpdateControls();
         }
@@ -75,72 +59,33 @@ namespace CraigStars
 
             if (MapObject != null)
             {
-                var race = PlayersManager.Me.Race;
-                gravHabBar.Low = race.HabLow.grav;
-                tempHabBar.Low = race.HabLow.temp;
-                radHabBar.Low = race.HabLow.rad;
-
-                gravHabBar.High = race.HabHigh.grav;
-                tempHabBar.High = race.HabHigh.temp;
-                radHabBar.High = race.HabHigh.rad;
-
                 nameLabel.Text = $"{MapObject.ObjectName} Summary";
 
-                var planet = MapObject?.MapObject as Planet;
-                if (planet != null && race != null)
+                if (MapObject.MapObject is Planet planet)
                 {
                     if (planet.Explored && planet.Hab is Hab hab)
                     {
-                        planetContainer.Visible = true;
+                        planetSummaryContainer.Visible = true;
                         unknownPlanetContainer.Visible = false;
-
-                        int habValue = race.GetPlanetHabitability(hab);
-                        valueLabel.Text = $"{habValue}%";
-                        // TODO: Add terraforming
-                        if (habValue > 0)
-                        {
-                            valueLabel.Modulate = GUIColors.HabitablePlanetTextColor;
-                        }
-                        else
-                        {
-                            valueLabel.Modulate = GUIColors.UninhabitablePlanetTextColor;
-                        }
-
-                        if (planet.ReportAge == 0)
-                        {
-                            reportAgeLabel.Text = "Report is current";
-                        }
-                        else if (planet.ReportAge == 1)
-                        {
-                            reportAgeLabel.Text = "Report 1 year old";
-                        }
-                        else
-                        {
-                            reportAgeLabel.Text = $"Report {planet.ReportAge} years old";
-                        }
-
-                        gravHabBar.HabValue = hab.grav;
-                        tempHabBar.HabValue = hab.temp;
-                        radHabBar.HabValue = hab.rad;
-
-                        ironiumMineralBar.Concentration = planet.MineralConcentration.Ironium;
-                        boraniumMineralBar.Concentration = planet.MineralConcentration.Boranium;
-                        germaniumMineralBar.Concentration = planet.MineralConcentration.Germanium;
-
-                        ironiumMineralBar.Surface = planet.Cargo.Ironium;
-                        boraniumMineralBar.Surface = planet.Cargo.Boranium;
-                        germaniumMineralBar.Surface = planet.Cargo.Germanium;
                     }
                     else
                     {
-                        planetContainer.Visible = false;
+                        planetSummaryContainer.Visible = false;
                         unknownPlanetContainer.Visible = true;
                     }
+                    fleetSummaryContainer.Visible = false;
+                }
+                else if (MapObject.MapObject is Fleet fleet)
+                {
+                    planetSummaryContainer.Visible = false;
+                    unknownPlanetContainer.Visible = false;
+                    fleetSummaryContainer.Visible = true;
                 }
                 else
                 {
                     nameLabel.Text = "Unknown";
-                    planetContainer.Visible = false;
+                    fleetSummaryContainer.Visible = false;
+                    planetSummaryContainer.Visible = false;
                     unknownPlanetContainer.Visible = false;
                 }
             }

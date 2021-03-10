@@ -86,6 +86,9 @@ namespace CraigStars.Tests
             player.Fleets.Add(fleet1);
             player.Fleets.Add(fleet2);
 
+            // messages require looking up objects by guid
+            player.SetupMapObjectMappings();
+
             // add a message about our homeworld
             Message.HomePlanet(player, planet1);
 

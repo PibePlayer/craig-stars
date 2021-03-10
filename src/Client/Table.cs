@@ -26,10 +26,13 @@ namespace CraigStars
             public readonly string text;
             public readonly IComparable value;
             public readonly Guid guid;
+            public readonly bool hidden;
 
-            public ColumnData(string text, IComparable value = null, Guid? guid = null)
+            public ColumnData(string text, IComparable value = null, Guid? guid = null, bool hidden = false)
             {
                 this.text = text;
+                this.hidden = hidden;
+
                 if (value == null)
                 {
                     this.value = text;
@@ -53,6 +56,7 @@ namespace CraigStars
                 this.text = value.ToString();
                 this.value = value;
                 this.guid = Guid.Empty;
+                this.hidden = false;
             }
         }
 
@@ -128,6 +132,7 @@ namespace CraigStars
 
         void OnSearchLineEditTextChanged(string newText)
         {
+
             ClearTree();
             AddHeader();
             AddRows(newText, sortColumn, sortDirection);
@@ -202,7 +207,23 @@ namespace CraigStars
                 sortedRows = items.Select((item) => CreateColumnData(item)).OrderByDescending((p) => p, comparer);
             }
 
-            return sortedRows.ToList();
+            return sortedRows.Where(row =>
+            {
+                if (filter == "")
+                {
+                    return true;
+                }
+
+                var lowerCaseFilter = filter.ToLower();
+                foreach (var columnData in row)
+                {
+                    if (columnData.value.ToString().ToLower().Contains(lowerCaseFilter))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }).ToList();
         }
 
         /// <summary>
@@ -218,9 +239,14 @@ namespace CraigStars
                 var item = tree.CreateItem(root);
                 item.SetMetadata(0, row[0].guid.ToString());
 
+                int visibleCol = 0;
                 for (int col = 0; col < Columns.Count; col++)
                 {
-                    item.SetText(col, row[col].text);
+                    if (row[col].hidden)
+                    {
+                        continue;
+                    }
+                    item.SetText(visibleCol++, row[col].text);
                 }
             }
         }

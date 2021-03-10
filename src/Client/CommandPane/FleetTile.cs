@@ -31,7 +31,7 @@ public class FleetTile : MarginContainer
         UpdateControls();
     }
 
-    protected virtual void OnTurnPassed(int year)
+    protected virtual void OnTurnPassed(PublicGameInfo gameInfo)
     {
         UpdateControls();
     }

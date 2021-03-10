@@ -21,6 +21,7 @@ namespace CraigStars
         /// If this is a ship building item, this is the design to build
         /// </summary>
         /// <value></value>
+        [JsonProperty(IsReference = true)]
         public ShipDesign Design { get; set; }
 
         [JsonConstructor]

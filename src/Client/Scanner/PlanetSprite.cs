@@ -144,7 +144,32 @@ namespace CraigStars
             // TODO: make this work with multiple types
             if (Planet.OrbitingFleets.Count > 0)
             {
-                orbitingState = Orbiting.Orbiting;
+                bool allAllies = true;
+                bool allEnemies = true;
+                Planet.OrbitingFleets.ForEach(fleet =>
+                {
+                    if (fleet.OwnedBy(Me))
+                    {
+                        allEnemies = false;
+                    }
+                    else
+                    {
+                        allAllies = false;
+                    }
+                });
+                if (allAllies)
+                {
+                    orbitingState = Orbiting.Orbiting;
+                }
+                else if (allEnemies)
+                {
+                    orbitingState = Orbiting.OrbitingEnemies;
+                }
+                else
+                {
+                    orbitingState = Orbiting.OrbitingAlliesAndEnemies;
+                }
+
             }
 
             if (Planet.Owner != null)
@@ -237,17 +262,30 @@ namespace CraigStars
             switch (orbitingState)
             {
                 case Orbiting.Orbiting:
-                case Orbiting.OrbitingEnemies:
-                case Orbiting.OrbitingAlliesAndEnemies:
-                    if (isActive)
-                    {
-                        orbitingCommanded.Visible = true;
-                    }
-                    else
-                    {
-                        orbiting.Visible = true;
-                    }
+                    orbitingCommanded.Modulate = Colors.White;
+                    orbiting.Modulate = Colors.White;
                     break;
+                case Orbiting.OrbitingEnemies:
+                    orbitingCommanded.Modulate = GUIColors.EnemyColor;
+                    orbiting.Modulate = GUIColors.EnemyColor;
+                    break;
+                case Orbiting.OrbitingAlliesAndEnemies:
+                    orbitingCommanded.Modulate = GUIColors.FriendAndEnemyColor;
+                    orbiting.Modulate = GUIColors.FriendAndEnemyColor;
+                    break;
+            }
+
+            if (orbitingState != Orbiting.None)
+            {
+                if (isActive)
+                {
+                    orbitingCommanded.Visible = true;
+                }
+                else
+                {
+                    orbiting.Visible = true;
+                }
+
             }
 
         }

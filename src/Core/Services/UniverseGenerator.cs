@@ -60,8 +60,6 @@ namespace CraigStars
 
             Game.Planets.AddRange(planets);
             Game.Fleets.AddRange(fleets);
-            Game.Width = Game.Rules.Area;
-            Game.Height = Game.Rules.Area;
         }
 
         /// <summary>
@@ -233,7 +231,7 @@ namespace CraigStars
             planet.Scanner = true;
 
             // the homeworld gets a starbase
-            var starbaseDesign = player.GetDesign("Starbase");
+            var starbaseDesign = Game.DesignsByGuid[player.GetDesign("Starbase").Guid];
 
             planet.Starbase = new Starbase()
             {
@@ -248,7 +246,7 @@ namespace CraigStars
                 Tokens = new List<ShipToken>
             {
                 new ShipToken() {
-                    Design = player.GetDesign("Starbase"),
+                    Design = starbaseDesign,
                     Quantity = 1,
                 }
             }
@@ -427,8 +425,8 @@ namespace CraigStars
             {
                 if (design.Player == player)
                 {
-                    design.ComputeAggregate(player);
                     Game.DesignsByGuid[design.Guid] = design;
+                    design.ComputeAggregate(player);
                     player.UpdateDesignReport(design, true);
                 }
             });
@@ -441,8 +439,10 @@ namespace CraigStars
         /// <param name="planets"></param>
         public void InitPlayerReports(Player player, List<Planet> planets)
         {
+            // TODO: re-use Player.UpdatePlayerPlanet()/Player.UpdatePlanetReport
             planets.ForEach(planet =>
             {
+                // add an empty report for this planet
                 var planetReport = new Planet()
                 {
                     Position = planet.Position,
@@ -452,10 +452,19 @@ namespace CraigStars
                     ReportAge = Planet.Unexplored,
                 };
 
-                player.Planets.Add(planetReport);
+                player.PlanetsByGuid[planetReport.Guid] = planetReport;
+
+                if (planet.OwnedBy(player))
+                {
+                    planetReport.Player = player;
+                    player.Planets.Add(planetReport);
+                    player.UpdatePlayerPlanet(planet);
+                }
+                else
+                {
+                    player.ForeignPlanets.Add(planetReport);
+                }
             });
-            // build each players dictionary of planets by id
-            player.SetupMapObjectMappings();
         }
 
         #region Starting Minerals

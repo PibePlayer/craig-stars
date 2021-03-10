@@ -104,6 +104,11 @@ namespace CraigStars
         /// <returns></returns>
         public static JsonSerializerSettings CreateGameSettings(Game game)
         {
+            return CreateGameSettings(game.Players, game.TechStore);
+        }
+
+        public static JsonSerializerSettings CreateGameSettings(List<Player> players, ITechStore techStore)
+        {
             return new JsonSerializerSettings()
             {
                 Formatting = Formatting.Indented,
@@ -111,7 +116,7 @@ namespace CraigStars
                 ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
                 DefaultValueHandling = DefaultValueHandling.Ignore,
                 TraceWriter = traceWriter,
-                ContractResolver = new PlayerContractResolver<Player>(game.Players, game.TechStore),
+                ContractResolver = new PlayerContractResolver<Player>(players, techStore),
 
                 Converters = new JsonConverter[] {
                     new ColorJsonConverter(),
@@ -282,5 +287,6 @@ namespace CraigStars
             }
             return null;
         }
+
     }
 }

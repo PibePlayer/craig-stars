@@ -20,8 +20,8 @@ namespace CraigStars
             base._Ready();
         }
 
-        protected override void OnShowOwnedPressed() { ShowAll = false; UpdateItems(); }
-        protected override void OnShowAllPressed() { ShowAll = true; UpdateItems(); }
+        protected override void OnShowOwnedPressed() { ShowAll = false; ResetColumns(); UpdateItems(); }
+        protected override void OnShowAllPressed() { ShowAll = true; ResetColumns(); UpdateItems(); }
 
         void ResetColumns()
         {
@@ -37,6 +37,12 @@ namespace CraigStars
             "Factory",
             "Defense",
             });
+
+            // maybe we need a column header class with a "hidden" field?
+            if (ShowAll)
+            {
+                Columns.Insert(1, "Owner");
+            }
         }
 
         /// <summary>
@@ -49,11 +55,23 @@ namespace CraigStars
             var player = PlayersManager.Me;
             var race = player.Race;
 
+            var explored = item.Explored;
+            var owned = item.OwnedBy(player);
+
+            var owner = "(unexplored)";
             var capacity = 0.0;
-            var habitability = 0;
-            var habitabilityText = "Unknown";
-            if (item.Explored)
+            var habitability = int.MinValue;
+            var habitabilityText = "(unexplored)";
+            if (explored)
             {
+                if (item.Owner != null)
+                {
+                    owner = $"{item.Owner.RacePluralName}";
+                }
+                else
+                {
+                    owner = "--";
+                }
                 capacity = item.Population / (float)item.GetMaxPopulation(race, player.Rules);
                 habitability = race.GetPlanetHabitability(item.Hab.Value);
                 habitabilityText = $"{habitability:.#}%";
@@ -66,14 +84,15 @@ namespace CraigStars
 
             return new ColumnData[] {
                 new ColumnData(item.Name, guid: item.Guid),
+                new ColumnData(owner, hidden: !ShowAll),
                 new ColumnData($"{(item.Starbase != null ? item.Starbase.Name : "--")}"),
                 new ColumnData($"{item.Population}", item.Population),
                 new ColumnData($"{capacity*100:.#}%", capacity),
                 new ColumnData(habitabilityText, habitability),
                 new ColumnData(production),
-                item.Explored ? new ColumnData(item.Mines) : new ColumnData("--", -1),
-                item.Explored ? new ColumnData(item.Factories) : new ColumnData("--", -1),
-                item.Explored ? new ColumnData(item.Defenses) : new ColumnData("--", -1),
+                (explored && owned) ? new ColumnData(item.Mines) : new ColumnData("--", -1),
+                (explored && owned) ? new ColumnData(item.Factories) : new ColumnData("--", -1),
+                (explored && owned) ? new ColumnData(item.Defenses) : new ColumnData("--", -1),
             };
 
         }
@@ -82,11 +101,11 @@ namespace CraigStars
         {
             if (ShowAll)
             {
-                return PlayersManager.Me.Planets;
+                return PlayersManager.Me.AllPlanets;
             }
             else
             {
-                return PlayersManager.Me.Planets.Where(p => p.Player == PlayersManager.Me);
+                return PlayersManager.Me.Planets;
             }
         }
 
@@ -95,7 +114,14 @@ namespace CraigStars
             Guid guid = Guid.Parse(row.GetMetadata(0).ToString());
             if (PlayersManager.Me.PlanetsByGuid.TryGetValue(guid, out var planet))
             {
-                Signals.PublishCommandMapObjectEvent(planet);
+                if (planet.OwnedBy(PlayersManager.Me))
+                {
+                    Signals.PublishCommandMapObjectEvent(planet);
+                }
+                else
+                {
+                    Signals.PublishSelectMapObjectEvent(planet);
+                }
             }
             else
             {

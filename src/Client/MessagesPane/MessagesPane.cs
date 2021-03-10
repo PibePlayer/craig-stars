@@ -62,12 +62,12 @@ namespace CraigStars
             UpdateControls();
         }
 
-        void OnPostStartGame(string name, int year)
+        void OnPostStartGame(PublicGameInfo gameInfo)
         {
-            OnTurnPassed(year);
+            OnTurnPassed(gameInfo);
         }
 
-        void OnTurnPassed(int year)
+        void OnTurnPassed(PublicGameInfo gameInfo)
         {
             var player = PlayersManager.Me;
             messageNum = 0;

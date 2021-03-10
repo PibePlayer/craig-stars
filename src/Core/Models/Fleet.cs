@@ -327,19 +327,19 @@ namespace CraigStars
             int fuelCost = 0;
 
             // compute each ship stack separately
-            foreach (var stack in Tokens)
+            foreach (var token in Tokens)
             {
                 // figure out this ship stack's mass as well as it's proportion of the cargo
-                int mass = stack.Design.Aggregate.Mass * stack.Quantity;
+                int mass = token.Design.Aggregate.Mass * token.Quantity;
                 int fleetCargo = Cargo.Total;
-                int stackCapacity = stack.Design.Aggregate.CargoCapacity * stack.Quantity;
+                int stackCapacity = token.Design.Aggregate.CargoCapacity * token.Quantity;
                 int fleetCapacity = Aggregate.CargoCapacity;
 
                 if (fleetCapacity > 0)
                 {
                     mass += (int)((float)fleetCargo * ((float)stackCapacity / (float)fleetCapacity));
                 }
-                fuelCost += GetFuelCost(warpFactor, mass, distance, ifeFactor, stack.Design.Aggregate.Engine);
+                fuelCost += GetFuelCost(warpFactor, mass, distance, ifeFactor, token.Design.Aggregate.Engine);
             }
 
             return fuelCost;
@@ -386,6 +386,7 @@ namespace CraigStars
             Aggregate.ScanRange = TechHullComponent.NoScanner;
             Aggregate.ScanRangePen = TechHullComponent.NoScanner;
             Aggregate.Engine = null;
+            Aggregate.MineSweep = 0;
 
             // compute each token's 
             Tokens.ForEach(token =>
@@ -412,6 +413,9 @@ namespace CraigStars
 
                 // fuel
                 Aggregate.FuelCapacity += token.Design.Aggregate.FuelCapacity * token.Quantity;
+
+                // minesweep
+                Aggregate.MineSweep += token.Design.Aggregate.MineSweep * token.Quantity;
 
                 // colonization
                 if (token.Design.Aggregate.Colonizer)

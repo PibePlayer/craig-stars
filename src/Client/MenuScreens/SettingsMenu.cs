@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class Settings : MarginContainer
+public class SettingsMenu : MarginContainer
 {
     CheckButton musicCheckButton;
 

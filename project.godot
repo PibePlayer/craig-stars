@@ -26,7 +26,7 @@ TechStore="*res://src/Client/Singletons/TechStore.cs"
 PlayersManager="*res://src/Client/Singletons/PlayersManager.cs"
 Rpc="*res://src/Client/Singletons/RPC.cs"
 TextureLoader="*res://src/Client/Singletons/TextureLoader.cs"
-GameSettings="*res://src/Client/Singletons/GameSettings.cs"
+Settings="*res://src/Client/Singletons/Settings.cs"
 Client="*res://src/Client/Singletons/Client.cs"
 Network="*res://src/Client/Singletons/Network.cs"
 

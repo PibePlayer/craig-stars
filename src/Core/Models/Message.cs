@@ -9,7 +9,7 @@ namespace CraigStars
         public MessageType Type { get; set; }
         public String Text { get; set; }
 
-        // [JsonProperty(IsReference = true)]
+        [JsonProperty(IsReference = true)]
         public MapObject Target { get; set; }
 
         public Message() { }
@@ -131,7 +131,7 @@ namespace CraigStars
             String text;
             if (planet.Owner != null && planet.Owner != player)
             {
-                text = $"You have found a planet occupied by someone else. {planet.Name} is currently owned by the {planet.Player.Race.PluralName}";
+                text = $"You have found a planet occupied by someone else. {planet.Name} is currently owned by the {planet.Owner.RacePluralName}";
             }
             else
             {

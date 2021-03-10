@@ -20,7 +20,7 @@ namespace CraigStars
             Signals.TurnPassedEvent -= OnTurnPassed;
         }
 
-        protected virtual void OnTurnPassed(int year)
+        protected virtual void OnTurnPassed(PublicGameInfo gameInfo)
         {
             UpdateControls();
         }

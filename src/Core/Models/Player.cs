@@ -11,10 +11,18 @@ namespace CraigStars
         static ILog log = LogManager.GetLogger(typeof(Player));
 
         /// <summary>
+        /// The player needs to know information about the game
+        /// </summary>
+        public PublicGameInfo Game { get; set; } = new PublicGameInfo();
+
+        public override String RaceName { get => Race.Name; }
+        public override String RacePluralName { get => Race.PluralName; }
+
+        /// <summary>
         /// Each player gets a copy of rules from the server. These rules are used
         /// for computing various values both for the UI and during turn generation
         /// </summary>
-        public Rules Rules { get; set; } = new Rules();
+        public Rules Rules { get => Game.Rules; }
 
         /// <summary>
         /// Each player gets a TechStore from the server (or client)
@@ -64,6 +72,12 @@ namespace CraigStars
         [JsonProperty(ItemIsReference = true)]
         public List<ShipDesign> DeletedDesigns { get; set; } = new List<ShipDesign>();
 
+        [JsonProperty(ItemIsReference = true)]
+        public List<ShipDesign> ForeignDesigns { get; set; } = new List<ShipDesign>();
+
+        [JsonIgnore]
+        public IEnumerable<ShipDesign> AllDesigns { get => Designs.Concat(ForeignDesigns); }
+
         #endregion
 
         #region Universe Data
@@ -75,10 +89,22 @@ namespace CraigStars
         public List<Planet> Planets { get; set; } = new List<Planet>();
 
         [JsonProperty(ItemIsReference = true)]
+        public List<Planet> ForeignPlanets { get; set; } = new List<Planet>();
+
+        [JsonIgnore]
+        public IEnumerable<Planet> AllPlanets { get => Planets.Concat(ForeignPlanets); }
+
+        [JsonProperty(ItemIsReference = true)]
         public List<Fleet> Fleets { get; set; } = new List<Fleet>();
 
         [JsonProperty(ItemIsReference = true)]
         public List<Fleet> DeletedFleets { get; set; } = new List<Fleet>();
+
+        [JsonProperty(ItemIsReference = true)]
+        public List<Fleet> ForeignFleets { get; set; } = new List<Fleet>();
+
+        [JsonIgnore]
+        public IEnumerable<Fleet> AllFleets { get => Fleets.Concat(ForeignFleets); }
 
         [JsonProperty(ItemIsReference = true)]
         public List<Message> Messages { get; set; } = new List<Message>();
@@ -111,9 +137,9 @@ namespace CraigStars
 
         public void SetupMapObjectMappings()
         {
-            DesignsByGuid = Designs.ToLookup(d => d.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
-            PlanetsByGuid = Planets.ToLookup(p => p.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
-            FleetsByGuid = Fleets.ToLookup(f => f.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
+            DesignsByGuid = AllDesigns.ToLookup(d => d.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
+            PlanetsByGuid = AllPlanets.ToLookup(p => p.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
+            FleetsByGuid = AllFleets.ToLookup(f => f.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
         }
 
         public void ComputeAggregates()
@@ -136,7 +162,7 @@ namespace CraigStars
             DeletedDesigns.Add(Designs[designIndex]);
             Designs.RemoveAt(designIndex);
 
-            foreach (var fleet in Fleets.Where(f => f.OwnedBy(this)))
+            foreach (var fleet in Fleets)
             {
                 fleet.Tokens = fleet.Tokens.Where(token => token.Design != design).ToList();
             }
@@ -448,33 +474,20 @@ namespace CraigStars
             else
             {
                 var newDesign = design.Clone();
-                Designs.Add(newDesign);
+                if (design.Player == this)
+                {
+                    Designs.Add(newDesign);
+                }
+                else
+                {
+                    ForeignDesigns.Add(newDesign);
+                }
                 DesignsByGuid[newDesign.Guid] = newDesign;
                 if (!penScanned)
                 {
                     // don't show the player slots if it was scanned with penetrating scanners
                     newDesign.Slots.Clear();
                 }
-            }
-        }
-
-        /// <summary>
-        /// Update our report of this planet
-        /// Note: This should never be an RPC call, it should always
-        /// be called on the server
-        /// </summary>
-        /// <param name="planet"></param>
-        public void UpdatePlanetReport(Planet planet)
-        {
-            var planetReport = PlanetsByGuid[planet.Guid];
-            if (planetReport.ReportAge > 0)
-            {
-                planetReport.UpdatePlanetReport(planet);
-            }
-            else if (planetReport.ReportAge == Planet.Unexplored)
-            {
-                planetReport.UpdatePlanetReport(planet);
-                Message.PlanetDiscovered(this, planetReport);
             }
         }
 
@@ -487,8 +500,37 @@ namespace CraigStars
         public void UpdatePlayerPlanet(Planet planet)
         {
             var planetReport = PlanetsByGuid[planet.Guid];
+
+            if (planetReport.Player != planet.Player)
+            {
+                // this planet wasn't owned by us last turn, switch which list it belongs to
+                ForeignPlanets.Remove(planetReport);
+                Planets.Add(planetReport);
+            }
+
             planetReport.Player = this;
             planetReport.UpdatePlayerPlanet(planet);
+        }
+
+        /// <summary>
+        /// Update our report of this planet
+        /// Note: This should never be an RPC call, it should always
+        /// be called on the server
+        /// </summary>
+        /// <param name="planet"></param>
+        public void UpdatePlanetReport(Planet planet)
+        {
+            var planetReport = PlanetsByGuid[planet.Guid];
+
+            if (planetReport.ReportAge > 0)
+            {
+                planetReport.UpdatePlanetReport(planet);
+            }
+            else if (planetReport.ReportAge == Planet.Unexplored)
+            {
+                planetReport.UpdatePlanetReport(planet);
+                Message.PlanetDiscovered(this, planetReport);
+            }
         }
 
         /// <summary>
@@ -505,6 +547,7 @@ namespace CraigStars
                 Name = fleet.Name,
                 RaceName = fleet.Player.Race.Name,
                 RacePluralName = fleet.Player.Race.PluralName,
+                Owner = fleet.Owner,
             };
 
             // update orbiting information
@@ -536,18 +579,24 @@ namespace CraigStars
                     }
                 });
                 fleetReport.Cargo = fleet.Cargo;
-                // TODO: Copy ship tokens? We don't want user modified
-                // ShipDesigns to impact the server...
-                fleetReport.Tokens.AddRange(fleet.Tokens);
+                fleetReport.Tokens.AddRange(fleet.Tokens.Select(token => new ShipToken(DesignsByGuid[token.Design.Guid], token.Quantity)).ToList());
 
-                foreach (var token in fleetReport.Tokens)
-                {
-                    token.Design = DesignsByGuid[token.Design.Guid];
-                }
+                Fleets.Add(fleetReport);
             }
-
-            Fleets.Add(fleetReport);
+            else
+            {
+                foreach (var token in fleet.Tokens)
+                {
+                    if (!DesignsByGuid.ContainsKey(token.Design.Guid))
+                    {
+                        UpdateDesignReport(token.Design, penScanned);
+                    }
+                    fleetReport.Tokens.Add(new ShipToken(DesignsByGuid[token.Design.Guid], token.Quantity));
+                }
+                ForeignFleets.Add(fleetReport);
+            }
             FleetsByGuid[fleet.Guid] = fleetReport;
+
         }
 
         /// <summary>

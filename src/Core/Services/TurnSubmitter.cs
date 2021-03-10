@@ -35,26 +35,30 @@ namespace CraigStars
         /// <param name="player"></param>
         void UpdateShipDesigns(Player player)
         {
-            foreach (var playerDesign in player.Designs.Where(d => d.Player == player))
+            foreach (var playerDesign in player.Designs)
             {
                 if (Game.DesignsByGuid.TryGetValue(playerDesign.Guid, out var design))
                 {
                     if (design.Player != player)
                     {
-                        log.Error($"Player {player} is trying to update design {design.Name}, owned by {design.Player}");
+                        log.Error($"{Game.Year}: Player {player} is trying to update design {design.Name}, owned by {design.Player}");
                         continue;
                     }
                     // see if this design can be updated
                     if (design.Aggregate.InUse)
                     {
-                        log.Debug($"Not updating Player Design: {player} - {design.Name}. It is in use");
+                        log.Debug($"{Game.Year}: Not updating Player Design: {player} - {design.Name}. It is in use");
+                    }
+                    else
+                    {
+                        log.Debug($"{Game.Year}: Updating Game design from Player Design: {player} - {design.Name}.");
                     }
                     // TODO: update design name, slots, etc
                 }
                 else
                 {
                     // this is a new design
-                    log.Debug($"Adding new Player Design: {player} - {playerDesign.Name}.");
+                    log.Debug($"{Game.Year}: Adding new Player Design: {player} - {playerDesign.Name}.");
                     var newDesign = playerDesign.Copy();
                     newDesign.Name = playerDesign.Name;
                     newDesign.Guid = playerDesign.Guid;
@@ -67,7 +71,7 @@ namespace CraigStars
                 if (!player.DesignsByGuid.ContainsKey(design.Guid))
                 {
                     // the player doesn't have this design
-
+                    log.Warn($"{Game.Year}: Player {player} no longer has design that is present in Game designs {design.Name}");
                 }
             }
         }
@@ -79,7 +83,7 @@ namespace CraigStars
         /// <param name="player"></param>
         void UpdateFleetActions(Player player)
         {
-            foreach (var playerFleet in player.Fleets.Where(f => f.Player == player))
+            foreach (var playerFleet in player.Fleets)
             {
                 if (Game.FleetsByGuid.TryGetValue(playerFleet.Guid, out var fleet) && fleet.Player == player)
                 {
@@ -106,7 +110,7 @@ namespace CraigStars
                             {
                                 if (Game.PlanetsByGuid.TryGetValue(planet.Guid, out var gamePlanet))
                                 {
-                                    log.Debug($"Adding player defined waypoint for {fleet.Name} to {playerWaypoint.TargetName} -> {playerWaypoint.Task}");
+                                    log.Debug($"{Game.Year}: Adding player defined waypoint for {fleet.Name} to {playerWaypoint.TargetName} -> {playerWaypoint.Task}");
                                     // add the server side version of this planet as a waypoint
                                     fleet.Waypoints.Add(Waypoint.TargetWaypoint(gamePlanet, playerWaypoint.WarpFactor, playerWaypoint.Task, playerWaypoint.TransportTasks));
                                 }
@@ -120,7 +124,7 @@ namespace CraigStars
                 }
                 else
                 {
-                    log.Error($"Could not find Game Fleet for Player Fleet: {playerFleet.Name}, Guid: {playerFleet.Guid}");
+                    log.Error($"{Game.Year}: Could not find Game Fleet for Player Fleet: {playerFleet.Name}, Guid: {playerFleet.Guid}");
                 }
             }
 
@@ -128,7 +132,7 @@ namespace CraigStars
 
         void UpdateProductionQueues(Player player)
         {
-            foreach (var playerPlanet in player.Planets.Where(p => p.Player == player))
+            foreach (var playerPlanet in player.Planets)
             {
                 if (Game.PlanetsByGuid.TryGetValue(playerPlanet.Guid, out var planet) && planet.Player == player)
                 {
@@ -137,8 +141,7 @@ namespace CraigStars
                     // replacing the player's design with our game design
 
                     planet.ProductionQueue.Items.Clear();
-                    planet.ProductionQueue.Items.AddRange(playerPlanet.ProductionQueue.Items);
-                    planet.ProductionQueue.Items.ForEach(item =>
+                    planet.ProductionQueue.Items.AddRange(playerPlanet.ProductionQueue.Items.Select(item =>
                     {
                         if (item.Design != null)
                         {
@@ -149,10 +152,11 @@ namespace CraigStars
                             }
                             else
                             {
-                                log.Error($"Player ProductionQueueItem has unknown design: {player} - {design.Name}");
+                                log.Error($"{Game.Year}: Player ProductionQueueItem has unknown design: {player} - {design.Name}");
                             }
                         }
-                    });
+                        return item;
+                    }));
                 }
             }
         }

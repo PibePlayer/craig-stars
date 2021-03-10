@@ -24,13 +24,13 @@ namespace CraigStars
             ShipDesign scoutShip = player.Designs.Find(design => design.Hull.Name == "Scout");
 
             // find all the planets we don't know about yet
-            List<Planet> unknownPlanets = player.Planets.Where(planet => !planet.Explored).ToList();
+            List<Planet> unknownPlanets = player.AllPlanets.Where(planet => !planet.Explored).ToList();
             List<Planet> buildablePlanets = player.Planets.Where(planet => planet.CanBuild(player, scoutShip.Aggregate.Mass)).ToList();
 
             // get all the fleets that can scan and don't have waypoints yet
             List<Fleet> scannerFleets = new List<Fleet>();
 
-            foreach (Fleet fleet in player.Fleets.Where(fleet => fleet.OwnedBy(player) && fleet.Aggregate.Scanner))
+            foreach (Fleet fleet in player.Fleets.Where(fleet => fleet.Aggregate.Scanner))
             {
                 if (fleet.Waypoints.Count == 1)
                 {

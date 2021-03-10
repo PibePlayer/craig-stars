@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 using CraigStars.Singletons;
 using log4net;
+using CraigStars.Utils;
 
 namespace CraigStars
 {
@@ -20,7 +21,7 @@ namespace CraigStars
 
             foreach (WaypointTask task in Enum.GetValues(typeof(WaypointTask)))
             {
-                waypointTask.AddItem(GetLabelForWaypointTask(task));
+                waypointTask.AddItem(EnumUtils.GetLabelForWaypointTask(task));
             }
 
             waypointTask.Connect("item_selected", this, nameof(OnWaypointTaskItemSelected));
@@ -48,27 +49,6 @@ namespace CraigStars
                 ActiveWaypoint.Task = (WaypointTask)index;
             }
         }
-
-        string GetLabelForWaypointTask(WaypointTask task)
-        {
-            switch (task)
-            {
-                case WaypointTask.RemoteMining:
-                    return "Remote Mining";
-                case WaypointTask.MergeWithFleet:
-                    return "Merge With Fleet";
-                case WaypointTask.ScrapFleet:
-                    return "Scrap Fleet";
-                case WaypointTask.LayMineField:
-                    return "Lay Mine Field";
-                case WaypointTask.TransferFleet:
-                    return "Transfer";
-                default:
-                    return task.ToString();
-            }
-
-        }
-
 
         protected override void UpdateControls()
         {

@@ -18,6 +18,7 @@ namespace CraigStars
         /// The game node creates a server in single player or host mode
         /// </summary>
         Game Game { get; set; }
+        PublicGameInfo GameInfo { get; set; }
 
         string projectName;
 
@@ -48,8 +49,6 @@ namespace CraigStars
 
         public override void _Ready()
         {
-            // TODO: figure this out for server side...
-            Game = new Game();
             scanner = FindNode("Scanner") as Scanner;
             productionQueueDialog = GetNode<ProductionQueueDialog>("CanvasLayer/ProductionQueueDialog");
             cargoTransferDialog = GetNode<CargoTransferDialog>("CanvasLayer/CargoTransferDialog");
@@ -72,11 +71,11 @@ namespace CraigStars
             // init the server and send a notice to all players that it's time to start
             if (this.IsServerOrSinglePlayer())
             {
-                Game = new Game() { TechStore = TechStore.Instance };
-                if (GameSettings.Instance.ShouldContinueGame)
+                Game = new Game() { TechStore = TechStore.Instance, Mode = Settings.Instance.GameMode };
+                if (Settings.Instance.ShouldContinueGame)
                 {
                     GameSaver saver = new GameSaver(Game);
-                    saver.LoadGame(GameSettings.Instance.ContinueGame, GameSettings.Instance.ContinueYear, TechStore.Instance);
+                    saver.LoadGame(Settings.Instance.ContinueGame, Settings.Instance.ContinueYear, TechStore.Instance);
                     PlayersManager.Instance.InitPlayersFromGame(Game.Players);
                 }
                 else
@@ -84,13 +83,15 @@ namespace CraigStars
                     Game.Init(PlayersManager.Instance.Players.Cast<Player>().ToList(), RulesManager.Rules, TechStore.Instance);
                     Game.GenerateUniverse();
                 }
-                Signals.PublishPostStartGameEvent(Game.Name, Game.Year);
+
+                GameInfo = Game.GameInfo;
+                Signals.PublishPostStartGameEvent(GameInfo);
                 if (this.IsServer())
                 {
                     // send players their data
                     RPC.Instance.SendPlayerDataUpdated(Game);
                     // tell everyone to start the game
-                    RPC.Instance.SendPostStartGame(Game.Name, Game.Year);
+                    RPC.Instance.SendPostStartGame(GameInfo);
                 }
 
                 Game.TurnGeneratorAdvancedEvent += OnTurnGeneratorAdvanced;
@@ -100,7 +101,7 @@ namespace CraigStars
             {
                 // if we aren't the server, we come here with our player data already loaded
                 // TODO: we need public game data
-                OnPostStartGameEvent(Game.Name, PlayersManager.Me.Year);
+                OnPostStartGameEvent(PlayersManager.Me.Game);
             }
 
         }
@@ -147,10 +148,10 @@ namespace CraigStars
                 {
                     // send players their data
                     RPC.Instance.SendPlayerDataUpdated(Game);
-                    RPC.Instance.SendTurnPassed(Game.Year);
+                    RPC.Instance.SendTurnPassed(Game.GameInfo);
                 }
 
-                Signals.PublishTurnPassedEvent(Game.Year);
+                Signals.PublishTurnPassedEvent(Game.GameInfo);
             }
         }
 
@@ -158,17 +159,16 @@ namespace CraigStars
         /// When the game is ready to go, init the scanner
         /// </summary>
         /// <param name="year"></param>
-        void OnPostStartGameEvent(String name, int year)
+        void OnPostStartGameEvent(PublicGameInfo gameInfo)
         {
-            Game.Name = name;
-            OS.SetWindowTitle($"{projectName} - {name}: Year {year}");
+            OS.SetWindowTitle($"{projectName} - {gameInfo.Name}: Year {gameInfo.Year}");
             // add the universe to the viewport
             scanner.InitMapObjects();
         }
 
-        void OnTurnPassedEvent(int year)
+        void OnTurnPassedEvent(PublicGameInfo gameInfo)
         {
-            OS.SetWindowTitle($"{projectName} - {Game.Name}: Year {year}");
+            OS.SetWindowTitle($"{projectName} - {gameInfo.Name}: Year {gameInfo.Year}");
         }
 
 

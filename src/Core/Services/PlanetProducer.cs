@@ -155,7 +155,7 @@ namespace CraigStars
         {
             planet.Player.Stats.NumFleetsBuilt++;
             planet.Player.Stats.NumTokensBuilt += numBuilt;
-            String name = item.fleetName != null ? item.fleetName : $"Fleet #{planet.Player.Stats.NumFleetsBuilt}";
+            String name = item.fleetName != null ? item.fleetName : $"{item.Design.Name} #{planet.Player.Stats.NumFleetsBuilt}";
             var existingFleet = planet.OrbitingFleets.Where(f => f.Name == name);
 
             // if (we didn't have a fleet of that name, or it wasn't defined

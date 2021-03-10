@@ -86,6 +86,7 @@ namespace CraigStars
             Hab = planet.Hab;
             Population = planet.Population;
             ReportAge = 0;
+            Owner = planet.Owner;
         }
 
         /// <summary>
@@ -111,22 +112,22 @@ namespace CraigStars
             ProductionQueue.Allocated = planet.ProductionQueue.Allocated;
             ProductionQueue.LeftoverResources = planet.ProductionQueue.LeftoverResources;
             ProductionQueue.Items.Clear();
-            ProductionQueue.Items.AddRange(planet.ProductionQueue.Items);
-            ProductionQueue.Items.ForEach(item =>
+            ProductionQueue.Items.AddRange(planet.ProductionQueue.Items.Select(item =>
             {
                 if (item.Design != null)
                 {
-                    if (Player.DesignsByGuid.TryGetValue(item.Design.Guid, out var design))
+                    if (Player.DesignsByGuid.TryGetValue(item.Design.Guid, out var playerDesign))
                     {
                         // use the Game design, not the player one
-                        item.Design = design;
+                        item.Design = playerDesign;
                     }
                     else
                     {
-                        log.Error($"Player ProductionQueueItem has unknown design: {Player} - {design.Name}");
+                        log.Error($"Player ProductionQueueItem has unknown design: {Player} - {playerDesign.Name}");
                     }
                 }
-            });
+                return item;
+            }));
 
             if (planet.HasStarbase)
             {

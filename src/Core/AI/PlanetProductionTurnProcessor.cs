@@ -23,7 +23,7 @@ namespace CraigStars
         /// </summary>
         public override void Process(int year, Player player)
         {
-            foreach (var planet in player.Planets.Where(planet => planet.OwnedBy(player)))
+            foreach (var planet in player.Planets)
             {
                 planet.ProductionQueue.EnsureHasItem(new ProductionQueueItem(QueueItemType.AutoMine, 5), 1);
                 planet.ProductionQueue.EnsureHasItem(new ProductionQueueItem(QueueItemType.AutoFactory, 5), 2);

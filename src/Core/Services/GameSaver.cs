@@ -98,6 +98,8 @@ namespace CraigStars
                         player.ComputeAggregates();
                     }
                 }
+
+                game.ComputeAggregates();
             }
 
             return game;

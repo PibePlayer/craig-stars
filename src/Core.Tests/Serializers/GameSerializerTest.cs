@@ -84,6 +84,9 @@ namespace CraigStars.Tests
             player.Fleets.Add(fleet1);
             player.Fleets.Add(fleet2);
 
+            // messages require looking up objects by guid
+            player.SetupMapObjectMappings();
+
             // add a message about our homeworld
             Message.HomePlanet(player, planet1);
 
@@ -95,11 +98,11 @@ namespace CraigStars.Tests
                 Fleets = new List<Fleet>() { fleet1, fleet2 }
             };
 
-            var json = Serializers.Serialize(game);
+            var json = Serializers.SerializeGame(game, Serializers.CreateGameSettings(game));
             log.Info($"\n{json}");
 
             Game loaded = new Game() { TechStore = StaticTechStore.Instance };
-            Serializers.PopulateGame(json, game, Serializers.CreateGameSettings(loaded));
+            Serializers.PopulateGame(json, loaded, Serializers.CreateGameSettings(loaded));
 
             Assert.AreEqual(game.Players.Count, loaded.Players.Count);
             Assert.AreEqual(game.Players[0].Name, loaded.Players[0].Name);
@@ -118,8 +121,8 @@ namespace CraigStars.Tests
 
             var player2 = new Player()
             {
-                Name = "Bob",
-                Num = 0,
+                Name = "Ted",
+                Num = 1,
             };
 
             // generate a tiny universe
@@ -127,18 +130,19 @@ namespace CraigStars.Tests
             game.Init(new List<Player>() { player1, player2 }, new Rules() { Size = Size.Tiny, Density = Density.Sparse }, StaticTechStore.Instance);
             game.GenerateUniverse();
 
-            var gameJson = Serializers.Serialize(game);
-            var settings = Serializers.CreatePlayerSettings(game.Players.Cast<PublicPlayerInfo>().ToList(), game.TechStore);
+            var gameSettings = Serializers.CreateGameSettings(game);
+            var gameJson = Serializers.SerializeGame(game, gameSettings);
+            var playerSettings = Serializers.CreatePlayerSettings(game.Players.Cast<PublicPlayerInfo>().ToList(), game.TechStore);
 
-            var player1Json = Serializers.Serialize(player1, settings);
-            var player2Json = Serializers.Serialize(player2, settings);
+            var player1Json = Serializers.Serialize(player1, playerSettings);
+            var player2Json = Serializers.Serialize(player2, playerSettings);
             log.Info($"Game: \n{gameJson}");
             log.Info($"Player1: \n{player1Json}");
-            log.Info($"Player2: \n{player2Json}");
+            // log.Info($"Player2: \n{player2Json}");
 
             // reload the game
             Game loaded = new Game() { TechStore = StaticTechStore.Instance };
-            Serializers.PopulateGame(gameJson, game, Serializers.CreateGameSettings(loaded));
+            Serializers.PopulateGame(gameJson, loaded, Serializers.CreateGameSettings(loaded));
             var loadSettings = Serializers.CreatePlayerSettings(loaded.Players.Cast<PublicPlayerInfo>().ToList(), loaded.TechStore);
             Serializers.PopulatePlayer(player1Json, loaded.Players[0], loadSettings);
             Serializers.PopulatePlayer(player2Json, loaded.Players[1], loadSettings);

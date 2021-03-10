@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace CraigStars
 {
@@ -14,6 +15,7 @@ namespace CraigStars
         public bool BuiltInScannerForJoaT { get; set; }
         public int CargoCapacity { get; set; }
         public bool Starbase { get; set; }
+        [DefaultValue(UnlimitedSpaceDock)]
         public int SpaceDock { get; set; } = UnlimitedSpaceDock;
         public int Initiative { get; set; }
         public List<TechHullSlot> Slots { get; set; } = new List<TechHullSlot>();

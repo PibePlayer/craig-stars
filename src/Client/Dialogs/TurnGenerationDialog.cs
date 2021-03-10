@@ -56,7 +56,7 @@ namespace CraigStars
             progressBar.Value = 100 * ((int)state / (float)(Enum.GetValues(typeof(TurnGeneratorState)).Length));
         }
 
-        void OnTurnPassed(int year)
+        void OnTurnPassed(PublicGameInfo gameInfo)
         {
             Hide();
         }

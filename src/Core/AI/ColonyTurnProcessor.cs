@@ -14,9 +14,9 @@ namespace CraigStars
         private static readonly ILog log = LogManager.GetLogger(typeof(ColonyTurnProcessor));
 
         // the required population density required of a planet in order to suck people off of it
-        // setting this to .33 because we don't want to suck people off a planet until it's reached the
-        // max of its growth rate (over 1/3rd crowded)
-        private const float PopulationDensityRequired = .33f;
+        // setting this to .25 because we don't want to suck people off a planet until it's reached the
+        // max of its growth rate (over 1/4 crowded)
+        private const float PopulationDensityRequired = .25f;
 
         /// <summary>
         /// a new turn! build some ships

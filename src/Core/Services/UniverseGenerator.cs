@@ -11,6 +11,8 @@ namespace CraigStars
     {
         Game Game { get; }
 
+        PlayerIntel playerIntel = new PlayerIntel();
+
         public UniverseGenerator(Game game)
         {
             Game = game;
@@ -30,7 +32,7 @@ namespace CraigStars
 
                 // initialize this player
                 InitTechLevels(player);
-                InitPlayerReports(player, planets);
+                InitPlayerPlanetReports(player, planets);
                 InitShipDesigns(player);
                 player.PlanetaryScanner = player.GetBestPlanetaryScanner();
 
@@ -416,6 +418,8 @@ namespace CraigStars
             ShipDesignGenerator designer = new ShipDesignGenerator();
             Game.Designs.Add(designer.DesignShip(Techs.Scout, "Long Range Scout", player));
             Game.Designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player));
+
+            // starbases are special, they have a specific design that each player gets
             var starbase = ShipDesigns.Starbase.Copy();
             starbase.Name = "Starbase";
             starbase.Player = player;
@@ -427,7 +431,7 @@ namespace CraigStars
                 {
                     Game.DesignsByGuid[design.Guid] = design;
                     design.ComputeAggregate(player);
-                    player.UpdateDesignReport(design, true);
+                    playerIntel.Discover(player, design, true);
                 }
             });
         }
@@ -437,33 +441,11 @@ namespace CraigStars
         /// </summary>
         /// <param name="player"></param>
         /// <param name="planets"></param>
-        public void InitPlayerReports(Player player, List<Planet> planets)
+        public void InitPlayerPlanetReports(Player player, List<Planet> planets)
         {
-            // TODO: re-use Player.UpdatePlayerPlanet()/Player.UpdatePlanetReport
             planets.ForEach(planet =>
             {
-                // add an empty report for this planet
-                var planetReport = new Planet()
-                {
-                    Position = planet.Position,
-                    Guid = planet.Guid,
-                    Id = planet.Id,
-                    Name = planet.Name,
-                    ReportAge = Planet.Unexplored,
-                };
-
-                player.PlanetsByGuid[planetReport.Guid] = planetReport;
-
-                if (planet.OwnedBy(player))
-                {
-                    planetReport.Player = player;
-                    player.Planets.Add(planetReport);
-                    player.UpdatePlayerPlanet(planet);
-                }
-                else
-                {
-                    player.ForeignPlanets.Add(planetReport);
-                }
+                playerIntel.Discover(player, planet);
             });
         }
 

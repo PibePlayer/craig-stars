@@ -56,7 +56,7 @@ namespace CraigStars
         [DefaultValue(1500000)]
         public int MineralDecayFactor { get; set; } = 1500000;
 
-        // Population Rules
+        // Population rules
         [DefaultValue(25000)]
         public int StartingPopulation { get; set; } = 25000;
         [DefaultValue(12500)]
@@ -64,7 +64,7 @@ namespace CraigStars
         [DefaultValue(.7f)]
         public float LowStartingPopulationFactor { get; set; } = .7f;
 
-        // Bulding Rules
+        // Bulding rules
         [DefaultValue(10)]
         public int StartingMines { get; set; } = 10;
         [DefaultValue(10)]
@@ -89,8 +89,16 @@ namespace CraigStars
         [DefaultValue(20)]
         public int BuiltInScannerJoaTMultiplier = 20;
 
+        // Game rules
         [DefaultValue(1000000)]
         public int MaxPopulation = 1000000;
+
+        /// <summary>
+        /// The amount scanned populations differ from the actual population on the planet
+        /// </summary>
+        [DefaultValue(.2)]
+        public double PopulationScannerError = .2f;
+
 
         /// <summary>
         /// Get the Area of the universe

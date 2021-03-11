@@ -32,6 +32,7 @@ namespace CraigStars
 
         Game Game { get; }
         PlanetProducer planetProducer = new PlanetProducer();
+        PlayerIntel playerIntel = new PlayerIntel();
         List<Planet> ownedPlanets = new List<Planet>();
 
         public TurnGenerator(Game game)
@@ -282,8 +283,8 @@ namespace CraigStars
             {
                 // clear out old fleets
                 // we rebuild this list each turn
-                player.Fleets.Clear();
-                player.ForeignFleets.Clear();
+                playerIntel.ClearFleetReports(player);
+
                 foreach (var planet in player.AllPlanets)
                 {
                     planet.OrbitingFleets.Clear();
@@ -321,9 +322,10 @@ namespace CraigStars
                     scanners.Add(new Scanner(fleet.Position, fleet.Aggregate.ScanRange * fleet.Aggregate.ScanRange, fleet.Aggregate.ScanRangePen * fleet.Aggregate.ScanRangePen));
                 }
 
+                // discover our own designs
                 foreach (var design in Game.Designs.Where(d => d.Player == player))
                 {
-                    player.UpdateDesignReport(design, true);
+                    playerIntel.Discover(player, design, true);
                 }
 
                 // go through each planet and update its report if
@@ -333,8 +335,7 @@ namespace CraigStars
                     // we own this planet, update the report
                     if (planet.Player == player)
                     {
-                        player.UpdatePlanetReport(planet);
-                        player.UpdatePlayerPlanet(planet);
+                        playerIntel.Discover(player, planet, true);
                         continue;
                     }
 
@@ -342,7 +343,7 @@ namespace CraigStars
                     {
                         if (scanner.RangePen >= scanner.Position.DistanceSquaredTo(planet.Position))
                         {
-                            player.UpdatePlanetReport(planet);
+                            playerIntel.Discover(player, planet, true);
                         }
                     }
                 }
@@ -352,7 +353,7 @@ namespace CraigStars
                     // we own this fleet, update the report
                     if (fleet.Player == player)
                     {
-                        player.AddFleetReport(fleet, true);
+                        playerIntel.Discover(player, fleet, true);
                         continue;
                     }
 
@@ -362,22 +363,14 @@ namespace CraigStars
                         if (scanner.RangePen >= scanner.Position.DistanceSquaredTo(fleet.Position))
                         {
                             // update the fleet report with pen scanners
-                            player.AddFleetReport(fleet, true);
-                            foreach (var token in fleet.Tokens)
-                            {
-                                player.UpdateDesignReport(token.Design, true);
-                            }
+                            playerIntel.Discover(player, fleet, true);
                             continue;
                         }
 
                         // if we aren't orbiting a planet, we can be seen with regular scanners
                         if (fleet.Orbiting == null && scanner.Range >= scanner.Position.DistanceSquaredTo(fleet.Position))
                         {
-                            player.AddFleetReport(fleet, false);
-                            foreach (var token in fleet.Tokens)
-                            {
-                                player.UpdateDesignReport(token.Design, false);
-                            }
+                            playerIntel.Discover(player, fleet, false);
                         }
                     }
                 }

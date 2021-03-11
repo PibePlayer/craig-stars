@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 namespace CraigStars
 {
     [JsonObject(IsReference = true)]
-    public class ShipDesign
+    public class ShipDesign : Discoverable
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(ShipDesign));
         public string Name { get; set; }

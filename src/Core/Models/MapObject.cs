@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 namespace CraigStars
 {
     [JsonObject(IsReference = true)]
-    public abstract class MapObject : SerializableMapObject
+    public abstract class MapObject : SerializableMapObject, Discoverable
     {
 
         public int Id { get; set; }

@@ -70,7 +70,7 @@ namespace CraigStars.Tests
 
             // setup initial player knowledge
             var ug = new UniverseGenerator(game);
-            ug.InitPlayerReports(game.Players[0], game.Planets);
+            ug.InitPlayerPlanetReports(game.Players[0], game.Planets);
 
             var tg = new TurnGenerator(game);
             game.Planets[0].Population = 120000;

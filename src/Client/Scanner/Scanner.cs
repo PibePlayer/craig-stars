@@ -241,7 +241,13 @@ namespace CraigStars
         void OnActiveFleetChanged()
         {
             log.Info("ActiveFleetChanged begin");
-            waypointAreas.ForEach(wpa => { RemoveChild(wpa); wpa.DisconnectAll(); wpa.QueueFree(); });
+            waypointAreas.ForEach(wpa =>
+            {
+                if (IsInstanceValid(wpa))
+                {
+                    RemoveChild(wpa); wpa.DisconnectAll(); wpa.QueueFree();
+                }
+            });
             waypointAreas.Clear();
             selectedWaypoint = null;
             ActiveFleet?.Fleet?.Waypoints.Each((wp, index) => AddWaypointArea(wp));

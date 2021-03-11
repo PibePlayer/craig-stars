@@ -118,16 +118,26 @@ namespace CraigStars
 
                     if (planet.Population > 0)
                     {
-                        populationLabel.Text = $"{planet.Population:n0}";
+                        if (planet.OwnedBy(Me))
+                        {
+                            populationLabel.Text = $"{planet.Population:n0}";
+                        }
+                        else
+                        {
+                            populationLabel.Text = $"±{planet.Population:n0}";
+                        }
                     }
                     else
                     {
                         populationLabel.Text = "uninhabited";
                     }
 
-                    if (planet.OwnedBy(Me)) {
+                    if (planet.OwnedBy(Me))
+                    {
                         ownerLabel.Text = "";
-                    } else {
+                    }
+                    else if (planet.Owner != null)
+                    {
                         ownerLabel.Text = planet.Owner.RacePluralName;
                         ownerLabel.Modulate = planet.Owner.Color;
                     }

@@ -12,6 +12,8 @@ namespace CraigStars
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(PlanetDiscoverer));
 
+        ShipDesignDiscoverer designDiscoverer = new ShipDesignDiscoverer();
+
         protected override List<Planet> GetOwnedItemReports(Player player) => player.Planets;
         protected override List<Planet> GetForeignItemReports(Player player) => player.ForeignPlanets;
         protected override Dictionary<Guid, Planet> GetItemsByGuid(Player player) => player.PlanetsByGuid;
@@ -39,6 +41,31 @@ namespace CraigStars
                 itemReport.Hab = item.Hab;
                 itemReport.ReportAge = 0;
                 itemReport.Owner = item.Owner;
+
+                // discover this starbase
+                if (item.Starbase != null)
+                {
+                    itemReport.Starbase = new Starbase()
+                    {
+                        Position = item.Starbase.Position,
+                        Guid = item.Starbase.Guid,
+                        Id = item.Starbase.Id,
+                        Name = item.Starbase.Name,
+                        RaceName = item.Starbase.Player.Race.Name,
+                        RacePluralName = item.Starbase.Player.Race.PluralName,
+                        Owner = item.Starbase.Owner,
+                    };
+
+                    foreach (var token in item.Starbase.Tokens)
+                    {
+                        if (!player.DesignsByGuid.ContainsKey(token.Design.Guid))
+                        {
+                            designDiscoverer.Discover(player, token.Design, penScanned);
+                        }
+                        itemReport.Starbase.Tokens.Add(new ShipToken(player.DesignsByGuid[token.Design.Guid], token.Quantity));
+                    }
+
+                }
 
                 if (reportAge == Planet.Unexplored)
                 {

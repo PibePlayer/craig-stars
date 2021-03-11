@@ -214,10 +214,8 @@ namespace CraigStars
                     shipSprite.Modulate = Colors.Blue;
                     break;
                 case ScannerOwnerAlly.Friend:
-                    shipSprite.Modulate = Colors.Yellow;
-                    break;
                 case ScannerOwnerAlly.Enemy:
-                    shipSprite.Modulate = Colors.Red;
+                    shipSprite.Modulate = Fleet.Owner.Color;
                     break;
                 default:
                     shipSprite.Modulate = Colors.Gray;

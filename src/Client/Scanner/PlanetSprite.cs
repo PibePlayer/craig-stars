@@ -236,24 +236,24 @@ namespace CraigStars
                     if (isActive)
                     {
                         inhabitedCommanded.Visible = true;
-                        inhabitedCommanded.Modulate = GUIColors.FriendColor;
+                        inhabitedCommanded.Modulate = Planet.Owner.Color;
                     }
                     else
                     {
                         inhabited.Visible = true;
-                        inhabited.Modulate = GUIColors.FriendColor;
+                        inhabited.Modulate = Planet.Owner.Color;
                     }
                     break;
                 case ScannerOwnerAlly.Enemy:
                     if (isActive)
                     {
                         inhabitedCommanded.Visible = true;
-                        inhabitedCommanded.Modulate = GUIColors.EnemyColor;
+                        inhabitedCommanded.Modulate = Planet.Owner.Color;
                     }
                     else
                     {
                         inhabited.Visible = true;
-                        inhabited.Modulate = GUIColors.EnemyColor;
+                        inhabited.Modulate = Planet.Owner.Color;
                     }
                     break;
             }

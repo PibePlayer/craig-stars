@@ -62,11 +62,17 @@ namespace CraigStars
             var capacity = 0.0;
             var habitability = int.MinValue;
             var habitabilityText = "(unexplored)";
+            var foreign = false;
             if (explored)
             {
                 if (item.Owner != null)
                 {
                     owner = $"{item.Owner.RacePluralName}";
+                    if (!owned)
+                    {
+                        // has an owner, but not owned by us
+                        foreign = true;
+                    }
                 }
                 else
                 {
@@ -86,7 +92,7 @@ namespace CraigStars
                 new ColumnData(item.Name, guid: item.Guid),
                 new ColumnData(owner, hidden: !ShowAll),
                 new ColumnData($"{(item.Starbase != null ? item.Starbase.Name : "--")}"),
-                new ColumnData($"{item.Population}", item.Population),
+                new ColumnData($"{(foreign ? "±" : "")}{item.Population}", item.Population),
                 new ColumnData($"{capacity*100:.#}%", capacity),
                 new ColumnData(habitabilityText, habitability),
                 new ColumnData(production),

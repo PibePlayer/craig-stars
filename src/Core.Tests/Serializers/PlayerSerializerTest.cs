@@ -25,16 +25,17 @@ namespace CraigStars.Tests
                 Num = 0,
             };
 
-            player.Designs = new List<ShipDesign>() {
-                    new ShipDesign() {
-                        Player = player,
-                        Name = "Design 1",
-                        Hull = Techs.Scout,
-                        Slots = new List<ShipDesignSlot>() {
-                            new ShipDesignSlot(Techs.QuickJump5, 1, 1)
-                        }
+            player.Designs.Add(
+                new ShipDesign()
+                {
+                    Player = player,
+                    Name = "Design 1",
+                    Hull = Techs.Scout,
+                    Slots = new List<ShipDesignSlot>() {
+                        new ShipDesignSlot(Techs.QuickJump5, 1, 1)
                     }
-                };
+                }
+            );
 
             var otherPlayer = new PublicPlayerInfo()
             {

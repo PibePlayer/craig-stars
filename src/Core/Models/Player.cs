@@ -64,19 +64,23 @@ namespace CraigStars
 
         #endregion
 
+        #region Intel
+
+        public Intel<ShipDesign> DesignIntel { get; set; } = new Intel<ShipDesign>();
+        public Intel<Planet> PlanetIntel { get; set; } = new Intel<Planet>();
+        public Intel<Fleet> FleetIntel { get; set; } = new Intel<Fleet>();
+
+        #endregion
+
         #region Designs
 
-        [JsonProperty(ItemIsReference = true)]
-        public List<ShipDesign> Designs { get; set; } = new List<ShipDesign>();
+        [JsonIgnore] public List<ShipDesign> Designs { get => DesignIntel.Owned; }
+        [JsonIgnore] public List<ShipDesign> ForeignDesigns { get => DesignIntel.Foriegn; }
+        [JsonIgnore] public IEnumerable<ShipDesign> AllDesigns { get => DesignIntel.All; }
+        [JsonIgnore] public Dictionary<Guid, ShipDesign> DesignsByGuid { get => DesignIntel.ItemsByGuid; }
 
         [JsonProperty(ItemIsReference = true)]
         public List<ShipDesign> DeletedDesigns { get; set; } = new List<ShipDesign>();
-
-        [JsonProperty(ItemIsReference = true)]
-        public List<ShipDesign> ForeignDesigns { get; set; } = new List<ShipDesign>();
-
-        [JsonIgnore]
-        public IEnumerable<ShipDesign> AllDesigns { get => Designs.Concat(ForeignDesigns); }
 
         #endregion
 
@@ -85,41 +89,21 @@ namespace CraigStars
 
         public PlanetViewState PlanetViewState { get; set; }
 
-        [JsonProperty(ItemIsReference = true)]
-        public List<Planet> Planets { get; set; } = new List<Planet>();
+        [JsonIgnore] public List<Planet> Planets { get => PlanetIntel.Owned; }
+        [JsonIgnore] public List<Planet> ForeignPlanets { get => PlanetIntel.Foriegn; }
+        [JsonIgnore] public IEnumerable<Planet> AllPlanets { get => PlanetIntel.All; }
+        [JsonIgnore] public Dictionary<Guid, Planet> PlanetsByGuid { get => PlanetIntel.ItemsByGuid; }
 
-        [JsonProperty(ItemIsReference = true)]
-        public List<Planet> ForeignPlanets { get; set; } = new List<Planet>();
-
-        [JsonIgnore]
-        public IEnumerable<Planet> AllPlanets { get => Planets.Concat(ForeignPlanets); }
-
-        [JsonProperty(ItemIsReference = true)]
-        public List<Fleet> Fleets { get; set; } = new List<Fleet>();
-
-        [JsonProperty(ItemIsReference = true)]
-        public List<Fleet> DeletedFleets { get; set; } = new List<Fleet>();
-
-        [JsonProperty(ItemIsReference = true)]
-        public List<Fleet> ForeignFleets { get; set; } = new List<Fleet>();
-
-        [JsonIgnore]
-        public IEnumerable<Fleet> AllFleets { get => Fleets.Concat(ForeignFleets); }
+        [JsonIgnore] public List<Fleet> Fleets { get => FleetIntel.Owned; }
+        [JsonIgnore] public List<Fleet> ForeignFleets { get => FleetIntel.Foriegn; }
+        [JsonIgnore] public IEnumerable<Fleet> AllFleets { get => FleetIntel.All; }
+        [JsonIgnore] public Dictionary<Guid, Fleet> FleetsByGuid { get => FleetIntel.ItemsByGuid; }
 
         [JsonProperty(ItemIsReference = true)]
         public List<Message> Messages { get; set; } = new List<Message>();
 
         [JsonProperty(IsReference = true)]
         public Planet Homeworld { get; set; }
-
-        [JsonIgnore]
-        public Dictionary<Guid, ShipDesign> DesignsByGuid { get; set; } = new Dictionary<Guid, ShipDesign>();
-
-        [JsonIgnore]
-        public Dictionary<Guid, Planet> PlanetsByGuid { get; set; } = new Dictionary<Guid, Planet>();
-
-        [JsonIgnore]
-        public Dictionary<Guid, Fleet> FleetsByGuid { get; set; } = new Dictionary<Guid, Fleet>();
 
         #endregion
 
@@ -137,9 +121,9 @@ namespace CraigStars
 
         public void SetupMapObjectMappings()
         {
-            DesignsByGuid = AllDesigns.ToLookup(d => d.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
-            PlanetsByGuid = AllPlanets.ToLookup(p => p.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
-            FleetsByGuid = AllFleets.ToLookup(f => f.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
+            DesignIntel.SetupItemsByGuid();
+            PlanetIntel.SetupItemsByGuid();
+            FleetIntel.SetupItemsByGuid();
         }
 
         public void ComputeAggregates()

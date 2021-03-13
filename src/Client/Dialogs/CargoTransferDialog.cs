@@ -143,6 +143,10 @@ namespace CraigStars
             {
                 destCargoTransfer = destFleetCargoTransfer;
             }
+            else
+            {
+                // TODO add deep space jettison
+            }
 
             sourceCargoTransfer.CargoHolder = Source;
             destCargoTransfer.CargoHolder = Dest;

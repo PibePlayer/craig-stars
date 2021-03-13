@@ -21,11 +21,12 @@ namespace CraigStars
 
             fleetsInOrbitOptionButton = GetNode<OptionButton>("VBoxContainer/FleetsInOrbitOptionButton");
             gotoButton = GetNode<Button>("VBoxContainer/HBoxContainer/GotoButton");
-            fleetsInOrbitOptionButton.Connect("item_selected", this, nameof(OnFleetsInOrbitOptionItemSelected));
-            gotoButton.Connect("pressed", this, nameof(OnGotoButtonPressed));
 
             fuelBar = (CargoBar)FindNode("FuelBar");
             cargoBar = (CargoBar)FindNode("CargoBar");
+
+            fleetsInOrbitOptionButton.Connect("item_selected", this, nameof(OnFleetsInOrbitOptionItemSelected));
+            gotoButton.Connect("pressed", this, nameof(OnGotoButtonPressed));
 
             cargoBar.ValueUpdatedEvent += OnCargoBarPressed;
 

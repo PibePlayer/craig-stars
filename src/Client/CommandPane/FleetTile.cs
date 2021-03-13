@@ -7,7 +7,7 @@ public class FleetTile : MarginContainer
 {
     public FleetSprite ActiveFleet
     {
-        get => activeFleet; 
+        get => activeFleet;
         set
         {
             if (activeFleet != value)
@@ -19,8 +19,12 @@ public class FleetTile : MarginContainer
     }
     FleetSprite activeFleet;
 
+    protected Label titleLabel;
+
     public override void _Ready()
     {
+        titleLabel = GetNode<Label>("VBoxContainer/Title/Name");
+
         Signals.MapObjectActivatedEvent += OnMapObjectActivated;
         Signals.TurnPassedEvent += OnTurnPassed;
     }

@@ -416,11 +416,12 @@ namespace CraigStars
         internal void InitShipDesigns(Player player)
         {
             ShipDesignGenerator designer = new ShipDesignGenerator();
-            Game.Designs.Add(designer.DesignShip(Techs.Scout, "Long Range Scout", player));
-            Game.Designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player));
+            Game.Designs.Add(designer.DesignShip(Techs.Scout, "Long Range Scout", player, player.DefaultHullSet));
+            Game.Designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player, player.DefaultHullSet));
 
             // starbases are special, they have a specific design that each player gets
             var starbase = ShipDesigns.Starbase.Copy();
+            starbase.HullSetNumber = player.DefaultHullSet;
             starbase.Name = "Starbase";
             starbase.Player = player;
             Game.Designs.Add(starbase);

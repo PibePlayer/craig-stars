@@ -13,13 +13,14 @@ namespace CraigStars
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(ShipDesignGenerator));
 
-        public ShipDesign DesignShip(TechHull hull, String name, Player player)
+        public ShipDesign DesignShip(TechHull hull, String name, Player player, int hullSetNumber)
         {
             var design = new ShipDesign()
             {
                 Name = name,
                 Player = player,
-                Hull = hull
+                Hull = hull,
+                HullSetNumber = hullSetNumber
             };
 
             // populate each slot for this design

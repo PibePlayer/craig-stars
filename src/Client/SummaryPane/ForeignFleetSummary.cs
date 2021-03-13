@@ -28,7 +28,7 @@ namespace CraigStars
                 {
                     Visible = true;
                     shipCountLabel.Text = $"Ship Count: {fleet.Tokens.Count}";
-                    massLabel.Text = $"Fleet Mass: {fleet.Aggregate.Mass}";
+                    massLabel.Text = $"Fleet Mass: {fleet.Mass}kT";
                 }
                 else
                 {

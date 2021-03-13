@@ -32,6 +32,7 @@ namespace CraigStars
         public ITechStore TechStore { get; set; } = StaticTechStore.Instance;
 
         public Race Race { get; set; } = new Race();
+        public int DefaultHullSet { get; set; } = 0;
         public PlayerStats Stats { get; set; } = new PlayerStats();
 
         #region Research

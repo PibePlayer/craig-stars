@@ -66,6 +66,7 @@ namespace CraigStars
             // wire up events
             Signals.TurnPassedEvent += OnTurnPassed;
             Signals.MapObjectActivatedEvent += OnMapObjectActivated;
+            Signals.GotoMapObjectEvent += OnGotoMapObject;
             Signals.ActiveNextMapObjectEvent += OnActiveNextMapObject;
             Signals.ActivePrevMapObjectEvent += OnActivePrevMapObject;
             Signals.CommandMapObjectEvent += OnCommandMapObject;
@@ -80,6 +81,7 @@ namespace CraigStars
         {
             Signals.TurnPassedEvent -= OnTurnPassed;
             Signals.MapObjectActivatedEvent -= OnMapObjectActivated;
+            Signals.GotoMapObjectEvent -= OnGotoMapObject;
             Signals.ActiveNextMapObjectEvent -= OnActiveNextMapObject;
             Signals.ActivePrevMapObjectEvent -= OnActivePrevMapObject;
             Signals.CommandMapObjectEvent -= OnCommandMapObject;
@@ -124,6 +126,19 @@ namespace CraigStars
               .FirstOrDefault(item => item != current)
               ?? items.First();
         }
+
+        void OnGotoMapObject(MapObjectSprite mapObject)
+        {
+            if (mapObject.OwnedByMe)
+            {
+                CommandMapObject(mapObject);
+            }
+            else
+            {
+                SelectMapObject(mapObject);
+            }
+        }
+
 
         void OnActiveNextMapObject()
         {
@@ -299,7 +314,7 @@ namespace CraigStars
                 return planetSprite;
             }));
             Planets.ForEach(p => AddChild(p));
-            Planets.ForEach(p => p.Connect("input_event", this, nameof(OnInputEvent)));
+            Planets.ForEach(p => p.Connect("input_event", this, nameof(OnInputEvent), new Godot.Collections.Array() { p }));
             Planets.ForEach(p => p.Connect("mouse_entered", this, nameof(OnMouseEntered), new Godot.Collections.Array() { p }));
             Planets.ForEach(p => p.Connect("mouse_exited", this, nameof(OnMouseExited), new Godot.Collections.Array() { p }));
             PlanetsByGuid = Planets.ToLookup(p => p.Planet.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
@@ -353,6 +368,7 @@ namespace CraigStars
         {
             if (IsInstanceValid(mapObject))
             {
+                log.Debug($"Mouse Left map object {mapObject.ObjectName}");
                 mapObjectsUnderMouse.Remove(mapObject);
                 Signals.PublishMapObjectHightlightedEvent(mapObject);
             }
@@ -369,14 +385,20 @@ namespace CraigStars
         /// owns the object, it should activate it. Subsequent clicks should cycle through all mapObjects
         /// at the same point on the scanner
         /// </summary>
-        void OnInputEvent(Node viewport, InputEvent @event, int shapeIdx)
+        void OnInputEvent(Node viewport, InputEvent @event, int shapeIdx, MapObjectSprite mapObjectSprite)
         {
             if (@event.IsActionPressed("viewport_select"))
             {
+                log.Debug("viewport_select event");
                 var localMousePosition = GetLocalMousePosition();
                 MapObjectSprite closest = mapObjectsUnderMouse.Aggregate((curMin, mo) => (curMin == null || (mo.Position.DistanceSquaredTo(localMousePosition)) < curMin.Position.DistanceSquaredTo(localMousePosition) ? mo : curMin));
 
                 log.Debug($"Clicked {closest.ObjectName}");
+                if (mapObjectSprite != closest)
+                {
+                    // ignore events from all but the closest mapobject
+                    return;
+                }
                 if (@event is InputEventMouseButton eventMouseButton && eventMouseButton.Shift)
                 {
                     if (commandedMapObject is FleetSprite commandedFleet)
@@ -542,7 +564,7 @@ namespace CraigStars
             }));
 
             Fleets.ForEach(f => AddChild(f));
-            Fleets.ForEach(f => f.Connect("input_event", this, nameof(OnInputEvent)));
+            Fleets.ForEach(f => f.Connect("input_event", this, nameof(OnInputEvent), new Godot.Collections.Array() { f }));
             Fleets.ForEach(f => f.Connect("mouse_entered", this, nameof(OnMouseEntered), new Godot.Collections.Array() { f }));
             Fleets.ForEach(f => f.Connect("mouse_exited", this, nameof(OnMouseExited), new Godot.Collections.Array() { f }));
             FleetsByGuid = Fleets.ToLookup(f => f.Fleet.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);

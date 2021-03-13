@@ -27,6 +27,9 @@ namespace CraigStars
             RaceName = item.Player.Race.Name,
             RacePluralName = item.Player.Race.PluralName,
             Owner = item.Owner,
+            WarpSpeed = item.WarpSpeed,
+            Heading = item.Heading,
+            Mass = item.Mass
         };
 
         protected override void OnNewReportCreated(Player player, Fleet item, Fleet itemReport)

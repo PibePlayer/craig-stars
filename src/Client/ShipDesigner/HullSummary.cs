@@ -94,7 +94,7 @@ namespace CraigStars
             costGrid = FindNode("CostGrid") as CostGrid;
 
             // icon controls
-            iconButtonContainer = FindNode("IconButtonContainer") as Control;
+            iconButtonContainer = (Control)FindNode("IconButtonContainer");
             prevIconButton = FindNode("PrevIconButton") as Button;
             nextIconButton = FindNode("NextIconButton") as Button;
 

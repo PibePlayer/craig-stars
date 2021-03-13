@@ -1,20 +1,19 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=4 format=2]
 
-[ext_resource path="res://src/Client/CargoBar.tscn" type="PackedScene" id=1]
+[ext_resource path="res://src/Client/CommandPane/FleetsInOrbitTile.cs" type="Script" id=1]
 [ext_resource path="res://src/Client/TileTheme.tres" type="Theme" id=2]
-[ext_resource path="res://src/Client/CargoGrid.tscn" type="PackedScene" id=3]
-[ext_resource path="res://src/Client/CommandPane/FleetCargoTile.cs" type="Script" id=4]
+[ext_resource path="res://src/Client/CargoBar.tscn" type="PackedScene" id=3]
 
-[node name="FleetCargoTile" type="MarginContainer"]
+[node name="FleetsInOrbitTile" type="MarginContainer"]
 margin_right = 200.0
-margin_bottom = 65.0
-rect_min_size = Vector2( 200, 65 )
+margin_bottom = 80.0
+rect_min_size = Vector2( 200, 80 )
 theme = ExtResource( 2 )
 custom_constants/margin_right = 10
 custom_constants/margin_top = 10
 custom_constants/margin_left = 10
 custom_constants/margin_bottom = 10
-script = ExtResource( 4 )
+script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -23,7 +22,7 @@ __meta__ = {
 margin_left = 10.0
 margin_top = 10.0
 margin_right = 190.0
-margin_bottom = 132.0
+margin_bottom = 108.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -32,7 +31,7 @@ __meta__ = {
 margin_left = 10.0
 margin_top = 10.0
 margin_right = 190.0
-margin_bottom = 132.0
+margin_bottom = 108.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -45,7 +44,7 @@ margin_bottom = 14.0
 margin_right = 180.0
 margin_bottom = 14.0
 size_flags_horizontal = 3
-text = "Fuel & Cargo"
+text = "Fleets In Orbit"
 align = 1
 
 [node name="Button" type="Button" parent="VBoxContainer/Title"]
@@ -55,10 +54,15 @@ margin_right = 180.0
 margin_bottom = 20.0
 text = "^"
 
-[node name="GridContainer" type="GridContainer" parent="VBoxContainer"]
+[node name="FleetsInOrbitOptionButton" type="OptionButton" parent="VBoxContainer"]
 margin_top = 18.0
 margin_right = 180.0
-margin_bottom = 50.0
+margin_bottom = 38.0
+
+[node name="GridContainer" type="GridContainer" parent="VBoxContainer"]
+margin_top = 42.0
+margin_right = 180.0
+margin_bottom = 74.0
 columns = 2
 
 [node name="FuelLabel" type="Label" parent="VBoxContainer/GridContainer"]
@@ -66,7 +70,7 @@ margin_right = 35.0
 margin_bottom = 14.0
 text = "Fuel"
 
-[node name="FuelBar" parent="VBoxContainer/GridContainer" instance=ExtResource( 1 )]
+[node name="FuelBar" parent="VBoxContainer/GridContainer" instance=ExtResource( 3 )]
 margin_left = 39.0
 margin_right = 180.0
 IsFuel = true
@@ -79,13 +83,18 @@ margin_right = 35.0
 margin_bottom = 32.0
 text = "Cargo"
 
-[node name="CargoBar" parent="VBoxContainer/GridContainer" instance=ExtResource( 1 )]
+[node name="CargoBar" parent="VBoxContainer/GridContainer" instance=ExtResource( 3 )]
 margin_left = 39.0
 margin_top = 18.0
 margin_right = 180.0
 margin_bottom = 32.0
 
-[node name="CargoGrid" parent="VBoxContainer" instance=ExtResource( 3 )]
-margin_top = 54.0
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+margin_top = 78.0
 margin_right = 180.0
-margin_bottom = 122.0
+margin_bottom = 98.0
+
+[node name="GotoButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+margin_right = 43.0
+margin_bottom = 20.0
+text = "Goto"

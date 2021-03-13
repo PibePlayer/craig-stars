@@ -136,8 +136,6 @@ namespace CraigStars
             Game.Planets.ForEach(p => p.Starbase?.ComputeAggregate());
             log.Debug("Scanning");
             Scan();
-            log.Debug("Updating player reports");
-            UpdatePlayers();
         }
 
         void ProcessCargoTransfers()
@@ -381,7 +379,7 @@ namespace CraigStars
         /// <summary>
         /// After a turn is generated, update some data on each player (like their current best planetary scanner)
         /// </summary>
-        void UpdatePlayers()
+        internal void UpdatePlayers()
         {
             Game.Players.ForEach(p =>
             {

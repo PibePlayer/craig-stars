@@ -149,6 +149,7 @@ namespace CraigStars
                 stopwatch.Start();
 
                 turnGenerator.GenerateTurn();
+                turnGenerator.UpdatePlayerReports();
 
                 // do any post-turn generation steps
                 AfterTurnGeneration();
@@ -172,7 +173,7 @@ namespace CraigStars
             UpdateDictionaries();
 
             // update our player information as if we'd just generated a new turn
-            turnGenerator.UpdatePlayerReports();
+            turnGenerator.UpdatePlayers();
             turnGenerator.RunTurnProcessors();
 
             // first round, we have to submit AI turns
@@ -221,8 +222,10 @@ namespace CraigStars
 
         void OnFleetBuilt(Fleet fleet)
         {
-            foreach (var token in fleet.Tokens) {
-                if (token.Design.Slots.Count == 0) {
+            foreach (var token in fleet.Tokens)
+            {
+                if (token.Design.Slots.Count == 0)
+                {
                     log.Error("Built token with no design slots!");
                 }
             }

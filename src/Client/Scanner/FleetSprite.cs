@@ -34,6 +34,7 @@ namespace CraigStars
         CollisionShape2D collisionShape;
         Line2D waypointsLine;
 
+        Node2D spriteContainer;
         Sprite selected;
         Sprite active;
 
@@ -44,6 +45,7 @@ namespace CraigStars
             base._Ready();
             selected = GetNode<Sprite>("Sprite/Selected");
             active = GetNode<Sprite>("Sprite/Active");
+            spriteContainer = GetNode<Node2D>("Sprite");
 
             stateSprites.Add(selected);
             stateSprites.Add(active);
@@ -58,6 +60,27 @@ namespace CraigStars
         public override void _ExitTree()
         {
             base._ExitTree();
+        }
+
+        public override void _Draw()
+        {
+            // for fleets owned by other players, draw a helpful line showing how fast the fleet is going
+            // and where it will end up
+            if (State == ScannerState.Selected && !Fleet.OwnedBy(Me) && Fleet.WarpSpeed > 0)
+            {
+                var distancePerYear = Fleet.WarpSpeed * Fleet.WarpSpeed;
+                var color = Fleet.Owner.Color;
+                var perpendicular = Fleet.Heading.Perpendicular();
+                for (var i = 0; i < 5; i++)
+                {
+                    DrawLine(Fleet.Heading * i * distancePerYear, Fleet.Heading * ((i + 1) * distancePerYear), color, 2);
+                    DrawLine(-Fleet.Heading * i * distancePerYear, -Fleet.Heading * ((i + 1) * distancePerYear), color, 2);
+
+                    // draw wings per each warp
+                    DrawLine(Fleet.Heading * i * distancePerYear - perpendicular * 5, Fleet.Heading * i * distancePerYear + perpendicular * 5, color, 2);
+                    DrawLine(-Fleet.Heading * i * distancePerYear - perpendicular * 5, -Fleet.Heading * i * distancePerYear + perpendicular * 5, color, 2);
+                }
+            }
         }
 
         /// <summary>
@@ -137,7 +160,6 @@ namespace CraigStars
                 // select the previous waypoint in the list
                 Signals.PublishWaypointSelectedEvent(Fleet.Waypoints[index - 1]);
             }
-
         }
 
         void UpdateWaypointsLine()
@@ -198,6 +220,16 @@ namespace CraigStars
             Sprite shipSprite = State == ScannerState.Commanded ? active : selected;
             shipSprite.Visible = true;
 
+            if (Fleet.WarpSpeed > 0)
+            {
+                // look at our heading
+                spriteContainer.LookAt(GlobalPosition + Fleet.Heading);
+            }
+            else
+            {
+                spriteContainer.Rotation = 0;
+            }
+
             var ownerAllyState = ScannerOwnerAlly.Unknown;
             if (OwnedByMe)
             {
@@ -231,6 +263,8 @@ namespace CraigStars
             {
                 waypointsLine.DefaultColor = GUIColors.WaypointLineColor;
             }
+
+            Update();
         }
     }
 

@@ -14,6 +14,9 @@ namespace CraigStars
         Label warpLabel;
         Label mineSweepSummaryLabel;
 
+        CargoBar fuelBar;
+        CargoBar cargoBar;
+
         public override void _Ready()
         {
             base._Ready();
@@ -24,6 +27,27 @@ namespace CraigStars
             waypointTaskLabel = (Label)FindNode("WaypointTaskLabel");
             warpLabel = (Label)FindNode("WarpLabel");
             mineSweepSummaryLabel = (Label)FindNode("MineSweepSummaryLabel");
+
+            fuelBar = (CargoBar)FindNode("FuelBar");
+            cargoBar = (CargoBar)FindNode("CargoBar");
+
+            cargoBar.ValueUpdatedEvent += OnCargoBarPressed;
+
+        }
+
+        public override void _ExitTree()
+        {
+            cargoBar.ValueUpdatedEvent -= OnCargoBarPressed;
+            base._ExitTree();
+        }
+
+        void OnCargoBarPressed(int newValue)
+        {
+            if (Fleet?.Fleet != null && Fleet.Fleet.Aggregate.CargoCapacity > 0 && Fleet?.Fleet?.Orbiting != null)
+            {
+                // trigger a cargo transfer event between this fleet and the planet it is orbiting
+                Signals.PublishCargoTransferRequestedEvent(Fleet.Fleet, Fleet.Fleet.Orbiting);
+            }
         }
 
         protected override void UpdateControls()
@@ -60,6 +84,12 @@ namespace CraigStars
                     {
                         mineSweepSummaryLabel.Text = "";
                     }
+
+                    fuelBar.Capacity = fleet.Aggregate.FuelCapacity;
+                    fuelBar.Cargo = fleet.Cargo;
+                    cargoBar.Cargo = fleet.Cargo;
+                    cargoBar.Capacity = fleet.Aggregate.CargoCapacity;
+
                 }
                 else
                 {

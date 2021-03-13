@@ -4,6 +4,7 @@ using System;
 using log4net;
 using Newtonsoft.Json;
 using System.Runtime.Serialization;
+using Godot;
 
 namespace CraigStars
 {
@@ -29,7 +30,12 @@ namespace CraigStars
         public Planet Orbiting { get; set; }
         public bool Scrapped { get; set; }
         public List<Waypoint> Waypoints { get; set; } = new List<Waypoint>();
+
+        // These are all publicly viewable when a fleet is scanned
         public List<ShipToken> Tokens { get; set; } = new List<ShipToken>();
+        public Vector2 Heading { get; set; }
+        public int WarpSpeed { get; set; }
+        public int Mass { get => Aggregate.Mass; set => Aggregate.Mass = value; }
 
         [JsonIgnore]
         public FleetAggregate Aggregate { get; } = new FleetAggregate();
@@ -99,18 +105,32 @@ namespace CraigStars
                     if (Waypoints.Count == 1)
                     {
                         Message.FleetCompletedAssignedOrders(Player, this);
+                        WarpSpeed = 0;
+                        Heading = Vector2.Zero;
+                    }
+                    else
+                    {
+                        wp1 = Waypoints[1];
+                        WarpSpeed = wp1.WarpFactor;
+                        Heading = (wp1.Position - Position).Normalized();
                     }
                 }
                 else
                 {
                     // move this fleet closer to the next waypoint
-                    var direction = (wp1.Position - Position).Normalized();
+                    WarpSpeed = wp1.WarpFactor;
+                    Heading = (wp1.Position - Position).Normalized();
                     wp0.Target = null;
                     // sprite.LookAt(wp1.Position);
 
-                    Position += direction * dist;
+                    Position += Heading * dist;
                     wp0.Position = Position;
                 }
+            }
+            else
+            {
+                WarpSpeed = 0;
+                Heading = Vector2.Zero;
             }
         }
 
@@ -431,17 +451,6 @@ namespace CraigStars
 
             });
 
-
-        }
-
-        /// <summary>
-        /// Update the report for this fleet
-        /// </summary>
-        /// <param name="fleet"></param>
-        /// <param name="penScanned">True if we penscanned it</param>
-        public void UpdateReport(Fleet fleet, bool penScanned)
-        {
-            Position = fleet.Position;
 
         }
 

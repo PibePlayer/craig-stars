@@ -123,7 +123,8 @@ namespace CraigStars.Singletons
                     Color = num < PlayerColors.Length ? PlayerColors[num] : Colors.White,
                     AIControlled = num != 0,
                     Ready = true,
-                    TechStore = TechStore.Instance
+                    TechStore = TechStore.Instance,
+                    DefaultHullSet = num % 2
                 };
 
                 if (num > 0)

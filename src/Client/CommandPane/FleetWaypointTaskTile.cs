@@ -27,11 +27,6 @@ namespace CraigStars
             waypointTask.Connect("item_selected", this, nameof(OnWaypointTaskItemSelected));
         }
 
-        // public override void _ExitTree()
-        // {
-        //     base._Ready();
-        // }
-
         protected override void OnNewActiveFleet()
         {
             base.OnNewActiveFleet();

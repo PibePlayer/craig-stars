@@ -67,6 +67,7 @@ namespace CraigStars
             Signals.TurnPassedEvent += OnTurnPassed;
             Signals.MapObjectActivatedEvent += OnMapObjectActivated;
             Signals.GotoMapObjectEvent += OnGotoMapObject;
+            Signals.GotoMapObjectSpriteEvent += OnGotoMapObjectSprite;
             Signals.ActiveNextMapObjectEvent += OnActiveNextMapObject;
             Signals.ActivePrevMapObjectEvent += OnActivePrevMapObject;
             Signals.CommandMapObjectEvent += OnCommandMapObject;
@@ -82,6 +83,7 @@ namespace CraigStars
             Signals.TurnPassedEvent -= OnTurnPassed;
             Signals.MapObjectActivatedEvent -= OnMapObjectActivated;
             Signals.GotoMapObjectEvent -= OnGotoMapObject;
+            Signals.GotoMapObjectSpriteEvent -= OnGotoMapObjectSprite;
             Signals.ActiveNextMapObjectEvent -= OnActiveNextMapObject;
             Signals.ActivePrevMapObjectEvent -= OnActivePrevMapObject;
             Signals.CommandMapObjectEvent -= OnCommandMapObject;
@@ -127,7 +129,7 @@ namespace CraigStars
               ?? items.First();
         }
 
-        void OnGotoMapObject(MapObjectSprite mapObject)
+        void OnGotoMapObjectSprite(MapObjectSprite mapObject)
         {
             if (mapObject.OwnedByMe)
             {
@@ -137,6 +139,34 @@ namespace CraigStars
             {
                 SelectMapObject(mapObject);
             }
+        }
+
+        void OnGotoMapObject(MapObject mapObject)
+        {
+            MapObjectSprite mapObjectSprite = null;
+
+            if (mapObject is Planet planet && PlanetsByGuid.TryGetValue(planet.Guid, out var planetSprite))
+            {
+                mapObjectSprite = planetSprite;
+            }
+            else if (mapObject is Fleet fleet && FleetsByGuid.TryGetValue(fleet.Guid, out var fleetSprite))
+            {
+                mapObjectSprite = fleetSprite;
+            }
+
+            if (mapObjectSprite != null)
+            {
+                if (mapObjectSprite.OwnedByMe)
+                {
+                    CommandMapObject(mapObjectSprite);
+                }
+                else
+                {
+                    SelectMapObject(mapObjectSprite);
+                }
+
+            }
+
         }
 
 

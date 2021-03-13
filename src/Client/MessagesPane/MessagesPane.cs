@@ -53,7 +53,10 @@ namespace CraigStars
 
         void OnGotoButtonPressed()
         {
-
+            if (activeMessage != null && activeMessage.Target != null)
+            {
+                Signals.PublishGotoMapObjectEvent(activeMessage.Target);
+            }
         }
 
         void OnPrevButtonPressed()
@@ -87,7 +90,8 @@ namespace CraigStars
                 titleLabel.Text = $"Year: {player.Year}{changesMadeIndicator} Message {messageNum + 1} of {player.Messages.Count}";
                 if (messageNum >= 0 && messageNum < player.Messages.Count)
                 {
-                    messageText.Text = player.Messages[messageNum].Text;
+                    activeMessage = player.Messages[messageNum];
+                    messageText.Text = activeMessage.Text;
                 }
 
                 // disable/enable buttons
@@ -100,6 +104,8 @@ namespace CraigStars
             {
                 titleLabel.Text = $"Year: {player.Year}{changesMadeIndicator} No Messages";
                 prevButton.Disabled = nextButton.Disabled = gotoButton.Disabled = true;
+                activeMessage = null;
+                messageNum = 0;
             }
 
         }

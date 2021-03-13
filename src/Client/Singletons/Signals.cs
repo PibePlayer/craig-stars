@@ -56,7 +56,8 @@ namespace CraigStars.Singletons
 
         public static event Action ActiveNextMapObjectEvent;
         public static event Action ActivePrevMapObjectEvent;
-        public static event Action<MapObjectSprite> GotoMapObjectEvent;
+        public static event Action<MapObjectSprite> GotoMapObjectSpriteEvent;
+        public static event Action<MapObject> GotoMapObjectEvent;
         public static event Action<FleetSprite> RenameFleetRequestedEvent;
         #endregion
 
@@ -125,7 +126,8 @@ namespace CraigStars.Singletons
         public static void PublishActiveNextMapObjectEvent() => ActiveNextMapObjectEvent?.Invoke();
         public static void PublishActivePrevMapObjectEvent() => ActivePrevMapObjectEvent?.Invoke();
         public static void PublishRenameFleetRequestedEvent(FleetSprite fleetSprite) => RenameFleetRequestedEvent?.Invoke(fleetSprite);
-        public static void PublishGotoMapObjectEvent(MapObjectSprite mapObjectSprite) => GotoMapObjectEvent?.Invoke(mapObjectSprite);
+        public static void PublishGotoMapObjectEvent(MapObjectSprite mapObjectSprite) => GotoMapObjectSpriteEvent?.Invoke(mapObjectSprite);
+        public static void PublishGotoMapObjectEvent(MapObject mapObject) => GotoMapObjectEvent?.Invoke(mapObject);
 
         #endregion
 

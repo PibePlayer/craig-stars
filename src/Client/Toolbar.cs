@@ -60,13 +60,13 @@ namespace CraigStars
 
         void OnNormalViewToolButtonPressed()
         {
-            PlayersManager.Me.PlanetViewState = PlanetViewState.Normal;
+            PlayersManager.Me.UISettings.PlanetViewState = PlanetViewState.Normal;
             Signals.PublishPlanetViewStateUpdatedEvent();
         }
 
         void OnPercentViewToolButtonPressed()
         {
-            PlayersManager.Me.PlanetViewState = PlanetViewState.Percent;
+            PlayersManager.Me.UISettings.PlanetViewState = PlanetViewState.Percent;
             Signals.PublishPlanetViewStateUpdatedEvent();
         }
 

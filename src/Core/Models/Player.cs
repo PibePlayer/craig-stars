@@ -2,6 +2,7 @@ using Godot;
 using log4net;
 using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -15,6 +16,12 @@ namespace CraigStars
         /// The player needs to know information about the game
         /// </summary>
         public PublicGameInfo Game { get; set; } = new PublicGameInfo();
+
+        /// <summary>
+        /// true if this player has made changes and needs to save
+        /// </summary>
+        /// <value></value>
+        [JsonIgnore] public bool Dirty { get; set; }
 
         public override String RaceName { get => Race.Name; }
         public override String RacePluralName { get => Race.PluralName; }
@@ -88,7 +95,7 @@ namespace CraigStars
 
         #region Universe Data
 
-        public PlanetViewState PlanetViewState { get; set; }
+        public PlayerUISettings UISettings { get; set; } = new PlayerUISettings();
 
         [JsonIgnore] public Dictionary<Vector2, List<MapObject>> MapObjectsByLocation = new Dictionary<Vector2, List<MapObject>>();
 
@@ -104,6 +111,7 @@ namespace CraigStars
 
         [JsonProperty(ItemIsReference = true)]
         public List<Message> Messages { get; set; } = new List<Message>();
+        [JsonIgnore] public IEnumerable<Message> FilteredMessages { get => Messages.Where(m => ((ulong)m.Type & UISettings.MessageTypeFilter) > 0); }
 
         [JsonProperty(IsReference = true)]
         public Planet Homeworld { get; set; }

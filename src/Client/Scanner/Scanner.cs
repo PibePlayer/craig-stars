@@ -370,6 +370,8 @@ namespace CraigStars
                         {
                             log.Debug($"Adding waypoint in space for {commandedFleet.Name} to {GetLocalMousePosition()}");
                             commandedFleet?.AddWaypoint(GetLocalMousePosition(), selectedWaypoint);
+                            PlayersManager.Me.Dirty = true;
+                            Signals.PublishPlayerDirtyEvent();
                         }
                     }
                 }
@@ -377,6 +379,8 @@ namespace CraigStars
             if (@event.IsActionPressed("delete") && selectedWaypoint != null && activeFleet != null)
             {
                 activeFleet.DeleteWaypoint(selectedWaypoint);
+                PlayersManager.Me.Dirty = true;
+                Signals.PublishPlayerDirtyEvent();
             }
         }
 
@@ -436,6 +440,8 @@ namespace CraigStars
                         // this was shift+clicked, so let the viewport know it's supposed to be added as a waypoint
                         log.Debug($"Adding waypoint for {commandedFleet.Name} to {closest.Name}");
                         commandedFleet.AddWaypoint(closest.MapObject, selectedWaypoint);
+                        PlayersManager.Me.Dirty = true;
+                        Signals.PublishPlayerDirtyEvent();
                     }
                 }
                 else

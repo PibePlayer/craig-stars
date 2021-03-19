@@ -83,7 +83,7 @@ namespace CraigStars
 
         public override void _Draw()
         {
-            switch (PlayersManager.Me.PlanetViewState)
+            switch (PlayersManager.Me.UISettings.PlanetViewState)
             {
                 // just use sprites
                 case PlanetViewState.None:
@@ -190,7 +190,7 @@ namespace CraigStars
             // do any custom drawing
             Update();
 
-            var planetViewState = PlayersManager.Me.PlanetViewState;
+            var planetViewState = PlayersManager.Me.UISettings.PlanetViewState;
 
             if (planetViewState == PlanetViewState.None)
             {

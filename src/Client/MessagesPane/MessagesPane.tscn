@@ -48,17 +48,17 @@ pressed = true
 [node name="TitleLabel" type="Label" parent="VBoxContainer/Title"]
 margin_left = 28.0
 margin_top = 5.0
-margin_right = 380.0
+margin_right = 315.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
 text = "Year: 2400* Message 1 of 3"
 align = 1
 
-[node name="ShowFilteredMessagesCheckbox" type="CheckBox" parent="VBoxContainer/Title"]
-visible = false
+[node name="FilterMessagesCheckbox" type="CheckBox" parent="VBoxContainer/Title"]
 margin_left = 319.0
 margin_right = 380.0
 margin_bottom = 24.0
+hint_tooltip = "Filter messages by type. Uncheck to view all messages."
 pressed = true
 text = "Filter"
 

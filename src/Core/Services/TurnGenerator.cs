@@ -383,7 +383,6 @@ namespace CraigStars
         {
             Game.Players.ForEach(p =>
             {
-                p.Year = Game.Year;
                 p.PlanetaryScanner = p.GetBestPlanetaryScanner();
                 p.Fleets.ForEach(f => f.ComputeAggregate());
                 p.SetupMapObjectMappings();

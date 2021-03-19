@@ -1,3 +1,4 @@
+using Godot;
 using log4net;
 using Newtonsoft.Json;
 using System;
@@ -86,9 +87,10 @@ namespace CraigStars
         #endregion
 
         #region Universe Data
-        public int Year { get; set; } = 2400;
 
         public PlanetViewState PlanetViewState { get; set; }
+
+        [JsonIgnore] public Dictionary<Vector2, List<MapObject>> MapObjectsByLocation = new Dictionary<Vector2, List<MapObject>>();
 
         [JsonIgnore] public List<Planet> Planets { get => PlanetIntel.Owned; }
         [JsonIgnore] public List<Planet> ForeignPlanets { get => PlanetIntel.Foriegn; }
@@ -125,6 +127,22 @@ namespace CraigStars
             DesignIntel.SetupItemsByGuid();
             PlanetIntel.SetupItemsByGuid();
             FleetIntel.SetupItemsByGuid();
+
+            List<MapObject> mapObjects = new List<MapObject>();
+            mapObjects.AddRange(PlanetIntel.All);
+            mapObjects.AddRange(FleetIntel.All);
+            MapObjectsByLocation = mapObjects.ToLookup(mo => mo.Position).ToDictionary(lookup => lookup.Key, lookup => lookup.ToList());
+
+            Fleets.ForEach(fleet =>
+            {
+                if (MapObjectsByLocation.TryGetValue(fleet.Position, out var otherMapObjects))
+                {
+                    foreach (var otherFleet in otherMapObjects.Where(mo => mo is Fleet && mo != fleet))
+                    {
+                        fleet.OtherFleets.Add((Fleet)otherFleet);
+                    }
+                }
+            });
         }
 
         public void ComputeAggregates()

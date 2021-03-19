@@ -149,7 +149,6 @@ namespace CraigStars
                 stopwatch.Start();
 
                 turnGenerator.GenerateTurn();
-                turnGenerator.UpdatePlayerReports();
 
                 // do any post-turn generation steps
                 AfterTurnGeneration();
@@ -173,6 +172,7 @@ namespace CraigStars
             UpdateDictionaries();
 
             // update our player information as if we'd just generated a new turn
+            turnGenerator.UpdatePlayerReports();
             turnGenerator.UpdatePlayers();
             turnGenerator.RunTurnProcessors();
 

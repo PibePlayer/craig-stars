@@ -32,7 +32,7 @@ namespace CraigStars
         /// </summary>
         public void SetupItemsByGuid()
         {
-            ItemsByGuid = All.ToLookup(d => d.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
+            ItemsByGuid = All.ToLookup(item => item.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
         }
     }
 }

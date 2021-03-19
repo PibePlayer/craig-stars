@@ -28,7 +28,7 @@ namespace CraigStars
 
         void OnGotoButtonPressed()
         {
-            if (ActiveFleet != null && ActiveFleet.Orbiting != null)
+            if (ActiveFleet != null && ActiveFleet.Orbiting != null && ActiveFleet.Orbiting.OwnedByMe)
             {
                 Signals.PublishMapObjectActivatedEvent(ActiveFleet.Orbiting);
             }
@@ -47,7 +47,7 @@ namespace CraigStars
             base.UpdateControls();
             if (ActiveFleet != null)
             {
-                if (ActiveFleet.Fleet.Orbiting != null)
+                if (ActiveFleet.Fleet.Orbiting != null && ActiveFleet.Orbiting.OwnedByMe)
                 {
                     titleLabel.Text = $"Orbiting {ActiveFleet.Fleet.Orbiting.Name}";
                     gotoButton.Disabled = false;

@@ -6,6 +6,7 @@ namespace CraigStars
 {
     public class MessagesPane : MarginContainer
     {
+        PublicGameInfo gameInfo;
         TextEdit messageText;
         Label titleLabel;
         CheckBox filterMessageTypeCheckbox;
@@ -67,11 +68,13 @@ namespace CraigStars
 
         void OnPostStartGame(PublicGameInfo gameInfo)
         {
+            this.gameInfo = gameInfo;
             OnTurnPassed(gameInfo);
         }
 
         void OnTurnPassed(PublicGameInfo gameInfo)
         {
+            this.gameInfo = gameInfo;
             var player = PlayersManager.Me;
             messageNum = 0;
             if (player != null && player.Messages.Count > 0)
@@ -87,7 +90,7 @@ namespace CraigStars
             var changesMadeIndicator = changesMade ? "*" : "";
             if (player.Messages.Count > 0)
             {
-                titleLabel.Text = $"Year: {player.Year}{changesMadeIndicator} Message {messageNum + 1} of {player.Messages.Count}";
+                titleLabel.Text = $"Year: {gameInfo.Year}{changesMadeIndicator} Message {messageNum + 1} of {player.Messages.Count}";
                 if (messageNum >= 0 && messageNum < player.Messages.Count)
                 {
                     activeMessage = player.Messages[messageNum];
@@ -102,7 +105,7 @@ namespace CraigStars
             }
             else
             {
-                titleLabel.Text = $"Year: {player.Year}{changesMadeIndicator} No Messages";
+                titleLabel.Text = $"Year: {gameInfo?.Year}{changesMadeIndicator} No Messages";
                 prevButton.Disabled = nextButton.Disabled = gotoButton.Disabled = true;
                 activeMessage = null;
                 messageNum = 0;

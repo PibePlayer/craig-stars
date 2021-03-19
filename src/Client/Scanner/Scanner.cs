@@ -593,11 +593,25 @@ namespace CraigStars
                 return fleetSprite;
             }));
 
+            FleetsByGuid = Fleets.ToLookup(f => f.Fleet.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
+
+            Fleets.ForEach(f =>
+            {
+                f.OtherFleets.Clear();
+                if (f.Fleet.OtherFleets?.Count > 0)
+                {
+                    foreach (var fleet in f.Fleet.OtherFleets)
+                    {
+                        var fleetSprite = FleetsByGuid[fleet.Guid];
+                        f.OtherFleets.Add(fleetSprite);
+                    }
+                }
+            });
+
             Fleets.ForEach(f => AddChild(f));
             Fleets.ForEach(f => f.Connect("input_event", this, nameof(OnInputEvent), new Godot.Collections.Array() { f }));
             Fleets.ForEach(f => f.Connect("mouse_entered", this, nameof(OnMouseEntered), new Godot.Collections.Array() { f }));
             Fleets.ForEach(f => f.Connect("mouse_exited", this, nameof(OnMouseExited), new Godot.Collections.Array() { f }));
-            FleetsByGuid = Fleets.ToLookup(f => f.Fleet.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
         }
 
         public void ResetScannerToHome()

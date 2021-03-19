@@ -28,6 +28,9 @@ namespace CraigStars
 
         [JsonProperty(IsReference = true)]
         public Planet Orbiting { get; set; }
+        [JsonIgnore]
+        public List<Fleet> OtherFleets { get; set; } = new List<Fleet>();
+
         public bool Scrapped { get; set; }
         public List<Waypoint> Waypoints { get; set; } = new List<Waypoint>();
 

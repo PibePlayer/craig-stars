@@ -7,8 +7,8 @@ namespace CraigStars
     public class Rules
     {
 
-        public Size Size { get; set; } = Size.Tiny;
-        public Density Density { get; set; } = Density.Sparse;
+        public Size Size { get; set; } = Size.Small;
+        public Density Density { get; set; } = Density.Normal;
 
         [DefaultValue(15)]
         public int PlanetMinDistance { get; } = 15;

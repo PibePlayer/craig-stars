@@ -31,6 +31,8 @@ namespace CraigStars
         /// <value></value>
         public PlanetSprite Orbiting { get; set; }
 
+        public List<FleetSprite> OtherFleets { get; set; } = new List<FleetSprite>();
+
         CollisionShape2D collisionShape;
         Line2D waypointsLine;
 

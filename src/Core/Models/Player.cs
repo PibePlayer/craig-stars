@@ -13,7 +13,7 @@ namespace CraigStars
         static ILog log = LogManager.GetLogger(typeof(Player));
 
         /// <summary>
-        /// The player needs to know information about the game
+        /// /// The player needs to know information about the game
         /// </summary>
         public PublicGameInfo Game { get; set; } = new PublicGameInfo();
 
@@ -70,6 +70,11 @@ namespace CraigStars
         #region Turn Actions
 
         public List<CargoTransferOrder> CargoTransferOrders { get; set; } = new List<CargoTransferOrder>();
+        public List<MergeFleetOrder> MergeFleetOrders { get; set; } = new List<MergeFleetOrder>();
+        public List<SplitFleetOrder> SplitFleetOrders { get; set; } = new List<SplitFleetOrder>();
+
+        [JsonProperty(ItemIsReference = true)]
+        public List<FleetOrder> FleetOrders { get; set; } = new List<FleetOrder>();
 
         #endregion
 
@@ -108,6 +113,16 @@ namespace CraigStars
         [JsonIgnore] public List<Fleet> ForeignFleets { get => FleetIntel.Foriegn; }
         [JsonIgnore] public IEnumerable<Fleet> AllFleets { get => FleetIntel.All; }
         [JsonIgnore] public Dictionary<Guid, Fleet> FleetsByGuid { get => FleetIntel.ItemsByGuid; }
+
+        /// <summary>
+        /// These fleets have been merged into other fleets and no longer exist
+        /// We might not need this field. 
+        /// TODO: Delete this if we don't actually use it
+        /// </summary>
+        /// <typeparam name="Fleet"></typeparam>
+        /// <returns></returns>
+        [JsonProperty(ItemIsReference = true)]
+        public List<Fleet> MergedFleets { get; set; } = new List<Fleet>();
 
         [JsonProperty(ItemIsReference = true)]
         public List<Message> Messages { get; set; } = new List<Message>();
@@ -461,6 +476,20 @@ namespace CraigStars
         public ShipDesign GetDesign(string name)
         {
             return Designs.Find(d => d.Name == name);
+        }
+
+        /// <summary>
+        /// Merge
+        /// </summary>
+        /// <param name="order"></param>
+        public void MergeFleet(MergeFleetOrder order)
+        {
+            order.Source.Merge(order);
+            foreach (var fleet in order.Source.OtherFleets)
+            {
+                MergedFleets.Add(fleet);
+                Fleets.Remove(fleet);
+            }
         }
 
         /// <summary>

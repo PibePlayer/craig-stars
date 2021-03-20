@@ -7,7 +7,7 @@
 [node name="CargoTransferDialog" type="WindowDialog"]
 margin_right = 597.0
 margin_bottom = 300.0
-window_title = "Cargo Transfver"
+window_title = "Cargo Transfer"
 resizable = true
 script = ExtResource( 2 )
 __meta__ = {

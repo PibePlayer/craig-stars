@@ -1,8 +1,7 @@
 namespace CraigStars
 {
-    public class CargoTransferOrder
+    public class CargoTransferOrder : FleetOrder
     {
-        public ICargoHolder Source { get; set; }
         public ICargoHolder Dest { get; set; }
         public Cargo Transfer { get; set; }
 

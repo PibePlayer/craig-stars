@@ -33,6 +33,7 @@ namespace CraigStars
         ReportsDialog reportsDialog;
         TechBrowserDialog techBrowserDialog;
         ShipDesignerDialog shipDesignerDialog;
+        MergeFleetsDialog mergeFleetsDialog;
 
         /// <summary>
         /// When this node enters the tree, setup any server/player stuff
@@ -56,16 +57,18 @@ namespace CraigStars
             reportsDialog = GetNode<ReportsDialog>("CanvasLayer/ReportsDialog");
             techBrowserDialog = GetNode<TechBrowserDialog>("CanvasLayer/TechBrowserDialog");
             shipDesignerDialog = GetNode<ShipDesignerDialog>("CanvasLayer/ShipDesignerDialog");
+            mergeFleetsDialog = GetNode<MergeFleetsDialog>("CanvasLayer/MergeFleetsDialog");
             projectName = ProjectSettings.GetSetting("application/config/name").ToString();
 
-            Signals.PostStartGameEvent += OnPostStartGameEvent;
-            Signals.TurnPassedEvent += OnTurnPassedEvent;
+            Signals.PostStartGameEvent += OnPostStartGame;
+            Signals.TurnPassedEvent += OnTurnPassed;
             Signals.ChangeProductionQueuePressedEvent += OnChangeProductionQueue;
             Signals.CargoTransferRequestedEvent += OnCargoTransferRequested;
             Signals.ResearchDialogRequestedEvent += OnResearchDialogRequested;
             Signals.ReportsDialogRequestedEvent += OnReportsDialogRequested;
-            Signals.ShipDesignerDialogRequestedEvent += OnShipDesignerDialogRequestedEvent;
-            Signals.TechBrowserDialogRequestedEvent += OnTechBrowserDialogRequestedEvent;
+            Signals.ShipDesignerDialogRequestedEvent += OnShipDesignerDialogRequested;
+            Signals.TechBrowserDialogRequestedEvent += OnTechBrowserDialogRequested;
+            Signals.MergeFleetsDialogRequestedEvent += OnMergeFleetsDialogRequested;
 
             // if we are the server (or a single player game)
             // init the server and send a notice to all players that it's time to start
@@ -101,21 +104,22 @@ namespace CraigStars
             {
                 // if we aren't the server, we come here with our player data already loaded
                 // TODO: we need public game data
-                OnPostStartGameEvent(PlayersManager.Me.Game);
+                OnPostStartGame(PlayersManager.Me.Game);
             }
 
         }
 
         public override void _ExitTree()
         {
-            Signals.PostStartGameEvent -= OnPostStartGameEvent;
-            Signals.TurnPassedEvent -= OnTurnPassedEvent;
+            Signals.PostStartGameEvent -= OnPostStartGame;
+            Signals.TurnPassedEvent -= OnTurnPassed;
             Signals.ChangeProductionQueuePressedEvent -= OnChangeProductionQueue;
             Signals.CargoTransferRequestedEvent -= OnCargoTransferRequested;
             Signals.ResearchDialogRequestedEvent -= OnResearchDialogRequested;
             Signals.ReportsDialogRequestedEvent -= OnReportsDialogRequested;
-            Signals.ShipDesignerDialogRequestedEvent -= OnShipDesignerDialogRequestedEvent;
-            Signals.TechBrowserDialogRequestedEvent -= OnTechBrowserDialogRequestedEvent;
+            Signals.ShipDesignerDialogRequestedEvent -= OnShipDesignerDialogRequested;
+            Signals.TechBrowserDialogRequestedEvent -= OnTechBrowserDialogRequested;
+            Signals.MergeFleetsDialogRequestedEvent -= OnMergeFleetsDialogRequested;
 
 
             if (this.IsServerOrSinglePlayer())
@@ -159,20 +163,20 @@ namespace CraigStars
         /// When the game is ready to go, init the scanner
         /// </summary>
         /// <param name="year"></param>
-        void OnPostStartGameEvent(PublicGameInfo gameInfo)
+        void OnPostStartGame(PublicGameInfo gameInfo)
         {
             OS.SetWindowTitle($"{projectName} - {gameInfo.Name}: Year {gameInfo.Year}");
             // add the universe to the viewport
             scanner.InitMapObjects();
         }
 
-        void OnTurnPassedEvent(PublicGameInfo gameInfo)
+        void OnTurnPassed(PublicGameInfo gameInfo)
         {
             OS.SetWindowTitle($"{projectName} - {gameInfo.Name}: Year {gameInfo.Year}");
         }
 
 
-        void OnTechBrowserDialogRequestedEvent()
+        void OnTechBrowserDialogRequested()
         {
             techBrowserDialog.PopupCentered();
         }
@@ -182,7 +186,7 @@ namespace CraigStars
             reportsDialog.PopupCentered();
         }
 
-        void OnShipDesignerDialogRequestedEvent()
+        void OnShipDesignerDialogRequested()
         {
             shipDesignerDialog.PopupCentered();
         }
@@ -204,6 +208,13 @@ namespace CraigStars
             productionQueueDialog.Planet = planetSprite.Planet;
             productionQueueDialog.PopupCentered();
         }
+
+        void OnMergeFleetsDialogRequested(FleetSprite sourceFleet)
+        {
+            mergeFleetsDialog.SourceFleet = sourceFleet;
+            mergeFleetsDialog.PopupCentered();
+        }
+
 
     }
 }

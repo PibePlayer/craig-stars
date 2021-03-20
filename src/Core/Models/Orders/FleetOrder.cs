@@ -6,8 +6,12 @@ namespace CraigStars
     /// An immediate merge order (i.e. the client clicks a merge in the UI) merging one or more fleets
     /// into a source fleet
     /// </summary>
-    public class MergeFleetOrder : FleetOrder
+    public abstract class FleetOrder
     {
-        public List<Fleet> MergingFleets { get; set; }
+        /// <summary>
+        /// The source fleet that this order acts upon
+        /// </summary>
+        /// <value></value>
+        public Fleet Source { get; set; }
     }
 }

@@ -169,21 +169,44 @@ namespace CraigStars
             if (netCargoDiff != Cargo.Empty)
             {
                 var me = PlayersManager.Me;
-                var source = sourceCargoTransfer.CargoHolder;
-                var dest = destCargoTransfer.CargoHolder;
-                me.CargoTransferOrders.Add(new CargoTransferOrder()
+
+                Fleet source;
+                ICargoHolder dest;
+
+                // CargoTransferOrders require the source to be a fleet.
+                if (sourceCargoTransfer.CargoHolder is Fleet sourceFleet)
+                {
+                    source = sourceFleet;
+                    dest = destCargoTransfer.CargoHolder;
+                }
+                else if (destCargoTransfer.CargoHolder is Fleet destFleet)
+                {
+                    source = destFleet;
+                    dest = sourceCargoTransfer.CargoHolder;
+                }
+                else
+                {
+                    log.Error($"Either source or Dest must be a Fleet for a CargoTransfer: Source: {sourceCargoTransfer.CargoHolder.Name}, Dest: {destCargoTransfer.CargoHolder.Name}");
+                    return;
+                }
+
+                var order = new CargoTransferOrder()
                 {
                     Source = source,
                     Dest = dest,
                     Transfer = netCargoDiff
-                });
-                if (source is Fleet sourceFleet)
+                };
+
+                me.CargoTransferOrders.Add(order);
+                me.FleetOrders.Add(order);
+
+                // update the aggregate for the source fleet
+                source.ComputeAggregate();
+
+                if (dest is Fleet fleet)
                 {
-                    sourceFleet.ComputeAggregate();
-                }
-                if (dest is Fleet destFleet)
-                {
-                    destFleet.ComputeAggregate();
+                    // if the dest is also a fleet, update its aggregate with a new mass
+                    fleet.ComputeAggregate();
                 }
                 log.Info($"{me.Name} made immediate transfer from {source.Name} to {dest.Name} for {netCargoDiff} cargo");
 

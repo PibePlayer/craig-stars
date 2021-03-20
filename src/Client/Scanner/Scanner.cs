@@ -72,6 +72,7 @@ namespace CraigStars
             Signals.ActivePrevMapObjectEvent += OnActivePrevMapObject;
             Signals.CommandMapObjectEvent += OnCommandMapObject;
             Signals.SelectMapObjectEvent += OnSelectMapObject;
+            Signals.FleetDeletedEvent += OnFleetDeleted;
             Signals.WaypointAddedEvent += OnWaypointAdded;
             Signals.WaypointSelectedEvent += OnWaypointSelected;
             Signals.WaypointDeletedEvent += OnWaypointDeleted;
@@ -88,6 +89,7 @@ namespace CraigStars
             Signals.ActivePrevMapObjectEvent -= OnActivePrevMapObject;
             Signals.CommandMapObjectEvent -= OnCommandMapObject;
             Signals.SelectMapObjectEvent -= OnSelectMapObject;
+            Signals.FleetDeletedEvent -= OnFleetDeleted;
             Signals.WaypointAddedEvent -= OnWaypointAdded;
             Signals.WaypointSelectedEvent -= OnWaypointSelected;
             Signals.WaypointDeletedEvent -= OnWaypointDeleted;
@@ -618,6 +620,27 @@ namespace CraigStars
             Fleets.ForEach(f => f.Connect("input_event", this, nameof(OnInputEvent), new Godot.Collections.Array() { f }));
             Fleets.ForEach(f => f.Connect("mouse_entered", this, nameof(OnMouseEntered), new Godot.Collections.Array() { f }));
             Fleets.ForEach(f => f.Connect("mouse_exited", this, nameof(OnMouseExited), new Godot.Collections.Array() { f }));
+        }
+
+        void OnFleetDeleted(FleetSprite fleet)
+        {
+            Fleets.Remove(fleet);
+            // make sure other fleets don't know about us anymore
+            fleet.OtherFleets.ForEach(otherFleet => otherFleet.OtherFleets.Remove(fleet));
+            
+            // make sure any planets we are orbiting don't know about us anymore
+            if (fleet.Orbiting != null)
+            {
+                fleet.Orbiting.OrbitingFleets.Remove(fleet);
+            }
+            FleetsByGuid.Remove(fleet.Fleet.Guid);
+
+            // remove the fleet from the scanner
+            RemoveChild(fleet);
+            fleet.Disconnect("input_event", this, nameof(OnInputEvent));
+            fleet.Disconnect("mouse_entered", this, nameof(OnMouseEntered));
+            fleet.Disconnect("mouse_exited", this, nameof(OnMouseExited));
+            fleet.QueueFree();
         }
 
         public void ResetScannerToHome()

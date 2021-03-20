@@ -138,6 +138,50 @@ namespace CraigStars
         }
 
         /// <summary>
+        /// Merge this fleet with a MergeFleetOrder from the client (or in the UI)
+        /// </summary>
+        /// <param name="order"></param>
+        public void Merge(MergeFleetOrder order)
+        {
+            // build a dictionary of tokens by design
+            var tokenByDesign = Tokens.ToLookup(token => token.Design).ToDictionary(lookup => lookup.Key, lookup => lookup.ToList()[0]);
+
+            foreach (var fleet in order.MergingFleets)
+            {
+                foreach (var token in fleet.Tokens)
+                {
+                    // if we already have this design in our 
+                    if (tokenByDesign.TryGetValue(token.Design, out var existingToken))
+                    {
+                        var originalQuantityDamaged = existingToken.QuantityDamaged;
+                        var incomingQuantityDamaged = token.QuantityDamaged;
+
+                        existingToken.Quantity += token.Quantity;
+
+                        // merge in damange 
+                        if (incomingQuantityDamaged > 0 || originalQuantityDamaged > 0)
+                        {
+                            var originalDamage = existingToken.Damage;
+                            var incomingDamage = token.Damage;
+                            // if we have 5 scouts at 20% damage and 5 scouts at 10% damage
+                            // we get 10 scounts at 15% damage
+                            existingToken.Damage = (originalDamage * originalQuantityDamaged + incomingDamage * incomingQuantityDamaged) / (originalQuantityDamaged + incomingQuantityDamaged);
+                            existingToken.QuantityDamaged = incomingQuantityDamaged + originalQuantityDamaged;
+                        }
+                    }
+                    else
+                    {
+                        Tokens.Add(token);
+                        tokenByDesign[token.Design] = token;
+                    }
+                }
+            }
+
+            // these fleets should no longer be in our "OtherFleets" list
+            order.MergingFleets.ForEach(otherFleet => OtherFleets.Remove(otherFleet));
+        }
+
+        /// <summary>
         /// Process the task at the current waypoint
         /// </summary>
         /// <param name="wp"></param>
@@ -403,8 +447,8 @@ namespace CraigStars
         /// <returns></returns>
         public int GetEstimatedRange()
         {
-            // get the cost to go one lightyear and figure out how many times our fuel will do that
-            return (int)(Fuel / (float)GetFuelCost(GetDefaultWarpFactor(), 1));
+            // get the cost to go 1000 lightyears and figure out how many times our fuel will do that
+            return (int)((float)Fuel / (float)GetFuelCost(GetDefaultWarpFactor(), 1000) * 1000.0f);
         }
 
         public void ComputeAggregate()

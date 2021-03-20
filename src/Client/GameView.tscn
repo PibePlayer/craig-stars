@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=2]
+[gd_scene load_steps=28 format=2]
 
 [ext_resource path="res://src/Client/Scanner/Scanner.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/Client/Scanner/ScannerSelectedStats.tscn" type="PackedScene" id=2]
@@ -25,6 +25,7 @@
 [ext_resource path="res://src/Client/CommandPane/FleetOrbitingTile.tscn" type="PackedScene" id=23]
 [ext_resource path="res://src/Client/CommandPane/OtherFleetsHereTile.tscn" type="PackedScene" id=24]
 [ext_resource path="res://src/Client/CommandPane/FleetCompositionTile.tscn" type="PackedScene" id=25]
+[ext_resource path="res://src/Client/Dialogs/MergeFleetsDialog.tscn" type="PackedScene" id=26]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.145098, 0.145098, 0.168627, 1 )
@@ -103,12 +104,12 @@ margin_bottom = 895.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer"]
 margin_right = 504.0
-margin_bottom = 504.0
+margin_bottom = 530.0
 size_flags_vertical = 3
 
 [node name="LeftCommandPane" type="VBoxContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/HBoxContainer"]
 margin_right = 250.0
-margin_bottom = 504.0
+margin_bottom = 530.0
 rect_min_size = Vector2( 250, 0 )
 
 [node name="MapObjectSummaryTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 9 )]
@@ -144,7 +145,7 @@ margin_bottom = 504.0
 [node name="RightCommandPange" type="VBoxContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/HBoxContainer"]
 margin_left = 254.0
 margin_right = 504.0
-margin_bottom = 504.0
+margin_bottom = 530.0
 rect_min_size = Vector2( 250, 0 )
 
 [node name="PlanetProductionTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 7 )]
@@ -157,7 +158,12 @@ margin_top = 164.0
 margin_right = 250.0
 margin_bottom = 366.0
 
-[node name="FleetOrbitingTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 24 )]
+[node name="FleetCargoTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 12 )]
+visible = false
+margin_right = 250.0
+margin_bottom = 148.0
+
+[node name="OtherFleetsHereTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 24 )]
 visible = false
 margin_top = 164.0
 margin_right = 250.0
@@ -168,26 +174,20 @@ margin_top = 164.0
 margin_right = 250.0
 margin_bottom = 282.0
 
-[node name="FleetCargoTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 12 )]
-visible = false
-margin_right = 250.0
-margin_bottom = 148.0
-
 [node name="PlanetStarbaseTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 5 )]
 margin_top = 286.0
 margin_right = 250.0
 margin_bottom = 466.0
 
 [node name="MessagesPane" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer" instance=ExtResource( 8 )]
-margin_top = 508.0
+margin_top = 534.0
 margin_right = 504.0
-margin_bottom = 656.0
+margin_bottom = 682.0
 
 [node name="SelectionSummaryPane" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer" instance=ExtResource( 11 )]
-margin_top = 660.0
+margin_top = 686.0
 margin_right = 504.0
 margin_bottom = 890.0
-size_flags_vertical = 3
 theme = null
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer"]
@@ -228,3 +228,5 @@ pause_mode = 2
 visible = false
 
 [node name="ReportsDialog" parent="CanvasLayer" instance=ExtResource( 21 )]
+
+[node name="MergeFleetsDialog" parent="CanvasLayer" instance=ExtResource( 26 )]

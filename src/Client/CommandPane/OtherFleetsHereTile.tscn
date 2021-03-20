@@ -3,7 +3,7 @@
 [ext_resource path="res://src/Client/CommandPane/OtherFleetsHereTile.cs" type="Script" id=1]
 [ext_resource path="res://src/Client/TileTheme.tres" type="Theme" id=2]
 
-[node name="FleetOrbitingTile" type="MarginContainer"]
+[node name="OtherFleetsHereTile" type="MarginContainer"]
 margin_right = 200.0
 margin_bottom = 58.0
 rect_min_size = Vector2( 200, 50 )

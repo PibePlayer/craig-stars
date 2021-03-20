@@ -33,6 +33,23 @@ namespace CraigStars
             mergeButton.Connect("pressed", this, nameof(OnMergeButtonPressed));
             cargoTransferButton.Connect("pressed", this, nameof(OnCargoTransferButtonPressed));
             otherFleetsOptionButton.Connect("item_selected", this, nameof(OnOtherFleetsOptionItemSelected));
+
+            Signals.FleetDeletedEvent += OnFleetDeleted;
+        }
+
+        public override void _ExitTree()
+        {
+            base._ExitTree();
+            Signals.FleetDeletedEvent -= OnFleetDeleted;
+        }
+
+        void OnFleetDeleted(FleetSprite fleet)
+        {
+            if (otherFleets.Contains(fleet))
+            {
+                otherFleets.Remove(fleet);
+                UpdateControls();
+            }
         }
 
         void OnGotoButtonPressed()
@@ -69,6 +86,7 @@ namespace CraigStars
             base.UpdateControls();
             if (ActiveFleet != null)
             {
+                otherFleetsOptionButton.Clear();
                 otherFleets = ActiveFleet.OtherFleets?.Where(f => f.OwnedByMe).ToList();
                 if (otherFleets?.Count > 0)
                 {
@@ -76,7 +94,6 @@ namespace CraigStars
                     mergeButton.Disabled = false;
                     gotoButton.Disabled = false;
 
-                    otherFleetsOptionButton.Clear();
                     foreach (var fleet in otherFleets)
                     {
                         otherFleetsOptionButton.AddItem(fleet.Fleet.Name);

@@ -28,11 +28,20 @@ namespace CraigStars
             splitButton.Connect("pressed", this, nameof(OnSplitButtonPressed));
             splitAllButton.Connect("pressed", this, nameof(OnSplitAllButtonPressed));
             mergeButton.Connect("pressed", this, nameof(OnMergeButtonPressed));
+
+            Signals.FleetDeletedEvent += OnFleetDeleted;
         }
 
         public override void _ExitTree()
         {
             base._ExitTree();
+            Signals.FleetDeletedEvent -= OnFleetDeleted;
+        }
+
+        void OnFleetDeleted(FleetSprite fleet)
+        {
+            AddItemsToTree();
+            UpdateControls();
         }
 
         void OnSplitButtonPressed()
@@ -47,7 +56,7 @@ namespace CraigStars
 
         void OnMergeButtonPressed()
         {
-
+            Signals.PublishMergeFleetsDialogRequestedEvent(ActiveFleet);
         }
 
         void AddItemsToTree()

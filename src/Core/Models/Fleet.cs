@@ -397,9 +397,19 @@ namespace CraigStars
             return warpFactor;
         }
 
+        /// <summary>
+        /// Get the estimated range, in light years, for this fleet going the default warp
+        /// </summary>
+        /// <returns></returns>
+        public int GetEstimatedRange()
+        {
+            // get the cost to go one lightyear and figure out how many times our fuel will do that
+            return (int)(Fuel / (float)GetFuelCost(GetDefaultWarpFactor(), 1));
+        }
+
         public void ComputeAggregate()
         {
-            Aggregate.Mass = 0;
+            Aggregate.Mass = Cargo.Total;
             Aggregate.Shield = 0;
             Aggregate.CargoCapacity = 0;
             Aggregate.FuelCapacity = 0;

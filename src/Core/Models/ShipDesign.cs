@@ -116,6 +116,7 @@ namespace CraigStars
             Aggregate.SpaceDock = 0;
             Aggregate.CargoCapacity += Hull.CargoCapacity;
             Aggregate.MineSweep = 0;
+            Aggregate.CloakPercent = 0f; // TODO: compute cloaking..
 
             foreach (ShipDesignSlot slot in Slots)
             {

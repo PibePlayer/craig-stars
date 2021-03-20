@@ -27,6 +27,7 @@ namespace CraigStars
             Columns.Clear();
             Columns.AddRange(new List<string>() {
             "Name",
+            "Id",
             "Location",
             "Destination",
             "ETA",
@@ -81,6 +82,7 @@ namespace CraigStars
 
             return new ColumnData[] {
                 new ColumnData(item.Name, guid: item.Guid),
+                new ColumnData(item.Id),
                 new ColumnData(owner, hidden: !ShowAll),
                 new ColumnData(location),
                 new ColumnData(destination),

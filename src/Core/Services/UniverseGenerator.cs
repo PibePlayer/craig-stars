@@ -129,21 +129,23 @@ namespace CraigStars
         Fleet CreateFleet(ShipDesign playerDesign, String name, Player player, Planet planet)
         {
             var design = Game.DesignsByGuid[playerDesign.Guid];
-            var fleet = new Fleet();
+            var fleet = new Fleet()
+            {
+                Id = 1 + player.Stats.NumFleetsBuilt++
+            };
             fleet.Tokens.Add(
-                new ShipToken()
-                {
-                    Design = design,
-                    Quantity = 1
-                }
-            );
+                    new ShipToken()
+                    {
+                        Design = design,
+                        Quantity = 1
+                    }
+                );
             fleet.Position = planet.Position;
             fleet.Orbiting = planet;
             fleet.Waypoints.Add(Waypoint.TargetWaypoint(fleet.Orbiting));
             planet.OrbitingFleets.Add(fleet);
             fleet.Name = name;
             fleet.Player = player;
-            fleet.Id = player.Fleets.Count + 1;
 
             // aggregate all the design data
             fleet.ComputeAggregate();

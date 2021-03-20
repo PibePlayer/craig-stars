@@ -246,7 +246,12 @@ namespace CraigStars
                     {
                         continue;
                     }
+                    if (col == 0)
+                    {
+                        item.SetExpandRight(0, true);
+                    }
                     item.SetText(visibleCol++, row[col].text);
+
                 }
             }
         }

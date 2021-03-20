@@ -172,7 +172,8 @@ namespace CraigStars
                 Name = name,
                 Player = planet.Player,
                 Orbiting = planet,
-                Position = planet.Position
+                Position = planet.Position,
+                Id = planet.Player.Stats.NumFleetsBuilt
             };
             fleet.Tokens.Add(new ShipToken(item.Design, item.quantity));
             fleet.ComputeAggregate();

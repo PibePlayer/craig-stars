@@ -19,6 +19,7 @@ namespace CraigStars
         public bool Colonizer { get; set; }
         public int SpaceDock { get; set; }
         public int MineSweep { get; set; }
+        public float CloakPercent { get; set; }
 
         /// <summary>
         /// Does this fleet have scanning capabilities? 

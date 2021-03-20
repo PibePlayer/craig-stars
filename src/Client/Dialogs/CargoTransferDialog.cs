@@ -177,6 +177,14 @@ namespace CraigStars
                     Dest = dest,
                     Transfer = netCargoDiff
                 });
+                if (source is Fleet sourceFleet)
+                {
+                    sourceFleet.ComputeAggregate();
+                }
+                if (dest is Fleet destFleet)
+                {
+                    destFleet.ComputeAggregate();
+                }
                 log.Info($"{me.Name} made immediate transfer from {source.Name} to {dest.Name} for {netCargoDiff} cargo");
 
                 // zero it out for next time

@@ -76,6 +76,7 @@ namespace CraigStars
                 }
             });
             itemReport.Cargo = item.Cargo;
+            itemReport.Fuel = item.Fuel;
             itemReport.Tokens.AddRange(item.Tokens.Select(token => new ShipToken(player.DesignsByGuid[token.Design.Guid], token.Quantity)).ToList());
 
         }

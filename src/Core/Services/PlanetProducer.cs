@@ -93,7 +93,7 @@ namespace CraigStars
             }
 
             // reset surface minerals to whatever we have leftover
-            planet.Cargo = new Cargo(allocated.Ironium, allocated.Boranium, allocated.Germanium, planet.Cargo.Colonists, planet.Cargo.Fuel);
+            planet.Cargo = new Cargo(allocated.Ironium, allocated.Boranium, allocated.Germanium, planet.Cargo.Colonists);
 
             // return the resources we have left for research
             return allocated.Resources;

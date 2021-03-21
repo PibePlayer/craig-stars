@@ -33,6 +33,16 @@ namespace CraigStars
             }
         }
 
+        public int Fuel
+        {
+            get => Planet.Fuel;
+            set
+            {
+                Planet.Fuel = value;
+                UpdateControls();
+            }
+        }
+
         Label nameLabel;
         Label ironiumAmountLabel;
         Label boraniumAmountLabel;
@@ -62,9 +72,9 @@ namespace CraigStars
             }
         }
 
-        public bool AttemptTransfer(Cargo newCargo)
+        public bool AttemptTransfer(Cargo newCargo, int newFuel)
         {
-            if (newCargo.Fuel != 0)
+            if (newFuel != 0)
             {
                 // ignore fuel requests to planets
                 return false;

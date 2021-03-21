@@ -101,7 +101,7 @@ namespace CraigStars
         {
             cargoBar.Cargo = SelectedFleet.Fleet.Cargo;
             cargoBar.Capacity = SelectedFleet.Fleet.Aggregate.CargoCapacity;
-            fuelBar.Cargo = SelectedFleet.Fleet.Cargo;
+            fuelBar.Fuel = SelectedFleet.Fleet.Fuel;
             fuelBar.Capacity = SelectedFleet.Fleet.Aggregate.FuelCapacity;
         }
     }

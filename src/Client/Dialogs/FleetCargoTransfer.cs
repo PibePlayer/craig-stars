@@ -24,7 +24,7 @@ namespace CraigStars
         public Fleet Fleet { get; set; } = new Fleet()
         {
             Name = "UI Test Fleet",
-            Cargo = new Cargo(1, 2, 3, 4, 5),
+            Cargo = new Cargo(1, 2, 3, 4),
         };
 
         public Cargo Cargo
@@ -33,6 +33,16 @@ namespace CraigStars
             set
             {
                 Fleet.Cargo = value;
+                UpdateControls();
+            }
+        }
+
+        public int Fuel
+        {
+            get => Fleet.Fuel;
+            set
+            {
+                Fleet.Fuel = value;
                 UpdateControls();
             }
         }
@@ -50,7 +60,7 @@ namespace CraigStars
         {
             // for testing, update the aggregate
             Fleet.Aggregate.CargoCapacity = Fleet.Cargo.Total * 2;
-            Fleet.Aggregate.FuelCapacity = Fleet.Cargo.Fuel;
+            Fleet.Aggregate.FuelCapacity = Fleet.Fuel;
             nameLabel = FindNode("NameLabel") as Label;
             fuelBar = FindNode("FuelBar") as CargoBar;
             cargoBar = FindNode("CargoBar") as CargoBar;
@@ -95,7 +105,7 @@ namespace CraigStars
 
             // log.Debug($"Fleet {Fleet.Name} requested a new cargo transfer: {newCargo}");
 
-            CargoTransferRequestedEvent?.Invoke(newCargo);
+            CargoTransferRequestedEvent?.Invoke(newCargo, 0);
         }
 
         void OnBoraniumBarValueUpdated(int newValue)
@@ -108,7 +118,7 @@ namespace CraigStars
             // make sure we only request a new cargo value between 0 and the most amount of mineral we can put in
             newCargo = newCargo.WithBoranium(Mathf.Clamp(newValue, 0, Fleet.Cargo.Boranium + available));
 
-            CargoTransferRequestedEvent?.Invoke(newCargo);
+            CargoTransferRequestedEvent?.Invoke(newCargo, 0);
         }
 
         void OnGermaniumBarValueUpdated(int newValue)
@@ -121,7 +131,7 @@ namespace CraigStars
             // make sure we only request a new cargo value between 0 and the most amount of mineral we can put in
             newCargo = newCargo.WithGermanium(Mathf.Clamp(newValue, 0, Fleet.Cargo.Germanium + available));
 
-            CargoTransferRequestedEvent?.Invoke(newCargo);
+            CargoTransferRequestedEvent?.Invoke(newCargo, 0);
         }
 
         void OnColonistsBarValueUpdated(int newValue)
@@ -134,20 +144,20 @@ namespace CraigStars
             // make sure we only request a new cargo value between 0 and the most amount of mineral we can put in
             newCargo = newCargo.WithColonists(Mathf.Clamp(newValue, 0, Fleet.Cargo.Colonists + available));
 
-            CargoTransferRequestedEvent?.Invoke(newCargo);
+            CargoTransferRequestedEvent?.Invoke(newCargo, 0);
         }
 
         void OnFuelBarValueUpdated(int newValue)
         {
-            Cargo newCargo = Fleet.Cargo;
+            int newFuel = Fleet.Fuel;
 
             // how much room we have in the hold
-            var available = Fleet.Aggregate.FuelCapacity - Fleet.Cargo.Fuel;
+            var available = Fleet.Aggregate.FuelCapacity - Fleet.Fuel;
 
             // make sure we only request a new cargo value between 0 and the most amount of mineral we can put in
-            newCargo = newCargo.WithFuel(Mathf.Clamp(newValue, 0, Fleet.Cargo.Fuel + available));
+            newFuel = Mathf.Clamp(newValue, 0, Fleet.Fuel + available);
 
-            CargoTransferRequestedEvent?.Invoke(newCargo);
+            CargoTransferRequestedEvent?.Invoke(new Cargo(), newFuel);
         }
 
         internal void UpdateControls()
@@ -158,7 +168,7 @@ namespace CraigStars
             boraniumBar.Cargo = new Cargo(boranium: Fleet.Cargo.Boranium);
             germaniumBar.Cargo = new Cargo(germanium: Fleet.Cargo.Germanium);
             colonistsBar.Cargo = new Cargo(colonists: Fleet.Cargo.Colonists);
-            fuelBar.Cargo = new Cargo(fuel: Fleet.Cargo.Fuel);
+            fuelBar.Fuel = Fleet.Fuel;
 
             cargoBar.Capacity = Fleet.Aggregate.CargoCapacity;
             ironiumBar.Capacity = Fleet.Aggregate.CargoCapacity;
@@ -168,13 +178,15 @@ namespace CraigStars
             fuelBar.Capacity = Fleet.Aggregate.FuelCapacity;
         }
 
-        public bool AttemptTransfer(Cargo newCargo)
+        public bool AttemptTransfer(Cargo newCargo, int newFuel)
         {
-            var result = Fleet.Cargo + newCargo;
-            if (result >= 0)
+            var cargoResult = Fleet.Cargo + newCargo;
+            var fuelResult = Fleet.Fuel + newFuel;
+            if (cargoResult >= 0 && fuelResult >= 0)
             {
                 // update the cargo
-                Fleet.Cargo = result;
+                Fleet.Cargo = cargoResult;
+                Fleet.Fuel = fuelResult;
                 UpdateControls();
                 return true;
             }

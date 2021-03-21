@@ -7,6 +7,7 @@ namespace CraigStars
         [JsonProperty(IsReference = true)]
         public ICargoHolder Dest { get; set; }
         public Cargo Transfer { get; set; }
+        public int FuelTransfer { get; set; }
 
     }
 }

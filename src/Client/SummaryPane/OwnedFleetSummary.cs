@@ -86,7 +86,7 @@ namespace CraigStars
                     }
 
                     fuelBar.Capacity = fleet.Aggregate.FuelCapacity;
-                    fuelBar.Cargo = fleet.Cargo;
+                    fuelBar.Fuel = fleet.Fuel;
                     cargoBar.Cargo = fleet.Cargo;
                     cargoBar.Capacity = fleet.Aggregate.CargoCapacity;
 

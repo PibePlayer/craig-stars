@@ -3,13 +3,14 @@ using System;
 
 namespace CraigStars
 {
-    public delegate void CargoTransferRequested(Cargo newCargo);
+    public delegate void CargoTransferRequested(Cargo newCargo, int newFuel);
 
     public interface ICargoTransferControl
     {
         event CargoTransferRequested CargoTransferRequestedEvent;
 
         Cargo Cargo { get; set; }
+        int Fuel { get; set; }
         ICargoHolder CargoHolder { get; set; }
 
         /// <summary>
@@ -18,6 +19,6 @@ namespace CraigStars
         /// </summary>
         /// <param name="newCargo"></param>
         /// <returns>True if this cargo was accepted</returns>
-        bool AttemptTransfer(Cargo newCargo);
+        bool AttemptTransfer(Cargo newCargo, int newFuel);
     }
 }

@@ -50,7 +50,7 @@ namespace CraigStars
             if (ActiveFleet != null)
             {
                 fuelBar.Capacity = ActiveFleet.Fleet.Aggregate.FuelCapacity;
-                fuelBar.Cargo = ActiveFleet.Fleet.Cargo;
+                fuelBar.Fuel = ActiveFleet.Fleet.Fuel;
                 cargoBar.Cargo = ActiveFleet.Fleet.Cargo;
                 cargoBar.Capacity = ActiveFleet.Fleet.Aggregate.CargoCapacity;
                 cargoGrid.Cargo = ActiveFleet.Fleet.Cargo;

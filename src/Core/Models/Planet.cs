@@ -13,6 +13,7 @@ namespace CraigStars
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(Planet));
         public const int Unexplored = -1;
+        public const int UnlimitedFuel = -1;
 
         #region Scannable Stats
 
@@ -40,6 +41,14 @@ namespace CraigStars
 
         public Mineral MineYears { get; set; }
         public Cargo Cargo { get; set; }
+        public int Fuel
+        {
+            get => Starbase != null ? UnlimitedFuel : 0;
+            set
+            {
+                // ignore setting fuel on a planet
+            }
+        }
         public ProductionQueue ProductionQueue { get; set; }
 
         public int Mines { get; set; }
@@ -318,11 +327,11 @@ namespace CraigStars
         /// </summary>
         /// <param name="transfer"></param>
         /// <returns>true if we have minerals we can transfer</returns>
-        public bool AttemptTransfer(Cargo transfer)
+        public bool AttemptTransfer(Cargo transfer, int fuel)
         {
-            if (transfer.Fuel != 0)
+            if (fuel > 0 || fuel < 0 && Starbase == null)
             {
-                // ignore fuel requests to planets
+                // fleets can't deposit fuel onto a planet, or take fuel from a planet without a starbase
                 return false;
             }
 

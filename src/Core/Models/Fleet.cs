@@ -17,13 +17,7 @@ namespace CraigStars
 
         public Cargo Cargo { get; set; } = new Cargo();
 
-        [JsonIgnore]
-        public int Fuel
-        {
-            get => Cargo.Fuel;
-            set => Cargo = Cargo.WithFuel(value);
-        }
-
+        public int Fuel { get; set; }
         public int Damage { get; set; }
 
         [JsonProperty(IsReference = true)]
@@ -175,7 +169,8 @@ namespace CraigStars
                         tokenByDesign[token.Design] = token;
                     }
                 }
-                Cargo += fleet.Cargo; // this also adds fuel
+                Cargo += fleet.Cargo;
+                Fuel += fleet.Fuel;
             }
 
             // these fleets should no longer be in our "OtherFleets" list
@@ -423,8 +418,16 @@ namespace CraigStars
                             var transferAmount = Math.Min(availableToLoad, capacity);
                             if (transferAmount > 0)
                             {
-                                cargoHolder.AttemptTransfer(Cargo.OfAmount(taskType, -transferAmount));
-                                AttemptTransfer(Cargo.OfAmount(taskType, transferAmount));
+                                if (taskType == CargoType.Fuel)
+                                {
+                                    cargoHolder.AttemptTransfer(Cargo.Empty, -transferAmount);
+                                    AttemptTransfer(Cargo.Empty, transferAmount);
+                                }
+                                else
+                                {
+                                    cargoHolder.AttemptTransfer(Cargo.OfAmount(taskType, -transferAmount), 0);
+                                    AttemptTransfer(Cargo.OfAmount(taskType, transferAmount), 0);
+                                }
                             }
                             break;
                     }
@@ -613,19 +616,16 @@ namespace CraigStars
         /// </summary>
         /// <param name="transfer"></param>
         /// <returns></returns>
-        public bool AttemptTransfer(Cargo transfer)
+        public bool AttemptTransfer(Cargo transfer, int fuelTransfer)
         {
-            if (transfer.Fuel != 0)
-            {
-                // ignore fuel requests to planets
-                return false;
-            }
+            var cargoResult = Cargo + transfer;
+            var fuelResult = Fuel + fuelTransfer;
 
-            var result = Cargo + transfer;
-            if (result >= 0 && result.Total <= Aggregate.CargoCapacity && result.Fuel <= Aggregate.FuelCapacity)
+            if (cargoResult >= 0 && cargoResult.Total <= Aggregate.CargoCapacity && fuelResult <= Aggregate.FuelCapacity)
             {
                 // The transfer doesn't leave us with 0 minerals, or with so many minerals and fuel that we can't hold it
-                Cargo = result;
+                Cargo = cargoResult;
+                Fuel = fuelResult;
                 return true;
             }
             return false;

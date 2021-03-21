@@ -45,6 +45,17 @@ namespace CraigStars
         }
         Cargo cargo = new Cargo(3, 3, 2, 8);
 
+        public int Fuel
+        {
+            get => fuel;
+            set
+            {
+                fuel = value;
+                Update();
+            }
+        }
+        int fuel = 0;
+
         [Export]
         public int Capacity
         {
@@ -128,13 +139,13 @@ namespace CraigStars
                 if (IsFuel)
                 {
 
-                    label.Text = $"{Cargo.Fuel} of {Capacity}{Unit}";
+                    label.Text = $"{Fuel} of {Capacity}{Unit}";
 
-                    if (Cargo.Fuel > 0)
+                    if (Fuel > 0)
                     {
                         // get the width of our rectangle
                         // it's a percentage of the totaly width based on capacity and quantity
-                        float width = panel.RectSize.x * ((float)Cargo.Fuel / (float)Capacity) - (borderWidth);
+                        float width = panel.RectSize.x * ((float)Fuel / (float)Capacity) - (borderWidth);
                         DrawRect(new Rect2(
                             panel.RectPosition,
                             new Vector2(width, panel.RectSize.y - (borderHeight / 2))),

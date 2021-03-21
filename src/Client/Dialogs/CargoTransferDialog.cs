@@ -39,6 +39,7 @@ namespace CraigStars
         /// This is the net cargo difference we record when the OK button is pressed
         /// </summary>
         Cargo netCargoDiff = new Cargo();
+        int netFuelDiff = 0;
 
         public override void _Ready()
         {
@@ -111,12 +112,27 @@ namespace CraigStars
 
         void OnSourceButtonPressed(CargoType type)
         {
-            AttemptSourceTransfer(Cargo.OfAmount(type, -quantityModifier));
+            if (type == CargoType.Fuel)
+            {
+                AttemptSourceTransfer(Cargo.Empty, -quantityModifier);
+            }
+            else
+            {
+                AttemptSourceTransfer(Cargo.OfAmount(type, -quantityModifier), 0);
+            }
         }
 
         void OnDestButtonPressed(CargoType type)
         {
-            AttemptDestTransfer(Cargo.OfAmount(type, -quantityModifier));
+            if (type == CargoType.Fuel)
+            {
+                AttemptDestTransfer(Cargo.Empty, -quantityModifier);
+            }
+            else
+            {
+                AttemptDestTransfer(Cargo.OfAmount(type, -quantityModifier), 0);
+
+            }
         }
 
         /// <summary>
@@ -126,6 +142,7 @@ namespace CraigStars
         {
             // clear out the cargoDiff
             netCargoDiff = new Cargo();
+            netFuelDiff = 0;
             if (Source is Planet)
             {
                 sourceCargoTransfer = sourcePlanetCargoTransfer;
@@ -166,7 +183,7 @@ namespace CraigStars
 
         void OnOK()
         {
-            if (netCargoDiff != Cargo.Empty)
+            if (netCargoDiff != Cargo.Empty || netFuelDiff != 0)
             {
                 var me = PlayersManager.Me;
 
@@ -194,7 +211,8 @@ namespace CraigStars
                 {
                     Source = source,
                     Dest = dest,
-                    Transfer = netCargoDiff
+                    Transfer = netCargoDiff,
+                    FuelTransfer = netFuelDiff
                 };
 
                 me.CargoTransferOrders.Add(order);
@@ -208,46 +226,49 @@ namespace CraigStars
                     // if the dest is also a fleet, update its aggregate with a new mass
                     fleet.ComputeAggregate();
                 }
-                log.Info($"{me.Name} made immediate transfer from {source.Name} to {dest.Name} for {netCargoDiff} cargo");
+                log.Info($"{me.Name} made immediate transfer from {source.Name} to {dest.Name} for {netCargoDiff} cargo and {netFuelDiff} fuel");
 
                 Signals.PublishCargoTransferredEvent(source, dest);
                 // zero it out for next time
                 netCargoDiff = new Cargo();
+                netFuelDiff = 0;
             }
             Hide();
         }
 
-        void OnSourceCargoTransferRequested(Cargo newCargo)
+        void OnSourceCargoTransferRequested(Cargo newCargo, int fuel)
         {
             var cargoDiff = sourceCargoTransfer.Cargo - newCargo;
-            AttemptSourceTransfer(cargoDiff);
+            AttemptSourceTransfer(cargoDiff, fuel);
         }
 
-        void AttemptSourceTransfer(Cargo cargoDiff)
+        void AttemptSourceTransfer(Cargo cargoDiff, int fuel)
         {
-            if (destCargoTransfer.AttemptTransfer(cargoDiff))
+            if (destCargoTransfer.AttemptTransfer(cargoDiff, fuel))
             {
                 // the cargo transfer was successful, so update the source cargo
                 // with their requested value
                 sourceCargoTransfer.Cargo = sourceCargoTransfer.Cargo - cargoDiff;
                 netCargoDiff -= cargoDiff;
+                netFuelDiff -= fuel;
             }
         }
 
-        void OnDestCargoTransferRequested(Cargo newCargo)
+        void OnDestCargoTransferRequested(Cargo newCargo, int fuel)
         {
             var cargoDiff = destCargoTransfer.Cargo - newCargo;
-            AttemptDestTransfer(cargoDiff);
+            AttemptDestTransfer(cargoDiff, fuel);
         }
 
-        void AttemptDestTransfer(Cargo cargoDiff)
+        void AttemptDestTransfer(Cargo cargoDiff, int fuel)
         {
-            if (sourceCargoTransfer.AttemptTransfer(cargoDiff))
+            if (sourceCargoTransfer.AttemptTransfer(cargoDiff, fuel))
             {
                 // the cargo transfer was successful, so update the source cargo
                 // with their requested value
                 destCargoTransfer.Cargo = destCargoTransfer.Cargo - cargoDiff;
                 netCargoDiff += cargoDiff;
+                netFuelDiff += fuel;
             }
 
         }

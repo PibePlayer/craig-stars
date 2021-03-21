@@ -9,16 +9,14 @@ namespace CraigStars
         public readonly int Boranium;
         public readonly int Germanium;
         public readonly int Colonists;
-        public readonly int Fuel;
 
         [JsonConstructor]
-        public Cargo(int ironium = 0, int boranium = 0, int germanium = 0, int colonists = 0, int fuel = 0)
+        public Cargo(int ironium = 0, int boranium = 0, int germanium = 0, int colonists = 0)
         {
             Ironium = ironium;
             Boranium = boranium;
             Germanium = germanium;
             Colonists = colonists;
-            Fuel = fuel;
         }
 
         public int Total { get => Ironium + Boranium + Germanium + Colonists; }
@@ -33,7 +31,7 @@ namespace CraigStars
 
         public override string ToString()
         {
-            return $"Cargo i:{Ironium}, b:{Boranium}, g:{Germanium}, c:{Colonists}, f:{Fuel}";
+            return $"Cargo i:{Ironium}, b:{Boranium}, g:{Germanium}, c:{Colonists}";
         }
 
         public static Cargo Empty { get => empty; }
@@ -53,8 +51,6 @@ namespace CraigStars
                         return Germanium;
                     case 3:
                         return Colonists;
-                    case 4:
-                        return Fuel;
                     default:
                         throw new IndexOutOfRangeException($"Index {index} out of range for {this.GetType().ToString()}");
                 }
@@ -75,8 +71,6 @@ namespace CraigStars
                     return new Cargo(germanium: amount);
                 case CargoType.Colonists:
                     return new Cargo(colonists: amount);
-                case CargoType.Fuel:
-                    return new Cargo(fuel: amount);
                 default:
                     throw new InvalidOperationException($"CargoType {type} not allowed");
             }
@@ -93,7 +87,7 @@ namespace CraigStars
 
         public bool Equals(Cargo other)
         {
-            return Ironium == other.Ironium && Boranium == other.Boranium && Germanium == other.Germanium && Colonists == other.Colonists && Fuel == other.Fuel;
+            return Ironium == other.Ironium && Boranium == other.Boranium && Germanium == other.Germanium && Colonists == other.Colonists;
         }
 
         public static bool operator ==(Cargo a, Cargo b)
@@ -108,7 +102,7 @@ namespace CraigStars
 
         public override int GetHashCode()
         {
-            return Ironium.GetHashCode() ^ Boranium.GetHashCode() ^ Germanium.GetHashCode() ^ Colonists.GetHashCode() ^ Fuel.GetHashCode();
+            return Ironium.GetHashCode() ^ Boranium.GetHashCode() ^ Germanium.GetHashCode() ^ Colonists.GetHashCode();
         }
 
         public static Cargo operator +(Cargo a, Mineral b)
@@ -117,8 +111,7 @@ namespace CraigStars
                 a.Ironium + b.Ironium,
                 a.Boranium + b.Boranium,
                 a.Germanium + b.Germanium,
-                a.Colonists,
-                a.Fuel
+                a.Colonists
             );
         }
 
@@ -129,8 +122,7 @@ namespace CraigStars
                 a.Ironium + b.Ironium,
                 a.Boranium + b.Boranium,
                 a.Germanium + b.Germanium,
-                a.Colonists + b.Colonists,
-                a.Fuel + b.Fuel
+                a.Colonists + b.Colonists
             );
         }
 
@@ -140,8 +132,7 @@ namespace CraigStars
                 a.Ironium - b.Ironium,
                 a.Boranium - b.Boranium,
                 a.Germanium - b.Germanium,
-                a.Colonists - b.Colonists,
-                a.Fuel - b.Fuel
+                a.Colonists - b.Colonists
             );
         }
 
@@ -151,8 +142,7 @@ namespace CraigStars
                 -a.Ironium,
                 -a.Boranium,
                 -a.Germanium,
-                -a.Colonists,
-                -a.Fuel
+                -a.Colonists
             );
         }
 
@@ -162,8 +152,7 @@ namespace CraigStars
                 a.Ironium / num,
                 a.Boranium / num,
                 a.Germanium / num,
-                a.Colonists / num,
-                a.Fuel // don't divide by fuel
+                a.Colonists / num
             );
         }
 
@@ -173,8 +162,7 @@ namespace CraigStars
                 (int)(a.Ironium * num),
                 (int)(a.Boranium * num),
                 (int)(a.Germanium * num),
-                (int)(a.Colonists * num),
-                a.Fuel // don't multiple fuel
+                (int)(a.Colonists * num)
             );
         }
 
@@ -187,7 +175,7 @@ namespace CraigStars
         /// <returns></returns>
         public static bool operator >=(Cargo a, int num)
         {
-            return a.Ironium >= num && a.Boranium >= num && a.Germanium >= num && a.Colonists >= num && a.Fuel >= num;
+            return a.Ironium >= num && a.Boranium >= num && a.Germanium >= num && a.Colonists >= num;
         }
 
         /// <summary>
@@ -199,7 +187,7 @@ namespace CraigStars
         /// <returns></returns>
         public static bool operator <=(Cargo a, int num)
         {
-            return a.Ironium <= num && a.Boranium <= num && a.Germanium <= num && a.Colonists <= num && a.Fuel <= num;
+            return a.Ironium <= num && a.Boranium <= num && a.Germanium <= num && a.Colonists <= num;
         }
 
         /// <summary>
@@ -211,7 +199,7 @@ namespace CraigStars
         /// <returns></returns>
         public static bool operator >(Cargo a, int num)
         {
-            return a.Ironium > num && a.Boranium > num && a.Germanium > num && a.Colonists > num && a.Fuel > num;
+            return a.Ironium > num && a.Boranium > num && a.Germanium > num && a.Colonists > num;
         }
 
         /// <summary>
@@ -223,7 +211,7 @@ namespace CraigStars
         /// <returns></returns>
         public static bool operator <(Cargo a, int num)
         {
-            return a.Ironium < num && a.Boranium < num && a.Germanium < num && a.Colonists < num && a.Fuel < num;
+            return a.Ironium < num && a.Boranium < num && a.Germanium < num && a.Colonists < num;
         }
 
         public Cost ToCost(int resources = 0)
@@ -237,7 +225,7 @@ namespace CraigStars
         /// <returns></returns>
         public Cargo WithIronium(int ironium = 0)
         {
-            return new Cargo(ironium, Boranium, Germanium, Colonists, Fuel);
+            return new Cargo(ironium, Boranium, Germanium, Colonists);
         }
 
         /// <summary>
@@ -246,7 +234,7 @@ namespace CraigStars
         /// <returns></returns>
         public Cargo WithBoranium(int boranium = 0)
         {
-            return new Cargo(Ironium, boranium, Germanium, Colonists, Fuel);
+            return new Cargo(Ironium, boranium, Germanium, Colonists);
         }
 
         /// <summary>
@@ -255,7 +243,7 @@ namespace CraigStars
         /// <returns></returns>
         public Cargo WithGermanium(int germanium = 0)
         {
-            return new Cargo(Ironium, Boranium, germanium, Colonists, Fuel);
+            return new Cargo(Ironium, Boranium, germanium, Colonists);
         }
 
         /// <summary>
@@ -264,17 +252,7 @@ namespace CraigStars
         /// <returns></returns>
         public Cargo WithColonists(int colonists = 0)
         {
-            return new Cargo(Ironium, Boranium, Germanium, colonists, Fuel);
+            return new Cargo(Ironium, Boranium, Germanium, colonists);
         }
-
-        /// <summary>
-        /// Get a copy of this, with updated Colonists
-        /// </summary>
-        /// <returns></returns>
-        public Cargo WithFuel(int fuel = 0)
-        {
-            return new Cargo(Ironium, Boranium, Germanium, Colonists, fuel);
-        }
-
     }
 }

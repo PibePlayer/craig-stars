@@ -23,10 +23,16 @@ namespace CraigStars
         Cargo Cargo { get; set; }
 
         /// <summary>
+        /// All cargo holders must have fuel
+        /// </summary>
+        /// <value></value>
+        int Fuel { get; set; }
+
+        /// <summary>
         /// Attempt to transfer cargo from cargoHolder to this object
         /// </summary>
         /// <param name="transfer">The cargo to transfer</param>
         /// <returns></returns>
-        bool AttemptTransfer(Cargo transfer);
+        bool AttemptTransfer(Cargo transfer, int fuel);
     }
 }

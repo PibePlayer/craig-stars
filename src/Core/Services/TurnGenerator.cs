@@ -154,11 +154,11 @@ namespace CraigStars
                         Game.CargoHoldersByGuid.TryGetValue(cargoTransferOrder.Dest.Guid, out var dest))
                         {
                             // make sure our source can lose the cargo
-                            var result = source.AttemptTransfer(cargoTransferOrder.Transfer);
+                            var result = source.AttemptTransfer(cargoTransferOrder.Transfer, cargoTransferOrder.FuelTransfer);
                             if (result)
                             {
                                 // make sure our dest can take the cargo
-                                result = dest.AttemptTransfer(-cargoTransferOrder.Transfer);
+                                result = dest.AttemptTransfer(-cargoTransferOrder.Transfer, cargoTransferOrder.FuelTransfer);
                                 if (!result)
                                 {
                                     // revert the source changes

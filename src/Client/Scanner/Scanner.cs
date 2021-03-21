@@ -50,6 +50,9 @@ namespace CraigStars
         public PlanetSprite ActivePlanet { get; set; }
         Player Me { get => PlayersManager.Me; }
 
+        bool movingWaypoint = false;
+        WaypointArea activeWaypointArea;
+
         public override void _Ready()
         {
             waypointAreaScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/WaypointArea.tscn");
@@ -96,6 +99,42 @@ namespace CraigStars
             Signals.WaypointSelectedEvent -= OnWaypointSelected;
             Signals.WaypointDeletedEvent -= OnWaypointDeleted;
             Signals.PlanetViewStateUpdatedEvent -= OnPlanetViewStateUpdatedEvent;
+        }
+
+        /// <summary>
+        /// During process we handle constant update stuff like dragging waypoints around
+        /// </summary>
+        /// <param name="delta"></param>
+        public override void _Process(float delta)
+        {
+            // if we are currently moving a waypoint, and the viewport_select action is held down, and we have an active waypoint, drag it around
+            if (movingWaypoint && Input.IsActionPressed("viewport_select") && activeWaypointArea != null && IsInstanceValid(activeWaypointArea))
+            {
+                // without the shift key we snap to objects
+                MapObjectSprite closest = GetClosestMapObjectUnderMouse();
+                if (Input.IsKeyPressed((int)Godot.KeyList.Shift) || closest == null)
+                {
+                    // shift key we just move to a position
+                    activeWaypointArea.GlobalPosition = GetGlobalMousePosition();
+                    activeWaypointArea.Waypoint.Position = activeWaypointArea.Position;
+                    activeWaypointArea.Waypoint.Target = null;
+                }
+                else
+                {
+                    // snap to the closest object
+                    activeWaypointArea.Position = closest.Position;
+                    activeWaypointArea.Waypoint.Position = closest.Position;
+                    activeWaypointArea.Waypoint.Target = closest.MapObject;
+                }
+
+                Signals.PublishWaypointMovedEvent(activeWaypointArea.Fleet, activeWaypointArea.Waypoint);
+
+            }
+            else if (Input.IsActionJustReleased("viewport_select"))
+            {
+                movingWaypoint = false;
+                UpdateSelectedIndicator();
+            }
         }
 
         void OnPlanetViewStateUpdatedEvent()
@@ -299,9 +338,11 @@ namespace CraigStars
             });
             waypointAreas.Clear();
             selectedWaypoint = null;
-            ActiveFleet?.Fleet?.Waypoints.Each((wp, index) => AddWaypointArea(wp));
+            ActiveFleet?.Fleet?.Waypoints.Each((wp, index) => AddWaypointArea(ActiveFleet.Fleet, wp));
             log.Info("ActiveFleetChanged end");
         }
+
+        #region Waypoints
 
         /// <summary>
         /// When a waypoint is added, add an area for it so we can
@@ -311,7 +352,7 @@ namespace CraigStars
         /// <param name="waypoint"></param>
         void OnWaypointAdded(Fleet fleet, Waypoint waypoint)
         {
-            AddWaypointArea(waypoint);
+            AddWaypointArea(fleet, waypoint);
             selectedWaypoint = waypoint;
             UpdateSelectedIndicator();
         }
@@ -330,13 +371,51 @@ namespace CraigStars
             UpdateSelectedIndicator();
         }
 
-        void AddWaypointArea(Waypoint waypoint)
+        void AddWaypointArea(Fleet fleet, Waypoint waypoint)
         {
             var waypointArea = waypointAreaScene.Instance() as WaypointArea;
+            if (waypoint != fleet.Waypoints[0])
+            {
+                waypointArea.Connect("mouse_entered", this, nameof(OnWaypointAreaMouseEntered), new Godot.Collections.Array() { waypointArea });
+                waypointArea.Connect("mouse_exited", this, nameof(OnWaypointAreaMouseExited), new Godot.Collections.Array() { waypointArea });
+                waypointArea.Connect("input_event", this, nameof(OnWaypointAreaInputEvent), new Godot.Collections.Array() { waypointArea });
+            }
+
+            waypointArea.Fleet = fleet;
             waypointArea.Waypoint = waypoint;
             waypointAreas.Add(waypointArea);
             AddChild(waypointArea);
         }
+
+        void OnWaypointAreaMouseEntered(WaypointArea waypointArea)
+        {
+            Input.SetDefaultCursorShape(Input.CursorShape.Drag);
+        }
+
+        void OnWaypointAreaMouseExited(WaypointArea waypointArea)
+        {
+            Input.SetDefaultCursorShape(Input.CursorShape.Arrow);
+        }
+
+        void OnWaypointAreaInputEvent(Node viewport, InputEvent @event, int shapeIdx, WaypointArea waypointArea)
+        {
+            if (IsInstanceValid(waypointArea))
+            {
+                if (@event.IsActionPressed("viewport_select"))
+                {
+                    log.Debug($"Selecting waypoint {waypointArea.Position}");
+                    Signals.PublishWaypointSelectedEvent(waypointArea.Waypoint);
+                    activeWaypointArea = waypointArea;
+                    movingWaypoint = true;
+                }
+            }
+            else
+            {
+                log.Error("Got input event for invalid waypoint.");
+            }
+        }
+
+        #endregion
 
         public void InitMapObjects()
         {
@@ -416,6 +495,23 @@ namespace CraigStars
             }
         }
 
+        /// <summary>
+        /// Get the closest map object sprite under our mouse
+        /// </summary>
+        /// <returns></returns>
+        MapObjectSprite GetClosestMapObjectUnderMouse()
+        {
+            var localMousePosition = GetLocalMousePosition();
+            var validMapObjects = mapObjectsUnderMouse.Where(mo => IsInstanceValid(mo)).ToList();
+            if (validMapObjects.Count > 0)
+            {
+                return validMapObjects.Aggregate((curMin, mo) => (curMin == null || (mo.Position.DistanceSquaredTo(localMousePosition)) < curMin.Position.DistanceSquaredTo(localMousePosition) ? mo : curMin));
+            }
+            else
+            {
+                return null;
+            }
+        }
 
         /// <summary>
         /// Respond to mouse events on our map objects in the Scanner
@@ -428,8 +524,7 @@ namespace CraigStars
             if (@event.IsActionPressed("viewport_select"))
             {
                 log.Debug("viewport_select event");
-                var localMousePosition = GetLocalMousePosition();
-                MapObjectSprite closest = mapObjectsUnderMouse.Aggregate((curMin, mo) => (curMin == null || (mo.Position.DistanceSquaredTo(localMousePosition)) < curMin.Position.DistanceSquaredTo(localMousePosition) ? mo : curMin));
+                MapObjectSprite closest = GetClosestMapObjectUnderMouse();
 
                 log.Debug($"Clicked {closest.ObjectName}");
                 if (mapObjectSprite != closest)

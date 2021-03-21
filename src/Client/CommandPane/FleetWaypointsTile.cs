@@ -43,12 +43,14 @@ namespace CraigStars
 
             waypoints.Connect("item_selected", this, nameof(OnItemSelected));
             warpFactor.WarpSpeedChangedEvent += OnWarpSpeedChanged;
+            Signals.WaypointMovedEvent += OnWaypointMoved;
         }
 
         public override void _ExitTree()
         {
             base._ExitTree();
             warpFactor.WarpSpeedChangedEvent -= OnWarpSpeedChanged;
+            Signals.WaypointMovedEvent -= OnWaypointMoved;
         }
 
         void OnWarpSpeedChanged(int warpSpeed)
@@ -78,6 +80,20 @@ namespace CraigStars
             ActiveWaypoint = ActiveFleet?.Fleet.Waypoints[0];
         }
 
+        string GetItemText(Waypoint waypoint)
+        {
+            return waypoint.Target != null ? waypoint.Target.Name : $"Space: ({waypoint.Position.x}, {waypoint.Position.y})";
+        }
+
+        void OnWaypointMoved(Fleet fleet, Waypoint waypoint)
+        {
+            var selectedIndices = waypoints.GetSelectedItems();
+            if (selectedIndices.Length > 0 && selectedIndices[0] > 0 && selectedIndices[0] < waypoints.GetItemCount())
+            {
+                waypoints.SetItemText(selectedIndices[0], GetItemText(waypoint));
+            }
+        }
+
         protected override void UpdateControls()
         {
             base.UpdateControls();
@@ -88,7 +104,7 @@ namespace CraigStars
                 waypoints.Clear();
                 foreach (var wp in ActiveFleet.Fleet.Waypoints)
                 {
-                    waypoints.AddItem(wp.Target != null ? wp.Target.Name : $"Space: ({wp.Position.x}, {wp.Position.y})");
+                    waypoints.AddItem(GetItemText(wp));
                     if (ActiveWaypoint == wp)
                     {
                         selectedIndex = index;

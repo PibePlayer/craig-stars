@@ -35,6 +35,7 @@ namespace CraigStars.Singletons
         public static event Action<MapObject> CommandMapObjectEvent;
         public static event Action<MapObject> SelectMapObjectEvent;
         public static event Action<Fleet, Waypoint> WaypointAddedEvent;
+        public static event Action<Fleet, Waypoint> WaypointMovedEvent;
         public static event Action<Waypoint> WaypointSelectedEvent;
         public static event Action<Waypoint> WaypointDeletedEvent;
 
@@ -119,6 +120,7 @@ namespace CraigStars.Singletons
         public static void PublishPlayerLeftEvent(int networkId) => PlayerLeftEvent?.Invoke(networkId);
         public static void PublishPlayerReadyToStart(int networkId, bool ready) => PlayerReadyToStartEvent?.Invoke(networkId, ready);
         public static void PublishPlayerMessageEvent(PlayerMessage message) => PlayerMessageEvent?.Invoke(message);
+        public static void PublishServerDisconnectedEvent() => ServerDisconnectedEvent?.Invoke();
 
 
         # region Scanner Objects
@@ -136,27 +138,14 @@ namespace CraigStars.Singletons
 
         #endregion
 
-        public static void PublishWaypointAddedEvent(Fleet fleet, Waypoint waypoint)
-        {
-            WaypointAddedEvent?.Invoke(fleet, waypoint);
-        }
 
-        public static void PublishServerDisconnectedEvent()
-        {
-            ServerDisconnectedEvent?.Invoke();
-        }
 
         #region Waypoints
 
-        public static void PublishWaypointSelectedEvent(Waypoint waypoint)
-        {
-            WaypointSelectedEvent?.Invoke(waypoint);
-        }
-
-        public static void PublishWaypointDeletedEvent(Waypoint waypoint)
-        {
-            WaypointDeletedEvent?.Invoke(waypoint);
-        }
+        public static void PublishWaypointAddedEvent(Fleet fleet, Waypoint waypoint) => WaypointAddedEvent?.Invoke(fleet, waypoint);
+        public static void PublishWaypointMovedEvent(Fleet fleet, Waypoint waypoint) => WaypointMovedEvent?.Invoke(fleet, waypoint);
+        public static void PublishWaypointSelectedEvent(Waypoint waypoint) => WaypointSelectedEvent?.Invoke(waypoint);
+        public static void PublishWaypointDeletedEvent(Waypoint waypoint) => WaypointDeletedEvent?.Invoke(waypoint);
 
         #endregion
 

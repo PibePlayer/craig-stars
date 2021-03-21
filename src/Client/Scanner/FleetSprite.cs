@@ -57,11 +57,15 @@ namespace CraigStars
             waypointsLine = GetNode<Line2D>("Waypoints");
             UpdateWaypointsLine();
 
+            Signals.WaypointMovedEvent += OnWaypointMoved;
+
         }
 
         public override void _ExitTree()
         {
             base._ExitTree();
+
+            Signals.WaypointMovedEvent -= OnWaypointMoved;
         }
 
         public override void _Draw()
@@ -174,6 +178,14 @@ namespace CraigStars
                     .Select(wp => wp.Position - Position)
                     .ToArray();
                 waypointsLine.Points = points;
+            }
+        }
+
+        void OnWaypointMoved(Fleet fleet, Waypoint waypoint)
+        {
+            if (fleet == Fleet)
+            {
+                UpdateWaypointsLine();
             }
         }
 

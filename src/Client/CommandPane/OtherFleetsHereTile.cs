@@ -40,7 +40,7 @@ namespace CraigStars
         {
             if (ActiveFleet != null && ActiveFleet.Orbiting != null)
             {
-                Signals.PublishMapObjectActivatedEvent(ActiveFleet.Orbiting);
+                Signals.PublishGotoMapObjectEvent(ActiveFleet.Orbiting);
             }
         }
 

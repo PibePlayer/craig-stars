@@ -50,6 +50,22 @@ namespace CraigStars
             Task = task;
         }
 
+        /// <summary>
+        /// Create a clone of this waypoint. This is used when splitting fleets
+        /// </summary>
+        /// <returns></returns>
+        public Waypoint Clone()
+        {
+            return new Waypoint()
+            {
+                Target = Target,
+                Position = Position,
+                WarpFactor = WarpFactor,
+                Task = Task,
+                TransportTasks = TransportTasks
+            };
+        }
+
         public static Waypoint TargetWaypoint(MapObject target, int warpFactor = 5, WaypointTask task = WaypointTask.None, WaypointTransportTasks? transportTasks = null)
         {
             return new Waypoint(target, Vector2.Zero, warpFactor, task, transportTasks == null ? new WaypointTransportTasks() : transportTasks.Value);

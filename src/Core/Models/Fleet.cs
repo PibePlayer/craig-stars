@@ -181,6 +181,7 @@ namespace CraigStars
         /// <summary>
         /// Split this fleet into itself and additional fleets
         /// TODO: Figure out damage distribution...
+        /// TODO: also, when submitting turns we don't handle changes to fleets after being split...
         /// </summary>
         /// <param name="split"></param>
         /// <returns>The new fleets created by this split command</returns>
@@ -236,7 +237,7 @@ namespace CraigStars
                         // copy all the waypoints
                         Waypoints.ForEach(wp =>
                         {
-                            newFleet.Waypoints.Add(wp);
+                            newFleet.Waypoints.Add(wp.Clone());
                         });
 
                         if (Orbiting != null)

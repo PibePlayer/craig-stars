@@ -1,6 +1,6 @@
 # craig-stars
 
-![screenshot](docs/screenshots/screenshot2.png)
+![screenshot](docs/screenshots/screenshot3.png)
 
 A clone of the 4X game Stars!
 
@@ -8,30 +8,30 @@ A clone of the 4X game Stars!
 
 This version still isn't playable. In order to make a playable game, this clone requires:
 
-- Scanner Views (both planetary and fleet based)
-- Research Menu (partially done)
-- Ship Designer (started)
-- Production Queue UI (partially done)
-- Race Customizer
-- Tech Browser (partially done)
-- Waypoint Orders (to colonize planets) (partially done)
-- The rest of the Command pane tiles (for fleet management, waypoints, etc)
-- Menu system (Main menu, in game exit menu, Multiplayer lobby, etc)
-- Battles
-- Bombing
-- Invasion
+-   Scanner Views (both planetary and fleet based)
+-   Research Menu (partially done)
+-   Ship Designer (started)
+-   Production Queue UI (partially done)
+-   Race Customizer
+-   Tech Browser (partially done)
+-   Waypoint Orders (to colonize planets) (partially done)
+-   The rest of the Command pane tiles (for fleet management, waypoints, etc)
+-   Menu system (Main menu, in game exit menu, Multiplayer lobby, etc)
+-   Battles
+-   Bombing
+-   Invasion
 
 # Little TODOs
 
 There are loads of things to do, but this section is for tracking things I've implmented partially but not fully.
 
-- Production doesn't allocate unspent resources to research
-- Orbital ring colors for enemy, mixed, and friendly orbiting fleets
-- Research at max level just stops, should switch to lowest unless all are max
-- GR LRT not implemented
-- No terraforming view on hab summary
-- No cloak, jam, or initiative in ship aggregate
-- Move waypoints/shift move waypoints for fine tuning
+-   Production doesn't allocate unspent resources to research
+-   Orbital ring colors for enemy, mixed, and friendly orbiting fleets
+-   Research at max level just stops, should switch to lowest unless all are max
+-   GR LRT not implemented
+-   No terraforming view on hab summary
+-   No cloak, jam, or initiative in ship aggregate
+-   Move waypoints/shift move waypoints for fine tuning
 
 # Development
 
@@ -43,9 +43,9 @@ _... More to come on setting up a dev environment_
 
 # Credits
 
-* The artwork comes from ForceUser on the [Home World Forum](https://starsautohost.org/sahforum2/index.php?t=index&rid=479)
-* The calculations for various formulas come from [The Stars! FAQ](http://starsfaq.com), FreeStars, Nova, and the Home World Forum.
-* Help setting up a multi-module c#+godot project came from [van800](https://github.com/van800/godot-demo-projects/tree/nunit/mono). Thanks!
+-   The artwork comes from ForceUser on the [Home World Forum](https://starsautohost.org/sahforum2/index.php?t=index&rid=479)
+-   The calculations for various formulas come from [The Stars! FAQ](http://starsfaq.com), FreeStars, Nova, and the Home World Forum.
+-   Help setting up a multi-module c#+godot project came from [van800](https://github.com/van800/godot-demo-projects/tree/nunit/mono). Thanks!
 
 # License
 

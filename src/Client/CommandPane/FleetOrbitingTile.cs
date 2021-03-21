@@ -30,7 +30,7 @@ namespace CraigStars
         {
             if (ActiveFleet != null && ActiveFleet.Orbiting != null && ActiveFleet.Orbiting.OwnedByMe)
             {
-                Signals.PublishMapObjectActivatedEvent(ActiveFleet.Orbiting);
+                Signals.PublishGotoMapObjectEvent(ActiveFleet.Orbiting);
             }
         }
 

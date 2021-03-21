@@ -73,6 +73,7 @@ namespace CraigStars
             Signals.CommandMapObjectEvent += OnCommandMapObject;
             Signals.SelectMapObjectEvent += OnSelectMapObject;
             Signals.FleetDeletedEvent += OnFleetDeleted;
+            Signals.FleetsCreatedEvent += OnFleetsCreated;
             Signals.WaypointAddedEvent += OnWaypointAdded;
             Signals.WaypointSelectedEvent += OnWaypointSelected;
             Signals.WaypointDeletedEvent += OnWaypointDeleted;
@@ -90,6 +91,7 @@ namespace CraigStars
             Signals.CommandMapObjectEvent -= OnCommandMapObject;
             Signals.SelectMapObjectEvent -= OnSelectMapObject;
             Signals.FleetDeletedEvent -= OnFleetDeleted;
+            Signals.FleetsCreatedEvent -= OnFleetsCreated;
             Signals.WaypointAddedEvent -= OnWaypointAdded;
             Signals.WaypointSelectedEvent -= OnWaypointSelected;
             Signals.WaypointDeletedEvent -= OnWaypointDeleted;
@@ -622,12 +624,57 @@ namespace CraigStars
             Fleets.ForEach(f => f.Connect("mouse_exited", this, nameof(OnMouseExited), new Godot.Collections.Array() { f }));
         }
 
+        /// <summary>
+        /// Add a new set of fleets to the viewport. This happens when doing a split
+        /// on the client side
+        /// </summary>
+        /// <param name="fleets"></param>
+        void OnFleetsCreated(List<Fleet> fleets)
+        {
+            // add in new fleets
+            var newFleetSprites = fleets.Select(fleet =>
+            {
+                var fleetSprite = fleetScene.Instance() as FleetSprite;
+                fleetSprite.Fleet = fleet;
+                fleetSprite.Position = fleet.Position;
+                if (fleet.Orbiting != null && PlanetsByGuid.TryGetValue(fleet.Orbiting.Guid, out var planetSprite))
+                {
+                    planetSprite.OrbitingFleets.Add(fleetSprite);
+                    fleetSprite.Orbiting = planetSprite;
+                }
+
+                FleetsByGuid[fleet.Guid] = fleetSprite;
+                return fleetSprite;
+            }).ToList();
+
+            Fleets.AddRange(newFleetSprites);
+
+            Fleets.ForEach(f =>
+            {
+                f.OtherFleets.Clear();
+                if (f.Fleet.OtherFleets?.Count > 0)
+                {
+                    foreach (var fleet in f.Fleet.OtherFleets)
+                    {
+                        var fleetSprite = FleetsByGuid[fleet.Guid];
+                        f.OtherFleets.Add(fleetSprite);
+                    }
+                }
+            });
+
+            newFleetSprites.ForEach(f => AddChild(f));
+            newFleetSprites.ForEach(f => f.Connect("input_event", this, nameof(OnInputEvent), new Godot.Collections.Array() { f }));
+            newFleetSprites.ForEach(f => f.Connect("mouse_entered", this, nameof(OnMouseEntered), new Godot.Collections.Array() { f }));
+            newFleetSprites.ForEach(f => f.Connect("mouse_exited", this, nameof(OnMouseExited), new Godot.Collections.Array() { f }));
+
+        }
+
         void OnFleetDeleted(FleetSprite fleet)
         {
             Fleets.Remove(fleet);
             // make sure other fleets don't know about us anymore
             fleet.OtherFleets.ForEach(otherFleet => otherFleet.OtherFleets.Remove(fleet));
-            
+
             // make sure any planets we are orbiting don't know about us anymore
             if (fleet.Orbiting != null)
             {

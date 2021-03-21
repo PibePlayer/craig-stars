@@ -119,20 +119,22 @@ namespace CraigStars
         List<Fleet> GenerateFleets(Rules rules, Player player, Planet homeworld)
         {
             var fleets = new List<Fleet>(new Fleet[] {
-            CreateFleet(player.GetDesign(ShipDesigns.LongRangeScount.Name), $"Long Range Scout #1", player, homeworld),
-            CreateFleet(player.GetDesign(ShipDesigns.SantaMaria.Name), $"Santa Maria # 1", player, homeworld)
-        });
+                CreateFleet(player.GetDesign(ShipDesigns.LongRangeScount.Name), player, 1, homeworld),
+                CreateFleet(player.GetDesign(ShipDesigns.SantaMaria.Name), player, 2, homeworld)
+            });
 
             return fleets;
         }
 
-        Fleet CreateFleet(ShipDesign playerDesign, String name, Player player, Planet planet)
+        Fleet CreateFleet(ShipDesign playerDesign, Player player, int id, Planet planet)
         {
             var design = Game.DesignsByGuid[playerDesign.Guid];
             var fleet = new Fleet()
             {
-                Id = 1 + player.Stats.NumFleetsBuilt++
+                Id = id
             };
+            fleet.Name = $"{playerDesign.Name} #{fleet.Id}";
+            player.Stats.NumFleetsBuilt++;
             fleet.Tokens.Add(
                     new ShipToken()
                     {
@@ -144,7 +146,6 @@ namespace CraigStars
             fleet.Orbiting = planet;
             fleet.Waypoints.Add(Waypoint.TargetWaypoint(fleet.Orbiting));
             planet.OrbitingFleets.Add(fleet);
-            fleet.Name = name;
             fleet.Player = player;
 
             // aggregate all the design data

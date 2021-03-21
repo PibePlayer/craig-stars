@@ -71,7 +71,7 @@ namespace CraigStars
 
         public List<CargoTransferOrder> CargoTransferOrders { get; set; } = new List<CargoTransferOrder>();
         public List<MergeFleetOrder> MergeFleetOrders { get; set; } = new List<MergeFleetOrder>();
-        public List<SplitFleetOrder> SplitFleetOrders { get; set; } = new List<SplitFleetOrder>();
+        public List<SplitAllFleetOrder> SplitFleetOrders { get; set; } = new List<SplitAllFleetOrder>();
 
         [JsonProperty(ItemIsReference = true)]
         public List<FleetOrder> FleetOrders { get; set; } = new List<FleetOrder>();
@@ -192,6 +192,26 @@ namespace CraigStars
             {
                 fleet.Tokens = fleet.Tokens.Where(token => token.Design != design).ToList();
             }
+        }
+
+        /// <summary>
+        /// Get the next available fleet id
+        /// TODO: with 30k fleets this will take a while...
+        /// </summary>
+        /// <returns></returns>
+        public int GetNextFleetId()
+        {
+            int i = 1;
+            foreach (var fleet in Fleets.OrderBy(f => f.Id))
+            {
+                if (fleet.Id != i)
+                {
+                    // find the first available id, starting at 1 and counting up
+                    break;
+                }
+                i++;
+            }
+            return i;
         }
 
         /// <summary>

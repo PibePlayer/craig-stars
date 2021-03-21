@@ -210,6 +210,7 @@ namespace CraigStars
                 }
                 log.Info($"{me.Name} made immediate transfer from {source.Name} to {dest.Name} for {netCargoDiff} cargo");
 
+                Signals.PublishCargoTransferredEvent(source, dest);
                 // zero it out for next time
                 netCargoDiff = new Cargo();
             }

@@ -2,9 +2,12 @@ using Godot;
 using System;
 using CraigStars.Singletons;
 using CraigStars;
+using System.Collections.Generic;
 
 public class FleetTile : MarginContainer
 {
+    public Player Me { get => PlayersManager.Me; }
+
     public FleetSprite ActiveFleet
     {
         get => activeFleet;
@@ -27,6 +30,17 @@ public class FleetTile : MarginContainer
 
         Signals.MapObjectActivatedEvent += OnMapObjectActivated;
         Signals.TurnPassedEvent += OnTurnPassed;
+        Signals.FleetDeletedEvent += OnFleetDeleted;
+        Signals.FleetsCreatedEvent += OnFleetsCreated;
+    }
+
+    public override void _ExitTree()
+    {
+        base._ExitTree();
+        Signals.MapObjectActivatedEvent -= OnMapObjectActivated;
+        Signals.TurnPassedEvent -= OnTurnPassed;
+        Signals.FleetDeletedEvent -= OnFleetDeleted;
+        Signals.FleetsCreatedEvent -= OnFleetsCreated;
     }
 
     protected virtual void OnMapObjectActivated(MapObjectSprite mapObject)
@@ -36,6 +50,16 @@ public class FleetTile : MarginContainer
     }
 
     protected virtual void OnTurnPassed(PublicGameInfo gameInfo)
+    {
+        UpdateControls();
+    }
+
+    protected virtual void OnFleetDeleted(FleetSprite fleet)
+    {
+        UpdateControls();
+    }
+
+    protected virtual void OnFleetsCreated(List<Fleet> fleets)
     {
         UpdateControls();
     }

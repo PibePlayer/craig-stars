@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace CraigStars
 {
@@ -8,6 +9,7 @@ namespace CraigStars
     /// </summary>
     public class MergeFleetOrder : FleetOrder
     {
+        [JsonProperty(ItemIsReference = true)]
         public List<Fleet> MergingFleets { get; set; }
     }
 }

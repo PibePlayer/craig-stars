@@ -34,22 +34,6 @@ namespace CraigStars
             cargoTransferButton.Connect("pressed", this, nameof(OnCargoTransferButtonPressed));
             otherFleetsOptionButton.Connect("item_selected", this, nameof(OnOtherFleetsOptionItemSelected));
 
-            Signals.FleetDeletedEvent += OnFleetDeleted;
-        }
-
-        public override void _ExitTree()
-        {
-            base._ExitTree();
-            Signals.FleetDeletedEvent -= OnFleetDeleted;
-        }
-
-        void OnFleetDeleted(FleetSprite fleet)
-        {
-            if (otherFleets.Contains(fleet))
-            {
-                otherFleets.Remove(fleet);
-                UpdateControls();
-            }
         }
 
         void OnGotoButtonPressed()

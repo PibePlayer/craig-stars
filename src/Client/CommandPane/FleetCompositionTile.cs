@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using CraigStars.Singletons;
+using System.Collections.Generic;
 
 namespace CraigStars
 {
@@ -28,20 +29,18 @@ namespace CraigStars
             splitButton.Connect("pressed", this, nameof(OnSplitButtonPressed));
             splitAllButton.Connect("pressed", this, nameof(OnSplitAllButtonPressed));
             mergeButton.Connect("pressed", this, nameof(OnMergeButtonPressed));
-
-            Signals.FleetDeletedEvent += OnFleetDeleted;
         }
 
-        public override void _ExitTree()
+        protected override void OnFleetsCreated(List<Fleet> fleets)
         {
-            base._ExitTree();
-            Signals.FleetDeletedEvent -= OnFleetDeleted;
-        }
-
-        void OnFleetDeleted(FleetSprite fleet)
-        {
+            base.OnFleetsCreated(fleets);
             AddItemsToTree();
-            UpdateControls();
+        }
+
+        protected override void OnFleetDeleted(FleetSprite fleet)
+        {
+            base.OnFleetDeleted(fleet);
+            AddItemsToTree();
         }
 
         void OnSplitButtonPressed()
@@ -51,7 +50,12 @@ namespace CraigStars
 
         void OnSplitAllButtonPressed()
         {
+            var order = new SplitAllFleetOrder() { Source = ActiveFleet.Fleet };
+            Me.SplitFleetOrders.Add(order);
+            Me.FleetOrders.Add(order);
 
+            var fleets = ActiveFleet.Fleet.Split(order);
+            Signals.PublishFleetsCreatedEvent(fleets);
         }
 
         void OnMergeButtonPressed()

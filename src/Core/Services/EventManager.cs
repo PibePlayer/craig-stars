@@ -16,16 +16,15 @@ namespace CraigStars.Singletons
 
         #region Server Events
 
-        public static event Action<Fleet> FleetBuiltEvent;
+        public static event Action<Fleet> FleetCreatedEvent;
+        public static event Action<Fleet> FleetDeletedEvent;
 
         #endregion
 
         #region Event Publishers
 
-        internal static void PublishFleetBuiltEvent(Fleet fleet)
-        {
-            FleetBuiltEvent?.Invoke(fleet);
-        }
+        internal static void PublishFleetCreatedEvent(Fleet fleet) => FleetCreatedEvent?.Invoke(fleet);
+        internal static void PublishFleetDeletedEvent(Fleet fleet) => FleetDeletedEvent?.Invoke(fleet);
 
         #endregion
 

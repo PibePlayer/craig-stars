@@ -175,10 +175,106 @@ namespace CraigStars
                         tokenByDesign[token.Design] = token;
                     }
                 }
+                Cargo += fleet.Cargo; // this also adds fuel
             }
 
             // these fleets should no longer be in our "OtherFleets" list
             order.MergingFleets.ForEach(otherFleet => OtherFleets.Remove(otherFleet));
+            ComputeAggregate();
+        }
+
+        /// <summary>
+        /// Split this fleet into itself and additional fleets
+        /// TODO: Figure out damage distribution...
+        /// </summary>
+        /// <param name="split"></param>
+        /// <returns>The new fleets created by this split command</returns>
+        public List<Fleet> Split(SplitAllFleetOrder split)
+        {
+            List<Fleet> newFleets = new List<Fleet>();
+            var originalCargoCapacity = Aggregate.CargoCapacity;
+            var originalFuelCapacity = Aggregate.FuelCapacity;
+            var fuelPercent = (float)Fuel / Aggregate.FuelCapacity;
+
+            var count = 0;
+            ShipToken remainingToken = null;
+            foreach (var token in Tokens)
+            {
+                for (int i = 0; i < token.Quantity; i++)
+                {
+                    if (count == 0)
+                    {
+                        // the first token becomes our existing fleet
+                        remainingToken = token;
+                    }
+                    else
+                    {
+                        var newFleet = new Fleet()
+                        {
+                            Id = Player.GetNextFleetId(),
+                            Player = Player,
+                            Name = $"{token.Design.Name} #{Player.Stats.NumFleetsBuilt}",
+                            Orbiting = Orbiting,
+                            Position = Position,
+                            Tokens = new List<ShipToken>() { new ShipToken() {
+                                Design = token.Design,
+                                Quantity = 1,
+                            }},
+                        };
+                        newFleet.ComputeAggregate();
+                        newFleet.OtherFleets.AddRange(OtherFleets);
+                        newFleet.OtherFleets.Add(this);
+
+                        if (newFleet.Aggregate.CargoCapacity > 0)
+                        {
+                            // how much of the cargo goes to this token
+                            var cargoPercent = (float)newFleet.Aggregate.CargoCapacity / originalCargoCapacity;
+                            // copy cargo
+                            // TODO: make sure we account for any fractional leftovers
+                            newFleet.Cargo = Cargo * (cargoPercent * newFleet.Aggregate.CargoCapacity);
+                        }
+
+                        // copy fuel
+                        // TODO: make sure we account for any fractional leftovers
+                        newFleet.Fuel = (int)(fuelPercent * newFleet.Aggregate.FuelCapacity);
+
+                        // copy all the waypoints
+                        Waypoints.ForEach(wp =>
+                        {
+                            newFleet.Waypoints.Add(wp);
+                        });
+
+                        if (Orbiting != null)
+                        {
+                            Orbiting.OrbitingFleets.Add(newFleet);
+                        }
+
+                        newFleets.Add(newFleet);
+                    }
+                    count++;
+                }
+            }
+
+            // this fleet now has one token left
+            remainingToken.Quantity = 1;
+            Tokens.Clear();
+            Tokens.Add(remainingToken);
+
+            // update our remaining fuel and cargo
+            ComputeAggregate();
+
+            // TODO: make sure we account for any fractional leftovers
+            if (Aggregate.CargoCapacity > 0)
+            {
+                // how much of the cargo goes to this token
+                var cargoPercent = (float)Aggregate.CargoCapacity / originalCargoCapacity;
+                Cargo = Cargo * cargoPercent;
+            }
+            Fuel = (int)(Aggregate.FuelCapacity * fuelPercent);
+            Name = $"{remainingToken.Design.Name} #{Id}";
+            OtherFleets.AddRange(newFleets);
+
+            return newFleets;
         }
 
         /// <summary>

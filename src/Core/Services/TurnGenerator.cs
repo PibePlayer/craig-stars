@@ -105,7 +105,7 @@ namespace CraigStars
             ownedPlanets = Game.Planets.Where(p => p.Player != null).ToList();
 
             log.Debug("Processing player immmediate cargo transfers");
-            ProcessCargoTransfers();
+            ProcessFleetOrders();
 
             // regular turn stuff
             PublishTurnGeneratorAdvancedEvent(TurnGeneratorState.Waypoint0);
@@ -138,34 +138,115 @@ namespace CraigStars
             Scan();
         }
 
-        void ProcessCargoTransfers()
+        /// <summary>
+        /// The client allows various immediate orders like cargo transfers and merge/split operations.
+        /// We process those like WP0 tasks
+        /// </summary>
+        void ProcessFleetOrders()
         {
             Game.Players.ForEach(player =>
             {
-                player.CargoTransferOrders.ForEach(cargoTransfer =>
+                player.FleetOrders.ForEach(order =>
                 {
-                    if (Game.CargoHoldersByGuid.TryGetValue(cargoTransfer.Source.Guid, out var source) &&
-                    Game.CargoHoldersByGuid.TryGetValue(cargoTransfer.Dest.Guid, out var dest))
+                    if (order is CargoTransferOrder cargoTransferOrder)
                     {
-                        // make sure our source can lose the cargo
-                        var result = source.AttemptTransfer(cargoTransfer.Transfer);
-                        if (result)
+                        if (Game.CargoHoldersByGuid.TryGetValue(cargoTransferOrder.Source.Guid, out var source) &&
+                        Game.CargoHoldersByGuid.TryGetValue(cargoTransferOrder.Dest.Guid, out var dest))
                         {
-                            // make sure our dest can take the cargo
-                            result = dest.AttemptTransfer(-cargoTransfer.Transfer);
-                            if (!result)
+                            // make sure our source can lose the cargo
+                            var result = source.AttemptTransfer(cargoTransferOrder.Transfer);
+                            if (result)
                             {
-                                // revert the source changes
-                                source.Cargo -= cargoTransfer.Transfer;
-                                log.Error($"Failed to transfer {cargoTransfer.Transfer} from {source.Name} to {dest.Name}. {dest.Name} rejected cargo.");
+                                // make sure our dest can take the cargo
+                                result = dest.AttemptTransfer(-cargoTransferOrder.Transfer);
+                                if (!result)
+                                {
+                                    // revert the source changes
+                                    source.Cargo -= cargoTransferOrder.Transfer;
+                                    log.Error($"Player {player} Failed to transfer {cargoTransferOrder.Transfer} from {source.Name} to {dest.Name}. {dest.Name} rejected cargo.");
+                                }
+                            }
+                            else
+                            {
+                                log.Error($"Player {player} Failed to transfer {cargoTransferOrder.Transfer} from {source.Name} to {dest.Name}. {source.Name} rejected cargo.");
+                            }
+                        }
+                    }
+                    else if (order is MergeFleetOrder mergeFleetOrder)
+                    {
+                        if (Game.FleetsByGuid.TryGetValue(mergeFleetOrder.Source.Guid, out var source))
+                        {
+                            if (source.Player == player)
+                            {
+                                List<Fleet> mergingFleets = new List<Fleet>();
+                                foreach (var playerFleet in mergeFleetOrder.MergingFleets)
+                                {
+                                    if (Game.FleetsByGuid.TryGetValue(playerFleet.Guid, out var mergingFleet))
+                                    {
+                                        if (mergingFleet.Player == player)
+                                        {
+                                            // finally, error checking done, we can merge this one
+                                            mergingFleets.Add(mergingFleet);
+                                        }
+                                        else
+                                        {
+                                            log.Error($"Player {player} tried to merge {playerFleet.Name} into {source.Name}, but they do not own {playerFleet.Name} - {playerFleet.Guid}");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        log.Error($"Player {player} tried to merge {playerFleet.Name} into {source.Name}, but {playerFleet.Name} - {playerFleet.Guid} doesn't exist");
+                                    }
+
+                                }
+
+                                if (mergingFleets.Count > 0)
+                                {
+                                    source.Merge(new MergeFleetOrder()
+                                    {
+                                        Source = source,
+                                        MergingFleets = mergingFleets
+                                    });
+
+                                    mergingFleets.ForEach(f => EventManager.PublishFleetDeletedEvent(f));
+                                }
+                            }
+                            else
+                            {
+                                log.Error($"Player {player} tried to merge into a fleet that they don't own: {mergeFleetOrder.Source.Name} - {mergeFleetOrder.Source.Guid}");
                             }
                         }
                         else
                         {
-                            log.Error($"Failed to transfer {cargoTransfer.Transfer} from {source.Name} to {dest.Name}. {source.Name} rejected cargo.");
+                            log.Error($"Player {player} tried to merge into a fleet that doesn't exist: {mergeFleetOrder.Source.Name} - {mergeFleetOrder.Source.Guid}");
                         }
                     }
+                    else if (order is SplitAllFleetOrder splitAllFleetOrder)
+                    {
+                        if (Game.FleetsByGuid.TryGetValue(splitAllFleetOrder.Source.Guid, out var source))
+                        {
+                            if (source.Player == player)
+                            {
+                                var newFleets = source.Split(new SplitAllFleetOrder { Source = source });
+                                newFleets.ForEach(f => EventManager.PublishFleetCreatedEvent(f));
+                            }
+                            else
+                            {
+                                log.Error($"Player {player} tried to split a fleet that they don't own: {splitAllFleetOrder.Source.Name} - {splitAllFleetOrder.Source.Guid}");
+                            }
+                        }
+                        else
+                        {
+                            log.Error($"Player {player} tried to split a fleet that doesn't exist: {splitAllFleetOrder.Source.Name} - {splitAllFleetOrder.Source.Guid}");
+                        }
+
+                    }
                 });
+
+                player.FleetOrders.Clear();
+                player.CargoTransferOrders.Clear();
+                player.MergeFleetOrders.Clear();
+                player.SplitFleetOrders.Clear();
             });
         }
 

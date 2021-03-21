@@ -71,12 +71,14 @@ namespace CraigStars
             gameSaver = new GameSaver(this);
 
             turnGenerator.TurnGeneratorAdvancedEvent += OnTurnGeneratedAdvanced;
-            EventManager.FleetBuiltEvent += OnFleetBuilt;
+            EventManager.FleetCreatedEvent += OnFleetCreated;
+            EventManager.FleetDeletedEvent += OnFleetDeleted;
         }
 
         ~Game()
         {
-            EventManager.FleetBuiltEvent -= OnFleetBuilt;
+            EventManager.FleetCreatedEvent -= OnFleetCreated;
+            EventManager.FleetDeletedEvent -= OnFleetDeleted;
             turnGenerator.TurnGeneratorAdvancedEvent -= OnTurnGeneratedAdvanced;
         }
 
@@ -220,7 +222,7 @@ namespace CraigStars
 
         #region Event Handlers
 
-        void OnFleetBuilt(Fleet fleet)
+        void OnFleetCreated(Fleet fleet)
         {
             foreach (var token in fleet.Tokens)
             {
@@ -232,6 +234,13 @@ namespace CraigStars
             Fleets.Add(fleet);
             FleetsByGuid[fleet.Guid] = fleet;
             CargoHoldersByGuid[fleet.Guid] = fleet;
+        }
+
+        void OnFleetDeleted(Fleet fleet)
+        {
+            Fleets.Remove(fleet);
+            FleetsByGuid.Remove(fleet.Guid);
+            CargoHoldersByGuid.Remove(fleet.Guid);
         }
 
         #endregion

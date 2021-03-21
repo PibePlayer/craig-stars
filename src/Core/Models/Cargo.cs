@@ -163,7 +163,7 @@ namespace CraigStars
                 a.Boranium / num,
                 a.Germanium / num,
                 a.Colonists / num,
-                a.Fuel / num
+                a.Fuel // don't divide by fuel
             );
         }
 
@@ -174,7 +174,7 @@ namespace CraigStars
                 (int)(a.Boranium * num),
                 (int)(a.Germanium * num),
                 (int)(a.Colonists * num),
-                (int)(a.Fuel * num)
+                a.Fuel // don't multiple fuel
             );
         }
 

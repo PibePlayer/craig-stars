@@ -17,13 +17,16 @@ namespace CraigStars
             cargoGrid = FindNode("CargoGrid") as CargoGrid;
 
             cargoBar.ValueUpdatedEvent += OnCargoBarPressed;
+            Signals.CargoTransferredEvent += OnCargoTransferred;
 
             base._Ready();
+
         }
 
         public override void _ExitTree()
         {
             cargoBar.ValueUpdatedEvent -= OnCargoBarPressed;
+            Signals.CargoTransferredEvent -= OnCargoTransferred;
             base._ExitTree();
         }
 
@@ -34,6 +37,11 @@ namespace CraigStars
                 // trigger a cargo transfer event between this fleet and the planet it is orbiting
                 Signals.PublishCargoTransferRequestedEvent(ActiveFleet.Fleet, ActiveFleet.Fleet.Orbiting);
             }
+        }
+
+        void OnCargoTransferred(Fleet source, ICargoHolder dest)
+        {
+            UpdateControls();
         }
 
         protected override void UpdateControls()

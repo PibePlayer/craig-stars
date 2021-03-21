@@ -62,6 +62,8 @@ namespace CraigStars.Singletons
         public static event Action<MapObject> GotoMapObjectEvent;
         public static event Action<FleetSprite> RenameFleetRequestedEvent;
         public static event Action<FleetSprite> FleetDeletedEvent;
+        public static event Action<Fleet, ICargoHolder> CargoTransferredEvent;
+        public static event Action<List<Fleet>> FleetsCreatedEvent;
         #endregion
 
         #region Network Events
@@ -161,6 +163,8 @@ namespace CraigStars.Singletons
         #region Fleets
 
         public static void PublishFleetDeletedEvent(FleetSprite fleet) => FleetDeletedEvent?.Invoke(fleet);
+        public static void PublishCargoTransferredEvent(Fleet source, ICargoHolder dest) => CargoTransferredEvent?.Invoke(source, dest);
+        public static void PublishFleetsCreatedEvent(List<Fleet> fleets) => FleetsCreatedEvent?.Invoke(fleets);
 
         #endregion
 

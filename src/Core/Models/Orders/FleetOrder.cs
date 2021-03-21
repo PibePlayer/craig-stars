@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace CraigStars
 {
@@ -12,6 +13,8 @@ namespace CraigStars
         /// The source fleet that this order acts upon
         /// </summary>
         /// <value></value>
+        [JsonProperty(IsReference = true)]
         public Fleet Source { get; set; }
+
     }
 }

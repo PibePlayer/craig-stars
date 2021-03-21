@@ -155,7 +155,8 @@ namespace CraigStars
         {
             planet.Player.Stats.NumFleetsBuilt++;
             planet.Player.Stats.NumTokensBuilt += numBuilt;
-            String name = item.fleetName != null ? item.fleetName : $"{item.Design.Name} #{planet.Player.Stats.NumFleetsBuilt}";
+            var id = planet.Player.Stats.NumFleetsBuilt;
+            String name = item.fleetName != null ? item.fleetName : $"{item.Design.Name} #{id}";
             var existingFleet = planet.OrbitingFleets.Where(f => f.Name == name);
 
             // if (we didn't have a fleet of that name, or it wasn't defined
@@ -173,7 +174,7 @@ namespace CraigStars
                 Player = planet.Player,
                 Orbiting = planet,
                 Position = planet.Position,
-                Id = planet.Player.Stats.NumFleetsBuilt
+                Id = id
             };
             fleet.Tokens.Add(new ShipToken(item.Design, item.quantity));
             fleet.ComputeAggregate();
@@ -182,7 +183,7 @@ namespace CraigStars
             planet.OrbitingFleets.Add(fleet);
 
             Message.FleetBuilt(planet.Player, item.Design, fleet, numBuilt);
-            EventManager.PublishFleetBuiltEvent(fleet);
+            EventManager.PublishFleetCreatedEvent(fleet);
 
             // }
         }

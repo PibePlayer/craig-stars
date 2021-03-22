@@ -1,3 +1,4 @@
+using CraigStars.Utils;
 using Godot;
 using System;
 
@@ -138,15 +139,15 @@ namespace CraigStars
             {
                 case HabType.Gravity:
                     habLabel.Text = "Gravity";
-                    habValueLabel.Text = GetGravString(HabValue);
+                    habValueLabel.Text = TextUtils.GetGravString(HabValue);
                     break;
                 case HabType.Temperature:
                     habLabel.Text = "Temperature";
-                    habValueLabel.Text = GetTempString(HabValue);
+                    habValueLabel.Text = TextUtils.GetTempString(HabValue);
                     break;
                 case HabType.Radiation:
                     habLabel.Text = "Radiation";
-                    habValueLabel.Text = GetRadString(HabValue);
+                    habValueLabel.Text = TextUtils.GetRadString(HabValue);
                     break;
             }
 
@@ -158,32 +159,6 @@ namespace CraigStars
             Update();
         }
 
-        public static String GetGravString(int grav)
-        {
-            int result, tmp = Math.Abs(grav - 50);
-            if (tmp <= 25)
-                result = (tmp + 25) * 4;
-            else
-                result = tmp * 24 - 400;
-            if (grav < 50)
-                result = 10000 / result;
-
-            double value = result / 100 + (result % 100 / 100.0);
-            return $"{value:0.00}g";
-        }
-
-        public static string GetTempString(int temp)
-        {
-            int result;
-            result = (temp - 50) * 4;
-
-            return $"{result}°C";
-        }
-
-        public static string GetRadString(int rad)
-        {
-            return rad + "mR";
-        }
 
     }
 }

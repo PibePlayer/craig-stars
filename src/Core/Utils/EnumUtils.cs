@@ -23,9 +23,58 @@ namespace CraigStars.Utils
                 default:
                     return task.ToString();
             }
+        }
+
+        public static string GetLabelForSpendLeftoverPointsOn(SpendLeftoverPointsOn value)
+        {
+            switch (value)
+            {
+                case SpendLeftoverPointsOn.MineralConcentrations:
+                    return "Mineral Concentrations";
+                case SpendLeftoverPointsOn.SurfaceMinerals:
+                    return "Surface Minerals";
+                default:
+                    return value.ToString();
+            }
 
         }
 
+        public static string GetLabelForLRT(LRT lrt)
+        {
+            switch (lrt)
+            {
+                case LRT.IFE:
+                    return "Improved Fuel Efficiency";
+                case LRT.TT:
+                    return "Total Terraforming";
+                case LRT.ARM:
+                    return "Advanced Remote Mining";
+                case LRT.ISB:
+                    return "Improved Starbases";
+                case LRT.GR:
+                    return "Generalized Research";
+                case LRT.UR:
+                    return "Ultimate Recycling";
+                case LRT.NRSE:
+                    return "No Ram Scoop Engines";
+                case LRT.OBRM:
+                    return "Only Basic Remote Mining";
+                case LRT.NAS:
+                    return "No Advanced Scanners";
+                case LRT.LSP:
+                    return "Low Starting Population";
+                case LRT.BET:
+                    return "Bleeding Edge Technology";
+                case LRT.RS:
+                    return "Regenerating Shields";
+                case LRT.MA:
+                    return "Mineral Alchemy";
+                case LRT.CE:
+                    return "Cheap Engines";
+                default:
+                    return lrt.ToString();
+            }
+        }
     }
 }
 

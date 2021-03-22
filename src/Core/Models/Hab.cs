@@ -41,6 +41,24 @@ namespace CraigStars
             }
         }
 
+        public int this[HabType index]
+        {
+            get
+            {
+                switch (index)
+                {
+                    case HabType.Gravity:
+                        return grav;
+                    case HabType.Temperature:
+                        return temp;
+                    case HabType.Radiation:
+                        return rad;
+                    default:
+                        throw new IndexOutOfRangeException($"Index {index} out of range for {this.GetType().ToString()}");
+                }
+            }
+        }
+
         /// <summary>
         /// Get a copy of this, with updated Grav
         /// </summary>
@@ -66,6 +84,21 @@ namespace CraigStars
         public Hab WithRad(int rad = 0)
         {
             return new Hab(this.grav, this.temp, rad);
+        }
+
+        public Hab WithType(HabType type, int value = 0)
+        {
+            switch (type)
+            {
+                case HabType.Gravity:
+                    return WithGrav(value);
+                case HabType.Temperature:
+                    return WithTemp(value);
+                case HabType.Radiation:
+                    return WithRad(value);
+                default:
+                    throw new IndexOutOfRangeException($"Type {type} out of range for {this.GetType().ToString()}");
+            }
         }
 
     }

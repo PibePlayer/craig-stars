@@ -5,6 +5,8 @@ namespace CraigStars
     /// </summary>
     public enum HabType
     {
-        Gravity, Temperature, Radiation
+        Gravity, 
+        Temperature, 
+        Radiation
     }
 }

@@ -293,6 +293,23 @@ namespace CraigStars
         }
 
         /// <summary>
+        /// Get the defense coverage for this planet against smart bombs, assuming it has a player
+        /// </summary>
+        /// <param name="techStore"></param>
+        /// <returns></returns>
+        public float SmartDefenseCoverage
+        {
+            get
+            {
+                if (Player != null)
+                {
+                    return GetDefenseCoverage(Player.GetBestDefense());
+                }
+                return 0;
+            }
+        }
+
+        /// <summary>
         /// Get the defense coverage for this planet for a given defense type
         /// </summary>
         /// <param name="techStore"></param>
@@ -302,6 +319,20 @@ namespace CraigStars
             if (Defenses > 0 && defense != null)
             {
                 return (float)(1.0 - (Math.Pow((1 - (defense.DefenseCoverage / 100)), Mathf.Clamp(Defenses, 0, MaxDefenses))));
+            }
+            return 0;
+        }
+
+        /// <summary>
+        /// Get the defense coverage for this planet for a given defense type
+        /// </summary>
+        /// <param name="techStore"></param>
+        /// <returns></returns>
+        public float GetDefenseCoverageSmart(TechDefense defense)
+        {
+            if (Defenses > 0 && defense != null)
+            {
+                return (float)(1.0 - (Math.Pow((1 - (defense.DefenseCoverage / 100 * Player.Rules.SmartDefenseCoverageFactor)), Mathf.Clamp(Defenses, 0, MaxDefenses))));
             }
             return 0;
         }

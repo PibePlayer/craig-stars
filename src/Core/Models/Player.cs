@@ -178,6 +178,20 @@ namespace CraigStars
         #endregion
 
         /// <summary>
+        /// Return true if this other player is our enemy
+        /// </summary>
+        /// <param name="otherPlayer"></param>
+        /// <returns></returns>
+        public bool IsEnemy(PublicPlayerInfo otherPlayer)
+        {
+            if (otherPlayer == null)
+            {
+                return false;
+            }
+            return this.Num != otherPlayer.Num;
+        }
+
+        /// <summary>
         /// Delete this design and also delete any tokens that use the design
         /// </summary>
         /// <param name="design"></param>
@@ -476,6 +490,36 @@ namespace CraigStars
         public TechHullComponent GetBestTorpedo()
         {
             return GetBestTech<TechHullComponent>(TechStore, TechCategory.Torpedo);
+        }
+
+        /// <summary>
+        /// Get the best bomb this player has access to
+        /// </summary>
+        /// <param name="techStore"></param>
+        /// <returns></returns>
+        public TechHullComponent GetBestBomb()
+        {
+            return GetBestTech<TechHullComponent>(TechStore, TechCategory.Bomb);
+        }
+
+        /// <summary>
+        /// Get the best mine robot this player has access to
+        /// </summary>
+        /// <param name="techStore"></param>
+        /// <returns></returns>
+        public TechHullComponent GetBestMineRobot()
+        {
+            return GetBestTech<TechHullComponent>(TechStore, TechCategory.MineRobot);
+        }
+
+        /// <summary>
+        /// Get the best mine layer this player has access to
+        /// </summary>
+        /// <param name="techStore"></param>
+        /// <returns></returns>
+        public TechHullComponent GetBestMineLayer()
+        {
+            return GetBestTech<TechHullComponent>(TechStore, TechCategory.MineLayer);
         }
 
         /// <summary>

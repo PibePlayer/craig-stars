@@ -27,6 +27,8 @@ namespace CraigStars
         ColonizeWithNoColonizationModule= 1 << 16,
         ColonizeWithNoColonists         = 1 << 17,
         PlanetColonized                 = 1 << 18,
-        GainTechLevel                   = 1 << 19
+        GainTechLevel                   = 1 << 19,
+        MyPlanetBombed                  = 1 << 20,
+        EnemyPlanetBombed               = 1 << 21,
     }
 }

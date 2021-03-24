@@ -155,5 +155,38 @@ namespace CraigStars
             player.Messages.Add(new Message(MessageType.FleetOrdersComplete, text, fleet));
         }
 
+        public static void PlanetBombed(Player player, Planet planet, Fleet fleet, int colonistsKilled, int minesDestroyed, int factoriesDestroyed, int defensesDestroyed)
+        {
+            string text;
+
+            if (player == fleet.Player)
+            {
+                text = planet.Population == 0 ? $"Your {fleet.Name} has bombed {planet.Name} killing off all colonists" : $"Your {fleet.Name} has bombed {planet.Name} killing {colonistsKilled} colonists, and destroying {minesDestroyed} mines, {factoriesDestroyed} factories, and {defensesDestroyed} defenses.";
+                player.Messages.Add(new Message(MessageType.EnemyPlanetBombed, text, planet));
+            }
+            else
+            {
+                text = planet.Population == 0 ? $"{fleet.Name} has bombed your {planet.Name} killing off all colonists" : $"{fleet.Name} has bombed your {planet.Name} killing {colonistsKilled} colonists, and destroying {minesDestroyed} mines, {factoriesDestroyed} factories, and {defensesDestroyed} defenses.";
+                player.Messages.Add(new Message(MessageType.MyPlanetBombed, text, planet));
+            }
+
+        }
+
+        public static void PlanetSmartBombed(Player player, Planet planet, Fleet fleet, int colonistsKilled)
+        {
+            string text;
+
+            if (player == fleet.Player)
+            {
+                text = planet.Population == 0 ? $"Your fleet {fleet.Name} has bombed {planet.Name} with smart bombs killing all colonists" : $"Your {fleet.Name} has bombed {planet.Name} with smart bombs killing {colonistsKilled} colonists.";
+                player.Messages.Add(new Message(MessageType.EnemyPlanetBombed, text, planet));
+            }
+            else
+            {
+                text = planet.Population == 0 ? $"{fleet.Name} has bombed your {planet.Name} with smart bombs killing all colonists" : $"{fleet.Name} has bombed your {planet.Name} with smart bombs killing {colonistsKilled} colonists.";
+                player.Messages.Add(new Message(MessageType.MyPlanetBombed, text, planet));
+            }
+        }
+
     }
 }

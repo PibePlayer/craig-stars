@@ -30,7 +30,7 @@ namespace CraigStars
             // get all the fleets that can scan and don't have waypoints yet
             List<Fleet> scannerFleets = new List<Fleet>();
 
-            foreach (Fleet fleet in player.Fleets.Where(fleet => fleet.Aggregate.Scanner))
+            foreach (Fleet fleet in player.Fleets.Where(fleet => fleet.Aggregate.Purposes.Contains(ShipDesignPurpose.Scout)))
             {
                 if (fleet.Waypoints.Count == 1)
                 {

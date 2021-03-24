@@ -210,15 +210,15 @@ namespace CraigStars
                     {
                         AddDescription($"If a planet has no defenses, this bomb is guaranteed to kill at least {hullComponent.MinKillRate} colonists.");
                     }
-                    if (hullComponent.StructureKillRate == 0)
+                    if (hullComponent.StructureDestroyRate == 0)
                     {
                         AddDescription("This bomb will not damage a planet's mines or factories.");
                     }
                 }
 
-                if (hullComponent.StructureKillRate > 0)
+                if (hullComponent.StructureDestroyRate > 0)
                 {
-                    AddDescription($"This bomb will destroy approximately {hullComponent.StructureKillRate} of a planet's mines, factories, and/or defenses each year.");
+                    AddDescription($"This bomb will destroy approximately {hullComponent.StructureDestroyRate} of a planet's mines, factories, and/or defenses each year.");
                 }
 
                 if (hullComponent.TerraformRate > 0)

@@ -14,14 +14,19 @@ namespace CraigStars
         private static readonly ILog log = LogManager.GetLogger(typeof(TurnSubmitter));
 
         public Game Game { get; }
+        FleetOrderExecutor fleetOrderExecutor;
 
         public TurnSubmitter(Game game)
         {
             Game = game;
+            fleetOrderExecutor = new FleetOrderExecutor(game);
         }
 
         public void SubmitTurn(Player player)
         {
+            log.Debug("Processing player immmediate cargo transfers");
+            fleetOrderExecutor.ExecuteFleetOrders();
+
             UpdateFleetActions(player);
             UpdateShipDesigns(player);
             UpdateProductionQueues(player);
@@ -104,8 +109,15 @@ namespace CraigStars
                         wp0.WarpFactor = playerWp0.WarpFactor;
                         wp0.TransportTasks = playerWp0.TransportTasks;
 
+                        var index = 1;
+
                         foreach (var playerWaypoint in playerFleet.Waypoints.Skip(1))
                         {
+                            if (playerWaypoint.Target == playerFleet.Waypoints[index - 1].Target)
+                            {
+                                // don't let the client submit multiple waypoints to the same location in a row
+                                continue;
+                            }
                             if (playerWaypoint.Target is Planet planet)
                             {
                                 if (Game.PlanetsByGuid.TryGetValue(planet.Guid, out var gamePlanet))

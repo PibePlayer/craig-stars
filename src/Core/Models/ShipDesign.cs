@@ -12,6 +12,7 @@ namespace CraigStars
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(ShipDesign));
         public string Name { get; set; }
+        public int Version { get; set; } = 1;
         public Guid Guid { get; set; } = Guid.NewGuid();
 
         public PublicPlayerInfo Owner
@@ -33,6 +34,8 @@ namespace CraigStars
 
         [JsonProperty(IsReference = true)]
         public Player Player { get; set; }
+
+        public ShipDesignPurpose Purpose { get; set; }
         public TechHull Hull { get; set; } = new TechHull();
         public int HullSetNumber { get; set; }
         public List<ShipDesignSlot> Slots { get; set; } = new List<ShipDesignSlot>();
@@ -68,6 +71,7 @@ namespace CraigStars
                 Player = Player,
                 Hull = Hull,
                 HullSetNumber = HullSetNumber,
+                Purpose = Purpose,
                 Slots = Slots.Select(s => new ShipDesignSlot(s.HullComponent, s.HullSlotIndex, s.Quantity)).ToList()
             };
             return clone;
@@ -103,8 +107,13 @@ namespace CraigStars
             return filledRequiredSlots == requiredHullSlotByIndex.Count;
         }
 
-        public void ComputeAggregate(Player player)
+        public void ComputeAggregate(Player player, bool recompute = false)
         {
+            if (Aggregate.Computed && !recompute)
+            {
+                // don't recompute unless explicitly requested
+                return;
+            }
             var rules = player.Rules;
             Aggregate.Mass = Hull.Mass;
             Aggregate.Armor = Hull.Armor;
@@ -117,6 +126,8 @@ namespace CraigStars
             Aggregate.CargoCapacity += Hull.CargoCapacity;
             Aggregate.MineSweep = 0;
             Aggregate.CloakPercent = 0f; // TODO: compute cloaking..
+            Aggregate.Bomber = false;
+            Aggregate.Bombs.Clear();
 
             foreach (ShipDesignSlot slot in Slots)
             {
@@ -146,6 +157,27 @@ namespace CraigStars
                     Aggregate.CargoCapacity += slot.HullComponent.CargoBonus * slot.Quantity;
                     Aggregate.FuelCapacity += slot.HullComponent.FuelBonus * slot.Quantity;
                     Aggregate.Colonizer = slot.HullComponent.ColonizationModule || slot.HullComponent.OrbitalConstructionModule;
+
+                    // if this slot has a bomb, this design is a bomber
+                    if (slot.HullComponent.HullSlotType == HullSlotType.Bomb)
+                    {
+                        Aggregate.Bomber = true;
+                        var bomb = new Bomb()
+                        {
+                            Quantity = slot.Quantity,
+                            KillRate = slot.HullComponent.KillRate,
+                            MinKillRate = slot.HullComponent.MinKillRate,
+                            StructureDestroyRate = slot.HullComponent.StructureDestroyRate,
+                        };
+                        if (slot.HullComponent.Smart)
+                        {
+                            Aggregate.SmartBombs.Add(bomb);
+                        }
+                        else
+                        {
+                            Aggregate.Bombs.Add(bomb);
+                        }
+                    }
                 }
                 // cargo and space doc that are built into the hull
                 // the space dock assumes that there is only one slot like that

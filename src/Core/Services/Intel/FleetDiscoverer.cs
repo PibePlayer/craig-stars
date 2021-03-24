@@ -47,7 +47,7 @@ namespace CraigStars
         {
             foreach (var token in item.Tokens)
             {
-                if (!player.DesignsByGuid.ContainsKey(token.Design.Guid))
+                if (!player.DesignsByGuid.TryGetValue(token.Design.Guid, out var existingDesign) || (existingDesign.Slots.Count == 0 && penScanned))
                 {
                     designDiscoverer.Discover(player, token.Design, penScanned);
                 }

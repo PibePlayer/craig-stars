@@ -6,6 +6,7 @@ namespace CraigStars
     public class TechHull : Tech
     {
         public const int UnlimitedSpaceDock = -1;
+        public TechHullType Type { get; set; }
         public int Mass { get; set; }
         public int Armor { get; set; }
         public int FuelCapacity { get; set; }

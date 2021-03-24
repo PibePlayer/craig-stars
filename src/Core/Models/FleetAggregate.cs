@@ -7,5 +7,6 @@ namespace CraigStars
     /// </summary>
     public class FleetAggregate : ShipDesignAggregate
     {
+        public HashSet<ShipDesignPurpose> Purposes = new HashSet<ShipDesignPurpose>();
     }
 }

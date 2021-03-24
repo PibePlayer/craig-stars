@@ -110,19 +110,19 @@ align = 1
 [node name="HullComponentsContainer" type="CenterContainer" parent="Panel/MarginContainer/HullContainer"]
 margin_top = 124.0
 margin_right = 490.0
-margin_bottom = 478.0
+margin_bottom = 460.0
 size_flags_vertical = 3
 
 [node name="ScoutHullComponents" parent="Panel/MarginContainer/HullContainer/HullComponentsContainer" instance=ExtResource( 3 )]
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_left = 245.0
-margin_top = 177.0
+margin_top = 168.0
 margin_right = 245.0
-margin_bottom = 177.0
+margin_bottom = 168.0
 
 [node name="CostContainer" type="VBoxContainer" parent="Panel/MarginContainer/HullContainer"]
-margin_top = 482.0
+margin_top = 464.0
 margin_right = 490.0
 margin_bottom = 640.0
 
@@ -134,24 +134,24 @@ text = "Cost of 1 Scout Hull"
 [node name="MarginContainer" type="MarginContainer" parent="Panel/MarginContainer/HullContainer/CostContainer"]
 margin_top = 18.0
 margin_right = 490.0
-margin_bottom = 140.0
+margin_bottom = 158.0
 custom_constants/margin_right = 10
 custom_constants/margin_left = 10
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Panel/MarginContainer/HullContainer/CostContainer/MarginContainer"]
 margin_left = 10.0
 margin_right = 480.0
-margin_bottom = 122.0
+margin_bottom = 140.0
 custom_constants/separation = 10
 
 [node name="CostGrid" parent="Panel/MarginContainer/HullContainer/CostContainer/MarginContainer/HBoxContainer" instance=ExtResource( 2 )]
 margin_right = 230.0
-margin_bottom = 122.0
+margin_bottom = 140.0
 
 [node name="FuelArmorGrid" type="GridContainer" parent="Panel/MarginContainer/HullContainer/CostContainer/MarginContainer/HBoxContainer"]
 margin_left = 240.0
 margin_right = 470.0
-margin_bottom = 122.0
+margin_bottom = 140.0
 size_flags_horizontal = 3
 columns = 2
 
@@ -251,10 +251,24 @@ margin_right = 230.0
 margin_bottom = 122.0
 text = "66/30"
 
+[node name="PurposeLabel" type="Label" parent="Panel/MarginContainer/HullContainer/CostContainer/MarginContainer/HBoxContainer/FuelArmorGrid"]
+margin_top = 126.0
+margin_right = 181.0
+margin_bottom = 140.0
+size_flags_horizontal = 3
+text = "Purpose"
+
+[node name="PurposeValueLabel" type="Label" parent="Panel/MarginContainer/HullContainer/CostContainer/MarginContainer/HBoxContainer/FuelArmorGrid"]
+margin_left = 185.0
+margin_top = 126.0
+margin_right = 230.0
+margin_bottom = 140.0
+text = "Scout"
+
 [node name="MassLabel" type="Label" parent="Panel/MarginContainer/HullContainer/CostContainer"]
-margin_top = 144.0
+margin_top = 162.0
 margin_right = 490.0
-margin_bottom = 158.0
+margin_bottom = 176.0
 text = "Mass: 8kt"
 
 [node name="NoHullContainer" type="CenterContainer" parent="Panel/MarginContainer"]

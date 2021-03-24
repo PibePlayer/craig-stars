@@ -48,6 +48,7 @@ namespace CraigStars
             itemReport.Owner = item.Owner;
             itemReport.Hull = item.Hull;
             itemReport.HullSetNumber = item.HullSetNumber;
+            itemReport.Purpose = item.Purpose;
         }
     }
 }

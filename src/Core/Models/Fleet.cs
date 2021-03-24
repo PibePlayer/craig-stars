@@ -175,7 +175,7 @@ namespace CraigStars
 
             // these fleets should no longer be in our "OtherFleets" list
             order.MergingFleets.ForEach(otherFleet => OtherFleets.Remove(otherFleet));
-            ComputeAggregate();
+            ComputeAggregate(recompute: true);
         }
 
         /// <summary>
@@ -257,7 +257,7 @@ namespace CraigStars
             Tokens.Add(remainingToken);
 
             // update our remaining fuel and cargo
-            ComputeAggregate();
+            ComputeAggregate(recompute: true);
 
             // TODO: make sure we account for any fractional leftovers
             if (Aggregate.CargoCapacity > 0)
@@ -551,8 +551,14 @@ namespace CraigStars
             return (int)((float)Fuel / (float)GetFuelCost(GetDefaultWarpFactor(), 1000) * 1000.0f);
         }
 
-        public void ComputeAggregate()
+        public void ComputeAggregate(bool recompute = false)
         {
+            if (Aggregate.Computed && !recompute)
+            {
+                // don't recompute unless explicitly requested
+                return;
+            }
+            
             Aggregate.Mass = Cargo.Total;
             Aggregate.Shield = 0;
             Aggregate.CargoCapacity = 0;
@@ -564,11 +570,17 @@ namespace CraigStars
             Aggregate.ScanRangePen = TechHullComponent.NoScanner;
             Aggregate.Engine = null;
             Aggregate.MineSweep = 0;
+            Aggregate.Purposes.Clear();
+
+            Aggregate.Bomber = false;
+            Aggregate.Bombs.Clear();
 
             // compute each token's 
             Tokens.ForEach(token =>
             {
                 token.Design.ComputeAggregate(Player);
+
+                Aggregate.Purposes.Add(token.Design.Purpose);
 
                 // TODO: which default engine do we use for multiple fleets?
                 Aggregate.Engine = token.Design.Aggregate.Engine;
@@ -606,6 +618,10 @@ namespace CraigStars
                 Aggregate.ScanRange = Math.Max(Aggregate.ScanRange, token.Design.Aggregate.ScanRange);
                 Aggregate.ScanRangePen = Math.Max(Aggregate.ScanRangePen, token.Design.Aggregate.ScanRangePen);
 
+                // add bombs
+                Aggregate.Bomber = token.Design.Aggregate.Bomber ? true : Aggregate.Bomber;
+                Aggregate.Bombs.AddRange(token.Design.Aggregate.Bombs);
+                Aggregate.SmartBombs.AddRange(token.Design.Aggregate.SmartBombs);
             });
 
 

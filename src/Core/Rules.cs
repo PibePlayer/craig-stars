@@ -6,6 +6,8 @@ namespace CraigStars
 {
     public class Rules
     {
+        [DefaultValue(0)]
+        public int QuickStartTurns { get; set; } = 0;
 
         public Size Size { get; set; } = Size.Small;
         public Density Density { get; set; } = Density.Normal;
@@ -96,8 +98,14 @@ namespace CraigStars
         /// <summary>
         /// The amount scanned populations differ from the actual population on the planet
         /// </summary>
-        [DefaultValue(.2)]
-        public double PopulationScannerError = .2f;
+        [DefaultValue(.2f)]
+        public float PopulationScannerError = .2f;
+
+        /// <summary>
+        /// The factor that defenses coverage is multiplied by against smart bombs (i.e. halved)
+        /// </summary>
+        [DefaultValue(.5f)]
+        public float SmartDefenseCoverageFactor = .5f;
 
 
         /// <summary>

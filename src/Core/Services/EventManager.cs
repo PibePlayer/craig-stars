@@ -18,6 +18,7 @@ namespace CraigStars.Singletons
 
         public static event Action<Fleet> FleetCreatedEvent;
         public static event Action<Fleet> FleetDeletedEvent;
+        public static event Action<Planet> PlanetPopulationEmptied;
 
         #endregion
 
@@ -25,6 +26,7 @@ namespace CraigStars.Singletons
 
         internal static void PublishFleetCreatedEvent(Fleet fleet) => FleetCreatedEvent?.Invoke(fleet);
         internal static void PublishFleetDeletedEvent(Fleet fleet) => FleetDeletedEvent?.Invoke(fleet);
+        internal static void PublishPlanetPopulationEmptiedEvent(Planet planet) => PlanetPopulationEmptied?.Invoke(planet);
 
         #endregion
 

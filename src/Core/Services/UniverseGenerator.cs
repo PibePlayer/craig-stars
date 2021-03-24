@@ -118,10 +118,18 @@ namespace CraigStars
 
         List<Fleet> GenerateFleets(Rules rules, Player player, Planet homeworld)
         {
-            var fleets = new List<Fleet>(new Fleet[] {
-                CreateFleet(player.GetDesign(ShipDesigns.LongRangeScount.Name), player, 1, homeworld),
-                CreateFleet(player.GetDesign(ShipDesigns.SantaMaria.Name), player, 2, homeworld)
-            });
+            var fleets = new List<Fleet>();
+            switch (player.Race.PRT)
+            {
+                case PRT.JoaT:
+                    fleets.Add(CreateFleet(player.GetDesign(ShipDesigns.LongRangeScount.Name), player, 1, homeworld));
+                    fleets.Add(CreateFleet(player.GetDesign(ShipDesigns.ArmoredProbe.Name), player, 2, homeworld));
+                    fleets.Add(CreateFleet(player.GetDesign(ShipDesigns.SantaMaria.Name), player, 3, homeworld));
+                    fleets.Add(CreateFleet(player.GetDesign(ShipDesigns.Teamster.Name), player, 4, homeworld));
+                    fleets.Add(CreateFleet(player.GetDesign(ShipDesigns.CottonPicker.Name), player, 5, homeworld));
+                    fleets.Add(CreateFleet(player.GetDesign(ShipDesigns.StalwartDefender.Name), player, 6, homeworld));
+                    break;
+            }
 
             return fleets;
         }
@@ -419,8 +427,17 @@ namespace CraigStars
         internal void InitShipDesigns(Player player)
         {
             ShipDesignGenerator designer = new ShipDesignGenerator();
-            Game.Designs.Add(designer.DesignShip(Techs.Scout, "Long Range Scout", player, player.DefaultHullSet));
-            Game.Designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player, player.DefaultHullSet));
+            switch (player.Race.PRT)
+            {
+                case PRT.JoaT:
+                    Game.Designs.Add(designer.DesignShip(Techs.Scout, "Long Range Scout", player, player.DefaultHullSet, ShipDesignPurpose.Scout));
+                    Game.Designs.Add(designer.DesignShip(Techs.Scout, "Armed Probe", player, player.DefaultHullSet, ShipDesignPurpose.ArmedScout));
+                    Game.Designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player, player.DefaultHullSet, ShipDesignPurpose.Colonizer));
+                    Game.Designs.Add(designer.DesignShip(Techs.MediumFreighter, "Teamster", player, player.DefaultHullSet, ShipDesignPurpose.Freighter));
+                    Game.Designs.Add(designer.DesignShip(Techs.MiniMiner, "Cotton Picker", player, player.DefaultHullSet, ShipDesignPurpose.Miner));
+                    Game.Designs.Add(designer.DesignShip(Techs.Destroyer, "Stalwart Defender", player, player.DefaultHullSet, ShipDesignPurpose.FighterScout));
+                    break;
+            }
 
             // starbases are special, they have a specific design that each player gets
             var starbase = ShipDesigns.Starbase.Copy();

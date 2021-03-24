@@ -7,6 +7,12 @@ namespace CraigStars
     /// </summary>
     public class ShipDesignAggregate
     {
+        /// <summary>
+        /// Have we already computed the aggregate for this design/fleet?
+        /// </summary>
+        /// <value></value>
+        public bool Computed { get; set; }
+
         public TechEngine Engine { get; set; }
         public Cost Cost { get; set; } = new Cost();
         public int Mass { get; set; }

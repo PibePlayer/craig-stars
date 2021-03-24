@@ -53,6 +53,7 @@ namespace CraigStars
         Label initiativeMovesAmountLabel;
         Label scannerRangeLabel;
         Label scannerRangeAmountLabel;
+        Label purposeValueLabel;
         Label massLabel;
 
         // icon
@@ -88,6 +89,7 @@ namespace CraigStars
             initiativeMovesAmountLabel = FindNode("InitiativeMovesAmountLabel") as Label;
             scannerRangeLabel = FindNode("ScannerRangeLabel") as Label;
             scannerRangeAmountLabel = FindNode("ScannerRangeAmountLabel") as Label;
+            purposeValueLabel = FindNode("PurposeValueLabel") as Label;
             massLabel = FindNode("MassLabel") as Label;
             icon = FindNode("Icon") as TextureRect;
             hullComponentsContainer = FindNode("HullComponentsContainer") as Control;
@@ -118,7 +120,7 @@ namespace CraigStars
                     child.QueueFree();
                 }
             }
-            var hullNameWithoutSpaces = Hull.Name.Replace(" ", "");
+            var hullNameWithoutSpaces = Hull.Name.Replace(" ", "").Replace("-", "");
             var scenePath = $"res://src/Client/ShipDesigner/Hulls/{hullNameWithoutSpaces}HullComponents.tscn";
             var hullComponentsScene = ResourceLoader.Load<PackedScene>(scenePath);
             if (hullComponentsScene != null)
@@ -237,6 +239,7 @@ namespace CraigStars
                     initiativeMovesAmountLabel.Visible = true;
                     scannerRangeLabel.Visible = true;
                     scannerRangeAmountLabel.Visible = true;
+                    purposeValueLabel.Text = $"{shipDesign.Purpose}";
                 }
                 else if (hull != null)
                 {

@@ -136,7 +136,7 @@ namespace CraigStars
             {
                 filterMessageTypeCheckbox.Visible = true;
                 titleLabel.Text = $"Year: {gameInfo.Year}{changesMadeIndicator} Message {messageNum + 1} of {messages.Count}{(filterMessagesCheckbox.Pressed ? $" ({Me.Messages.Count} total)" : "")}";
-                if (messageNum >= 0 && messageNum < Me.Messages.Count)
+                if (messageNum >= 0 && messageNum < messages.Count)
                 {
                     activeMessage = messages[messageNum];
                     messageText.Text = activeMessage.Text;

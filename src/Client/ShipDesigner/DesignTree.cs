@@ -82,6 +82,7 @@ namespace CraigStars
                     break;
             }
 
+
             // filter designs based on search result
             if (searchLineEdit.Text.Trim() != "")
             {
@@ -99,14 +100,26 @@ namespace CraigStars
         {
             designs = new List<ShipDesign>(designsToAdd);
             // TODO: sort by power
-            designs.Sort((t1, t2) => t1.Hull.Ranking.CompareTo(t2.Hull.Ranking).CompareTo(t1.Hull?.Name?.CompareTo(t2.Hull?.Name)));
+            designs.Sort((t1, t2) =>
+            {
+                var compare = t1.Hull.Ranking.CompareTo(t2.Hull.Ranking);
+                if (compare == 0)
+                {
+                    compare = t1.Hull.Name.CompareTo(t2.Hull.Name);
+                    if (compare == 0)
+                    {
+                        compare = t1.Version.CompareTo(t2.Version);
+                    }
+                }
+                return compare;
+            });
 
             designs.Each((design, index) =>
             {
                 var item = tree.CreateItem(root);
                 techTreeItemByTech[design] = item;
                 item.SetMetadata(0, index);
-                item.SetText(0, design.Name);
+                item.SetText(0, $"{design.Name} v{design.Version}");
                 item.SetIcon(0, TextureLoader.Instance.FindTexture(design.Hull, design.HullSetNumber));
             });
         }

@@ -5,6 +5,33 @@ namespace CraigStars.Utils
 {
     public static class EnumUtils
     {
+        public static ShipDesignPurpose GetPurposeForTechHullType(TechHullType type)
+        {
+            switch (type)
+            {
+                case TechHullType.Scout:
+                    return ShipDesignPurpose.Scout;
+                case TechHullType.Colonizer:
+                    return ShipDesignPurpose.Colonizer;
+                case TechHullType.Bomber:
+                    return ShipDesignPurpose.Bomber;
+                case TechHullType.Fighter:
+                    return ShipDesignPurpose.Fighter;
+                case TechHullType.CapitalShip:
+                    return ShipDesignPurpose.CapitalShip;
+                case TechHullType.Freighter:
+                    return ShipDesignPurpose.Freighter;
+                case TechHullType.ArmedFreighter:
+                    return ShipDesignPurpose.ArmedFreighter;
+                case TechHullType.Miner:
+                    return ShipDesignPurpose.Miner;
+                case TechHullType.MineLayer:
+                    return ShipDesignPurpose.MineLayer;
+                default:
+                    // everything is a scout unless we specify otherwise
+                    return ShipDesignPurpose.Scout;
+            }
+        }
 
         public static string GetLabelForWaypointTask(WaypointTask task)
         {

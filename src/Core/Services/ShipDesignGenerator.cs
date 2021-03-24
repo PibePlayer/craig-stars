@@ -13,14 +13,17 @@ namespace CraigStars
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(ShipDesignGenerator));
 
-        public ShipDesign DesignShip(TechHull hull, String name, Player player, int hullSetNumber)
+        public delegate TechHullComponent FillGeneralSlotCallback(int index);
+
+        public ShipDesign DesignShip(TechHull hull, String name, Player player, int hullSetNumber, ShipDesignPurpose purpose)
         {
             var design = new ShipDesign()
             {
                 Name = name,
                 Player = player,
                 Hull = hull,
-                HullSetNumber = hullSetNumber
+                HullSetNumber = hullSetNumber,
+                Purpose = purpose
             };
 
             // populate each slot for this design
@@ -30,44 +33,70 @@ namespace CraigStars
                 {
                     HullSlotIndex = index + 1
                 };
+                // fill er up!
+                slot.Quantity = hullSlot.Capacity;
+
                 switch (hullSlot.Type)
                 {
                     case HullSlotType.Engine:
                         slot.HullComponent = player.GetBestEngine();
-                        slot.Quantity = hullSlot.Capacity;
+                        break;
+                    case HullSlotType.Electrical:
+                        slot.HullComponent = Techs.BattleComputer;
                         break;
                     case HullSlotType.Scanner:
+                    case HullSlotType.ScannerElectricalMechanical:
                         slot.HullComponent = player.GetBestScanner();
-                        slot.Quantity = hullSlot.Capacity;
                         break;
                     case HullSlotType.Shield:
                         slot.HullComponent = player.GetBestShield();
-                        slot.Quantity = hullSlot.Capacity;
                         break;
                     case HullSlotType.Armor:
                     case HullSlotType.ShieldArmor:
                         slot.HullComponent = player.GetBestArmor();
-                        slot.Quantity = hullSlot.Capacity;
                         break;
                     case HullSlotType.Weapon:
                         slot.HullComponent = player.GetBestBeamWeapon();
-                        slot.Quantity = hullSlot.Capacity;
+                        break;
+                    case HullSlotType.Mining:
+                        slot.HullComponent = player.GetBestMineRobot();
+                        break;
+                    case HullSlotType.Mine:
+                        slot.HullComponent = player.GetBestMineLayer();
+                        break;
+                    case HullSlotType.Bomb:
+                        slot.HullComponent = player.GetBestBomb();
                         break;
                     case HullSlotType.General:
-                        // TODO: we need to make this more dynamic
-                        slot.HullComponent = Techs.FuelTank;
-                        slot.Quantity = hullSlot.Capacity;
+                        switch (purpose)
+                        {
+                            case ShipDesignPurpose.ArmedScout:
+                                slot.HullComponent = player.GetBestBeamWeapon();
+                                break;
+                            case ShipDesignPurpose.Freighter:
+                                slot.HullComponent = Techs.CargoPod;
+                                break;
+                            case ShipDesignPurpose.FuelFreighter:
+                                slot.HullComponent = Techs.FuelTank;
+                                break;
+                            case ShipDesignPurpose.FighterScout:
+                                slot.HullComponent = player.GetBestScanner();
+                                break;
+                            default:
+                                slot.HullComponent = Techs.FuelTank;
+                                break;
+                        }
                         break;
                     case HullSlotType.Mechanical:
-                        if (hull.Name == "Colony Ship")
+                        switch (purpose)
                         {
-                            slot.HullComponent = Techs.ColonizationModule;
-                            slot.Quantity = 1;
-                        }
-                        else
-                        {
-                            slot.HullComponent = Techs.FuelTank;
-                            slot.Quantity = hullSlot.Capacity;
+                            case ShipDesignPurpose.Colonizer:
+                                slot.HullComponent = Techs.ColonizationModule;
+                                break;
+                            default:
+                                slot.HullComponent = Techs.FuelTank;
+                                break;
+
                         }
                         break;
 

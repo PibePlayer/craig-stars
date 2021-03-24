@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Godot;
 using Newtonsoft.Json;
 
@@ -42,31 +43,35 @@ namespace CraigStars
         /// Save this game to disk
         /// </summary>
         /// <param name="game"></param>
-        public void SaveGame(Game game)
+        public async Task SaveGame(Game game)
         {
-            using (var directory = new Directory())
+            await Task.Factory.StartNew(() =>
             {
-                directory.MakeDirRecursive(GetSaveDirPath(game.Name, game.Year));
-            }
-            using (var saveGame = new File())
-            {
-                saveGame.Open(GetSaveGamePath(game.Name, game.Year), File.ModeFlags.Write);
 
-                var gameJson = Serializers.SerializeGame(game, gameSerializerSettings);
-                saveGame.StoreString(gameJson);
-                saveGame.Close();
-
-                foreach (var player in game.Players)
+                using (var directory = new Directory())
                 {
-                    using (var playerSave = new File())
+                    directory.MakeDirRecursive(GetSaveDirPath(game.Name, game.Year));
+                }
+                using (var saveGame = new File())
+                {
+                    saveGame.Open(GetSaveGamePath(game.Name, game.Year), File.ModeFlags.Write);
+
+                    var gameJson = Serializers.SerializeGame(game, gameSerializerSettings);
+                    saveGame.StoreString(gameJson);
+                    saveGame.Close();
+
+                    foreach (var player in game.Players)
                     {
-                        playerSave.Open(GetSaveGamePlayerPath(game.Name, game.Year, player.Num), File.ModeFlags.Write);
-                        var json = Serializers.Serialize(player, playerSerializerSettings);
-                        playerSave.StoreString(json);
-                        playerSave.Close();
+                        using (var playerSave = new File())
+                        {
+                            playerSave.Open(GetSaveGamePlayerPath(game.Name, game.Year, player.Num), File.ModeFlags.Write);
+                            var json = Serializers.Serialize(player, playerSerializerSettings);
+                            playerSave.StoreString(json);
+                            playerSave.Close();
+                        }
                     }
                 }
-            }
+            });
         }
 
         /// <summary>

@@ -1,0 +1,76 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://src/Client/ShipDesigner/HullComponentPanel.tscn" type="PackedScene" id=1]
+[ext_resource path="res://src/Client/ShipDesigner/Hulls/HullComponents.cs" type="Script" id=2]
+
+[node name="DestroyerHullComponents" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Container" type="Control" parent="."]
+margin_left = -96.0
+margin_top = -32.0
+margin_right = -56.0
+margin_bottom = 8.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HullComponent1" parent="Container" instance=ExtResource( 1 )]
+margin_left = -24.0
+margin_top = -8.0
+margin_right = 56.0
+margin_bottom = 72.0
+Required = true
+Type = 1
+
+[node name="HullComponent2" parent="Container" instance=ExtResource( 1 )]
+margin_left = 96.0
+margin_top = -128.0
+margin_right = 176.0
+margin_bottom = -48.0
+Index = 2
+Type = 1024
+
+[node name="HullComponent3" parent="Container" instance=ExtResource( 1 )]
+margin_left = 96.0
+margin_top = 112.0
+margin_right = 176.0
+margin_bottom = 192.0
+Index = 3
+Type = 1024
+
+[node name="HullComponent4" parent="Container" instance=ExtResource( 1 )]
+margin_left = 136.0
+margin_top = -8.0
+margin_right = 216.0
+margin_bottom = 72.0
+Index = 4
+Type = 5350
+
+[node name="HullComponent5" parent="Container" instance=ExtResource( 1 )]
+margin_left = 56.0
+margin_top = -8.0
+margin_right = 136.0
+margin_bottom = 72.0
+Index = 5
+Type = 128
+
+[node name="HullComponent6" parent="Container" instance=ExtResource( 1 )]
+margin_left = 16.0
+margin_top = -88.0
+margin_right = 96.0
+margin_bottom = -8.0
+Index = 6
+
+[node name="HullComponent7" parent="Container" instance=ExtResource( 1 )]
+margin_left = 16.0
+margin_top = 72.0
+margin_right = 96.0
+margin_bottom = 152.0
+Index = 7
+Type = 32

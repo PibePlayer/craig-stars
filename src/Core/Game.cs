@@ -73,12 +73,14 @@ namespace CraigStars
             turnGenerator.TurnGeneratorAdvancedEvent += OnTurnGeneratedAdvanced;
             EventManager.FleetCreatedEvent += OnFleetCreated;
             EventManager.FleetDeletedEvent += OnFleetDeleted;
+            EventManager.PlanetPopulationEmptied += OnPlanetPopulationEmptied;
         }
 
         ~Game()
         {
             EventManager.FleetCreatedEvent -= OnFleetCreated;
             EventManager.FleetDeletedEvent -= OnFleetDeleted;
+            EventManager.PlanetPopulationEmptied -= OnPlanetPopulationEmptied;
             turnGenerator.TurnGeneratorAdvancedEvent -= OnTurnGeneratedAdvanced;
         }
 
@@ -118,6 +120,8 @@ namespace CraigStars
             UniverseGenerator generator = new UniverseGenerator(this);
             generator.Generate();
             AfterTurnGeneration();
+
+            SaveGame();
         }
 
         public void SubmitTurn(Player player)
@@ -155,12 +159,27 @@ namespace CraigStars
                 // do any post-turn generation steps
                 AfterTurnGeneration();
 
+                SaveGame();
+
                 TurnGeneratorAdvancedEvent?.Invoke(TurnGeneratorState.Finished);
 
                 stopwatch.Stop();
 
                 log.Debug($"Turn Generated ({stopwatch.ElapsedMilliseconds}ms)");
             });
+
+
+            if (Year < Rules.StartingYear + Rules.QuickStartTurns)
+            {
+                Players.ForEach(p =>
+                {
+                    if (!p.AIControlled)
+                    {
+                        SubmitTurn(p);
+                    }
+                });
+                await GenerateTurn();
+            }
         }
 
         /// <summary>
@@ -182,9 +201,17 @@ namespace CraigStars
             SubmitAITurns();
 
             GameInfo.Lifecycle = GameLifecycle.WaitingForPlayers;
-            TurnGeneratorAdvancedEvent?.Invoke(TurnGeneratorState.Saving);
-            // save the game to disk
-            gameSaver.SaveGame(this);
+
+        }
+
+        internal async Task SaveGame()
+        {
+            if (Year >= Rules.StartingYear + Rules.QuickStartTurns)
+            {
+                TurnGeneratorAdvancedEvent?.Invoke(TurnGeneratorState.Saving);
+                // save the game to disk
+                await gameSaver.SaveGame(this);
+            }
         }
 
 
@@ -241,6 +268,16 @@ namespace CraigStars
             Fleets.Remove(fleet);
             FleetsByGuid.Remove(fleet.Guid);
             CargoHoldersByGuid.Remove(fleet.Guid);
+        }
+
+        void OnPlanetPopulationEmptied(Planet planet)
+        {
+            // empty this planet
+            planet.Player = null;
+            planet.Owner = null;
+            planet.Starbase = null;
+            planet.Scanner = false;
+            planet.ProductionQueue = new ProductionQueue();
         }
 
         #endregion

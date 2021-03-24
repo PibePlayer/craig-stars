@@ -69,6 +69,7 @@ namespace CraigStars
             base.UpdateControls();
             if (ActivePlanet != null)
             {
+                fleetsInOrbitOptionButton.Clear();
                 OribitingFleets = ActivePlanet.OrbitingFleets.Where(f => f.OwnedByMe).ToList();
                 if (OribitingFleets.Count > 0)
                 {
@@ -77,7 +78,6 @@ namespace CraigStars
                     fuelBar.Visible = true;
                     gotoButton.Disabled = false;
 
-                    fleetsInOrbitOptionButton.Clear();
                     foreach (FleetSprite fleet in OribitingFleets)
                     {
                         fleetsInOrbitOptionButton.AddItem(fleet.Fleet.Name);

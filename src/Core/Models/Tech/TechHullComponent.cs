@@ -32,11 +32,15 @@ namespace CraigStars
         public int ScanRangePen { get; set; } = NoScanner;
         public bool StealCargo { get; set; }
         public bool Radiating { get; set; }
+
+        // bombs
         public bool Smart { get; set; }
         public float KillRate { get; set; }
         public int MinKillRate { get; set; }
-        public int StructureKillRate { get; set; }
+        public float StructureDestroyRate { get; set; }
         public int UnterraformRate { get; set; }
+
+        // beams/torpedos
         public int Power { get; set; }
         public int Range { get; set; }
         public int Initiative { get; set; }

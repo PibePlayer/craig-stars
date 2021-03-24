@@ -22,6 +22,13 @@ namespace CraigStars
         public float CloakPercent { get; set; }
 
         /// <summary>
+        /// Does this design have any bombs
+        /// </summary>
+        public bool Bomber { get; set; }
+        public List<Bomb> Bombs { get; set; } = new List<Bomb>();
+        public List<Bomb> SmartBombs { get; set; } = new List<Bomb>();
+
+        /// <summary>
         /// Does this fleet have scanning capabilities? 
         /// </summary>
         /// <value></value>

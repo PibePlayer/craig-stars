@@ -210,6 +210,8 @@ namespace CraigStars
 
             // compute the scan ranges
             ComputeScanRanges(player);
+
+            Aggregate.Computed = true;
         }
 
         /// <summary>

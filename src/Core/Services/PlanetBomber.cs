@@ -2,6 +2,10 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
+using static CraigStars.Utils.Utils;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("Core.Tests")]
 namespace CraigStars
 {
     // ============================================================================
@@ -88,8 +92,8 @@ namespace CraigStars
                 if (fleet.Aggregate.Bombs.Count > 0)
                 {
                     // figure out the killRate and minKill for this fleet's bombs
-                    var killRateColonistsKilled = RoundColonistsKilled(GetColonistsKilled(planet.Population, defenseCoverage, fleet.Aggregate.Bombs));
-                    var minColonistsKilled = RoundColonistsKilled(GetMinColonistsKilled(planet.Population, defenseCoverage, fleet.Aggregate.Bombs));
+                    var killRateColonistsKilled = RoundToNearest(GetColonistsKilled(planet.Population, defenseCoverage, fleet.Aggregate.Bombs));
+                    var minColonistsKilled = RoundToNearest(GetMinColonistsKilled(planet.Population, defenseCoverage, fleet.Aggregate.Bombs));
 
                     var killed = Math.Max(killRateColonistsKilled, minColonistsKilled);
                     var leftoverPopulation = Math.Max(0, planet.Population - killed);
@@ -141,7 +145,7 @@ namespace CraigStars
                 if (fleet.Aggregate.SmartBombs.Count > 0)
                 {
                     // figure out the killRate and minKill for this fleet's bombs
-                    var smartKilled = RoundColonistsKilled(GetColonistsKilledWithSmartBombs(planet.Population, smartDefenseCoverage, fleet.Aggregate.SmartBombs));
+                    var smartKilled = RoundToNearest(GetColonistsKilledWithSmartBombs(planet.Population, smartDefenseCoverage, fleet.Aggregate.SmartBombs));
 
                     var leftoverPopulation = Math.Max(0, planet.Population - smartKilled);
                     var actualKilled = planet.Population - leftoverPopulation;
@@ -162,7 +166,7 @@ namespace CraigStars
         /// <param name="defenseCoverage"></param>
         /// <param name="bombs"></param>
         /// <returns></returns>
-        public float GetColonistsKilled(int population, float defenseCoverage, List<Bomb> bombs)
+        internal float GetColonistsKilled(int population, float defenseCoverage, List<Bomb> bombs)
         {
             // calculate the killRate for all these bombs
             var killRate = 0f;
@@ -219,7 +223,7 @@ namespace CraigStars
         /// <param name="defenseCoverage"></param>
         /// <param name="bombs"></param>
         /// <returns></returns>
-        public float GetStructuresDestroyed(float defenseCoverage, List<Bomb> bombs)
+        internal float GetStructuresDestroyed(float defenseCoverage, List<Bomb> bombs)
         {
             // calculate the killRate for all these bombs
             var structuresDestroyed = 0f;
@@ -242,7 +246,7 @@ namespace CraigStars
         /// <param name="defenseCoverage"></param>
         /// <param name="bombs"></param>
         /// <returns></returns>
-        public float GetMinColonistsKilled(int population, float defenseCoverage, List<Bomb> bombs)
+        internal float GetMinColonistsKilled(int population, float defenseCoverage, List<Bomb> bombs)
         {
             // calculate the killRate for all these bombs
             var minKilled = 0;
@@ -262,7 +266,7 @@ namespace CraigStars
         /// <param name="killRate"></param>
         /// <param name="quantity"></param>
         /// <returns></returns>
-        public float GetColonistsKilled(int population, float defenseCoverage, float killRate, int quantity = 1)
+        internal float GetColonistsKilled(int population, float defenseCoverage, float killRate, int quantity = 1)
         {
             var killed = killRate / 100.0f * quantity * (1 - defenseCoverage) * population;
 
@@ -304,7 +308,7 @@ namespace CraigStars
         /// <param name="defenseCoverageSmart"></param>
         /// <param name="bombs"></param>
         /// <returns></returns>
-        public float GetColonistsKilledWithSmartBombs(int population, float defenseCoverageSmart, List<Bomb> bombs)
+        internal float GetColonistsKilledWithSmartBombs(int population, float defenseCoverageSmart, List<Bomb> bombs)
         {
             var smartKillRate = 0.0;
             bombs.ForEach(bomb =>
@@ -328,14 +332,5 @@ namespace CraigStars
             return 0;
         }
 
-        /// <summary>
-        /// Round the number of killed colonists to the nearest 100
-        /// </summary>
-        /// <param name="killed"></param>
-        /// <returns></returns>
-        public int RoundColonistsKilled(float killed)
-        {
-            return (int)(Math.Round(killed / 100f) * 100);
-        }
     }
 }

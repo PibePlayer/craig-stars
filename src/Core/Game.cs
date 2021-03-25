@@ -29,6 +29,7 @@ namespace CraigStars
         [JsonIgnore] public ITechStore TechStore { get; set; }
 
         #region PublicGameInfo
+
         /// <summary>
         /// The game gives each player a copy of the PublicGameInfo. The properties
         /// in the game that match up with PublicGameInfo properties are just forwarded
@@ -57,8 +58,12 @@ namespace CraigStars
         [JsonIgnore] public Dictionary<Guid, ShipDesign> DesignsByGuid { get; set; } = new Dictionary<Guid, ShipDesign>();
         [JsonIgnore] public Dictionary<Guid, Fleet> FleetsByGuid { get; set; } = new Dictionary<Guid, Fleet>();
         [JsonIgnore] public Dictionary<Guid, ICargoHolder> CargoHoldersByGuid { get; set; } = new Dictionary<Guid, ICargoHolder>();
+        [JsonIgnore] public IEnumerable<Planet> OwnedPlanets { get => Planets.Where(p => p.Player != null); }
 
         #endregion
+
+        // for tests or fast generation
+        [JsonIgnore] public bool SaveToDisk { get; set; } = true;
 
         TurnGenerator turnGenerator;
         TurnSubmitter turnSubmitter;
@@ -88,6 +93,10 @@ namespace CraigStars
         internal void OnDeserialized(StreamingContext context)
         {
             GameInfo.Players.AddRange(Players.Cast<PublicPlayerInfo>());
+
+            // compute aggregates on load
+            ComputeAggregates();
+
             // Update the Game dictionaries used for lookups, like PlanetsByGuid, FleetsByGuid, etc.
             UpdateDictionaries();
         }
@@ -119,7 +128,16 @@ namespace CraigStars
             // generate a new univers
             UniverseGenerator generator = new UniverseGenerator(this);
             generator.Generate();
+
+            ComputeAggregates();
+
             AfterTurnGeneration();
+
+            // update player intel with new universe
+            var scanStep = new PlayerScanStep(this, TurnGeneratorState.Scan);
+            scanStep.Execute(OwnedPlanets.ToList());
+
+            UpdatePlayers();
 
             SaveGame();
         }
@@ -153,6 +171,11 @@ namespace CraigStars
             {
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
+
+                // after new player actions and designs are submitted, we need
+                // to compute aggregates for fleets and designs
+                // for turn generation
+                ComputeAggregates();
 
                 turnGenerator.GenerateTurn();
 
@@ -193,9 +216,11 @@ namespace CraigStars
             UpdateDictionaries();
 
             // update our player information as if we'd just generated a new turn
-            turnGenerator.UpdatePlayerReports();
-            turnGenerator.UpdatePlayers();
-            turnGenerator.RunTurnProcessors();
+            UpdatePlayers();
+
+            // run AI turn processors
+            TurnGeneratorAdvancedEvent?.Invoke(TurnGeneratorState.RunningTurnProcessors);
+            RunTurnProcessors();
 
             // first round, we have to submit AI turns
             SubmitAITurns();
@@ -204,9 +229,47 @@ namespace CraigStars
 
         }
 
+        /// <summary>
+        /// After a turn is generated, update some data on each player (like their current best planetary scanner)
+        /// </summary>
+        internal void UpdatePlayers()
+        {
+            Players.ForEach(p =>
+            {
+                p.PlanetaryScanner = p.GetBestPlanetaryScanner();
+                p.Fleets.ForEach(f => f.ComputeAggregate());
+                p.SetupMapObjectMappings();
+                p.UpdateMessageTargets();
+            });
+        }
+
+
+        /// <summary>
+        /// Run through all the turn processors for each player
+        /// </summary>
+        internal void RunTurnProcessors()
+        {
+            List<TurnProcessor> processors = new List<TurnProcessor>() {
+                new ShipDesignerTurnProcessor(),
+                new ScoutTurnProcessor(),
+                new ColonyTurnProcessor(),
+                new BomberTurnProcessor(),
+                new PlanetProductionTurnProcessor()
+            };
+            Players.ForEach(player =>
+            {
+                // TODO: make turn processors configurable
+                if (player.AIControlled || true)
+                {
+                    processors.ForEach(processor => processor.Process(Year, player));
+                }
+            });
+
+        }
+
         internal async Task SaveGame()
         {
-            if (Year >= Rules.StartingYear + Rules.QuickStartTurns)
+            if (SaveToDisk && Year >= Rules.StartingYear + Rules.QuickStartTurns)
             {
                 TurnGeneratorAdvancedEvent?.Invoke(TurnGeneratorState.Saving);
                 // save the game to disk
@@ -218,7 +281,7 @@ namespace CraigStars
         /// <summary>
         /// To reference objects between player knowledge and the server's data, we build Dictionaries by Guid
         /// </summary>
-        void UpdateDictionaries()
+        internal void UpdateDictionaries()
         {
             // build game dictionaries by guid
             DesignsByGuid = Designs.ToLookup(d => d.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
@@ -265,6 +328,10 @@ namespace CraigStars
 
         void OnFleetDeleted(Fleet fleet)
         {
+            if (fleet.Orbiting != null)
+            {
+                fleet.Orbiting.OrbitingFleets.Remove(fleet);
+            }
             Fleets.Remove(fleet);
             FleetsByGuid.Remove(fleet.Guid);
             CargoHoldersByGuid.Remove(fleet.Guid);
@@ -277,6 +344,7 @@ namespace CraigStars
             planet.Owner = null;
             planet.Starbase = null;
             planet.Scanner = false;
+            planet.Defenses = 0;
             planet.ProductionQueue = new ProductionQueue();
         }
 

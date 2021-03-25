@@ -32,8 +32,33 @@ namespace CraigStars
         }
         PublicPlayerInfo owner;
 
-        public String RaceName { get; set; }
-        public String RacePluralName { get; set; }
+        public string RaceName
+        {
+            get
+            {
+                if (raceName == null && Player != null)
+                {
+                    raceName = Player.Race.Name;
+                }
+                return raceName;
+            }
+            set => raceName = value;
+        }
+        string raceName;
+
+        public string RacePluralName
+        {
+            get
+            {
+                if (racePluralName == null && Player != null)
+                {
+                    racePluralName = Player.Race.PluralName;
+                }
+                return racePluralName;
+            }
+            set => racePluralName = value;
+        }
+        string racePluralName;
 
         /// <summary>
         /// For fleets we own, the Player field is populated

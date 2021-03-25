@@ -7,11 +7,12 @@ namespace CraigStars
     {
         WaitingForPlayers,
         Scrapping,
-        Waypoint0,
+        Waypoint,
         MovePackets,
         MoveFleets,
         Mining,
         Production,
+        Research,
         Grow,
         Battle,
         Bomb,
@@ -20,7 +21,9 @@ namespace CraigStars
         Transfer,
         MineSweeping,
         Repair,
+        Scan,
         UpdatingPlayers,
+        RunningTurnProcessors,
         Saving,
         Finished,
     }

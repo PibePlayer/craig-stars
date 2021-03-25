@@ -41,6 +41,11 @@ namespace CraigStars
 
         public Mineral MineYears { get; set; }
         public Cargo Cargo { get; set; }
+        
+        [JsonIgnore] 
+        public int AvailableCapacity { get => int.MaxValue; }
+        
+        [JsonIgnore] 
         public int Fuel
         {
             get => Starbase != null ? UnlimitedFuel : 0;

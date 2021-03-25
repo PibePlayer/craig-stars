@@ -101,7 +101,7 @@ namespace CraigStars
         {
             // TODO, support updates
             designerHullSummary.ShipDesign.Name = designNameLineEdit.Text;
-            designerHullSummary.ShipDesign.ComputeAggregate(PlayersManager.Me);
+            designerHullSummary.ShipDesign.ComputeAggregate(PlayersManager.Me, true);
             if (EditingExisting)
             {
                 // remove the old design and add the new one

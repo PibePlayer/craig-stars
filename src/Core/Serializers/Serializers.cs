@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using log4net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;

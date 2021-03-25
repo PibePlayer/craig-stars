@@ -74,14 +74,6 @@ namespace CraigStars.Tests
         }
 
         [Test]
-        public void TestRoundColonistsKilled()
-        {
-            Assert.AreEqual(100, planetBomber.RoundColonistsKilled(51));
-            Assert.AreEqual(0, planetBomber.RoundColonistsKilled(49));
-            Assert.AreEqual(2500, planetBomber.RoundColonistsKilled(2451.5f));
-        }
-
-        [Test]
         public void TestBombPlanet()
         {
             var planetOwner = new Player()
@@ -95,6 +87,7 @@ namespace CraigStars.Tests
 
             var planet = new Planet()
             {
+                Name = "Brin",
                 Player = planetOwner,
                 Population = 10000,
                 Mines = 100,
@@ -151,6 +144,7 @@ namespace CraigStars.Tests
 
             var planet = new Planet()
             {
+                Name = "Brin",
                 Player = planetOwner,
                 Population = 10000,
                 Mines = 100,

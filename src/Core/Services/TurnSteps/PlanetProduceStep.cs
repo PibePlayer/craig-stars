@@ -1,18 +1,32 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using CraigStars.Singletons;
+using Godot;
 
 namespace CraigStars
 {
-    public class PlanetProducer
+    /// <summary>
+    /// Move Fleets in space
+    /// </summary>
+    public class PlanetProduceStep : Step
     {
-        public static HashSet<QueueItemType> AutoBuildTypes = new HashSet<QueueItemType>() {
+        static HashSet<QueueItemType> AutoBuildTypes = new HashSet<QueueItemType>() {
             QueueItemType.AutoAlchemy,
             QueueItemType.AutoMine,
             QueueItemType.AutoDefense,
             QueueItemType.AutoFactory
         };
+
+        public PlanetProduceStep(Game game, TurnGeneratorState state) : base(game, state) { }
+
+        public override void Process()
+        {
+            OwnedPlanets.ForEach(planet =>
+            {
+                Build(planet);
+            });
+        }
 
         /// <summary>
         /// Build anything in the production queue on the planet.
@@ -151,12 +165,12 @@ namespace CraigStars
         /// <param name="item"></param>
         /// <param name="numBuilt"></param>
         /// <param name="rules"></param>
-        private void BuildFleet(Planet planet, ProductionQueueItem item, int numBuilt)
+        void BuildFleet(Planet planet, ProductionQueueItem item, int numBuilt)
         {
             planet.Player.Stats.NumFleetsBuilt++;
             planet.Player.Stats.NumTokensBuilt += numBuilt;
             var id = planet.Player.Stats.NumFleetsBuilt;
-            String name = item.fleetName != null ? item.fleetName : $"{item.Design.Name} #{id}";
+            string name = item.fleetName != null ? item.fleetName : $"{item.Design.Name} #{id}";
             var existingFleet = planet.OrbitingFleets.Where(f => f.Name == name);
 
             // if (we didn't have a fleet of that name, or it wasn't defined
@@ -193,7 +207,7 @@ namespace CraigStars
         /// </summary>
         /// <param name="planet"></param>
         /// <param name="item"></param>
-        private void BuildStarbase(Planet planet, ProductionQueueItem item)
+        void BuildStarbase(Planet planet, ProductionQueueItem item)
         {
             if (planet.Starbase != null)
             {
@@ -223,7 +237,7 @@ namespace CraigStars
         /// <param name="costPer"></param>
         /// <param name="allocated"></param>
         /// <returns></returns>
-        private Cost AllocateToQueue(Cost costPer, Cost allocated)
+        Cost AllocateToQueue(Cost costPer, Cost allocated)
         {
             double ironiumPerc = (costPer.Ironium > 0 ? (double)(allocated.Ironium) / costPer.Ironium : 100.0);
             double boraniumPerc = (costPer.Boranium > 0 ? (double)(allocated.Boranium) / costPer.Boranium : 100.0);
@@ -244,5 +258,6 @@ namespace CraigStars
             // return the amount we allocate to the top queued item
             return newAllocated;
         }
+
     }
 }

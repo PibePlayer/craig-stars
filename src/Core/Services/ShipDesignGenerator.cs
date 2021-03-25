@@ -104,6 +104,7 @@ namespace CraigStars
                 design.Slots.Add(slot);
             });
 
+            design.ComputeAggregate(player);
             return design;
         }
     }

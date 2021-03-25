@@ -130,6 +130,8 @@ namespace CraigStars
             var treeItem = tree.CreateItem(root);
             treeItem.SetText(0, text);
             treeItem.SetMetadata(0, Serializers.Serialize(item, PlayersManager.Instance.Players, TechStore.Instance));
+            tree.SetColumnMinWidth(1, (int)tree.GetFont("").GetStringSize("1000").x);
+
             if (item.quantity != 0)
             {
                 treeItem.SetText(1, $"{item.quantity}");

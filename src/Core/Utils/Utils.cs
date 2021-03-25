@@ -43,6 +43,18 @@ namespace CraigStars.Utils
             foreach (var e in ie) action(e, i++);
         }
 
+        /// <summary>
+        /// Helper function to round to the nearest 100 (by default)
+        /// This is used to ensure we have colonists in counts of 100 after bombings, invasions, etc
+        /// </summary>
+        /// <param name="value">The value to round</param>
+        /// <param name="nearest">The nearest integer to round to, defaults to 100</param>
+        /// <returns></returns>
+        public static int RoundToNearest(float value, int nearest = 100)
+        {
+            return (int)(Math.Round(value / nearest) * nearest);
+        }
+
     }
 }
 

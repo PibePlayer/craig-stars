@@ -107,6 +107,12 @@ namespace CraigStars
         [DefaultValue(.5f)]
         public float SmartDefenseCoverageFactor = .5f;
 
+        /// <summary>
+        /// The factor that defenses coverage is multiplied by against invasions
+        /// </summary>
+        [DefaultValue(.5f)]
+        public float InvasionDefenseCoverageFactor = .75f;
+
 
         /// <summary>
         /// Get the Area of the universe

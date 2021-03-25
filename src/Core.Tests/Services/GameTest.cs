@@ -9,6 +9,7 @@ using System.Diagnostics;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace CraigStars.Tests
 {
@@ -21,10 +22,13 @@ namespace CraigStars.Tests
         /// Test helper method to return a simple game
         /// </summary>
         /// <returns>A game with one planet, one player, one fleet</returns>
-        Game GetSingleUnitGame()
+        internal static Game GetSingleUnitGame()
         {
-            var game = new Game();
-            game.TechStore = StaticTechStore.Instance;
+            var game = new Game()
+            {
+                SaveToDisk = false,
+                TechStore = StaticTechStore.Instance
+            };
             var player = new Player();
             game.Players.Add(player);
 
@@ -40,13 +44,18 @@ namespace CraigStars.Tests
                 MineralConcentration = new Mineral(100, 100, 100),
                 Scanner = true
             });
+
+            var design = ShipDesigns.LongRangeScount.Clone();
+            design.Player = player;
+            game.Designs.Add(design);
+
             game.Fleets.Add(new Fleet()
             {
                 Player = player,
                 Tokens = new List<ShipToken>(new ShipToken[] {
                     new ShipToken()
                     {
-                        Design = ShipDesigns.LongRangeScount,
+                        Design = design,
                         Quantity = 1
                     }
                 })
@@ -57,13 +66,13 @@ namespace CraigStars.Tests
         [Test]
         public void TestGenerateUniverse()
         {
-            var game = new Game();
+            var game = new Game() { SaveToDisk = false };
             var rules = new Rules();
             game.Init(new List<Player>() { new Player() }, rules, StaticTechStore.Instance);
             game.GenerateUniverse();
 
             Assert.AreEqual(rules.NumPlanets, game.Planets.Count);
-            Assert.AreEqual(rules.NumPlanets, game.Players[0].Planets.Count);
+            Assert.AreEqual(rules.NumPlanets, game.Players[0].AllPlanets.ToList().Count);
             Assert.AreEqual(game.Fleets.Count, game.Players[0].Fleets.Count);
         }
 
@@ -71,7 +80,7 @@ namespace CraigStars.Tests
         public async Task TestGenerateTurn()
         {
             // create a new game with universe
-            var game = new Game();
+            var game = new Game() { SaveToDisk = false };
             var player = new Player();
             var rules = new Rules();
             game.Init(new List<Player>() { player }, rules, StaticTechStore.Instance);
@@ -95,7 +104,7 @@ namespace CraigStars.Tests
         public async Task TestGenerateManyTurns()
         {
             // create a new game with universe
-            var game = new Game();
+            var game = new Game() { SaveToDisk = false };
             var player = new Player();
             var aiPlayer = new Player() { AIControlled = true };
             var rules = new Rules()
@@ -135,6 +144,7 @@ namespace CraigStars.Tests
             Assert.AreEqual(0, player.Homeworld.ReportAge);
             Assert.AreEqual(rules.StartingYear + numTurns, game.Year);
         }
+
     }
 
 }

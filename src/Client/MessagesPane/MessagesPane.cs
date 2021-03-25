@@ -156,6 +156,7 @@ namespace CraigStars
                 prevButton.Disabled = nextButton.Disabled = gotoButton.Disabled = true;
                 activeMessage = null;
                 messageNum = 0;
+                messageText.Text = "No messages to view";
             }
 
         }

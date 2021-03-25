@@ -23,6 +23,11 @@ namespace CraigStars
         Cargo Cargo { get; set; }
 
         /// <summary>
+        /// The amount of cargo holder can hold
+        /// </summary>
+        int AvailableCapacity { get; }
+
+        /// <summary>
         /// All cargo holders must have fuel
         /// </summary>
         /// <value></value>

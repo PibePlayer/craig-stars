@@ -16,6 +16,8 @@ namespace CraigStars
         #region Planet Stats
 
         public Cargo Cargo { get; set; } = new Cargo();
+        [JsonIgnore] 
+        public int AvailableCapacity { get => Aggregate.CargoCapacity - Cargo.Total; }
 
         public int Fuel { get; set; }
         public int Damage { get; set; }
@@ -34,8 +36,7 @@ namespace CraigStars
         public int WarpSpeed { get; set; }
         public int Mass { get => Aggregate.Mass; set => Aggregate.Mass = value; }
 
-        [JsonIgnore]
-        public FleetAggregate Aggregate { get; } = new FleetAggregate();
+        [JsonIgnore] public FleetAggregate Aggregate { get; } = new FleetAggregate();
 
         #endregion
 
@@ -59,77 +60,7 @@ namespace CraigStars
             return Tokens.FirstOrDefault();
         }
 
-        public void Move()
-        {
-            if (Waypoints.Count > 1)
-            {
-                Waypoint wp0 = Waypoints[0];
-                Waypoint wp1 = Waypoints[1];
-                float totaldist = wp0.Position.DistanceTo(wp1.Position);
-                float dist = wp1.WarpFactor * wp1.WarpFactor;
 
-                // go with the lower
-                if (totaldist < dist)
-                {
-                    dist = totaldist;
-                }
-
-                // get the cost for the fleet
-                int fuelCost = GetFuelCost(wp1.WarpFactor, dist);
-                Fuel -= fuelCost;
-
-                // assuming we move at all, make sure we are no longer orbiting any planets
-                if (dist > 0 && Orbiting != null)
-                {
-                    Orbiting.OrbitingFleets.Remove(this);
-                    Orbiting = null;
-                }
-
-                if (totaldist == dist)
-                {
-                    Position = wp1.Position;
-                    if (wp1.Target != null && wp1.Target is Planet planet)
-                    {
-                        Orbiting = planet;
-                        planet.OrbitingFleets.Add(this);
-                    }
-
-                    // remove the previous waypoint, it's been processed already
-                    Waypoints.RemoveAt(0);
-
-                    // we arrived, process the current task (the previous waypoint)
-                    ProcessTask();
-                    if (Waypoints.Count == 1)
-                    {
-                        Message.FleetCompletedAssignedOrders(Player, this);
-                        WarpSpeed = 0;
-                        Heading = Vector2.Zero;
-                    }
-                    else
-                    {
-                        wp1 = Waypoints[1];
-                        WarpSpeed = wp1.WarpFactor;
-                        Heading = (wp1.Position - Position).Normalized();
-                    }
-                }
-                else
-                {
-                    // move this fleet closer to the next waypoint
-                    WarpSpeed = wp1.WarpFactor;
-                    Heading = (wp1.Position - Position).Normalized();
-                    wp0.Target = null;
-                    // sprite.LookAt(wp1.Position);
-
-                    Position += Heading * dist;
-                    wp0.Position = Position;
-                }
-            }
-            else
-            {
-                WarpSpeed = 0;
-                Heading = Vector2.Zero;
-            }
-        }
 
         /// <summary>
         /// Merge this fleet with a MergeFleetOrder from the client (or in the UI)
@@ -274,170 +205,6 @@ namespace CraigStars
         }
 
         /// <summary>
-        /// Process the task at the current waypoint
-        /// </summary>
-        /// <param name="wp"></param>
-        public void ProcessTask()
-        {
-            if (Waypoints.Count > 0)
-            {
-                var wp = Waypoints[0];
-                log.Debug($"Processing waypoint for {Name} at {wp.TargetName} -> {wp.Task}");
-
-                switch (wp.Task)
-                {
-                    case WaypointTask.Colonize:
-                        Colonize(wp);
-                        break;
-                    case WaypointTask.LayMineField:
-                        break;
-                    case WaypointTask.MergeWithFleet:
-                        break;
-                    case WaypointTask.Patrol:
-                        break;
-                    case WaypointTask.RemoteMining:
-                        break;
-                    case WaypointTask.Route:
-                        break;
-                    case WaypointTask.ScrapFleet:
-                        Scrap(wp);
-                        break;
-                    case WaypointTask.TransferFleet:
-                        break;
-                    case WaypointTask.Transport:
-                        Transport(wp);
-                        break;
-
-                }
-            }
-
-        }
-
-
-        /// <summary>
-        /// Scrap this fleet, adding resources to the waypoint
-        /// from the stars wiki:
-        /// After battle, 1/3 of the mineral cost of the destroyed ships is left as salvage. If the battle took place in orbit, these minerals are deposited on the planet below.
-        /// In deep space, each type of mineral decays 10%, or 10kT per year, whichever is higher. Salvage deposited on planets does not decay.
-        /// Scrapping: (from help file)
-        /// 
-        /// A ship scrapped at a starbase deposits 80% of the original minerals on the planet, or 90% of the minerals and 70% of the resources if the LRT 'Ultimate Recycling' is selected.
-        /// A ship scrapped at a planet with no starbase leaves 33% of the original minerals on the planet, or 45% of the minerals if the LRT Ultimate Recycling is selected.
-        /// Wih UR the resources recovered is:
-        /// (resources the ship costs * resources on the planet)/(resources the ship cost + resources on the planet)
-        /// The maximum recoverable resources occurs when the cost of the scrapped ship equals the resources produced at the planet where it is scrapped.
-        /// 
-        /// A ship scrapped in space leaves no minerals behind.
-        /// When a ship design is deleted, all such ships vanish leaving nothing behind. (moral: scrap before you delete!)
-        /// </summary>
-        /// <param name="wp">The waypoint pointing to the target planet to colonize</param>    
-        void Scrap(Waypoint wp)
-        {
-            // create a new cargo instance out of our fleet cost
-            Cargo cargo = Aggregate.Cost;
-
-            if (Player.Race.HasLRT(LRT.UR))
-            {
-                // we only recover 40% of our minerals on scrapping
-                cargo *= .45f;
-
-                // TODO: handle resource gain for an occupied planet
-            }
-            else
-            {
-                // we only recover 1/3rd of our minerals on scrapping
-                cargo /= 3;
-            }
-
-            // add in any cargo the fleet was holding
-            cargo += Cargo;
-
-            if (wp.Target is Planet planet)
-            {
-                planet.Cargo += cargo;
-                planet.OrbitingFleets.Remove(this);
-                Orbiting = null;
-                Scrapped = true;
-            }
-            else
-            {
-                // TODO: put some scrap in space...
-            }
-        }
-
-        /// <summary>
-        /// Take this fleet and have it colonize a planet
-        /// </summary>
-        /// <param name="wp">The waypoint pointing to the target planet to colonize</param>
-        void Colonize(Waypoint wp)
-        {
-            if (wp.Target is Planet planet)
-            {
-                if (planet.Player != null)
-                {
-                    Message.ColonizeOwnedPlanet(Player, this);
-                }
-                else if (!Aggregate.Colonizer)
-                {
-                    Message.ColonizeWithNoModule(Player, this);
-                }
-                else if (Cargo.Colonists <= 0)
-                {
-                    Message.ColonizeWithNoColonists(Player, this);
-                }
-                else
-                {
-                    // we own this planet now, yay!
-                    planet.Player = Player;
-                    planet.ProductionQueue = new ProductionQueue();
-                    planet.Population = Cargo.Colonists * 100;
-                    Cargo = Cargo.WithColonists(0);
-                    Scrap(wp);
-                }
-            }
-            else
-            {
-                Message.ColonizeNonPlanet(Player, this);
-            }
-        }
-
-        void Transport(Waypoint wp)
-        {
-            if (wp.Target is ICargoHolder cargoHolder)
-            {
-                // how much space do we have available
-                var capacity = Aggregate.CargoCapacity - Cargo.Total;
-
-                foreach (CargoType taskType in Enum.GetValues(typeof(CargoType)))
-                {
-                    var task = wp.TransportTasks[taskType];
-                    switch (task.action)
-                    {
-                        case WaypointTaskTransportAction.LoadAll:
-                            // load all available, based on our constraints
-                            var availableToLoad = cargoHolder.Cargo[taskType];
-                            var transferAmount = Math.Min(availableToLoad, capacity);
-                            if (transferAmount > 0)
-                            {
-                                if (taskType == CargoType.Fuel)
-                                {
-                                    cargoHolder.AttemptTransfer(Cargo.Empty, -transferAmount);
-                                    AttemptTransfer(Cargo.Empty, transferAmount);
-                                }
-                                else
-                                {
-                                    cargoHolder.AttemptTransfer(Cargo.OfAmount(taskType, -transferAmount), 0);
-                                    AttemptTransfer(Cargo.OfAmount(taskType, transferAmount), 0);
-                                }
-                            }
-                            break;
-                    }
-
-                }
-            }
-        }
-
-        /// <summary>
         /// Fuel usage calculation courtesy of m.a@stars
         /// </summary>
         /// <param name = "warpFactor" > The warp speed 1 to 10</param>
@@ -558,7 +325,7 @@ namespace CraigStars
                 // don't recompute unless explicitly requested
                 return;
             }
-            
+
             Aggregate.Mass = Cargo.Total;
             Aggregate.Shield = 0;
             Aggregate.CargoCapacity = 0;
@@ -624,7 +391,7 @@ namespace CraigStars
                 Aggregate.SmartBombs.AddRange(token.Design.Aggregate.SmartBombs);
             });
 
-
+            Aggregate.Computed = true;
         }
 
         /// <summary>

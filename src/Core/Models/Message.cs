@@ -35,28 +35,28 @@ namespace CraigStars
         public static void HomePlanet(Player player, Planet planet)
         {
             String text = $"Your home planet is {planet.Name}.  Your people are ready to leave the nest and explore the universe.  Good luck.";
-            player.Messages.Add(new Message(MessageType.HomePlanet, text, player.PlanetsByGuid[planet.Guid]));
+            player.Messages.Add(new Message(MessageType.HomePlanet, text, planet));
 
         }
 
         public static void Mine(Player player, Planet planet, int numMines)
         {
             String text = $"You have built {numMines} mine(s) on {planet.Name}.";
-            player.Messages.Add(new Message(MessageType.BuiltMine, text, player.PlanetsByGuid[planet.Guid]));
+            player.Messages.Add(new Message(MessageType.BuiltMine, text, planet));
 
         }
 
         public static void Factory(Player player, Planet planet, int numFactories)
         {
             String text = $"You have built {numFactories} factory(s) on {planet.Name}.";
-            player.Messages.Add(new Message(MessageType.BuiltFactory, text, player.PlanetsByGuid[planet.Guid]));
+            player.Messages.Add(new Message(MessageType.BuiltFactory, text, planet));
 
         }
 
         public static void Defense(Player player, Planet planet, int numDefenses)
         {
             String text = $"You have built {numDefenses} defense(s) on {planet.Name}.";
-            player.Messages.Add(new Message(MessageType.BuiltDefense, text, player.PlanetsByGuid[planet.Guid]));
+            player.Messages.Add(new Message(MessageType.BuiltDefense, text, planet));
 
         }
 
@@ -69,34 +69,33 @@ namespace CraigStars
         public static void ColonizeNonPlanet(Player player, Fleet fleet)
         {
             String text = $"{fleet.Name} has attempted to colonize a waypoint with no Planet.";
-            player.Messages.Add(new Message(MessageType.ColonizeNonPlanet, text));
-
+            player.Messages.Add(new Message(MessageType.ColonizeInvalid, text, fleet));
         }
 
         public static void ColonizeOwnedPlanet(Player player, Fleet fleet)
         {
             String text = $"{fleet.Name} has attempted to colonize a planet that is already inhabited.";
-            player.Messages.Add(new Message(MessageType.ColonizeOwnedPlanet, text));
+            player.Messages.Add(new Message(MessageType.ColonizeInvalid, text, fleet));
 
         }
 
         public static void ColonizeWithNoModule(Player player, Fleet fleet)
         {
             String text = $"{fleet.Name} has attempted to colonize a planet without a colonization module.";
-            player.Messages.Add(new Message(MessageType.ColonizeWithNoColonizationModule, text));
+            player.Messages.Add(new Message(MessageType.ColonizeInvalid, text, fleet));
 
         }
 
         public static void ColonizeWithNoColonists(Player player, Fleet fleet)
         {
             String text = $"{fleet.Name} has attempted to colonize a planet without bringing any colonists.";
-            player.Messages.Add(new Message(MessageType.ColonizeWithNoColonists, text));
+            player.Messages.Add(new Message(MessageType.ColonizeInvalid, text, fleet));
         }
 
-        public static void planetColonized(Player player, Planet planet)
+        public static void PlanetColonized(Player player, Planet planet)
         {
             String text = $"Your colonists are now in control of {planet.Name}";
-            player.Messages.Add(new Message(MessageType.PlanetColonized, text, player.PlanetsByGuid[planet.Guid]));
+            player.Messages.Add(new Message(MessageType.PlanetColonized, text, planet));
         }
 
         public static void FleetOutOfFuel(Player player, Fleet fleet)
@@ -108,7 +107,7 @@ namespace CraigStars
         public static void fleetScrapped(Player player, Fleet fleet, int num_minerals, Planet planet)
         {
             String text = $"{fleet.Name} has been dismantled for {num_minerals}kT of minerals which have been deposited on {planet.Name}.";
-            player.Messages.Add(new Message(MessageType.FleetScrapped, text, player.PlanetsByGuid[planet.Guid]));
+            player.Messages.Add(new Message(MessageType.FleetScrapped, text, planet));
         }
 
         public static void FleetBuilt(Player player, ShipDesign design, Fleet fleet, int numBuilt)
@@ -146,7 +145,7 @@ namespace CraigStars
                 }
             }
 
-            player.Messages.Add(new Message(MessageType.PlanetDiscovery, text, player.PlanetsByGuid[planet.Guid]));
+            player.Messages.Add(new Message(MessageType.PlanetDiscovery, text, planet));
         }
 
         public static void FleetCompletedAssignedOrders(Player player, Fleet fleet)
@@ -161,12 +160,27 @@ namespace CraigStars
 
             if (player == fleet.Player)
             {
-                text = planet.Population == 0 ? $"Your {fleet.Name} has bombed {planet.Name} killing off all colonists" : $"Your {fleet.Name} has bombed {planet.Name} killing {colonistsKilled} colonists, and destroying {minesDestroyed} mines, {factoriesDestroyed} factories, and {defensesDestroyed} defenses.";
+                if (planet.Population == 0)
+                {
+                    text = $"Your {fleet.Name} has bombed {planet.RaceName} {planet.Name} killing off all colonists";
+                }
+                else
+                {
+                    text = $"Your {fleet.Name} has bombed {planet.RaceName} {planet.Name} killing {colonistsKilled:n0} colonists, and destroying {minesDestroyed:n0} mines, {factoriesDestroyed:n0} factories, and {defensesDestroyed:n0} defenses.";
+                }
                 player.Messages.Add(new Message(MessageType.EnemyPlanetBombed, text, planet));
             }
             else
             {
-                text = planet.Population == 0 ? $"{fleet.Name} has bombed your {planet.Name} killing off all colonists" : $"{fleet.Name} has bombed your {planet.Name} killing {colonistsKilled} colonists, and destroying {minesDestroyed} mines, {factoriesDestroyed} factories, and {defensesDestroyed} defenses.";
+                if (planet.Population == 0)
+                {
+                    text = $"{fleet.RaceName} {fleet.Name} has bombed your {planet.Name} killing off all colonists";
+                }
+                else
+                {
+                    text = $"{fleet.RaceName} {fleet.Name} has bombed your {planet.Name} killing {colonistsKilled:n0} colonists, and destroying {minesDestroyed:n0} mines, {factoriesDestroyed:n0} factories, and {defensesDestroyed:n0} defenses.";
+                }
+
                 player.Messages.Add(new Message(MessageType.MyPlanetBombed, text, planet));
             }
 
@@ -178,14 +192,71 @@ namespace CraigStars
 
             if (player == fleet.Player)
             {
-                text = planet.Population == 0 ? $"Your fleet {fleet.Name} has bombed {planet.Name} with smart bombs killing all colonists" : $"Your {fleet.Name} has bombed {planet.Name} with smart bombs killing {colonistsKilled} colonists.";
+                if (planet.Population == 0)
+                {
+                    text = $"Your fleet {fleet.Name} has bombed {planet.RaceName} planet {planet.Name} with smart bombs killing all colonists";
+
+                }
+                else
+                {
+                    text = $"Your {fleet.Name} has bombed {planet.RaceName} planet {planet.Name} with smart bombs killing {colonistsKilled:n0} colonists.";
+                }
                 player.Messages.Add(new Message(MessageType.EnemyPlanetBombed, text, planet));
             }
             else
             {
-                text = planet.Population == 0 ? $"{fleet.Name} has bombed your {planet.Name} with smart bombs killing all colonists" : $"{fleet.Name} has bombed your {planet.Name} with smart bombs killing {colonistsKilled} colonists.";
+                if (planet.Population == 0)
+                {
+                    text = $"{fleet.RaceName} {fleet.Name} has bombed your {planet.Name} with smart bombs killing all colonists";
+                }
+                else
+                {
+                    text = $"{fleet.RaceName} {fleet.Name} has bombed your {planet.Name} with smart bombs killing {colonistsKilled:n0} colonists.";
+                }
                 player.Messages.Add(new Message(MessageType.MyPlanetBombed, text, planet));
             }
+        }
+
+        public static void InvadeEmptyPlanet(Player player, Fleet fleet, Planet planet)
+        {
+            String text = $"{fleet.Name} has attempted to invade {planet.Name}, but the planet is uninhabited.";
+            player.Messages.Add(new Message(MessageType.ColonizeInvalid, text, planet));
+        }
+
+
+        public static void PlanetInvaded(Player player, Planet planet, Fleet fleet, int attackersKilled, int defendersKilled)
+        {
+            string text;
+
+            if (player == fleet.Player)
+            {
+                if (planet.Player == fleet.Player)
+                {
+                    // we invaded and won
+                    text = $"Your {fleet.Name} has successfully invaded {planet.RaceName} planet {planet.Name} killing off all colonists";
+                }
+                else
+                {
+                    // we invaded and lost
+                    text = $"Your {fleet.Name} tried to invade {planet.Name}, but all of your colonists were killed by {planet.RacePluralName}. You valiant fighters managed to kill {defendersKilled:n0} of their colonists.";
+                }
+                player.Messages.Add(new Message(MessageType.EnemyPlanetInvaded, text, planet));
+            }
+            else
+            {
+                if (planet.Player == fleet.Player)
+                {
+                    // we were invaded, and lost
+                    text = $"{fleet.RaceName} {fleet.Name} has successfully invaded your planet {planet.Name}, killing off all of your colonists";
+                }
+                else
+                {
+                    // we were invaded, and lost
+                    text = $"{fleet.RaceName} {fleet.Name} tried to invade {planet.Name}, but you were able to fend them off. You lost {defendersKilled:n0} colonists in the invasion.";
+                }
+                player.Messages.Add(new Message(MessageType.MyPlanetInvaded, text, planet));
+            }
+
         }
 
     }

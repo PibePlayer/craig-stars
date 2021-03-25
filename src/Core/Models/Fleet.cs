@@ -13,7 +13,7 @@ namespace CraigStars
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(Fleet));
 
-        #region Planet Stats
+        #region Stats
 
         public Cargo Cargo { get; set; } = new Cargo();
         [JsonIgnore] 

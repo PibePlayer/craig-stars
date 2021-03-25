@@ -9,9 +9,9 @@ using CraigStars.Singletons;
 namespace CraigStars.Tests
 {
     [TestFixture]
-    public class PlanetBomberTest
+    public class PlanetBombStepTest
     {
-        PlanetBomber planetBomber = new PlanetBomber();
+        PlanetBombStep planetBomber = new PlanetBombStep(GameTest.GetSingleUnitGame(), TurnGeneratorState.Bomb);
 
         [Test]
         public void TestGetColonistsKilled()
@@ -209,6 +209,6 @@ namespace CraigStars.Tests
             Assert.AreEqual(98, planet.Factories);
             Assert.AreEqual(9, planet.Defenses);
             Assert.AreEqual(9300, planet.Population);
-        }        
+        }
     }
 }

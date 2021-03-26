@@ -10,6 +10,7 @@ public enum TechHullType
     CapitalShip,
     Freighter,
     ArmedFreighter,
+    FuelTransport,
     Miner,
     MineLayer,
 }

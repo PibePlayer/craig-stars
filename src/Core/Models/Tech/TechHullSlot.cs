@@ -10,7 +10,7 @@ namespace CraigStars
 
         public TechHullSlot() { }
 
-        public TechHullSlot(HullSlotType type, int capacity = 0, bool required = false)
+        public TechHullSlot(HullSlotType type, int capacity = 1, bool required = false)
         {
             Type = type;
             Capacity = capacity;

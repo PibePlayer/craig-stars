@@ -1552,9 +1552,21 @@ namespace CraigStars
             FuelCapacity = 210,
             Slots = new List<TechHullSlot>(new TechHullSlot[] {
                 new TechHullSlot(HullSlotType.Engine, 1, true),
-                new TechHullSlot(HullSlotType.ScannerElectricalMechanical, 1, false),
-                new TechHullSlot(HullSlotType.Mining, 1, false),
-                new TechHullSlot(HullSlotType.Mining, 1, false)
+                new TechHullSlot(HullSlotType.ScannerElectricalMechanical),
+                new TechHullSlot(HullSlotType.Mining),
+                new TechHullSlot(HullSlotType.Mining)
+            })
+        };
+
+        public static readonly TechHull FuelTransport = new TechHull("Fuel Transport", new Cost(10, 0, 5, 50), new TechRequirements(), 260, TechCategory.ShipHull)
+        {
+            Type = TechHullType.FuelTransport,
+            Mass = 12,
+            Armor = 5,
+            FuelCapacity = 750,
+            Slots = new List<TechHullSlot>(new TechHullSlot[] {
+                new TechHullSlot(HullSlotType.Engine, 1, true),
+                new TechHullSlot(HullSlotType.Shield),
             })
         };
 
@@ -1896,6 +1908,7 @@ namespace CraigStars
                 ColonyShip,
                 MiniBomber,
                 MiniMiner,
+                FuelTransport,
 
                 // starbases
                 SpaceStation,

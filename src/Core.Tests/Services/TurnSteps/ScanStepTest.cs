@@ -33,7 +33,7 @@ namespace CraigStars.Tests
             game.UpdatePlayers();
 
             var scanStep = new PlayerScanStep(game, TurnGeneratorState.Scan);
-            scanStep.Execute(game.OwnedPlanets.ToList());
+            scanStep.Execute(new TurnGenerationContext(), game.OwnedPlanets.ToList());
 
             // our player should know about the planet updates
             Assert.AreEqual(game.Planets[0].Population, game.Players[0].Planets[0].Population);

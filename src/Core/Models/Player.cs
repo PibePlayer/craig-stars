@@ -207,6 +207,29 @@ namespace CraigStars
         }
 
         /// <summary>
+        /// Are we neutral to this player
+        /// </summary>
+        /// <param name="otherPlayer"></param>
+        /// <returns></returns>
+        public bool IsNeutral(PublicPlayerInfo otherPlayer)
+        {
+            // TODO: add some player relations...
+            return false;
+        }
+
+        /// <summary>
+        /// Are we friends?
+        /// </summary>
+        /// <param name="otherPlayer"></param>
+        /// <returns></returns>
+        public bool IsFriend(PublicPlayerInfo otherPlayer)
+        {
+            // TODO: add some player relations...
+            // WE HAVE NO FRIENDS
+            return false;
+        }
+
+        /// <summary>
         /// Delete this design and also delete any tokens that use the design
         /// </summary>
         /// <param name="design"></param>

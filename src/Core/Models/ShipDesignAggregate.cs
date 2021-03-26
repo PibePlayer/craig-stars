@@ -35,6 +35,16 @@ namespace CraigStars
         public List<Bomb> SmartBombs { get; set; } = new List<Bomb>();
 
         /// <summary>
+        /// Does this design have any weapons?
+        /// </summary>
+        public bool HasWeapons { get; set; }
+
+        /// <summary>
+        /// The ship design's weapon slots, in slot order
+        /// </summary>
+        public List<ShipDesignSlot> WeaponSlots = new List<ShipDesignSlot>();
+
+        /// <summary>
         /// Does this fleet have scanning capabilities? 
         /// </summary>
         /// <value></value>

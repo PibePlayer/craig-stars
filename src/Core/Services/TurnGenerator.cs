@@ -62,17 +62,17 @@ namespace CraigStars
         /// <param name="game"></param>
         public TurnGenerator(Game game)
         {
-            FleetWaypointStep waypointStep = new FleetWaypointStep(game, TurnGeneratorState.Waypoint);
             Game = game;
             steps = new List<Step>() {
-                waypointStep, // wp0
+                new FleetWaypointStep(game, TurnGeneratorState.Waypoint), // wp0
                 new FleetMoveStep(game, TurnGeneratorState.MoveFleets),
                 new PlanetMineStep(game, TurnGeneratorState.Mining),
                 new PlanetProduceStep(game, TurnGeneratorState.Production),
                 new PlayerResearchStep(game, TurnGeneratorState.Research),
                 new PlanetGrowStep(game, TurnGeneratorState.Grow),
+                new FleetBattleStep(game, TurnGeneratorState.Battle),
                 new PlanetBombStep(game, TurnGeneratorState.Bomb),
-                waypointStep, // wp1
+                new FleetWaypointStep(game, TurnGeneratorState.Waypoint), // wp1
                 new PlayerScanStep(game, TurnGeneratorState.Scan),
             };
         }
@@ -96,18 +96,14 @@ namespace CraigStars
             });
 
             // execute each turn step
+            var context = new TurnGenerationContext();
             var ownedPlanets = Game.OwnedPlanets.ToList();
             foreach (var step in steps)
             {
                 PublishTurnGeneratorAdvancedEvent(step.State);
-                step.Execute(ownedPlanets);
+                step.Execute(context, ownedPlanets);
             }
 
         }
-
-        #region Event Publishers
-
-
-        #endregion
     }
 }

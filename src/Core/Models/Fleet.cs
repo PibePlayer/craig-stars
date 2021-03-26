@@ -16,7 +16,7 @@ namespace CraigStars
         #region Stats
 
         public Cargo Cargo { get; set; } = new Cargo();
-        [JsonIgnore] 
+        [JsonIgnore]
         public int AvailableCapacity { get => Aggregate.CargoCapacity - Cargo.Total; }
 
         public int Fuel { get; set; }
@@ -29,6 +29,7 @@ namespace CraigStars
 
         public bool Scrapped { get; set; }
         public List<Waypoint> Waypoints { get; set; } = new List<Waypoint>();
+        public BattleOrders BattleOrders { get; set; } = new BattleOrders();
 
         // These are all publicly viewable when a fleet is scanned
         public List<ShipToken> Tokens { get; set; } = new List<ShipToken>();
@@ -318,6 +319,34 @@ namespace CraigStars
             return (int)((float)Fuel / (float)GetFuelCost(GetDefaultWarpFactor(), 1000) * 1000.0f);
         }
 
+        /// <summary>
+        /// Return true if this fleet's BattleOrders.AttackWho would attack the owner of the otherFleet
+        /// </summary>
+        /// <param name="otherFleet"></param>
+        /// <returns></returns>
+        public bool WillAttack(PublicPlayerInfo otherPlayer)
+        {
+            bool willAttack = false;
+            // if we have weapons and we don't own this other fleet, see if we
+            // would target it
+            if (Aggregate.HasWeapons && BattleOrders.Tactic != BattleTactic.Disengage && otherPlayer.Num != Player.Num)
+            {
+                switch (BattleOrders.AttackWho)
+                {
+                    case BattleAttackWho.Enemies:
+                        willAttack = Player.IsEnemy(otherPlayer);
+                        break;
+                    case BattleAttackWho.EnemiesAndNeutrals:
+                        willAttack = Player.IsEnemy(otherPlayer) || Player.IsNeutral(otherPlayer);
+                        break;
+                    case BattleAttackWho.Everyone:
+                        willAttack = true;
+                        break;
+                }
+            }
+            return willAttack;
+        }
+
         public void ComputeAggregate(bool recompute = false)
         {
             if (Aggregate.Computed && !recompute)
@@ -341,6 +370,8 @@ namespace CraigStars
 
             Aggregate.Bomber = false;
             Aggregate.Bombs.Clear();
+
+            Aggregate.HasWeapons = false;
 
             // compute each token's 
             Tokens.ForEach(token =>
@@ -389,6 +420,11 @@ namespace CraigStars
                 Aggregate.Bomber = token.Design.Aggregate.Bomber ? true : Aggregate.Bomber;
                 Aggregate.Bombs.AddRange(token.Design.Aggregate.Bombs);
                 Aggregate.SmartBombs.AddRange(token.Design.Aggregate.SmartBombs);
+
+                // check if any tokens have weapons
+                // we process weapon slots per stack, so we don't need to aggregate all
+                // weapons in a fleet
+                Aggregate.HasWeapons = token.Design.Aggregate.HasWeapons ? true : Aggregate.HasWeapons;
             });
 
             Aggregate.Computed = true;

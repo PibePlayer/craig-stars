@@ -120,8 +120,10 @@ namespace CraigStars
                 // determine the next field to research
                 var nextField = GetNextResearchField(player);
 
-                // notify our player that we got a new level
-                Message.TechLevel(player, player.Researching, player.TechLevels[player.Researching], nextField);
+                // notify our player (and any listeners) that we got a new level
+                var newLevel = player.TechLevels[player.Researching];
+                Message.TechLevel(player, player.Researching, newLevel, nextField);
+                EventManager.PublishPlayerResearchLevelIncreasedEvent(player, player.Researching, newLevel);
 
                 // setup the next level
                 player.Researching = nextField;

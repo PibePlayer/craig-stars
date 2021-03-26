@@ -13,24 +13,44 @@ namespace CraigStars
     public class FleetWaypointStep : Step
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(FleetWaypointStep));
+        public const string ProcessedWaypointsContextKey = "ProcessedWaypoints";
 
         public FleetWaypointStep(Game game, TurnGeneratorState state) : base(game, state) { }
 
         HashSet<Waypoint> processedWaypoints = new HashSet<Waypoint>();
         List<Fleet> scrappedFleets = new List<Fleet>();
 
+        /// <summary>
+        /// Override PreProcess() to get processed waypoints to the TurnGeneratorContext
+        /// </summary>
         public override void PreProcess(List<Planet> ownedPlanets)
         {
             base.PreProcess(ownedPlanets);
 
             processedWaypoints.Clear();
             scrappedFleets.Clear();
+
+            if (Context.Context.TryGetValue(ProcessedWaypointsContextKey, out var waypoints)
+            && waypoints is HashSet<Waypoint> processedWaypointsFromContext)
+            {
+                // add any processed waypoints from the context
+                processedWaypoints.UnionWith(processedWaypointsFromContext);
+            }
         }
 
         public override void Process()
         {
             Game.Fleets.ForEach(fleet => ProcessWaypoint(fleet));
             scrappedFleets.ForEach(fleet => EventManager.PublishFleetDeletedEvent(fleet));
+        }
+
+        /// <summary>
+        /// Override PostProcess() to set processed waypoints to the TurnGeneratorContext
+        /// </summary>
+        public override void PostProcess()
+        {
+            base.PostProcess();
+            Context.Context[ProcessedWaypointsContextKey] = processedWaypoints;
         }
 
         /// <summary>

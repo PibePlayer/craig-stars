@@ -13,4 +13,5 @@ public enum TechHullType
     FuelTransport,
     Miner,
     MineLayer,
+    Starbase,
 }

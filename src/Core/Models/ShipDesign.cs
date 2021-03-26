@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CraigStars.Singletons;
 using CraigStars.Utils;
 using log4net;
 using Newtonsoft.Json;
@@ -46,6 +47,16 @@ namespace CraigStars
         /// <returns></returns>
         [JsonIgnore]
         public ShipDesignAggregate Aggregate { get; } = new ShipDesignAggregate();
+
+        public ShipDesign()
+        {
+            EventManager.PlayerResearchLevelIncreasedEvent += OnPlayerResearchLevelIncreased;
+        }
+
+        ~ShipDesign()
+        {
+            EventManager.PlayerResearchLevelIncreasedEvent -= OnPlayerResearchLevelIncreased;
+        }
 
         /// <summary>
         /// Create a clone of this ship design
@@ -128,6 +139,7 @@ namespace CraigStars
             Aggregate.CloakPercent = 0f; // TODO: compute cloaking..
             Aggregate.Bomber = false;
             Aggregate.Bombs.Clear();
+            Aggregate.HasWeapons = false;
 
             foreach (ShipDesignSlot slot in Slots)
             {
@@ -177,6 +189,12 @@ namespace CraigStars
                         {
                             Aggregate.Bombs.Add(bomb);
                         }
+                    }
+
+                    if (slot.HullComponent.Power > 0)
+                    {
+                        Aggregate.HasWeapons = true;
+                        Aggregate.WeaponSlots.Add(slot);
                     }
                 }
                 // cargo and space doc that are built into the hull
@@ -281,6 +299,27 @@ namespace CraigStars
                 }
             }
         }
+
+        #region Event
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="field"></param>
+        /// <param name="level"></param>
+        void OnPlayerResearchLevelIncreased(Player player, TechField field, int level)
+        {
+            if (player != Player) return;
+
+            if (player.Race != null && player.Race.PRT == PRT.JoaT && Hull != null && Hull.BuiltInScannerForJoaT)
+            {
+                // update our scanner aggregate
+                ComputeScanRanges(player);
+            }
+        }
+
+        #endregion
 
     }
 }

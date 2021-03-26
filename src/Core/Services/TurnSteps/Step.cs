@@ -13,6 +13,7 @@ namespace CraigStars
 
         public Game Game { get; private set; }
         public TurnGeneratorState State { get; private set; }
+        public TurnGenerationContext Context { get; private set; }
 
         public List<Planet> OwnedPlanets { get; private set; }
 
@@ -27,11 +28,12 @@ namespace CraigStars
         /// <summary>
         /// Execute this step
         /// </summary>
-        public void Execute(List<Planet> ownedPlanets)
+        public void Execute(TurnGenerationContext context, List<Planet> ownedPlanets)
         {
             stopwatch.Start();
             log.Debug($"Beginning {this.GetType().ToString()}");
-
+            Context = context;
+            
             PreProcess(ownedPlanets);
             Process();
             PostProcess();

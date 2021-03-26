@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using CraigStars.Singletons;
+using Godot;
 using log4net;
 using Newtonsoft.Json;
 
@@ -59,6 +60,7 @@ namespace CraigStars
         [JsonIgnore] public Dictionary<Guid, Fleet> FleetsByGuid { get; set; } = new Dictionary<Guid, Fleet>();
         [JsonIgnore] public Dictionary<Guid, ICargoHolder> CargoHoldersByGuid { get; set; } = new Dictionary<Guid, ICargoHolder>();
         [JsonIgnore] public IEnumerable<Planet> OwnedPlanets { get => Planets.Where(p => p.Player != null); }
+        [JsonIgnore] public Dictionary<Vector2, List<MapObject>> MapObjectsByLocation = new Dictionary<Vector2, List<MapObject>>();
 
         #endregion
 
@@ -78,14 +80,14 @@ namespace CraigStars
             turnGenerator.TurnGeneratorAdvancedEvent += OnTurnGeneratedAdvanced;
             EventManager.FleetCreatedEvent += OnFleetCreated;
             EventManager.FleetDeletedEvent += OnFleetDeleted;
-            EventManager.PlanetPopulationEmptied += OnPlanetPopulationEmptied;
+            EventManager.PlanetPopulationEmptiedEvent += OnPlanetPopulationEmptied;
         }
 
         ~Game()
         {
             EventManager.FleetCreatedEvent -= OnFleetCreated;
             EventManager.FleetDeletedEvent -= OnFleetDeleted;
-            EventManager.PlanetPopulationEmptied -= OnPlanetPopulationEmptied;
+            EventManager.PlanetPopulationEmptiedEvent -= OnPlanetPopulationEmptied;
             turnGenerator.TurnGeneratorAdvancedEvent -= OnTurnGeneratedAdvanced;
         }
 
@@ -105,6 +107,20 @@ namespace CraigStars
         {
             Designs.ForEach(d => d.ComputeAggregate(d.Player));
             Fleets.ForEach(f => f.ComputeAggregate());
+        }
+
+        /// <summary>
+        /// Update our dictionary of MapObjectsByLocation. This is used for combat
+        /// </summary>
+        public void UpdateMapObjectsByLocation()
+        {
+            List<MapObject> mapObjects = new List<MapObject>();
+            mapObjects.AddRange(Planets);
+            mapObjects.AddRange(Fleets);
+            mapObjects.AddRange(MineralPackets);
+            mapObjects.AddRange(MineFields);
+
+            MapObjectsByLocation = mapObjects.ToLookup(mo => mo.Position).ToDictionary(lookup => lookup.Key, lookup => lookup.ToList());
         }
 
         public void Init(List<Player> players, Rules rules, ITechStore techStore)
@@ -135,9 +151,11 @@ namespace CraigStars
 
             // update player intel with new universe
             var scanStep = new PlayerScanStep(this, TurnGeneratorState.Scan);
-            scanStep.Execute(OwnedPlanets.ToList());
+            scanStep.Execute(new TurnGenerationContext(), OwnedPlanets.ToList());
 
             UpdatePlayers();
+
+            RunTurnProcessors();
 
             SaveGame();
         }

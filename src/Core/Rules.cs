@@ -7,7 +7,7 @@ namespace CraigStars
     public class Rules
     {
         [DefaultValue(0)]
-        public int QuickStartTurns { get; set; } = 0;
+        public int QuickStartTurns { get; set; } = 25;
 
         public Size Size { get; set; } = Size.Small;
         public Density Density { get; set; } = Density.Normal;
@@ -112,6 +112,18 @@ namespace CraigStars
         /// </summary>
         [DefaultValue(.5f)]
         public float InvasionDefenseCoverageFactor = .75f;
+
+        /// <summary>
+        /// The number of battle rounds per battle
+        /// </summary>
+        [DefaultValue(16)]
+        public int BattleRounds = 16;
+
+        /// <summary>
+        /// The number of possible movements phases per round of battle
+        /// </summary>
+        [DefaultValue(4)]
+        public int BattleMovementPhases = 3;
 
 
         /// <summary>

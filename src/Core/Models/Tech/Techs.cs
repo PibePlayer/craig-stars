@@ -1575,6 +1575,7 @@ namespace CraigStars
         #region StarbaseHulls
         public static readonly TechHull SpaceStation = new TechHull("Space Station", new Cost(106, 71, 220, 528), new TechRequirements(), 20, TechCategory.StarbaseHull)
         {
+            Type = TechHullType.Starbase,
             Mass = 0,
             Armor = 500,
             Initiative = 14,
@@ -1598,6 +1599,7 @@ namespace CraigStars
 
         public static readonly TechHull DeathStar = new TechHull("Death Star", new Cost(120, 80, 350, 750), new TechRequirements(construction: 17, prtRequired: PRT.AR), 40, TechCategory.StarbaseHull)
         {
+            Type = TechHullType.Starbase,
             Mass = 0,
             Armor = 1500,
             Initiative = 18,

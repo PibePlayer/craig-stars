@@ -50,6 +50,8 @@ namespace CraigStars
         public bool HitsAllTargets { get; set; }
         public bool DamageShieldsOnly { get; set; }
         public bool CapitalShipMissile { get; set; }
+
+        // other
         public int PacketSpeed { get; set; }
         public int SafeHullMass { get; set; }
         public int SafeRange { get; set; }

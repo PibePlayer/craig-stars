@@ -12,10 +12,6 @@ namespace CraigStars
         public override void Process()
         {
             Game.Fleets.ForEach(fleet => Move(fleet));
-
-            // remove any fleets that were scrapped at the end
-            // TODO: move this to waypoint processing
-            Game.Fleets.RemoveAll(f => f.Scrapped);
         }
 
         /// <summary>

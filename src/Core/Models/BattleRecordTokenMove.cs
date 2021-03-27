@@ -6,18 +6,8 @@ namespace CraigStars
     /// <summary>
     /// Movement for a token
     /// </summary>
-    public class BattleRecordTokenMove
+    public class BattleRecordTokenMove : BattleRecordTokenAction
     {
-        /// <summary>
-        /// The token moving
-        /// </summary>
-        public BattleToken Token { get; set; }
-
-        /// <summary>
-        /// The starting location of the token
-        /// </summary>
-        public Vector2 From { get; set; }
-
         /// <summary>
         /// The ending location of the token
         /// </summary>

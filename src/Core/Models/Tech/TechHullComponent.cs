@@ -23,7 +23,7 @@ namespace CraigStars
         public bool ColonizationModule { get; set; }
         public bool OrbitalConstructionModule { get; set; }
         public int CargoBonus { get; set; }
-        public float MovementBonus { get; set; }
+        public int MovementBonus { get; set; }
         public int BeamDefense { get; set; }
         public int BeamBonus { get; set; }
         [DefaultValue(NoScanner)]

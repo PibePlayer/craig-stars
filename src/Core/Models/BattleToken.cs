@@ -8,15 +8,8 @@ namespace CraigStars
     /// <summary>
     /// A token on a battle board
     /// </summary>
-    public class BattleToken
+    public class BattleToken : BattleRecordToken
     {
-        public Player Player { get; set; }
-
-        /// <summary>
-        /// The token 
-        /// </summary>
-        public ShipToken Token { get; set; }
-
         /// <summary>
         /// This will be null during the recording, but populated 
         /// during battle generation
@@ -34,10 +27,30 @@ namespace CraigStars
         internal BattleToken Target { get; set; }
 
         /// <summary>
+        /// Tokens targeting this token
+        /// </summary>
+        internal List<BattleToken> TargetedBy { get; set; } = new List<BattleToken>();
+
+        /// <summary>
         /// The token's current position on the board
         /// </summary>
         /// <value></value>
         internal Vector2 Position { get; set; }
+
+        /// <summary>
+        /// Has this token been destroyed? (it won't move anymore)
+        /// </summary>
+        internal bool Destroyed;
+
+        /// <summary>
+        /// Has this token been damaged? 
+        /// </summary>
+        internal bool Damaged;
+
+        /// <summary>
+        /// A token can disengage after moving 7 times
+        /// </summary>
+        internal int MovesMade;
 
     }
 }

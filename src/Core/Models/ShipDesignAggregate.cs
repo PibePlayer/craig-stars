@@ -28,6 +28,12 @@ namespace CraigStars
         public float CloakPercent { get; set; }
 
         /// <summary>
+        /// The number of movement points in battle spread across 4 rounds
+        /// </summary>
+        /// <value></value>
+        public int Movement { get; set; }
+
+        /// <summary>
         /// Does this design have any bombs
         /// </summary>
         public bool Bomber { get; set; }

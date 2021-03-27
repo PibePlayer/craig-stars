@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CraigStars.Singletons;
 using CraigStars.Utils;
+using Godot;
 using log4net;
 using Newtonsoft.Json;
 
@@ -140,6 +141,10 @@ namespace CraigStars
             Aggregate.Bomber = false;
             Aggregate.Bombs.Clear();
             Aggregate.HasWeapons = false;
+            Aggregate.Movement = 0;
+
+            var idealSpeed = 0;
+            var numEngines = 0;
 
             foreach (ShipDesignSlot slot in Slots)
             {
@@ -148,6 +153,8 @@ namespace CraigStars
                     if (slot.HullComponent is TechEngine engine)
                     {
                         Aggregate.Engine = engine;
+                        idealSpeed = engine.IdealSpeed;
+                        numEngines += slot.Quantity;
                     }
                     if (slot.HullComponent.Category == TechCategory.BeamWeapon && slot.HullComponent.Power > 0 && slot.HullComponent.Range > 0)
                     {
@@ -169,6 +176,7 @@ namespace CraigStars
                     Aggregate.CargoCapacity += slot.HullComponent.CargoBonus * slot.Quantity;
                     Aggregate.FuelCapacity += slot.HullComponent.FuelBonus * slot.Quantity;
                     Aggregate.Colonizer = slot.HullComponent.ColonizationModule || slot.HullComponent.OrbitalConstructionModule;
+                    Aggregate.Movement += slot.HullComponent.MovementBonus * slot.Quantity;
 
                     // if this slot has a bomb, this design is a bomber
                     if (slot.HullComponent.HullSlotType == HullSlotType.Bomb)
@@ -206,6 +214,18 @@ namespace CraigStars
                 {
                     Aggregate.SpaceDock = hullSlot.Capacity;
                 }
+            }
+
+            if (numEngines > 0)
+            {
+                // Movement = IdealEngineSpeed - 2 - Mass / 70 / NumEngines + NumManeuveringJets + 2*NumOverThrusters
+                // we added any MovementBonus components above
+                // we round up the slightest bit, and we can't go below 2, or above 10
+                Aggregate.Movement = Mathf.Clamp((int)Math.Ceiling((double)((idealSpeed - 2) - Aggregate.Mass / 70 / numEngines + Aggregate.Movement)), 2, 10);
+            }
+            else
+            {
+                Aggregate.Movement = 0;
             }
 
             // this ship design is in use if any fleets use it

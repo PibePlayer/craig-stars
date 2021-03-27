@@ -19,7 +19,7 @@ namespace CraigStars
         None,
         Any,
         Starbase,
-        ArmedShip,
+        ArmedShips,
         BombersFreighters,
         UnarmedShips,
         FuelTransports,

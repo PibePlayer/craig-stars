@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using Godot;
+using log4net;
 
 namespace CraigStars
 {
@@ -139,7 +141,35 @@ namespace CraigStars
     /// </summary>
     public class BattleEngine
     {
+        private static readonly ILog log = LogManager.GetLogger(typeof(BattleEngine));
+
+        // TODO: make this algorithmic
+        readonly Vector2[] PositionsByPlayer = new Vector2[] {
+            new Vector2(1, 4),
+            new Vector2(8, 5),
+            new Vector2(4, 1),
+            new Vector2(5, 8),
+            new Vector2(1, 1),
+            new Vector2(8, 1),
+            new Vector2(8, 8),
+            new Vector2(1, 8),
+        };
+
+        static readonly int[,] MovementByRound = new int[,]
+        {
+            {1, 0, 1, 0},
+            {1, 1, 0, 1},
+            {1, 1, 1, 1},
+            {2, 1, 1, 1},
+            {2, 1, 2, 1},
+            {2, 2, 1, 2},
+            {2, 2, 2, 2},
+            {3, 2, 2, 2},
+            {3, 2, 3, 2},
+        };
+
         public Rules Rules { get; set; } = new Rules();
+
         /// <summary>
         /// For a list of fleets that contains more than one player, build a battle recording
         /// with all the battle tokens. We'll use this to determine if 
@@ -214,6 +244,10 @@ namespace CraigStars
             battle.Tokens.ForEach(token =>
             {
                 token.Target = GetTarget(token, battle.Tokens);
+                if (token.Target != null)
+                {
+                    token.Target.TargetedBy.Add(token);
+                }
                 battle.HasTargets = token.Target != null ? true : battle.HasTargets;
             });
 
@@ -226,20 +260,20 @@ namespace CraigStars
         public void RunBattle(Battle battle)
         {
             PlaceTokensOnBoard(battle);
+            BuildMovementOrder(battle);
             for (int round = 0; round < Rules.BattleRounds; round++)
             {
-                var tokensByMass = battle.Tokens.OrderBy(token => token.Token.Design.Aggregate.Mass * token.Token.Quantity).ToList();
                 FindTargets(battle);
                 if (battle.HasTargets)
                 {
                     // if we still have targets, process the round
-                    for (int phase = 0; phase < Rules.BattleMovementPhases; phase++)
+
+                    // movement is a repeating pattern of 4 movement blocks
+                    // which we figured out in BuildMovement
+                    int roundBlock = round % 4;
+                    foreach (BattleToken token in battle.MoveOrder[roundBlock])
                     {
-                        // sort tokens by mass and move them for each phase
-                        foreach (BattleToken token in tokensByMass)
-                        {
-                            MoveToken(phase, token);
-                        }
+                        MoveToken(token);
                     }
 
                     // iterate over 
@@ -259,9 +293,59 @@ namespace CraigStars
         /// Place tokens on the board in their starting locations
         /// </summary>
         /// <param name="battle"></param>
-        void PlaceTokensOnBoard(Battle battle)
+        internal void PlaceTokensOnBoard(Battle battle)
         {
+            var tokensByPlayer = battle.Tokens.ToLookup(token => token.Player).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray());
+            int playerIndex = 0;
+            foreach (var entry in tokensByPlayer)
+            {
+                foreach (var token in entry.Value)
+                {
+                    token.Position = PositionsByPlayer[playerIndex];
+                }
+                playerIndex++;
+                if (playerIndex >= PositionsByPlayer.Length)
+                {
+                    log.Warn($"Oh noes! We have a battle with more players than we have positions for... {battle.Guid}");
+                    playerIndex = 0;
+                }
+            }
+        }
 
+        /// <summary>
+        /// Build a list of Movers in this battle
+        /// Each ship moves in order of mass with heavier ships moving first.
+        /// Ships that can move 3 times in a round move first, then ships that move 2 times, then 1
+        /// </summary>
+        /// <param name="battle"></param>
+        internal void BuildMovementOrder(Battle battle)
+        {
+            // our tokens are moved by mass
+            var tokensByMass = battle.Tokens.OrderByDescending(token => token.Token.Design.Aggregate.Mass).ToList();
+
+            // each token can move up to 3 times in a round
+            // ships that can move 3 times go first, so we loop through the moveNum backwards
+            // so that our Movers list has ships that move 3 times first
+            for (int moveNum = 2; moveNum >= 0; moveNum--)
+            {
+                // for each block of 4 rounds, add each ship to the movement list if it's supposed to move that round
+                for (int roundBlock = 0; roundBlock < 4; roundBlock++)
+                {
+                    // add each battle token to the movement for this roundBlock
+                    foreach (BattleToken token in tokensByMass)
+                    {
+                        // movement is between 2 and 10, so we offset it to fit in our MovementByRound table
+                        var movement = token.Token.Design.Aggregate.Movement;
+
+                        // see if this token can move on this moveNum (i.e. move 1, 2, or 3)
+                        if (MovementByRound[movement - 2, roundBlock] > moveNum)
+                        {
+                            battle.MoveOrder[roundBlock].Add(token);
+                        }
+
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -274,13 +358,37 @@ namespace CraigStars
         }
 
         /// <summary>
-        /// If a token can move during this phase, move it if it should move
+        /// Move a token towards or away from its target
+        /// TODO: figure out moving away/random
         /// </summary>
-        /// <param name="phase"></param>
         /// <param name="token"></param>
-        internal void MoveToken(int phase, BattleToken token)
+        internal void MoveToken(BattleToken token)
         {
+            switch (token.Fleet.BattleOrders.Tactic)
+            {
+                case BattleTactic.Disengage:
 
+                    break;
+                case BattleTactic.DisengageIfChallenged:
+                case BattleTactic.MinimizeDamageToSelf:
+                case BattleTactic.MaximizeNetDamage:
+                case BattleTactic.MaximizeDamageRatio:
+                case BattleTactic.MaximizeDamage:
+                    if (token.Target != null)
+                    {
+                        var dist = token.Position - token.Target.Position;
+                        if (dist.x >= dist.y)
+                        {
+                            // move on x
+
+                        }
+                        else
+                        {
+                            // move on y
+                        }
+                    }
+                    break;
+            }
         }
 
         /// <summary>
@@ -343,7 +451,7 @@ namespace CraigStars
                     return false;
                 case BattleTargetType.Starbase:
                     return (token.Attributes & BattleTokenAttribute.Starbase) > 0;
-                case BattleTargetType.ArmedShip:
+                case BattleTargetType.ArmedShips:
                     return (token.Attributes & BattleTokenAttribute.Armed) > 0;
                 case BattleTargetType.BombersFreighters:
                     return (token.Attributes & BattleTokenAttribute.Bomber) > 0 || (token.Attributes & BattleTokenAttribute.Freighter) > 0;

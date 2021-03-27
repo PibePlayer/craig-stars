@@ -120,13 +120,6 @@ namespace CraigStars
         public int BattleRounds = 16;
 
         /// <summary>
-        /// The number of possible movements phases per round of battle
-        /// </summary>
-        [DefaultValue(4)]
-        public int BattleMovementPhases = 3;
-
-
-        /// <summary>
         /// Get the Area of the universe
         /// </summary>
         /// <value></value>

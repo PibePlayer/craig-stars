@@ -7,17 +7,17 @@ namespace CraigStars
     /// <summary>
     /// A recording of a single battle
     /// </summary>
-    public class BattleRecord
+    public class BattleRecord<T> where T : BattleRecordToken
     {
         /// <summary>
         /// The tokens for this battle
         /// </summary>
-        public List<BattleToken> Tokens { get; set; } = new List<BattleToken>();
+        public List<T> Tokens { get; set; } = new List<T>();
 
         /// <summary>
         /// The rounds of the battle
         /// </summary>
-        public List<BattleRecordRound> Rounds { get; set; } = new List<BattleRecordRound>();
+        public List<BattleRecordTokenAction> Actions { get; set; } = new List<BattleRecordTokenAction>();
 
     }
 }

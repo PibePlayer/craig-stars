@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
@@ -7,22 +8,26 @@ namespace CraigStars
     /// <summary>
     /// The state of a battle as it progresses
     /// </summary>
-    public class Battle
+    public class Battle : BattleRecord<BattleToken>
     {
-        /// <summary>
-        /// The tokens for this battle
-        /// </summary>
-        public List<BattleToken> Tokens { get; set; } = new List<BattleToken>();
-
-        /// <summary>
-        /// The rounds of the battle
-        /// </summary>
-        public List<BattleRecordRound> Rounds { get; set; } = new List<BattleRecordRound>();
+        public Guid Guid { get; set; } = new Guid();
 
         /// <summary>
         /// True if this battle has any tokens that target each other
         /// </summary>
         public bool HasTargets { get; set; }
+
+        /// <summary>
+        /// Movement is split into 4 round blocks. Each block contains a list of tokens
+        /// that are moved during that round. This list repeats for each 4 rounds of battle
+        /// i.e. it repeats 4 times for 16 rounds
+        /// </summary>
+        public List<BattleToken>[] MoveOrder = new List<BattleToken>[4] {
+            new List<BattleToken>(),
+            new List<BattleToken>(),
+            new List<BattleToken>(),
+            new List<BattleToken>(),
+        };
 
         /// <summary>
         /// A list of all weapon slots in the battle, sorted by initiative

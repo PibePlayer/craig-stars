@@ -120,6 +120,12 @@ namespace CraigStars
         public int BattleRounds = 16;
 
         /// <summary>
+        /// The number of moves required before a token can run away
+        /// </summary>
+        [DefaultValue(7)]
+        public int MovesToRunAway = 7;
+
+        /// <summary>
         /// Get the Area of the universe
         /// </summary>
         /// <value></value>

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Godot;
 using Newtonsoft.Json;
 
 namespace CraigStars
@@ -17,6 +18,8 @@ namespace CraigStars
         /// </summary>
         public bool HasTargets { get; set; }
 
+        public List<BattleWeaponSlot> SortedWeaponSlots { get; private set; } = new List<BattleWeaponSlot>();
+
         /// <summary>
         /// Movement is split into 4 round blocks. Each block contains a list of tokens
         /// that are moved during that round. This list repeats for each 4 rounds of battle
@@ -30,17 +33,59 @@ namespace CraigStars
         };
 
         /// <summary>
-        /// A list of all weapon slots in the battle, sorted by initiative
+        /// Build the SortedWeaponSlots property
         /// </summary>
-        /// <returns></returns>
-        public IEnumerable<BattleWeaponSlot> SortedWeaponSlots
+        public void BuildSortedWeaponSlots()
         {
-            get => Tokens.SelectMany(
+            SortedWeaponSlots = Tokens.SelectMany(
                     token => token.Token.Design.Aggregate.WeaponSlots.Select(
                         slot => new BattleWeaponSlot(token, slot)))
-                    .OrderBy(bws => bws.Slot.HullComponent.Initiative);
+                    .OrderBy(bws => bws.Slot.HullComponent.Initiative).ToList();
         }
 
+        /// <summary>
+        /// Record a move
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        internal void RecordMove(BattleRecordToken token, Vector2 from, Vector2 to)
+        {
+            Actions.Add(new BattleRecordTokenMove(token, from, to));
+        }
+
+        /// <summary>
+        /// Record a token running away
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        internal void RecordRunAway(BattleRecordToken token)
+        {
+            Actions.Add(new BattleRecordTokenRanAway(token));
+        }
+
+        /// <summary>
+        /// Record a token being entired destroyed
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        internal void RecordFire(BattleRecordToken token, Vector2 from, int slot, BattleRecordToken target, int damage, int tokensDestroyed)
+        {
+            Actions.Add(new BattleRecordTokenFire(token, from, slot, target, damage, tokensDestroyed));
+        }
+
+        /// <summary>
+        /// Record a move
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        internal void RecordDestroyed(BattleRecordToken token)
+        {
+            Actions.Add(new BattleRecordTokenDestroyed(token));
+        }
 
     }
 }

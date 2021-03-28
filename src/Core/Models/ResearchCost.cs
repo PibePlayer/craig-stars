@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 
 namespace CraigStars
 {
@@ -7,12 +8,17 @@ namespace CraigStars
     /// </summary>
     public class ResearchCost
     {
-
+        [DefaultValue(ResearchCostLevel.Standard)]
         public ResearchCostLevel Energy { get; set; } = ResearchCostLevel.Standard;
+        [DefaultValue(ResearchCostLevel.Standard)]
         public ResearchCostLevel Weapons { get; set; } = ResearchCostLevel.Standard;
+        [DefaultValue(ResearchCostLevel.Standard)]
         public ResearchCostLevel Propulsion { get; set; } = ResearchCostLevel.Standard;
+        [DefaultValue(ResearchCostLevel.Standard)]
         public ResearchCostLevel Construction { get; set; } = ResearchCostLevel.Standard;
+        [DefaultValue(ResearchCostLevel.Standard)]
         public ResearchCostLevel Electronics { get; set; } = ResearchCostLevel.Standard;
+        [DefaultValue(ResearchCostLevel.Standard)]
         public ResearchCostLevel Biotechnology { get; set; } = ResearchCostLevel.Standard;
 
         public ResearchCost()
@@ -65,6 +71,33 @@ namespace CraigStars
                     default:
                         throw new IndexOutOfRangeException($"Index {field} out of range for {this.GetType().ToString()}");
                 }
+            }
+            set
+            {
+                switch (field)
+                {
+                    case TechField.Biotechnology:
+                        Biotechnology = value;
+                        break;
+                    case TechField.Construction:
+                        Construction = value;
+                        break;
+                    case TechField.Electronics:
+                        Electronics = value;
+                        break;
+                    case TechField.Energy:
+                        Energy = value;
+                        break;
+                    case TechField.Propulsion:
+                        Propulsion = value;
+                        break;
+                    case TechField.Weapons:
+                        Weapons = value;
+                        break;
+                    default:
+                        throw new IndexOutOfRangeException($"Index {field} out of range for {this.GetType().ToString()}");
+                }
+
             }
         }
     }

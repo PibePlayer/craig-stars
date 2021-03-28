@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
@@ -48,9 +49,39 @@ namespace CraigStars
         internal bool Damaged;
 
         /// <summary>
+        /// Has this token successfully run away? 
+        /// </summary>
+        internal bool RanAway;
+
+        /// <summary>
         /// A token can disengage after moving 7 times
         /// </summary>
         internal int MovesMade;
+
+        /// <summary>
+        /// The remaining shields for this stack, computed at the beginning of battle
+        /// </summary>
+        internal int Shields;
+
+        /// <summary>
+        /// Return this token's distance from another position on the board.
+        /// </summary>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        internal int GetDistanceAway(Vector2 position)
+        {
+            return (int)Math.Max(Math.Abs(Position.x - position.x), Math.Abs(Position.y - position.y));
+        }
+
+        /// <summary>
+        /// Get the distance we are from this weapon
+        /// </summary>
+        /// <param name="weaponSlot"></param>
+        /// <returns></returns>
+        internal int GetDistanceAway(BattleWeaponSlot weaponSlot)
+        {
+            return GetDistanceAway(weaponSlot.Token.Position);
+        }
 
     }
 }

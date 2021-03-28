@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel;
 using Godot;
 
 namespace CraigStars
@@ -8,6 +9,14 @@ namespace CraigStars
     /// </summary>
     public abstract class BattleRecordTokenAction
     {
+        public BattleRecordTokenAction() { }
+
+        public BattleRecordTokenAction(BattleRecordToken token, Vector2 from)
+        {
+            Token = token;
+            From = from;
+        }
+
         /// <summary>
         /// The token taking the action
         /// </summary>

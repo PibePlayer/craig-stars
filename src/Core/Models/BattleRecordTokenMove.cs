@@ -8,6 +8,11 @@ namespace CraigStars
     /// </summary>
     public class BattleRecordTokenMove : BattleRecordTokenAction
     {
+        public BattleRecordTokenMove(BattleRecordToken token, Vector2 from, Vector2 to) : base(token, from)
+        {
+            To = to;
+        }
+
         /// <summary>
         /// The ending location of the token
         /// </summary>

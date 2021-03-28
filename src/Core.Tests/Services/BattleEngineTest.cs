@@ -159,6 +159,87 @@ namespace CraigStars.Tests
             Assert.AreEqual(token2, round2Tokens[0]);
         }
 
+        [Test]
+        public void TestRunAway()
+        {
+            // create a new battle from two test fleets
+            var battle = battleEngine.BuildBattle(GetFleetsForBattle());
+            var attacker = battle.Tokens[0];
+            var defender = battle.Tokens[1];
+
+            battle.BuildSortedWeaponSlots();
+
+            var weapon = battle.SortedWeaponSlots[0];
+
+            attacker.Position = new Vector2(0, 0);
+            defender.Position = attacker.Position + Vector2.Right * weapon.Range;
+
+            battleEngine.RunAway(battle, defender);
+
+            // we should move one space to the right to get away
+            Assert.AreEqual(attacker.Position + (Vector2.Right * weapon.Range) + Vector2.Right, defender.Position);
+
+            // make sure we recorded this move
+            Assert.AreEqual(1, battle.Actions.Count);
+            Assert.AreEqual(typeof(BattleRecordTokenMove), battle.Actions[0].GetType());
+            Assert.AreEqual(defender, battle.Actions[0].Token);
+        }
+
+        [Test]
+        public void TestMaximizeDamage()
+        {
+            // create a new battle from two test fleets
+            var battle = battleEngine.BuildBattle(GetFleetsForBattle());
+            var attacker = battle.Tokens[0];
+            var defender = battle.Tokens[1];
+
+            battleEngine.FindTargets(battle);
+            battle.BuildSortedWeaponSlots();
+
+            var weapon = battle.SortedWeaponSlots[0];
+
+            // put our defender one position out of range
+            attacker.Position = new Vector2(0, 0);
+            defender.Position = attacker.Position + Vector2.Right * (weapon.Range + 1);
+
+            battleEngine.MaximizeDamage(battle, attacker);
+
+            // our attacker should move towards the defender, and also move down, because it zigzags
+            Assert.AreEqual(new Vector2(1, 1), attacker.Position);
+
+            // make sure we recorded this move
+            Assert.AreEqual(1, battle.Actions.Count);
+            Assert.AreEqual(typeof(BattleRecordTokenMove), battle.Actions[0].GetType());
+            Assert.AreEqual(attacker, battle.Actions[0].Token);
+        }
+
+        [Test]
+        public void TestFireWeaponSlot()
+        {
+            // create a new battle from two test fleets
+            var battle = battleEngine.BuildBattle(GetFleetsForBattle());
+            var attacker = battle.Tokens[0];
+            var defender = battle.Tokens[1];
+
+            battleEngine.FindTargets(battle);
+            battle.BuildSortedWeaponSlots();
+
+            var weapon = battle.SortedWeaponSlots[0];
+
+            // put our defender one position out of range
+            attacker.Position = new Vector2(0, 0);
+            defender.Position = new Vector2(0, 0);
+
+            // this weapon slot should destroy the token
+            battleEngine.FireWeaponSlot(battle, weapon);
+
+            // make sure we recorded this move
+            Assert.AreEqual(2, battle.Actions.Count);
+            Assert.AreEqual(typeof(BattleRecordTokenFire), battle.Actions[0].GetType());
+            Assert.AreEqual(attacker, battle.Actions[0].Token);
+            Assert.AreEqual(typeof(BattleRecordTokenDestroyed), battle.Actions[1].GetType());
+            Assert.AreEqual(defender, battle.Actions[1].Token);
+        }
     }
 
 }

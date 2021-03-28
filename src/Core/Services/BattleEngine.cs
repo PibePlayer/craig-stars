@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
@@ -188,6 +189,7 @@ namespace CraigStars
                         Player = fleet.Player,
                         Fleet = fleet,
                         Token = token,
+                        Shields = token.Quantity * token.Design.Aggregate.Shield,
                         Attributes = GetTokenAttributes(token)
                     })
                 )
@@ -243,6 +245,12 @@ namespace CraigStars
             battle.HasTargets = false;
             battle.Tokens.ForEach(token =>
             {
+                // ignore tokens that are no longer part of the battle
+                if (token.Destroyed || token.RanAway)
+                {
+                    return;
+                }
+
                 token.Target = GetTarget(token, battle.Tokens);
                 if (token.Target != null)
                 {
@@ -263,6 +271,11 @@ namespace CraigStars
             BuildMovementOrder(battle);
             for (int round = 0; round < Rules.BattleRounds; round++)
             {
+                // each round we build the SortedWeaponSlots list
+                // anew to account for ships that were destroyed
+                battle.BuildSortedWeaponSlots();
+
+                // find new targets
                 FindTargets(battle);
                 if (battle.HasTargets)
                 {
@@ -273,7 +286,7 @@ namespace CraigStars
                     int roundBlock = round % 4;
                     foreach (BattleToken token in battle.MoveOrder[roundBlock])
                     {
-                        MoveToken(token);
+                        MoveToken(battle, token);
                     }
 
                     // iterate over 
@@ -281,7 +294,7 @@ namespace CraigStars
                     {
                         if (weaponSlot.IsInRange())
                         {
-                            FireWeaponSlot(weaponSlot);
+                            FireWeaponSlot(battle, weaponSlot);
                         }
                     }
 
@@ -352,8 +365,70 @@ namespace CraigStars
         /// Fire the weapon slot towards its target
         /// </summary>
         /// <param name="weaponSlot"></param>
-        internal void FireWeaponSlot(BattleWeaponSlot weaponSlot)
+        internal void FireWeaponSlot(Battle battle, BattleWeaponSlot weaponSlot)
         {
+            var target = weaponSlot.Token.Target;
+            ShipToken attackerShipToken = weaponSlot.Token.Token;
+            ShipToken targetShipToken = target.Token;
+
+            // shields are shared among all tokens
+            var shields = target.Shields;
+            var armor = targetShipToken.Design.Aggregate.Armor;
+
+            // damage is power * number of weapons * number of attackers.
+            var damage = weaponSlot.Slot.HullComponent.Power * weaponSlot.Slot.Quantity * attackerShipToken.Quantity;
+
+            if (damage > shields)
+            {
+                // wipe out the shields
+                var remaningDamage = damage - shields;
+                weaponSlot.Token.Target.Shields = 0;
+
+                // figure out how damaged the fleet currently is
+                var existingDamage = targetShipToken.Damage * targetShipToken.QuantityDamaged;
+                remaningDamage += existingDamage;
+
+                // figure out how many tokens were destroyed
+                var numDestroyed = armor / remaningDamage;
+                if (numDestroyed >= targetShipToken.Quantity)
+                {
+                    // token completely destroyed
+                    // TODO: if this is a beam weapon, apply remaining damage equally to any other
+                    // tokens at this location
+                    remaningDamage -= armor * numDestroyed;
+
+                    // record that we destroyed this token
+                    target.Destroyed = true;
+                    battle.RecordFire(weaponSlot.Token, weaponSlot.Token.Position, weaponSlot.Slot.HullSlotIndex, target, damage, numDestroyed);
+                    battle.RecordDestroyed(target);
+                }
+                else
+                {
+                    if (numDestroyed > 0)
+                    {
+                        targetShipToken.Quantity -= (int)numDestroyed;
+                    }
+
+                    // reduce our remaining damage by however many we destroyed
+                    remaningDamage -= armor * numDestroyed;
+
+                    if (remaningDamage > 0)
+                    {
+                        // all remaining damage is applied equally to all ships
+                        targetShipToken.Damage = remaningDamage;
+                        targetShipToken.QuantityDamaged = targetShipToken.Quantity;
+                    }
+                    battle.RecordFire(weaponSlot.Token, weaponSlot.Token.Position, weaponSlot.Slot.HullSlotIndex, target, damage, numDestroyed);
+                }
+
+            }
+            else
+            {
+                // no ships were destroyed, deplete shields
+                weaponSlot.Token.Target.Shields -= damage;
+            }
+
+            target.Damaged = true;
 
         }
 
@@ -362,32 +437,141 @@ namespace CraigStars
         /// TODO: figure out moving away/random
         /// </summary>
         /// <param name="token"></param>
-        internal void MoveToken(BattleToken token)
+        internal void MoveToken(Battle battle, BattleToken token)
         {
+            // count this token's moves
+            token.MovesMade++;
             switch (token.Fleet.BattleOrders.Tactic)
             {
                 case BattleTactic.Disengage:
-
+                    RunAway(battle, token);
+                    if (token.MovesMade >= Rules.MovesToRunAway)
+                    {
+                        token.RanAway = true;
+                        battle.RecordRunAway(token);
+                    }
                     break;
                 case BattleTactic.DisengageIfChallenged:
+                    if (token.Damaged)
+                    {
+                        RunAway(battle, token);
+                    }
+                    else
+                    {
+                        MaximizeDamage(battle, token);
+                    }
+                    break;
                 case BattleTactic.MinimizeDamageToSelf:
                 case BattleTactic.MaximizeNetDamage:
                 case BattleTactic.MaximizeDamageRatio:
                 case BattleTactic.MaximizeDamage:
-                    if (token.Target != null)
-                    {
-                        var dist = token.Position - token.Target.Position;
-                        if (dist.x >= dist.y)
-                        {
-                            // move on x
+                    MaximizeDamage(battle, token);
+                    break;
+            }
+        }
 
-                        }
-                        else
+        /// <summary>
+        /// Locate most attractive primary target (or secondary if no primary targets are left). If any of 
+        /// your weapons are out of range of that token then keep moving to squares that are closer to it until 
+        /// in range with all weapons. If using any beam weapons (as they have range dissipation) then attempt 
+        /// to close to 0 range. If just using missiles or torps and in range then move randomly to a squares 
+        /// still in range.
+        /// </summary>
+        /// <param name="battle"></param>
+        /// <param name="token"></param>
+        internal void MaximizeDamage(Battle battle, BattleToken token)
+        {
+            if (token.Target != null)
+            {
+                Vector2 newPosition = token.Position;
+                if (token.Position.y > token.Target.Position.y)
+                {
+                    newPosition.y--;
+                }
+                else
+                {
+                    newPosition.y++;
+                }
+                if (token.Position.x > token.Target.Position.x)
+                {
+                    newPosition.x--;
+                }
+                else
+                {
+                    newPosition.x++;
+                }
+
+                // create a move record for the viewer and then move the token
+                battle.RecordMove(token, token.Position, newPosition);
+                token.Position = newPosition;
+            }
+        }
+
+        /// <summary>
+        /// Run away from weapons
+        /// TODO: tokens might randomly move into range of a weapon
+        /// TODO: tokens should probably weight their movement to move to a place with less powerful weapons?
+        /// </summary>
+        /// <param name="battle"></param>
+        /// <param name="token"></param>
+        internal void RunAway(Battle battle, BattleToken token)
+        {
+            // if we are in range of a weapon, move away, otherwise move randomly
+            var weaponsInRange = battle.SortedWeaponSlots.Where(weapon => weapon.IsInRange(token)).ToList();
+
+            if (weaponsInRange.Count > 0)
+            {
+                var possiblePositions = new Vector2[] {
+                            new Vector2(token.Position + Vector2.Right),
+                            new Vector2(token.Position + Vector2.Left),
+                            new Vector2(token.Position + Vector2.Down),
+                            new Vector2(token.Position + Vector2.Up),
+                            new Vector2(token.Position + Vector2.Up + Vector2.Right),
+                            new Vector2(token.Position + Vector2.Up + Vector2.Left),
+                            new Vector2(token.Position + Vector2.Down + Vector2.Right),
+                            new Vector2(token.Position + Vector2.Down + Vector2.Left),
+                        };
+
+                // default to move to a random position
+                var newPosition = new Vector2(token.Position.x + Rules.Random.Next(0, 1), token.Position.y + Rules.Random.Next(0, 1));
+
+                // move to a position that is out of range, or to the greatest distance away we can get
+                int maxNumWeaponsInRange = int.MinValue;
+                foreach (var possiblePosition in possiblePositions)
+                {
+                    int numWeaponsInRange = 0;
+                    foreach (var weapon in weaponsInRange)
+                    {
+                        int distanceAway = weapon.Token.GetDistanceAway(possiblePosition);
+                        if (weapon.IsInRange(distanceAway))
                         {
-                            // move on y
+                            numWeaponsInRange++;
+                            if (distanceAway > maxNumWeaponsInRange)
+                            {
+                                maxNumWeaponsInRange = distanceAway;
+                                newPosition = weapon.Token.Position;
+                            }
                         }
                     }
-                    break;
+
+                    // no weapons in range of this position, move there
+                    if (numWeaponsInRange == 0)
+                    {
+                        newPosition = possiblePosition;
+                        break;
+                    }
+                }
+
+                // move to our new position
+                battle.RecordMove(token, token.Position, newPosition);
+                token.Position = newPosition;
+            }
+            else
+            {
+                // move at random
+                var newPosition = new Vector2(token.Position.x + Rules.Random.Next(0, 1), token.Position.y + Rules.Random.Next(0, 1));
+                battle.RecordMove(token, token.Position, newPosition);
+                token.Position = newPosition;
             }
         }
 
@@ -407,7 +591,7 @@ namespace CraigStars
             BattleTargetType secondaryTargetOrder = attacker.Fleet.BattleOrders.SecondaryTarget;
 
             // TODO: We need to account for the fact that if a fleet targets us, we will target them back
-            foreach (var defender in defenders.Where(defender => attacker.Fleet.WillAttack(defender.Player)))
+            foreach (var defender in defenders.Where(defender => !(defender.Destroyed || defender.RanAway) && attacker.Fleet.WillAttack(defender.Player)))
             {
                 // if we would target this defender with our primary target and it's more attactive than our current primaryTarget, pick it
                 if (WillTarget(primaryTargetOrder, defender))

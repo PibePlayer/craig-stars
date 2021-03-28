@@ -41,5 +41,5 @@ A starting JoaT Teamster is 130kT:
 Teamster with just long hump 6
 `6 - 2 - 69 / 70 = 3.02` (should be 4)
 
-add scanner to make mass 74kT
-`6 - 2 - 74 / 70 = 
+add scanner to the above teamster to make mass 74kT
+`6 - 2 - 74 / 70 = 4 - 1.05 = 2.94` (should be 3)

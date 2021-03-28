@@ -32,6 +32,7 @@ namespace CraigStars
         ResearchDialog researchDialog;
         ReportsDialog reportsDialog;
         TechBrowserDialog techBrowserDialog;
+        RaceDesignerDialog raceDesignerDialog;
         ShipDesignerDialog shipDesignerDialog;
         MergeFleetsDialog mergeFleetsDialog;
 
@@ -56,6 +57,7 @@ namespace CraigStars
             researchDialog = GetNode<ResearchDialog>("CanvasLayer/ResearchDialog");
             reportsDialog = GetNode<ReportsDialog>("CanvasLayer/ReportsDialog");
             techBrowserDialog = GetNode<TechBrowserDialog>("CanvasLayer/TechBrowserDialog");
+            raceDesignerDialog = GetNode<RaceDesignerDialog>("CanvasLayer/RaceDesignerDialog");
             shipDesignerDialog = GetNode<ShipDesignerDialog>("CanvasLayer/ShipDesignerDialog");
             mergeFleetsDialog = GetNode<MergeFleetsDialog>("CanvasLayer/MergeFleetsDialog");
             projectName = ProjectSettings.GetSetting("application/config/name").ToString();
@@ -68,6 +70,7 @@ namespace CraigStars
             Signals.ReportsDialogRequestedEvent += OnReportsDialogRequested;
             Signals.ShipDesignerDialogRequestedEvent += OnShipDesignerDialogRequested;
             Signals.TechBrowserDialogRequestedEvent += OnTechBrowserDialogRequested;
+            Signals.RaceDesignerDialogRequestedEvent += OnRaceDesignerDialogRequested;
             Signals.MergeFleetsDialogRequestedEvent += OnMergeFleetsDialogRequested;
 
             // if we are the server (or a single player game)
@@ -119,6 +122,7 @@ namespace CraigStars
             Signals.ReportsDialogRequestedEvent -= OnReportsDialogRequested;
             Signals.ShipDesignerDialogRequestedEvent -= OnShipDesignerDialogRequested;
             Signals.TechBrowserDialogRequestedEvent -= OnTechBrowserDialogRequested;
+            Signals.RaceDesignerDialogRequestedEvent -= OnRaceDesignerDialogRequested;
             Signals.MergeFleetsDialogRequestedEvent -= OnMergeFleetsDialogRequested;
 
 
@@ -179,6 +183,11 @@ namespace CraigStars
         void OnTechBrowserDialogRequested()
         {
             techBrowserDialog.PopupCentered();
+        }
+
+        void OnRaceDesignerDialogRequested()
+        {
+            raceDesignerDialog.PopupCentered();
         }
 
         void OnReportsDialogRequested()

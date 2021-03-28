@@ -58,43 +58,50 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="TechBrowserButton" type="Button" parent="Panel/HBoxContainerRight"]
-margin_right = 42.0
+[node name="TechsBrowserButton" type="Button" parent="Panel/HBoxContainerRight"]
+margin_right = 49.0
 margin_bottom = 40.0
 size_flags_horizontal = 0
-text = "Tech"
+text = "Techs"
+
+[node name="RaceDesignerButton" type="Button" parent="Panel/HBoxContainerRight"]
+margin_left = 53.0
+margin_right = 95.0
+margin_bottom = 40.0
+size_flags_horizontal = 0
+text = "Race"
 
 [node name="ShipDesignerButton" type="Button" parent="Panel/HBoxContainerRight"]
-margin_left = 46.0
-margin_right = 102.0
+margin_left = 99.0
+margin_right = 155.0
 margin_bottom = 40.0
 size_flags_horizontal = 0
 text = "Design"
 
 [node name="ResearchButton" type="Button" parent="Panel/HBoxContainerRight"]
-margin_left = 106.0
-margin_right = 176.0
+margin_left = 159.0
+margin_right = 229.0
 margin_bottom = 40.0
 size_flags_horizontal = 0
 text = "Research"
 
 [node name="BattlePlansButton" type="Button" parent="Panel/HBoxContainerRight"]
-margin_left = 180.0
-margin_right = 268.0
+margin_left = 233.0
+margin_right = 321.0
 margin_bottom = 40.0
 size_flags_horizontal = 0
 disabled = true
 text = "Battle Plans"
 
 [node name="ReportsButton" type="Button" parent="Panel/HBoxContainerRight"]
-margin_left = 272.0
-margin_right = 333.0
+margin_left = 325.0
+margin_right = 386.0
 margin_bottom = 40.0
 size_flags_horizontal = 0
 text = "Reports"
 
 [node name="SubmitTurnButton" type="Button" parent="Panel/HBoxContainerRight"]
-margin_left = 337.0
-margin_right = 394.0
+margin_left = 390.0
+margin_right = 447.0
 margin_bottom = 40.0
 text = "Submit"

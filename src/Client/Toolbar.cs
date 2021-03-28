@@ -9,7 +9,8 @@ namespace CraigStars
         ToolButton normalViewToolButton;
         ToolButton percentViewToolButton;
 
-        Button techBrowserButton;
+        Button techsBrowserButton;
+        Button raceDesignerButton;
         Button shipDesignerButton;
         Button researchButton;
         Button battlePlansButton;
@@ -21,7 +22,8 @@ namespace CraigStars
             normalViewToolButton = (ToolButton)FindNode("NormalViewToolButton");
             percentViewToolButton = (ToolButton)FindNode("PercentViewToolButton");
 
-            techBrowserButton = (Button)FindNode("TechBrowserButton");
+            techsBrowserButton = (Button)FindNode("TechsBrowserButton");
+            raceDesignerButton = (Button)FindNode("RaceDesignerButton");
             shipDesignerButton = (Button)FindNode("ShipDesignerButton");
             researchButton = (Button)FindNode("ResearchButton");
             battlePlansButton = (Button)FindNode("BattlePlansButton");
@@ -31,7 +33,8 @@ namespace CraigStars
             normalViewToolButton.Connect("pressed", this, nameof(OnNormalViewToolButtonPressed));
             percentViewToolButton.Connect("pressed", this, nameof(OnPercentViewToolButtonPressed));
 
-            techBrowserButton.Connect("pressed", this, nameof(OnTechBrowserButtonPressed));
+            techsBrowserButton.Connect("pressed", this, nameof(OnTechBrowserButtonPressed));
+            raceDesignerButton.Connect("pressed", this, nameof(OnRaceDesignerButtonPressed));
             shipDesignerButton.Connect("pressed", this, nameof(OnShipDesignerButtonPressed));
             researchButton.Connect("pressed", this, nameof(OnResearchButtonPressed));
             battlePlansButton.Connect("pressed", this, nameof(OnBattlePlansButtonPressed));
@@ -73,6 +76,11 @@ namespace CraigStars
         void OnTechBrowserButtonPressed()
         {
             Signals.PublishTechBrowserDialogRequestedEvent();
+        }
+
+        void OnRaceDesignerButtonPressed()
+        {
+            Signals.PublishRaceDesignerDialogRequestedEvent();
         }
 
         void OnShipDesignerButtonPressed()

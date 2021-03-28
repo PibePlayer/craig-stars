@@ -21,6 +21,7 @@ config/icon="res://icon.png"
 [autoload]
 
 RulesManager="*res://src/Client/Singletons/RulesManager.cs"
+RacesManager="*res://src/Client/Singletons/RacesManager.cs"
 TechStore="*res://src/Client/Singletons/TechStore.cs"
 PlayersManager="*res://src/Client/Singletons/PlayersManager.cs"
 Rpc="*res://src/Client/Singletons/RPC.cs"
@@ -111,6 +112,11 @@ ship_designer={
 hullcomponent_select={
 "deadzone": 0.5,
 "events": [ Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"button_mask":0,"position":Vector2( 0, 0 ),"global_position":Vector2( 0, 0 ),"factor":1.0,"button_index":1,"pressed":false,"doubleclick":false,"script":null)
+ ]
+}
+race_designer={
+"deadzone": 0.5,
+"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":16777251,"unicode":0,"echo":false,"script":null)
  ]
 }
 

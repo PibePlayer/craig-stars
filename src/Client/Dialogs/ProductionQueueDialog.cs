@@ -23,6 +23,8 @@ namespace CraigStars
 
         Button addButton;
         Button removeButton;
+        Button itemUpButton;
+        Button itemDownButton;
         Button clearButton;
         Button prevButton;
         Button nextButton;
@@ -37,16 +39,18 @@ namespace CraigStars
 
         public override void _Ready()
         {
-            queuedItemsTree = FindNode("QueuedItemsTree") as Tree;
-            availableItemsTree = FindNode("AvailableItemsTree") as Tree;
+            queuedItemsTree = (Tree)FindNode("QueuedItemsTree");
+            availableItemsTree = (Tree)FindNode("AvailableItemsTree");
 
-            addButton = FindNode("AddButton") as Button;
-            removeButton = FindNode("RemoveButton") as Button;
-            clearButton = FindNode("ClearButton") as Button;
-            prevButton = FindNode("PrevButton") as Button;
-            nextButton = FindNode("NextButton") as Button;
-            okButton = FindNode("OKButton") as Button;
-            contributesOnlyLeftoverToResearchCheckbox = FindNode("ContributesOnlyLeftoverToResearchCheckbox") as CheckBox;
+            addButton = (Button)FindNode("AddButton");
+            removeButton = (Button)FindNode("RemoveButton");
+            itemUpButton = (Button)FindNode("ItemUpButton");
+            itemDownButton = (Button)FindNode("ItemDownButton");
+            clearButton = (Button)FindNode("ClearButton");
+            prevButton = (Button)FindNode("PrevButton");
+            nextButton = (Button)FindNode("NextButton");
+            okButton = (Button)FindNode("OKButton");
+            contributesOnlyLeftoverToResearchCheckbox = (CheckBox)FindNode("ContributesOnlyLeftoverToResearchCheckbox");
 
             availableItemCostGrid = FindNode("AvailableItemCostGrid") as CostGrid;
             queuedItemCostGrid = FindNode("QueuedItemCostGrid") as CostGrid;
@@ -61,6 +65,8 @@ namespace CraigStars
             addButton.Connect("pressed", this, nameof(OnAddItem));
             clearButton.Connect("pressed", this, nameof(OnClear));
             removeButton.Connect("pressed", this, nameof(OnRemoveItem));
+            itemUpButton.Connect("pressed", this, nameof(OnItemUp));
+            itemDownButton.Connect("pressed", this, nameof(OnItemDown));
             okButton.Connect("pressed", this, nameof(OnOk));
 
             Connect("about_to_show", this, nameof(OnAboutToShow));
@@ -104,10 +110,14 @@ namespace CraigStars
             AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoDefense));
             AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoAlchemy));
 
-            Planet.ProductionQueue?.Items.ForEach(item =>
+            if (Planet.ProductionQueue != null)
             {
-                AddQueuedItem(item);
-            });
+                AddTopOfQueueItem();
+                Planet.ProductionQueue.Items.ForEach(item =>
+                {
+                    AddQueuedItem(item);
+                });
+            }
 
             contributesOnlyLeftoverToResearchCheckbox.Pressed = Planet.ContributesOnlyLeftoverToResearch;
 
@@ -138,6 +148,12 @@ namespace CraigStars
                 treeItem.SetTextAlign(1, TreeItem.TextAlign.Right);
             }
             treeItem.Select(0);
+        }
+
+        void AddTopOfQueueItem()
+        {
+            var treeItem = queuedItemsTree.CreateItem(queuedItemsTreeRoot);
+            treeItem.SetText(0, Planet.ProductionQueue.Items.Count == 0 ? "-- Queue is Empty --" : "-- Top of the Queue --");
         }
 
         /// <summary>
@@ -286,6 +302,15 @@ namespace CraigStars
             }
         }
 
+        void OnItemUp()
+        {
+        }
+
+        void OnItemDown()
+        {
+
+        }
+
         void OnAvailableItemSelected()
         {
             var item = GetSelectedAvailableItem();
@@ -304,7 +329,7 @@ namespace CraigStars
         ProductionQueueItem? GetSelectedQueueItem()
         {
             var selectedItem = queuedItemsTree.GetSelected();
-            if (selectedItem != null)
+            if (selectedItem != null && selectedItem.GetMetadata(0) != null)
             {
                 return Serializers.Deserialize<ProductionQueueItem>(selectedItem.GetMetadata(0).ToString(), PlayersManager.Instance.Players, TechStore.Instance);
             }

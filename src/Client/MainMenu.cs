@@ -16,7 +16,7 @@ namespace CraigStars
         Control continueGameInfo;
         Button continueGameButton;
         Label continueGameNameLabel;
-        Label continueGameYearLabel;
+        SpinBox continueGameYearSpinBox;
 
         private bool joining = false;
 
@@ -31,7 +31,7 @@ namespace CraigStars
             continueGameInfo = (Control)FindNode("ContinueGameInfo");
             continueGameButton = (Button)FindNode("ContinueGameButton");
             continueGameNameLabel = (Label)FindNode("ContinueGameNameLabel");
-            continueGameYearLabel = (Label)FindNode("ContinueGameYearLabel");
+            continueGameYearSpinBox = (SpinBox)FindNode("ContinueGameYearSpinBox");
 
             hostPortEdit.Text = Settings.Instance.ServerPort.ToString();
             joinHostEdit.Text = Settings.Instance.ClientHost;
@@ -41,7 +41,8 @@ namespace CraigStars
             {
                 continueGameButton.Visible = continueGameInfo.Visible = true;
                 continueGameNameLabel.Text = Settings.Instance.ContinueGame;
-                continueGameYearLabel.Text = $"{Settings.Instance.ContinueYear}";
+                continueGameYearSpinBox.Value = Settings.Instance.ContinueYear;
+                continueGameYearSpinBox.MaxValue = Settings.Instance.ContinueYear;
 
                 continueGameButton.Connect("pressed", this, nameof(OnContinueGameButtonPressed));
             }
@@ -51,6 +52,7 @@ namespace CraigStars
             FindNode("NewGameButton").Connect("pressed", this, nameof(OnNewGameButtonPressed));
             FindNode("HostGameButton").Connect("pressed", this, nameof(OnHostGameButtonPressed));
             FindNode("JoinGameButton").Connect("pressed", this, nameof(OnJoinGameButtonPressed));
+            FindNode("CustomRacesButton").Connect("pressed", this, nameof(OnCustomRacesButtonPressed));
 
             joinWindow.Connect("popup_hide", this, nameof(OnJoinWindoPopupHide));
             joinWindow.FindNode("CancelButton").Connect("pressed", this, nameof(OnJoinWindowCancelButtonPressed));
@@ -104,12 +106,18 @@ namespace CraigStars
         {
             // like a new game, but we continue
             Settings.Instance.ShouldContinueGame = true;
+            Settings.Instance.ContinueYear = (int)continueGameYearSpinBox.Value;
             OnNewGameButtonPressed();
         }
 
         void OnSettingsButtonPressed()
         {
             GetTree().ChangeScene("res://src/Client/MenuScreens/SettingsMenu.tscn");
+        }
+
+        void OnCustomRacesButtonPressed()
+        {
+            GetTree().ChangeScene("res://src/Client/MenuScreens/CustomRacesMenu.tscn");
         }
 
         void OnHostGameButtonPressed()

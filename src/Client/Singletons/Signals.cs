@@ -65,6 +65,8 @@ namespace CraigStars.Singletons
         public static event Action<FleetSprite> FleetDeletedEvent;
         public static event Action<Fleet, ICargoHolder> CargoTransferredEvent;
         public static event Action<List<Fleet>> FleetsCreatedEvent;
+
+        public static event Action<Race, string> RaceSavedEvent;
         #endregion
 
         #region Network Events
@@ -170,6 +172,8 @@ namespace CraigStars.Singletons
         public static void PublishCargoTransferRequestedEvent(ICargoHolder source, ICargoHolder dest) => CargoTransferRequestedEvent?.Invoke(source, dest);
         public static void PublishMergeFleetsDialogRequestedEvent(FleetSprite sourceFleet) => MergeFleetsDialogRequestedEvent?.Invoke(sourceFleet);
         public static void PublishSubmitTurnEvent(Player player) => SubmitTurnEvent?.Invoke(player);
+        public static void PublishRaceSavedEvent(Race race, string filename) => RaceSavedEvent?.Invoke(race, filename);
+
 
         #endregion
 

@@ -1,8 +1,9 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://src/Client/Dialogs/RaceDesignerDialog.cs" type="Script" id=1]
 [ext_resource path="res://assets/gui/DroidSans.ttf" type="DynamicFontData" id=2]
 [ext_resource path="res://src/Client/RaceDesigner/HabEditor.tscn" type="PackedScene" id=3]
+[ext_resource path="res://src/Client/RaceDesigner/ResearchCostEditor.tscn" type="PackedScene" id=4]
 [ext_resource path="res://src/Client/Dialogs/CSConfirmDialog.cs" type="Script" id=6]
 
 [sub_resource type="DynamicFont" id=1]
@@ -15,11 +16,10 @@ font_data = ExtResource( 2 )
 [sub_resource type="ButtonGroup" id=3]
 
 [node name="RaceDesignerDialog" type="WindowDialog"]
-visible = true
 margin_right = 730.0
 margin_bottom = 458.0
+rect_min_size = Vector2( 730, 458 )
 window_title = "Ship Designer"
-resizable = true
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -86,7 +86,6 @@ margin_bottom = 424.0
 size_flags_vertical = 3
 
 [node name="Name" type="MarginContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
-visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 4.0
@@ -100,7 +99,7 @@ margin_bottom = 336.0
 
 [node name="GridContainer" type="GridContainer" parent="MarginContainer/VBoxContainer/TabContainer/Name/VBoxContainer"]
 margin_right = 702.0
-margin_bottom = 87.0
+margin_bottom = 115.0
 columns = 2
 
 [node name="RaceNameLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Name/VBoxContainer/GridContainer"]
@@ -132,19 +131,35 @@ margin_bottom = 52.0
 size_flags_horizontal = 3
 placeholder_text = "Humanoids"
 
-[node name="SpendLeftoverPointsOnLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Name/VBoxContainer/GridContainer"]
-margin_top = 56.0
+[node name="FilenameLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Name/VBoxContainer/GridContainer"]
+margin_top = 61.0
 margin_right = 120.0
-margin_bottom = 87.0
+margin_bottom = 75.0
+text = "Filename:"
+align = 2
+
+[node name="Filename" type="LineEdit" parent="MarginContainer/VBoxContainer/TabContainer/Name/VBoxContainer/GridContainer"]
+margin_left = 124.0
+margin_top = 56.0
+margin_right = 702.0
+margin_bottom = 80.0
+hint_tooltip = "A unique filename for storing multiple versions of the same race."
+size_flags_horizontal = 3
+placeholder_text = "Humanoid"
+
+[node name="SpendLeftoverPointsOnLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Name/VBoxContainer/GridContainer"]
+margin_top = 84.0
+margin_right = 120.0
+margin_bottom = 115.0
 text = "Spend Leftover
 Points On: "
 align = 2
 
 [node name="SpendLeftoverPointsOn" type="OptionButton" parent="MarginContainer/VBoxContainer/TabContainer/Name/VBoxContainer/GridContainer"]
 margin_left = 124.0
-margin_top = 56.0
+margin_top = 84.0
 margin_right = 702.0
-margin_bottom = 87.0
+margin_bottom = 115.0
 size_flags_horizontal = 3
 
 [node name="Primary Racial Trait" type="MarginContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
@@ -433,6 +448,7 @@ text = "This gives you the Fuel Mizer and Galaxy Scoop engines and increases you
 autowrap = true
 
 [node name="Habitability" type="MarginContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
+visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 4.0
@@ -456,6 +472,45 @@ margin_top = 136.0
 margin_bottom = 200.0
 Type = 2
 
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/TabContainer/Habitability/VBoxContainer"]
+margin_top = 204.0
+margin_right = 702.0
+margin_bottom = 266.0
+custom_constants/margin_right = 100
+custom_constants/margin_top = 20
+custom_constants/margin_left = 100
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Habitability/VBoxContainer/MarginContainer"]
+margin_left = 100.0
+margin_top = 20.0
+margin_right = 602.0
+margin_bottom = 62.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Habitability/VBoxContainer/MarginContainer/VBoxContainer"]
+margin_right = 502.0
+margin_bottom = 24.0
+
+[node name="GrowthRateLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Habitability/VBoxContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+margin_top = 5.0
+margin_right = 245.0
+margin_bottom = 19.0
+text = "Maxium Colonist Growth Rate Per Year"
+
+[node name="GrowthRateSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/TabContainer/Habitability/VBoxContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+margin_left = 249.0
+margin_right = 323.0
+margin_bottom = 24.0
+min_value = 1.0
+max_value = 20.0
+value = 15.0
+suffix = "%"
+
+[node name="GrowthRateDescriptionLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Habitability/VBoxContainer/MarginContainer/VBoxContainer"]
+margin_top = 28.0
+margin_right = 502.0
+margin_bottom = 42.0
+text = "You can expect that 1 in 2 planets will be habitable to your race."
+
 [node name="Production" type="MarginContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
 visible = false
 anchor_right = 1.0
@@ -465,6 +520,224 @@ margin_top = 32.0
 margin_right = -4.0
 margin_bottom = -4.0
 
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Production"]
+margin_right = 702.0
+margin_bottom = 336.0
+
+[node name="ColonistsPerResourceContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Production/VBoxContainer"]
+margin_right = 702.0
+margin_bottom = 24.0
+
+[node name="ColonistsPerResourceLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Production/VBoxContainer/ColonistsPerResourceContainer"]
+margin_top = 5.0
+margin_right = 295.0
+margin_bottom = 19.0
+text = "One resource is generated each year for every"
+
+[node name="ColonistsPerResourceSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/TabContainer/Production/VBoxContainer/ColonistsPerResourceContainer"]
+margin_left = 299.0
+margin_right = 373.0
+margin_bottom = 24.0
+min_value = 700.0
+max_value = 2500.0
+step = 100.0
+value = 1000.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ColonistsPerResourceLabel2" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Production/VBoxContainer/ColonistsPerResourceContainer"]
+margin_left = 377.0
+margin_top = 5.0
+margin_right = 439.0
+margin_bottom = 19.0
+text = "colonists."
+
+[node name="FactoryOutputContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Production/VBoxContainer"]
+margin_top = 28.0
+margin_right = 702.0
+margin_bottom = 52.0
+
+[node name="FactoryOutputLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Production/VBoxContainer/FactoryOutputContainer"]
+margin_top = 5.0
+margin_right = 173.0
+margin_bottom = 19.0
+text = "Every 10 factories produce "
+
+[node name="FactoryOutputSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/TabContainer/Production/VBoxContainer/FactoryOutputContainer"]
+margin_left = 177.0
+margin_right = 251.0
+margin_bottom = 24.0
+min_value = 5.0
+max_value = 15.0
+value = 10.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="FactoryOutputLabel2" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Production/VBoxContainer/FactoryOutputContainer"]
+margin_left = 255.0
+margin_top = 5.0
+margin_right = 387.0
+margin_bottom = 19.0
+text = "resources each year."
+
+[node name="FactoryCostContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Production/VBoxContainer"]
+margin_top = 56.0
+margin_right = 702.0
+margin_bottom = 80.0
+
+[node name="FactoryCostLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Production/VBoxContainer/FactoryCostContainer"]
+margin_top = 5.0
+margin_right = 112.0
+margin_bottom = 19.0
+text = "Factories require "
+
+[node name="FactoryCostSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/TabContainer/Production/VBoxContainer/FactoryCostContainer"]
+margin_left = 116.0
+margin_right = 190.0
+margin_bottom = 24.0
+min_value = 5.0
+max_value = 25.0
+value = 10.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="FactoryCostLabel2" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Production/VBoxContainer/FactoryCostContainer"]
+margin_left = 194.0
+margin_top = 5.0
+margin_right = 318.0
+margin_bottom = 19.0
+text = "resources  to build."
+
+[node name="NumFactoriesContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Production/VBoxContainer"]
+margin_top = 84.0
+margin_right = 702.0
+margin_bottom = 108.0
+
+[node name="NumFactoriesLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Production/VBoxContainer/NumFactoriesContainer"]
+margin_top = 5.0
+margin_right = 269.0
+margin_bottom = 19.0
+text = "Every 10,000 colonists may operate up to "
+
+[node name="NumFactoriesSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/TabContainer/Production/VBoxContainer/NumFactoriesContainer"]
+margin_left = 273.0
+margin_right = 347.0
+margin_bottom = 24.0
+min_value = 5.0
+max_value = 25.0
+value = 10.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="NumFactoriesLabel2" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Production/VBoxContainer/NumFactoriesContainer"]
+margin_left = 351.0
+margin_top = 5.0
+margin_right = 410.0
+margin_bottom = 19.0
+text = "factories."
+
+[node name="FactoriesCostLessContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Production/VBoxContainer"]
+margin_top = 112.0
+margin_right = 702.0
+margin_bottom = 136.0
+
+[node name="FactoriesCostLessCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/TabContainer/Production/VBoxContainer/FactoriesCostLessContainer"]
+margin_right = 322.0
+margin_bottom = 24.0
+text = "Factories cost 1kT less of Germanium to build"
+
+[node name="MineOutputContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Production/VBoxContainer"]
+margin_top = 140.0
+margin_right = 702.0
+margin_bottom = 164.0
+
+[node name="MineOutputLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Production/VBoxContainer/MineOutputContainer"]
+margin_top = 5.0
+margin_right = 195.0
+margin_bottom = 19.0
+text = "Every 10 mines produce up to "
+
+[node name="MineOutputSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/TabContainer/Production/VBoxContainer/MineOutputContainer"]
+margin_left = 199.0
+margin_right = 273.0
+margin_bottom = 24.0
+min_value = 5.0
+max_value = 25.0
+value = 10.0
+suffix = "kT"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MineOutputLabel2" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Production/VBoxContainer/MineOutputContainer"]
+margin_left = 277.0
+margin_top = 5.0
+margin_right = 450.0
+margin_bottom = 19.0
+text = "of each mineral every year."
+
+[node name="MineCostContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Production/VBoxContainer"]
+margin_top = 168.0
+margin_right = 702.0
+margin_bottom = 192.0
+
+[node name="MineCostLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Production/VBoxContainer/MineCostContainer"]
+margin_top = 5.0
+margin_right = 89.0
+margin_bottom = 19.0
+text = "Mines require"
+
+[node name="MineCostSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/TabContainer/Production/VBoxContainer/MineCostContainer"]
+margin_left = 93.0
+margin_right = 167.0
+margin_bottom = 24.0
+min_value = 2.0
+max_value = 15.0
+value = 5.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MineCostLabel2" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Production/VBoxContainer/MineCostContainer"]
+margin_left = 171.0
+margin_top = 5.0
+margin_right = 291.0
+margin_bottom = 19.0
+text = "resources to build."
+
+[node name="NumMinesContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Production/VBoxContainer"]
+margin_top = 196.0
+margin_right = 702.0
+margin_bottom = 220.0
+
+[node name="NumMinesLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Production/VBoxContainer/NumMinesContainer"]
+margin_top = 5.0
+margin_right = 269.0
+margin_bottom = 19.0
+text = "Every 10,000 colonists may operate up to "
+
+[node name="NumMinesSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/TabContainer/Production/VBoxContainer/NumMinesContainer"]
+margin_left = 273.0
+margin_right = 347.0
+margin_bottom = 24.0
+min_value = 5.0
+max_value = 25.0
+value = 10.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="NumMinesLabel2" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Production/VBoxContainer/NumMinesContainer"]
+margin_left = 351.0
+margin_top = 5.0
+margin_right = 391.0
+margin_bottom = 19.0
+text = "mines"
+
 [node name="Research" type="MarginContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
 visible = false
 anchor_right = 1.0
@@ -473,6 +746,68 @@ margin_left = 4.0
 margin_top = 32.0
 margin_right = -4.0
 margin_bottom = -4.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Research"]
+margin_right = 702.0
+margin_bottom = 336.0
+
+[node name="GridContainer" type="GridContainer" parent="MarginContainer/VBoxContainer/TabContainer/Research/VBoxContainer"]
+margin_right = 702.0
+margin_bottom = 250.0
+custom_constants/vseparation = 10
+custom_constants/hseparation = 10
+columns = 3
+
+[node name="EnergyResearchCost" parent="MarginContainer/VBoxContainer/TabContainer/Research/VBoxContainer/GridContainer" instance=ExtResource( 4 )]
+margin_right = 227.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="WeaponsResearchCost" parent="MarginContainer/VBoxContainer/TabContainer/Research/VBoxContainer/GridContainer" instance=ExtResource( 4 )]
+margin_left = 237.0
+margin_right = 464.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+Field = 1
+
+[node name="PropulsionResearchCost" parent="MarginContainer/VBoxContainer/TabContainer/Research/VBoxContainer/GridContainer" instance=ExtResource( 4 )]
+margin_left = 474.0
+margin_right = 701.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+Field = 2
+
+[node name="ConstructionResearchCost" parent="MarginContainer/VBoxContainer/TabContainer/Research/VBoxContainer/GridContainer" instance=ExtResource( 4 )]
+margin_top = 130.0
+margin_right = 227.0
+margin_bottom = 250.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+Field = 3
+
+[node name="ElectronicsResearchCost" parent="MarginContainer/VBoxContainer/TabContainer/Research/VBoxContainer/GridContainer" instance=ExtResource( 4 )]
+margin_left = 237.0
+margin_top = 130.0
+margin_right = 464.0
+margin_bottom = 250.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+Field = 4
+
+[node name="BiotechnologyResearchCost" parent="MarginContainer/VBoxContainer/TabContainer/Research/VBoxContainer/GridContainer" instance=ExtResource( 4 )]
+margin_left = 474.0
+margin_top = 130.0
+margin_right = 701.0
+margin_bottom = 250.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+Field = 5
+
+[node name="TechsStartHighCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/TabContainer/Research/VBoxContainer"]
+margin_top = 254.0
+margin_right = 702.0
+margin_bottom = 278.0
+text = "All 'Costs 75% extra' research fields start at Tech 4"
 
 [node name="HBoxContainerButtons" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 margin_top = 428.0

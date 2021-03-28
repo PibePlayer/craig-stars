@@ -90,7 +90,22 @@ namespace CraigStars
             leftButton.Connect("pressed", this, nameof(OnLeftButtonPressed));
             rightButton.Connect("pressed", this, nameof(OnRightButtonPressed));
 
+            hab.BarChangedEvent += OnBarChanged;
+
             UpdateControls();
+        }
+
+        public override void _ExitTree()
+        {
+            hab.BarChangedEvent -= OnBarChanged;
+        }
+
+        void OnBarChanged(int low, int high)
+        {
+            Low = low;
+            High = high;
+            UpdateControls();
+            PublishHabChangedEvent();
         }
 
         void OnImmuneCheckBoxPressed()

@@ -71,26 +71,17 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="MusicContainer" type="HBoxContainer" parent="VBoxContainer/CenterContainer/Panel/HBoxContainer/MenuButtons"]
-margin_top = 218.0
+[node name="Label" type="Label" parent="VBoxContainer/CenterContainer/Panel/HBoxContainer/MenuButtons"]
+margin_top = 231.0
 margin_right = 400.0
-margin_bottom = 258.0
-alignment = 2
-
-[node name="Label" type="Label" parent="VBoxContainer/CenterContainer/Panel/HBoxContainer/MenuButtons/MusicContainer"]
-margin_left = 282.0
-margin_top = 13.0
-margin_right = 320.0
-margin_bottom = 27.0
-text = "Music"
-
-[node name="MusicCheckButton" type="CheckButton" parent="VBoxContainer/CenterContainer/Panel/HBoxContainer/MenuButtons/MusicContainer"]
-margin_left = 324.0
-margin_right = 400.0
-margin_bottom = 40.0
+margin_bottom = 245.0
+text = "Some games have more settings than others."
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="BackButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/HBoxContainer/MenuButtons"]
-margin_top = 262.0
+margin_top = 249.0
 margin_right = 400.0
-margin_bottom = 282.0
+margin_bottom = 269.0
 text = "Back"

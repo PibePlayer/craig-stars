@@ -333,7 +333,9 @@ namespace CraigStars
         internal void BuildMovementOrder(Battle battle)
         {
             // our tokens are moved by mass
-            var tokensByMass = battle.Tokens.OrderByDescending(token => token.Token.Design.Aggregate.Mass).ToList();
+            var tokensByMass = battle.Tokens
+                .Where(token => !(token.Fleet is Starbase))
+                .OrderByDescending(token => token.Token.Design.Aggregate.Mass).ToList();
 
             // each token can move up to 3 times in a round
             // ships that can move 3 times go first, so we loop through the moveNum backwards

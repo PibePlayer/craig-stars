@@ -132,7 +132,7 @@ namespace CraigStars
 
             PlayersManager.Instance.Reset();
             Network.Instance.Reset();
-            GetTree().ChangeScene("res://src/Client/Main.tscn");
+            GetTree().ChangeScene("res://src/Client/MainMenu.tscn");
         }
 
         void OnReadyButtonPressed()

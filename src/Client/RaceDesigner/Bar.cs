@@ -10,6 +10,9 @@ namespace CraigStars
     [Tool]
     public class Bar : ColorRect
     {
+        public delegate void BarChanged(int low, int high);
+        public event BarChanged BarChangedEvent;
+
         public Color BarColor { get; set; } = Colors.White;
         public int Low { get; set; } = 15;
         public int High { get; set; } = 85;
@@ -31,19 +34,32 @@ namespace CraigStars
             if (dragging)
             {
                 var mousePosition = GetLocalMousePosition();
-                var xoff = mousePosition.x - positionOnDrag.x;
 
-                // scale this number from 0 to 100
-                int xoffScaled = (int)(xoff);
-                if (xoffScaled >= 1 || xoffScaled <= -1
-                && Low + xoffScaled >= 0 && Low + xoffScaled < High
-                && High + xoffScaled <= 100 && High + xoffScaled > Low)
+                // move the color rect, but make sure it is constrained in the 
+                // outer box. The x coord can be between 0 and as far to the 
+                // right as the bar can go. If the total width is 100, the bar is 80 wide
+                // then we can go between 0 and 20
+                var x = Mathf.Clamp(colorRect.RectPosition.x + mousePosition.x - positionOnDrag.x, 0, RectSize.x - colorRect.RectSize.x);
+
+
+                // reverse the calculations for our Low/High
+                // colorRect.RectPosition.x = Low / 100f * RectSize.x
+                // so Low = colorRect.RectPosition.x * 100f / RectSize.x;
+                // colorRect.RectSize.x = RectSize.x * (High - Low) / 100f
+                // High = (colorRect.RectSize.x * 100f) / RectSize.x + Low
+                // yay Algebra!
+                var width = High - Low;
+                var newLow = (int)(x * 100f / RectSize.x);
+                if (newLow != Low)
                 {
-                    Low = Mathf.Clamp(Low + xoffScaled, 0, 100);
-                    High = Mathf.Clamp(High + xoffScaled, 0, 100);
+                    Low = newLow;
+                    High = Low + width;
+                    BarChangedEvent?.Invoke(Low, High);
+
                     positionOnDrag = mousePosition;
+
+                    Update();
                 }
-                Update();
             }
         }
 

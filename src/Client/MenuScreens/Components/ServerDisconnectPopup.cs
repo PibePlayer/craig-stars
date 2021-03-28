@@ -38,7 +38,7 @@ namespace CraigStars
 
         void OnServerDisconnectedDialogConfirmed()
         {
-            GetTree().ChangeScene("res://src/Client/Main.tscn");
+            GetTree().ChangeScene("res://src/Client/MainMenu.tscn");
         }
     }
 }

@@ -14,16 +14,30 @@ namespace CraigStars
         /// <value></value>
         public Race Race { get; set; } = Races.Humanoid;
 
+        public String RaceFilename { get; set; }
+
+        /// <summary>
+        /// True if this race designer is editable or just readonly
+        /// </summary>
+        [Export]
+        public bool Editable { get; set; } = true;
+
+        // if this is true, UI change events shouldn't update the race because we are loading it
+        bool loadingRace;
+
         /// <summary>
         /// The race that represents what is currently in the editor
         /// </summary>
         Race updatedRace;
         RacePointsCalculator racePointsCalculator = new RacePointsCalculator();
 
+        TabContainer tabContainer;
         Button okButton;
+        CSConfirmDialog confirmationDialog;
 
         Label advantagePoints;
 
+        LineEdit filename;
         LineEdit raceName;
         LineEdit racePluralName;
         OptionButton spendLeftoverPointsOn;
@@ -60,11 +74,34 @@ namespace CraigStars
         HabEditor gravHabEditor;
         HabEditor tempHabEditor;
         HabEditor radHabEditor;
+        SpinBox growthRate;
+        Label growthRateDescription;
+
+        SpinBox colonistsPerResourceSpinBox;
+        SpinBox factoryOutputSpinBox;
+        SpinBox factoryCostSpinBox;
+        SpinBox numFactoriesSpinBox;
+        CheckBox factoriesCostLessCheckBox;
+        SpinBox mineOutputSpinBox;
+        SpinBox mineCostSpinBox;
+        SpinBox numMinesSpinBox;
+
+        ResearchCostEditor energyResearchCost;
+        ResearchCostEditor weaponsResearchCost;
+        ResearchCostEditor propulsionResearchCost;
+        ResearchCostEditor constructionResearchCost;
+        ResearchCostEditor electronicsResearchCost;
+        ResearchCostEditor biotechnologyResearchCost;
+        CheckBox techsStartHighCheckBox;
+
 
         public override void _Ready()
         {
             advantagePoints = (Label)FindNode("AdvantagePoints");
 
+            tabContainer = (TabContainer)FindNode("TabContainer");
+
+            filename = (LineEdit)FindNode("Filename");
             raceName = (LineEdit)FindNode("RaceName");
             racePluralName = (LineEdit)FindNode("RacePluralName");
             spendLeftoverPointsOn = (OptionButton)FindNode("SpendLeftoverPointsOn");
@@ -104,11 +141,35 @@ namespace CraigStars
             gravHabEditor = (HabEditor)FindNode("GravHabEditor");
             tempHabEditor = (HabEditor)FindNode("TempHabEditor");
             radHabEditor = (HabEditor)FindNode("RadHabEditor");
+            growthRate = (SpinBox)FindNode("GrowthRateSpinBox");
+            growthRateDescription = (Label)FindNode("GrowthRateDescription");
+
+            // production
+            colonistsPerResourceSpinBox = (SpinBox)FindNode("ColonistsPerResourceSpinBox");
+            factoryOutputSpinBox = (SpinBox)FindNode("FactoryOutputSpinBox");
+            factoryCostSpinBox = (SpinBox)FindNode("FactoryCostSpinBox");
+            numFactoriesSpinBox = (SpinBox)FindNode("NumFactoriesSpinBox");
+            factoriesCostLessCheckBox = (CheckBox)FindNode("FactoriesCostLessCheckBox");
+            mineOutputSpinBox = (SpinBox)FindNode("MineOutputSpinBox");
+            mineCostSpinBox = (SpinBox)FindNode("MineCostSpinBox");
+            numMinesSpinBox = (SpinBox)FindNode("NumMinesSpinBox");
+
+            // research
+            energyResearchCost = (ResearchCostEditor)FindNode("EnergyResearchCost");
+            weaponsResearchCost = (ResearchCostEditor)FindNode("WeaponsResearchCost");
+            propulsionResearchCost = (ResearchCostEditor)FindNode("PropulsionResearchCost");
+            constructionResearchCost = (ResearchCostEditor)FindNode("ConstructionResearchCost");
+            electronicsResearchCost = (ResearchCostEditor)FindNode("ElectronicsResearchCost");
+            biotechnologyResearchCost = (ResearchCostEditor)FindNode("BiotechnologyResearchCost");
+            techsStartHighCheckBox = (CheckBox)FindNode("TechsStartHighCheckBox");
 
             okButton = (Button)FindNode("OKButton");
+            confirmationDialog = GetNode<CSConfirmDialog>("ConfirmationDialog");
 
             Connect("visibility_changed", this, nameof(OnVisibilityChanged));
             okButton.Connect("pressed", this, nameof(OnOk));
+
+            raceName.Connect("text_changed", this, nameof(OnRaceNameTextChanged));
 
             heCheckBox.Connect("pressed", this, nameof(OnPRTCheckBoxPressed), new Godot.Collections.Array() { PRT.HE });
             ssCheckBox.Connect("pressed", this, nameof(OnPRTCheckBoxPressed), new Godot.Collections.Array() { PRT.SS });
@@ -139,7 +200,27 @@ namespace CraigStars
             gravHabEditor.HabChangedEvent += OnHabChanged;
             tempHabEditor.HabChangedEvent += OnHabChanged;
             radHabEditor.HabChangedEvent += OnHabChanged;
-            Show();
+            growthRate.Connect("value_changed", this, nameof(OnGrowthRateChanged));
+
+            colonistsPerResourceSpinBox.Connect("value_changed", this, nameof(OnProductionValueChanged));
+            factoryOutputSpinBox.Connect("value_changed", this, nameof(OnProductionValueChanged));
+            factoryCostSpinBox.Connect("value_changed", this, nameof(OnProductionValueChanged));
+            numFactoriesSpinBox.Connect("value_changed", this, nameof(OnProductionValueChanged));
+            factoriesCostLessCheckBox.Connect("toggled", this, nameof(OnFactoriesCostLessToggled));
+            mineOutputSpinBox.Connect("value_changed", this, nameof(OnProductionValueChanged));
+            mineCostSpinBox.Connect("value_changed", this, nameof(OnProductionValueChanged));
+            numMinesSpinBox.Connect("value_changed", this, nameof(OnProductionValueChanged));
+
+            energyResearchCost.ResearchCostLevelChangedEvent += OnResearchCostChanged;
+            weaponsResearchCost.ResearchCostLevelChangedEvent += OnResearchCostChanged;
+            propulsionResearchCost.ResearchCostLevelChangedEvent += OnResearchCostChanged;
+            constructionResearchCost.ResearchCostLevelChangedEvent += OnResearchCostChanged;
+            electronicsResearchCost.ResearchCostLevelChangedEvent += OnResearchCostChanged;
+            biotechnologyResearchCost.ResearchCostLevelChangedEvent += OnResearchCostChanged;
+            techsStartHighCheckBox.Connect("toggled", this, nameof(OnTechsStartHighCheckBoxToggled));
+
+            SetAsMinsize();
+            // Show();
         }
 
         public override void _ExitTree()
@@ -147,6 +228,14 @@ namespace CraigStars
             gravHabEditor.HabChangedEvent -= OnHabChanged;
             tempHabEditor.HabChangedEvent -= OnHabChanged;
             radHabEditor.HabChangedEvent -= OnHabChanged;
+
+            energyResearchCost.ResearchCostLevelChangedEvent -= OnResearchCostChanged;
+            weaponsResearchCost.ResearchCostLevelChangedEvent -= OnResearchCostChanged;
+            propulsionResearchCost.ResearchCostLevelChangedEvent -= OnResearchCostChanged;
+            constructionResearchCost.ResearchCostLevelChangedEvent -= OnResearchCostChanged;
+            electronicsResearchCost.ResearchCostLevelChangedEvent -= OnResearchCostChanged;
+            biotechnologyResearchCost.ResearchCostLevelChangedEvent -= OnResearchCostChanged;
+
         }
 
         void OnHabChanged(HabType type, int low, int high, bool immune)
@@ -182,9 +271,17 @@ namespace CraigStars
         {
             if (Visible)
             {
+                loadingRace = true;
+                tabContainer.CurrentTab = 0;
                 updatedRace = Race;
                 raceName.Text = Race.Name;
                 racePluralName.Text = Race.PluralName;
+
+                if (RaceFilename == null || RaceFilename.Empty())
+                {
+                    filename.Text = Race.PluralName;
+                }
+
                 spendLeftoverPointsOn.Selected = (int)Race.SpendLeftoverPointsOn;
 
                 // PRT
@@ -238,14 +335,62 @@ namespace CraigStars
                 maCheckBox.Pressed = Race.HasLRT(LRT.MA);
                 ceCheckBox.Pressed = Race.HasLRT(LRT.CE);
 
+                // growth
+                growthRate.Value = Race.GrowthRate;
+                // TODO: update growthRateDescription
+
+                // production
+                colonistsPerResourceSpinBox.Value = Race.ColonistsPerResource;
+                factoryOutputSpinBox.Value = Race.FactoryOutput;
+                factoryCostSpinBox.Value = Race.FactoryCost;
+                numFactoriesSpinBox.Value = Race.NumFactories;
+                factoriesCostLessCheckBox.Pressed = Race.FactoriesCostLess;
+                mineOutputSpinBox.Value = Race.MineOutput;
+                mineCostSpinBox.Value = Race.MineCost;
+                numMinesSpinBox.Value = Race.NumMines;
+
+                // research cost
+                energyResearchCost.Level = Race.ResearchCost[TechField.Energy];
+                weaponsResearchCost.Level = Race.ResearchCost[TechField.Weapons];
+                propulsionResearchCost.Level = Race.ResearchCost[TechField.Propulsion];
+                constructionResearchCost.Level = Race.ResearchCost[TechField.Construction];
+                electronicsResearchCost.Level = Race.ResearchCost[TechField.Electronics];
+                biotechnologyResearchCost.Level = Race.ResearchCost[TechField.Biotechnology];
+                UpdateTechsStartHighLabel(Race);
+
+                loadingRace = false;
+
+                UpdateAdvantagePoints();
+
             }
         }
 
         void OnOk()
         {
-            UpdateRace(Race);
-            // all done
-            Hide();
+            if (Editable)
+            {
+                UpdateRace(Race);
+                if (RacesManager.FileExists(filename.Text))
+                {
+                    confirmationDialog.Show(
+                        $"A race with the file named: {filename.Text} already exists. Do you want to overwrite it?",
+                        () =>
+                        {
+                            RacesManager.SaveRace(Race, filename.Text);
+                            Hide();
+                        });
+                }
+                else
+                {
+                    RacesManager.SaveRace(Race, filename.Text);
+                    Hide();
+                }
+            }
+            else
+            {
+                // all done
+                Hide();
+            }
         }
 
         void UpdateRace(Race race)
@@ -280,6 +425,40 @@ namespace CraigStars
             if (rsCheckBox.Pressed) { race.LRTs.Add(LRT.RS); }
             if (maCheckBox.Pressed) { race.LRTs.Add(LRT.MA); }
             if (ceCheckBox.Pressed) { race.LRTs.Add(LRT.CE); }
+
+            race.GrowthRate = (int)growthRate.Value;
+
+            // production
+            race.ColonistsPerResource = (int)colonistsPerResourceSpinBox.Value;
+            race.FactoryOutput = (int)factoryOutputSpinBox.Value;
+            race.FactoryCost = (int)factoryCostSpinBox.Value;
+            race.NumFactories = (int)numFactoriesSpinBox.Value;
+            race.FactoriesCostLess = factoriesCostLessCheckBox.Pressed;
+            race.MineOutput = (int)mineOutputSpinBox.Value;
+            race.MineCost = (int)mineCostSpinBox.Value;
+            race.NumMines = (int)numMinesSpinBox.Value;
+
+            // research cost
+            race.ResearchCost[TechField.Energy] = energyResearchCost.Level;
+            race.ResearchCost[TechField.Weapons] = weaponsResearchCost.Level;
+            race.ResearchCost[TechField.Propulsion] = propulsionResearchCost.Level;
+            race.ResearchCost[TechField.Construction] = constructionResearchCost.Level;
+            race.ResearchCost[TechField.Electronics] = electronicsResearchCost.Level;
+            race.ResearchCost[TechField.Biotechnology] = biotechnologyResearchCost.Level;
+            race.TechsStartHigh = techsStartHighCheckBox.Pressed;
+
+        }
+
+        void UpdateTechsStartHighLabel(Race race)
+        {
+            if (race.PRT == PRT.JoaT)
+            {
+                techsStartHighCheckBox.Text = "All 'Costs 75% extra' research fields start at Tech 4";
+            }
+            else
+            {
+                techsStartHighCheckBox.Text = "All 'Costs 75% extra' research fields start at Tech 3";
+            }
         }
 
         void UpdateAdvantagePoints()
@@ -298,10 +477,27 @@ namespace CraigStars
             }
         }
 
+        /// <summary>
+        /// As a convenience, keep the race name, filename, and plural name in sync
+        /// </summary>
+        /// <param name="newText"></param>
+        void OnRaceNameTextChanged(string newText)
+        {
+            if (loadingRace) return;
+            if (filename.Text == racePluralName.Text)
+            {
+                filename.Text = newText + "s";
+            }
+            racePluralName.Text = newText + "s";
+        }
+
         void OnPRTCheckBoxPressed(PRT prt)
         {
             prtDescription.Text = TextUtils.GetDescriptionForPRT(prt);
+
+            if (loadingRace) return;
             updatedRace.PRT = prt;
+            UpdateTechsStartHighLabel(updatedRace);
             UpdateAdvantagePoints();
         }
 
@@ -309,6 +505,8 @@ namespace CraigStars
         {
             lrtDescriptionLabel.Text = EnumUtils.GetLabelForLRT(lrt);
             lrtDescription.Text = TextUtils.GetDescriptionForLRT(lrt);
+
+            if (loadingRace) return;
 
             if (buttonPressed)
             {
@@ -319,6 +517,54 @@ namespace CraigStars
                 updatedRace.LRTs.Remove(lrt);
             }
 
+            UpdateAdvantagePoints();
+        }
+
+        void OnGrowthRateChanged(float value)
+        {
+            if (loadingRace) return;
+
+            updatedRace.GrowthRate = (int)value;
+            UpdateAdvantagePoints();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        void OnProductionValueChanged(float value)
+        {
+            if (loadingRace) return;
+
+            updatedRace.ColonistsPerResource = (int)colonistsPerResourceSpinBox.Value;
+            updatedRace.FactoryOutput = (int)factoryOutputSpinBox.Value;
+            updatedRace.FactoryCost = (int)factoryCostSpinBox.Value;
+            updatedRace.NumFactories = (int)numFactoriesSpinBox.Value;
+            updatedRace.MineOutput = (int)mineOutputSpinBox.Value;
+            updatedRace.MineCost = (int)mineCostSpinBox.Value;
+            updatedRace.NumMines = (int)numMinesSpinBox.Value;
+            UpdateAdvantagePoints();
+        }
+
+        void OnFactoriesCostLessToggled(bool buttonPressed)
+        {
+            if (loadingRace) return;
+
+            updatedRace.FactoriesCostLess = buttonPressed;
+            UpdateAdvantagePoints();
+        }
+
+        void OnResearchCostChanged(TechField field, ResearchCostLevel level)
+        {
+            if (loadingRace) return;
+            updatedRace.ResearchCost[field] = level;
+            UpdateAdvantagePoints();
+        }
+
+        void OnTechsStartHighCheckBoxToggled(bool buttonPressed)
+        {
+            if (loadingRace) return;
+            updatedRace.TechsStartHigh = buttonPressed;
             UpdateAdvantagePoints();
         }
     }

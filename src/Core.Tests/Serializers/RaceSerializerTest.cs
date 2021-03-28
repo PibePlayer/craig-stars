@@ -19,14 +19,23 @@ namespace CraigStars.Tests
                 {
                     LRT.ARM,
                     LRT.BET
-                }
+                },
             };
 
+            race.ResearchCost.Electronics = ResearchCostLevel.Extra;
+            race.ResearchCost.Biotechnology = ResearchCostLevel.Less;
+
             string jsonString = Serializers.Serialize(race);
-            // log.Debug($"{jsonString}");
+            log.Info($"{jsonString}");
 
             var loadedRace = Serializers.DeserializeObject<Race>(jsonString);
             Assert.AreEqual(race.Name, race.Name);
+            Assert.AreEqual(ResearchCostLevel.Standard, race.ResearchCost.Energy);
+            Assert.AreEqual(ResearchCostLevel.Less, race.ResearchCost.Biotechnology);
+            Assert.AreEqual(ResearchCostLevel.Less, race.ResearchCost.Biotechnology);
+            Assert.IsTrue(race.HasLRT(LRT.ARM));
+            Assert.IsTrue(race.HasLRT(LRT.BET));
+            Assert.IsFalse(race.HasLRT(LRT.OBRM));
         }
 
     }

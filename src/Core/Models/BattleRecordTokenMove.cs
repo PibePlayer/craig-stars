@@ -18,5 +18,9 @@ namespace CraigStars
         /// </summary>
         public Vector2 To { get; set; }
 
+        public override string ToString()
+        {
+            return $"{Token} moved from {From} to {To}";
+        }
     }
 }

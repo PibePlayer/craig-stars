@@ -292,12 +292,11 @@ namespace CraigStars
                     // iterate over 
                     foreach (var weaponSlot in battle.SortedWeaponSlots)
                     {
-                        if (weaponSlot.IsInRange())
+                        if (weaponSlot.IsInRange() && !weaponSlot.Token.Target.Destroyed)
                         {
                             FireWeaponSlot(battle, weaponSlot);
                         }
                     }
-
                 }
             }
         }

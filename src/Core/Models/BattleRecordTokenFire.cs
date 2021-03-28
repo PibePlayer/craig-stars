@@ -31,5 +31,10 @@ namespace CraigStars
         public int TokensDestroyed { get; set; }
         public int DamageDone { get; set; }
 
+        public override string ToString()
+        {
+            return $"{Token} fired upon {Target} with {Token.Token.Design.Slots[Slot-1].HullComponent.Name} for {DamageDone} damage, destroying {TokensDestroyed} ships";
+        }
+
     }
 }

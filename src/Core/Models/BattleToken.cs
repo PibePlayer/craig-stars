@@ -63,6 +63,11 @@ namespace CraigStars
         /// </summary>
         internal int Shields;
 
+        public override string ToString()
+        {
+            return $"{Fleet.RaceName} {Token.Design.Name} ({Token.Quantity})";
+        }
+
         /// <summary>
         /// Return this token's distance from another position on the board.
         /// </summary>

@@ -53,7 +53,7 @@ namespace CraigStars.Singletons
             /// configure the logger we will use
             /// TODO: this should probably be in a different function
             const string logLayoutPattern =
-                "[%date %timestamp][%level][%stacktracedetail{1}] %message %newline" +
+                "[%date %timestamp][%level][%class.%method] %message %newline" +
                 "%exception %newline";
 
             var logger = (Logger)log.Logger;

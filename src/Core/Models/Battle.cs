@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
+using log4net;
 using Newtonsoft.Json;
 
 namespace CraigStars
@@ -11,7 +12,9 @@ namespace CraigStars
     /// </summary>
     public class Battle : BattleRecord<BattleToken>
     {
-        public Guid Guid { get; set; } = new Guid();
+        private static readonly ILog log = LogManager.GetLogger(typeof(Battle));
+
+        public Guid Guid { get; set; } = Guid.NewGuid();
 
         /// <summary>
         /// True if this battle has any tokens that target each other
@@ -52,6 +55,7 @@ namespace CraigStars
         internal void RecordMove(BattleRecordToken token, Vector2 from, Vector2 to)
         {
             Actions.Add(new BattleRecordTokenMove(token, from, to));
+            log.Debug(Actions[Actions.Count - 1]);
         }
 
         /// <summary>
@@ -63,6 +67,7 @@ namespace CraigStars
         internal void RecordRunAway(BattleRecordToken token)
         {
             Actions.Add(new BattleRecordTokenRanAway(token));
+            log.Debug(Actions[Actions.Count - 1]);
         }
 
         /// <summary>
@@ -74,6 +79,7 @@ namespace CraigStars
         internal void RecordFire(BattleRecordToken token, Vector2 from, int slot, BattleRecordToken target, int damage, int tokensDestroyed)
         {
             Actions.Add(new BattleRecordTokenFire(token, from, slot, target, damage, tokensDestroyed));
+            log.Debug(Actions[Actions.Count - 1]);
         }
 
         /// <summary>

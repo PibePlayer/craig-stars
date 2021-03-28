@@ -141,6 +141,7 @@ namespace CraigStars
             Aggregate.Bomber = false;
             Aggregate.Bombs.Clear();
             Aggregate.HasWeapons = false;
+            Aggregate.WeaponSlots.Clear();
             Aggregate.Movement = 0;
 
             var idealSpeed = 0;

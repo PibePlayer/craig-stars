@@ -29,6 +29,8 @@ namespace CraigStars.Tests
                 Num = 1,
                 Name = "Ted"
             };
+            player2.Race.Name = "Rabbitoid";
+            player2.Race.PluralName = "Rabbitoids";
 
             var design1 = ShipDesigns.StalwartDefender.Clone();
             design1.Player = player1;
@@ -239,6 +241,36 @@ namespace CraigStars.Tests
             Assert.AreEqual(attacker, battle.Actions[0].Token);
             Assert.AreEqual(typeof(BattleRecordTokenDestroyed), battle.Actions[1].GetType());
             Assert.AreEqual(defender, battle.Actions[1].Token);
+        }
+
+        [Test]
+        public void TestRunBattle1()
+        {
+            // create a new battle from two test fleets
+            var battle = battleEngine.BuildBattle(GetFleetsForBattle());
+            var attacker = battle.Tokens[0];
+            var defender = battle.Tokens[1];
+
+            battleEngine.RunBattle(battle);
+
+            // the scout moves 7 times, and then runs away (for 8 actions)
+            // the defender moves 4 times trying to get to the scout
+            Assert.Greater(10, battle.Actions.Count);
+        }
+
+        [Test]
+        public void TestRunBattle2()
+        {
+            // create a new battle from two test fleets
+            var battle = battleEngine.BuildBattle(GetFleetsForBattle());
+            var attacker = battle.Tokens[0];
+            var defender = battle.Tokens[1];
+
+            // make the attacker move faster
+            attacker.Token.Design.Slots[0].HullComponent = Techs.TransStar10;
+            attacker.Token.Design.ComputeAggregate(attacker.Fleet.Player, true);
+
+            battleEngine.RunBattle(battle);
         }
     }
 

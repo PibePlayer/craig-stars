@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Godot;
 using Newtonsoft.Json;
 
 namespace CraigStars
@@ -259,5 +260,15 @@ namespace CraigStars
 
         }
 
+        public static void Battle(Player player, Planet planet, Vector2 position, BattleRecord record)
+        {
+            string text;
+            string location = planet != null ? $"at {planet.Name}" : $"in deep space at ({position.x:.##}, {position.y:.##})";
+
+            // TODO: this should be more descriptive like "A battle took place at Zebra against the Cleavers. Neither your 7 forces nor the
+            // Cleaver Smaugarian Peeping Tom were completely wiped out. You lost 0."
+            text = $"A battle took place {location}";
+            player.Messages.Add(new Message(MessageType.Battle, text, planet));
+        }
     }
 }

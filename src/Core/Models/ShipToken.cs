@@ -33,5 +33,13 @@ namespace CraigStars
             Quantity = quantity;
         }
 
+        public ShipToken(ShipDesign design, int quantity, int damage, int quantityDamaged)
+        {
+            Design = design;
+            Quantity = quantity;
+            Damage = damage;
+            QuantityDamaged = quantityDamaged;
+        }
+
     }
 }

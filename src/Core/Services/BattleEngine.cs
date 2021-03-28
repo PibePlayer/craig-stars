@@ -170,21 +170,51 @@ namespace CraigStars
         };
 
         public Rules Rules { get; set; } = new Rules();
+        public ShipDesignDiscoverer designDiscoverer = new ShipDesignDiscoverer();
+
+        public BattleEngine(Rules rules)
+        {
+            Rules = rules;
+        }
 
         /// <summary>
         /// For a list of fleets that contains more than one player, build a battle recording
         /// with all the battle tokens. We'll use this to determine if 
         /// </summary>
-        /// <param name="fleets"></param>
-        /// <returns></returns>
+        /// <param name="fleets">The fleets in this battle</param>
+        /// /// <returns></returns>
         public Battle BuildBattle(List<Fleet> fleets)
         {
-            Battle recording = new Battle();
+            if (fleets == null || fleets.Count == 0)
+            {
+                log.Error("Can't build battle with no fleets.");
+                return null;
+            }
+
+            Battle battle = new Battle()
+            {
+                Planet = fleets[0].Orbiting,
+                Position = fleets[0].Position
+            };
+
+
+            // add recordings for each player
+            HashSet<Player> players = fleets.Select(fleet => fleet.Player).ToHashSet();
+            foreach (var player in players)
+            {
+                battle.PlayerRecords[player] = new BattleRecord() { Player = player };
+
+                // every player should discover all designs in a battle as if they were penscanned.
+                foreach (var design in fleets.SelectMany(fleet => fleet.Tokens).Select(token => token.Design))
+                {
+                    designDiscoverer.Discover(player, design, true);
+                }
+            }
 
             // add each fleet's token to the battle
             fleets.ForEach(fleet =>
                 fleet.Tokens.ForEach(token =>
-                    recording.Tokens.Add(new BattleToken()
+                    battle.AddToken(new BattleToken()
                     {
                         Player = fleet.Player,
                         Fleet = fleet,
@@ -195,7 +225,9 @@ namespace CraigStars
                 )
             );
 
-            return recording;
+            battle.SetupPlayerRecords(Rules.NumBattleRounds);
+
+            return battle;
         }
 
         /// <summary>
@@ -269,7 +301,7 @@ namespace CraigStars
         {
             PlaceTokensOnBoard(battle);
             BuildMovementOrder(battle);
-            for (int round = 0; round < Rules.BattleRounds; round++)
+            for (battle.Round = 0; battle.Round < Rules.NumBattleRounds; battle.Round++)
             {
                 // each round we build the SortedWeaponSlots list
                 // anew to account for ships that were destroyed
@@ -283,7 +315,7 @@ namespace CraigStars
 
                     // movement is a repeating pattern of 4 movement blocks
                     // which we figured out in BuildMovement
-                    int roundBlock = round % 4;
+                    int roundBlock = battle.Round % 4;
                     foreach (BattleToken token in battle.MoveOrder[roundBlock])
                     {
                         MoveToken(battle, token);
@@ -298,6 +330,12 @@ namespace CraigStars
                         }
                     }
                 }
+            }
+
+            // tell players about the battle
+            foreach (var playerEntry in battle.PlayerRecords)
+            {
+                Message.Battle(playerEntry.Key, battle.Planet, battle.Position, playerEntry.Value);
             }
         }
 
@@ -393,6 +431,7 @@ namespace CraigStars
                 var numDestroyed = armor / remaningDamage;
                 if (numDestroyed >= targetShipToken.Quantity)
                 {
+                    targetShipToken.Quantity = 0;
                     // token completely destroyed
                     // TODO: if this is a beam weapon, apply remaining damage equally to any other
                     // tokens at this location

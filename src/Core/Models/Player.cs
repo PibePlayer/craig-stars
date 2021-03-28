@@ -84,6 +84,7 @@ namespace CraigStars
         public Intel<ShipDesign> DesignIntel { get; set; } = new Intel<ShipDesign>();
         public Intel<Planet> PlanetIntel { get; set; } = new Intel<Planet>();
         public Intel<Fleet> FleetIntel { get; set; } = new Intel<Fleet>();
+        public Intel<BattleRecord> BattleIntel { get; set; } = new Intel<BattleRecord>();
 
         #endregion
 

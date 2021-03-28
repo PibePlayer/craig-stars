@@ -117,7 +117,7 @@ namespace CraigStars
         /// The number of battle rounds per battle
         /// </summary>
         [DefaultValue(16)]
-        public int BattleRounds = 16;
+        public int NumBattleRounds = 16;
 
         /// <summary>
         /// The number of moves required before a token can run away

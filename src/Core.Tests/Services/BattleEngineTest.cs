@@ -11,7 +11,7 @@ namespace CraigStars.Tests
     [TestFixture]
     public class BattleEngineTest
     {
-        BattleEngine battleEngine = new BattleEngine();
+        BattleEngine battleEngine = new BattleEngine(new Rules());
 
         /// <summary>
         /// Build a simple battle between two players, one with a Stalwart Defender, one with a Long Range Scout
@@ -168,6 +168,7 @@ namespace CraigStars.Tests
             var battle = battleEngine.BuildBattle(GetFleetsForBattle());
             var attacker = battle.Tokens[0];
             var defender = battle.Tokens[1];
+            var player1 = attacker.Fleet.Player;
 
             battle.BuildSortedWeaponSlots();
 
@@ -182,9 +183,9 @@ namespace CraigStars.Tests
             Assert.AreEqual(attacker.Position + (Vector2.Right * weapon.Range) + Vector2.Right, defender.Position);
 
             // make sure we recorded this move
-            Assert.AreEqual(1, battle.Actions.Count);
-            Assert.AreEqual(typeof(BattleRecordTokenMove), battle.Actions[0].GetType());
-            Assert.AreEqual(defender, battle.Actions[0].Token);
+            Assert.AreEqual(1, battle.PlayerRecords[player1].ActionsPerRound[0].Count);
+            Assert.AreEqual(typeof(BattleRecordTokenMove), battle.PlayerRecords[player1].ActionsPerRound[0][0].GetType());
+            Assert.AreEqual(defender.Guid, battle.PlayerRecords[player1].ActionsPerRound[0][0].Token.Guid);
         }
 
         [Test]
@@ -194,6 +195,7 @@ namespace CraigStars.Tests
             var battle = battleEngine.BuildBattle(GetFleetsForBattle());
             var attacker = battle.Tokens[0];
             var defender = battle.Tokens[1];
+            var player1 = attacker.Fleet.Player;
 
             battleEngine.FindTargets(battle);
             battle.BuildSortedWeaponSlots();
@@ -210,9 +212,9 @@ namespace CraigStars.Tests
             Assert.AreEqual(new Vector2(1, 1), attacker.Position);
 
             // make sure we recorded this move
-            Assert.AreEqual(1, battle.Actions.Count);
-            Assert.AreEqual(typeof(BattleRecordTokenMove), battle.Actions[0].GetType());
-            Assert.AreEqual(attacker, battle.Actions[0].Token);
+            Assert.AreEqual(1, battle.PlayerRecords[player1].ActionsPerRound[0].Count);
+            Assert.AreEqual(typeof(BattleRecordTokenMove), battle.PlayerRecords[player1].ActionsPerRound[0][0].GetType());
+            Assert.AreEqual(attacker.Guid, battle.PlayerRecords[player1].ActionsPerRound[0][0].Token.Guid);
         }
 
         [Test]
@@ -222,6 +224,7 @@ namespace CraigStars.Tests
             var battle = battleEngine.BuildBattle(GetFleetsForBattle());
             var attacker = battle.Tokens[0];
             var defender = battle.Tokens[1];
+            var player1 = attacker.Fleet.Player;
 
             battleEngine.FindTargets(battle);
             battle.BuildSortedWeaponSlots();
@@ -236,11 +239,11 @@ namespace CraigStars.Tests
             battleEngine.FireWeaponSlot(battle, weapon);
 
             // make sure we recorded this move
-            Assert.AreEqual(2, battle.Actions.Count);
-            Assert.AreEqual(typeof(BattleRecordTokenFire), battle.Actions[0].GetType());
-            Assert.AreEqual(attacker, battle.Actions[0].Token);
-            Assert.AreEqual(typeof(BattleRecordTokenDestroyed), battle.Actions[1].GetType());
-            Assert.AreEqual(defender, battle.Actions[1].Token);
+            Assert.AreEqual(2, battle.PlayerRecords[player1].ActionsPerRound[0].Count);
+            Assert.AreEqual(typeof(BattleRecordTokenFire), battle.PlayerRecords[player1].ActionsPerRound[0][0].GetType());
+            Assert.AreEqual(attacker.Guid, battle.PlayerRecords[player1].ActionsPerRound[0][0].Token.Guid);
+            Assert.AreEqual(typeof(BattleRecordTokenDestroyed), battle.PlayerRecords[player1].ActionsPerRound[0][1].GetType());
+            Assert.AreEqual(defender.Guid, battle.PlayerRecords[player1].ActionsPerRound[0][1].Token.Guid);
         }
 
         [Test]
@@ -250,12 +253,13 @@ namespace CraigStars.Tests
             var battle = battleEngine.BuildBattle(GetFleetsForBattle());
             var attacker = battle.Tokens[0];
             var defender = battle.Tokens[1];
+            var player1 = attacker.Fleet.Player;
 
             battleEngine.RunBattle(battle);
 
             // the scout moves 7 times, and then runs away (for 8 actions)
             // the defender moves 4 times trying to get to the scout
-            Assert.Greater(10, battle.Actions.Count);
+            Assert.Greater(10, battle.PlayerRecords[player1].ActionsPerRound[0].Count);
         }
 
         [Test]

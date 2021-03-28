@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
@@ -10,6 +11,8 @@ namespace CraigStars
     /// </summary>
     public class BattleRecordToken
     {
+        public Guid Guid { get; set; } = Guid.NewGuid();
+
         public PublicPlayerInfo Owner
         {
             get
@@ -34,5 +37,11 @@ namespace CraigStars
         /// The token 
         /// </summary>
         public ShipToken Token { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Owner.RaceName} {Token.Design.Name} ({Token.Quantity})";
+        }
+
     }
 }

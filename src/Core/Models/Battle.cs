@@ -10,17 +10,42 @@ namespace CraigStars
     /// <summary>
     /// The state of a battle as it progresses
     /// </summary>
-    public class Battle : BattleRecord<BattleToken>
+    public class Battle
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(Battle));
 
         public Guid Guid { get; set; } = Guid.NewGuid();
+
+        public Planet Planet { get; set; }
+        public Vector2 Position { get; set; }
+
+        /// <summary>
+        /// The tokens for this battle
+        /// </summary>
+        public List<BattleToken> Tokens { get; set; } = new List<BattleToken>();
+
+        /// <summary>
+        /// Record for players
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<Player, BattleRecord> PlayerRecords { get; set; } = new Dictionary<Player, BattleRecord>();
+
+        /// <summary>
+        /// The current round in battle
+        /// </summary>
+        /// <value></value>
+        public int Round { get; set; }
 
         /// <summary>
         /// True if this battle has any tokens that target each other
         /// </summary>
         public bool HasTargets { get; set; }
 
+        /// <summary>
+        /// A list of weapon slots in the battle, sorted by initiative
+        /// </summary>
+        /// <typeparam name="BattleWeaponSlot"></typeparam>
+        /// <returns></returns>
         public List<BattleWeaponSlot> SortedWeaponSlots { get; private set; } = new List<BattleWeaponSlot>();
 
         /// <summary>
@@ -36,6 +61,94 @@ namespace CraigStars
         };
 
         /// <summary>
+        /// Record a move
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        internal void RecordMove(BattleRecordToken token, Vector2 from, Vector2 to)
+        {
+            foreach (var record in PlayerRecords.Values)
+            {
+                record.RecordMove(Round, token, from, to);
+            }
+        }
+
+        /// <summary>
+        /// Record a token running away
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        internal void RecordRunAway(BattleRecordToken token)
+        {
+            foreach (var record in PlayerRecords.Values)
+            {
+                record.RecordRunAway(Round, token);
+            }
+        }
+
+        /// <summary>
+        /// Record a token being entired destroyed
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        internal void RecordFire(BattleRecordToken token, Vector2 from, int slot, BattleRecordToken target, int damage, int tokensDestroyed)
+        {
+            foreach (var record in PlayerRecords.Values)
+            {
+                record.RecordFire(Round, token, from, slot, target, damage, tokensDestroyed);
+            }
+
+        }
+
+        /// <summary>
+        /// Record a token being destroyed
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        internal void RecordDestroyed(BattleRecordToken token)
+        {
+            foreach (var record in PlayerRecords.Values)
+            {
+                record.RecordDestroyed(Round, token);
+            }
+        }
+
+        /// <summary>
+        /// Add a token to the battle
+        /// </summary>
+        /// <param name="token"></param>
+        internal void AddToken(BattleToken token)
+        {
+            Tokens.Add(token);
+
+            var shipToken = token.Token;
+            var design = shipToken.Design;
+
+            // also add this token to each player's battle record
+            foreach (var reportEntry in PlayerRecords)
+            {
+                // add a player specific version of this token
+                if (reportEntry.Key.DesignsByGuid.TryGetValue(design.Guid, out var playerDesign))
+                {
+                    reportEntry.Value.Tokens.Add(new BattleRecordToken()
+                    {
+                        Guid = token.Guid,
+                        Owner = token.Owner,
+                        Token = new ShipToken(playerDesign, shipToken.Quantity, shipToken.Damage, shipToken.QuantityDamaged)
+                    });
+                }
+                else
+                {
+                    log.Error($"Could not find Player Design for Battle: {Guid}, Player: {token.Player}, Design: {design.Name}");
+                }
+            }
+        }
+
+        /// <summary>
         /// Build the SortedWeaponSlots property
         /// </summary>
         public void BuildSortedWeaponSlots()
@@ -47,51 +160,14 @@ namespace CraigStars
         }
 
         /// <summary>
-        /// Record a move
+        /// Setup the player records by guid
         /// </summary>
-        /// <param name="token"></param>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        internal void RecordMove(BattleRecordToken token, Vector2 from, Vector2 to)
+        internal void SetupPlayerRecords(int numRounds)
         {
-            Actions.Add(new BattleRecordTokenMove(token, from, to));
-            log.Debug(Actions[Actions.Count - 1]);
+            foreach (var record in PlayerRecords.Values)
+            {
+                record.SetupRecord(numRounds);
+            }
         }
-
-        /// <summary>
-        /// Record a token running away
-        /// </summary>
-        /// <param name="token"></param>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        internal void RecordRunAway(BattleRecordToken token)
-        {
-            Actions.Add(new BattleRecordTokenRanAway(token));
-            log.Debug(Actions[Actions.Count - 1]);
-        }
-
-        /// <summary>
-        /// Record a token being entired destroyed
-        /// </summary>
-        /// <param name="token"></param>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        internal void RecordFire(BattleRecordToken token, Vector2 from, int slot, BattleRecordToken target, int damage, int tokensDestroyed)
-        {
-            Actions.Add(new BattleRecordTokenFire(token, from, slot, target, damage, tokensDestroyed));
-            log.Debug(Actions[Actions.Count - 1]);
-        }
-
-        /// <summary>
-        /// Record a move
-        /// </summary>
-        /// <param name="token"></param>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        internal void RecordDestroyed(BattleRecordToken token)
-        {
-            Actions.Add(new BattleRecordTokenDestroyed(token));
-        }
-
     }
 }

@@ -13,9 +13,12 @@ namespace CraigStars
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(FleetBattleStep));
 
-        BattleEngine battleEngine = new BattleEngine();
+        BattleEngine battleEngine;
 
-        public FleetBattleStep(Game game, TurnGeneratorState state) : base(game, state) { }
+        public FleetBattleStep(Game game, TurnGeneratorState state) : base(game, state)
+        {
+            battleEngine = new BattleEngine(Game.Rules);
+        }
 
         public override void PreProcess(List<Planet> ownedPlanets)
         {
@@ -57,18 +60,37 @@ namespace CraigStars
 
                     if (battle.HasTargets)
                     {
-                        var fleet = fleetsAndStarbases[0];
-                        if (fleet.Orbiting != null)
+                        var singleFleet = fleetsAndStarbases[0];
+                        if (singleFleet.Orbiting != null)
                         {
-                            log.Info($"Running a battle at {fleet.Orbiting.Name} involving {players.Count} players and {fleetsAndStarbases.Count} fleets.");
+                            log.Info($"Running a battle at {singleFleet.Orbiting.Name} involving {players.Count} players and {fleetsAndStarbases.Count} fleets.");
                         }
                         else
                         {
-                            log.Info($"Running a battle at {fleet.Position} involving {players.Count} players and {fleetsAndStarbases.Count} fleets.");
+                            log.Info($"Running a battle at {singleFleet.Position} involving {players.Count} players and {fleetsAndStarbases.Count} fleets.");
                         }
 
                         // run the battle!
                         battleEngine.RunBattle(battle);
+                        foreach (var fleet in fleetsAndStarbases)
+                        {
+                            var hasTokens = false;
+                            foreach (var token in fleet.Tokens)
+                            {
+                                if (token.Quantity > 0)
+                                {
+                                    hasTokens = true;
+                                    break;
+                                }
+                            }
+
+                            if (!hasTokens)
+                            {
+                                // this fleet was destroyed
+                                EventManager.PublishFleetDeletedEvent(fleet);
+                            }
+
+                        }
                         EventManager.PublishBattleRunEvent(battle);
                     }
                 }

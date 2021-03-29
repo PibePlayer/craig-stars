@@ -16,7 +16,6 @@ namespace CraigStars
         PlanetDiscoverer planetDiscoverer = new PlanetDiscoverer();
         FleetDiscoverer fleetDiscoverer = new FleetDiscoverer();
         ShipDesignDiscoverer designDiscoverer = new ShipDesignDiscoverer();
-        BattleDiscoverer battleDiscoverer = new BattleDiscoverer();
 
         /// <summary>
         /// Discover a new planet. This is called when the universe is being setup with penScanned = false

@@ -43,6 +43,9 @@ namespace CraigStars
                 continueGameNameLabel.Text = Settings.Instance.ContinueGame;
                 continueGameYearSpinBox.Value = Settings.Instance.ContinueYear;
                 continueGameYearSpinBox.MaxValue = Settings.Instance.ContinueYear;
+                var minSizeRect = continueGameYearSpinBox.RectMinSize;
+                minSizeRect.x = continueGameYearSpinBox.GetFont("").GetStringSize("2400").x;
+                continueGameYearSpinBox.RectMinSize = minSizeRect;
 
                 continueGameButton.Connect("pressed", this, nameof(OnContinueGameButtonPressed));
             }

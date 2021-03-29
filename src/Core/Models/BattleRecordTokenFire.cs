@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Godot;
+using Newtonsoft.Json;
 
 namespace CraigStars
 {
@@ -8,6 +9,9 @@ namespace CraigStars
     /// </summary>
     public class BattleRecordTokenFire : BattleRecordTokenAction
     {
+        public BattleRecordTokenFire()
+        {
+        }
 
         public BattleRecordTokenFire(BattleRecordToken token, Vector2 from, int slot, BattleRecordToken target, int damageDone, int tokensDestroyed) : base(token, from)
         {
@@ -26,6 +30,7 @@ namespace CraigStars
         /// The target fired upon
         /// </summary>
         /// <value></value>
+        [JsonProperty(IsReference = true)]
         public BattleRecordToken Target { get; set; }
 
         public int TokensDestroyed { get; set; }
@@ -33,7 +38,7 @@ namespace CraigStars
 
         public override string ToString()
         {
-            return $"{Token} fired upon {Target} with {Token.Token.Design.Slots[Slot-1].HullComponent.Name} for {DamageDone} damage, destroying {TokensDestroyed} ships";
+            return $"{Token} fired upon {Target} with {Token.Token.Design.Slots[Slot - 1].HullComponent.Name} for {DamageDone} damage, destroying {TokensDestroyed} ships";
         }
 
     }

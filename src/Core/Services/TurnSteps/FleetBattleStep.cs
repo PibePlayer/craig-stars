@@ -60,16 +60,6 @@ namespace CraigStars
 
                     if (battle.HasTargets)
                     {
-                        var singleFleet = fleetsAndStarbases[0];
-                        if (singleFleet.Orbiting != null)
-                        {
-                            log.Info($"Running a battle at {singleFleet.Orbiting.Name} involving {players.Count} players and {fleetsAndStarbases.Count} fleets.");
-                        }
-                        else
-                        {
-                            log.Info($"Running a battle at {singleFleet.Position} involving {players.Count} players and {fleetsAndStarbases.Count} fleets.");
-                        }
-
                         // run the battle!
                         battleEngine.RunBattle(battle);
                         foreach (var fleet in fleetsAndStarbases)
@@ -91,6 +81,13 @@ namespace CraigStars
                             }
 
                         }
+
+                        foreach (var playerEntry in battle.PlayerRecords)
+                        {
+                            // let each player know about this battle
+                            playerEntry.Key.Battles.Add(playerEntry.Value);
+                        }
+
                         EventManager.PublishBattleRunEvent(battle);
                     }
                 }

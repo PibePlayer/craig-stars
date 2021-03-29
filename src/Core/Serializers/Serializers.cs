@@ -93,7 +93,8 @@ namespace CraigStars
 
                 Converters = new JsonConverter[] {
                     new ColorJsonConverter(),
-                    new StringEnumConverter()
+                    new StringEnumConverter(),
+                    new BattleRecordTokenActionConverter()
                 }
             };
         }

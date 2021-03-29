@@ -299,6 +299,16 @@ namespace CraigStars
         /// <param name="battle"></param>
         public void RunBattle(Battle battle)
         {
+            var planet = battle.Planet;
+            if (planet != null)
+            {
+                log.Info($"Running a battle at {battle.Planet.Name} involving {battle.PlayerRecords.Count} players and {battle.Tokens.Count} tokens.");
+            }
+            else
+            {
+                log.Info($"Running a battle at ({battle.Position.x:.##}, {battle.Position.y:.##}) involving {battle.PlayerRecords.Count} players and {battle.Tokens.Count} tokens.");
+            }
+
             PlaceTokensOnBoard(battle);
             BuildMovementOrder(battle);
             for (battle.Round = 0; battle.Round < Rules.NumBattleRounds; battle.Round++)

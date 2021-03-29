@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using Godot;
+using Newtonsoft.Json;
 
 namespace CraigStars
 {
@@ -18,8 +19,15 @@ namespace CraigStars
         }
 
         /// <summary>
+        /// Used for deserializing
+        /// </summary>
+        /// <returns></returns>
+        public string Type { get => GetType().Name; }
+
+        /// <summary>
         /// The token taking the action
         /// </summary>
+        [JsonProperty(IsReference = true)]
         public BattleRecordToken Token { get; set; }
 
         /// <summary>

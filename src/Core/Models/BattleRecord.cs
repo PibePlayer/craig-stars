@@ -51,6 +51,14 @@ namespace CraigStars
         /// </summary>
         public List<List<BattleRecordTokenAction>> ActionsPerRound { get; set; } = new List<List<BattleRecordTokenAction>>();
 
+        // stats
+        public int MyShipCount { get; set; }
+        public int EnemyShipCount { get; set; }
+        public int FriendShipCount { get; set; }
+        public int MyShipsDestroyed { get; set; }
+        public int FriendShipsDestroyed { get; set; }
+        public int EnemyShipsDestroyd { get; set; }
+
         /// <summary>
         /// Store a list of our tokens by guid
         /// </summary>
@@ -66,6 +74,22 @@ namespace CraigStars
         public void SetupRecord(int numRounds)
         {
             TokensByGuid = Tokens.ToLookup(token => token.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
+
+            foreach (var token in Tokens)
+            {
+                if (token.Owner.Num == Owner.Num)
+                {
+                    MyShipCount++;
+                }
+                else if (Player.IsFriend(token.Owner))
+                {
+                    FriendShipCount++;
+                }
+                else
+                {
+                    EnemyShipCount++;
+                }
+            }
             ActionsPerRound.Clear();
             for (int i = 0; i < numRounds; i++)
             {
@@ -105,7 +129,19 @@ namespace CraigStars
         /// <param name="to"></param>
         internal void RecordFire(int round, BattleRecordToken token, Vector2 from, int slot, BattleRecordToken target, int damage, int tokensDestroyed)
         {
-            ActionsPerRound[round].Add(new BattleRecordTokenFire(TokensByGuid[token.Guid], from, slot, target, damage, tokensDestroyed));
+            if (target.Owner.Num == Owner.Num)
+            {
+                MyShipCount++;
+            }
+            else if (Player.IsFriend(target.Owner))
+            {
+                FriendShipCount++;
+            }
+            else
+            {
+                EnemyShipCount++;
+            }
+            ActionsPerRound[round].Add(new BattleRecordTokenFire(TokensByGuid[token.Guid], from, slot, TokensByGuid[target.Guid], damage, tokensDestroyed));
             log.Debug(ActionsPerRound[round][ActionsPerRound[round].Count - 1]);
         }
 

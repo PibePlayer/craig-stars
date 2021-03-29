@@ -199,9 +199,7 @@ mouse_filter = 2
 size_flags_horizontal = 3
 
 [node name="Toolbar" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/VBoxContainer" instance=ExtResource( 16 )]
-anchor_right = 0.0
 margin_right = 926.0
-margin_bottom = 40.0
 
 [node name="Center" type="MarginContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/VBoxContainer"]
 margin_top = 44.0

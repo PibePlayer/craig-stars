@@ -8,6 +8,10 @@ namespace CraigStars
     /// </summary>
     public class BattleRecordTokenMove : BattleRecordTokenAction
     {
+        public BattleRecordTokenMove()
+        {
+        }
+
         public BattleRecordTokenMove(BattleRecordToken token, Vector2 from, Vector2 to) : base(token, from)
         {
             To = to;

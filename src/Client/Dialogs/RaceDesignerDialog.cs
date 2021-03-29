@@ -166,9 +166,6 @@ namespace CraigStars
             okButton = (Button)FindNode("OKButton");
             confirmationDialog = GetNode<CSConfirmDialog>("ConfirmationDialog");
 
-            Connect("visibility_changed", this, nameof(OnVisibilityChanged));
-            okButton.Connect("pressed", this, nameof(OnOk));
-
             raceName.Connect("text_changed", this, nameof(OnRaceNameTextChanged));
 
             heCheckBox.Connect("pressed", this, nameof(OnPRTCheckBoxPressed), new Godot.Collections.Array() { PRT.HE });
@@ -218,6 +215,9 @@ namespace CraigStars
             electronicsResearchCost.ResearchCostLevelChangedEvent += OnResearchCostChanged;
             biotechnologyResearchCost.ResearchCostLevelChangedEvent += OnResearchCostChanged;
             techsStartHighCheckBox.Connect("toggled", this, nameof(OnTechsStartHighCheckBoxToggled));
+
+            Connect("visibility_changed", this, nameof(OnVisibilityChanged));
+            okButton.Connect("pressed", this, nameof(OnOk));
 
             SetAsMinsize();
             // Show();

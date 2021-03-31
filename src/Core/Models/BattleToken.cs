@@ -23,15 +23,9 @@ namespace CraigStars
         internal BattleTokenAttribute Attributes { get; set; }
 
         /// <summary>
-        /// This token's target
+        /// This token's primary target that it is moving towards
         /// </summary>
-        internal BattleToken Target { get; set; }
-
-        /// <summary>
-        /// If the token can't fire on it's target, this will be the best
-        /// target of opportunity that is in range of one of the weapons
-        /// </summary>
-        internal BattleToken TargetOfOpportunity { get; set; }
+        internal BattleToken MoveTarget { get; set; }
 
         /// <summary>
         /// Tokens targeting this token

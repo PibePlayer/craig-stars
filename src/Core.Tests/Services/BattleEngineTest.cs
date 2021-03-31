@@ -41,14 +41,14 @@ namespace CraigStars.Tests
             var battle = battleEngine.BuildBattle(Battles.GetFleetsForSimpleBattle());
 
             // find some targets!
-            battleEngine.FindTargets(battle);
+            battleEngine.FindMoveTargets(battle);
 
             Assert.IsTrue(battle.HasTargets);
             Assert.AreEqual(2, battle.Tokens.Count);
             var token1 = battle.Tokens[0];
             var token2 = battle.Tokens[1];
-            Assert.AreEqual(token2, token1.Target);
-            Assert.IsNull(token2.Target);
+            Assert.AreEqual(token2, token1.MoveTarget);
+            Assert.IsNull(token2.MoveTarget);
         }
 
         [Test]
@@ -127,7 +127,7 @@ namespace CraigStars.Tests
             var defender = battle.Tokens[1];
             var player1 = attacker.Fleet.Player;
 
-            battleEngine.FindTargets(battle);
+            battleEngine.FindMoveTargets(battle);
             battle.BuildSortedWeaponSlots();
 
             var weapon = battle.SortedWeaponSlots[0];
@@ -156,7 +156,7 @@ namespace CraigStars.Tests
             var defender = battle.Tokens[1];
             var player1 = attacker.Fleet.Player;
 
-            battleEngine.FindTargets(battle);
+            battleEngine.FindMoveTargets(battle);
             battle.BuildSortedWeaponSlots();
 
             var weapon = battle.SortedWeaponSlots[0];

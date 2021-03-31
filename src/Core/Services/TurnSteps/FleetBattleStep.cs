@@ -56,7 +56,7 @@ namespace CraigStars
                 {
                     // build a new battle engine and find targets
                     var battle = battleEngine.BuildBattle(fleetsAndStarbases);
-                    battleEngine.FindTargets(battle);
+                    battleEngine.FindMoveTargets(battle);
 
                     if (battle.HasTargets)
                     {

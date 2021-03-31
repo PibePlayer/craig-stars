@@ -20,6 +20,20 @@ namespace CraigStars
         public ShipDesignSlot Slot { get; set; }
 
         /// <summary>
+        /// The type of weapon this weapon slot is
+        /// </summary>
+        /// <value></value>
+        public BattleWeaponType WeaponType { get; set; }
+
+        /// <summary>
+        /// Each weapon has a potential list of targets that is updated each turn
+        /// This list is sorted by attractiveness
+        /// </summary>
+        /// <typeparam name="BattleToken"></typeparam>
+        /// <returns></returns>
+        public List<BattleToken> Targets { get; set; } = new List<BattleToken>();
+
+        /// <summary>
         /// The range of this weapon
         /// </summary>
         /// <value></value>
@@ -39,15 +53,14 @@ namespace CraigStars
         {
             Token = token;
             Slot = slot;
-        }
-
-        /// <summary>
-        /// True if this weapon is in slow of it's target
-        /// </summary>
-        /// <returns></returns>
-        public bool IsInRange()
-        {
-            return IsInRange(Token.Target) || IsInRange(Token.TargetOfOpportunity);
+            if (slot.HullComponent.Category == TechCategory.BeamWeapon)
+            {
+                WeaponType = BattleWeaponType.Beam;
+            }
+            else if (slot.HullComponent.Category == TechCategory.Torpedo)
+            {
+                WeaponType = BattleWeaponType.Torpedo;
+            }
         }
 
         /// <summary>

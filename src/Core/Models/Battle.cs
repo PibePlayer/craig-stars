@@ -114,11 +114,11 @@ namespace CraigStars
         /// <param name="token"></param>
         /// <param name="from"></param>
         /// <param name="to"></param>
-        internal void RecordFire(BattleRecordToken token, Vector2 from, Vector2 to, int slot, BattleRecordToken target, int damageDoneShields, int damageDoneArmor, int tokensDestroyed)
+        internal void RecordFire(BattleRecordToken token, Vector2 from, Vector2 to, BattleWeaponType weaponType, int slot, BattleRecordToken target, int damageDoneShields, int damageDoneArmor, int tokensDestroyed)
         {
             foreach (var record in PlayerRecords.Values)
             {
-                record.RecordFire(Round, token, from, to, slot, target, damageDoneShields, damageDoneArmor, tokensDestroyed);
+                record.RecordFire(Round, token, from, to, weaponType, slot, target, damageDoneShields, damageDoneArmor, tokensDestroyed);
             }
 
         }

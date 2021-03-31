@@ -268,47 +268,57 @@ namespace CraigStars
             return attributes;
         }
 
+
+        /// <summary>
+        /// Find all the targets for a weapon
+        /// </summary>
+        /// <param name="battle"></param>
+        public void FindTargets(Battle battle, BattleWeaponSlot weapon)
+        {
+            weapon.Targets.Clear();
+            var attacker = weapon.Token;
+            var primaryTarget = attacker.Fleet.BattleOrders.PrimaryTarget;
+            var secondaryTarget = attacker.Fleet.BattleOrders.SecondaryTarget;
+
+            var primaryTargets = new List<BattleToken>();
+            var secondaryTargets = new List<BattleToken>();
+
+            // Find all enemy tokens
+            foreach (var token in battle.RemainingTokens.Where(token => attacker.Fleet.WillAttack(token.Player)))
+            {
+                // if we will target this
+                if (WillTarget(primaryTarget, token) && weapon.IsInRange(token))
+                {
+                    primaryTargets.Add(token);
+                }
+                else if (WillTarget(secondaryTarget, token) && weapon.IsInRange(token))
+                {
+                    secondaryTargets.Add(token);
+                }
+            };
+            // our list of available targets is all primary and all secondary targets in range
+            weapon.Targets.AddRange(primaryTargets.OrderBy(token => GetAttractiveness(weapon, token)));
+            weapon.Targets.AddRange(secondaryTargets.OrderBy(token => GetAttractiveness(weapon, token)));
+        }
+
         /// <summary>
         /// For a battle, allocate targets for each token
         /// </summary>
         /// <param name="battle"></param>
-        public void FindTargets(Battle battle)
+        public void FindMoveTargets(Battle battle)
         {
             battle.HasTargets = false;
             // ignore tokens that are no longer part of the battle
             foreach (var token in battle.RemainingTokens.Where(token => token.Token.Design.Aggregate.HasWeapons))
             {
-                token.Target = GetTarget(token, battle.RemainingTokens.Where(target => target != token));
-                if (token.Target != null)
+                token.MoveTarget = GetTarget(token, battle.RemainingTokens.Where(target => target != token));
+                if (token.MoveTarget != null)
                 {
-                    token.Target.TargetedBy.Add(token);
+                    token.MoveTarget.TargetedBy.Add(token);
                 }
-                battle.HasTargets = token.Target != null ? true : battle.HasTargets;
+                battle.HasTargets = token.MoveTarget != null ? true : battle.HasTargets;
             };
         }
-
-        /// <summary>
-        /// After move, find any opportunity targets before firing.
-        /// Ships will fire on other targets while moving towards their main target
-        /// </summary>
-        /// <param name="battle"></param>
-        internal void FindOpportunityTargets(Battle battle)
-        {
-            foreach (var token in battle.RemainingTokens.Where(token => token.Token.Design.Aggregate.HasWeapons))
-            {
-                token.TargetOfOpportunity = GetTarget(token, FindTokensInRange(token, battle.RemainingTokens));
-            }
-        }
-
-        internal IEnumerable<BattleToken> FindTokensInRange(BattleToken token, IEnumerable<BattleToken> tokens)
-        {
-            return tokens.Where(target =>
-                token != target &&
-                token.Token.Design.Aggregate.WeaponSlots
-                    .Any(weapon => token.GetDistanceAway(target.Position) <= weapon.HullComponent.Range)
-            );
-        }
-
 
         /// <summary>
         /// Run a battle!
@@ -337,7 +347,7 @@ namespace CraigStars
                 battle.BuildSortedWeaponSlots();
 
                 // find new targets
-                FindTargets(battle);
+                FindMoveTargets(battle);
                 if (battle.HasTargets)
                 {
                     // if we still have targets, process the round
@@ -350,18 +360,20 @@ namespace CraigStars
                         MoveToken(battle, token);
                     }
 
-                    FindOpportunityTargets(battle);
 
                     // iterate over each weapon and fire if they have a target
                     foreach (var weaponSlot in battle.SortedWeaponSlots)
                     {
+                        // find all available targets for this weapon
+                        FindTargets(battle, weaponSlot);
+
                         // if this weapon belongs to a token still on the board and is still targetting
-                        if (!weaponSlot.Token.Destroyed && !weaponSlot.Token.RanAway
-                            && !weaponSlot.Token.Target.Destroyed && !weaponSlot.Token.Target.RanAway
-                            && weaponSlot.IsInRange())
-                        {
-                            FireWeaponSlot(battle, weaponSlot);
-                        }
+                        // if (!weaponSlot.Token.Destroyed && !weaponSlot.Token.RanAway
+                        //     && !weaponSlot.Token.Target.Destroyed && !weaponSlot.Token.Target.RanAway
+                        //     && weaponSlot.IsInRange())
+                        // {
+                        FireWeaponSlot(battle, weaponSlot);
+                        // }
                     }
                 }
                 else
@@ -443,73 +455,127 @@ namespace CraigStars
         /// <summary>
         /// Fire the weapon slot towards its target
         /// </summary>
-        /// <param name="weaponSlot"></param>
-        internal void FireWeaponSlot(Battle battle, BattleWeaponSlot weaponSlot)
+        /// <param name="weapon"></param>
+        internal void FireWeaponSlot(Battle battle, BattleWeaponSlot weapon)
         {
-            var target = weaponSlot.Token.Target ?? weaponSlot.Token.TargetOfOpportunity;
-            ShipToken attackerShipToken = weaponSlot.Token.Token;
-            ShipToken targetShipToken = target.Token;
-
-            // shields are shared among all tokens
-            var shields = target.Shields;
-            var armor = targetShipToken.Design.Aggregate.Armor;
-
-            // damage is power * number of weapons * number of attackers.
-            var damage = weaponSlot.Slot.HullComponent.Power * weaponSlot.Slot.Quantity * attackerShipToken.Quantity;
-
-            if (damage > shields)
+            if (weapon.Targets.Count == 0 || weapon.Token.Destroyed || weapon.Token.RanAway)
             {
-                // wipe out the shields
-                float remaningDamage = damage - shields;
-                target.Shields = 0;
+                // no targets, nothing to do
+                return;
+            }
 
-                // figure out how damaged the fleet currently is
-                var existingDamage = targetShipToken.Damage * targetShipToken.QuantityDamaged;
-                remaningDamage += existingDamage;
+            switch (weapon.WeaponType)
+            {
+                case BattleWeaponType.Beam:
+                    FireBeamWeapon(battle, weapon);
+                    break;
+                case BattleWeaponType.Torpedo:
+                    FireTorpedo(battle, weapon);
+                    break;
+            }
+        }
 
-                // figure out how many tokens were destroyed
-                int numDestroyed = (int)remaningDamage / armor;
-                if (numDestroyed >= targetShipToken.Quantity)
+        internal void FireBeamWeapon(Battle battle, BattleWeaponSlot weapon)
+        {
+            ShipToken attackerShipToken = weapon.Token.Token;
+            // damage is power * number of weapons * number of attackers.
+            var damage = weapon.Slot.HullComponent.Power * weapon.Slot.Quantity * attackerShipToken.Quantity;
+            float remainingDamage = damage;
+
+            log.Debug($"{weapon.Token} is firing at {weapon.Targets.Count} targets for a total of {damage} damage");
+
+            foreach (var target in weapon.Targets)
+            {
+                if (target.Destroyed || target.RanAway)
                 {
-                    numDestroyed = targetShipToken.Quantity;
-                    targetShipToken.Quantity = 0;
-                    // token completely destroyed
-                    // TODO: if this is a beam weapon, apply remaining damage equally to any other
-                    // tokens at this location
-                    remaningDamage -= armor * numDestroyed;
+                    // this token isn't valid anymore, skip it
+                    continue;
+                }
+                // no more damage to spread, break out
+                if (remainingDamage == 0)
+                {
+                    break;
+                }
+                ShipToken targetShipToken = target.Token;
 
-                    // record that we destroyed this token
-                    target.Destroyed = true;
-                    battle.RecordFire(weaponSlot.Token, weaponSlot.Token.Position, target.Position, weaponSlot.Slot.HullSlotIndex, target, shields, damage - shields, numDestroyed);
+                // shields are shared among all tokens
+                var shields = target.Shields;
+                var armor = targetShipToken.Design.Aggregate.Armor;
+
+                // beam weapons degrade 10% max over distance
+                var distance = weapon.Token.GetDistanceAway(target.Position);
+
+                // if a target of a beam weapon is 3 spaces away and the beam has a range of 4
+                // we do 3/4 * 10% less damage
+                var rangedDamage = (int)(remainingDamage * (1 - .1f * distance / weapon.Range));
+
+                log.Debug($"{weapon.Token} fired {weapon.Slot.Quantity} {weapon.Slot.HullComponent.Name} at {target} (shields: {shields}, armor: {armor}, distance: {distance}, {targetShipToken.Quantity}@{targetShipToken.Damage} damage) for {remainingDamage} (range adjusted to {rangedDamage})");
+
+                if (rangedDamage > shields)
+                {
+                    // wipe out the shields
+                    remainingDamage = rangedDamage - shields;
+                    target.Shields = 0;
+
+                    // figure out how damaged the fleet currently is
+                    float existingDamage = targetShipToken.Damage * targetShipToken.QuantityDamaged;
+                    remainingDamage += existingDamage;
+
+                    // figure out how many tokens were destroyed
+                    int numDestroyed = (int)remainingDamage / armor;
+                    if (numDestroyed >= targetShipToken.Quantity)
+                    {
+                        numDestroyed = targetShipToken.Quantity;
+                        targetShipToken.Quantity = 0;
+                        // token completely destroyed
+                        remainingDamage -= armor * numDestroyed;
+
+                        // record that we destroyed this token
+                        target.Destroyed = true;
+                        log.Debug($"{weapon.Token} completely destroyed {target}");
+
+                        battle.RecordFire(weapon.Token, weapon.Token.Position, target.Position, weapon.WeaponType, weapon.Slot.HullSlotIndex, target, shields, rangedDamage - shields, numDestroyed);
+                    }
+                    else
+                    {
+                        if (numDestroyed > 0)
+                        {
+                            targetShipToken.Quantity -= (int)numDestroyed;
+                        }
+
+                        // reduce our remaining damage by however many we destroyed
+                        remainingDamage -= armor * numDestroyed;
+
+                        if (remainingDamage > 0)
+                        {
+                            // all remaining damage is applied equally to all ships
+                            targetShipToken.Damage = remainingDamage / targetShipToken.Quantity;
+                            targetShipToken.QuantityDamaged = targetShipToken.Quantity;
+                            remainingDamage = 0;
+                            log.Debug($"{weapon.Token} destroyed {numDestroyed} ships, leaving {target} damaged {targetShipToken.Quantity}@{targetShipToken.Damage} damage");
+                        }
+
+
+                        battle.RecordFire(weapon.Token, weapon.Token.Position, target.Position, weapon.WeaponType, weapon.Slot.HullSlotIndex, target, shields, rangedDamage - shields, numDestroyed);
+                    }
+
                 }
                 else
                 {
-                    if (numDestroyed > 0)
-                    {
-                        targetShipToken.Quantity -= (int)numDestroyed;
-                    }
-
-                    // reduce our remaining damage by however many we destroyed
-                    remaningDamage -= armor * numDestroyed;
-
-                    if (remaningDamage > 0)
-                    {
-                        // all remaining damage is applied equally to all ships
-                        targetShipToken.Damage = remaningDamage / targetShipToken.Quantity;
-                        targetShipToken.QuantityDamaged = targetShipToken.Quantity;
-                    }
-                    battle.RecordFire(weaponSlot.Token, weaponSlot.Token.Position, target.Position, weaponSlot.Slot.HullSlotIndex, target, shields, damage - shields, numDestroyed);
+                    // no ships were destroyed, deplete shields
+                    target.Shields -= rangedDamage;
+                    log.Debug($"{weapon.Token} firing {weapon.Slot.Quantity} {weapon.Slot.HullComponent.Name} did {rangedDamage} to {target} shields, leaving {target.Shields} shields still operational.");
+                    battle.RecordFire(weapon.Token, weapon.Token.Position, target.Position, weapon.WeaponType, weapon.Slot.HullSlotIndex, target, rangedDamage, 0, 0);
                 }
 
-            }
-            else
-            {
-                // no ships were destroyed, deplete shields
-                target.Shields -= damage;
-                battle.RecordFire(weaponSlot.Token, weaponSlot.Token.Position, target.Position, weaponSlot.Slot.HullSlotIndex, target, damage, 0, 0);
-            }
+                log.Debug($"{weapon.Token} {weapon.Slot.Quantity} {weapon.Slot.HullComponent.Name} has {remainingDamage} remaining dp to burn through {weapon.Targets.Count - 1} additional targets.");
 
-            target.Damaged = true;
+                target.Damaged = true;
+            }
+        }
+
+        internal void FireTorpedo(Battle battle, BattleWeaponSlot weapon)
+        {
 
         }
 
@@ -522,7 +588,7 @@ namespace CraigStars
         {
             // count this token's moves
             token.MovesMade++;
-            if (token.Target == null || !token.Token.Design.Aggregate.HasWeapons)
+            if (token.MoveTarget == null || !token.Token.Design.Aggregate.HasWeapons)
             {
                 // tokens with no weapons always run away
                 RunAway(battle, token);
@@ -570,10 +636,10 @@ namespace CraigStars
         /// <param name="token"></param>
         internal void MaximizeDamage(Battle battle, BattleToken token)
         {
-            if (token.Target != null)
+            if (token.MoveTarget != null)
             {
                 Vector2 newPosition = token.Position;
-                if (token.Position.y > token.Target.Position.y)
+                if (token.Position.y > token.MoveTarget.Position.y)
                 {
                     newPosition.y--;
                 }
@@ -581,7 +647,7 @@ namespace CraigStars
                 {
                     newPosition.y++;
                 }
-                if (token.Position.x > token.Target.Position.x)
+                if (token.Position.x > token.MoveTarget.Position.x)
                 {
                     newPosition.x--;
                 }
@@ -772,5 +838,21 @@ namespace CraigStars
             return (cost.Germanium + cost.Resources) / defense;
         }
 
+        /// <summary>
+        /// Get the attractiveness of a defender token vs an attacker weapon
+        /// This assumes the defender is owned by a player we want to attack
+        /// TODO: work in weapon attractiveness
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        float GetAttractiveness(BattleWeaponSlot weapon, BattleToken target)
+        {
+            var cost = target.Token.Design.Aggregate.Cost * target.Token.Quantity;
+            var defense = (target.Token.Design.Aggregate.Armor + target.Token.Design.Aggregate.Shield) * target.Token.Quantity;
+
+            // TODO: change defense based on attacker weapons
+
+            return (cost.Germanium + cost.Resources) / defense;
+        }
     }
 }

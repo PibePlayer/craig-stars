@@ -139,7 +139,7 @@ namespace CraigStars
         /// <param name="token"></param>
         /// <param name="from"></param>
         /// <param name="to"></param>
-        internal void RecordFire(int round, BattleRecordToken token, Vector2 from, Vector2 to, int slot, BattleRecordToken target, int damageDoneShields, int damageDoneArmor, int tokensDestroyed)
+        internal void RecordFire(int round, BattleRecordToken token, Vector2 from, Vector2 to, BattleWeaponType weaponType, int slot, BattleRecordToken target, int damageDoneShields, int damageDoneArmor, int tokensDestroyed)
         {
             if (target.Owner.Num == Owner.Num)
             {
@@ -153,10 +153,10 @@ namespace CraigStars
             {
                 EnemyShipCount++;
             }
-            ActionsPerRound[ActionsPerRound.Count - 1].Add(new BattleRecordTokenFire(TokensByGuid[token.Guid], from, to, slot, TokensByGuid[target.Guid], damageDoneShields, damageDoneArmor, tokensDestroyed));
+            ActionsPerRound[ActionsPerRound.Count - 1].Add(new BattleRecordTokenFire(TokensByGuid[token.Guid], from, to, weaponType, slot, TokensByGuid[target.Guid], damageDoneShields, damageDoneArmor, tokensDestroyed));
             if (Owner.Num == 0)
             {
-                log.Debug($"Round: {round} {ActionsPerRound[round][ActionsPerRound[round].Count - 1]}");
+                // log.Debug($"Round: {round} {ActionsPerRound[round][ActionsPerRound[round].Count - 1]}");
             }
         }
 

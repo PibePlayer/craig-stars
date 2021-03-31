@@ -4,6 +4,11 @@ using System.Linq;
 
 namespace CraigStars
 {
+    /// <summary>
+    /// Ideally, we would load techs from json on disk for mods and such
+    /// but we need something to start with. This class has all the base techs
+    /// as static readonly vars
+    /// </summary>
     public static class Techs
     {
         public static List<Tech> AllTechs { get; set; } = new List<Tech>();

@@ -47,7 +47,7 @@ namespace CraigStars
         /// <returns></returns>
         public bool IsInRange()
         {
-            return IsInRange(Token.Target);
+            return IsInRange(Token.Target) || IsInRange(Token.TargetOfOpportunity);
         }
 
         /// <summary>

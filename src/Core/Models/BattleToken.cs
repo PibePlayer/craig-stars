@@ -28,6 +28,12 @@ namespace CraigStars
         internal BattleToken Target { get; set; }
 
         /// <summary>
+        /// If the token can't fire on it's target, this will be the best
+        /// target of opportunity that is in range of one of the weapons
+        /// </summary>
+        internal BattleToken TargetOfOpportunity { get; set; }
+
+        /// <summary>
         /// Tokens targeting this token
         /// </summary>
         internal List<BattleToken> TargetedBy { get; set; } = new List<BattleToken>();

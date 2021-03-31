@@ -13,13 +13,20 @@ namespace CraigStars
         {
         }
 
-        public BattleRecordTokenFire(BattleRecordToken token, Vector2 from, int slot, BattleRecordToken target, int damageDone, int tokensDestroyed) : base(token, from)
+        public BattleRecordTokenFire(BattleRecordToken token, Vector2 from, Vector2 to, int slot, BattleRecordToken target, int damageDoneShields, int damageDoneArmor, int tokensDestroyed) : base(token, from)
         {
+            To = to;
             Slot = slot;
             Target = target;
-            DamageDone = damageDone;
+            DamageDoneShields = damageDoneShields;
+            DamageDoneArmor = damageDoneArmor;
             TokensDestroyed = tokensDestroyed;
         }
+
+        /// <summary>
+        /// The ending location of the token
+        /// </summary>
+        public Vector2 To { get; set; }
 
         /// <summary>
         /// The slot with weapons that is firing
@@ -34,11 +41,12 @@ namespace CraigStars
         public BattleRecordToken Target { get; set; }
 
         public int TokensDestroyed { get; set; }
-        public int DamageDone { get; set; }
+        public int DamageDoneShields { get; set; }
+        public int DamageDoneArmor { get; set; }
 
         public override string ToString()
         {
-            return $"{Token} fired upon {Target} with {Token.Token.Design.Slots[Slot - 1].HullComponent.Name} for {DamageDone} damage, destroying {TokensDestroyed} ships";
+            return $"{Token} fired upon {Target} with {Token.Token.Design.Slots[Slot - 1].HullComponent.Name} for {DamageDoneShields} shield damage, {DamageDoneArmor} armor damage, destroying {TokensDestroyed} ships";
         }
 
     }

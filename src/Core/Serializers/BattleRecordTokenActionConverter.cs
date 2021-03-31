@@ -36,10 +36,6 @@ namespace CraigStars
             {
                 item = new BattleRecordTokenRanAway();
             }
-            else if (type == typeof(BattleRecordTokenDestroyed).Name)
-            {
-                item = new BattleRecordTokenDestroyed();
-            }
 
             if (item != null)
             {

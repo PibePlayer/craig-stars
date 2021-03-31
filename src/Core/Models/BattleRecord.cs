@@ -90,11 +90,17 @@ namespace CraigStars
                     EnemyShipCount++;
                 }
             }
+            // always start with one round
             ActionsPerRound.Clear();
-            for (int i = 0; i < numRounds; i++)
-            {
-                ActionsPerRound.Add(new List<BattleRecordTokenAction>());
-            }
+            ActionsPerRound.Add(new List<BattleRecordTokenAction>());
+        }
+
+        /// <summary>
+        /// Add a new round to the record
+        /// </summary>
+        internal void RecordNewRound()
+        {
+            ActionsPerRound.Add(new List<BattleRecordTokenAction>());
         }
 
         /// <summary>
@@ -105,8 +111,11 @@ namespace CraigStars
         /// <param name="to"></param>
         internal void RecordMove(int round, BattleRecordToken token, Vector2 from, Vector2 to)
         {
-            ActionsPerRound[round].Add(new BattleRecordTokenMove(TokensByGuid[token.Guid], from, to));
-            log.Debug(ActionsPerRound[round][ActionsPerRound[round].Count - 1]);
+            ActionsPerRound[ActionsPerRound.Count - 1].Add(new BattleRecordTokenMove(TokensByGuid[token.Guid], from, to));
+            if (Owner.Num == 0)
+            {
+                log.Debug($"Round: {round} {ActionsPerRound[round][ActionsPerRound[round].Count - 1]}");
+            }
         }
 
         /// <summary>
@@ -117,8 +126,11 @@ namespace CraigStars
         /// <param name="to"></param>
         internal void RecordRunAway(int round, BattleRecordToken token)
         {
-            ActionsPerRound[round].Add(new BattleRecordTokenRanAway(TokensByGuid[token.Guid]));
-            log.Debug(ActionsPerRound[round][ActionsPerRound[round].Count - 1]);
+            ActionsPerRound[ActionsPerRound.Count - 1].Add(new BattleRecordTokenRanAway(TokensByGuid[token.Guid]));
+            if (Owner.Num == 0)
+            {
+                log.Debug($"Round: {round} {ActionsPerRound[round][ActionsPerRound[round].Count - 1]}");
+            }
         }
 
         /// <summary>
@@ -127,7 +139,7 @@ namespace CraigStars
         /// <param name="token"></param>
         /// <param name="from"></param>
         /// <param name="to"></param>
-        internal void RecordFire(int round, BattleRecordToken token, Vector2 from, int slot, BattleRecordToken target, int damage, int tokensDestroyed)
+        internal void RecordFire(int round, BattleRecordToken token, Vector2 from, Vector2 to, int slot, BattleRecordToken target, int damageDoneShields, int damageDoneArmor, int tokensDestroyed)
         {
             if (target.Owner.Num == Owner.Num)
             {
@@ -141,19 +153,12 @@ namespace CraigStars
             {
                 EnemyShipCount++;
             }
-            ActionsPerRound[round].Add(new BattleRecordTokenFire(TokensByGuid[token.Guid], from, slot, TokensByGuid[target.Guid], damage, tokensDestroyed));
-            log.Debug(ActionsPerRound[round][ActionsPerRound[round].Count - 1]);
+            ActionsPerRound[ActionsPerRound.Count - 1].Add(new BattleRecordTokenFire(TokensByGuid[token.Guid], from, to, slot, TokensByGuid[target.Guid], damageDoneShields, damageDoneArmor, tokensDestroyed));
+            if (Owner.Num == 0)
+            {
+                log.Debug($"Round: {round} {ActionsPerRound[round][ActionsPerRound[round].Count - 1]}");
+            }
         }
 
-        /// <summary>
-        /// Record a token being destroyed
-        /// </summary>
-        /// <param name="round"></param>
-        /// <param name="token"></param>
-        internal void RecordDestroyed(int round, BattleRecordToken token)
-        {
-            ActionsPerRound[round].Add(new BattleRecordTokenDestroyed(TokensByGuid[token.Guid]));
-            log.Debug(ActionsPerRound[round][ActionsPerRound[round].Count - 1]);
-        }
     }
 }

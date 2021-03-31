@@ -1,0 +1,451 @@
+using CraigStars.Singletons;
+using Godot;
+using log4net;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace CraigStars
+{
+    public class BattleViewerDialog : WindowDialog
+    {
+        private static readonly ILog log = LogManager.GetLogger(typeof(BattleViewerDialog));
+
+        [Export]
+        public int GridSize { get; set; } = 10;
+        // for debugging, we can generate a test battle
+        bool useTestBattle = true;
+
+        public BattleRecord BattleRecord { get; set; } = new BattleRecord();
+
+        BattleGridSquare[,] Squares = new BattleGridSquare[10, 10];
+
+        Label roundLabel;
+        Label phaseLabel;
+        Label actionLabel;
+        Label actionRaceLabel;
+        Label actionDesignLabel;
+        Label actionMoveLabel;
+        Container actionAttackLabelContainer;
+        Label actionAttackLabel;
+        Label actionAttackTargetLabel;
+        Label actionAttackLocationLabel;
+        Label actionAttackDamageLabel;
+
+        Label selectionLabel;
+        Label selectionRaceLabel;
+        Label selectionDesignLabel;
+        Label selectionInitiative;
+        Label selectionMovement;
+        Label selectionArmor;
+        Label selectionDamage;
+        Label selectionShields;
+
+        Button nextActionButton;
+        Button prevActionButton;
+
+        int currentRound = 0;
+        int currentAction = -1;
+        int currentPhase = -1;
+        int totalRounds = 0;
+        int totalPhases = 0;
+
+        BattleGridSquare selectedSquare;
+        int selectedTokenIndex = 0;
+        BattleRecordToken selectedToken;
+
+        Button designDetailsButton;
+        PopupPanel hullSummaryPopup;
+        HullSummary hullSummary;
+
+        public override void _Ready()
+        {
+            for (int y = 0; y < GridSize; y++)
+            {
+                for (int x = 0; x < GridSize; x++)
+                {
+                    Squares[y, x] = GetNode<BattleGridSquare>($"MarginContainer/VBoxContainer/BattleContainer/BattleGrid/BattleGridSquare{(x + 1) + y * GridSize}");
+                    Squares[y, x].Coordinates = new Vector2(y, x);
+                    Squares[y, x].SelectedEvent += OnBattleGridSquareSelected;
+                    log.Debug($"Loading square MarginContainer/VBoxContainer/BattleContainer/BattleGrid/BattleGridSquare{(x + 1) + y * GridSize}");
+                }
+            }
+
+            phaseLabel = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/PhaseRoundContainer/PhaseLabel");
+            roundLabel = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/PhaseRoundContainer/RoundLabel");
+            actionLabel = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/ActionDetailContainer/VBoxContainer/ActionLabel");
+            actionRaceLabel = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/ActionDetailContainer/VBoxContainer/ActionRaceLabel");
+            actionDesignLabel = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/ActionDetailContainer/VBoxContainer/ActionDesignLabel");
+            actionMoveLabel = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/ActionDetailContainer/VBoxContainer/ActionMoveLabel");
+            actionAttackLabelContainer = GetNode<Container>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/ActionDetailContainer/VBoxContainer/ActionAttackLabelContainer");
+            actionAttackLabel = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/ActionDetailContainer/VBoxContainer/ActionAttackLabelContainer/ActionAttackLabel");
+            actionAttackTargetLabel = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/ActionDetailContainer/VBoxContainer/ActionAttackLabelContainer/ActionAttackTargetLabel");
+            actionAttackLocationLabel = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/ActionDetailContainer/VBoxContainer/ActionAttackLabelContainer/ActionAttackLocationLabel");
+            actionAttackDamageLabel = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/ActionDetailContainer/VBoxContainer/ActionAttackLabelContainer/ActionAttackDamageLabel");
+
+            selectionLabel = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/SelectedDetailContainer/VBoxContainer/SelectionLabel");
+            selectionRaceLabel = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/SelectedDetailContainer/VBoxContainer/SelectionRaceLabel");
+            selectionDesignLabel = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/SelectedDetailContainer/VBoxContainer/SelectionDesignLabel");
+            selectionInitiative = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/SelectedDetailContainer/VBoxContainer/GridContainer/SelectionInitiative");
+            selectionMovement = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/SelectedDetailContainer/VBoxContainer/GridContainer/SelectionMovement");
+            selectionArmor = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/SelectedDetailContainer/VBoxContainer/GridContainer/SelectionArmor");
+            selectionDamage = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/SelectedDetailContainer/VBoxContainer/GridContainer/SelectionDamage");
+            selectionShields = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/SelectedDetailContainer/VBoxContainer/GridContainer/SelectionShields");
+            designDetailsButton = GetNode<Button>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/SelectedDetailContainer/VBoxContainer/DesignDetailsButton");
+
+            hullSummaryPopup = GetNode<PopupPanel>("HullSummaryPopup");
+            hullSummary = GetNode<HullSummary>("HullSummaryPopup/HullSummary");
+
+            nextActionButton = GetNode<Button>("MarginContainer/VBoxContainer/HBoxContainerButtons/NextActionButton");
+            prevActionButton = GetNode<Button>("MarginContainer/VBoxContainer/HBoxContainerButtons/PrevActionButton");
+
+            designDetailsButton.Connect("button_down", this, nameof(OnDesignDetailsButtonDown));
+            designDetailsButton.Connect("button_up", this, nameof(OnDesignDetailsButtonUp));
+            nextActionButton.Connect("pressed", this, nameof(OnNextActionButtonPressed));
+            prevActionButton.Connect("pressed", this, nameof(OnPrevActionButtonPressed));
+            Connect("visibility_changed", this, nameof(OnVisibilityChanged));
+
+            SetAsMinsize();
+            if (useTestBattle)
+            {
+                BattleRecord = GenerateTestBattle();
+                Show();
+            }
+        }
+
+        private void OnBattleGridSquareSelected(BattleGridSquare square)
+        {
+            if (selectedSquare != null)
+            {
+                if (selectedSquare == square)
+                {
+                    // cycle through tokens
+                    selectedTokenIndex++;
+                    if (selectedTokenIndex >= selectedSquare.Tokens.Count)
+                    {
+                        selectedTokenIndex = 0;
+                    }
+                }
+                else
+                {
+                    // deselect the old square
+                    selectedSquare.Selected = false;
+
+                    // select this square
+                    selectedSquare = square;
+                    selectedSquare.Selected = true;
+                    selectedTokenIndex = 0;
+                }
+            }
+            else
+            {
+                // select this square
+                selectedSquare = square;
+                selectedSquare.Selected = true;
+                selectedTokenIndex = 0;
+            }
+
+            if (selectedSquare.Tokens.Count > 0)
+            {
+                selectedToken = selectedSquare.Tokens[selectedTokenIndex];
+                selectedSquare.SelectedTokenIndex = selectedTokenIndex;
+            }
+            else
+            {
+                selectedToken = null;
+            }
+
+            UpdateDescriptionFields();
+        }
+
+        void OnVisibilityChanged()
+        {
+            if (Visible)
+            {
+                totalRounds = BattleRecord.ActionsPerRound.Count;
+                totalPhases = BattleRecord.ActionsPerRound.Sum(actionsPerRound => actionsPerRound.Count);
+
+                UpdateDescriptionFields();
+                ResetBoard();
+            }
+        }
+
+        void ResetBoard()
+        {
+            currentRound = 0;
+            currentAction = -1;
+            currentPhase = -1;
+
+            // clear out existing tokens
+            for (int y = 0; y < GridSize; y++)
+            {
+                for (int x = 0; x < GridSize; x++)
+                {
+                    Squares[y, x].ClearTokens();
+                }
+            }
+
+            foreach (var token in BattleRecord.Tokens)
+            {
+                var square = Squares[(int)token.StartingPosition.y, (int)token.StartingPosition.x];
+                square.AddToken(token);
+                OnBattleGridSquareSelected(square);
+            }
+        }
+
+        /// <summary>
+        /// Update the various fields like phase number, action details, etc
+        /// </summary>
+        void UpdateDescriptionFields()
+        {
+            roundLabel.Text = $"Round {currentRound + 1} of {totalRounds}";
+
+            if (currentPhase == -1)
+            {
+                phaseLabel.Text = $"{totalPhases} Phases";
+                actionLabel.Text = $"{BattleRecord.ActionsPerRound[currentRound].Count} Actions";
+            }
+            else
+            {
+                phaseLabel.Text = $"Phase {currentPhase + 1} of {totalPhases}";
+                actionLabel.Text = $"Action {currentAction + 1} of {BattleRecord.ActionsPerRound[currentRound].Count}";
+
+                var action = BattleRecord.ActionsPerRound[currentRound][currentAction];
+                actionRaceLabel.Text = action.Token.Owner.RacePluralName;
+                actionDesignLabel.Text = action.Token.Token.Design.Name;
+
+                actionMoveLabel.Visible = false;
+                actionAttackLabelContainer.Visible = false;
+
+                if (action is BattleRecordTokenMove move)
+                {
+                    actionMoveLabel.Visible = true;
+                    actionMoveLabel.Text = $"Moved from ({move.From.x + 1}, {move.From.y + 1}) to ({move.To.x + 1}, {move.To.y + 1})";
+                }
+                else if (action is BattleRecordTokenFire fire)
+                {
+                    actionAttackLabelContainer.Visible = true;
+                    actionAttackLabel.Text = $"attacks the {fire.Target.Owner.RacePluralName}";
+                    actionAttackTargetLabel.Text = $"{fire.Target.Token.Design.Name} * {fire.Target.Token.Quantity - fire.TokensDestroyed}";
+                    actionAttackLocationLabel.Text = $"at ({fire.To.x + 1}, {fire.To.y + 1}) doing";
+                    if (fire.DamageDoneShields > 0 && fire.DamageDoneArmor > 0)
+                    {
+                        actionAttackDamageLabel.Text = $"{fire.DamageDoneShields} damage to shields and {fire.DamageDoneArmor} to armor.";
+                    }
+                    else if (fire.DamageDoneShields > 0)
+                    {
+                        actionAttackDamageLabel.Text = $"{fire.DamageDoneShields} damage to shields.";
+                    }
+                    else
+                    {
+                        actionAttackDamageLabel.Text = $"{fire.DamageDoneArmor} damage to armor.";
+                    }
+
+                }
+            }
+
+
+            if (selectedSquare != null)
+            {
+                selectionLabel.Text = $"Selection: ({selectedSquare.Coordinates.x}, {selectedSquare.Coordinates.y})";
+                if (selectedToken != null)
+                {
+                    selectionRaceLabel.Text = selectedToken.Owner.RacePluralName;
+
+                    var design = selectedToken.Token.Design;
+                    selectionDesignLabel.Text = design.Name;
+
+                    if (design.Aggregate.HasWeapons)
+                    {
+                        // todo, add initiative to aggregate..
+                        selectionInitiative.Text = $"Initiative: {design.Aggregate.WeaponSlots[0].HullComponent.Initiative}";
+                    }
+                    else
+                    {
+                        selectionInitiative.Text = $"Initiative: 0";
+                    }
+
+                    selectionMovement.Text = $"Movement: {selectedToken.Token.Design.Aggregate.Movement}";
+                    selectionArmor.Text = $"Armor: {selectedToken.Token.Design.Aggregate.Armor}dp";
+                    selectionShields.Text = $"Shields: {selectedToken.Token.Design.Aggregate.Shield}dp";
+
+                    if (selectedToken.Token.Damage > 0)
+                    {
+                        selectionDamage.Text = $"Damage: {selectedToken.Token.Damage}";
+                    }
+                    else
+                    {
+                        selectionDamage.Text = $"Damage: (none)";
+                    }
+                }
+            }
+        }
+
+        void OnNextActionButtonPressed()
+        {
+            prevActionButton.Disabled = false;
+            if (currentPhase < totalPhases - 1)
+            {
+                currentPhase++;
+
+                // see if we need to advance the round
+                var round = BattleRecord.ActionsPerRound[currentRound];
+                if (currentAction < round.Count - 1)
+                {
+                    currentAction++;
+                }
+                else
+                {
+                    currentAction = 0;
+                    currentRound++;
+                }
+
+                RunAction(BattleRecord.ActionsPerRound[currentRound][currentAction]);
+            }
+
+            UpdateDescriptionFields();
+
+            if (currentPhase >= totalPhases - 1)
+            {
+                nextActionButton.Disabled = true;
+            }
+        }
+
+        void OnPrevActionButtonPressed()
+        {
+            nextActionButton.Disabled = false;
+
+            currentPhase--;
+
+            var round = BattleRecord.ActionsPerRound[currentRound];
+            var action = BattleRecord.ActionsPerRound[currentRound][currentAction];
+            if (currentPhase == -1 || currentAction > 0)
+            {
+                currentAction--;
+            }
+            else
+            {
+                currentRound--;
+                currentAction = BattleRecord.ActionsPerRound[currentRound].Count - 1;
+            }
+
+            if (currentPhase == -1)
+            {
+                ResetBoard();
+                prevActionButton.Disabled = true;
+            }
+            else
+            {
+                ReverseAction(action);
+            }
+
+            UpdateDescriptionFields();
+        }
+
+        void OnDesignDetailsButtonDown()
+        {
+            if (selectedToken != null)
+            {
+                var design = selectedToken.Token.Design;
+                hullSummary.Hull = design.Hull;
+                hullSummary.ShipDesign = design;
+
+                // position the summary view on the corner
+                var size = RectSize;
+                var position = RectGlobalPosition;
+                position.x += size.x / 2 - hullSummary.RectSize.x / 2;
+                position.y += size.y / 2 - hullSummary.RectSize.y / 2;
+                hullSummaryPopup.SetGlobalPosition(position);
+                hullSummaryPopup.Show();
+            }
+        }
+
+        void OnDesignDetailsButtonUp()
+        {
+            hullSummaryPopup.Hide();
+        }
+
+        /// <summary>
+        /// Run an action
+        /// </summary>
+        /// <param name="action"></param>
+        void RunAction(BattleRecordTokenAction action)
+        {
+            log.Debug($"Running action {action}");
+            if (action is BattleRecordTokenMove move)
+            {
+                var source = Squares[(int)move.From.y, (int)move.From.x];
+                var dest = Squares[(int)move.To.y, (int)move.To.x];
+                source.RemoveToken(move.Token);
+                dest.AddToken(move.Token);
+                OnBattleGridSquareSelected(dest);
+                selectedToken = move.Token;
+                UpdateDescriptionFields();
+            }
+            else if (action is BattleRecordTokenFire fire)
+            {
+                var target = fire.Target;
+                target.DamageArmor += fire.DamageDoneArmor;
+                target.DamageShield += fire.DamageDoneShields;
+                target.ShipsDestroyed += fire.TokensDestroyed;
+                if (target.ShipsDestroyed >= target.Token.Quantity)
+                {
+                    Squares[(int)fire.To.y, (int)fire.To.x].RemoveToken(target);
+                }
+            }
+        }
+
+        void ReverseAction(BattleRecordTokenAction action)
+        {
+            log.Debug($"Reversing action {action}");
+            if (action is BattleRecordTokenMove move)
+            {
+                var source = Squares[(int)move.From.y, (int)move.From.x];
+                var dest = Squares[(int)move.To.y, (int)move.To.x];
+                dest.RemoveToken(move.Token);
+                source.AddToken(move.Token);
+                OnBattleGridSquareSelected(source);
+                selectedToken = move.Token;
+                UpdateDescriptionFields();
+            }
+            else if (action is BattleRecordTokenFire fire)
+            {
+                var target = fire.Target;
+                target.DamageArmor -= fire.DamageDoneArmor;
+                target.DamageShield -= fire.DamageDoneShields;
+                if (target.ShipsDestroyed == 0 && fire.TokensDestroyed > 0)
+                {
+                    Squares[(int)fire.To.y, (int)fire.To.x].AddToken(target);
+                }
+                target.ShipsDestroyed -= fire.TokensDestroyed;
+            }
+        }
+
+        #region Test Battle Setup
+
+        BattleRecord GenerateTestBattle()
+        {
+            PlayersManager.Instance.SetupPlayers();
+            var player1 = PlayersManager.Me;
+            // level up our players so they will have designs
+            player1.TechLevels = new TechLevel(10, 10, 10, 10, 10, 10);
+
+            // create a second weaker player
+            var player2 = PlayersManager.Instance.Players[1] as Player;
+            player2.TechLevels = new TechLevel(6, 6, 6, 6, 6, 6);
+
+            var battleEngine = new BattleEngine(RulesManager.Rules);
+            var battle = battleEngine.BuildBattle(Battles.GetFleetsForDesignsBattle(
+                player1,
+                player2,
+                new HashSet<string>() { "Destroyer", "Space Station" },
+                new HashSet<string>() { "Destroyer", "Scout" }
+            ));
+            battleEngine.RunBattle(battle);
+
+            return battle.PlayerRecords[PlayersManager.Me];
+        }
+
+        #endregion
+    }
+}

@@ -23,7 +23,7 @@ namespace CraigStars
         /// This is the percent the QuanityDamaged tokens are damaged
         /// </summary>
         /// <value></value>
-        public int Damage { get; set; }
+        public float Damage { get; set; }
 
         public ShipToken() { }
 
@@ -33,7 +33,7 @@ namespace CraigStars
             Quantity = quantity;
         }
 
-        public ShipToken(ShipDesign design, int quantity, int damage, int quantityDamaged)
+        public ShipToken(ShipDesign design, int quantity, float damage, int quantityDamaged)
         {
             Design = design;
             Quantity = quantity;

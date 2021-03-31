@@ -25,6 +25,11 @@ namespace CraigStars
         public List<BattleToken> Tokens { get; set; } = new List<BattleToken>();
 
         /// <summary>
+        /// Get an enumerable of remaining tokens
+        /// </summary>
+        public IEnumerable<BattleToken> RemainingTokens { get => Tokens.Where(token => !(token.Destroyed || token.RanAway)); }
+
+        /// <summary>
         /// Record for players
         /// </summary>
         /// <returns></returns>
@@ -61,6 +66,21 @@ namespace CraigStars
         };
 
         /// <summary>
+        /// Let the 
+        /// </summary>
+        internal void RecordNewRound()
+        {
+            foreach (var record in PlayerRecords.Values)
+            {
+                // records start with 1 round, so don't re-add it
+                if (record.ActionsPerRound.Count <= Round)
+                {
+                    record.RecordNewRound();
+                }
+            }
+        }
+
+        /// <summary>
         /// Record a move
         /// </summary>
         /// <param name="token"></param>
@@ -94,27 +114,13 @@ namespace CraigStars
         /// <param name="token"></param>
         /// <param name="from"></param>
         /// <param name="to"></param>
-        internal void RecordFire(BattleRecordToken token, Vector2 from, int slot, BattleRecordToken target, int damage, int tokensDestroyed)
+        internal void RecordFire(BattleRecordToken token, Vector2 from, Vector2 to, int slot, BattleRecordToken target, int damageDoneShields, int damageDoneArmor, int tokensDestroyed)
         {
             foreach (var record in PlayerRecords.Values)
             {
-                record.RecordFire(Round, token, from, slot, target, damage, tokensDestroyed);
+                record.RecordFire(Round, token, from, to, slot, target, damageDoneShields, damageDoneArmor, tokensDestroyed);
             }
 
-        }
-
-        /// <summary>
-        /// Record a token being destroyed
-        /// </summary>
-        /// <param name="token"></param>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        internal void RecordDestroyed(BattleRecordToken token)
-        {
-            foreach (var record in PlayerRecords.Values)
-            {
-                record.RecordDestroyed(Round, token);
-            }
         }
 
         /// <summary>
@@ -167,6 +173,14 @@ namespace CraigStars
             foreach (var record in PlayerRecords.Values)
             {
                 record.SetupRecord(numRounds);
+            }
+        }
+
+        internal void RecordStartingPosition(BattleToken token, Vector2 position)
+        {
+            foreach (var record in PlayerRecords.Values)
+            {
+                record.TokensByGuid[token.Guid].StartingPosition = position;
             }
         }
     }

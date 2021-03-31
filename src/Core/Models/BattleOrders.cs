@@ -12,8 +12,8 @@ namespace CraigStars
     public class BattleOrders
     {
         public BattleTargetType PrimaryTarget { get; set; } = BattleTargetType.ArmedShips;
-        public BattleTargetType SecondaryTarget { get; set; } = BattleTargetType.UnarmedShips;
-        public BattleTactic Tactic { get; set; } = BattleTactic.MaximizeDamage;
-        public BattleAttackWho AttackWho { get; set; } = BattleAttackWho.Enemies;
+        public BattleTargetType SecondaryTarget { get; set; } = BattleTargetType.Any;
+        public BattleTactic Tactic { get; set; } = BattleTactic.MaximizeDamageRatio;
+        public BattleAttackWho AttackWho { get; set; } = BattleAttackWho.EnemiesAndNeutrals;
     }
 }

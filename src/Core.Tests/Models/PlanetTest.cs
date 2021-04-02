@@ -5,7 +5,7 @@ namespace CraigStars.Tests
     [TestFixture]
     public class PlanetTest
     {
-        Rules rules = new Rules();
+        Rules rules = new Rules(0);
 
         [Test]
         public void TestGetMaxMines()

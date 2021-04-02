@@ -36,7 +36,7 @@ namespace CraigStars
         /// in the game that match up with PublicGameInfo properties are just forwarded
         /// </summary>
         [JsonIgnore] public PublicGameInfo GameInfo { get; set; } = new PublicGameInfo();
-        public String Name { get => GameInfo.Name; set => GameInfo.Name = value; }
+        public string Name { get => GameInfo.Name; set => GameInfo.Name = value; }
         public Rules Rules { get => GameInfo.Rules; private set => GameInfo.Rules = value; }
         public int Year { get => GameInfo.Year; set => GameInfo.Year = value; }
         public GameMode Mode { get => GameInfo.Mode; set => GameInfo.Mode = value; }

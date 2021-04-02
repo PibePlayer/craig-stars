@@ -22,6 +22,7 @@ namespace CraigStars
 
         int messageNum = 0;
 
+        MapObjectSprite selectedMapObject;
         Message activeMessage;
         List<Message> filteredMessages;
 
@@ -44,6 +45,7 @@ namespace CraigStars
             Signals.TurnPassedEvent += OnTurnPassed;
             Signals.PostStartGameEvent += OnPostStartGame;
             Signals.PlayerDirtyEvent += OnPlayerDirty;
+            Signals.MapObjectSelectedEvent += OnMapObjectSelected;
             UpdateControls();
         }
 
@@ -52,6 +54,12 @@ namespace CraigStars
             Signals.TurnPassedEvent -= OnTurnPassed;
             Signals.PostStartGameEvent -= OnPostStartGame;
             Signals.PlayerDirtyEvent -= OnPlayerDirty;
+            Signals.MapObjectSelectedEvent -= OnMapObjectSelected;
+        }
+
+        void OnMapObjectSelected(MapObjectSprite mapObject)
+        {
+            selectedMapObject = mapObject;
         }
 
         void OnNextButtonPressed()
@@ -64,7 +72,17 @@ namespace CraigStars
         {
             if (activeMessage != null && activeMessage.Target != null)
             {
-                Signals.PublishGotoMapObjectEvent(activeMessage.Target);
+                if (activeMessage.Type == MessageType.Battle 
+                    && selectedMapObject.MapObject == activeMessage.Target
+                    && activeMessage.BattleGuid.HasValue
+                    && Me.BattlesByGuid.TryGetValue(activeMessage.BattleGuid.Value, out var battle))
+                {
+                    Signals.PublishBattleViewerDialogRequestedEvent(battle);
+                }
+                else
+                {
+                    Signals.PublishGotoMapObjectEvent(activeMessage.Target);
+                }
             }
         }
 
@@ -146,7 +164,23 @@ namespace CraigStars
                 // disable/enable buttons
                 prevButton.Disabled = messageNum == 0;
                 nextButton.Disabled = messageNum >= messages.Count - 1;
-                gotoButton.Disabled = activeMessage?.Target == null;
+                if (activeMessage != null && activeMessage.Target != null)
+                {
+                    gotoButton.Disabled = false;
+                    if (activeMessage.Type == MessageType.Battle && selectedMapObject?.MapObject == activeMessage.Target)
+                    {
+                        // switch to a "View" button text
+                        gotoButton.Text = "View";
+                    }
+                    else
+                    {
+                        gotoButton.Text = "Goto";
+                    }
+                }
+                else
+                {
+                    gotoButton.Disabled = true;
+                }
 
             }
             else

@@ -49,6 +49,10 @@ namespace CraigStars
         [JsonIgnore]
         public ShipDesignAggregate Aggregate { get; } = new ShipDesignAggregate();
 
+        // public aggregate values
+        public int Shields { get => Aggregate.Shield; set => Aggregate.Shield = value; }
+        public int Armor { get => Aggregate.Armor; set => Aggregate.Armor = value; }
+
         public ShipDesign()
         {
             EventManager.PlayerResearchLevelIncreasedEvent += OnPlayerResearchLevelIncreased;
@@ -143,6 +147,7 @@ namespace CraigStars
             Aggregate.HasWeapons = false;
             Aggregate.WeaponSlots.Clear();
             Aggregate.Movement = 0;
+            Aggregate.TorpedoInaccuracyFactor = 1;
 
             var idealSpeed = 0;
             var numEngines = 0;
@@ -157,7 +162,7 @@ namespace CraigStars
                         idealSpeed = engine.IdealSpeed;
                         numEngines += slot.Quantity;
                     }
-                    if (slot.HullComponent.Category == TechCategory.BeamWeapon && slot.HullComponent.Power > 0 && slot.HullComponent.Range > 0)
+                    if (slot.HullComponent.Category == TechCategory.BeamWeapon && slot.HullComponent.Power > 0 && (slot.HullComponent.Range + Hull.RangeBonus) > 0)
                     {
                         // mine sweep is power * (range)^2
                         var gattlingMultiplier = 1;
@@ -167,7 +172,7 @@ namespace CraigStars
                             // lol, 4x, get it?
                             gattlingMultiplier = 4;
                         }
-                        Aggregate.MineSweep += slot.Quantity * slot.HullComponent.Power * (slot.HullComponent.Range * slot.HullComponent.Range) * gattlingMultiplier;
+                        Aggregate.MineSweep += slot.Quantity * slot.HullComponent.Power * ((slot.HullComponent.Range + Hull.RangeBonus) * slot.HullComponent.Range) * gattlingMultiplier;
                     }
                     Cost cost = slot.HullComponent.Cost * slot.Quantity;
                     Aggregate.Cost += cost;
@@ -178,6 +183,12 @@ namespace CraigStars
                     Aggregate.FuelCapacity += slot.HullComponent.FuelBonus * slot.Quantity;
                     Aggregate.Colonizer = slot.HullComponent.ColonizationModule || slot.HullComponent.OrbitalConstructionModule;
                     Aggregate.Movement += slot.HullComponent.MovementBonus * slot.Quantity;
+                    // i.e. two .3f battle computers is (1 -.3) * (1 - .3) or (.7 * .7) or it decreases innaccuracy by 49%
+                    // so a 75% accurate torpedo would be 100 - (100 - 75) * .49 = 100 - 12.25 or 88% accurate
+                    // a 75% accurate torpedo with two 30% comps and one 50% comp would be
+                    // 100 - (100 - 75) * .7 * .7 * .5 = 94% accurate
+                    // if TorpedoInnaccuracyDecrease is 1 (default), it's just 75%
+                    Aggregate.TorpedoInaccuracyFactor *= (float)Math.Pow((1 - slot.HullComponent.TorpedoBonus), slot.Quantity);
 
                     // if this slot has a bomb, this design is a bomber
                     if (slot.HullComponent.HullSlotType == HullSlotType.Bomb)

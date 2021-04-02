@@ -16,7 +16,7 @@
         "request": "launch",
         "preLaunchTask": "build",
         "program": "${workspaceFolder}/src/Core.Tests/bin/Debug/netcoreapp3.1/Core.Tests.dll",
-        "args": ["--test=CraigStars.Tests.GameSerializerTest.TestSerializeAll"],
+        "args": ["--test=CraigStars.Tests.BattleEngineTest.TestRunBattle3"],
         "cwd": "${workspaceFolder}/src/Core.Tests",
         "stopAtEntry": false,
         "console": "internalConsole"

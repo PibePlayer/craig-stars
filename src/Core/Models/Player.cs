@@ -24,8 +24,8 @@ namespace CraigStars
         /// <value></value>
         [JsonIgnore] public bool Dirty { get; set; }
 
-        public override String RaceName { get => Race.Name; }
-        public override String RacePluralName { get => Race.PluralName; }
+        public override string RaceName { get => Race.Name; }
+        public override string RacePluralName { get => Race.PluralName; }
 
         /// <summary>
         /// Each player gets a copy of rules from the server. These rules are used
@@ -69,6 +69,13 @@ namespace CraigStars
         #endregion
 
         #region Turn Actions
+        /// <summary>
+        /// Each player has a list of battle plans. Each fleet has a battle plan assigned
+        /// Each player automatically has the Default battle plan
+        /// </summary>
+        public List<BattlePlan> BattlePlans { get; set; } = new List<BattlePlan>();
+
+        public List<FleetComposition> FleetCompositions { get; set; } = new List<FleetComposition>();
 
         public List<CargoTransferOrder> CargoTransferOrders { get; set; } = new List<CargoTransferOrder>();
         public List<MergeFleetOrder> MergeFleetOrders { get; set; } = new List<MergeFleetOrder>();
@@ -115,6 +122,9 @@ namespace CraigStars
         [JsonIgnore] public List<Fleet> ForeignFleets { get => FleetIntel.Foriegn; }
         [JsonIgnore] public IEnumerable<Fleet> AllFleets { get => FleetIntel.All; }
         [JsonIgnore] public Dictionary<Guid, Fleet> FleetsByGuid { get => FleetIntel.ItemsByGuid; }
+        [JsonIgnore] public Dictionary<Guid, BattleRecord> BattlesByGuid { get; set; }
+
+        [JsonIgnore] public Dictionary<Guid, BattlePlan> BattlePlansByGuid = new Dictionary<Guid, BattlePlan>();
 
         /// <summary>
         /// These fleets have been merged into other fleets and no longer exist
@@ -163,6 +173,9 @@ namespace CraigStars
             DesignIntel.SetupItemsByGuid();
             PlanetIntel.SetupItemsByGuid();
             FleetIntel.SetupItemsByGuid();
+            BattlePlansByGuid = BattlePlans.ToLookup(plan => plan.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
+            BattlesByGuid = Battles.ToLookup(battle => battle.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
+
 
             List<MapObject> mapObjects = new List<MapObject>();
             mapObjects.AddRange(PlanetIntel.All);

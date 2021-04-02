@@ -29,7 +29,9 @@ namespace CraigStars
 
         public bool Scrapped { get; set; }
         public List<Waypoint> Waypoints { get; set; } = new List<Waypoint>();
-        public BattleOrders BattleOrders { get; set; } = new BattleOrders();
+
+        [JsonProperty(IsReference = true)]
+        public BattlePlan BattlePlan { get; set; } = new BattlePlan();
 
         // These are all publicly viewable when a fleet is scanned
         public List<ShipToken> Tokens { get; set; } = new List<ShipToken>();
@@ -148,6 +150,7 @@ namespace CraigStars
                                 Design = token.Design,
                                 Quantity = 1,
                             }},
+                            BattlePlan = BattlePlan
                         };
                         newFleet.ComputeAggregate();
                         newFleet.OtherFleets.AddRange(OtherFleets);
@@ -329,9 +332,9 @@ namespace CraigStars
             bool willAttack = false;
             // if we have weapons and we don't own this other fleet, see if we
             // would target it
-            if (Aggregate.HasWeapons && BattleOrders.Tactic != BattleTactic.Disengage && otherPlayer.Num != Player.Num)
+            if (Aggregate.HasWeapons && BattlePlan.Tactic != BattleTactic.Disengage && otherPlayer.Num != Player.Num)
             {
-                switch (BattleOrders.AttackWho)
+                switch (BattlePlan.AttackWho)
                 {
                     case BattleAttackWho.Enemies:
                         willAttack = Player.IsEnemy(otherPlayer);

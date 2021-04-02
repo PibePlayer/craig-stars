@@ -43,7 +43,7 @@ namespace CraigStars
             {
                 if (Slot != null)
                 {
-                    return Slot.HullComponent.Range;
+                    return Slot.HullComponent.Range + Token.Token.Design.Hull.RangeBonus;
                 }
                 return 0;
             }

@@ -78,7 +78,7 @@ namespace CraigStars
         /// Load this game and players from disk
         /// </summary>
         /// <param name="game"></param>
-        public Game LoadGame(String name, int year, ITechStore techStore)
+        public Game LoadGame(string name, int year, ITechStore techStore)
         {
             using (var saveGame = new File())
             {
@@ -113,7 +113,7 @@ namespace CraigStars
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public int GetLatestGameYear(String name)
+        public int GetLatestGameYear(string name)
         {
             return 2400;
         }

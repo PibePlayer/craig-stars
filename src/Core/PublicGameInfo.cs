@@ -16,11 +16,11 @@ namespace CraigStars
     {
         static ILog log = LogManager.GetLogger(typeof(PublicGameInfo));
 
-        public String Name { get; set; } = "A Barefoot Jaywalk";
+        public string Name { get; set; } = "A Barefoot Jaywalk";
         public int Year { get; set; } = 2400;
         public GameMode Mode { get; set; } = GameMode.SinglePlayer;
         public GameLifecycle Lifecycle { get; set; } = GameLifecycle.Setup;
-        public Rules Rules { get; set; } = new Rules();
+        public Rules Rules { get; set; } = new Rules(0);
 
         [JsonProperty(ItemConverterType = typeof(PublicPlayerInfoConverter))]
         public List<PublicPlayerInfo> Players { get; set; } = new List<PublicPlayerInfo>();

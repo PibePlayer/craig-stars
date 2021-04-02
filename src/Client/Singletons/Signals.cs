@@ -52,6 +52,7 @@ namespace CraigStars.Singletons
         public static event Action RaceDesignerDialogRequestedEvent;
         public static event Action ShipDesignerDialogRequestedEvent;
         public static event Action<FleetSprite> MergeFleetsDialogRequestedEvent;
+        public static event Action<BattleRecord> BattleViewerDialogRequestedEvent;
 
         public static event Action PlanetViewStateUpdatedEvent;
         public static event Action<Planet> ProductionQueueChangedEvent;
@@ -173,6 +174,7 @@ namespace CraigStars.Singletons
         public static void PublishProductionQueueChangedEvent(Planet planet) => ProductionQueueChangedEvent?.Invoke(planet);
         public static void PublishCargoTransferRequestedEvent(ICargoHolder source, ICargoHolder dest) => CargoTransferRequestedEvent?.Invoke(source, dest);
         public static void PublishMergeFleetsDialogRequestedEvent(FleetSprite sourceFleet) => MergeFleetsDialogRequestedEvent?.Invoke(sourceFleet);
+        public static void PublishBattleViewerDialogRequestedEvent(BattleRecord battle) => BattleViewerDialogRequestedEvent?.Invoke(battle);
         public static void PublishSubmitTurnEvent(Player player) => SubmitTurnEvent?.Invoke(player);
         public static void PublishRaceSavedEvent(Race race, string filename) => RaceSavedEvent?.Invoke(race, filename);
 

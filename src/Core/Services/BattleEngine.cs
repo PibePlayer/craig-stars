@@ -139,6 +139,13 @@ namespace CraigStars
     /// 2 is        2222
     /// 2 1/4 is    3222
     /// 2 1/2 is    3232
+    /// 
+    /// ===================================================================
+    /// TODO: 
+    /// * Accuracy/Beam Defense modifications to attractiveness
+    /// * Beam Bonus
+    /// * Capital Ship missiles doing double damage to capital ships
+    /// * Unit test FireTorpedo and FireBeamWeapon
     /// </summary>
     public class BattleEngine
     {
@@ -169,7 +176,7 @@ namespace CraigStars
             {3, 2, 3, 2},
         };
 
-        public Rules Rules { get; set; } = new Rules();
+        public Rules Rules { get; set; } = new Rules(0);
         public ShipDesignDiscoverer designDiscoverer = new ShipDesignDiscoverer();
 
         public BattleEngine(Rules rules)
@@ -179,7 +186,9 @@ namespace CraigStars
 
         /// <summary>
         /// For a list of fleets that contains more than one player, build a battle recording
-        /// with all the battle tokens. We'll use this to determine if 
+        /// with all the battle tokens. We'll use this to determine if a battle should take
+        /// place at this location. Also, any players that have a potential battle will discover
+        /// each other's designs
         /// </summary>
         /// <param name="fleets">The fleets in this battle</param>
         /// /// <returns></returns>
@@ -277,8 +286,8 @@ namespace CraigStars
         {
             weapon.Targets.Clear();
             var attacker = weapon.Token;
-            var primaryTarget = attacker.Fleet.BattleOrders.PrimaryTarget;
-            var secondaryTarget = attacker.Fleet.BattleOrders.SecondaryTarget;
+            var primaryTarget = attacker.Fleet.BattlePlan.PrimaryTarget;
+            var secondaryTarget = attacker.Fleet.BattlePlan.SecondaryTarget;
 
             var primaryTargets = new List<BattleToken>();
             var secondaryTargets = new List<BattleToken>();
@@ -507,9 +516,9 @@ namespace CraigStars
 
                 // if a target of a beam weapon is 3 spaces away and the beam has a range of 4
                 // we do 3/4 * 10% less damage
-                var rangedDamage = (int)(remainingDamage * (1 - .1f * distance / weapon.Range));
+                var rangedDamage = (int)(remainingDamage * (1 - Rules.BeamRangeDropoff * distance / weapon.Range));
 
-                log.Debug($"{weapon.Token} fired {weapon.Slot.Quantity} {weapon.Slot.HullComponent.Name} at {target} (shields: {shields}, armor: {armor}, distance: {distance}, {targetShipToken.Quantity}@{targetShipToken.Damage} damage) for {remainingDamage} (range adjusted to {rangedDamage})");
+                log.Debug($"{weapon.Token} fired {weapon.Slot.Quantity} {weapon.Slot.HullComponent.Name}(s) at {target} (shields: {shields}, armor: {armor}, distance: {distance}, {targetShipToken.Quantity}@{targetShipToken.Damage} damage) for {remainingDamage} (range adjusted to {rangedDamage})");
 
                 if (rangedDamage > shields)
                 {
@@ -532,9 +541,9 @@ namespace CraigStars
 
                         // record that we destroyed this token
                         target.Destroyed = true;
-                        log.Debug($"{weapon.Token} completely destroyed {target}");
+                        log.Debug($"{weapon.Token} {weapon.Slot.Quantity} {weapon.Slot.HullComponent.Name}(s) hit {target}, did {shields} shield damage and {rangedDamage - shields} armor damage damage and completely destroyed {target}");
 
-                        battle.RecordFire(weapon.Token, weapon.Token.Position, target.Position, weapon.WeaponType, weapon.Slot.HullSlotIndex, target, shields, rangedDamage - shields, numDestroyed);
+                        battle.RecordBeamFire(weapon.Token, weapon.Token.Position, target.Position, weapon.Slot.HullSlotIndex, target, shields, rangedDamage - shields, numDestroyed);
                     }
                     else
                     {
@@ -556,7 +565,7 @@ namespace CraigStars
                         }
 
 
-                        battle.RecordFire(weapon.Token, weapon.Token.Position, target.Position, weapon.WeaponType, weapon.Slot.HullSlotIndex, target, shields, rangedDamage - shields, numDestroyed);
+                        battle.RecordBeamFire(weapon.Token, weapon.Token.Position, target.Position, weapon.Slot.HullSlotIndex, target, shields, rangedDamage - shields, numDestroyed);
                     }
 
                 }
@@ -564,18 +573,146 @@ namespace CraigStars
                 {
                     // no ships were destroyed, deplete shields
                     target.Shields -= rangedDamage;
-                    log.Debug($"{weapon.Token} firing {weapon.Slot.Quantity} {weapon.Slot.HullComponent.Name} did {rangedDamage} to {target} shields, leaving {target.Shields} shields still operational.");
-                    battle.RecordFire(weapon.Token, weapon.Token.Position, target.Position, weapon.WeaponType, weapon.Slot.HullSlotIndex, target, rangedDamage, 0, 0);
+                    log.Debug($"{weapon.Token} firing {weapon.Slot.Quantity} {weapon.Slot.HullComponent.Name}(s) did {rangedDamage} damage to {target} shields, leaving {target.Shields} shields still operational.");
+                    battle.RecordBeamFire(weapon.Token, weapon.Token.Position, target.Position, weapon.Slot.HullSlotIndex, target, rangedDamage, 0, 0);
                 }
 
-                log.Debug($"{weapon.Token} {weapon.Slot.Quantity} {weapon.Slot.HullComponent.Name} has {remainingDamage} remaining dp to burn through {weapon.Targets.Count - 1} additional targets.");
+                log.Debug($"{weapon.Token} {weapon.Slot.Quantity} {weapon.Slot.HullComponent.Name}(s) has {remainingDamage} remaining dp to burn through {weapon.Targets.Count - 1} additional targets.");
 
                 target.Damaged = true;
             }
         }
 
+        /// <summary>
+        /// Fire a torpedo slot from a ship. Torpedos are different than beam weapons
+        /// A ship will fire each torpedo at it's target until the target is destroyed, then
+        /// fire remaining torpedos at the next target.
+        /// Each torpedo has an accuracy rating. That determines if it hits. A torpedo that
+        /// misses still explodes and does 1/8th damage to shields
+        /// </summary>
+        /// <param name="battle"></param>
+        /// <param name="weapon"></param>
         internal void FireTorpedo(Battle battle, BattleWeaponSlot weapon)
         {
+            ShipToken attackerShipToken = weapon.Token.Token;
+            // damage is power * number of weapons * number of attackers.
+            var damage = weapon.Slot.HullComponent.Power;
+            var torpedoInaccuracyFactor = weapon.Token.Token.Design.Aggregate.TorpedoInaccuracyFactor;
+            var accuracy = (100f - (100f - weapon.Slot.HullComponent.Accuracy) * torpedoInaccuracyFactor) / 100f;
+            var numTorpedos = weapon.Slot.Quantity * attackerShipToken.Quantity;
+            float remainingTorpedos = numTorpedos;
+
+            log.Debug($"{weapon.Token} is firing at {weapon.Targets.Count} targets with {numTorpedos} torpedos at %{accuracy * 100f:.##} accuracy for {damage} damage each");
+
+            int torpedoNum = 0;
+            foreach (var target in weapon.Targets)
+            {
+                if (target.Destroyed || target.RanAway)
+                {
+                    // this token isn't valid anymore, skip it
+                    continue;
+                }
+
+                // no more damage to spread, break out
+                if (remainingTorpedos == 0)
+                {
+                    break;
+                }
+                ShipToken targetShipToken = target.Token;
+
+                // shields are shared among all tokens
+                var shields = target.Shields;
+                var armor = targetShipToken.Design.Aggregate.Armor;
+
+                int totalShieldDamage = 0;
+                int totalArmorDamage = 0;
+                int hits = 0;
+                int misses = 0;
+                int shipsDestroyed = 0;
+
+                while (remainingTorpedos > 0 && !(target.Destroyed))
+                {
+                    // fire a torpedo
+                    torpedoNum++;
+                    remainingTorpedos--;
+                    bool hit = accuracy > Rules.Random.NextDouble();
+
+                    if (hit)
+                    {
+                        hits++;
+                        var shieldDamage = .5f * damage;
+                        var armorDamage = .5f * damage;
+
+                        // apply up to half our damage to shields
+                        // anything leftover goes to armor
+                        var afterShieldsDamaged = shields - shieldDamage;
+                        var actualShieldDamage = 0f;
+                        if (afterShieldsDamaged < 0)
+                        {
+                            // We did more damage to shields than they had remaining
+                            // apply the difference to armor
+                            armorDamage += -afterShieldsDamaged;
+                            actualShieldDamage = shieldDamage + afterShieldsDamaged;
+                        }
+                        else
+                        {
+                            actualShieldDamage = shieldDamage;
+                        }
+                        target.Shields -= (int)actualShieldDamage;
+
+                        // this torpedo blew up a ship, hooray!
+                        if ((armorDamage + targetShipToken.Damage / targetShipToken.QuantityDamaged) >= armor)
+                        {
+                            targetShipToken.Quantity--;
+                            if (targetShipToken.Quantity <= 0)
+                            {
+                                // record that we destroyed this token
+                                target.Destroyed = true;
+                                log.Debug($"{weapon.Token} torpedo number {torpedoNum} hit {target}, did {actualShieldDamage} shield damage and {armorDamage} armor damage and completely destroyed {target}");
+
+                                totalShieldDamage += (int)actualShieldDamage;
+                                totalArmorDamage += (int)(armorDamage);
+                                shipsDestroyed++;
+                            }
+                        }
+                        else
+                        {
+                            // damage all remaining ships in this token
+                            // leave at least 1dp per token. We can't destroy more than one token with a torpedo
+                            // it's possible a torpedo blast into 100 ships will leave them all severely damaged
+                            // but will only destroy one
+                            var previousDamage = targetShipToken.Damage;
+                            targetShipToken.Damage = Math.Min(armor * targetShipToken.Quantity - targetShipToken.Quantity, armorDamage + targetShipToken.Damage);
+                            targetShipToken.QuantityDamaged = targetShipToken.Quantity;
+                            var actualArmorDamage = (int)(targetShipToken.Damage - previousDamage);
+
+                            log.Debug($"{weapon.Token} torpedo number {torpedoNum} hit {target}, did {actualShieldDamage} shield damage and {actualArmorDamage} armor damage leaving {targetShipToken.Quantity}@{targetShipToken.Damage} damage");
+
+                            totalShieldDamage += (int)actualShieldDamage;
+                            totalArmorDamage += (int)(targetShipToken.Damage - previousDamage);
+                        }
+
+                    }
+                    else
+                    {
+                        misses++;
+                        // damage shields by 1/8th
+                        // round up, do a minimum of 1 damage
+                        int shieldDamage = (int)Math.Min(1, Math.Round(Rules.TorpedoSplashDamage * damage));
+                        int actualShieldDamage = shieldDamage;
+                        if (shieldDamage > target.Shields)
+                        {
+                            actualShieldDamage = target.Shields;
+                        }
+                        target.Shields = Math.Max(0, target.Shields - shieldDamage);
+                        log.Debug($"{weapon.Token} torpedo number {torpedoNum} missed {target}, did {shieldDamage} damage to shields leaving {target.Shields} shields");
+
+                        totalShieldDamage += actualShieldDamage;
+                    }
+                }
+
+                battle.RecordTorpedoFire(weapon.Token, weapon.Token.Position, target.Position, weapon.Slot.HullSlotIndex, target, totalShieldDamage, totalArmorDamage, shipsDestroyed, hits, misses);
+            }
 
         }
 
@@ -596,7 +733,7 @@ namespace CraigStars
             }
 
             // we have weapons, figure out our tactic and targets
-            switch (token.Fleet.BattleOrders.Tactic)
+            switch (token.Fleet.BattlePlan.Tactic)
             {
                 case BattleTactic.Disengage:
                     RunAway(battle, token);
@@ -680,9 +817,7 @@ namespace CraigStars
             // if we are in range of a weapon, move away, otherwise move randomly
             var weaponsInRange = battle.SortedWeaponSlots.Where(weapon => weapon.IsInRange(token)).ToList();
 
-            if (weaponsInRange.Count > 0)
-            {
-                var possiblePositions = new Vector2[] {
+            var possiblePositions = new Vector2[] {
                             new Vector2(token.Position + Vector2.Right),
                             new Vector2(token.Position + Vector2.Left),
                             new Vector2(token.Position + Vector2.Down),
@@ -691,10 +826,13 @@ namespace CraigStars
                             new Vector2(token.Position + Vector2.Up + Vector2.Left),
                             new Vector2(token.Position + Vector2.Down + Vector2.Right),
                             new Vector2(token.Position + Vector2.Down + Vector2.Left),
-                        };
+                        }.Where(position => position.x >= 0 && position.x < 10 && position.y >= 0 && position.y < 10)
+                        .ToArray();
 
+            if (weaponsInRange.Count > 0)
+            {
                 // default to move to a random position
-                var newPosition = new Vector2(token.Position.x + Rules.Random.Next(0, 1), token.Position.y + Rules.Random.Next(0, 1));
+                var newPosition = possiblePositions[Rules.Random.Next(0, possiblePositions.Length)];
 
                 // move to a position that is out of range, or to the greatest distance away we can get
                 int maxNumWeaponsInRange = int.MinValue;
@@ -741,7 +879,7 @@ namespace CraigStars
             else
             {
                 // move at random
-                var newPosition = new Vector2(token.Position.x + Rules.Random.Next(0, 1), token.Position.y + Rules.Random.Next(0, 1));
+                var newPosition = possiblePositions[Rules.Random.Next(0, possiblePositions.Length)];
                 battle.RecordMove(token, token.Position, newPosition);
                 token.Position = newPosition;
             }
@@ -758,9 +896,9 @@ namespace CraigStars
             BattleToken secondaryTarget = null;
             float primaryTargetAttractiveness = 0;
             float secondaryTargetAttractiveness = 0;
-            BattleTactic tactic = attacker.Fleet.BattleOrders.Tactic;
-            BattleTargetType primaryTargetOrder = attacker.Fleet.BattleOrders.PrimaryTarget;
-            BattleTargetType secondaryTargetOrder = attacker.Fleet.BattleOrders.SecondaryTarget;
+            BattleTactic tactic = attacker.Fleet.BattlePlan.Tactic;
+            BattleTargetType primaryTargetOrder = attacker.Fleet.BattlePlan.PrimaryTarget;
+            BattleTargetType secondaryTargetOrder = attacker.Fleet.BattlePlan.SecondaryTarget;
 
             // TODO: We need to account for the fact that if a fleet targets us, we will target them back
             foreach (var defender in defenders.Where(defender => !(defender.Destroyed || defender.RanAway) && attacker.Fleet.WillAttack(defender.Player)))

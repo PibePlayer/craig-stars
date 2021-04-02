@@ -11,7 +11,7 @@ namespace CraigStars.Singletons
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(RPC));
 
-        private String LogPrefix { get => this.IsServer() ? "Server:" : "Client:"; }
+        private string LogPrefix { get => this.IsServer() ? "Server:" : "Client:"; }
 
         /// <summary>
         /// RPC is a singleton

@@ -13,7 +13,7 @@ namespace CraigStars.Tests
         public void TestGenerate()
         {
             var game = new Game() { SaveToDisk = false };
-            game.Init(new List<Player>() { new Player() { AIControlled = true } }, new Rules(), StaticTechStore.Instance);
+            game.Init(new List<Player>() { new Player() { AIControlled = true } }, new Rules(0), StaticTechStore.Instance);
 
             var ug = new UniverseGenerator(game);
             ug.Generate();

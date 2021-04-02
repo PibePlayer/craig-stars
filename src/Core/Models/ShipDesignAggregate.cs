@@ -26,6 +26,7 @@ namespace CraigStars
         public int SpaceDock { get; set; }
         public int MineSweep { get; set; }
         public float CloakPercent { get; set; }
+        public float TorpedoInaccuracyFactor { get; set; }
 
         /// <summary>
         /// The number of movement points in battle spread across 4 rounds

@@ -21,6 +21,7 @@ namespace CraigStars.Tests
             {
                 Name = "Bob",
                 Num = 0,
+                BattlePlans = new List<BattlePlan>() { new BattlePlan("Default") }
             };
 
             player.Designs.Add(
@@ -73,7 +74,8 @@ namespace CraigStars.Tests
                 Player = player,
                 Tokens = new List<ShipToken>() {
                     new ShipToken(player.Designs[0], 1)
-                }
+                },
+                BattlePlan = player.BattlePlans[0]
             };
             planet1.OrbitingFleets.Add(fleet1);
 
@@ -129,7 +131,7 @@ namespace CraigStars.Tests
 
             // generate a tiny universe
             Game game = new Game() { SaveToDisk = false };
-            game.Init(new List<Player>() { player1, player2 }, new Rules() { Size = Size.Tiny, Density = Density.Sparse }, StaticTechStore.Instance);
+            game.Init(new List<Player>() { player1, player2 }, new Rules(0) { Size = Size.Tiny, Density = Density.Sparse }, StaticTechStore.Instance);
             game.GenerateUniverse();
 
             var gameSettings = Serializers.CreateGameSettings(game);

@@ -126,6 +126,18 @@ namespace CraigStars
         public int MovesToRunAway = 7;
 
         /// <summary>
+        /// The maximum range penalty for beam weapons, i.e. 10%
+        /// </summary>
+        [DefaultValue(.1f)]
+        public float BeamRangeDropoff = .1f;
+
+        /// <summary>
+        /// The number of moves required before a token can run away
+        /// </summary>
+        [DefaultValue(1 / 8f)]
+        public float TorpedoSplashDamage = 1 / 8f;
+
+        /// <summary>
         /// Get the Area of the universe
         /// </summary>
         /// <value></value>
@@ -243,6 +255,18 @@ namespace CraigStars
             77990,
             84700
         };
+
+        public Rules() { }
+
+        /// <summary>
+        /// Create a new Rules object with a specific random seed. This is used for unit tests but could also be used for
+        /// world generation
+        /// </summary>
+        /// <param name="seed"></param>
+        public Rules(int seed)
+        {
+            Random = new Random(seed);
+        }
     }
 
 

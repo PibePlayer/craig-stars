@@ -28,9 +28,13 @@ namespace CraigStars
             {
                 item = new BattleRecordTokenMove();
             }
-            else if (type == typeof(BattleRecordTokenFire).Name)
+            else if (type == typeof(BattleRecordTokenBeamFire).Name)
             {
-                item = new BattleRecordTokenFire();
+                item = new BattleRecordTokenBeamFire();
+            }
+            else if (type == typeof(BattleRecordTokenTorpedoFire).Name)
+            {
+                item = new BattleRecordTokenTorpedoFire();
             }
             else if (type == typeof(BattleRecordTokenRanAway).Name)
             {

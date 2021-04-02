@@ -14,7 +14,7 @@ namespace CraigStars
         /// <value></value>
         public Race Race { get; set; } = Races.Humanoid;
 
-        public String RaceFilename { get; set; }
+        public string RaceFilename { get; set; }
 
         /// <summary>
         /// True if this race designer is editable or just readonly

@@ -35,7 +35,7 @@ namespace CraigStars
         RaceDesignerDialog raceDesignerDialog;
         ShipDesignerDialog shipDesignerDialog;
         MergeFleetsDialog mergeFleetsDialog;
-
+        BattleViewerDialog battleViewerDialog;
         /// <summary>
         /// When this node enters the tree, setup any server/player stuff
         /// </summary>
@@ -60,6 +60,7 @@ namespace CraigStars
             raceDesignerDialog = GetNode<RaceDesignerDialog>("CanvasLayer/RaceDesignerDialog");
             shipDesignerDialog = GetNode<ShipDesignerDialog>("CanvasLayer/ShipDesignerDialog");
             mergeFleetsDialog = GetNode<MergeFleetsDialog>("CanvasLayer/MergeFleetsDialog");
+            battleViewerDialog = GetNode<BattleViewerDialog>("CanvasLayer/BattleViewerDialog");
             projectName = ProjectSettings.GetSetting("application/config/name").ToString();
 
             Signals.PostStartGameEvent += OnPostStartGame;
@@ -72,6 +73,7 @@ namespace CraigStars
             Signals.TechBrowserDialogRequestedEvent += OnTechBrowserDialogRequested;
             Signals.RaceDesignerDialogRequestedEvent += OnRaceDesignerDialogRequested;
             Signals.MergeFleetsDialogRequestedEvent += OnMergeFleetsDialogRequested;
+            Signals.BattleViewerDialogRequestedEvent += OnBattleViewerDialogRequested;
 
             // if we are the server (or a single player game)
             // init the server and send a notice to all players that it's time to start
@@ -124,6 +126,7 @@ namespace CraigStars
             Signals.TechBrowserDialogRequestedEvent -= OnTechBrowserDialogRequested;
             Signals.RaceDesignerDialogRequestedEvent -= OnRaceDesignerDialogRequested;
             Signals.MergeFleetsDialogRequestedEvent -= OnMergeFleetsDialogRequested;
+            Signals.BattleViewerDialogRequestedEvent -= OnBattleViewerDialogRequested;
 
 
             if (this.IsServerOrSinglePlayer())
@@ -224,6 +227,11 @@ namespace CraigStars
             mergeFleetsDialog.PopupCentered();
         }
 
+        void OnBattleViewerDialogRequested(BattleRecord battle)
+        {
+            battleViewerDialog.BattleRecord = battle;
+            battleViewerDialog.PopupCentered();
+        }
 
     }
 }

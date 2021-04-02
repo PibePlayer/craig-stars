@@ -76,7 +76,7 @@ Propulsion tech by 1 level. All engines use 15% less fuel.".Replace("\n", "");
             }
         }
 
-        public static String GetGravString(int grav)
+        public static string GetGravString(int grav)
         {
             int result, tmp = Math.Abs(grav - 50);
             if (tmp <= 25)

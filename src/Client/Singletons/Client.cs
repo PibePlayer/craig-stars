@@ -63,7 +63,7 @@ namespace CraigStars
         /// </summary>
         /// <param name="address"></param>
         /// <param name="port"></param>
-        public void JoinGame(String address, int port)
+        public void JoinGame(string address, int port)
         {
             // hook up to client specific network events
             GetTree().Connect("server_disconnected", this, nameof(OnServerDisconnected));

@@ -92,6 +92,7 @@ namespace CraigStars
             {
                 if (Game.FleetsByGuid.TryGetValue(playerFleet.Guid, out var fleet) && fleet.Player == player)
                 {
+                    fleet.BattlePlan = playerFleet.BattlePlan.Clone();
                     // Keep waypoint 0 so the client can't move the fleet
                     // remove all the other waypoints for this fleet and replace them with what was sent by the player
                     fleet.Waypoints.RemoveRange(1, fleet.Waypoints.Count - 1);
@@ -169,6 +170,12 @@ namespace CraigStars
                         }
                         return item;
                     }));
+
+                    // update starbase battleplan
+                    if (playerPlanet.HasStarbase && planet.HasStarbase)
+                    {
+                        planet.Starbase.BattlePlan = playerPlanet.Starbase.BattlePlan;
+                    }
                 }
             }
         }

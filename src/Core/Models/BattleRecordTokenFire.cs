@@ -7,25 +7,22 @@ namespace CraigStars
     /// <summary>
     /// A token firing weapons
     /// </summary>
-    public class BattleRecordTokenFire : BattleRecordTokenAction
+    public abstract class BattleRecordTokenFire : BattleRecordTokenAction
     {
 
         public BattleRecordTokenFire()
         {
         }
 
-        public BattleRecordTokenFire(BattleRecordToken token, Vector2 from, Vector2 to, BattleWeaponType weaponType, int slot, BattleRecordToken target, int damageDoneShields, int damageDoneArmor, int tokensDestroyed) : base(token, from)
+        public BattleRecordTokenFire(BattleRecordToken token, Vector2 from, Vector2 to, int slot, BattleRecordToken target, int damageDoneShields, int damageDoneArmor, int tokensDestroyed) : base(token, from)
         {
             To = to;
-            WeaponType = weaponType;
             Slot = slot;
             Target = target;
             DamageDoneShields = damageDoneShields;
             DamageDoneArmor = damageDoneArmor;
             TokensDestroyed = tokensDestroyed;
         }
-
-        public BattleWeaponType WeaponType { get; set; }
 
         /// <summary>
         /// The ending location of the token

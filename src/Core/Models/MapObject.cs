@@ -13,7 +13,7 @@ namespace CraigStars
         public int Id { get; set; }
         public Guid Guid { get; set; } = Guid.NewGuid();
         public Vector2 Position { get; set; }
-        public String Name { get; set; } = "";
+        public string Name { get; set; } = "";
 
         public PublicPlayerInfo Owner
         {

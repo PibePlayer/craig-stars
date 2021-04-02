@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=2]
+[gd_scene load_steps=30 format=2]
 
 [ext_resource path="res://src/Client/Scanner/Scanner.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/Client/Scanner/ScannerSelectedStats.tscn" type="PackedScene" id=2]
@@ -27,6 +27,7 @@
 [ext_resource path="res://src/Client/CommandPane/FleetCompositionTile.tscn" type="PackedScene" id=25]
 [ext_resource path="res://src/Client/Dialogs/MergeFleetsDialog.tscn" type="PackedScene" id=26]
 [ext_resource path="res://src/Client/Dialogs/RaceDesignerDialog.tscn" type="PackedScene" id=27]
+[ext_resource path="res://src/Client/Dialogs/BattleViewerDialog.tscn" type="PackedScene" id=28]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.145098, 0.145098, 0.168627, 1 )
@@ -232,3 +233,5 @@ visible = false
 
 [node name="RaceDesignerDialog" parent="CanvasLayer" instance=ExtResource( 27 )]
 Editable = false
+
+[node name="BattleViewerDialog" parent="CanvasLayer" instance=ExtResource( 28 )]

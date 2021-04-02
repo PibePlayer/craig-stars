@@ -764,7 +764,7 @@ namespace CraigStars
         {
             Mass = 1,
             InitiativeBonus = 1,
-            TorpedoBonus = 2,
+            TorpedoBonus = .2f,
             HullSlotType = HullSlotType.Electrical,
         };
 
@@ -772,7 +772,7 @@ namespace CraigStars
         {
             Mass = 1,
             InitiativeBonus = 3,
-            TorpedoBonus = 5,
+            TorpedoBonus = .5f,
             HullSlotType = HullSlotType.Electrical,
         };
 
@@ -780,7 +780,7 @@ namespace CraigStars
         {
             Mass = 1,
             InitiativeBonus = 2,
-            TorpedoBonus = 3,
+            TorpedoBonus = .3f,
             HullSlotType = HullSlotType.Electrical,
         };
 
@@ -1599,6 +1599,7 @@ namespace CraigStars
             Mass = 0,
             Armor = 500,
             Initiative = 14,
+            RangeBonus = 1,
             Starbase = true,
             SpaceDock = TechHull.UnlimitedSpaceDock,
             Slots = new List<TechHullSlot>(new TechHullSlot[] {

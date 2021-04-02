@@ -7,11 +7,11 @@ using CraigStars.Singletons;
 namespace CraigStars
 {
     [Tool]
-    public class BattleGridSquare : MarginContainer
+    public class BattleGridSquare : Panel
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(BattleGridSquare));
 
-        public event Action<BattleGridSquare> SelectedEvent;
+        public event Action<BattleGridSquare, BattleGridToken> SelectedEvent;
 
         public Vector2 Coordinates { get; set; }
 
@@ -22,13 +22,13 @@ namespace CraigStars
             set
             {
                 selected = value;
-                if (selected && panelStyleBox != null)
+                if (selected && styleBox != null)
                 {
-                    panelStyleBox.BorderColor = Colors.Blue;
+                    styleBox.BorderColor = Colors.Blue;
                 }
-                else if (!selected && panelStyleBox != null)
+                else if (!selected && styleBox != null)
                 {
-                    panelStyleBox.BorderColor = originalBorderColor;
+                    styleBox.BorderColor = originalBorderColor;
                 }
             }
         }
@@ -39,92 +39,95 @@ namespace CraigStars
             get => selectedTokenIndex;
             set
             {
-                selectedTokenIndex = value;
-                if (selectedTokenIndex < Tokens.Count)
+                // turn off the previously selected token
+                if (SelectedToken != null)
                 {
-                    icon.Texture = TextureLoader.Instance.FindTexture(Tokens[selectedTokenIndex].Token.Design);
+                    SelectedToken.Visible = false;
+                }
+
+                // turn on the currently selected token
+                selectedTokenIndex = value;
+                if (selectedTokenIndex != -1 && selectedTokenIndex < Tokens.Count)
+                {
+                    SelectedToken = Tokens[selectedTokenIndex];
+                    SelectedToken.Visible = true;
                 }
             }
         }
-        int selectedTokenIndex;
+        int selectedTokenIndex = -1;
 
-        public List<BattleRecordToken> Tokens { get; set; } = new List<BattleRecordToken>();
+        public BattleGridToken SelectedToken { get; set; }
+        public List<BattleGridToken> Tokens { get; set; } = new List<BattleGridToken>();
         public int NumShips { get; private set; } = 0;
         public int NumTokens { get; private set; } = 0;
 
-        TextureRect icon;
-        Panel iconPanel;
-        StyleBoxFlat panelStyleBox;
+        StyleBoxFlat styleBox;
         Color originalBorderColor = Colors.White;
 
+        Control tokenContainer;
         Label numTokensLabel;
         Label numShipsLabel;
 
         public override void _Ready()
         {
+            tokenContainer = GetNode<Control>("TokenContainer");
             numTokensLabel = GetNode<Label>("NumTokensLabel");
             numShipsLabel = GetNode<Label>("NumShipsLabel");
-            icon = GetNode<TextureRect>("Icon");
-            iconPanel = GetNode<Panel>("Icon/Panel");
-            panelStyleBox = iconPanel.GetStylebox("panel") as StyleBoxFlat;
-            originalBorderColor = panelStyleBox.BorderColor;
+            styleBox = GetStylebox("panel") as StyleBoxFlat;
+            originalBorderColor = styleBox.BorderColor;
 
-            icon.Connect("gui_input", this, nameof(OnGUIInput));
-
-            Connect("visibility_changed", this, nameof(OnVisibilityChanged));
+            Connect("gui_input", this, nameof(OnGUIInput));
         }
 
         public void ClearTokens()
         {
+            // remove tokens from this node
+            foreach (Node child in tokenContainer.GetChildren())
+            {
+                tokenContainer.RemoveChild(child);
+            }
+            SelectedToken = null;
+            SelectedTokenIndex = -1;
             Tokens.Clear();
-            icon.Texture = null;
             NumShips = NumTokens = 0;
             numTokensLabel.Text = "";
             numShipsLabel.Text = "";
         }
 
-        public void AddToken(BattleRecordToken token)
+        public void AddToken(BattleGridToken token)
         {
+            tokenContainer.AddChild(token);
             Tokens.Add(token);
+            SelectedTokenIndex = Tokens.Count - 1;
             NumTokens++;
-            NumShips += token.Token.Quantity;
+            NumShips += token.Quantity;
 
             numTokensLabel.Text = $"{NumTokens}";
             numShipsLabel.Text = $"{NumShips}";
-            if (icon.Texture == null)
-            {
-                icon.Texture = TextureLoader.Instance.FindTexture(token.Token.Design);
-            }
         }
 
-        public void RemoveToken(BattleRecordToken token)
+        public void RemoveToken(BattleGridToken token)
         {
             Tokens.Remove(token);
+            tokenContainer.RemoveChild(token);
             NumTokens--;
-            NumShips -= token.Token.Quantity;
+            NumShips -= token.Quantity;
 
+            if (SelectedToken == token && Tokens.Count > 0)
+            {
+                // we removed our visible token, so select the top one
+                SelectedTokenIndex = 0;
+            }
 
             if (Tokens.Count > 0)
             {
                 numTokensLabel.Text = $"{NumTokens}";
                 numShipsLabel.Text = $"{NumShips}";
-                icon.Texture = TextureLoader.Instance.FindTexture(Tokens[0].Token.Design);
             }
             else
             {
                 numTokensLabel.Text = "";
                 numShipsLabel.Text = "";
-                icon.Texture = null;
-            }
-        }
-
-        void OnVisibilityChanged()
-        {
-            if (Visible)
-            {
-                if (Tokens.Count > 0)
-                {
-                }
             }
         }
 
@@ -132,7 +135,7 @@ namespace CraigStars
         {
             if (@event.IsActionPressed("viewport_select"))
             {
-                SelectedEvent?.Invoke(this);
+                SelectedEvent?.Invoke(this, SelectedToken);
                 log.Debug("BattleGridSquare clicked");
                 // Selected = !Selected;
                 GetTree().SetInputAsHandled();

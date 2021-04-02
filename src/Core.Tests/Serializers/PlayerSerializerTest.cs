@@ -23,6 +23,7 @@ namespace CraigStars.Tests
             {
                 Name = "Bob",
                 Num = 0,
+                BattlePlans = new List<BattlePlan>() { new BattlePlan("Default") }
             };
 
             player.Designs.Add(
@@ -75,7 +76,8 @@ namespace CraigStars.Tests
                 Player = player,
                 Tokens = new List<ShipToken>() {
                     new ShipToken(player.Designs[0], 1)
-                }
+                },
+                BattlePlan = player.BattlePlans[0]
             };
             planet1.OrbitingFleets.Add(fleet1);
 

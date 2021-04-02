@@ -11,7 +11,7 @@ namespace CraigStars.Tests
     [TestFixture]
     public class BattleEngineTest
     {
-        BattleEngine battleEngine = new BattleEngine(new Rules());
+        BattleEngine battleEngine = new BattleEngine(new Rules(0));
 
         [Test]
         public void TestWillTarget()
@@ -160,6 +160,7 @@ namespace CraigStars.Tests
             battle.BuildSortedWeaponSlots();
 
             var weapon = battle.SortedWeaponSlots[0];
+            battleEngine.FindTargets(battle, weapon);
 
             // put our defender one position out of range
             attacker.Position = new Vector2(0, 0);
@@ -170,7 +171,7 @@ namespace CraigStars.Tests
 
             // make sure we recorded this move
             Assert.AreEqual(1, battle.PlayerRecords[player1].ActionsPerRound[0].Count);
-            Assert.AreEqual(typeof(BattleRecordTokenFire), battle.PlayerRecords[player1].ActionsPerRound[0][0].GetType());
+            Assert.AreEqual(typeof(BattleRecordTokenTorpedoFire), battle.PlayerRecords[player1].ActionsPerRound[0][0].GetType());
             Assert.AreEqual(attacker.Guid, battle.PlayerRecords[player1].ActionsPerRound[0][0].Token.Guid);
         }
 
@@ -220,7 +221,7 @@ namespace CraigStars.Tests
                 player1,
                 player2,
                 new HashSet<string>() { "Destroyer", "Space Station" },
-                new HashSet<string>() { "Destroyer", "Scout" }
+                new HashSet<string>() { "Destroyer", "Scout", "Fuel Transport" }
             ));
             battleEngine.RunBattle(battle);
         }

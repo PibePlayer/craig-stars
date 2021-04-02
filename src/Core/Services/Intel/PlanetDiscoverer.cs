@@ -132,6 +132,7 @@ namespace CraigStars
                     RaceName = item.Starbase.Player.Race.Name,
                     RacePluralName = item.Starbase.Player.Race.PluralName,
                     Player = player,
+                    BattlePlan = player.BattlePlansByGuid[item.Starbase.BattlePlan.Guid]
                 };
                 itemReport.Starbase.Tokens.AddRange(item.Starbase.Tokens);
                 itemReport.Starbase.ComputeAggregate();

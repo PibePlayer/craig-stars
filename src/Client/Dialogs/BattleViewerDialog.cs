@@ -13,6 +13,10 @@ namespace CraigStars
 
         [Export]
         public int GridSize { get; set; } = 10;
+
+        [Export]
+        public PackedScene BattleGridTokenScene { get; set; }
+
         // for debugging, we can generate a test battle
         bool useTestBattle = true;
 
@@ -41,7 +45,9 @@ namespace CraigStars
         Label selectionDamage;
         Label selectionShields;
 
+        Button resetBoardButton;
         Button nextActionButton;
+        Button nextAttackActionButton;
         Button prevActionButton;
 
         int currentRound = 0;
@@ -52,7 +58,10 @@ namespace CraigStars
 
         BattleGridSquare selectedSquare;
         int selectedTokenIndex = 0;
-        BattleRecordToken selectedToken;
+        BattleGridToken selectedGridToken;
+        BattleGridToken actionToken;
+        List<BattleGridToken> Tokens = new List<BattleGridToken>();
+        Dictionary<Guid, BattleGridToken> GridTokensByGuid { get; set; } = new Dictionary<Guid, BattleGridToken>();
 
         Button designDetailsButton;
         PopupPanel hullSummaryPopup;
@@ -97,23 +106,63 @@ namespace CraigStars
             hullSummary = GetNode<HullSummary>("HullSummaryPopup/HullSummary");
 
             nextActionButton = GetNode<Button>("MarginContainer/VBoxContainer/HBoxContainerButtons/NextActionButton");
+            resetBoardButton = GetNode<Button>("MarginContainer/VBoxContainer/HBoxContainerButtons/ResetBoardButton");
             prevActionButton = GetNode<Button>("MarginContainer/VBoxContainer/HBoxContainerButtons/PrevActionButton");
+            nextAttackActionButton = GetNode<Button>("MarginContainer/VBoxContainer/HBoxContainerButtons/NextAttackActionButton");
 
             designDetailsButton.Connect("button_down", this, nameof(OnDesignDetailsButtonDown));
             designDetailsButton.Connect("button_up", this, nameof(OnDesignDetailsButtonUp));
             nextActionButton.Connect("pressed", this, nameof(OnNextActionButtonPressed));
+            nextAttackActionButton.Connect("pressed", this, nameof(OnNextAttackActionButtonPressed));
+            resetBoardButton.Connect("pressed", this, nameof(OnResetBoardButtonPressed));
             prevActionButton.Connect("pressed", this, nameof(OnPrevActionButtonPressed));
             Connect("visibility_changed", this, nameof(OnVisibilityChanged));
 
             SetAsMinsize();
-            if (useTestBattle)
+            
+            // Uncomment this to debug JUSt the battle editor. This generates a test battle with a couple players
+            // if (useTestBattle)
+            // {
+            //     BattleRecord = GenerateTestBattle();
+            //     Show();
+            // }
+        }
+
+        /// <summary>
+        /// When the dialog becomes visible, this will setup the board with whatever information we have in the BattleRecord
+        /// </summary>
+        void OnVisibilityChanged()
+        {
+            if (Visible)
             {
-                BattleRecord = GenerateTestBattle();
-                Show();
+                totalRounds = BattleRecord.ActionsPerRound.Count;
+                totalPhases = BattleRecord.ActionsPerRound.Sum(actionsPerRound => actionsPerRound.Count);
+
+                // clear out previous token nodes
+                Tokens.ForEach(token => token.QueueFree());
+                Tokens.Clear();
+                GridTokensByGuid.Clear();
+
+                // add new tokens
+                BattleRecord.Tokens.ForEach(token =>
+                {
+                    BattleGridToken gridToken = BattleGridTokenScene.Instance() as BattleGridToken;
+                    gridToken.Token = token;
+                    Tokens.Add(gridToken);
+                    GridTokensByGuid[gridToken.Token.Guid] = gridToken;
+                });
+
+                ResetBoard();
+                UpdateDescriptionFields();
             }
         }
 
-        private void OnBattleGridSquareSelected(BattleGridSquare square)
+        /// <summary>
+        /// When a battle grid is selected, cycle through the tokens and update our display information
+        /// </summary>
+        /// <param name="square"></param>
+        /// <param name="token"></param>
+        void OnBattleGridSquareSelected(BattleGridSquare square, BattleGridToken token)
         {
             if (selectedSquare != null)
             {
@@ -147,29 +196,21 @@ namespace CraigStars
 
             if (selectedSquare.Tokens.Count > 0)
             {
-                selectedToken = selectedSquare.Tokens[selectedTokenIndex];
+                selectedGridToken = selectedSquare.Tokens[selectedTokenIndex];
                 selectedSquare.SelectedTokenIndex = selectedTokenIndex;
             }
             else
             {
-                selectedToken = null;
+                selectedGridToken = null;
             }
 
             UpdateDescriptionFields();
         }
 
-        void OnVisibilityChanged()
-        {
-            if (Visible)
-            {
-                totalRounds = BattleRecord.ActionsPerRound.Count;
-                totalPhases = BattleRecord.ActionsPerRound.Sum(actionsPerRound => actionsPerRound.Count);
-
-                UpdateDescriptionFields();
-                ResetBoard();
-            }
-        }
-
+        /// <summary>
+        /// Reset the board to starting positions and clear the state
+        /// of all tokens
+        /// </summary>
         void ResetBoard()
         {
             currentRound = 0;
@@ -185,11 +226,13 @@ namespace CraigStars
                 }
             }
 
-            foreach (var token in BattleRecord.Tokens)
+            foreach (var token in Tokens)
             {
-                var square = Squares[(int)token.StartingPosition.y, (int)token.StartingPosition.x];
+                token.FiringBeam = token.FiringTorpedo = token.TakingDamage = false;
+                token.Visible = false;
+                var square = Squares[(int)token.Token.StartingPosition.y, (int)token.Token.StartingPosition.x];
                 square.AddToken(token);
-                OnBattleGridSquareSelected(square);
+                OnBattleGridSquareSelected(square, token);
             }
         }
 
@@ -222,23 +265,43 @@ namespace CraigStars
                     actionMoveLabel.Visible = true;
                     actionMoveLabel.Text = $"Moved from ({move.From.x + 1}, {move.From.y + 1}) to ({move.To.x + 1}, {move.To.y + 1})";
                 }
-                else if (action is BattleRecordTokenFire fire)
+                else if (action is BattleRecordTokenBeamFire beamFire)
                 {
                     actionAttackLabelContainer.Visible = true;
-                    actionAttackLabel.Text = $"attacks the {fire.Target.Owner.RacePluralName}";
-                    actionAttackTargetLabel.Text = $"{fire.Target.Token.Design.Name} * {fire.Target.Token.Quantity - fire.TokensDestroyed}";
-                    actionAttackLocationLabel.Text = $"at ({fire.To.x + 1}, {fire.To.y + 1}) doing";
-                    if (fire.DamageDoneShields > 0 && fire.DamageDoneArmor > 0)
+                    actionAttackLabel.Text = $"attacks the {beamFire.Target.Owner.RacePluralName}";
+                    actionAttackTargetLabel.Text = $"{beamFire.Target.Token.Design.Name} * {beamFire.Target.Token.Quantity - beamFire.TokensDestroyed}";
+                    actionAttackLocationLabel.Text = $"at ({beamFire.To.x + 1}, {beamFire.To.y + 1}) doing";
+                    if (beamFire.DamageDoneShields > 0 && beamFire.DamageDoneArmor > 0)
                     {
-                        actionAttackDamageLabel.Text = $"{fire.DamageDoneShields} damage to shields and {fire.DamageDoneArmor} to armor.";
+                        actionAttackDamageLabel.Text = $"{beamFire.DamageDoneShields} damage to shields and {beamFire.DamageDoneArmor} to armor.";
                     }
-                    else if (fire.DamageDoneShields > 0)
+                    else if (beamFire.DamageDoneShields > 0)
                     {
-                        actionAttackDamageLabel.Text = $"{fire.DamageDoneShields} damage to shields.";
+                        actionAttackDamageLabel.Text = $"{beamFire.DamageDoneShields} damage to shields.";
                     }
                     else
                     {
-                        actionAttackDamageLabel.Text = $"{fire.DamageDoneArmor} damage to armor.";
+                        actionAttackDamageLabel.Text = $"{beamFire.DamageDoneArmor} damage to armor.";
+                    }
+
+                }
+                else if (action is BattleRecordTokenTorpedoFire torpedoFire)
+                {
+                    actionAttackLabelContainer.Visible = true;
+                    actionAttackLabel.Text = $"attacks the {torpedoFire.Target.Owner.RacePluralName}";
+                    actionAttackTargetLabel.Text = $"{torpedoFire.Target.Token.Design.Name} * {torpedoFire.Target.Token.Quantity - torpedoFire.TokensDestroyed}";
+                    actionAttackLocationLabel.Text = $"at ({torpedoFire.To.x + 1}, {torpedoFire.To.y + 1}) doing";
+                    if (torpedoFire.DamageDoneShields > 0 && torpedoFire.DamageDoneArmor > 0)
+                    {
+                        actionAttackDamageLabel.Text = $"{torpedoFire.DamageDoneShields} damage to shields and {torpedoFire.DamageDoneArmor} to armor.";
+                    }
+                    else if (torpedoFire.DamageDoneShields > 0)
+                    {
+                        actionAttackDamageLabel.Text = $"{torpedoFire.DamageDoneShields} damage to shields.";
+                    }
+                    else
+                    {
+                        actionAttackDamageLabel.Text = $"{torpedoFire.DamageDoneArmor} damage to armor.";
                     }
 
                 }
@@ -248,8 +311,9 @@ namespace CraigStars
             if (selectedSquare != null)
             {
                 selectionLabel.Text = $"Selection: ({selectedSquare.Coordinates.x}, {selectedSquare.Coordinates.y})";
-                if (selectedToken != null)
+                if (selectedGridToken != null)
                 {
+                    var selectedToken = selectedGridToken.Token;
                     selectionRaceLabel.Text = selectedToken.Owner.RacePluralName;
 
                     var design = selectedToken.Token.Design;
@@ -267,11 +331,11 @@ namespace CraigStars
 
                     selectionMovement.Text = $"Movement: {selectedToken.Token.Design.Aggregate.Movement}";
                     selectionArmor.Text = $"Armor: {selectedToken.Token.Design.Aggregate.Armor}dp";
-                    selectionShields.Text = $"Shields: {selectedToken.Token.Design.Aggregate.Shield}dp";
+                    selectionShields.Text = $"Shields: {selectedGridToken.Shields}dp";
 
-                    if (selectedToken.Token.Damage > 0)
+                    if (selectedGridToken.DamageArmor > 0)
                     {
-                        selectionDamage.Text = $"Damage: {selectedToken.Token.Damage}";
+                        selectionDamage.Text = $"Damage: {selectedGridToken.QuantityDamaged}@{selectedGridToken.DamageArmor}";
                     }
                     else
                     {
@@ -281,9 +345,30 @@ namespace CraigStars
             }
         }
 
+        void OnResetBoardButtonPressed()
+        {
+            ResetBoard();
+            prevActionButton.Disabled = true;
+            UpdateDescriptionFields();
+        }
+
+        void OnNextAttackActionButtonPressed()
+        {
+            while (currentPhase < totalPhases - 1)
+            {
+                OnNextActionButtonPressed();
+                var action = BattleRecord.ActionsPerRound[currentRound][currentAction];
+                if (action is BattleRecordTokenBeamFire || action is BattleRecordTokenTorpedoFire)
+                {
+                    break;
+                }
+            }
+        }
+
         void OnNextActionButtonPressed()
         {
             prevActionButton.Disabled = false;
+
             if (currentPhase < totalPhases - 1)
             {
                 currentPhase++;
@@ -344,9 +429,9 @@ namespace CraigStars
 
         void OnDesignDetailsButtonDown()
         {
-            if (selectedToken != null)
+            if (selectedGridToken != null)
             {
-                var design = selectedToken.Token.Design;
+                var design = selectedGridToken.Token.Token.Design;
                 hullSummary.Hull = design.Hull;
                 hullSummary.ShipDesign = design;
 
@@ -371,53 +456,104 @@ namespace CraigStars
         /// <param name="action"></param>
         void RunAction(BattleRecordTokenAction action)
         {
+            if (actionToken != null)
+            {
+                actionToken.FiringBeam = false;
+                actionToken.FiringTorpedo = false;
+                actionToken.Target = null;
+            }
+            var gridToken = GridTokensByGuid[action.Token.Guid];
+            actionToken = gridToken;
+            gridToken.FiringBeam = false;
+            gridToken.FiringTorpedo = false;
+            gridToken.Target = null;
             log.Debug($"Running action {action}");
             if (action is BattleRecordTokenMove move)
             {
                 var source = Squares[(int)move.From.y, (int)move.From.x];
                 var dest = Squares[(int)move.To.y, (int)move.To.x];
-                source.RemoveToken(move.Token);
-                dest.AddToken(move.Token);
-                OnBattleGridSquareSelected(dest);
-                selectedToken = move.Token;
+                source.RemoveToken(gridToken);
+                dest.AddToken(gridToken);
+                OnBattleGridSquareSelected(dest, gridToken);
+                selectedGridToken = gridToken;
                 UpdateDescriptionFields();
             }
-            else if (action is BattleRecordTokenFire fire)
+            else if (action is BattleRecordTokenBeamFire beamFire)
             {
-                var target = fire.Target;
-                target.DamageArmor += fire.DamageDoneArmor;
-                target.DamageShield += fire.DamageDoneShields;
-                target.ShipsDestroyed += fire.TokensDestroyed;
-                if (target.ShipsDestroyed >= target.Token.Quantity)
+                var target = GridTokensByGuid[beamFire.Target.Guid];
+                gridToken.FiringBeam = true;
+                gridToken.Target = target;
+
+                target.DamageArmor += beamFire.DamageDoneArmor;
+                target.DamageShields += beamFire.DamageDoneShields;
+                target.Quantity -= beamFire.TokensDestroyed;
+                if (target.Quantity == 0)
                 {
-                    Squares[(int)fire.To.y, (int)fire.To.x].RemoveToken(target);
+                    Squares[(int)beamFire.To.y, (int)beamFire.To.x].RemoveToken(target);
+                }
+            }
+            else if (action is BattleRecordTokenTorpedoFire torpedoFire)
+            {
+                var target = GridTokensByGuid[torpedoFire.Target.Guid];
+                gridToken.FiringBeam = true;
+                gridToken.Target = target;
+
+                target.DamageArmor += torpedoFire.DamageDoneArmor;
+                target.DamageShields += torpedoFire.DamageDoneShields;
+                target.Quantity -= torpedoFire.TokensDestroyed;
+                if (target.Quantity == 0)
+                {
+                    Squares[(int)torpedoFire.To.y, (int)torpedoFire.To.x].RemoveToken(target);
                 }
             }
         }
 
         void ReverseAction(BattleRecordTokenAction action)
         {
+            if (actionToken != null)
+            {
+                actionToken.FiringBeam = false;
+                actionToken.FiringTorpedo = false;
+                actionToken.Target = null;
+            }
+            var gridToken = GridTokensByGuid[action.Token.Guid];
+            actionToken = gridToken;
+
+            gridToken.FiringBeam = false;
+            gridToken.FiringTorpedo = false;
+            gridToken.Target = null;
             log.Debug($"Reversing action {action}");
             if (action is BattleRecordTokenMove move)
             {
                 var source = Squares[(int)move.From.y, (int)move.From.x];
                 var dest = Squares[(int)move.To.y, (int)move.To.x];
-                dest.RemoveToken(move.Token);
-                source.AddToken(move.Token);
-                OnBattleGridSquareSelected(source);
-                selectedToken = move.Token;
+                dest.RemoveToken(gridToken);
+                source.AddToken(gridToken);
+                OnBattleGridSquareSelected(source, gridToken);
+                selectedGridToken = gridToken;
                 UpdateDescriptionFields();
             }
-            else if (action is BattleRecordTokenFire fire)
+            else if (action is BattleRecordTokenBeamFire beamFire)
             {
-                var target = fire.Target;
-                target.DamageArmor -= fire.DamageDoneArmor;
-                target.DamageShield -= fire.DamageDoneShields;
-                if (target.ShipsDestroyed == 0 && fire.TokensDestroyed > 0)
+                var target = GridTokensByGuid[beamFire.Target.Guid];
+                target.DamageArmor -= beamFire.DamageDoneArmor;
+                target.DamageShields -= beamFire.DamageDoneShields;
+                if (target.Quantity == 0 && beamFire.TokensDestroyed > 0)
                 {
-                    Squares[(int)fire.To.y, (int)fire.To.x].AddToken(target);
+                    Squares[(int)beamFire.To.y, (int)beamFire.To.x].AddToken(target);
                 }
-                target.ShipsDestroyed -= fire.TokensDestroyed;
+                target.Quantity += beamFire.TokensDestroyed;
+            }
+            else if (action is BattleRecordTokenTorpedoFire torpedoFire)
+            {
+                var target = GridTokensByGuid[torpedoFire.Target.Guid];
+                target.DamageArmor -= torpedoFire.DamageDoneArmor;
+                target.DamageShields -= torpedoFire.DamageDoneShields;
+                if (target.Quantity == 0 && torpedoFire.TokensDestroyed > 0)
+                {
+                    Squares[(int)torpedoFire.To.y, (int)torpedoFire.To.x].AddToken(target);
+                }
+                target.Quantity += torpedoFire.TokensDestroyed;
             }
         }
 
@@ -439,7 +575,7 @@ namespace CraigStars
                 player1,
                 player2,
                 new HashSet<string>() { "Destroyer", "Space Station" },
-                new HashSet<string>() { "Destroyer", "Scout" }
+                new HashSet<string>() { "Destroyer", "Scout", "Fuel Transport" }
             ));
             battleEngine.RunBattle(battle);
 

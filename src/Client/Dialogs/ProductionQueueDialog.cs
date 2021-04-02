@@ -135,7 +135,7 @@ namespace CraigStars
             AddTreeItem(queuedItemsTree, queuedItemsTreeRoot, item.FullName, item);
         }
 
-        void AddTreeItem(Tree tree, TreeItem root, String text, ProductionQueueItem item)
+        void AddTreeItem(Tree tree, TreeItem root, string text, ProductionQueueItem item)
         {
             var treeItem = tree.CreateItem(root);
             treeItem.SetText(0, text);

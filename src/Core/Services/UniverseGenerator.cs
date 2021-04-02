@@ -32,8 +32,10 @@ namespace CraigStars
 
                 // initialize this player
                 InitTechLevels(player);
+                player.BattlePlans.Add(new BattlePlan("Default"));
                 InitPlayerPlanetReports(player, planets);
                 InitShipDesigns(player);
+
                 player.PlanetaryScanner = player.GetBestPlanetaryScanner();
 
                 var homeworld = planets.Find(p => p.Player == null && (ownedPlanets.Count == 0 || ShortestDistanceToPlanets(p, ownedPlanets) > Game.Rules.Area / 4));
@@ -142,6 +144,7 @@ namespace CraigStars
                 Id = id
             };
             fleet.Name = $"{playerDesign.Name} #{fleet.Id}";
+            fleet.BattlePlan = player.BattlePlans[0];
             player.Stats.NumFleetsBuilt++;
             fleet.Tokens.Add(
                     new ShipToken()
@@ -252,6 +255,7 @@ namespace CraigStars
                 Name = starbaseDesign.Name,
                 Position = planet.Position,
                 Orbiting = planet,
+                BattlePlan = player.BattlePlans[0],
                 Waypoints = new List<Waypoint>
             {
                 Waypoint.TargetWaypoint(planet)

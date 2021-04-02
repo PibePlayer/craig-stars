@@ -15,6 +15,11 @@ namespace CraigStars
         public bool DoubleMineEfficiency { get; set; }
         public bool BuiltInScannerForJoaT { get; set; }
         public int CargoCapacity { get; set; }
+
+        /// <summary>
+        /// Starbases have +1 range
+        /// </summary>
+        public int RangeBonus { get; set;  }
         public bool Starbase { get; set; }
         [DefaultValue(UnlimitedSpaceDock)]
         public int SpaceDock { get; set; } = UnlimitedSpaceDock;

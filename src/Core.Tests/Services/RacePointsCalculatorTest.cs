@@ -14,7 +14,7 @@ namespace CraigStars.Tests
         [Test]
         public void TestGetAdvantagePoints()
         {
-            var rules = new Rules();
+            var rules = new Rules(0);
             RacePointsCalculator rpc = new RacePointsCalculator();
             Assert.AreEqual(25, rpc.GetAdvantagePoints(Races.Humanoid, rules.RaceStartingPoints));
 

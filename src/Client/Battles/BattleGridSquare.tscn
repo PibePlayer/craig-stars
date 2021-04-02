@@ -1,52 +1,48 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://src/Client/Battles/BattleGridSquare.cs" type="Script" id=2]
 
 [sub_resource type="StyleBoxFlat" id=1]
 resource_local_to_scene = true
-bg_color = Color( 0, 0, 0, 1 )
+bg_color = Color( 0, 0, 0, 0 )
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
 border_color = Color( 0.223529, 0.227451, 0.266667, 1 )
 
-[node name="BattleGridSquare" type="MarginContainer"]
-margin_right = 64.0
-margin_bottom = 64.0
-rect_min_size = Vector2( 64, 64 )
-size_flags_horizontal = 0
-size_flags_vertical = 0
-custom_constants/margin_right = 2
-custom_constants/margin_top = 2
-custom_constants/margin_left = 2
-custom_constants/margin_bottom = 2
+[sub_resource type="StyleBoxFlat" id=2]
+bg_color = Color( 0, 0, 0, 1 )
+
+[node name="BattleGridSquare" type="Panel"]
+show_behind_parent = true
+margin_right = 68.0
+margin_bottom = 68.0
+rect_min_size = Vector2( 68, 68 )
+custom_styles/panel = SubResource( 1 )
 script = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Icon" type="TextureRect" parent="."]
-margin_left = 2.0
-margin_top = 2.0
-margin_right = 66.0
-margin_bottom = 66.0
-rect_min_size = Vector2( 64, 64 )
-mouse_filter = 0
-expand = true
-stretch_mode = 4
-
-[node name="Panel" type="Panel" parent="Icon"]
+[node name="Panel" type="Panel" parent="."]
 show_behind_parent = true
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -2.0
-margin_top = -2.0
-margin_right = 2.0
-margin_bottom = 2.0
-rect_min_size = Vector2( 68, 68 )
-mouse_filter = 1
-custom_styles/panel = SubResource( 1 )
+mouse_filter = 2
+custom_styles/panel = SubResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TokenContainer" type="MarginContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+custom_constants/margin_right = 2
+custom_constants/margin_top = 2
+custom_constants/margin_left = 2
+custom_constants/margin_bottom = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -54,7 +50,7 @@ __meta__ = {
 [node name="NumTokensLabel" type="Label" parent="."]
 margin_left = 2.0
 margin_top = 2.0
-margin_right = 66.0
+margin_right = 70.0
 margin_bottom = 16.0
 rect_min_size = Vector2( 64, 0 )
 size_flags_vertical = 0
@@ -64,7 +60,7 @@ align = 2
 [node name="NumShipsLabel" type="Label" parent="."]
 margin_left = 2.0
 margin_top = 2.0
-margin_right = 66.0
+margin_right = 70.0
 margin_bottom = 16.0
 rect_min_size = Vector2( 64, 0 )
 size_flags_vertical = 0

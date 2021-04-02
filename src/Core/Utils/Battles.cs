@@ -45,7 +45,7 @@ namespace CraigStars
                 Tokens = new List<ShipToken>() {
                         new ShipToken(design1, 1)
                     },
-                BattleOrders = new BattleOrders()
+                BattlePlan = new BattlePlan()
                 {
                     Tactic = BattleTactic.MaximizeDamageRatio,
                     PrimaryTarget = BattleTargetType.ArmedShips,
@@ -64,7 +64,7 @@ namespace CraigStars
                 Tokens = new List<ShipToken>() {
                         new ShipToken(design2, 1)
                     },
-                BattleOrders = new BattleOrders()
+                BattlePlan = new BattlePlan()
                 {
                     Tactic = BattleTactic.Disengage,
                     PrimaryTarget = BattleTargetType.None,
@@ -209,7 +209,7 @@ namespace CraigStars
         /// <returns></returns>
         public static BattleRecord GetSimpleBattleRecord(Player player1 = null, Player player2 = null)
         {
-            BattleEngine battleEngine = new BattleEngine(new Rules());
+            BattleEngine battleEngine = new BattleEngine(new Rules(0));
             var battle = battleEngine.BuildBattle(GetFleetsForSimpleBattle());
             battleEngine.RunBattle(battle);
 
@@ -224,7 +224,7 @@ namespace CraigStars
         /// <returns></returns>
         public static BattleRecord GetDesignsBattleRecord(Player player1, Player player2, HashSet<string> player1DesignNames, HashSet<string> player2DesignNames)
         {
-            BattleEngine battleEngine = new BattleEngine(new Rules());
+            BattleEngine battleEngine = new BattleEngine(new Rules(0));
             var battle = battleEngine.BuildBattle(GetFleetsForDesignsBattle(player1, player2, player1DesignNames, player2DesignNames));
             battleEngine.RunBattle(battle);
 

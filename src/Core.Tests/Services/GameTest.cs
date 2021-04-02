@@ -29,7 +29,13 @@ namespace CraigStars.Tests
                 SaveToDisk = false,
                 TechStore = StaticTechStore.Instance
             };
-            var player = new Player();
+            var player = new Player()
+            {
+                BattlePlans = new List<BattlePlan>() {
+                    new BattlePlan("Default")
+                }
+            };
+            player.SetupMapObjectMappings();
             game.Players.Add(player);
 
             game.Planets.Add(new Planet()
@@ -58,7 +64,8 @@ namespace CraigStars.Tests
                         Design = design,
                         Quantity = 1
                     }
-                })
+                }),
+                BattlePlan = player.BattlePlans[0]
             });
             return game;
         }
@@ -67,7 +74,7 @@ namespace CraigStars.Tests
         public void TestGenerateUniverse()
         {
             var game = new Game() { SaveToDisk = false };
-            var rules = new Rules();
+            var rules = new Rules(0);
             game.Init(new List<Player>() { new Player() }, rules, StaticTechStore.Instance);
             game.GenerateUniverse();
 
@@ -82,7 +89,7 @@ namespace CraigStars.Tests
             // create a new game with universe
             var game = new Game() { SaveToDisk = false };
             var player = new Player();
-            var rules = new Rules();
+            var rules = new Rules(0);
             game.Init(new List<Player>() { player }, rules, StaticTechStore.Instance);
             game.GenerateUniverse();
 
@@ -107,7 +114,7 @@ namespace CraigStars.Tests
             var game = new Game() { SaveToDisk = false };
             var player = new Player();
             var aiPlayer = new Player() { AIControlled = true };
-            var rules = new Rules()
+            var rules = new Rules(0)
             {
                 Size = Size.Huge,
                 Density = Density.Packed

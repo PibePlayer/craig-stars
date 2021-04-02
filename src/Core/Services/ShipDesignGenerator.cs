@@ -15,7 +15,7 @@ namespace CraigStars
 
         public delegate TechHullComponent FillGeneralSlotCallback(int index);
 
-        public ShipDesign DesignShip(TechHull hull, String name, Player player, int hullSetNumber, ShipDesignPurpose purpose)
+        public ShipDesign DesignShip(TechHull hull, string name, Player player, int hullSetNumber, ShipDesignPurpose purpose)
         {
             var design = new ShipDesign()
             {
@@ -25,6 +25,13 @@ namespace CraigStars
                 HullSetNumber = hullSetNumber,
                 Purpose = purpose
             };
+
+            // make an even number of beam and torpedo slots
+            int torpedoSlots = 0;
+            int beamSlots = 0;
+
+            int numShields = 0;
+            int numArmor = 0;
 
             // populate each slot for this design
             hull.Slots.Each((hullSlot, index) =>
@@ -50,13 +57,35 @@ namespace CraigStars
                         break;
                     case HullSlotType.Shield:
                         slot.HullComponent = player.GetBestShield();
+                        numShields++;
                         break;
                     case HullSlotType.Armor:
-                    case HullSlotType.ShieldArmor:
+                        numArmor++;
                         slot.HullComponent = player.GetBestArmor();
                         break;
+                    case HullSlotType.ShieldArmor:
+                        // balance armor and shields, but if equal, do armor
+                        if (numShields >= numArmor)
+                        {
+                            slot.HullComponent = player.GetBestArmor();
+                        }
+                        else
+                        {
+                            slot.HullComponent = player.GetBestShield();
+                        }
+                        break;
                     case HullSlotType.Weapon:
-                        slot.HullComponent = player.GetBestBeamWeapon();
+                        // balance beams and torpedos, but if equal, do beams
+                        if (torpedoSlots >= beamSlots)
+                        {
+                            slot.HullComponent = player.GetBestBeamWeapon();
+                            beamSlots++;
+                        }
+                        else
+                        {
+                            slot.HullComponent = player.GetBestTorpedo();
+                            torpedoSlots++;
+                        }
                         break;
                     case HullSlotType.Mining:
                         slot.HullComponent = player.GetBestMineRobot();

@@ -188,7 +188,8 @@ namespace CraigStars
                 Player = planet.Player,
                 Orbiting = planet,
                 Position = planet.Position,
-                Id = id
+                Id = id,
+                BattlePlan = planet.Player.BattlePlans[0]
             };
             fleet.Tokens.Add(new ShipToken(item.Design, item.quantity));
             fleet.ComputeAggregate();

@@ -39,7 +39,7 @@ namespace CraigStars.Tests
         public delegate void TestResultDelegate(TestResult testResult);
 
 
-        public TestRunner(SceneTree sceneTree, String testMethodToRun, bool requireTestFixture = true)
+        public TestRunner(SceneTree sceneTree, string testMethodToRun, bool requireTestFixture = true)
         {
             this.sceneTree = sceneTree;
             this.requireTestFixture = requireTestFixture;

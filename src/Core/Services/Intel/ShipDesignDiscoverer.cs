@@ -39,6 +39,8 @@ namespace CraigStars
                 // copy all the slot data so our player knows about it
                 // we only add this info, we don't take it away if the fleet goes out of penScan range
                 itemReport.Slots.AddRange(item.Slots.Select(slot => new ShipDesignSlot(slot.HullComponent, slot.HullSlotIndex, slot.Quantity)));
+                itemReport.Armor = item.Armor;
+                itemReport.Shields = item.Shields;
             }
         }
 

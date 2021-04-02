@@ -15,7 +15,7 @@ namespace CraigStars
         /// The name of the fleet to place this item into
         /// </summary>
         /// <value></value>
-        public readonly String fleetName;
+        public readonly string fleetName;
 
         /// <summary>
         /// If this is a ship building item, this is the design to build
@@ -73,7 +73,7 @@ namespace CraigStars
         }
 
 
-        public String ShortName
+        public string ShortName
         {
             get
             {
@@ -96,7 +96,7 @@ namespace CraigStars
             }
         }
 
-        public String FullName
+        public string FullName
         {
             get
             {

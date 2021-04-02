@@ -13,7 +13,13 @@ namespace CraigStars
         public int Shield { get; set; }
         public int Cloak { get; set; }
         public bool CloakUnarmedOnly { get; set; }
-        public int TorpedoBonus { get; set; }
+        
+        /// <summary>
+        /// This cumulative bonus decreases innaccuracy of torpedos on the ship
+        /// i.e. 75% accurate torpedo with two .3f torpedo bonus
+        /// is 100 - ((100 - 75) x .7 * .7) = 88% accuracy
+        /// </summary>
+        public float TorpedoBonus { get; set; }
         public int InitiativeBonus { get; set; }
         public int TorpedoJamming { get; set; }
         public int ReduceMovement { get; set; }

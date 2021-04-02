@@ -4,33 +4,6 @@
 
 A clone of the 4X game Stars!
 
-# Mininum Viable Game
-
-This version still isn't playable. In order to make a playable game, this clone requires:
-
--   Scanner Views (both planetary and fleet based)
--   Research Menu (partially done)
--   Ship Designer (started)
--   Production Queue UI (partially done)
--   Race Customizer
--   Tech Browser (partially done)
--   Waypoint Orders (to colonize planets) (partially done)
--   Menu system (Main menu, in game exit menu, Multiplayer lobby, etc)
--   Battles
--   Bombing
--   Invasion
-
-# Little TODOs
-
-There are loads of things to do, but this section is for tracking things I've implmented partially but not fully.
-
--   Production doesn't allocate unspent resources to research
--   Research at max level just stops, should switch to lowest unless all are max
--   GR LRT not implemented
--   No terraforming view on hab summary
--   No cloak, jam, or initiative in ship aggregate
--   Move waypoints/shift move waypoints for fine tuning
-
 # Development
 
 This clone is done using the [Godot](https://godotengine.org) game engine. To launch this project, install Godot Mono 3.2.3 or greater (and [the required .net sdks](https://docs.godotengine.org/en/stable/getting_started/scripting/c_sharp/c_sharp_basics.html?highlight=mono#setting-up-c-for-godot)), open project.godot in the editor and click the Play button.

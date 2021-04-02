@@ -789,6 +789,7 @@ namespace CraigStars
         {
             log.Debug("Resetting Scanner to homeview");
             FocusHomeworld();
+            log.Debug("Updating scanners");
             UpdateScanners();
             log.Debug("Updating Sprites");
             Planets.ForEach(p => p.UpdateSprite());

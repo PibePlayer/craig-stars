@@ -148,7 +148,7 @@ namespace CraigStars
         /// <param name="player"></param>
         async void OnSubmitTurn(Player player)
         {
-            Game.SubmitTurn(player);
+            await Game.SubmitTurn(player);
             if (Game.AllPlayersSubmitted())
             {
                 // once everyone is submitted, generate a new turn

@@ -52,25 +52,7 @@ namespace CraigStars
                 1080
             }
         };
-        public static readonly TechEngine LongHump6 = new TechEngine("Long Hump 6", new Cost(5, 0, 1, 6), new TechRequirements(propulsion: 3), 30)
-        {
-            Mass = 9,
-            IdealSpeed = 6,
-            FuelUsage = new int[] {
-                0,
-                0,
-                20,
-                60,
-                100,
-                100,
-                105,
-                450,
-                750,
-                900,
-                1080
-            }
-        };
-        public static readonly TechEngine FuelMizer = new TechEngine("Fuel Mizer", new Cost(8, 0, 0, 11), new TechRequirements(propulsion: 2, lrtsRequired: LRT.IFE), 40)
+        public static readonly TechEngine FuelMizer = new TechEngine("Fuel Mizer", new Cost(8, 0, 0, 11), new TechRequirements(propulsion: 2, lrtsRequired: LRT.IFE), 30)
         {
             Mass = 6,
             IdealSpeed = 6,
@@ -88,28 +70,26 @@ namespace CraigStars
                 420
             }
 
-        };
-        public static readonly TechEngine RadiatingHydroRamScoop = new TechEngine("Radiating Hydro-Ram Scoop", new Cost(3, 2, 9, 8), new TechRequirements(energy: 2, propulsion: 6, lrtsDenied: LRT.NRSE), 50)
+        };        
+        public static readonly TechEngine LongHump6 = new TechEngine("Long Hump 6", new Cost(5, 0, 1, 6), new TechRequirements(propulsion: 3), 40)
         {
-            Mass = 10,
-            Radiating = true,
+            Mass = 9,
             IdealSpeed = 6,
             FuelUsage = new int[] {
                 0,
                 0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                165,
-                375,
-                600,
-                720
+                20,
+                60,
+                100,
+                100,
+                105,
+                450,
+                750,
+                900,
+                1080
             }
-
         };
-        public static readonly TechEngine DaddyLongLegs7 = new TechEngine("Daddy Long Legs 7", new Cost(11, 0, 3, 12), new TechRequirements(propulsion: 5), 60)
+        public static readonly TechEngine DaddyLongLegs7 = new TechEngine("Daddy Long Legs 7", new Cost(11, 0, 3, 12), new TechRequirements(propulsion: 5), 50)
         {
             Mass = 13,
             IdealSpeed = 7,
@@ -128,7 +108,7 @@ namespace CraigStars
             }
 
         };
-        public static readonly TechEngine AlphaDrive8 = new TechEngine("Alpha Drive 8", new Cost(16, 0, 3, 28), new TechRequirements(propulsion: 7), 70)
+        public static readonly TechEngine AlphaDrive8 = new TechEngine("Alpha Drive 8", new Cost(16, 0, 3, 28), new TechRequirements(propulsion: 7), 60)
         {
             Mass = 17,
             IdealSpeed = 8,
@@ -147,7 +127,7 @@ namespace CraigStars
             }
 
         };
-        public static readonly TechEngine TransGalacticDrive = new TechEngine("Trans-Galactic Drive", new Cost(20, 20, 9, 50), new TechRequirements(propulsion: 9), 90)
+        public static readonly TechEngine TransGalacticDrive = new TechEngine("Trans-Galactic Drive", new Cost(20, 20, 9, 50), new TechRequirements(propulsion: 9), 70)
         {
             Mass = 25,
             IdealSpeed = 9,
@@ -166,82 +146,7 @@ namespace CraigStars
             }
 
         };
-        public static readonly TechEngine TransGalacticFuelScoop = new TechEngine("Trans-Galactic Fuel Scoop", new Cost(5, 4, 12, 18), new TechRequirements(energy: 3, propulsion: 9, lrtsDenied: LRT.NRSE), 100)
-        {
-            Mass = 19,
-            IdealSpeed = 8,
-            FuelUsage = new int[] {
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                88,
-                100,
-                145,
-                174
-            }
-
-        };
-        public static readonly TechEngine TransGalacticMizerScoop = new TechEngine("Trans-Galactic Mizer Scoop", new Cost(5, 2, 13, 11), new TechRequirements(energy: 4, propulsion: 16, lrtsDenied: LRT.NRSE), 110)
-        {
-            Mass = 11,
-            IdealSpeed = 10,
-            FuelUsage = new int[] {
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                70,
-                84
-            }
-
-        };
-        public static readonly TechEngine TransGalacticSuperScoop = new TechEngine("Trans-Galactic Super Scoop", new Cost(6, 4, 16, 24), new TechRequirements(energy: 4, propulsion: 12, lrtsDenied: LRT.NRSE), 120)
-        {
-            Mass = 18,
-            IdealSpeed = 9,
-            FuelUsage = new int[] {
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                65,
-                90,
-                108
-            }
-
-        };
-        public static readonly TechEngine GalaxyScoop = new TechEngine("Galaxy Scoop", new Cost(4, 2, 9, 12), new TechRequirements(energy: 5, propulsion: 20, lrtsRequired: LRT.IFE, lrtsDenied: LRT.NRSE), 130)
-        {
-            Mass = 8,
-            IdealSpeed = 10,
-            FuelUsage = new int[] {
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                60
-            }
-        };
-        public static readonly TechEngine Interspace10 = new TechEngine("Interspace-10", new Cost(18, 25, 10, 60), new TechRequirements(propulsion: 11, lrtsRequired: LRT.NRSE), 140)
+        public static readonly TechEngine Interspace10 = new TechEngine("Interspace-10", new Cost(18, 25, 10, 60), new TechRequirements(propulsion: 11, lrtsRequired: LRT.NRSE), 80)
         {
             Mass = 25,
             IdealSpeed = 10,
@@ -260,7 +165,7 @@ namespace CraigStars
             }
 
         };
-        public static readonly TechEngine TransStar10 = new TechEngine("Trans-Star 10", new Cost(3, 0, 3, 10), new TechRequirements(propulsion: 23), 150)
+        public static readonly TechEngine TransStar10 = new TechEngine("Trans-Star 10", new Cost(3, 0, 3, 10), new TechRequirements(propulsion: 23), 90)
         {
             Mass = 5,
             IdealSpeed = 10,
@@ -278,8 +183,28 @@ namespace CraigStars
                 50
             }
 
-        };
-        public static readonly TechEngine SubGalacticFuelScoop = new TechEngine("Sub-Galactic Fuel Scoop", new Cost(4, 4, 7, 12), new TechRequirements(energy: 2, propulsion: 8, lrtsDenied: LRT.NRSE), 160)
+        };        
+        public static readonly TechEngine RadiatingHydroRamScoop = new TechEngine("Radiating Hydro-Ram Scoop", new Cost(3, 2, 9, 8), new TechRequirements(energy: 2, propulsion: 6, lrtsDenied: LRT.NRSE), 100)
+        {
+            Mass = 10,
+            Radiating = true,
+            IdealSpeed = 6,
+            FuelUsage = new int[] {
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                165,
+                375,
+                600,
+                720
+            }
+
+        };       
+        public static readonly TechEngine SubGalacticFuelScoop = new TechEngine("Sub-Galactic Fuel Scoop", new Cost(4, 4, 7, 12), new TechRequirements(energy: 2, propulsion: 8, lrtsDenied: LRT.NRSE), 110)
         {
             Mass = 20,
             IdealSpeed = 7,
@@ -297,6 +222,82 @@ namespace CraigStars
                 456
             }
 
+        };
+
+        public static readonly TechEngine TransGalacticFuelScoop = new TechEngine("Trans-Galactic Fuel Scoop", new Cost(5, 4, 12, 18), new TechRequirements(energy: 3, propulsion: 9, lrtsDenied: LRT.NRSE), 120)
+        {
+            Mass = 19,
+            IdealSpeed = 8,
+            FuelUsage = new int[] {
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                88,
+                100,
+                145,
+                174
+            }
+
+        };
+        public static readonly TechEngine TransGalacticSuperScoop = new TechEngine("Trans-Galactic Super Scoop", new Cost(6, 4, 16, 24), new TechRequirements(energy: 4, propulsion: 12, lrtsDenied: LRT.NRSE), 130)
+        {
+            Mass = 18,
+            IdealSpeed = 9,
+            FuelUsage = new int[] {
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                65,
+                90,
+                108
+            }
+
+        };
+        public static readonly TechEngine TransGalacticMizerScoop = new TechEngine("Trans-Galactic Mizer Scoop", new Cost(5, 2, 13, 11), new TechRequirements(energy: 4, propulsion: 16, lrtsDenied: LRT.NRSE), 140)
+        {
+            Mass = 11,
+            IdealSpeed = 10,
+            FuelUsage = new int[] {
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                70,
+                84
+            }
+
+        };        
+        public static readonly TechEngine GalaxyScoop = new TechEngine("Galaxy Scoop", new Cost(4, 2, 9, 12), new TechRequirements(energy: 5, propulsion: 20, lrtsRequired: LRT.IFE, lrtsDenied: LRT.NRSE), 150)
+        {
+            Mass = 8,
+            IdealSpeed = 10,
+            FuelUsage = new int[] {
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                60
+            }
         };
 
         #endregion Engines

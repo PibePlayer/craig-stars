@@ -70,6 +70,7 @@ namespace CraigStars
         TurnGenerator turnGenerator;
         TurnSubmitter turnSubmitter;
         GameSaver gameSaver;
+        Task savingGameTask;
 
         public Game()
         {
@@ -160,8 +161,12 @@ namespace CraigStars
             SaveGame();
         }
 
-        public void SubmitTurn(Player player)
+        public async Task SubmitTurn(Player player)
         {
+            if (savingGameTask != null)
+            {
+                await savingGameTask;
+            }
             turnSubmitter.SubmitTurn(player);
         }
 
@@ -291,7 +296,9 @@ namespace CraigStars
             {
                 TurnGeneratorAdvancedEvent?.Invoke(TurnGeneratorState.Saving);
                 // save the game to disk
-                await gameSaver.SaveGame(this);
+                savingGameTask = gameSaver.SaveGame(this);
+                await savingGameTask;
+                savingGameTask = null;
             }
         }
 
@@ -319,11 +326,11 @@ namespace CraigStars
         void SubmitAITurns()
         {
             // submit AI turns
-            Players.ForEach(p =>
+            Players.ForEach(async p =>
             {
                 if (p.AIControlled)
                 {
-                    SubmitTurn(p as Player);
+                    await SubmitTurn(p as Player);
                 }
             });
         }

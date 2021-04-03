@@ -35,6 +35,7 @@ namespace CraigStars
         CostGrid availableItemCostGrid;
         CostGrid queuedItemCostGrid;
         Label completionEstimateLabel;
+        Label costOfQueuedLabel;
 
         int selectedAvailableItemIndex = -1;
         int selectedQueuedItemIndex = -1;
@@ -58,10 +59,12 @@ namespace CraigStars
             okButton = (Button)FindNode("OKButton");
             contributesOnlyLeftoverToResearchCheckbox = (CheckBox)FindNode("ContributesOnlyLeftoverToResearchCheckbox");
 
-            availableItemCostGrid = FindNode("AvailableItemCostGrid") as CostGrid;
-            queuedItemCostGrid = FindNode("QueuedItemCostGrid") as CostGrid;
-            completionEstimateLabel = FindNode("CompletionEstimateLabel") as Label;
+            availableItemCostGrid = (CostGrid)FindNode("AvailableItemCostGrid");
+            queuedItemCostGrid = (CostGrid)FindNode("QueuedItemCostGrid");
+            completionEstimateLabel = (Label)FindNode("CompletionEstimateLabel");
+            costOfQueuedLabel = (Label)FindNode("CostOfQueuedLabel");
 
+            queuedItemsTree.Columns = 2;
             queuedItemsTree.SetColumnExpand(0, true);
             queuedItemsTree.SetColumnExpand(1, false);
             queuedItemsTree.SetColumnMinWidth(1, 60);
@@ -76,16 +79,38 @@ namespace CraigStars
             removeButton.Connect("pressed", this, nameof(OnRemoveItem));
             itemUpButton.Connect("pressed", this, nameof(OnItemUp));
             itemDownButton.Connect("pressed", this, nameof(OnItemDown));
+
+            nextButton.Connect("pressed", this, nameof(OnNextButtonPressed));
+            prevButton.Connect("pressed", this, nameof(OnPrevButtonPressed));
             okButton.Connect("pressed", this, nameof(OnOk));
 
             Connect("about_to_show", this, nameof(OnAboutToShow));
             Connect("popup_hide", this, nameof(OnPopupHide));
+
+            Signals.MapObjectActivatedEvent += OnMapObjectActivated;
         }
+
+        public override void _ExitTree()
+        {
+            Signals.MapObjectActivatedEvent -= OnMapObjectActivated;
+        }
+
 
         void OnPopupHide()
         {
             availableItemsTree.Clear();
             queuedItemsTree.Clear();
+        }
+
+        void OnMapObjectActivated(MapObjectSprite mapObject)
+        {
+            // if the player is currently looking at the production queue and a new item comes up, reset ourselves to its
+            // items
+            if (Visible && mapObject is PlanetSprite planet)
+            {
+                Planet = planet.Planet;
+                OnAboutToShow();
+            }
         }
 
         /// <summary>
@@ -132,7 +157,6 @@ namespace CraigStars
             }
 
             contributesOnlyLeftoverToResearchCheckbox.Pressed = Planet.ContributesOnlyLeftoverToResearch;
-
         }
 
         void AddAvailableItem(ProductionQueueItem item, int index)
@@ -207,11 +231,23 @@ namespace CraigStars
             {
                 ProductionQueueItem item = selectedQueueItem.Value;
                 queuedItemCostGrid.Visible = true;
-                completionEstimateLabel.Visible = false;
 
                 // figure out how much this queue item costs
                 var cost = item.GetCostOfOne(RulesManager.Rules, Me.Race) * item.quantity;
                 queuedItemCostGrid.Cost = cost;
+                costOfQueuedLabel.Text = $"Cost of {item.ShortName} x {item.quantity}";
+
+                // see how much has been allocated for the top item in the queue
+                var allocatedSoFar = Planet.ProductionQueue.Allocated;
+
+                // figure out how much each previous item in the list is costing us
+                Cost previousItemCost = -allocatedSoFar;
+                for (int i = 0; i < selectedQueuedItemIndex; i++)
+                {
+                    var previousItem = queuedItems[i];
+                    previousItemCost += previousItem.GetCostOfOne(RulesManager.Rules, Me.Race) * previousItem.quantity;
+                }
+
 
                 // figure out how many resources we have per year
                 int yearlyResources = 0;
@@ -224,16 +260,26 @@ namespace CraigStars
                     yearlyResources = Planet.ResourcesPerYearAvailable;
                 }
 
-                var allocatedSoFar = Planet.ProductionQueue.Allocated;
-                var availableCost = Planet.Cargo.ToCost(yearlyResources);
-                var yearlyMinerals = Planet.MineralOutput;
+                // this is how man resources and minerals our planet produces each year
+                var yearlyAvailableCost = new Cost(Planet.MineralOutput, yearlyResources);
 
-                log.Debug($"Cost: {cost} Allocated: {allocatedSoFar}, available: {availableCost}, yearlyMinerals: {yearlyMinerals}");
+                // Get the total cost of this item plus any previous items in the queue
+                // and subtract what we have on hand (that will be applied this year)
+                Cost remainingCost = cost + previousItemCost - Planet.Cargo.ToCost();
 
-                var remaining = cost - allocatedSoFar - availableCost - yearlyMinerals;
+                // If we have a bunch of leftover minerals because our planet is full, 0 those out
+                remainingCost = new Cost(
+                    Math.Max(0, remainingCost.Ironium),
+                    Math.Max(0, remainingCost.Boranium),
+                    Math.Max(0, remainingCost.Germanium),
+                    Math.Max(0, remainingCost.Resources)
+                );
 
-                // TODO: figure this algorithm out...
-                log.Debug($"After year passed: {remaining}");
+                float percentComplete = selectedQueuedItemIndex == 0 && allocatedSoFar != Cost.Zero ? Mathf.Clamp(allocatedSoFar / cost, 0, 1) : 0;
+                int numYearsToBuild = remainingCost == Cost.Zero ? 1 : (int)Math.Ceiling(Mathf.Clamp(remainingCost / yearlyAvailableCost, 1, int.MaxValue));
+
+                completionEstimateLabel.Visible = true;
+                completionEstimateLabel.Text = $"{(int)(percentComplete * 100)}% Done. Completion {numYearsToBuild} year{(numYearsToBuild > 1 ? "s" : "")}";
             }
             else
             {
@@ -273,6 +319,12 @@ namespace CraigStars
         /// </summary>
         void OnOk()
         {
+            Save();
+            Hide();
+        }
+
+        void Save()
+        {
             if (Planet.ProductionQueue != null)
             {
                 Planet.ProductionQueue.Items.Clear();
@@ -285,8 +337,20 @@ namespace CraigStars
             Planet.ContributesOnlyLeftoverToResearch = contributesOnlyLeftoverToResearchCheckbox.Pressed;
 
             Signals.PublishProductionQueueChangedEvent(Planet);
-            Hide();
         }
+
+        void OnNextButtonPressed()
+        {
+            Save();
+            Signals.PublishActiveNextMapObjectEvent();
+        }
+
+        void OnPrevButtonPressed()
+        {
+            Save();
+            Signals.PublishActivePrevMapObjectEvent();
+        }
+
 
         void OnSelectQueuedItem()
         {

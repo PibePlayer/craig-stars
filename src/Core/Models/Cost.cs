@@ -19,10 +19,20 @@ namespace CraigStars
             Resources = resources;
         }
 
+        public Cost(Mineral minerals, int resources = 0)
+        {
+            Ironium = minerals.Ironium;
+            Boranium = minerals.Boranium;
+            Germanium = minerals.Germanium;
+            Resources = resources;
+        }
+
         public override string ToString()
         {
             return $"Cost i:{Ironium}, b:{Boranium}, g:{Germanium}, r:{Resources}";
         }
+
+        public static Cost Zero { get => new Cost(0, 0, 0, 0); }
 
         public static Cost operator +(Cost a, Cost b)
         {
@@ -70,17 +80,13 @@ namespace CraigStars
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        public static int operator /(Cost a, Cost b)
+        public static float operator /(Cost a, Cost b)
         {
-            int newIronium = int.MaxValue;
-            int newBoranium = int.MaxValue;
-            int newGermanium = int.MaxValue;
-            int newResources = int.MaxValue;
-
-            newIronium = b.Ironium > 0 ? a.Ironium / b.Ironium : newIronium;
-            newBoranium = b.Boranium > 0 ? a.Boranium / b.Boranium : newBoranium;
-            newGermanium = b.Germanium > 0 ? a.Germanium / b.Germanium : newGermanium;
-            newResources = b.Resources > 0 ? a.Resources / b.Resources : newResources;
+            // if either component is 0, we will have at least one
+            float newIronium = a.Ironium == 0 || b.Ironium == 0 ? float.MaxValue : (float)a.Ironium / b.Ironium;
+            float newBoranium = a.Boranium == 0 || b.Boranium == 0 ? float.MaxValue : (float)a.Boranium / b.Boranium;
+            float newGermanium = a.Germanium == 0 || b.Germanium == 0 ? float.MaxValue : (float)a.Germanium / b.Germanium;
+            float newResources = a.Resources == 0 || b.Resources == 0 ? float.MaxValue : (float)a.Resources / b.Resources;
 
             // get the minimum number of times b goes into a
             return Math.Min(newResources,
@@ -88,6 +94,75 @@ namespace CraigStars
                             Math.Min(newBoranium, newGermanium)
                         )
                     );
+        }
+
+        public static Cost operator -(Cost a)
+        {
+            return new Cost(
+                -a.Ironium,
+                -a.Boranium,
+                -a.Germanium,
+                -a.Resources
+            );
+        }
+
+        /// <summary>
+        /// Return true if all components of this cost are greater than or equal to scalar
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="scalar"></param>
+        /// <returns></returns>
+        public static bool operator >=(Cost a, int scalar)
+        {
+            return
+                a.Ironium >= scalar &&
+                a.Boranium >= scalar &&
+                a.Germanium >= scalar &&
+                a.Resources >= scalar;
+        }
+
+        /// <summary>
+        /// Return true if all components of this cost are less than or equal to scalar
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="scalar"></param>
+        /// <returns></returns>
+        public static bool operator <=(Cost a, int scalar)
+        {
+            return
+                a.Ironium <= scalar &&
+                a.Boranium <= scalar &&
+                a.Germanium <= scalar &&
+                a.Resources <= scalar;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Cost cargo)
+            {
+                return Equals(cargo);
+            }
+            return false;
+        }
+
+        public bool Equals(Cost other)
+        {
+            return Ironium == other.Ironium && Boranium == other.Boranium && Germanium == other.Germanium && Resources == other.Resources;
+        }
+
+        public static bool operator ==(Cost a, Cost b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(Cost a, Cost b)
+        {
+            return !a.Equals(b);
+        }
+
+        public override int GetHashCode()
+        {
+            return Ironium.GetHashCode() ^ Boranium.GetHashCode() ^ Germanium.GetHashCode() ^ Resources.GetHashCode();
         }
 
         /// <summary>

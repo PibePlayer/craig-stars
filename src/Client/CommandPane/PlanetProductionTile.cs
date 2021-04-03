@@ -8,7 +8,8 @@ namespace CraigStars
 
     public class PlanetProductionTile : PlanetTile
     {
-        ItemList productionQueueItemList;
+        GridContainer productionQueueContainer;
+        CSConfirmDialog confirmDialog;
         Button changeButton;
         Button clearButton;
         Button routeButton;
@@ -22,9 +23,11 @@ namespace CraigStars
             clearButton = (Button)FindNode("ClearButton");
             routeButton = (Button)FindNode("RouteButton");
             routeTo = (Label)FindNode("RouteTo");
-            productionQueueItemList = (ItemList)FindNode("ProductionQueueItemList");
+            productionQueueContainer = GetNode<GridContainer>("VBoxContainer/MarginContainer/Panel/MarginContainer/ScrollContainer/ProductionQueueContainer");
+            confirmDialog = GetNode<CSConfirmDialog>("ConfirmDialog");
 
             changeButton.Connect("pressed", this, nameof(OnChangeButtonPressed));
+            clearButton.Connect("pressed", this, nameof(OnClearButtonPressed));
             Signals.ProductionQueueChangedEvent += OnProductionQueueChanged;
         }
 
@@ -44,14 +47,20 @@ namespace CraigStars
         protected override void UpdateControls()
         {
             base.UpdateControls();
+            foreach (Node node in productionQueueContainer.GetChildren())
+            {
+                productionQueueContainer.RemoveChild(node);
+                node.QueueFree();
+            }
             if (ActivePlanet != null)
             {
                 // populate the production queue
-                productionQueueItemList.Clear();
                 ActivePlanet.Planet.ProductionQueue?.Items.ForEach(item =>
                 {
-                    productionQueueItemList.AddItem(item.ShortName);
-                    productionQueueItemList.AddItem($"{item.quantity}", selectable: false);
+                    var nameLabel = new Label() { Text = item.ShortName };
+                    nameLabel.SizeFlagsHorizontal = (int)SizeFlags.ExpandFill;
+                    productionQueueContainer.AddChild(nameLabel);
+                    productionQueueContainer.AddChild(new Label() { Text = $"{item.quantity}", Align = Label.AlignEnum.Right });
                 });
             }
         }
@@ -61,6 +70,20 @@ namespace CraigStars
             if (ActivePlanet != null)
             {
                 Signals.PublishChangeProductionQueuePressedEvent(ActivePlanet);
+            }
+        }
+
+        void OnClearButtonPressed()
+        {
+            if (ActivePlanet != null)
+            {
+                confirmDialog.Show($"Are you sure you want to clear the production queue at {ActivePlanet.Planet.Name}?",
+                () =>
+                {
+                    ActivePlanet.Planet.ProductionQueue.Items.Clear();
+                    UpdateControls();
+                });
+
             }
         }
 

@@ -51,7 +51,7 @@ namespace CraigStars
             {
                 ProductionQueueItem item = queue.Items[index];
                 Cost costPer = item.GetCostOfOne(rules, planet.Player.Race);
-                int numBuilt = allocated / costPer;
+                int numBuilt = (int)(allocated / costPer);
 
                 // log.debug('Building item: %s cost_per: %s allocated: %s num_build: %s', item,
                 // cost_per, allocated, numBuilt)

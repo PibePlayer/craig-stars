@@ -217,7 +217,6 @@ margin_top = 848.0
 [node name="TechBrowserDialog" parent="CanvasLayer" instance=ExtResource( 17 )]
 
 [node name="ProductionQueueDialog" parent="CanvasLayer" instance=ExtResource( 13 )]
-visible = false
 
 [node name="CargoTransferDialog" parent="CanvasLayer" instance=ExtResource( 14 )]
 

@@ -17,6 +17,7 @@ namespace CraigStars
         public virtual string RacePluralName { get; set; }
         public Boolean Ready { get; set; } = false;
         public Boolean AIControlled { get; set; }
+        public AIDifficulty AIDifficulty { get; set; } = AIDifficulty.Normal;
         public Boolean SubmittedTurn { get; set; }
         public Color Color { get; set; } = Colors.Black;
 

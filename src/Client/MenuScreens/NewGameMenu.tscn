@@ -1,0 +1,218 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://src/Client/MenuScreens/NewGameMenu.cs" type="Script" id=1]
+[ext_resource path="res://assets/gui/DroidSans.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://src/Client/Dialogs/CSConfirmDialog.cs" type="Script" id=4]
+[ext_resource path="res://src/Client/MenuScreens/Components/PlayerChooser.tscn" type="PackedScene" id=5]
+
+[sub_resource type="DynamicFont" id=1]
+size = 50
+font_data = ExtResource( 2 )
+
+[node name="NewGameMenu" type="MarginContainer"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -720.0
+margin_top = -450.0
+margin_right = 720.0
+margin_bottom = 450.0
+rect_pivot_offset = Vector2( 622, 55 )
+custom_constants/margin_right = 0
+custom_constants/margin_top = 0
+custom_constants/margin_left = 0
+custom_constants/margin_bottom = 0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+PlayerChooserScene = ExtResource( 5 )
+Size = 1
+Density = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+margin_right = 1440.0
+margin_bottom = 900.0
+alignment = 1
+
+[node name="Title" type="Label" parent="VBoxContainer"]
+margin_top = 168.0
+margin_right = 1440.0
+margin_bottom = 228.0
+custom_fonts/font = SubResource( 1 )
+text = "New Game"
+align = 1
+
+[node name="CenterContainer" type="CenterContainer" parent="VBoxContainer"]
+margin_top = 232.0
+margin_right = 1440.0
+margin_bottom = 732.0
+rect_min_size = Vector2( 500, 500 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Panel" type="Panel" parent="VBoxContainer/CenterContainer"]
+margin_left = 470.0
+margin_right = 970.0
+margin_bottom = 500.0
+rect_min_size = Vector2( 500, 500 )
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/CenterContainer/Panel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_constants/margin_right = 5
+custom_constants/margin_top = 5
+custom_constants/margin_left = 5
+custom_constants/margin_bottom = 5
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/CenterContainer/Panel/MarginContainer"]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 495.0
+margin_bottom = 495.0
+alignment = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MenuButtons" type="VBoxContainer" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer"]
+margin_left = 45.0
+margin_right = 445.0
+margin_bottom = 490.0
+rect_min_size = Vector2( 400, 0 )
+alignment = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="GridContainer" type="GridContainer" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons"]
+margin_right = 400.0
+margin_bottom = 72.0
+columns = 2
+
+[node name="NameLabel" type="Label" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/GridContainer"]
+margin_top = 5.0
+margin_right = 97.0
+margin_bottom = 19.0
+rect_min_size = Vector2( 80, 0 )
+text = "Name:"
+align = 2
+
+[node name="LineEdit" type="LineEdit" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/GridContainer"]
+margin_left = 101.0
+margin_right = 400.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+text = "A Barefoot Jaywalk"
+
+[node name="SizeLabel" type="Label" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/GridContainer"]
+margin_top = 31.0
+margin_right = 97.0
+margin_bottom = 45.0
+rect_min_size = Vector2( 80, 0 )
+text = "Universe Size:"
+align = 2
+
+[node name="SizeOptionButton" type="OptionButton" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/GridContainer"]
+margin_left = 101.0
+margin_top = 28.0
+margin_right = 400.0
+margin_bottom = 48.0
+text = "Small"
+items = [ "Tiny", null, false, 0, null, "Small", null, false, 1, null, "Medium", null, false, 2, null, "Large", null, false, 3, null, "Huge", null, false, 4, null ]
+selected = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="DensityLabel" type="Label" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/GridContainer"]
+margin_top = 55.0
+margin_right = 97.0
+margin_bottom = 69.0
+rect_min_size = Vector2( 80, 0 )
+text = "Planet Density:"
+align = 2
+
+[node name="DensityOptionButton" type="OptionButton" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/GridContainer"]
+margin_left = 101.0
+margin_top = 52.0
+margin_right = 400.0
+margin_bottom = 72.0
+text = "Normal"
+items = [ "Sparse", null, false, 0, null, "Normal", null, false, 1, null, "Dense", null, false, 2, null, "Packed", null, false, 3, null ]
+selected = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons"]
+margin_top = 76.0
+margin_right = 400.0
+margin_bottom = 96.0
+
+[node name="PlayersLabel" type="Label" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer"]
+margin_top = 3.0
+margin_right = 304.0
+margin_bottom = 17.0
+size_flags_horizontal = 3
+text = "Players"
+
+[node name="AddPlayerButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer"]
+margin_left = 308.0
+margin_right = 400.0
+margin_bottom = 20.0
+text = "Add Player +"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons"]
+margin_top = 100.0
+margin_right = 400.0
+margin_bottom = 442.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/ScrollContainer"]
+margin_right = 400.0
+margin_bottom = 342.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_constants/margin_right = 5
+custom_constants/margin_top = 15
+custom_constants/margin_left = 5
+custom_constants/margin_bottom = 15
+
+[node name="PlayersContainer" type="VBoxContainer" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/ScrollContainer/MarginContainer"]
+margin_left = 5.0
+margin_top = 15.0
+margin_right = 395.0
+margin_bottom = 327.0
+custom_constants/separation = 10
+
+[node name="PlayerChooser" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/ScrollContainer/MarginContainer/PlayersContainer" instance=ExtResource( 5 )]
+margin_left = 0.0
+margin_top = 0.0
+margin_right = 390.0
+margin_bottom = 96.0
+
+[node name="StartButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons"]
+margin_top = 446.0
+margin_right = 400.0
+margin_bottom = 466.0
+text = "Start"
+
+[node name="BackButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons"]
+margin_top = 470.0
+margin_right = 400.0
+margin_bottom = 490.0
+text = "Back"
+
+[node name="ConfirmationDialog" type="ConfirmationDialog" parent="."]
+margin_right = 1440.0
+margin_bottom = 900.0
+rect_min_size = Vector2( 400, 140 )
+popup_exclusive = true
+script = ExtResource( 4 )

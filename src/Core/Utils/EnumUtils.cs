@@ -5,6 +5,7 @@ namespace CraigStars.Utils
 {
     public static class EnumUtils
     {
+
         public static ShipDesignPurpose GetPurposeForTechHullType(TechHullType type)
         {
             switch (type)
@@ -31,6 +32,16 @@ namespace CraigStars.Utils
                     // everything is a scout unless we specify otherwise
                     return ShipDesignPurpose.Scout;
             }
+        }
+
+        public static string GetLabel<T>(T value) where T : Enum
+        {
+            return value.ToString();
+        }
+
+        public static string GetLabel<T>(WaypointTask value) where T : Enum
+        {
+            return GetLabelForWaypointTask(value);
         }
 
         public static string GetLabelForWaypointTask(WaypointTask task)

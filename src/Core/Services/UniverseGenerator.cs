@@ -38,7 +38,7 @@ namespace CraigStars
 
                 player.PlanetaryScanner = player.GetBestPlanetaryScanner();
 
-                var homeworld = planets.Find(p => p.Player == null && (ownedPlanets.Count == 0 || ShortestDistanceToPlanets(p, ownedPlanets) > Game.Rules.Area / 4));
+                var homeworld = planets.Find(p => p.Player == null && (ownedPlanets.Count == 0 || ShortestDistanceToPlanets(p, ownedPlanets) > Game.Rules.Area / Game.Players.Count));
                 player.Homeworld = homeworld;
                 MakeHomeworld(Game.Rules, player, homeworld, Game.Rules.StartingYear);
                 ownedPlanets.Add(homeworld);

@@ -77,6 +77,7 @@ namespace CraigStars.Singletons
                 }
             }
 
+            raceFiles.Sort();
             return raceFiles;
         }
 

@@ -100,9 +100,7 @@ namespace CraigStars
 
         void OnNewGameButtonPressed()
         {
-            PlayersManager.Instance.Reset();
-            PlayersManager.Instance.SetupPlayers();
-            GetTree().ChangeScene("res://src/Client/GameView.tscn");
+            GetTree().ChangeScene("res://src/Client/MenuScreens/NewGameMenu.tscn");
         }
 
         void OnContinueGameButtonPressed()
@@ -110,7 +108,7 @@ namespace CraigStars
             // like a new game, but we continue
             Settings.Instance.ShouldContinueGame = true;
             Settings.Instance.ContinueYear = (int)continueGameYearSpinBox.Value;
-            OnNewGameButtonPressed();
+            GetTree().ChangeScene("res://src/Client/GameView.tscn");
         }
 
         void OnSettingsButtonPressed()

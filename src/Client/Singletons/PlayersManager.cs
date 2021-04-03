@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CraigStars.Utils;
 using Godot;
 using log4net;
 
@@ -26,6 +27,33 @@ namespace CraigStars.Singletons
             "Ted",
             "Joe",
             "Bob",
+            "Lance",
+            "Elias",
+            "Eva",
+            "Maeve",
+        };
+
+        string[] raceNames = new string[] {
+            "Berserker",
+            "Hooveron",
+            "American",
+            "Ubert",
+            "Kurkonian",
+            "Mensoid",
+            "Ubert",
+            "Crusher",
+            "House Cat",
+            "Bulushi",
+            "Ferret",
+            "Nee",
+            "Golem",
+            "Loraxoid",
+            "Hicardi",
+            "Nairnian",
+            "Hawk",
+            "Rush'n",
+            "Nee",
+            "Tritizoid",
         };
 
         /// <summary>
@@ -105,6 +133,8 @@ namespace CraigStars.Singletons
             Players.Clear();
             PlayersByNetworkId.Clear();
             Messages.Clear();
+            RulesManager.Rules.Random.Shuffle(raceNames);
+            RulesManager.Rules.Random.Shuffle(playerNames);
         }
 
         /// <summary>
@@ -127,17 +157,46 @@ namespace CraigStars.Singletons
                     DefaultHullSet = num % 2
                 };
 
-                if (num > 0)
+                if (player.AIControlled)
                 {
-                    // TODO: this is just for testing with an AI player
-                    player.Race.Name = "The Other";
-                    player.Race.PluralName = "The Others";
+                    player.Race.Name = num < raceNames.Length ? raceNames[num] : $"Race {num + 1}";
+                    player.Race.PluralName = player.Race.Name + "s";
                 }
 
                 Players.Add(player);
 
                 Signals.PublishPlayerUpdatedEvent(Players[num]);
             }
+        }
+
+        /// <summary>
+        /// Add a new player to PlayersManager
+        /// </summary>
+        /// <returns></returns>
+        public Player AddNewPlayer()
+        {
+            var num = Players.Count;
+            var player = new Player
+            {
+                Num = num,
+                Name = num < playerNames.Length ? playerNames[num] : $"Player {num + 1}",
+                Color = num < PlayerColors.Length ? PlayerColors[num] : new Color((float)RulesManager.Rules.Random.NextDouble(), (float)RulesManager.Rules.Random.NextDouble(), (float)RulesManager.Rules.Random.NextDouble()),
+                AIControlled = num != 0,
+                Ready = true,
+                TechStore = TechStore.Instance,
+                DefaultHullSet = num % 2
+            };
+
+            if (player.AIControlled)
+            {
+                player.Race.Name = num < raceNames.Length ? raceNames[num] : $"Race {num + 1}";
+                player.Race.PluralName = player.Race.Name + "s";
+            }
+
+            Players.Add(player);
+            Signals.PublishPlayerUpdatedEvent(Players[num]);
+
+            return player;
         }
 
         /// <summary>

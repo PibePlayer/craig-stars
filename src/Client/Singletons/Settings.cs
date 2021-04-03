@@ -79,6 +79,7 @@ namespace CraigStars
 
         public GameMode GameMode { get; set; } = GameMode.SinglePlayer;
         public bool ShouldContinueGame { get; set; }
+        public string GameName { get; set; }
 
         #endregion
 

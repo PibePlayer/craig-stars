@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 
 using CraigStars.Singletons;
+using CraigStars.Utils;
 
 namespace CraigStars
 {
@@ -35,6 +36,11 @@ namespace CraigStars
         CostGrid queuedItemCostGrid;
         Label completionEstimateLabel;
 
+        int selectedAvailableItemIndex = -1;
+        int selectedQueuedItemIndex = -1;
+        List<ProductionQueueItem> availableItems = new List<ProductionQueueItem>();
+        List<ProductionQueueItem> queuedItems = new List<ProductionQueueItem>();
+
         int quantityModifier = 1;
 
         public override void _Ready()
@@ -62,6 +68,9 @@ namespace CraigStars
 
             availableItemsTree.SetColumnExpand(0, true);
             availableItemsTree.Connect("item_activated", this, nameof(OnAddItem));
+            queuedItemsTree.Connect("item_selected", this, nameof(OnSelectQueuedItem));
+            availableItemsTree.Connect("item_selected", this, nameof(OnSelectAvailableItem));
+
             addButton.Connect("pressed", this, nameof(OnAddItem));
             clearButton.Connect("pressed", this, nameof(OnClear));
             removeButton.Connect("pressed", this, nameof(OnRemoveItem));
@@ -77,9 +86,6 @@ namespace CraigStars
         {
             availableItemsTree.Clear();
             queuedItemsTree.Clear();
-
-            availableItemsTree.Disconnect("item_selected", this, nameof(OnAvailableItemSelected));
-            queuedItemsTree.Disconnect("item_selected", this, nameof(OnQueuedItemSelected));
         }
 
         /// <summary>
@@ -87,73 +93,108 @@ namespace CraigStars
         /// </summary>
         void OnAboutToShow()
         {
+            queuedItems.Clear();
+            availableItems.Clear();
             availableItemsTree.Clear();
             queuedItemsTree.Clear();
             availableItemsTreeRoot = availableItemsTree.CreateItem();
             queuedItemsTreeRoot = queuedItemsTree.CreateItem();
 
+            availableItemsTree.SetColumnMinWidth(1, (int)availableItemsTree.GetFont("").GetStringSize("9999").x);
+
             Me = PlayersManager.Me;
 
             // add each design
+            var availableItemIndex = 0;
             Me.Designs.ForEach(design =>
             {
-                AddAvailableItem(new ProductionQueueItem(QueueItemType.ShipToken, design: design));
+                AddAvailableItem(new ProductionQueueItem(QueueItemType.ShipToken, design: design), index: availableItemIndex++);
             });
 
             // add each type of item.
-            AddAvailableItem(new ProductionQueueItem(QueueItemType.Factory));
-            AddAvailableItem(new ProductionQueueItem(QueueItemType.Mine));
-            AddAvailableItem(new ProductionQueueItem(QueueItemType.Defense));
-            AddAvailableItem(new ProductionQueueItem(QueueItemType.Alchemy));
-            AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoFactory));
-            AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoMine));
-            AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoDefense));
-            AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoAlchemy));
+            AddAvailableItem(new ProductionQueueItem(QueueItemType.Factory), index: availableItemIndex++);
+            AddAvailableItem(new ProductionQueueItem(QueueItemType.Mine), index: availableItemIndex++);
+            AddAvailableItem(new ProductionQueueItem(QueueItemType.Defense), index: availableItemIndex++);
+            AddAvailableItem(new ProductionQueueItem(QueueItemType.Alchemy), index: availableItemIndex++);
+            AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoFactory), index: availableItemIndex++);
+            AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoMine), index: availableItemIndex++);
+            AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoDefense), index: availableItemIndex++);
+            AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoAlchemy), index: availableItemIndex++);
 
             if (Planet.ProductionQueue != null)
             {
                 AddTopOfQueueItem();
-                Planet.ProductionQueue.Items.ForEach(item =>
+                Planet.ProductionQueue.Items.Each((item, index) =>
                 {
-                    AddQueuedItem(item);
+                    queuedItems.Add(item);
+                    AddQueuedItem(item, index);
                 });
             }
 
             contributesOnlyLeftoverToResearchCheckbox.Pressed = Planet.ContributesOnlyLeftoverToResearch;
 
-            availableItemsTree.Connect("item_selected", this, nameof(OnAvailableItemSelected));
-            queuedItemsTree.Connect("item_selected", this, nameof(OnQueuedItemSelected));
         }
 
-        void AddAvailableItem(ProductionQueueItem item)
+        void AddAvailableItem(ProductionQueueItem item, int index)
         {
-            AddTreeItem(availableItemsTree, availableItemsTreeRoot, item.FullName, item);
+            availableItems.Add(item);
+            AddTreeItem(availableItemsTree, availableItemsTreeRoot, item.FullName, item, index);
         }
 
-        void AddQueuedItem(ProductionQueueItem item)
+        void AddQueuedItem(ProductionQueueItem item, int index)
         {
-            AddTreeItem(queuedItemsTree, queuedItemsTreeRoot, item.FullName, item);
+            AddTreeItem(queuedItemsTree, queuedItemsTreeRoot, item.FullName, item, index);
         }
 
-        void AddTreeItem(Tree tree, TreeItem root, string text, ProductionQueueItem item)
+        void UpdateQueuedItems()
+        {
+            queuedItemsTree.Clear();
+            queuedItemsTreeRoot = queuedItemsTree.CreateItem();
+            AddTopOfQueueItem();
+            queuedItems.Each((item, index) =>
+            {
+                AddQueuedItem(item, index);
+            });
+
+            // re-select our selected item or select the top
+            if (selectedQueuedItemIndex >= 0 && selectedQueuedItemIndex < queuedItems.Count)
+            {
+                var item = queuedItemsTreeRoot.GetChildren().GetNext();
+                int i;
+                for (i = 0; i < selectedQueuedItemIndex; i++)
+                {
+                    item = item.GetNext();
+                }
+
+                log.Debug("selecting queued item " + i);
+                item.Select(0);
+            }
+            else
+            {
+                // select the top of queue
+                log.Debug("selecting top of queue");
+                queuedItemsTreeRoot.GetChildren().Select(0);
+            }
+        }
+
+        void AddTreeItem(Tree tree, TreeItem root, string text, ProductionQueueItem item, int index = 0)
         {
             var treeItem = tree.CreateItem(root);
             treeItem.SetText(0, text);
-            treeItem.SetMetadata(0, Serializers.Serialize(item, PlayersManager.Instance.Players, TechStore.Instance));
-            tree.SetColumnMinWidth(1, (int)tree.GetFont("").GetStringSize("1000").x);
+            treeItem.SetMetadata(0, index);
 
             if (item.quantity != 0)
             {
                 treeItem.SetText(1, $"{item.quantity}");
                 treeItem.SetTextAlign(1, TreeItem.TextAlign.Right);
             }
-            treeItem.Select(0);
         }
 
         void AddTopOfQueueItem()
         {
             var treeItem = queuedItemsTree.CreateItem(queuedItemsTreeRoot);
             treeItem.SetText(0, Planet.ProductionQueue.Items.Count == 0 ? "-- Queue is Empty --" : "-- Top of the Queue --");
+            treeItem.SetMetadata(0, -1);
         }
 
         /// <summary>
@@ -235,15 +276,7 @@ namespace CraigStars
             if (Planet.ProductionQueue != null)
             {
                 Planet.ProductionQueue.Items.Clear();
-                var child = queuedItemsTreeRoot.GetChildren();
-                while (child != null)
-                {
-                    if (Serializers.Deserialize<ProductionQueueItem>(child.GetMetadata(0).ToString(), PlayersManager.Instance.Players, TechStore.Instance) is ProductionQueueItem item)
-                    {
-                        Planet.ProductionQueue.Items.Add(item);
-                    }
-                    child = child.GetNext();
-                }
+                Planet.ProductionQueue.Items.AddRange(queuedItems);
             }
             else
             {
@@ -255,29 +288,67 @@ namespace CraigStars
             Hide();
         }
 
+        void OnSelectQueuedItem()
+        {
+            selectedQueuedItemIndex = (int)queuedItemsTree.GetSelected().GetMetadata(0);
+            var item = GetSelectedQueueItem();
+            UpdateCompletionEstimate(item);
+            if (item.HasValue)
+            {
+                log.Debug($"Selected item {selectedQueuedItemIndex} - {(item.HasValue ? item.Value.ToString() : "(empty)")}");
+            }
+        }
+
+        void OnSelectAvailableItem()
+        {
+            selectedAvailableItemIndex = (int)availableItemsTree.GetSelected().GetMetadata(0);
+            var item = GetSelectedAvailableItem();
+
+            if (item != null)
+            {
+                availableItemCostGrid.Cost = item.Value.GetCostOfOne(RulesManager.Rules, Me.Race);
+            }
+        }
+
         void OnAddItem()
         {
-            var itemToAdd = Serializers.Deserialize<ProductionQueueItem>(availableItemsTree.GetSelected()?.GetMetadata(0).ToString(), PlayersManager.Instance.Players, TechStore.Instance);
-            var selectedQueueItem = Serializers.Deserialize<ProductionQueueItem>(queuedItemsTree.GetSelected()?.GetMetadata(0).ToString(), PlayersManager.Instance.Players, TechStore.Instance);
-
-            if (itemToAdd != null && selectedQueueItem != null && selectedQueueItem?.type == itemToAdd?.type)
+            var itemToAdd = GetSelectedAvailableItem();
+            var selectedQueueItem = GetSelectedQueueItem();
+            if (itemToAdd.HasValue && selectedQueueItem.HasValue
+                && selectedQueueItem.Value.type == itemToAdd.Value.type &&
+                selectedQueueItem.Value.Design == itemToAdd.Value.Design)
             {
-                var selectedItem = selectedQueueItem.Value;
-                selectedItem.quantity += quantityModifier;
-                queuedItemsTree.GetSelected().SetText(1, selectedItem.quantity.ToString());
-                queuedItemsTree.GetSelected().SetMetadata(0, Serializers.Serialize(selectedItem, PlayersManager.Instance.Players, TechStore.Instance));
+                var newItem = selectedQueueItem.Value;
+                newItem.quantity = newItem.quantity + quantityModifier;
+                queuedItems[selectedQueuedItemIndex] = newItem;
+                UpdateQueuedItems();
             }
             else if (itemToAdd != null)
             {
-                var queuedItem = new ProductionQueueItem(itemToAdd.Value.type, quantityModifier, itemToAdd.Value.Design);
-                AddQueuedItem(queuedItem);
+                var newItem = itemToAdd.Value;
+                newItem.quantity = quantityModifier;
+                if (selectedQueueItem.HasValue)
+                {
+                    // add below the selected item
+                    queuedItems.Insert(selectedQueuedItemIndex + 1, newItem);
+                    log.Debug($"Inserted new item to at {selectedQueuedItemIndex + 1} - {newItem}");
+                }
+                else
+                {
+                    queuedItems.Add(newItem);
+                    selectedQueuedItemIndex = queuedItems.Count - 1;
+                    log.Debug($"Added new item to at {selectedQueuedItemIndex} - {newItem}");
+                }
+                UpdateQueuedItems();
             }
         }
 
         void OnClear()
         {
+            queuedItems.Clear();
             queuedItemsTree.Clear();
             queuedItemsTreeRoot = queuedItemsTree.CreateItem();
+            AddTopOfQueueItem();
         }
 
         void OnRemoveItem()
@@ -289,59 +360,73 @@ namespace CraigStars
                 item.quantity -= quantityModifier;
                 if (item.quantity <= 0)
                 {
-                    queuedItemsTree.GetSelected().Free();
+                    queuedItems.RemoveAt(selectedQueuedItemIndex);
+                    if (selectedQueuedItemIndex > queuedItems.Count && queuedItems.Count > 0)
+                    {
+                        // if we removed the last item, set our index to the next last item
+                        selectedQueuedItemIndex = queuedItems.Count;
+                    }
+                    else
+                    {
+                        selectedQueuedItemIndex = -1;
+                    }
                 }
                 else
                 {
-                    // save the item back to our list and upate the tree
-                    queuedItemsTree.GetSelected().SetText(1, item.quantity.ToString());
-                    queuedItemsTree.GetSelected().SetMetadata(0, Serializers.Serialize(item, PlayersManager.Instance.Players, TechStore.Instance));
+                    queuedItems[selectedQueuedItemIndex] = item;
                 }
-                // force a UI update: https://github.com/godotengine/godot/issues/38787
-                queuedItemsTree.HideRoot = queuedItemsTree.HideRoot;
+                UpdateQueuedItems();
             }
         }
 
         void OnItemUp()
         {
+            if (queuedItemsTree.GetSelected() != null)
+            {
+                if (selectedQueuedItemIndex > 0 && selectedQueuedItemIndex < queuedItems.Count)
+                {
+                    // swap items and redraw the tree
+                    var selectedItem = queuedItems[selectedQueuedItemIndex];
+                    var previousItem = queuedItems[selectedQueuedItemIndex - 1];
+                    queuedItems[selectedQueuedItemIndex] = previousItem;
+                    queuedItems[selectedQueuedItemIndex - 1] = selectedItem;
+                    selectedQueuedItemIndex--;
+                    UpdateQueuedItems();
+                }
+            }
         }
 
         void OnItemDown()
         {
-
-        }
-
-        void OnAvailableItemSelected()
-        {
-            var item = GetSelectedAvailableItem();
-
-            if (item != null)
+            if (queuedItemsTree.GetSelected() != null)
             {
-                availableItemCostGrid.Cost = item.Value.GetCostOfOne(RulesManager.Rules, Me.Race);
+                if (selectedQueuedItemIndex >= 0 && selectedQueuedItemIndex < queuedItems.Count - 1)
+                {
+                    // swap items and redraw the tree
+                    var selectedItem = queuedItems[selectedQueuedItemIndex];
+                    var nextItem = queuedItems[selectedQueuedItemIndex + 1];
+                    queuedItems[selectedQueuedItemIndex] = nextItem;
+                    queuedItems[selectedQueuedItemIndex + 1] = selectedItem;
+                    selectedQueuedItemIndex++;
+                    UpdateQueuedItems();
+                }
             }
-        }
-
-        void OnQueuedItemSelected()
-        {
-            UpdateCompletionEstimate(GetSelectedQueueItem());
         }
 
         ProductionQueueItem? GetSelectedQueueItem()
         {
-            var selectedItem = queuedItemsTree.GetSelected();
-            if (selectedItem != null && selectedItem.GetMetadata(0) != null)
+            if (selectedQueuedItemIndex >= 0 && selectedQueuedItemIndex < queuedItems.Count)
             {
-                return Serializers.Deserialize<ProductionQueueItem>(selectedItem.GetMetadata(0).ToString(), PlayersManager.Instance.Players, TechStore.Instance);
+                return queuedItems[selectedQueuedItemIndex];
             }
             return null;
         }
 
         ProductionQueueItem? GetSelectedAvailableItem()
         {
-            var selectedItem = availableItemsTree.GetSelected();
-            if (selectedItem != null)
+            if (selectedAvailableItemIndex >= 0 && selectedAvailableItemIndex < availableItems.Count)
             {
-                return Serializers.Deserialize<ProductionQueueItem>(selectedItem.GetMetadata(0).ToString(), PlayersManager.Instance.Players, TechStore.Instance);
+                return availableItems[selectedAvailableItemIndex];
             }
             return null;
         }

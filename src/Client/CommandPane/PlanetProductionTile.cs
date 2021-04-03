@@ -18,11 +18,11 @@ namespace CraigStars
         {
             base._Ready();
 
-            changeButton = FindNode("ChangeButton") as Button;
-            clearButton = FindNode("ClearButton") as Button;
-            routeButton = FindNode("RouteButton") as Button;
-            routeTo = FindNode("RouteTo") as Label;
-            productionQueueItemList = FindNode("ProductionQueueItemList") as ItemList;
+            changeButton = (Button)FindNode("ChangeButton");
+            clearButton = (Button)FindNode("ClearButton");
+            routeButton = (Button)FindNode("RouteButton");
+            routeTo = (Label)FindNode("RouteTo");
+            productionQueueItemList = (ItemList)FindNode("ProductionQueueItemList");
 
             changeButton.Connect("pressed", this, nameof(OnChangeButtonPressed));
             Signals.ProductionQueueChangedEvent += OnProductionQueueChanged;

@@ -33,6 +33,11 @@ namespace CraigStars
             this.fleetName = fleetName;
         }
 
+        public override string ToString()
+        {
+            return $"{type} {quantity}{(Design != null ? " " + Design.Name : "")}";
+        }
+
         public override bool Equals(object obj)
         {
             if (obj is ProductionQueueItem item)

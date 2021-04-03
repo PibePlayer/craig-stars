@@ -217,11 +217,11 @@ namespace CraigStars
 
             if (Year < Rules.StartingYear + Rules.QuickStartTurns)
             {
-                Players.ForEach(p =>
+                Players.ForEach(async p =>
                 {
                     if (!p.AIControlled)
                     {
-                        SubmitTurn(p);
+                        await SubmitTurn(p);
                     }
                 });
                 await GenerateTurn();

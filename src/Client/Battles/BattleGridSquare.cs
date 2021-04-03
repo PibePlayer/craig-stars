@@ -51,6 +51,8 @@ namespace CraigStars
                 {
                     SelectedToken = Tokens[selectedTokenIndex];
                     SelectedToken.Visible = true;
+                } else {
+                    SelectedToken = null;
                 }
             }
         }
@@ -113,10 +115,17 @@ namespace CraigStars
             NumTokens--;
             NumShips -= token.Quantity;
 
-            if (SelectedToken == token && Tokens.Count > 0)
+            if (SelectedToken == token)
             {
-                // we removed our visible token, so select the top one
-                SelectedTokenIndex = 0;
+                if (Tokens.Count > 0)
+                {
+                    // we removed our visible token, so select the top one
+                    SelectedTokenIndex = 0;
+                }
+                else
+                {
+                    SelectedTokenIndex = -1;
+                }
             }
 
             if (Tokens.Count > 0)

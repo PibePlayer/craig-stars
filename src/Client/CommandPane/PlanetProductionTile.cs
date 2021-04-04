@@ -33,6 +33,7 @@ namespace CraigStars
 
         public override void _ExitTree()
         {
+            base._ExitTree();
             Signals.ProductionQueueChangedEvent -= OnProductionQueueChanged;
         }
 

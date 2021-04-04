@@ -36,6 +36,7 @@ namespace CraigStars
         ShipDesignerDialog shipDesignerDialog;
         MergeFleetsDialog mergeFleetsDialog;
         BattleViewerDialog battleViewerDialog;
+
         /// <summary>
         /// When this node enters the tree, setup any server/player stuff
         /// </summary>

@@ -7,7 +7,7 @@
 [node name="ResearchDialog" type="WindowDialog"]
 margin_right = 695.0
 margin_bottom = 403.0
-window_title = "Cargo Transfver"
+window_title = "Research"
 resizable = true
 script = ExtResource( 1 )
 __meta__ = {

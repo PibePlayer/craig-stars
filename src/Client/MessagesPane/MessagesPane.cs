@@ -72,7 +72,7 @@ namespace CraigStars
         {
             if (activeMessage != null && activeMessage.Target != null)
             {
-                if (activeMessage.Type == MessageType.Battle 
+                if (activeMessage.Type == MessageType.Battle
                     && selectedMapObject.MapObject == activeMessage.Target
                     && activeMessage.BattleGuid.HasValue
                     && Me.BattlesByGuid.TryGetValue(activeMessage.BattleGuid.Value, out var battle))
@@ -153,7 +153,7 @@ namespace CraigStars
             if (messages.Count > 0)
             {
                 filterMessageTypeCheckbox.Visible = true;
-                titleLabel.Text = $"Year: {gameInfo.Year}{changesMadeIndicator} Message {messageNum + 1} of {messages.Count}{(filterMessagesCheckbox.Pressed ? $" ({Me.Messages.Count} total)" : "")}";
+                titleLabel.Text = $"Year: {gameInfo?.Year}{changesMadeIndicator} Message {messageNum + 1} of {messages.Count}{(filterMessagesCheckbox.Pressed ? $" ({Me.Messages.Count} total)" : "")}";
                 if (messageNum >= 0 && messageNum < messages.Count)
                 {
                     activeMessage = messages[messageNum];

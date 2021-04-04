@@ -1,0 +1,77 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://src/Client/Dialogs/InGameMenu.cs" type="Script" id=1]
+[ext_resource path="res://src/Client/Dialogs/ConfirmDialog.tscn" type="PackedScene" id=2]
+
+[node name="InGameMenu" type="WindowDialog"]
+pause_mode = 2
+margin_right = 337.0
+margin_bottom = 226.0
+window_title = "Menu"
+resizable = true
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_constants/margin_right = 10
+custom_constants/margin_top = 5
+custom_constants/margin_left = 10
+custom_constants/margin_bottom = 5
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CenterContainer" type="CenterContainer" parent="MarginContainer"]
+margin_left = 10.0
+margin_top = 5.0
+margin_right = 327.0
+margin_bottom = 221.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/CenterContainer"]
+margin_left = 95.0
+margin_top = 86.0
+margin_right = 222.0
+margin_bottom = 130.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SaveTurnButton" type="Button" parent="MarginContainer/CenterContainer/VBoxContainer"]
+visible = false
+margin_right = 127.0
+margin_bottom = 20.0
+hint_tooltip = "Save your turn without submitting."
+text = "Save Turn"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LoadTurnButton" type="Button" parent="MarginContainer/CenterContainer/VBoxContainer"]
+visible = false
+margin_top = 24.0
+margin_right = 127.0
+margin_bottom = 44.0
+text = "Load Turn"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ExitToMainMenuButton" type="Button" parent="MarginContainer/CenterContainer/VBoxContainer"]
+margin_right = 127.0
+margin_bottom = 20.0
+text = "Exit to Main Menu"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ExitGameButton" type="Button" parent="MarginContainer/CenterContainer/VBoxContainer"]
+margin_top = 24.0
+margin_right = 127.0
+margin_bottom = 44.0
+text = "Exit Game"
+
+[node name="ConfirmDialog" parent="." instance=ExtResource( 2 )]

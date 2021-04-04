@@ -10,7 +10,22 @@ namespace CraigStars.Singletons
         /// <summary>
         /// This is just a temporary property for development.
         /// </summary>
-        public int NumPlayers = 2;
+        public int NumPlayers { get; set; } = 2;
+
+        /// <summary>
+        /// The currently active player
+        /// </summary>
+        /// <value></value>
+        public int ActivePlayer
+        {
+            get => activePlayer;
+            set
+            {
+                activePlayer = value;
+                me = null;
+            }
+        }
+        int activePlayer = 0;
 
         ILog log = LogManager.GetLogger(typeof(PlayersManager));
 
@@ -86,7 +101,10 @@ namespace CraigStars.Singletons
                     else
                     {
                         // no network, we are player one
-                        Instance.me = Instance.Players[0] as Player;
+                        if (Instance.ActivePlayer >= 0 && Instance.ActivePlayer < Instance.Players.Count)
+                        {
+                            Instance.me = Instance.Players[Instance.ActivePlayer] as Player;
+                        }
                     }
                 }
                 return Instance.me;
@@ -113,14 +131,21 @@ namespace CraigStars.Singletons
         public override void _Ready()
         {
             // Subscribe to some player joined/left events
+            Signals.TurnSubmittedEvent += OnTurnSubmitted;
             Signals.PlayerJoinedEvent += OnPlayerJoined;
             Signals.PlayerLeftEvent += OnPlayerLeft;
             Signals.PlayerUpdatedEvent += OnPlayerUpdated;
             Signals.PlayerMessageEvent += OnPlayerMessage;
         }
 
+        void OnTurnSubmitted(PublicPlayerInfo player)
+        {
+            GetPlayer(player.Num).SubmittedTurn = true;
+        }
+
         public override void _ExitTree()
         {
+            Signals.TurnSubmittedEvent += OnTurnSubmitted;
             Signals.PlayerJoinedEvent -= OnPlayerJoined;
             Signals.PlayerLeftEvent -= OnPlayerLeft;
             Signals.PlayerUpdatedEvent -= OnPlayerUpdated;

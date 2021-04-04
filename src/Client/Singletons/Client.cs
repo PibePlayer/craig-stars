@@ -38,7 +38,7 @@ namespace CraigStars
         {
             GD.Print("Client: connected to server");
             // subscribe to any server events we want to listen for
-            Signals.SubmitTurnEvent += OnSubmitTurn;
+            Signals.SubmitTurnRequestedEvent += OnSubmitTurnRequested;
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace CraigStars
         public void OnServerDisconnected()
         {
             Signals.PublishServerDisconnectedEvent();
-            Signals.SubmitTurnEvent -= OnSubmitTurn;
+            Signals.SubmitTurnRequestedEvent -= OnSubmitTurnRequested;
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace CraigStars
             GetTree().NetworkPeer = null;
         }
 
-        void OnSubmitTurn(Player player)
+        void OnSubmitTurnRequested(Player player)
         {
             if (!this.IsServerOrSinglePlayer())
             {

@@ -37,6 +37,18 @@ namespace CraigStars
         }
         int continueYear = 2400;
 
+        public bool FastHotseat
+        {
+            get => fastHotseat;
+            set
+            {
+                fastHotseat = value;
+                config?.SetValue("game", "fast_hotseat", fastHotseat);
+                Save();
+            }
+        }
+        bool fastHotseat;
+
         public string ClientHost
         {
             get => clientHost;
@@ -116,6 +128,9 @@ namespace CraigStars
                     continueGame = config.GetValue("game", "continue_game", continueGame).ToString();
                     continueYear = int.Parse(config.GetValue("game", "continue_year", continueYear).ToString());
                 }
+                fastHotseat = config.HasSectionKey("game", "fast_hotseat")
+                    && bool.Parse(config.GetValue("game", "fast_hotseat", fastHotseat).ToString());
+
                 Save();
             }
 

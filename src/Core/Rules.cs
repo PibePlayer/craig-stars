@@ -8,7 +8,7 @@ namespace CraigStars
     {
         [DefaultValue(0)]
         public int QuickStartTurns { get; set; } = 20;
-
+        
         public Size Size { get; set; } = Size.Small;
         public Density Density { get; set; } = Density.Normal;
 

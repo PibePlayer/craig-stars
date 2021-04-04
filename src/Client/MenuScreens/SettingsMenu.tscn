@@ -72,16 +72,26 @@ __meta__ = {
 }
 
 [node name="Label" type="Label" parent="VBoxContainer/CenterContainer/Panel/HBoxContainer/MenuButtons"]
-margin_top = 231.0
+margin_top = 209.0
 margin_right = 400.0
-margin_bottom = 245.0
+margin_bottom = 223.0
 text = "Some games have more settings than others."
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="BackButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/HBoxContainer/MenuButtons"]
-margin_top = 249.0
+[node name="FastHotseatCheckButton" type="CheckButton" parent="VBoxContainer/CenterContainer/Panel/HBoxContainer/MenuButtons"]
+margin_left = 240.0
+margin_top = 227.0
 margin_right = 400.0
-margin_bottom = 269.0
+margin_bottom = 267.0
+hint_tooltip = "When a player submits their  turn, automatically advance to the next player."
+size_flags_horizontal = 8
+text = "Fast Hotseat"
+align = 2
+
+[node name="BackButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/HBoxContainer/MenuButtons"]
+margin_top = 271.0
+margin_right = 400.0
+margin_bottom = 291.0
 text = "Back"

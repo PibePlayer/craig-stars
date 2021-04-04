@@ -17,6 +17,7 @@ namespace CraigStars
         [Export]
         public Density Density { get; set; }
 
+        CheckButton fastHotseatCheckButton;
         LineEdit nameLineEdit;
         OptionButton sizeOptionButton;
         OptionButton densityOptionButton;
@@ -30,6 +31,7 @@ namespace CraigStars
             densityOptionButton = (OptionButton)FindNode("DensityOptionButton");
             addPlayerButton = (Button)FindNode("AddPlayerButton");
             playersContainer = (Container)FindNode("PlayersContainer");
+            fastHotseatCheckButton = (CheckButton)FindNode("FastHotseatCheckButton");
 
             sizeOptionButton.PopulateOptionButton<Size>();
             densityOptionButton.PopulateOptionButton<Density>();
@@ -51,10 +53,17 @@ namespace CraigStars
                 playersContainer.AddChild(playerChooser);
             });
 
+            fastHotseatCheckButton.Pressed = Settings.Instance.FastHotseat;
+            fastHotseatCheckButton.Connect("toggled", this, nameof(OnFastHotseatToggled));
             addPlayerButton.Connect("pressed", this, nameof(OnAddPlayerButtonPressed));
             ((Button)FindNode("BackButton")).Connect("pressed", this, nameof(OnBackPressed));
             ((Button)FindNode("StartButton")).Connect("pressed", this, nameof(OnStartPressed));
 
+        }
+
+        void OnFastHotseatToggled(bool toggled)
+        {
+            Settings.Instance.FastHotseat = toggled;
         }
 
         void OnAddPlayerButtonPressed()

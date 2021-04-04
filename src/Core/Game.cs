@@ -170,6 +170,18 @@ namespace CraigStars
             turnSubmitter.SubmitTurn(player);
         }
 
+        public async Task UnsubmitTurn(Player player)
+        {
+            if (savingGameTask != null)
+            {
+                // can't unsubmit if a save is in progress...
+                // too late!
+                await savingGameTask;
+                return;
+            }
+            player.SubmittedTurn = false;
+        }
+
         public Boolean AllPlayersSubmitted()
         {
             return Players.All(p => p.SubmittedTurn);

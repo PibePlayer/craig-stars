@@ -103,7 +103,9 @@ namespace CraigStars
                 }
 
                 Game.TurnGeneratorAdvancedEvent += OnTurnGeneratorAdvanced;
-                Signals.SubmitTurnEvent += OnSubmitTurn;
+                Signals.SubmitTurnRequestedEvent += OnSubmitTurnRequested;
+                Signals.UnsubmitTurnRequestedEvent += OnUnsubmitTurnRequested;
+                Signals.PlayTurnRequestedEvent += OnPlayTurnRequested;
             }
             else
             {
@@ -132,7 +134,9 @@ namespace CraigStars
             if (this.IsServerOrSinglePlayer())
             {
                 Game.TurnGeneratorAdvancedEvent -= OnTurnGeneratorAdvanced;
-                Signals.SubmitTurnEvent -= OnSubmitTurn;
+                Signals.SubmitTurnRequestedEvent -= OnSubmitTurnRequested;
+                Signals.UnsubmitTurnRequestedEvent -= OnUnsubmitTurnRequested;
+                Signals.PlayTurnRequestedEvent -= OnPlayTurnRequested;
             }
         }
 
@@ -146,9 +150,10 @@ namespace CraigStars
         /// Copy any data from this to the main game
         /// </summary>
         /// <param name="player"></param>
-        async void OnSubmitTurn(Player player)
+        async void OnSubmitTurnRequested(Player player)
         {
             await Game.SubmitTurn(player);
+            Signals.PublishTurnSubmittedEvent(player);
             if (Game.AllPlayersSubmitted())
             {
                 // once everyone is submitted, generate a new turn
@@ -164,6 +169,21 @@ namespace CraigStars
 
                 Signals.PublishTurnPassedEvent(Game.GameInfo);
             }
+        }
+
+        async void OnUnsubmitTurnRequested(Player player)
+        {
+            await Game.UnsubmitTurn(player);
+        }
+
+        /// <summary>
+        /// Join as the next player and reset the UI
+        /// </summary>
+        /// <param name="playerNum"></param>
+        void OnPlayTurnRequested(int playerNum)
+        {
+            PlayersManager.Instance.ActivePlayer = playerNum;
+            Signals.PublishPostStartGameEvent(GameInfo);
         }
 
         /// <summary>

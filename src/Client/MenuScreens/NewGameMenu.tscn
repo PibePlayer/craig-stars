@@ -171,13 +171,13 @@ text = "Add Player +"
 [node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons"]
 margin_top = 100.0
 margin_right = 400.0
-margin_bottom = 442.0
+margin_bottom = 398.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/ScrollContainer"]
 margin_right = 400.0
-margin_bottom = 342.0
+margin_bottom = 298.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 custom_constants/margin_right = 5
@@ -189,7 +189,7 @@ custom_constants/margin_bottom = 15
 margin_left = 5.0
 margin_top = 15.0
 margin_right = 395.0
-margin_bottom = 327.0
+margin_bottom = 283.0
 custom_constants/separation = 10
 
 [node name="PlayerChooser" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/ScrollContainer/MarginContainer/PlayersContainer" instance=ExtResource( 5 )]
@@ -197,6 +197,16 @@ margin_left = 0.0
 margin_top = 0.0
 margin_right = 390.0
 margin_bottom = 96.0
+
+[node name="FastHotseatCheckButton" type="CheckButton" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons"]
+margin_left = 240.0
+margin_top = 402.0
+margin_right = 400.0
+margin_bottom = 442.0
+hint_tooltip = "When a player submits their  turn, automatically advance to the next player."
+size_flags_horizontal = 8
+text = "Fast Hotseat"
+align = 2
 
 [node name="StartButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons"]
 margin_top = 446.0

@@ -419,6 +419,17 @@ namespace CraigStars
 
         public void InitMapObjects()
         {
+            // remove old planets, in case we switched players
+            Planets.ForEach(oldPlanet =>
+            {
+                RemoveChild(oldPlanet);
+                oldPlanet.Disconnect("input_event", this, nameof(OnInputEvent));
+                oldPlanet.Disconnect("mouse_entered", this, nameof(OnMouseEntered));
+                oldPlanet.Disconnect("mouse_exited", this, nameof(OnMouseExited));
+                oldPlanet.QueueFree();
+            });
+            Planets.Clear();
+
             Planets.AddRange(Me.AllPlanets.Select(planet =>
             {
                 var planetSprite = planetScene.Instance() as PlanetSprite;

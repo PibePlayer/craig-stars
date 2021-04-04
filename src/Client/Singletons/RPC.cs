@@ -229,7 +229,7 @@ namespace CraigStars.Singletons
                 Serializers.PopulatePlayer(playerJson, player, Serializers.CreatePlayerSettings(PlayersManager.Instance.Players, TechStore.Instance));
                 player.SetupMapObjectMappings();
                 player.ComputeAggregates();
-                Signals.PublishSubmitTurnEvent(player);
+                Signals.PublishSubmitTurnRequestedEvent(player);
             }
             else
             {
@@ -280,6 +280,29 @@ namespace CraigStars.Singletons
             log.Info("Client: PublishedTurnPassedEvent for UI");
         }
 
+        public void SendTurnSubmitted(PublicPlayerInfo player)
+        {
+            // send our peers an update of a player
+            log.Debug($"{LogPrefix} Notifying clients about player turn submit: {player}");
+            Rpc(nameof(TurnSubmitted), Serializers.Serialize(player));
+        }
+
+        [Remote]
+        public void TurnSubmitted(string json)
+        {
+            var player = Serializers.DeserializeObject<PublicPlayerInfo>(json);
+            if (player != null)
+            {
+                log.Debug($"{LogPrefix} Received TurnSubmitted event for Player {player.Num} - {player.Name} (NetworkId: {player.NetworkId}");
+
+                // notify listeners that we have updated Player
+                Signals.PublishTurnSubmittedEvent(player);
+            }
+            else
+            {
+                log.Error($"{LogPrefix} Failed to parse json: {json}");
+            }
+        }
         #endregion
     }
 }

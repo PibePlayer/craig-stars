@@ -224,7 +224,6 @@ margin_top = 848.0
 
 [node name="TurnGenerationDialog" parent="CanvasLayer" instance=ExtResource( 20 )]
 pause_mode = 2
-visible = false
 
 [node name="ReportsDialog" parent="CanvasLayer" instance=ExtResource( 21 )]
 

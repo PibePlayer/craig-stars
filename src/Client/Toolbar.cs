@@ -105,7 +105,7 @@ namespace CraigStars
 
         void OnSubmitTurnButtonPressed()
         {
-            Signals.PublishSubmitTurnEvent(PlayersManager.Me);
+            Signals.PublishSubmitTurnRequestedEvent(PlayersManager.Me);
         }
 
         public override void _Input(InputEvent @event)
@@ -113,7 +113,7 @@ namespace CraigStars
             if (!submitTurnButton.Disabled && @event.IsActionPressed("submit_turn"))
             {
                 // submit our turn
-                Signals.PublishSubmitTurnEvent(PlayersManager.Me);
+                Signals.PublishSubmitTurnRequestedEvent(PlayersManager.Me);
             }
             if (@event.IsActionPressed("technology_browser"))
             {

@@ -23,9 +23,15 @@ namespace CraigStars.Singletons
         public static event Action TurnGeneratingEvent;
         public static event Action<TurnGeneratorState> TurnGeneratorAdvancedEvent;
 
+        /// <summary>
+        /// Triggered when any player has submitted their turn to the server
+        /// </summary>
+        public static event Action<PublicPlayerInfo> TurnSubmittedEvent;
+
         public static void PublishTurnPassedEvent(PublicGameInfo gameInfo) => TurnPassedEvent?.Invoke(gameInfo);
         public static void PublishTurnGeneratorAdvancedEvent(TurnGeneratorState state) => TurnGeneratorAdvancedEvent?.Invoke(state);
         public static void PublishTurnGeneratingEvent() => TurnGeneratingEvent?.Invoke();
+        public static void PublishTurnSubmittedEvent(PublicPlayerInfo player) => TurnSubmittedEvent?.Invoke(player);
 
         #region Viewport Events
 
@@ -44,7 +50,9 @@ namespace CraigStars.Singletons
         #region UI Events
 
         public static event Action PlayerDirtyEvent;
-        public static event Action<Player> SubmitTurnEvent;
+        public static event Action<Player> SubmitTurnRequestedEvent;
+        public static event Action<Player> UnsubmitTurnRequestedEvent;
+        public static event Action<int> PlayTurnRequestedEvent;
         public static event Action<PlanetSprite> ChangeProductionQueuePressedEvent;
         public static event Action ResearchDialogRequestedEvent;
         public static event Action ReportsDialogRequestedEvent;
@@ -162,8 +170,11 @@ namespace CraigStars.Singletons
         #endregion
 
 
-        #region Dialog Publishers
+        #region Dialog And Hotkey Publishers
 
+        public static void PublishSubmitTurnRequestedEvent(Player player) => SubmitTurnRequestedEvent?.Invoke(player);
+        public static void PublishUnsubmitTurnRequestedEvent(Player player) => UnsubmitTurnRequestedEvent?.Invoke(player);
+        public static void PublishPlayTurnRequestedEvent(int playerNum) => PlayTurnRequestedEvent?.Invoke(playerNum);
         public static void PublishChangeProductionQueuePressedEvent(PlanetSprite planet) => ChangeProductionQueuePressedEvent?.Invoke(planet);
         public static void PublishResearchDialogRequestedEvent() => ResearchDialogRequestedEvent?.Invoke();
         public static void PublishReportsDialogRequestedEvent() => ReportsDialogRequestedEvent?.Invoke();
@@ -175,7 +186,6 @@ namespace CraigStars.Singletons
         public static void PublishCargoTransferRequestedEvent(ICargoHolder source, ICargoHolder dest) => CargoTransferRequestedEvent?.Invoke(source, dest);
         public static void PublishMergeFleetsDialogRequestedEvent(FleetSprite sourceFleet) => MergeFleetsDialogRequestedEvent?.Invoke(sourceFleet);
         public static void PublishBattleViewerDialogRequestedEvent(BattleRecord battle) => BattleViewerDialogRequestedEvent?.Invoke(battle);
-        public static void PublishSubmitTurnEvent(Player player) => SubmitTurnEvent?.Invoke(player);
         public static void PublishRaceSavedEvent(Race race, string filename) => RaceSavedEvent?.Invoke(race, filename);
 
 

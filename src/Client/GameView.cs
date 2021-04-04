@@ -172,9 +172,9 @@ namespace CraigStars
             }
         }
 
-        async void OnUnsubmitTurnRequested(Player player)
+        void OnUnsubmitTurnRequested(Player player)
         {
-            await Game.UnsubmitTurn(player);
+            Game.UnsubmitTurn(player);
         }
 
         /// <summary>

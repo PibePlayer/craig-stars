@@ -113,6 +113,7 @@ namespace CraigStars
             if (!submitTurnButton.Disabled && @event.IsActionPressed("submit_turn"))
             {
                 // submit our turn
+                submitTurnButton.Disabled = true;
                 Signals.PublishSubmitTurnRequestedEvent(PlayersManager.Me);
             }
             if (@event.IsActionPressed("technology_browser"))

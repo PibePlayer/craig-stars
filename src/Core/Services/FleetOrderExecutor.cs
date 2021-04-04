@@ -24,31 +24,28 @@ namespace CraigStars
         /// The client allows various immediate orders like cargo transfers and merge/split operations.
         /// We process those like WP0 tasks
         /// </summary>
-        public void ExecuteFleetOrders()
+        public void ExecuteFleetOrders(Player player)
         {
-            Game.Players.ForEach(player =>
+            player.FleetOrders.ForEach(order =>
             {
-                player.FleetOrders.ForEach(order =>
+                if (order is CargoTransferOrder cargoTransferOrder)
                 {
-                    if (order is CargoTransferOrder cargoTransferOrder)
-                    {
-                        ExecuteCargoTransferOrder(player, cargoTransferOrder);
-                    }
-                    else if (order is MergeFleetOrder mergeFleetOrder)
-                    {
-                        ExecuteMergeFleetOrder(player, mergeFleetOrder);
-                    }
-                    else if (order is SplitAllFleetOrder splitAllFleetOrder)
-                    {
-                        ExecuteSplitAllFleetOrder(player, splitAllFleetOrder);
-                    }
-                });
-
-                player.FleetOrders.Clear();
-                player.CargoTransferOrders.Clear();
-                player.MergeFleetOrders.Clear();
-                player.SplitFleetOrders.Clear();
+                    ExecuteCargoTransferOrder(player, cargoTransferOrder);
+                }
+                else if (order is MergeFleetOrder mergeFleetOrder)
+                {
+                    ExecuteMergeFleetOrder(player, mergeFleetOrder);
+                }
+                else if (order is SplitAllFleetOrder splitAllFleetOrder)
+                {
+                    ExecuteSplitAllFleetOrder(player, splitAllFleetOrder);
+                }
             });
+
+            player.FleetOrders.Clear();
+            player.CargoTransferOrders.Clear();
+            player.MergeFleetOrders.Clear();
+            player.SplitFleetOrders.Clear();
         }
 
         void ExecuteCargoTransferOrder(Player player, CargoTransferOrder order)

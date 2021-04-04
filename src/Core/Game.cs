@@ -69,16 +69,18 @@ namespace CraigStars
 
         TurnGenerator turnGenerator;
         TurnSubmitter turnSubmitter;
+        GameSerializer gameSerializer;
         GameSaver gameSaver;
-        Task savingGameTask;
+        Task aiSubmittingTask;
 
         public Game()
         {
             turnGenerator = new TurnGenerator(this);
             turnSubmitter = new TurnSubmitter(this);
             gameSaver = new GameSaver(this);
+            gameSerializer = new GameSerializer(this);
 
-            turnGenerator.TurnGeneratorAdvancedEvent += OnTurnGeneratedAdvanced;
+            turnGenerator.TurnGeneratorAdvancedEvent += OnTurnGeneratorAdvanced;
             EventManager.FleetCreatedEvent += OnFleetCreated;
             EventManager.FleetDeletedEvent += OnFleetDeleted;
             EventManager.PlanetPopulationEmptiedEvent += OnPlanetPopulationEmptied;
@@ -89,7 +91,7 @@ namespace CraigStars
             EventManager.FleetCreatedEvent -= OnFleetCreated;
             EventManager.FleetDeletedEvent -= OnFleetDeleted;
             EventManager.PlanetPopulationEmptiedEvent -= OnPlanetPopulationEmptied;
-            turnGenerator.TurnGeneratorAdvancedEvent -= OnTurnGeneratedAdvanced;
+            turnGenerator.TurnGeneratorAdvancedEvent -= OnTurnGeneratorAdvanced;
         }
 
         [OnDeserialized]
@@ -156,29 +158,22 @@ namespace CraigStars
 
             UpdatePlayers();
 
-            RunTurnProcessors();
-
             SaveGame();
+
+            // this can happen in the background
+            SubmitAITurns();
         }
 
-        public async Task SubmitTurn(Player player)
+        public void SubmitTurn(Player player)
         {
-            if (savingGameTask != null)
-            {
-                await savingGameTask;
-            }
+            log.Info($"{Year}: {player} submitted turn");
             turnSubmitter.SubmitTurn(player);
         }
 
-        public async Task UnsubmitTurn(Player player)
+        public void UnsubmitTurn(Player player)
         {
-            if (savingGameTask != null)
-            {
-                // can't unsubmit if a save is in progress...
-                // too late!
-                await savingGameTask;
-                return;
-            }
+            // TODO: what happens if we are in the middle of generating a turn?
+            // it should just be a no-op, but we should tell the player somehow
             player.SubmittedTurn = false;
         }
 
@@ -191,7 +186,7 @@ namespace CraigStars
         /// Propogate turn generator events up to clients
         /// </summary>
         /// <param name="state"></param>
-        void OnTurnGeneratedAdvanced(TurnGeneratorState state)
+        void OnTurnGeneratorAdvanced(TurnGeneratorState state)
         {
             TurnGeneratorAdvancedEvent?.Invoke(state);
         }
@@ -204,8 +199,7 @@ namespace CraigStars
             GameInfo.Lifecycle = GameLifecycle.GeneratingTurn;
             await Task.Factory.StartNew(() =>
             {
-                var stopwatch = new Stopwatch();
-                stopwatch.Start();
+                log.Info($"{Year} Generating new turn");
 
                 // after new player actions and designs are submitted, we need
                 // to compute aggregates for fleets and designs
@@ -217,28 +211,38 @@ namespace CraigStars
                 // do any post-turn generation steps
                 AfterTurnGeneration();
 
+                TurnGeneratorAdvancedEvent?.Invoke(TurnGeneratorState.Saving);
+
                 SaveGame();
 
                 TurnGeneratorAdvancedEvent?.Invoke(TurnGeneratorState.Finished);
 
-                stopwatch.Stop();
+                log.Info($"{Year} Generating turn complete");
 
-                log.Debug($"Turn Generated ({stopwatch.ElapsedMilliseconds}ms)");
             });
+            GameInfo.Lifecycle = GameLifecycle.WaitingForPlayers;
 
+            // After we have notified players 
+            SubmitAITurns();
 
             if (Year < Rules.StartingYear + Rules.QuickStartTurns)
             {
-                Players.ForEach(async p =>
+                Players.ForEach(p =>
                 {
                     if (!p.AIControlled)
                     {
-                        await SubmitTurn(p);
+                        RunTurnProcessors(p);
+                        SubmitTurn(p);
                     }
                 });
+                if (aiSubmittingTask != null)
+                {
+                    await aiSubmittingTask;
+                }
                 await GenerateTurn();
             }
         }
+
 
         /// <summary>
         /// Method for updating player reports and doing any other stuff required after a turn (or universe)
@@ -253,15 +257,7 @@ namespace CraigStars
             // update our player information as if we'd just generated a new turn
             UpdatePlayers();
 
-            // run AI turn processors
-            TurnGeneratorAdvancedEvent?.Invoke(TurnGeneratorState.RunningTurnProcessors);
-            RunTurnProcessors();
-
-            // first round, we have to submit AI turns
-            SubmitAITurns();
-
             GameInfo.Lifecycle = GameLifecycle.WaitingForPlayers;
-
         }
 
         /// <summary>
@@ -282,7 +278,7 @@ namespace CraigStars
         /// <summary>
         /// Run through all the turn processors for each player
         /// </summary>
-        internal void RunTurnProcessors()
+        public void RunTurnProcessors(Player player)
         {
             List<TurnProcessor> processors = new List<TurnProcessor>() {
                 new ShipDesignerTurnProcessor(),
@@ -291,26 +287,22 @@ namespace CraigStars
                 new BomberTurnProcessor(),
                 new PlanetProductionTurnProcessor()
             };
-            Players.ForEach(player =>
-            {
-                // TODO: make turn processors configurable
-                if (player.AIControlled || true)
-                {
-                    processors.ForEach(processor => processor.Process(Year, player));
-                }
-            });
-
+            processors.ForEach(processor => processor.Process(Year, player));
         }
 
-        internal async Task SaveGame()
+        internal void SaveGame()
         {
             if (SaveToDisk && Year >= Rules.StartingYear + Rules.QuickStartTurns)
             {
-                TurnGeneratorAdvancedEvent?.Invoke(TurnGeneratorState.Saving);
-                // save the game to disk
-                savingGameTask = gameSaver.SaveGame(this);
-                await savingGameTask;
-                savingGameTask = null;
+                // serialize the game to JSON. This must complete before we can
+                // modify any state
+                var gameJson = gameSerializer.SerializeGame(this);
+
+                // now that we have our json, we can save the game to dis in a separate task
+                _ = Task.Run(() =>
+                {
+                    gameSaver.SaveGame(gameJson);
+                });
             }
         }
 
@@ -334,17 +326,24 @@ namespace CraigStars
 
         /// <summary>
         /// Submit any AI turns
+        /// This submits all turns in separate threads and returns a Task for them all to complete
         /// </summary>
         void SubmitAITurns()
         {
+            var tasks = new List<Task>();
             // submit AI turns
-            Players.ForEach(async p =>
+            foreach (var player in Players)
             {
-                if (p.AIControlled)
+                if (player.AIControlled)
                 {
-                    await SubmitTurn(p as Player);
+                    tasks.Add(Task.Run(() =>
+                    {
+                        RunTurnProcessors(player);
+                        SubmitTurn(player);
+                    }));
                 }
-            });
+            }
+            aiSubmittingTask = Task.Run(() => Task.WaitAll(tasks.ToArray()));
         }
 
         #region Event Handlers

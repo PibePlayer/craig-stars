@@ -51,7 +51,9 @@ namespace CraigStars
                 {
                     SelectedToken = Tokens[selectedTokenIndex];
                     SelectedToken.Visible = true;
-                } else {
+                }
+                else
+                {
                     SelectedToken = null;
                 }
             }

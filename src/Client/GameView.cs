@@ -153,7 +153,7 @@ namespace CraigStars
         /// <param name="player"></param>
         async void OnSubmitTurnRequested(Player player)
         {
-            await Game.SubmitTurn(player);
+            Game.SubmitTurn(player);
             Signals.PublishTurnSubmittedEvent(player);
             if (Game.AllPlayersSubmitted())
             {
@@ -194,12 +194,14 @@ namespace CraigStars
         void OnPostStartGame(PublicGameInfo gameInfo)
         {
             OS.SetWindowTitle($"{projectName} - {gameInfo.Name}: Year {gameInfo.Year}");
+            Game.RunTurnProcessors(PlayersManager.Me);
             // add the universe to the viewport
             scanner.InitMapObjects();
         }
 
         void OnTurnPassed(PublicGameInfo gameInfo)
         {
+            Game.RunTurnProcessors(PlayersManager.Me);
             OS.SetWindowTitle($"{projectName} - {gameInfo.Name}: Year {gameInfo.Year}");
         }
 

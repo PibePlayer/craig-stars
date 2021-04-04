@@ -1,13 +1,18 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Godot;
+using log4net;
 using Newtonsoft.Json;
 
 namespace CraigStars
 {
     public class GameSaver
     {
+        static ILog log = LogManager.GetLogger(typeof(GameSaver));
+
         public static string GetSaveDirPath(string gameName, int year)
         {
             return $"user://saves/{gameName}/{year}";
@@ -28,50 +33,54 @@ namespace CraigStars
             return $"user://saves/{gameName}/{year}/player-{playerNum}.json";
         }
 
-        JsonSerializerSettings gameSerializerSettings;
-        JsonSerializerSettings playerSerializerSettings;
         Game game;
 
         public GameSaver(Game game)
         {
             this.game = game;
-            playerSerializerSettings = Serializers.CreatePlayerSettings(game.Players.Cast<PublicPlayerInfo>().ToList(), game.TechStore);
-            gameSerializerSettings = Serializers.CreateGameSettings(game);
         }
 
         /// <summary>
         /// Save this game to disk
         /// </summary>
         /// <param name="game"></param>
-        public async Task SaveGame(Game game)
+        public void SaveGame(GameJson gameJson)
         {
-            await Task.Factory.StartNew(() =>
+            var dirPath = GetSaveDirPath(game.Name, game.Year);
+            log.Info($"Saving game {game.Year}:{game.Name} to {dirPath}");
+
+            // create the new year directory
+            using (var directory = new Directory())
             {
+                directory.MakeDirRecursive(dirPath);
+            }
 
-                using (var directory = new Directory())
+            // queue up the various disk tasks
+            var saveTasks = new List<Task>();
+            saveTasks.Add(Task.Factory.StartNew(() =>
+            {
+                var saveGame = new File();
+                saveGame.Open(GetSaveGamePath(game.Name, game.Year), File.ModeFlags.Write);
+
+                saveGame.StoreString(gameJson.Game);
+                saveGame.Close();
+            }));
+
+            for (int i = 0; i < game.Players.Count; i++)
+            {
+                // all these saves can happen in parallel
+                var playerJson = gameJson.Players[i];
+                saveTasks.Add(Task.Factory.StartNew(() =>
                 {
-                    directory.MakeDirRecursive(GetSaveDirPath(game.Name, game.Year));
-                }
-                using (var saveGame = new File())
-                {
-                    saveGame.Open(GetSaveGamePath(game.Name, game.Year), File.ModeFlags.Write);
+                    var playerSave = new File();
+                    playerSave.Open(GetSaveGamePlayerPath(game.Name, game.Year, i), File.ModeFlags.Write);
+                    playerSave.StoreString(playerJson);
+                    playerSave.Close();
+                }));
+            }
 
-                    var gameJson = Serializers.SerializeGame(game, gameSerializerSettings);
-                    saveGame.StoreString(gameJson);
-                    saveGame.Close();
-
-                    foreach (var player in game.Players)
-                    {
-                        using (var playerSave = new File())
-                        {
-                            playerSave.Open(GetSaveGamePlayerPath(game.Name, game.Year, player.Num), File.ModeFlags.Write);
-                            var json = Serializers.Serialize(player, playerSerializerSettings);
-                            playerSave.StoreString(json);
-                            playerSave.Close();
-                        }
-                    }
-                }
-            });
+            Task.WaitAll(saveTasks.ToArray());
+            log.Info($"{game.Year}:{game.Name} saved to {dirPath}");
         }
 
         /// <summary>
@@ -91,6 +100,7 @@ namespace CraigStars
                 var gameJson = saveGame.GetAsText();
                 saveGame.Close();
 
+                var gameSerializerSettings = Serializers.CreateGameSettings(game);
                 Serializers.PopulateGame(gameJson, game, gameSerializerSettings);
                 var settings = Serializers.CreatePlayerSettings(game.Players.Cast<PublicPlayerInfo>().ToList(), game.TechStore);
                 foreach (var player in game.Players)

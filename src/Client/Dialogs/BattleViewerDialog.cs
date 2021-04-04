@@ -119,7 +119,7 @@ namespace CraigStars
             Connect("visibility_changed", this, nameof(OnVisibilityChanged));
 
             SetAsMinsize();
-            
+
             // Uncomment this to debug JUSt the battle editor. This generates a test battle with a couple players
             // if (useTestBattle)
             // {

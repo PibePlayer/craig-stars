@@ -47,14 +47,14 @@ namespace CraigStars
                                 existingDesignForHull.Slots[i].HullComponent = updatedDesign.Slots[i].HullComponent;
                                 existingDesignForHull.Slots[i].Quantity = updatedDesign.Slots[i].Quantity;
                             }
-                            log.Info($"{player} has upgraded {existingDesignForHull.Name} with new components.");
+                            log.Debug($"{player} has upgraded {existingDesignForHull.Name} with new components.");
                         }
                         else
                         {
                             newDesigns.Add(updatedDesign);
                             updatedDesign.Version = newDesignVersion++;
 
-                            log.Info($"{player} has upgraded {existingDesignForHull.Name} v{existingDesignForHull.Version} to {updatedDesign.Name} v{updatedDesign.Version} with new components.");
+                            log.Debug($"{player} has upgraded {existingDesignForHull.Name} v{existingDesignForHull.Version} to {updatedDesign.Name} v{updatedDesign.Version} with new components.");
                         }
 
                     }
@@ -64,7 +64,7 @@ namespace CraigStars
 
                     // we don't have a design for this hull yet, create a new one!
                     var newDesign = shipDesignGenerator.DesignShip(hull, hull.Name, player, player.DefaultHullSet, EnumUtils.GetPurposeForTechHullType(hull.Type));
-                    log.Info($"{player} has created new design {newDesign.Name} v{newDesign.Version}.");
+                    log.Debug($"{player} has created new design {newDesign.Name} v{newDesign.Version}.");
                     newDesigns.Add(newDesign);
                 }
             }

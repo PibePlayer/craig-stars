@@ -24,8 +24,8 @@ namespace CraigStars
 
         public void SubmitTurn(Player player)
         {
-            log.Debug("Processing player immmediate cargo transfers");
-            fleetOrderExecutor.ExecuteFleetOrders();
+            log.Debug("Processing player immmediate cargo transfers, fleet merges, splits, etc");
+            fleetOrderExecutor.ExecuteFleetOrders(player);
 
             UpdateFleetActions(player);
             UpdateShipDesigns(player);

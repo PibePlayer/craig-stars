@@ -17,7 +17,7 @@ namespace CraigStars.Tests
             var game = GameTest.GetSingleUnitGame();
             var tg = new TurnGenerator(game);
             tg.GenerateTurn();
-            game.RunTurnProcessors();
+            // game.RunTurnProcessors();
 
             // make sure our planet grew pop
             Assert.IsTrue(game.Planets[0].Population > 100000);

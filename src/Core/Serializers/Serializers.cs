@@ -8,47 +8,6 @@ using Newtonsoft.Json.Serialization;
 
 namespace CraigStars
 {
-    // public class GuidReferenceResolver : ReferenceResolver
-    // {
-    //     private readonly IDictionary<Guid, MapObject> mapObjects = new Dictionary<Guid, MapObject>();
-
-    //     public override object ResolveReference(string referenceId)
-    //     {
-    //         Guid guid = new Guid(referenceId);
-
-    //         mapObjects.TryGetValue(guid, out MapObject mo);
-
-    //         return mo;
-    //     }
-
-    //     public override string GetReference(object value, out bool alreadyExists)
-    //     {
-    //         MapObject mo = value as MapObject;
-    //         if (mo != null)
-    //         {
-    //             if (!(alreadyExists = mapObjects.ContainsKey(mo.Guid)))
-    //             {
-    //                 mapObjects[mo.Guid] = mo;
-    //             }
-
-    //             return mo.Guid.ToString();
-    //         }
-    //         else
-    //         {
-    //             alreadyExists = false;
-    //             return null;
-    //         }
-    //     }
-
-    //     public override void AddReference(string reference, object value)
-    //     {
-    //         Guid guid = new Guid(reference);
-    //         MapObject MapObject = (MapObject)value;
-    //         MapObject.Guid = guid;
-    //         mapObjects[guid] = MapObject;
-    //     }
-    // }
-
     /// <summary>
     /// Serializers contains a group of static methods for converting game objects to/from json
     /// </summary>

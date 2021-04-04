@@ -51,6 +51,7 @@ public class FleetTile : MarginContainer
 
     protected virtual void OnTurnPassed(PublicGameInfo gameInfo)
     {
+        ActiveFleet = null;
         UpdateControls();
     }
 

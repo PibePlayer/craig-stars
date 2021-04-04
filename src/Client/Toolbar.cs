@@ -42,6 +42,7 @@ namespace CraigStars
             submitTurnButton.Connect("pressed", this, nameof(OnSubmitTurnButtonPressed));
 
             Signals.TurnGeneratingEvent += OnTurnGenerating;
+            Signals.UnsubmitTurnRequestedEvent += OnUnsubmitTurnButtonPressed;
             Signals.TurnPassedEvent += OnTurnPassed;
         }
 
@@ -59,6 +60,14 @@ namespace CraigStars
         private void OnTurnGenerating()
         {
             submitTurnButton.Disabled = true;
+        }
+
+        void OnUnsubmitTurnButtonPressed(Player player)
+        {
+            if (player == PlayersManager.Me)
+            {
+                submitTurnButton.Disabled = false;
+            }
         }
 
         void OnNormalViewToolButtonPressed()

@@ -70,6 +70,10 @@ namespace CraigStars
 
         public override void _Draw()
         {
+            if (!IsInstanceValid(this))
+            {
+                return;
+            }
             // for fleets owned by other players, draw a helpful line showing how fast the fleet is going
             // and where it will end up
             if (State == ScannerState.Selected && !Fleet.OwnedBy(Me) && Fleet.WarpSpeed > 0)

@@ -147,6 +147,11 @@ namespace CraigStars
             // update all the sprites
             mapObjectsUnderMouse.Clear();
             waypointAreas.Clear();
+            selectedMapObject = null;
+            selectedWaypoint = null;
+            activeFleet = null;
+            activeWaypointArea = null;
+
             CallDeferred(nameof(AddFleetsToViewport));
             CallDeferred(nameof(ResetScannerToHome));
         }
@@ -614,21 +619,25 @@ namespace CraigStars
         /// </summary>
         void UpdateSelectedIndicator()
         {
-            if (selectedWaypoint != null)
+            if (selectedMapObjectSprite != null)
             {
-                selectedMapObjectSprite.Select(selectedWaypoint.Position);
-            }
-            else
-            {
-                if (selectedMapObject == commandedMapObject || (commandedMapObject != null && commandedMapObject.GetPeers().Contains(selectedMapObject)))
+
+                if (selectedWaypoint != null)
                 {
-                    selectedMapObjectSprite.SelectLarge(selectedMapObject.Position);
+                    selectedMapObjectSprite.Select(selectedWaypoint.Position);
                 }
                 else
                 {
-                    selectedMapObjectSprite.Select(selectedMapObject.Position);
-                }
+                    if (selectedMapObject == commandedMapObject || (commandedMapObject != null && commandedMapObject.GetPeers().Contains(selectedMapObject)))
+                    {
+                        selectedMapObjectSprite.SelectLarge(selectedMapObject.Position);
+                    }
+                    else
+                    {
+                        selectedMapObjectSprite.Select(selectedMapObject.Position);
+                    }
 
+                }
             }
 
         }

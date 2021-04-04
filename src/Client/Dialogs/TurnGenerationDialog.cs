@@ -43,7 +43,7 @@ namespace CraigStars
                 // if we are on fast hot seat mode, switch to the next available player
                 if (Settings.Instance.FastHotseat)
                 {
-                    var nextUnsubmittedPlayer = PlayersManager.Instance.Players.Find(player => !player.SubmittedTurn);
+                    var nextUnsubmittedPlayer = PlayersManager.Instance.Players.Find(player => !player.AIControlled && !player.SubmittedTurn);
                     if (nextUnsubmittedPlayer != null)
                     {
                         OnPlayTurnButtonPressed(nextUnsubmittedPlayer.Num);

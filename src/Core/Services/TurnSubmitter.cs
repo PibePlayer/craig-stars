@@ -71,7 +71,7 @@ namespace CraigStars
                     Game.DesignsByGuid[newDesign.Guid] = newDesign;
                 }
             }
-            foreach (var design in Game.Designs.Where(d => d.Player == player))
+            foreach (var design in Game.Designs.Where(d => d.Player == player).ToList())
             {
                 if (!player.DesignsByGuid.ContainsKey(design.Guid))
                 {

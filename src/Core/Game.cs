@@ -338,8 +338,15 @@ namespace CraigStars
                 {
                     tasks.Add(Task.Run(() =>
                     {
-                        RunTurnProcessors(player);
-                        SubmitTurn(player);
+                        try
+                        {
+                            RunTurnProcessors(player);
+                            SubmitTurn(player);
+                        }
+                        catch (Exception e)
+                        {
+                            log.Error($"Failed to submit AI turn ${player}", e);
+                        }
                     }));
                 }
             }

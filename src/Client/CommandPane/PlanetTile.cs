@@ -22,6 +22,7 @@ namespace CraigStars
 
         protected virtual void OnTurnPassed(PublicGameInfo gameInfo)
         {
+            ActivePlanet = null;
             UpdateControls();
         }
 

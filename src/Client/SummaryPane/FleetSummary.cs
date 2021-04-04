@@ -39,6 +39,7 @@ namespace CraigStars
 
         void OnTurnPassed(PublicGameInfo gameInfo)
         {
+            Fleet = null;
             UpdateControls();
         }
 

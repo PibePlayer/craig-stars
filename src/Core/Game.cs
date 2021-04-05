@@ -65,7 +65,7 @@ namespace CraigStars
         #endregion
 
         // for tests or fast generation
-        [JsonIgnore] public bool SaveToDisk { get; set; } = false;
+        [JsonIgnore] public bool SaveToDisk { get; set; } = true;
 
         TurnGenerator turnGenerator;
         TurnSubmitter turnSubmitter;

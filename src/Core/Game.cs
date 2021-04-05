@@ -65,7 +65,7 @@ namespace CraigStars
         #endregion
 
         // for tests or fast generation
-        [JsonIgnore] public bool SaveToDisk { get; set; } = true;
+        [JsonIgnore] public bool SaveToDisk { get; set; } = false;
 
         TurnGenerator turnGenerator;
         TurnSubmitter turnSubmitter;
@@ -364,6 +364,7 @@ namespace CraigStars
                     log.Error("Built token with no design slots!");
                 }
             }
+            log.Debug($"Created new fleet {fleet.Name} - {fleet.Guid}");
             Fleets.Add(fleet);
             FleetsByGuid[fleet.Guid] = fleet;
             CargoHoldersByGuid[fleet.Guid] = fleet;
@@ -378,6 +379,7 @@ namespace CraigStars
             Fleets.Remove(fleet);
             FleetsByGuid.Remove(fleet.Guid);
             CargoHoldersByGuid.Remove(fleet.Guid);
+            log.Debug($"Deleted fleet {fleet.Name} - {fleet.Guid}");
         }
 
         void OnPlanetPopulationEmptied(Planet planet)

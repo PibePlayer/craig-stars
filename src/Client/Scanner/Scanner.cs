@@ -749,6 +749,7 @@ namespace CraigStars
             // add in new fleets
             var newFleetSprites = fleets.Select(fleet =>
             {
+                log.Debug($"User created new fleet {fleet.Name} - {fleet.Guid}");
                 var fleetSprite = fleetScene.Instance() as FleetSprite;
                 fleetSprite.Fleet = fleet;
                 fleetSprite.Position = fleet.Position;
@@ -771,8 +772,14 @@ namespace CraigStars
                 {
                     foreach (var fleet in f.Fleet.OtherFleets)
                     {
-                        var fleetSprite = FleetsByGuid[fleet.Guid];
-                        f.OtherFleets.Add(fleetSprite);
+                        if (FleetsByGuid.TryGetValue(fleet.Guid, out var fleetSprite))
+                        {
+                            f.OtherFleets.Add(fleetSprite);
+                        }
+                        else
+                        {
+                            log.Error($"Couldn't map up fleet's OtherFleet by guid: {fleet.Guid}");
+                        }
                     }
                 }
             });
@@ -786,6 +793,7 @@ namespace CraigStars
 
         void OnFleetDeleted(FleetSprite fleet)
         {
+            log.Debug($"User deleted fleet {fleet.Fleet.Name} - {fleet.Fleet.Guid}");
             Fleets.Remove(fleet);
             // make sure other fleets don't know about us anymore
             fleet.OtherFleets.ForEach(otherFleet => otherFleet.OtherFleets.Remove(fleet));

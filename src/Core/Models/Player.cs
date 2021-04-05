@@ -467,6 +467,7 @@ namespace CraigStars
             {
                 MergedFleets.Add(fleet);
                 Fleets.Remove(fleet);
+                FleetsByGuid.Remove(fleet.Guid);
             }
         }
 

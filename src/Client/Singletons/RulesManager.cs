@@ -57,7 +57,7 @@ namespace CraigStars.Singletons
                 "%exception %newline";
 
             var logger = (Logger)log.Logger;
-            logger.Hierarchy.Root.Level = Level.All;
+            logger.Hierarchy.Root.Level = Level.Debug;
 
             var consoleAppender = new ConsoleAppender
             {

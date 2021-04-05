@@ -90,6 +90,7 @@ namespace CraigStars
         {
             foreach (var playerFleet in player.Fleets)
             {
+                log.Debug($"{Game.Year}: Updating Fleet Actions for {playerFleet.Player} - {playerFleet.Name}");
                 if (Game.FleetsByGuid.TryGetValue(playerFleet.Guid, out var fleet) && fleet.Player == player)
                 {
                     fleet.BattlePlan = playerFleet.BattlePlan.Clone();

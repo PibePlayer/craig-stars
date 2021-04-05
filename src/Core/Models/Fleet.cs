@@ -74,9 +74,9 @@ namespace CraigStars
             // build a dictionary of tokens by design
             var tokenByDesign = Tokens.ToLookup(token => token.Design).ToDictionary(lookup => lookup.Key, lookup => lookup.ToList()[0]);
 
-            foreach (var fleet in order.MergingFleets)
+            foreach (var mergedFleet in order.MergingFleets)
             {
-                foreach (var token in fleet.Tokens)
+                foreach (var token in mergedFleet.Tokens)
                 {
                     // if we already have this design in our 
                     if (tokenByDesign.TryGetValue(token.Design, out var existingToken))
@@ -103,13 +103,18 @@ namespace CraigStars
                         tokenByDesign[token.Design] = token;
                     }
                 }
-                Cargo += fleet.Cargo;
-                Fuel += fleet.Fuel;
+                Cargo += mergedFleet.Cargo;
+                Fuel += mergedFleet.Fuel;
+
+                // remove this merged fleet from our OtherFleets list and the OtherFleets
+                // list of every other fleet that considers it an OtherFleet
+                OtherFleets.Remove(mergedFleet);
+                mergedFleet.OtherFleets.ForEach(otherFleet => otherFleet.OtherFleets.Remove(mergedFleet));
             }
 
-            // these fleets should no longer be in our "OtherFleets" list
-            order.MergingFleets.ForEach(otherFleet => OtherFleets.Remove(otherFleet));
             ComputeAggregate(recompute: true);
+
+
         }
 
         /// <summary>
@@ -178,6 +183,15 @@ namespace CraigStars
                         if (Orbiting != null)
                         {
                             Orbiting.OrbitingFleets.Add(newFleet);
+                        }
+
+                        if (split.NewFleetGuids.Count > i)
+                        {
+                            newFleet.Guid = split.NewFleetGuids[i];
+                        }
+                        else
+                        {
+                            split.NewFleetGuids.Add(newFleet.Guid);
                         }
 
                         newFleets.Add(newFleet);

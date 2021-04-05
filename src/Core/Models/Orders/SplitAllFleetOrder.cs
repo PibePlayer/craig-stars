@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace CraigStars
@@ -7,5 +8,6 @@ namespace CraigStars
     /// </summary>
     public class SplitAllFleetOrder : FleetOrder
     {
+        public List<Guid> NewFleetGuids { get; set; } = new List<Guid>();
     }
 }

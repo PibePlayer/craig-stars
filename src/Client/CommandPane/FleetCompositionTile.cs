@@ -54,7 +54,18 @@ namespace CraigStars
             Me.SplitFleetOrders.Add(order);
             Me.FleetOrders.Add(order);
 
+            // Execute this fleet order and then add it to our player's
+            // list of fleets so they can be commanded.
+            // TODO: this is a bit fragile. If we add these fleets to the player's
+            // Fleets in the Fleet.Split, we end up adding the fleets to the player's list twice.
+            // This Fleet.Split should probably be handled differently...
             var fleets = ActiveFleet.Fleet.Split(order);
+            fleets.ForEach(newFleet =>
+            {
+                Me.FleetsByGuid[newFleet.Guid] = newFleet;
+                Me.Fleets.Add(newFleet);
+            });
+
             Signals.PublishFleetsCreatedEvent(fleets);
         }
 

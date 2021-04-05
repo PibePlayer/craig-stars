@@ -44,6 +44,7 @@ margin_top = 18.0
 margin_right = 232.0
 margin_bottom = 242.0
 size_flags_vertical = 3
+select_mode = 1
 
 [node name="VBoxContainerButtons" type="VBoxContainer" parent="MarginContainer/HBoxContainer"]
 margin_left = 236.0

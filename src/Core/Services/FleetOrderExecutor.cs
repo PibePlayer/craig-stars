@@ -129,8 +129,10 @@ namespace CraigStars
             {
                 if (source.Player == player)
                 {
-                    var newFleets = source.Split(new SplitAllFleetOrder { Source = source });
+                    var newFleets = source.Split(new SplitAllFleetOrder { Source = source, NewFleetGuids = order.NewFleetGuids });
+
                     newFleets.ForEach(f => EventManager.PublishFleetCreatedEvent(f));
+                    log.Debug($"Executing user SplitAllFleetOrder for {source.Name}");
                 }
                 else
                 {

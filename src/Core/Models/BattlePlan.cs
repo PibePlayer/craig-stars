@@ -24,6 +24,7 @@ namespace CraigStars
         public BattleTargetType SecondaryTarget { get; set; } = BattleTargetType.Any;
         public BattleTactic Tactic { get; set; } = BattleTactic.MaximizeDamageRatio;
         public BattleAttackWho AttackWho { get; set; } = BattleAttackWho.EnemiesAndNeutrals;
+        public bool DumpCargo { get; set; }
 
         /// <summary>
         /// Make a clone of this battle plan
@@ -39,6 +40,7 @@ namespace CraigStars
                 SecondaryTarget = SecondaryTarget,
                 Tactic = Tactic,
                 AttackWho = AttackWho,
+                DumpCargo = DumpCargo,
             };
         }
     }

@@ -39,9 +39,50 @@ namespace CraigStars.Utils
             return value.ToString();
         }
 
-        public static string GetLabel<T>(WaypointTask value) where T : Enum
+        public static string GetLabelForBattleTargetType(BattleTargetType value)
         {
-            return GetLabelForWaypointTask(value);
+            switch (value)
+            {
+                case BattleTargetType.ArmedShips:
+                    return "Armed Ships";
+                case BattleTargetType.BombersFreighters:
+                    return "Bombers Freighters";
+                case BattleTargetType.UnarmedShips:
+                    return "Unarmed Ships";
+                case BattleTargetType.FuelTransports:
+                    return "Fuel Transports";
+                default:
+                    return value.ToString();
+            }
+        }
+
+        public static string GetLabelForBattleAttackWho(BattleAttackWho value)
+        {
+            switch (value)
+            {
+                case BattleAttackWho.EnemiesAndNeutrals:
+                    return "Enemies and Neutrals";
+                default:
+                    return value.ToString();
+            }
+        }
+        public static string GetLabelForBattleTactic(BattleTactic value)
+        {
+            switch (value)
+            {
+                case BattleTactic.DisengageIfChallenged:
+                    return "Disengage If Challenged";
+                case BattleTactic.MinimizeDamageToSelf:
+                    return "Minimize Damage To Self";
+                case BattleTactic.MaximizeNetDamage:
+                    return "Maximize Net Damage";
+                case BattleTactic.MaximizeDamageRatio:
+                    return "Maximize Damage Ratio";
+                case BattleTactic.MaximizeDamage:
+                    return "Maximize Damage";
+                default:
+                    return value.ToString();
+            }
         }
 
         public static string GetLabelForWaypointTask(WaypointTask task)

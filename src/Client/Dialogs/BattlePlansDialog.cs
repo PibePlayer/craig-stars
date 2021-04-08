@@ -3,6 +3,7 @@ using CraigStars.Utils;
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CraigStars
 {
@@ -48,22 +49,30 @@ namespace CraigStars
 
             battlePlansItemList.Connect("item_selected", this, nameof(OnBattlePlanSelected));
 
+            primaryTargetOptionButton.Connect("item_selected", this, nameof(OnOptionButtonItemSelected));
+            secondaryTargetOptionButton.Connect("item_selected", this, nameof(OnOptionButtonItemSelected));
+            tacticOptionButton.Connect("item_selected", this, nameof(OnOptionButtonItemSelected));
+            attackWhoOptionButton.Connect("item_selected", this, nameof(OnOptionButtonItemSelected));
+            nameLineEdit.Connect("text_changed", this, nameof(OnNameLineEditTextChanged));
+            dumpCargoCheckBox.Connect("toggled", this, nameof(OnDumpCargoCheckBoxToggled));
+
             okButton.Connect("pressed", this, nameof(OnOk));
             newButton.Connect("pressed", this, nameof(OnNewButtonPressed));
             deleteButton.Connect("pressed", this, nameof(OnDeleteButtonPressed));
 
             Connect("visibility_changed", this, nameof(OnVisibilityChanged));
 
-            PlayersManager.Instance.SetupPlayers();
-            Me.BattlePlans.Add(new BattlePlan("Default"));
-            Me.BattlePlans.Add(new BattlePlan("Sniper")
-            {
-                AttackWho = BattleAttackWho.Everyone,
-                PrimaryTarget = BattleTargetType.FuelTransports,
-                SecondaryTarget = BattleTargetType.Freighters,
-                Tactic = BattleTactic.DisengageIfChallenged,
-            });
-            Show();
+            // uncomment to test in scene
+            // PlayersManager.Instance.SetupPlayers();
+            // Me.BattlePlans.Add(new BattlePlan("Default"));
+            // Me.BattlePlans.Add(new BattlePlan("Sniper")
+            // {
+            //     AttackWho = BattleAttackWho.Everyone,
+            //     PrimaryTarget = BattleTargetType.FuelTransports,
+            //     SecondaryTarget = BattleTargetType.Freighters,
+            //     Tactic = BattleTactic.DisengageIfChallenged,
+            // });
+            // Show();
         }
 
         /// <summary>
@@ -106,6 +115,24 @@ namespace CraigStars
                 {
                     // add a new plan
                     Me.BattlePlans.Add(plan);
+                    Me.BattlePlansByGuid[plan.Guid] = plan;
+                }
+            }
+
+            foreach (var plan in deletedPlans)
+            {
+                if (Me.BattlePlansByGuid.TryGetValue(plan.Guid, out var existingPlan) && existingPlan != Me.BattlePlans[0])
+                {
+                    Me.BattlePlans.Remove(existingPlan);
+                    Me.BattlePlansByGuid.Remove(existingPlan.Guid);
+                    Me.Fleets.ForEach(fleet =>
+                    {
+                        // assign to the default if we delete this plan
+                        if (fleet.BattlePlan == existingPlan)
+                        {
+                            fleet.BattlePlan = Me.BattlePlans[0];
+                        }
+                    });
                 }
             }
 
@@ -118,6 +145,10 @@ namespace CraigStars
             UpdateBattlePlansItemList();
         }
 
+        /// <summary>
+        /// Delete the currently selected battle plan
+        /// TODO: Warn about in use battle plans
+        /// </summary>
         void OnDeleteButtonPressed()
         {
             if (selectedPlan != null && selectedPlan != battlePlans[0])
@@ -125,9 +156,36 @@ namespace CraigStars
                 deletedPlans.Add(selectedPlan);
                 battlePlans.Remove(selectedPlan);
                 UpdateBattlePlansItemList();
+                OnBattlePlanSelected(0);
             }
         }
 
+        void OnOptionButtonItemSelected(int index)
+        {
+            if (selectedPlan != null)
+            {
+                selectedPlan.PrimaryTarget = (BattleTargetType)primaryTargetOptionButton.Selected;
+                selectedPlan.SecondaryTarget = (BattleTargetType)secondaryTargetOptionButton.Selected;
+                selectedPlan.Tactic = (BattleTactic)tacticOptionButton.Selected;
+                selectedPlan.AttackWho = (BattleAttackWho)attackWhoOptionButton.Selected;
+            }
+        }
+
+        void OnNameLineEditTextChanged(string newText)
+        {
+            if (selectedPlan != null && selectedPlan != battlePlans[0])
+            {
+                selectedPlan.Name = newText;
+            }
+        }
+
+        void OnDumpCargoCheckBoxToggled(bool toggled)
+        {
+            if (selectedPlan != null)
+            {
+                selectedPlan.DumpCargo = toggled;
+            }
+        }
 
         void UpdateBattlePlansItemList()
         {

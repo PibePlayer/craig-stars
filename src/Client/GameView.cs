@@ -30,6 +30,7 @@ namespace CraigStars
         ProductionQueueDialog productionQueueDialog;
         CargoTransferDialog cargoTransferDialog;
         ResearchDialog researchDialog;
+        BattlePlansDialog battlePlansDialog;
         ReportsDialog reportsDialog;
         TechBrowserDialog techBrowserDialog;
         RaceDesignerDialog raceDesignerDialog;
@@ -56,6 +57,7 @@ namespace CraigStars
             productionQueueDialog = GetNode<ProductionQueueDialog>("CanvasLayer/ProductionQueueDialog");
             cargoTransferDialog = GetNode<CargoTransferDialog>("CanvasLayer/CargoTransferDialog");
             researchDialog = GetNode<ResearchDialog>("CanvasLayer/ResearchDialog");
+            battlePlansDialog = GetNode<BattlePlansDialog>("CanvasLayer/BattlePlansDialog");
             reportsDialog = GetNode<ReportsDialog>("CanvasLayer/ReportsDialog");
             techBrowserDialog = GetNode<TechBrowserDialog>("CanvasLayer/TechBrowserDialog");
             raceDesignerDialog = GetNode<RaceDesignerDialog>("CanvasLayer/RaceDesignerDialog");
@@ -69,6 +71,7 @@ namespace CraigStars
             Signals.ChangeProductionQueuePressedEvent += OnChangeProductionQueue;
             Signals.CargoTransferRequestedEvent += OnCargoTransferRequested;
             Signals.ResearchDialogRequestedEvent += OnResearchDialogRequested;
+            Signals.BattlePlansDialogRequestedEvent += OnBattlePlansDialogRequested;
             Signals.ReportsDialogRequestedEvent += OnReportsDialogRequested;
             Signals.ShipDesignerDialogRequestedEvent += OnShipDesignerDialogRequested;
             Signals.TechBrowserDialogRequestedEvent += OnTechBrowserDialogRequested;
@@ -124,6 +127,7 @@ namespace CraigStars
             Signals.ChangeProductionQueuePressedEvent -= OnChangeProductionQueue;
             Signals.CargoTransferRequestedEvent -= OnCargoTransferRequested;
             Signals.ResearchDialogRequestedEvent -= OnResearchDialogRequested;
+            Signals.BattlePlansDialogRequestedEvent -= OnBattlePlansDialogRequested;
             Signals.ReportsDialogRequestedEvent -= OnReportsDialogRequested;
             Signals.ShipDesignerDialogRequestedEvent -= OnShipDesignerDialogRequested;
             Signals.TechBrowserDialogRequestedEvent -= OnTechBrowserDialogRequested;
@@ -151,25 +155,30 @@ namespace CraigStars
         /// Copy any data from this to the main game
         /// </summary>
         /// <param name="player"></param>
-        async void OnSubmitTurnRequested(Player player)
+        void OnSubmitTurnRequested(Player player)
         {
             Game.SubmitTurn(player);
             Signals.PublishTurnSubmittedEvent(player);
             if (Game.AllPlayersSubmitted())
             {
-                // once everyone is submitted, generate a new turn
-                Signals.PublishTurnGeneratingEvent();
-                await Game.GenerateTurn();
-
-                if (this.IsServer())
-                {
-                    // send players their data
-                    RPC.Instance.SendPlayerDataUpdated(Game);
-                    RPC.Instance.SendTurnPassed(Game.GameInfo);
-                }
-
-                Signals.PublishTurnPassedEvent(Game.GameInfo);
+                CallDeferred(nameof(GenerateNewTurn));
             }
+        }
+
+        async void GenerateNewTurn()
+        {
+            // once everyone is submitted, generate a new turn
+            Signals.PublishTurnGeneratingEvent();
+            await Game.GenerateTurn();
+
+            if (this.IsServer())
+            {
+                // send players their data
+                RPC.Instance.SendPlayerDataUpdated(Game);
+                RPC.Instance.SendTurnPassed(Game.GameInfo);
+            }
+
+            Signals.PublishTurnPassedEvent(Game.GameInfo);
         }
 
         void OnUnsubmitTurnRequested(Player player)
@@ -229,6 +238,11 @@ namespace CraigStars
         void OnResearchDialogRequested()
         {
             researchDialog.PopupCentered();
+        }
+
+        void OnBattlePlansDialogRequested()
+        {
+            battlePlansDialog.PopupCentered();
         }
 
         void OnCargoTransferRequested(ICargoHolder source, ICargoHolder dest)

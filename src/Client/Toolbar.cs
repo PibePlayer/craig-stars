@@ -52,12 +52,17 @@ namespace CraigStars
             Signals.TurnPassedEvent -= OnTurnPassed;
         }
 
-        private void OnTurnPassed(PublicGameInfo gameInfo)
+        void EnableSubmitButton()
         {
             submitTurnButton.Disabled = false;
         }
 
-        private void OnTurnGenerating()
+        void OnTurnPassed(PublicGameInfo gameInfo)
+        {
+            CallDeferred(nameof(EnableSubmitButton));
+        }
+
+        void OnTurnGenerating()
         {
             submitTurnButton.Disabled = true;
         }
@@ -66,7 +71,7 @@ namespace CraigStars
         {
             if (player == PlayersManager.Me)
             {
-                submitTurnButton.Disabled = false;
+                CallDeferred(nameof(EnableSubmitButton));
             }
         }
 
@@ -109,7 +114,7 @@ namespace CraigStars
 
         void OnBattlePlansButtonPressed()
         {
-
+            Signals.PublishBattlePlansDialogRequestedEvent();
         }
 
         void OnSubmitTurnButtonPressed()
@@ -132,6 +137,10 @@ namespace CraigStars
             if (@event.IsActionPressed("research"))
             {
                 Signals.PublishResearchDialogRequestedEvent();
+            }
+            if (@event.IsActionPressed("battle_plans"))
+            {
+                Signals.PublishBattlePlansDialogRequestedEvent();
             }
             if (@event.IsActionPressed("ship_designer"))
             {

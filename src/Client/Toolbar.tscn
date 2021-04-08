@@ -91,7 +91,6 @@ margin_left = 233.0
 margin_right = 321.0
 margin_bottom = 40.0
 size_flags_horizontal = 0
-disabled = true
 text = "Battle Plans"
 
 [node name="ReportsButton" type="Button" parent="Panel/HBoxContainerRight"]

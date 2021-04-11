@@ -38,6 +38,6 @@ namespace CraigStars
         /// </summary>
         /// <param name="transfer">The cargo to transfer</param>
         /// <returns></returns>
-        bool AttemptTransfer(Cargo transfer, int fuel);
+        bool AttemptTransfer(Cargo transfer, int fuel = 0);
     }
 }

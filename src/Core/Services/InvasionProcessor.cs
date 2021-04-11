@@ -18,7 +18,7 @@ namespace CraigStars
     ///     (owner) = (attacker race) (pop) = (attackers) - (defenders)*(defense bonus)/(attack bonus)
     /// ELSE (owner) = (defender race) (pop) = (defenders) - (attackers)*(attack bonus)/(defense bonus)
     /// </summary>
-    public class PlanetInvader
+    public class InvasionProcessor
     {
 
         /// <summary>

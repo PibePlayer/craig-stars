@@ -101,10 +101,16 @@ namespace CraigStars
             player.Messages.Add(new Message(MessageType.PlanetColonized, text, planet));
         }
 
-        public static void FleetOutOfFuel(Player player, Fleet fleet)
+        public static void FleetOutOfFuel(Player player, Fleet fleet, int warpFactor)
         {
-            string text = $"{fleet.Name} has run out of fuel. The fleet's speed has been decreased to Warp 1.";
+            string text = $"{fleet.Name} has run out of fuel. The fleet's speed has been decreased to Warp {warpFactor}.";
             player.Messages.Add(new Message(MessageType.FleetOutOfFuel, text, fleet));
+        }
+
+        public static void FleetGeneratedFuel(Player player, Fleet fleet, int fuelGenerated)
+        {
+            string text = $"{fleet.Name}'s ram scoops have produced {fuelGenerated}mg of fuel from interstellar hydrogen.";
+            player.Messages.Add(new Message(MessageType.FleetGeneratedFuel, text, fleet));
         }
 
         public static void fleetScrapped(Player player, Fleet fleet, int num_minerals, Planet planet)

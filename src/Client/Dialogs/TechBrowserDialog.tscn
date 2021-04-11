@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://src/Client/Dialogs/TechBrowserDialog.cs" type="Script" id=1]
 [ext_resource path="res://src/Client/CostGrid.tscn" type="PackedScene" id=2]
 [ext_resource path="res://assets/gui/tech/Engine/Alpha Drive 8.png" type="Texture" id=3]
 [ext_resource path="res://src/Client/TechTree.tscn" type="PackedScene" id=4]
+[ext_resource path="res://src/Client/ShipDesigner/HullSummary.tscn" type="PackedScene" id=5]
 
 [node name="TechBrowserDialog" type="WindowDialog"]
 margin_right = 801.0
@@ -81,6 +82,7 @@ margin_left = 45.0
 margin_top = 2.0
 margin_right = 109.0
 margin_bottom = 66.0
+mouse_filter = 0
 size_flags_horizontal = 3
 texture = ExtResource( 3 )
 
@@ -342,3 +344,18 @@ margin_right = 781.0
 margin_bottom = 20.0
 rect_min_size = Vector2( 80, 0 )
 text = "OK"
+
+[node name="HullSummaryPopup" type="PopupPanel" parent="."]
+margin_right = 508.0
+margin_bottom = 658.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HullSummary" parent="HullSummaryPopup" instance=ExtResource( 5 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 4.0
+margin_top = 4.0
+margin_right = 504.0
+margin_bottom = 654.0

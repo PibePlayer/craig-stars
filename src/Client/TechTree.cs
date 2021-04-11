@@ -53,6 +53,10 @@ namespace CraigStars
             Connect("visibility_changed", this, nameof(OnVisible));
         }
 
+        public void FocusSearch()
+        {
+            searchLineEdit.GrabFocus();
+        }
 
         public void SelectFirstTech()
         {

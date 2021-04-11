@@ -14,6 +14,7 @@ namespace CraigStars
         public bool Computed { get; set; }
 
         public TechEngine Engine { get; set; }
+        public int NumEngines { get; set; } = 1;
         public Cost Cost { get; set; } = new Cost();
         public int Mass { get; set; }
         public int Armor { get; set; }

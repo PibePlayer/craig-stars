@@ -204,7 +204,7 @@ namespace CraigStars
             }
             catch (Exception e)
             {
-                log.Error($"Failed to PopulationPlayer from json: \n{json}", e);
+                log.Error($"Failed to PopulatePlayer from json: \n{json}", e);
                 log.Info($"TraceWriter: \n{traceWriter.ToString()}");
             }
         }

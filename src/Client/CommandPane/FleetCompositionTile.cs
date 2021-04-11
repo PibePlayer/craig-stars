@@ -2,6 +2,7 @@ using Godot;
 using System;
 using CraigStars.Singletons;
 using System.Collections.Generic;
+using CraigStars.Utils;
 
 namespace CraigStars
 {
@@ -14,6 +15,7 @@ namespace CraigStars
         Button splitButton;
         Button splitAllButton;
         Button mergeButton;
+        OptionButton battlePlanOptionButton;
 
         public override void _Ready()
         {
@@ -26,9 +28,12 @@ namespace CraigStars
             splitAllButton = (Button)FindNode("SplitAllButton");
             mergeButton = (Button)FindNode("MergeButton");
 
+            battlePlanOptionButton = (OptionButton)FindNode("BattlePlanOptionButton");
+
             splitButton.Connect("pressed", this, nameof(OnSplitButtonPressed));
             splitAllButton.Connect("pressed", this, nameof(OnSplitAllButtonPressed));
             mergeButton.Connect("pressed", this, nameof(OnMergeButtonPressed));
+            battlePlanOptionButton.Connect("item_selected", this, nameof(OnBattlePlanOptionButtonItemSelected));
         }
 
         protected override void OnFleetsCreated(List<Fleet> fleets)
@@ -41,6 +46,15 @@ namespace CraigStars
         {
             base.OnFleetDeleted(fleet);
             AddItemsToTree();
+        }
+
+        void OnBattlePlanOptionButtonItemSelected(int index)
+        {
+            if (ActiveFleet != null && index >= 0 && index < Me?.BattlePlans?.Count)
+            {
+                var plan = Me.BattlePlans[index];
+                ActiveFleet.Fleet.BattlePlan = plan;
+            }
         }
 
         void OnSplitButtonPressed()
@@ -106,6 +120,22 @@ namespace CraigStars
             base.UpdateControls();
             if (ActiveFleet != null)
             {
+                int selectedBattlePlanIndex = -1;
+                battlePlanOptionButton.Clear();
+                Me.BattlePlans.Each((plan, index) =>
+                {
+                    battlePlanOptionButton.AddItem(plan.Name);
+                    if (plan == ActiveFleet.Fleet.BattlePlan)
+                    {
+                        selectedBattlePlanIndex = index;
+                    }
+                });
+
+                if (selectedBattlePlanIndex != -1)
+                {
+                    battlePlanOptionButton.Select(selectedBattlePlanIndex);
+                }
+
                 estimatedRange.Text = $"{ActiveFleet.Fleet.GetEstimatedRange()} l.y.";
                 if (ActiveFleet.Fleet.Aggregate.CloakPercent == 0)
                 {

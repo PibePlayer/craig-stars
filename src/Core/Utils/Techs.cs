@@ -19,6 +19,7 @@ namespace CraigStars
         {
             Mass = 2,
             IdealSpeed = 6,
+            FreeSpeed = 6,
             FuelUsage = new int[] {
                 0,
                 0,
@@ -56,6 +57,7 @@ namespace CraigStars
         {
             Mass = 6,
             IdealSpeed = 6,
+            FreeSpeed = 4,
             FuelUsage = new int[] {
                 0,
                 0,
@@ -70,7 +72,7 @@ namespace CraigStars
                 420
             }
 
-        };        
+        };
         public static readonly TechEngine LongHump6 = new TechEngine("Long Hump 6", new Cost(5, 0, 1, 6), new TechRequirements(propulsion: 3), 40)
         {
             Mass = 9,
@@ -183,12 +185,13 @@ namespace CraigStars
                 50
             }
 
-        };        
+        };
         public static readonly TechEngine RadiatingHydroRamScoop = new TechEngine("Radiating Hydro-Ram Scoop", new Cost(3, 2, 9, 8), new TechRequirements(energy: 2, propulsion: 6, lrtsDenied: LRT.NRSE), 100)
         {
             Mass = 10,
             Radiating = true,
             IdealSpeed = 6,
+            FreeSpeed = 6,
             FuelUsage = new int[] {
                 0,
                 0,
@@ -203,11 +206,12 @@ namespace CraigStars
                 720
             }
 
-        };       
+        };
         public static readonly TechEngine SubGalacticFuelScoop = new TechEngine("Sub-Galactic Fuel Scoop", new Cost(4, 4, 7, 12), new TechRequirements(energy: 2, propulsion: 8, lrtsDenied: LRT.NRSE), 110)
         {
             Mass = 20,
             IdealSpeed = 7,
+            FreeSpeed = 7,
             FuelUsage = new int[] {
                 0,
                 0,
@@ -228,6 +232,7 @@ namespace CraigStars
         {
             Mass = 19,
             IdealSpeed = 8,
+            FreeSpeed = 8,
             FuelUsage = new int[] {
                 0,
                 0,
@@ -247,6 +252,7 @@ namespace CraigStars
         {
             Mass = 18,
             IdealSpeed = 9,
+            FreeSpeed = 9,
             FuelUsage = new int[] {
                 0,
                 0,
@@ -266,6 +272,7 @@ namespace CraigStars
         {
             Mass = 11,
             IdealSpeed = 10,
+            FreeSpeed = 10,
             FuelUsage = new int[] {
                 0,
                 0,
@@ -280,11 +287,12 @@ namespace CraigStars
                 84
             }
 
-        };        
+        };
         public static readonly TechEngine GalaxyScoop = new TechEngine("Galaxy Scoop", new Cost(4, 2, 9, 12), new TechRequirements(energy: 5, propulsion: 20, lrtsRequired: LRT.IFE, lrtsDenied: LRT.NRSE), 150)
         {
             Mass = 8,
             IdealSpeed = 10,
+            FreeSpeed = 10,
             FuelUsage = new int[] {
                 0,
                 0,
@@ -1476,6 +1484,21 @@ namespace CraigStars
             })
         };
 
+        public static readonly TechHull SuperFreighter = new TechHull("Super Freighter", new Cost(35, 0, 21, 100), new TechRequirements(construction: 13, prtRequired: PRT.IS), 40, TechCategory.ShipHull)
+        {
+            Type = TechHullType.Freighter,
+            Mass = 175,
+            Armor = 400,
+            FuelCapacity = 8000,
+            CargoCapacity = 3000,
+            Slots = new List<TechHullSlot>(new TechHullSlot[] {
+                new TechHullSlot(HullSlotType.Engine, 3, true),
+                new TechHullSlot(HullSlotType.ScannerElectricalMechanical, 3, false),
+                new TechHullSlot(HullSlotType.ShieldArmor, 5, false),
+                new TechHullSlot(HullSlotType.Electrical, 2, false)
+            })
+        };
+
         public static readonly TechHull Scout = new TechHull("Scout", new Cost(4, 2, 4, 9), new TechRequirements(), 50, TechCategory.ShipHull)
         {
             Type = TechHullType.Scout,
@@ -1524,6 +1547,64 @@ namespace CraigStars
                 new TechHullSlot(HullSlotType.Armor, 2, false),
                 new TechHullSlot(HullSlotType.Mechanical, 1, false),
                 new TechHullSlot(HullSlotType.Electrical, 1, false)
+            })
+        };
+
+        public static readonly TechHull Cruiser = new TechHull("Cruiser", new Cost(40, 5, 8, 85), new TechRequirements(construction: 9), 80, TechCategory.ShipHull)
+        {
+            Type = TechHullType.Fighter,
+            Mass = 90,
+            Armor = 700,
+            Initiative = 5,
+            FuelCapacity = 600,
+            Slots = new List<TechHullSlot>(new TechHullSlot[] {
+                new TechHullSlot(HullSlotType.Engine, 2, true),
+                new TechHullSlot(HullSlotType.ScannerElectricalMechanical, 1, false),
+                new TechHullSlot(HullSlotType.ScannerElectricalMechanical, 1, false),
+                new TechHullSlot(HullSlotType.Weapon, 2, false),
+                new TechHullSlot(HullSlotType.Weapon, 2, false),
+                new TechHullSlot(HullSlotType.General, 2, false),
+                new TechHullSlot(HullSlotType.ShieldArmor, 2, false)
+            })
+        };
+
+        public static readonly TechHull BattleCruiser = new TechHull("Battle Cruiser", new Cost(55, 8, 12, 120), new TechRequirements(construction: 9, prtRequired: PRT.WM), 90, TechCategory.ShipHull)
+        {
+            Type = TechHullType.Fighter,
+            Mass = 120,
+            Armor = 1000,
+            Initiative = 5,
+            FuelCapacity = 1400,
+            Slots = new List<TechHullSlot>(new TechHullSlot[] {
+                new TechHullSlot(HullSlotType.Engine, 2, true),
+                new TechHullSlot(HullSlotType.ScannerElectricalMechanical, 2, false),
+                new TechHullSlot(HullSlotType.ScannerElectricalMechanical, 2, false),
+                new TechHullSlot(HullSlotType.Weapon, 3, false),
+                new TechHullSlot(HullSlotType.Weapon, 3, false),
+                new TechHullSlot(HullSlotType.General, 3, false),
+                new TechHullSlot(HullSlotType.ShieldArmor, 4, false)
+            })
+        };
+
+        public static readonly TechHull Battleship = new TechHull("Battleship", new Cost(120, 25, 20, 225), new TechRequirements(construction: 13), 100, TechCategory.ShipHull)
+        {
+            Type = TechHullType.Fighter,
+            Mass = 222,
+            Armor = 2000,
+            Initiative = 10,
+            FuelCapacity = 2800,
+            Slots = new List<TechHullSlot>(new TechHullSlot[] {
+                new TechHullSlot(HullSlotType.Engine, 4, true),
+                new TechHullSlot(HullSlotType.ScannerElectricalMechanical, 1, false),
+                new TechHullSlot(HullSlotType.Shield, 8, false),
+                new TechHullSlot(HullSlotType.Weapon, 6, false),
+                new TechHullSlot(HullSlotType.Weapon, 6, false),
+                new TechHullSlot(HullSlotType.Weapon, 2, false),
+                new TechHullSlot(HullSlotType.Weapon, 2, false),
+                new TechHullSlot(HullSlotType.Weapon, 4, false),
+                new TechHullSlot(HullSlotType.Armor, 6, false),
+                new TechHullSlot(HullSlotType.Electrical, 3, false),
+                new TechHullSlot(HullSlotType.Electrical, 3, false),
             })
         };
 
@@ -1579,7 +1660,7 @@ namespace CraigStars
             })
         };
 
-        public static readonly TechHull FuelTransport = new TechHull("Fuel Transport", new Cost(10, 0, 5, 50), new TechRequirements(), 260, TechCategory.ShipHull)
+        public static readonly TechHull FuelTransport = new TechHull("Fuel Transport", new Cost(10, 0, 5, 50), new TechRequirements(construction: 4, prtRequired: PRT.IS), 260, TechCategory.ShipHull)
         {
             Type = TechHullType.FuelTransport,
             Mass = 12,
@@ -1925,9 +2006,13 @@ namespace CraigStars
                 SmallFreighter,
                 MediumFreighter,
                 LargeFreighter,
+                SuperFreighter,
                 Scout,
                 Frigate,
                 Destroyer,
+                Cruiser,
+                BattleCruiser,
+                Battleship,
                 MiniColonyShip,
                 ColonyShip,
                 MiniBomber,

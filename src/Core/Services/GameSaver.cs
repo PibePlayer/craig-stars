@@ -70,10 +70,11 @@ namespace CraigStars
             {
                 // all these saves can happen in parallel
                 var playerJson = gameJson.Players[i];
+                var playerNum = i;
                 saveTasks.Add(Task.Factory.StartNew(() =>
                 {
                     var playerSave = new File();
-                    playerSave.Open(GetSaveGamePlayerPath(game.Name, game.Year, i), File.ModeFlags.Write);
+                    playerSave.Open(GetSaveGamePlayerPath(game.Name, game.Year, playerNum), File.ModeFlags.Write);
                     playerSave.StoreString(playerJson);
                     playerSave.Close();
                 }));

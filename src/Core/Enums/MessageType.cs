@@ -21,6 +21,7 @@ namespace CraigStars
         BuiltStarbase                   = 1 << 10,
         FleetOrdersComplete             = 1 << 11,
         FleetOutOfFuel                  = 1 << 12,
+        FleetGeneratedFuel              = 1 << 12,
         FleetScrapped                   = 1 << 13,
         ColonizeInvalid                 = 1 << 14,
         PlanetColonized                 = 1 << 15,

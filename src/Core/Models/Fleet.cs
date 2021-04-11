@@ -327,6 +327,61 @@ namespace CraigStars
         }
 
         /// <summary>
+        /// Get the warp factor for when we run out of fuel.
+        /// </summary>
+        /// <returns></returns>
+        public int GetNoFuelWarpFactor()
+        {
+            // find the lowest freeSpeed from all the fleet's engines
+            var freeSpeed = int.MaxValue;
+            foreach (var token in Tokens)
+            {
+                freeSpeed = Math.Min(freeSpeed, token.Design.Aggregate.Engine.FreeSpeed);
+            }
+            return freeSpeed;
+        }
+
+        /// <summary>
+        /// Get the amount of fuel this ship will generate at a given warp
+        /// F = 0 if the engine is running above the highest warp at which it travels for free (i.e. it is using fuel) 
+        /// F = D if the engine is running at the highest warp at which it travels for free 
+        /// F = 3D if the engine is running 1 warp factor below the highest warp at which it travels for free 
+        /// F = 6D if the engine is running 2 warp factors below the highest warp at which it travels for free 
+        /// F = 10D if the engine is running 3 or more warp factors below the highest warp at which it travels for free
+        /// Note that the fuel generated is per engine, not per ship; i.e.; a ship with 2, 3, or 4 engines 
+        /// produces (or uses) 2, 3, or 4 times as much fuel as a single engine ship.
+        /// </summary>
+        /// <returns></returns>
+        public int GetFuelGeneration(int warpFactor, double distance)
+        {
+            var fuelGenerated = 0.0;
+            foreach (var token in Tokens)
+            {
+                var freeSpeed = token.Design.Aggregate.Engine.FreeSpeed;
+                var numEngines = token.Design.Aggregate.NumEngines;
+                var speedDifference = freeSpeed - warpFactor;
+                if (speedDifference == 0)
+                {
+                    fuelGenerated += distance * numEngines;
+                }
+                else if (speedDifference == 1)
+                {
+                    fuelGenerated += (3 * distance) * numEngines;
+                }
+                else if (speedDifference == 2)
+                {
+                    fuelGenerated += (6 * distance) * numEngines;
+                }
+                else if (speedDifference >= 3)
+                {
+                    fuelGenerated += (10 * distance) * numEngines;
+                }
+            }
+
+            return (int)fuelGenerated;
+        }
+
+        /// <summary>
         /// Get the estimated range, in light years, for this fleet going the default warp
         /// </summary>
         /// <returns></returns>
@@ -453,7 +508,7 @@ namespace CraigStars
         /// </summary>
         /// <param name="transfer"></param>
         /// <returns></returns>
-        public bool AttemptTransfer(Cargo transfer, int fuelTransfer)
+        public bool AttemptTransfer(Cargo transfer, int fuelTransfer = 0)
         {
             var cargoResult = Cargo + transfer;
             var fuelResult = Fuel + fuelTransfer;

@@ -107,6 +107,10 @@ namespace CraigStars
                             wp0.Position = fleet.Position;
                         }
                         var playerWp0 = playerFleet.Waypoints[0];
+                        if (wp0.Task != playerWp0.Task)
+                        {
+                            log.Debug($"{Game.Year}: Updating waypoint task for {fleet.Name} to {playerWp0.TargetName} -> {playerWp0.Task}");
+                        }
                         wp0.Task = playerWp0.Task;
                         wp0.WarpFactor = playerWp0.WarpFactor;
                         wp0.TransportTasks = playerWp0.TransportTasks;

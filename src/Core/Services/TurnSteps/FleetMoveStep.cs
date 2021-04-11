@@ -35,7 +35,36 @@ namespace CraigStars
 
                 // get the cost for the fleet
                 int fuelCost = fleet.GetFuelCost(wp1.WarpFactor, dist);
-                fleet.Fuel -= fuelCost;
+                int fuelGenerated = 0;
+                if (fuelCost > fleet.Fuel)
+                {
+                    // we will run out of fuel
+                    // if this distance would have cost us 10 fuel but we have 6 left, only travel 60% of the distance.
+                    var distanceFactor = fleet.Fuel / fuelCost;
+                    dist = dist * distanceFactor;
+                    fleet.Fuel = 0;
+                    wp1.WarpFactor = fleet.GetNoFuelWarpFactor();
+                    Message.FleetOutOfFuel(fleet.Player, fleet, wp1.WarpFactor);
+
+                    // if we ran out of fuel 60% of the way to our normal distance, the remaining 40% of our time
+                    // was spent travelling at fuel generation speeds:
+                    var remainingDistanceTravelled = (1 - distanceFactor) * (wp1.WarpFactor * wp1.WarpFactor);
+                    dist += remainingDistanceTravelled;
+                    fuelGenerated = fleet.GetFuelGeneration(wp1.WarpFactor, remainingDistanceTravelled);
+                }
+                else
+                {
+                    fleet.Fuel -= fuelCost;
+                    fuelGenerated = fleet.GetFuelGeneration(wp1.WarpFactor, dist);
+
+                }
+
+                // message the player about fuel generation
+                if (fuelGenerated > 0)
+                {
+                    fleet.Fuel += fuelGenerated;
+                    Message.FleetGeneratedFuel(fleet.Player, fleet, fuelGenerated);
+                }
 
                 // assuming we move at all, make sure we are no longer orbiting any planets
                 if (dist > 0 && fleet.Orbiting != null)

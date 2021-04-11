@@ -13,6 +13,4 @@ public enum WaypointTaskTransportAction
     LoadDunnage,
     SetAmountTo,
     SetWaypointTo,
-    SetToFleetCapacityPercent,
-    DropAndLoad,
 }

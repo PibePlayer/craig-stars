@@ -10,6 +10,7 @@ namespace CraigStars
         Player Me { get => PlayersManager.Me; }
         PublicGameInfo GameInfo { get; set; }
 
+        Label yearLabel;
         Container playerStatusContainer;
         Button cancelButton;
         Label label;
@@ -18,6 +19,7 @@ namespace CraigStars
         // Called when the node enters the scene tree for the first time.
         public override void _Ready()
         {
+            yearLabel = GetNode<Label>("MarginContainer/VBoxContainer/YearLabel");
             playerStatusContainer = (Container)FindNode("PlayerStatusContainer");
             cancelButton = (Button)FindNode("CancelButton");
             label = (Label)FindNode("Label");
@@ -98,6 +100,7 @@ namespace CraigStars
 
         void OnTurnGeneratorAdvanced(TurnGeneratorState state)
         {
+            yearLabel.Text = $"Year {GameInfo.Year}";
             string labelText;
             switch (state)
             {

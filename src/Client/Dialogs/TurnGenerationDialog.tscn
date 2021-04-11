@@ -1,9 +1,15 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://src/Client/Dialogs/TurnGenerationDialog.cs" type="Script" id=1]
+[ext_resource path="res://assets/gui/DroidSans.ttf" type="DynamicFontData" id=2]
+
+[sub_resource type="DynamicFont" id=1]
+size = 20
+font_data = ExtResource( 2 )
 
 [node name="TurnGenerationDialog" type="WindowDialog"]
 pause_mode = 2
+visible = true
 margin_right = 295.0
 margin_bottom = 323.0
 window_title = "Turn Submitted"
@@ -29,7 +35,15 @@ margin_top = 5.0
 margin_right = 290.0
 margin_bottom = 318.0
 
+[node name="YearLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+margin_right = 285.0
+margin_bottom = 24.0
+custom_fonts/font = SubResource( 1 )
+text = "Year: 2400"
+align = 2
+
 [node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/VBoxContainer"]
+margin_top = 28.0
 margin_right = 285.0
 margin_bottom = 253.0
 size_flags_horizontal = 3
@@ -37,7 +51,7 @@ size_flags_vertical = 3
 
 [node name="PlayerStatusContainer" type="GridContainer" parent="MarginContainer/VBoxContainer/ScrollContainer"]
 margin_right = 285.0
-margin_bottom = 253.0
+margin_bottom = 225.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 custom_constants/vseparation = 5

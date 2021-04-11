@@ -104,6 +104,9 @@ namespace CraigStars
 
             // Update the Game dictionaries used for lookups, like PlanetsByGuid, FleetsByGuid, etc.
             UpdateDictionaries();
+            
+            // make sure AIs submit their turns
+            SubmitAITurns();
         }
 
         public void ComputeAggregates()

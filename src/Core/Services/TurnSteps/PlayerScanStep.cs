@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CraigStars.Singletons;
 using Godot;
 using log4net;
@@ -44,11 +45,24 @@ namespace CraigStars
 
         public override void Process()
         {
-
+            var scanTasks = new List<Task>();
             foreach (var player in Game.Players)
             {
-                Scan(player);
+                // TODO: this is crashing when generating a bunch of turns...
+                // scanTasks.Add(Task.Factory.StartNew(() =>
+                // {
+                try
+                {
+                    Scan(player);
+                }
+                catch (Exception e)
+                {
+                    log.Error($"Encountered error during PlayerScanStep for {player}.", e);
+                }
+                // }));
             }
+
+            // Task.WaitAll(scanTasks.ToArray());
         }
 
         internal void Scan(Player player)

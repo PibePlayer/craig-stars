@@ -148,9 +148,9 @@ namespace CraigStars
             Aggregate.WeaponSlots.Clear();
             Aggregate.Movement = 0;
             Aggregate.TorpedoInaccuracyFactor = 1;
+            Aggregate.NumEngines = 0;
 
             var idealSpeed = 0;
-            var numEngines = 0;
 
             foreach (ShipDesignSlot slot in Slots)
             {
@@ -160,7 +160,7 @@ namespace CraigStars
                     {
                         Aggregate.Engine = engine;
                         idealSpeed = engine.IdealSpeed;
-                        numEngines += slot.Quantity;
+                        Aggregate.NumEngines += slot.Quantity;
                     }
                     if (slot.HullComponent.Category == TechCategory.BeamWeapon && slot.HullComponent.Power > 0 && (slot.HullComponent.Range + Hull.RangeBonus) > 0)
                     {
@@ -228,12 +228,12 @@ namespace CraigStars
                 }
             }
 
-            if (numEngines > 0)
+            if (Aggregate.NumEngines > 0)
             {
                 // Movement = IdealEngineSpeed - 2 - Mass / 70 / NumEngines + NumManeuveringJets + 2*NumOverThrusters
                 // we added any MovementBonus components above
                 // we round up the slightest bit, and we can't go below 2, or above 10
-                Aggregate.Movement = Mathf.Clamp((int)Math.Ceiling((double)((idealSpeed - 2) - Aggregate.Mass / 70 / numEngines + Aggregate.Movement)), 2, 10);
+                Aggregate.Movement = Mathf.Clamp((int)Math.Ceiling((double)((idealSpeed - 2) - Aggregate.Mass / 70 / Aggregate.NumEngines + Aggregate.Movement)), 2, 10);
             }
             else
             {

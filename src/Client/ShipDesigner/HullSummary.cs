@@ -239,6 +239,7 @@ namespace CraigStars
                     initiativeMovesAmountLabel.Visible = true;
                     scannerRangeLabel.Visible = true;
                     scannerRangeAmountLabel.Visible = true;
+                    purposeValueLabel.Visible = true;
                     purposeValueLabel.Text = $"{shipDesign.Purpose}";
                 }
                 else if (hull != null)
@@ -261,6 +262,7 @@ namespace CraigStars
                     initiativeMovesAmountLabel.Visible = false;
                     scannerRangeLabel.Visible = false;
                     scannerRangeAmountLabel.Visible = false;
+                    purposeValueLabel.Visible = false;
                 }
             }
             else

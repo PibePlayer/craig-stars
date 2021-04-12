@@ -67,10 +67,10 @@ namespace CraigStars
         protected override void UpdateControls()
         {
             base.UpdateControls();
-            if (ActivePlanet != null)
+            if (CommandedPlanet != null)
             {
                 fleetsInOrbitOptionButton.Clear();
-                OribitingFleets = ActivePlanet.OrbitingFleets.Where(f => f.OwnedByMe).ToList();
+                OribitingFleets = CommandedPlanet.OrbitingFleets.Where(f => f.OwnedByMe).ToList();
                 if (OribitingFleets.Count > 0)
                 {
                     SelectedFleet = OribitingFleets[0];

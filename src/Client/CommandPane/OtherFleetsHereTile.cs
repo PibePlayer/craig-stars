@@ -38,9 +38,9 @@ namespace CraigStars
 
         void OnGotoButtonPressed()
         {
-            if (ActiveFleet != null && ActiveFleet.Orbiting != null)
+            if (CommandedFleet != null && CommandedFleet.Orbiting != null)
             {
-                Signals.PublishGotoMapObjectEvent(ActiveFleet.Orbiting);
+                Signals.PublishGotoMapObjectEvent(CommandedFleet.Orbiting);
             }
         }
 
@@ -51,9 +51,9 @@ namespace CraigStars
 
         void OnCargoTransferButtonPressed()
         {
-            if (ActiveFleet != null)
+            if (CommandedFleet != null)
             {
-                Signals.PublishCargoTransferRequestedEvent(ActiveFleet.Fleet, ActiveFleet.Fleet.Orbiting);
+                Signals.PublishCargoTransferRequestedEvent(CommandedFleet.Fleet, CommandedFleet.Fleet.Orbiting);
             }
         }
 
@@ -68,10 +68,10 @@ namespace CraigStars
         protected override void UpdateControls()
         {
             base.UpdateControls();
-            if (ActiveFleet != null)
+            if (CommandedFleet != null)
             {
                 otherFleetsOptionButton.Clear();
-                otherFleets = ActiveFleet.OtherFleets?.Where(f => f.OwnedByMe).ToList();
+                otherFleets = CommandedFleet.OtherFleets?.Where(f => f.OwnedByMe).ToList();
                 if (otherFleets?.Count > 0)
                 {
                     cargoTransferButton.Disabled = false;

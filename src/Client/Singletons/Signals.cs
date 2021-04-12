@@ -37,7 +37,7 @@ namespace CraigStars.Singletons
 
         public static event Action<MapObjectSprite> MapObjectHighlightedEvent;
         public static event Action<MapObjectSprite> MapObjectSelectedEvent;
-        public static event Action<MapObjectSprite> MapObjectActivatedEvent;
+        public static event Action<MapObjectSprite> MapObjectCommandedEvent;
         public static event Action<MapObject> CommandMapObjectEvent;
         public static event Action<MapObject> SelectMapObjectEvent;
         public static event Action<Fleet, Waypoint> WaypointAddedEvent;
@@ -140,7 +140,7 @@ namespace CraigStars.Singletons
         public static void PublishPlayerDirtyEvent() => PlayerDirtyEvent?.Invoke();
         public static void PublishMapObjectHightlightedEvent(MapObjectSprite mapObjectSprite) => MapObjectHighlightedEvent?.Invoke(mapObjectSprite);
         public static void PublishMapObjectSelectedEvent(MapObjectSprite mapObjectSprite) => MapObjectSelectedEvent?.Invoke(mapObjectSprite);
-        public static void PublishMapObjectActivatedEvent(MapObjectSprite mapObjectSprite) => MapObjectActivatedEvent?.Invoke(mapObjectSprite);
+        public static void PublishMapObjectCommandedEvent(MapObjectSprite mapObjectSprite) => MapObjectCommandedEvent?.Invoke(mapObjectSprite);
         public static void PublishCommandMapObjectEvent(MapObject mapObject) => CommandMapObjectEvent?.Invoke(mapObject);
         public static void PublishSelectMapObjectEvent(MapObject mapObject) => SelectMapObjectEvent?.Invoke(mapObject);
         public static void PublishActiveNextMapObjectEvent() => ActiveNextMapObjectEvent?.Invoke();

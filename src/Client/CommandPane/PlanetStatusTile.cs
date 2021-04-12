@@ -28,17 +28,17 @@ namespace CraigStars
         protected override void UpdateControls()
         {
             base.UpdateControls();
-            if (ActivePlanet != null)
+            if (CommandedPlanet != null)
             {
-                population.Text = $"{ActivePlanet.Planet.Population:n0}";
-                resources.Text = $"{ActivePlanet.Planet.ResourcesPerYearAvailable:n0} of {ActivePlanet.Planet.ResourcesPerYear:n0}";
-                defenses.Text = $"{ActivePlanet.Planet.Defenses:n0} of {ActivePlanet.Planet.MaxDefenses:n0}";
-                var defense = ActivePlanet.Planet.Player?.GetBestDefense();
+                population.Text = $"{CommandedPlanet.Planet.Population:n0}";
+                resources.Text = $"{CommandedPlanet.Planet.ResourcesPerYearAvailable:n0} of {CommandedPlanet.Planet.ResourcesPerYear:n0}";
+                defenses.Text = $"{CommandedPlanet.Planet.Defenses:n0} of {CommandedPlanet.Planet.MaxDefenses:n0}";
+                var defense = CommandedPlanet.Planet.Player?.GetBestDefense();
                 defenseType.Text = defense?.Name;
-                defenseCoverage.Text = $"{ActivePlanet.Planet?.DefenseCoverage:P1}";
-                if (ActivePlanet.Planet.Scanner)
+                defenseCoverage.Text = $"{CommandedPlanet.Planet?.DefenseCoverage:P1}";
+                if (CommandedPlanet.Planet.Scanner)
                 {
-                    var scanner = ActivePlanet.Planet.Player.GetBestPlanetaryScanner();
+                    var scanner = CommandedPlanet.Planet.Player.GetBestPlanetaryScanner();
                     scannerType.Text = $"{scanner.Name}";
                     if (scanner.ScanRangePen > 0)
                     {

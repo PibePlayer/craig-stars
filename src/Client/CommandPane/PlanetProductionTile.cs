@@ -39,7 +39,7 @@ namespace CraigStars
 
         void OnProductionQueueChanged(Planet planet)
         {
-            if (ActivePlanet?.Planet == planet)
+            if (CommandedPlanet?.Planet == planet)
             {
                 UpdateControls();
             }
@@ -53,10 +53,10 @@ namespace CraigStars
                 productionQueueContainer.RemoveChild(node);
                 node.QueueFree();
             }
-            if (ActivePlanet != null)
+            if (CommandedPlanet != null)
             {
                 // populate the production queue
-                ActivePlanet.Planet.ProductionQueue?.Items.ForEach(item =>
+                CommandedPlanet.Planet.ProductionQueue?.Items.ForEach(item =>
                 {
                     var nameLabel = new Label() { Text = item.ShortName };
                     nameLabel.SizeFlagsHorizontal = (int)SizeFlags.ExpandFill;
@@ -68,20 +68,20 @@ namespace CraigStars
 
         void OnChangeButtonPressed()
         {
-            if (ActivePlanet != null)
+            if (CommandedPlanet != null)
             {
-                Signals.PublishChangeProductionQueuePressedEvent(ActivePlanet);
+                Signals.PublishChangeProductionQueuePressedEvent(CommandedPlanet);
             }
         }
 
         void OnClearButtonPressed()
         {
-            if (ActivePlanet != null)
+            if (CommandedPlanet != null)
             {
-                confirmDialog.Show($"Are you sure you want to clear the production queue at {ActivePlanet.Planet.Name}?",
+                confirmDialog.Show($"Are you sure you want to clear the production queue at {CommandedPlanet.Planet.Name}?",
                 () =>
                 {
-                    ActivePlanet.Planet.ProductionQueue.Items.Clear();
+                    CommandedPlanet.Planet.ProductionQueue.Items.Clear();
                     UpdateControls();
                 });
 

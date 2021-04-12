@@ -27,14 +27,14 @@ namespace CraigStars
         protected override void UpdateControls()
         {
             base.UpdateControls();
-            if (ActivePlanet != null)
+            if (CommandedPlanet != null)
             {
-                ironium.Text = $"{ActivePlanet.Planet.Cargo.Ironium}kT";
-                boranium.Text = $"{ActivePlanet.Planet.Cargo.Boranium}kT";
-                germanium.Text = $"{ActivePlanet.Planet.Cargo.Germanium}kT";
+                ironium.Text = $"{CommandedPlanet.Planet.Cargo.Ironium}kT";
+                boranium.Text = $"{CommandedPlanet.Planet.Cargo.Boranium}kT";
+                germanium.Text = $"{CommandedPlanet.Planet.Cargo.Germanium}kT";
 
-                mines.Text = $"{ActivePlanet.Planet.Mines} of {ActivePlanet.Planet.MaxMines}";
-                factories.Text = $"{ActivePlanet.Planet.Factories} of {ActivePlanet.Planet.MaxFactories}";
+                mines.Text = $"{CommandedPlanet.Planet.Mines} of {CommandedPlanet.Planet.MaxMines}";
+                factories.Text = $"{CommandedPlanet.Planet.Factories} of {CommandedPlanet.Planet.MaxFactories}";
             }
         }
 

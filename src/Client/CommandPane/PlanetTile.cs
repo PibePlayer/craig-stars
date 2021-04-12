@@ -5,31 +5,31 @@ namespace CraigStars
 {
     public class PlanetTile : MarginContainer
     {
-        public PlanetSprite ActivePlanet { get; set; }
+        public PlanetSprite CommandedPlanet { get; set; }
         public Player Me { get => PlayersManager.Me; }
 
         public override void _Ready()
         {
-            Signals.MapObjectActivatedEvent += OnMapObjectActivated;
+            Signals.MapObjectCommandedEvent += OnMapObjectCommanded;
             Signals.TurnPassedEvent += OnTurnPassed;
         }
 
         public override void _ExitTree()
         {
-            Signals.MapObjectActivatedEvent -= OnMapObjectActivated;
+            Signals.MapObjectCommandedEvent -= OnMapObjectCommanded;
             Signals.TurnPassedEvent -= OnTurnPassed;
         }
 
         protected virtual void OnTurnPassed(PublicGameInfo gameInfo)
         {
-            ActivePlanet = null;
+            CommandedPlanet = null;
             UpdateControls();
         }
 
-        protected virtual void OnMapObjectActivated(MapObjectSprite mapObject)
+        protected virtual void OnMapObjectCommanded(MapObjectSprite mapObject)
         {
-            ActivePlanet = mapObject as PlanetSprite;
-            Visible = ActivePlanet != null;
+            CommandedPlanet = mapObject as PlanetSprite;
+            Visible = CommandedPlanet != null;
             UpdateControls();
         }
 

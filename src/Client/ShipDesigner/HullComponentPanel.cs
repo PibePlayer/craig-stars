@@ -257,11 +257,15 @@ namespace CraigStars
                     case HullSlotType.SpaceDock:
                         return "Space Dock";
                     case HullSlotType.ShieldArmor:
-                        return "Shield \nor\n Armor";
+                        return "Shield\nor\nArmor";
+                    case HullSlotType.ShieldElectricalMechanical:
+                        return "Shield\nElect\nMech";
                     case HullSlotType.OrbitalElectrical:
-                        return "Orbital \nor\n Electrical";
+                        return "Orbital\nor\nElectrical";
+                    case HullSlotType.WeaponShield:
+                        return "Weapon\nor\nShield";
                     case HullSlotType.ScannerElectricalMechanical:
-                        return "Scanner Elec Mech";
+                        return "Scanner\nElec\nMech";
                     case HullSlotType.General:
                         return "General Purpose";
                     default:

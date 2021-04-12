@@ -6,7 +6,7 @@
 [ext_resource path="res://src/Client/GUIColors.tres" type="Resource" id=4]
 
 [sub_resource type="CircleShape2D" id=1]
-radius = 16.0
+radius = 32.0
 
 [node name="FleetSprite" type="Area2D"]
 z_index = 20

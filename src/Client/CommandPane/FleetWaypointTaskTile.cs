@@ -27,12 +27,12 @@ namespace CraigStars
             waypointTask.Connect("item_selected", this, nameof(OnWaypointTaskItemSelected));
         }
 
-        protected override void OnNewActiveFleet()
+        protected override void OnNewCommandedFleet()
         {
-            base.OnNewActiveFleet();
+            base.OnNewCommandedFleet();
             // when we have a new active fleet, set the active waypoint to the
             // first waypoint
-            ActiveWaypoint = ActiveFleet?.Fleet.Waypoints[0];
+            ActiveWaypoint = CommandedFleet?.Fleet.Waypoints[0];
         }
 
 

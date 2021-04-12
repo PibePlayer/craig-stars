@@ -10,14 +10,13 @@
 [ext_resource path="res://src/Client/GUIColors.tres" type="Resource" id=8]
 
 [sub_resource type="CircleShape2D" id=1]
-radius = 16.0
+radius = 32.0
 
 [node name="Planet" type="Area2D"]
 script = ExtResource( 1 )
 GUIColors = ExtResource( 8 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-visible = false
 shape = SubResource( 1 )
 
 [node name="Sprite" type="Node2D" parent="."]

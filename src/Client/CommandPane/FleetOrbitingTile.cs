@@ -28,30 +28,38 @@ namespace CraigStars
 
         void OnGotoButtonPressed()
         {
-            if (ActiveFleet != null && ActiveFleet.Orbiting != null && ActiveFleet.Orbiting.OwnedByMe)
+            if (CommandedFleet != null && CommandedFleet.Orbiting != null && CommandedFleet.Orbiting.OwnedByMe)
             {
-                Signals.PublishGotoMapObjectEvent(ActiveFleet.Orbiting);
+                Signals.PublishGotoMapObjectEvent(CommandedFleet.Orbiting);
             }
         }
 
         void OnCargoTransferButtonPressed()
         {
-            if (ActiveFleet != null)
+            if (CommandedFleet != null)
             {
-                Signals.PublishCargoTransferRequestedEvent(ActiveFleet.Fleet, ActiveFleet.Fleet.Orbiting);
+                Signals.PublishCargoTransferRequestedEvent(CommandedFleet.Fleet, CommandedFleet.Fleet.Orbiting);
             }
         }
 
         protected override void UpdateControls()
         {
             base.UpdateControls();
-            if (ActiveFleet != null)
+            if (CommandedFleet != null)
             {
-                if (ActiveFleet.Fleet.Orbiting != null && ActiveFleet.Orbiting.OwnedByMe)
+                if (CommandedFleet.Fleet.Orbiting != null)
                 {
-                    titleLabel.Text = $"Orbiting {ActiveFleet.Fleet.Orbiting.Name}";
-                    gotoButton.Disabled = false;
-                    cargoTransferButton.Text = "Cargo";
+                    titleLabel.Text = $"Orbiting {CommandedFleet.Fleet.Orbiting.Name}";
+                    if (CommandedFleet.Orbiting.OwnedByMe)
+                    {
+                        gotoButton.Disabled = false;
+                        cargoTransferButton.Text = "Cargo";
+                    }
+                    else
+                    {
+                        gotoButton.Disabled = true;
+                        cargoTransferButton.Text = "Jettison";
+                    }
                 }
                 else
                 {

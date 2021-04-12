@@ -3,7 +3,7 @@ using System;
 
 namespace CraigStars
 {
-    public class SelectedMapObjectSprite : Node2D
+    public class SelectedMapObjectIndicatorSprite : Node2D
     {
         Sprite selected;
         Sprite selectedLarge;

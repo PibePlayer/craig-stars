@@ -16,12 +16,26 @@ namespace CraigStars
         PackedScene scannerCoverageScene;
         PackedScene planetScene;
         PackedScene fleetScene;
+
+        /// <summary>
+        /// The index of the currently selected map object (if there are more than one at a location)
+        /// </summary>
+        int selectedMapObjectIndex;
         MapObjectSprite selectedMapObject;
+
+        /// <summary>
+        /// The index of the currently commanded map object (if there are more than one at a location)
+        /// </summary>
+        int commandedMapObjectIndex;
         MapObjectSprite commandedMapObject;
         MapObjectSprite highlightedMapObject;
         Waypoint selectedWaypoint;
+
         List<MapObjectSprite> mapObjectsUnderMouse = new List<MapObjectSprite>();
-        SelectedMapObjectSprite selectedMapObjectSprite;
+        List<MapObjectSprite> mapObjects = new List<MapObjectSprite>();
+        Dictionary<Vector2, List<MapObjectSprite>> mapObjectsByLocation = new Dictionary<Vector2, List<MapObjectSprite>>();
+
+        SelectedMapObjectIndicatorSprite selectedMapObjectIndicatorSprite;
         Node2D normalScannersNode;
         Node2D penScannersNode;
         Camera2D camera2D;
@@ -34,20 +48,20 @@ namespace CraigStars
         public List<ScannerCoverage> Scanners { get; set; } = new List<ScannerCoverage>();
         public List<ScannerCoverage> PenScanners { get; set; } = new List<ScannerCoverage>();
 
-        public FleetSprite ActiveFleet
+        public FleetSprite CommandedFleet
         {
-            get => activeFleet; set
+            get => commandedFleet; set
             {
-                if (activeFleet != value)
+                if (commandedFleet != value)
                 {
-                    activeFleet = value;
-                    OnActiveFleetChanged();
+                    commandedFleet = value;
+                    OnCommandedFleetChanged();
                 }
             }
         }
-        FleetSprite activeFleet;
+        FleetSprite commandedFleet;
 
-        public PlanetSprite ActivePlanet { get; set; }
+        public PlanetSprite CommandedPlanet { get; set; }
         Player Me { get => PlayersManager.Me; }
 
         bool movingWaypoint = false;
@@ -61,14 +75,14 @@ namespace CraigStars
             fleetScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/FleetSprite.tscn");
 
             // get some nodes
-            selectedMapObjectSprite = GetNode<SelectedMapObjectSprite>("SelectedMapObjectSprite");
+            selectedMapObjectIndicatorSprite = GetNode<SelectedMapObjectIndicatorSprite>("SelectedMapObjectIndicatorSprite");
             normalScannersNode = GetNode<Node2D>("Scanners/Normal");
             penScannersNode = GetNode<Node2D>("Scanners/Pen");
             camera2D = GetNode<Camera2D>("Camera2D");
 
             // wire up events
             Signals.TurnPassedEvent += OnTurnPassed;
-            Signals.MapObjectActivatedEvent += OnMapObjectActivated;
+            Signals.MapObjectCommandedEvent += OnMapObjectCommanded;
             Signals.GotoMapObjectEvent += OnGotoMapObject;
             Signals.GotoMapObjectSpriteEvent += OnGotoMapObjectSprite;
             Signals.ActiveNextMapObjectEvent += OnActiveNextMapObject;
@@ -86,7 +100,7 @@ namespace CraigStars
         public override void _ExitTree()
         {
             Signals.TurnPassedEvent -= OnTurnPassed;
-            Signals.MapObjectActivatedEvent -= OnMapObjectActivated;
+            Signals.MapObjectCommandedEvent -= OnMapObjectCommanded;
             Signals.GotoMapObjectEvent -= OnGotoMapObject;
             Signals.GotoMapObjectSpriteEvent -= OnGotoMapObjectSprite;
             Signals.ActiveNextMapObjectEvent -= OnActiveNextMapObject;
@@ -133,7 +147,7 @@ namespace CraigStars
             else if (Input.IsActionJustReleased("viewport_select"))
             {
                 movingWaypoint = false;
-                UpdateSelectedIndicator();
+                UpdateSelectedMapObjectIndicator();
             }
         }
 
@@ -146,20 +160,23 @@ namespace CraigStars
         {
             // update all the sprites
             mapObjectsUnderMouse.Clear();
+            waypointAreas.ForEach(wpa => { RemoveChild(wpa); wpa.DisconnectAll(); wpa.QueueFree(); });
             waypointAreas.Clear();
             selectedMapObject = null;
             selectedWaypoint = null;
-            activeFleet = null;
+            commandedFleet = null;
             activeWaypointArea = null;
+            commandedMapObjectIndex = 0;
+            selectedMapObjectIndex = 0;
 
             CallDeferred(nameof(AddFleetsToViewport));
             CallDeferred(nameof(ResetScannerToHome));
         }
 
-        void OnMapObjectActivated(MapObjectSprite mapObject)
+        void OnMapObjectCommanded(MapObjectSprite mapObject)
         {
-            ActiveFleet = mapObject as FleetSprite;
-            ActivePlanet = mapObject as PlanetSprite;
+            CommandedFleet = mapObject as FleetSprite;
+            CommandedPlanet = mapObject as PlanetSprite;
         }
 
         /// <summary>
@@ -212,26 +229,23 @@ namespace CraigStars
                 {
                     SelectMapObject(mapObjectSprite);
                 }
-
             }
-
         }
-
 
         void OnActiveNextMapObject()
         {
             MapObjectSprite mapObjectToActivate = null;
-            if (ActivePlanet != null)
+            if (CommandedPlanet != null)
             {
-                mapObjectToActivate = FindNextObject(Planets.Where(p => p.Planet.Player == Me), ActivePlanet);
+                mapObjectToActivate = FindNextObject(Planets.Where(p => p.Planet.Player == Me), CommandedPlanet);
             }
-            else if (ActiveFleet != null)
+            else if (CommandedFleet != null)
             {
-                mapObjectToActivate = FindNextObject(Fleets.Where(f => f.Fleet.Player == Me), ActiveFleet);
+                mapObjectToActivate = FindNextObject(Fleets.Where(f => f.Fleet.Player == Me), CommandedFleet);
             }
 
             // activate this object
-            if (mapObjectToActivate != null && mapObjectToActivate != ActivePlanet && mapObjectToActivate != ActiveFleet)
+            if (mapObjectToActivate != null && mapObjectToActivate != CommandedPlanet && mapObjectToActivate != CommandedFleet)
             {
                 CommandMapObject(mapObjectToActivate);
             }
@@ -240,17 +254,17 @@ namespace CraigStars
         void OnActivePrevMapObject()
         {
             MapObjectSprite mapObjectToActivate = null;
-            if (ActivePlanet != null)
+            if (CommandedPlanet != null)
             {
-                mapObjectToActivate = FindNextObject(Planets.Where(p => p.Planet.Player == Me).Reverse(), ActivePlanet);
+                mapObjectToActivate = FindNextObject(Planets.Where(p => p.Planet.Player == Me).Reverse(), CommandedPlanet);
             }
-            else if (ActiveFleet != null)
+            else if (CommandedFleet != null)
             {
-                mapObjectToActivate = FindNextObject(Fleets.Where(f => f.Fleet.Player == Me).Reverse(), ActiveFleet);
+                mapObjectToActivate = FindNextObject(Fleets.Where(f => f.Fleet.Player == Me).Reverse(), CommandedFleet);
             }
 
             // activate this object
-            if (mapObjectToActivate != null && mapObjectToActivate != ActivePlanet && mapObjectToActivate != ActiveFleet)
+            if (mapObjectToActivate != null && mapObjectToActivate != CommandedPlanet && mapObjectToActivate != CommandedFleet)
             {
                 CommandMapObject(mapObjectToActivate);
             }
@@ -274,7 +288,7 @@ namespace CraigStars
             }
 
             // activate this object
-            if (mapObjectToActivate != null && mapObjectToActivate != ActivePlanet && mapObjectToActivate != ActiveFleet)
+            if (mapObjectToActivate != null)
             {
                 CommandMapObject(mapObjectToActivate);
             }
@@ -298,53 +312,90 @@ namespace CraigStars
             }
 
             // activate this object
-            if (mapObjectToSelect != null && mapObjectToSelect != ActivePlanet && mapObjectToSelect != ActiveFleet)
+            if (mapObjectToSelect != null)
             {
                 SelectMapObject(mapObjectToSelect);
             }
         }
 
+        /// <summary>
+        /// Select this map object, deselecting the previous map object
+        /// if necessary
+        /// </summary>
+        /// <param name="mapObject"></param>
         void SelectMapObject(MapObjectSprite mapObject)
         {
-            selectedMapObject.Deselect();
-            selectedMapObject = mapObject;
-            selectedMapObject.Select();
-            selectedMapObject.UpdateSprite();
-            Signals.PublishMapObjectSelectedEvent(mapObject);
-            UpdateSelectedIndicator();
-        }
+            // don't deselect the commanded map object in case we selected something else
+            if (selectedMapObject != commandedMapObject)
+            {
+                selectedMapObject.Deselect();
+                selectedMapObject.UpdateSprite();
+            }
+            selectedWaypoint = null;
 
-        // TODO: We need to share this functionality with the various mouse click stuff
-        // It's not good for it to be all over
-        void CommandMapObject(MapObjectSprite mapObject)
-        {
-            selectedMapObject.Deselect();
+            // now we have selected something else, don't toggle the "selected" mode
+            // on this newly selected if object if it's the currently commanded mapObject
+            // i.e. if we select off and back onto the currently commanded planet, don't
+            // "select" the planet because that will make it small
             selectedMapObject = mapObject;
-            commandedMapObject = mapObject;
-            commandedMapObject.Command();
-            commandedMapObject.UpdateSprite();
+            if (selectedMapObject != commandedMapObject)
+            {
+                selectedMapObject.Select();
+                selectedMapObject.UpdateSprite();
+            }
+
+            var mapObjectsAtLocation = mapObjectsByLocation[mapObject.MapObject.Position];
+            for (int i = 0; i < mapObjectsAtLocation.Count; i++)
+            {
+                if (mapObjectsAtLocation[i] == selectedMapObject)
+                {
+                    selectedMapObjectIndex = i;
+                    break;
+                }
+            }
+
             Signals.PublishMapObjectSelectedEvent(mapObject);
-            Signals.PublishMapObjectActivatedEvent(mapObject);
-            UpdateSelectedIndicator();
+            UpdateSelectedMapObjectIndicator();
         }
 
         /// <summary>
-        /// When the ActiveFleet changes, 
+        /// Command this mapObject, deselecting the previous commandedMapObject if necessary 
         /// </summary>
-        void OnActiveFleetChanged()
+        /// <param name="mapObject"></param>
+        void CommandMapObject(MapObjectSprite mapObject)
         {
-            log.Info("ActiveFleetChanged begin");
-            waypointAreas.ForEach(wpa =>
+            // deselect the current map object
+            commandedMapObject.Deselect();
+            commandedMapObject.UpdateSprite();
+
+            // update and select the new one
+            commandedMapObject = mapObject;
+            var mapObjectsAtLocation = mapObjectsByLocation[mapObject.MapObject.Position];
+            for (int i = 0; i < mapObjectsAtLocation.Count; i++)
             {
-                if (IsInstanceValid(wpa))
+                if (mapObjectsAtLocation[i] == commandedMapObject)
                 {
-                    RemoveChild(wpa); wpa.DisconnectAll(); wpa.QueueFree();
+                    commandedMapObjectIndex = i;
+                    break;
                 }
-            });
+            }
+
+            commandedMapObject.Command();
+            commandedMapObject.UpdateSprite();
+            Signals.PublishMapObjectCommandedEvent(mapObject);
+            UpdateSelectedMapObjectIndicator();
+        }
+
+        /// <summary>
+        /// When the CommandedFleet changes, 
+        /// </summary>
+        void OnCommandedFleetChanged()
+        {
+            log.Debug($"CommandedFleetChanged to {CommandedFleet}");
+            waypointAreas.ForEach(wpa => { RemoveChild(wpa); wpa.DisconnectAll(); wpa.QueueFree(); });
             waypointAreas.Clear();
             selectedWaypoint = null;
-            ActiveFleet?.Fleet?.Waypoints.Each((wp, index) => AddWaypointArea(ActiveFleet.Fleet, wp));
-            log.Info("ActiveFleetChanged end");
+            CommandedFleet?.Fleet?.Waypoints.Each((wp, index) => AddWaypointArea(CommandedFleet.Fleet, wp));
         }
 
         #region Waypoints
@@ -359,7 +410,7 @@ namespace CraigStars
         {
             AddWaypointArea(fleet, waypoint);
             selectedWaypoint = waypoint;
-            UpdateSelectedIndicator();
+            UpdateSelectedMapObjectIndicator();
         }
 
         void OnWaypointDeleted(Waypoint waypoint)
@@ -373,7 +424,7 @@ namespace CraigStars
         void OnWaypointSelected(Waypoint waypoint)
         {
             selectedWaypoint = waypoint;
-            UpdateSelectedIndicator();
+            UpdateSelectedMapObjectIndicator();
         }
 
         void AddWaypointArea(Fleet fleet, Waypoint waypoint)
@@ -475,9 +526,9 @@ namespace CraigStars
                     }
                 }
             }
-            if (@event.IsActionPressed("delete") && selectedWaypoint != null && activeFleet != null)
+            if (@event.IsActionPressed("delete") && selectedWaypoint != null && commandedFleet != null)
             {
-                activeFleet.DeleteWaypoint(selectedWaypoint);
+                commandedFleet.DeleteWaypoint(selectedWaypoint);
                 PlayersManager.Me.Dirty = true;
                 Signals.PublishPlayerDirtyEvent();
             }
@@ -535,19 +586,20 @@ namespace CraigStars
         /// owns the object, it should activate it. Subsequent clicks should cycle through all mapObjects
         /// at the same point on the scanner
         /// </summary>
-        void OnInputEvent(Node viewport, InputEvent @event, int shapeIdx, MapObjectSprite mapObjectSprite)
+        void OnInputEvent(Node viewport, InputEvent @event, int shapeIdx, MapObjectSprite mapObject)
         {
             if (@event.IsActionPressed("viewport_select"))
             {
-                log.Debug("viewport_select event");
+                log.Debug($"viewport_select event {mapObject}");
                 MapObjectSprite closest = GetClosestMapObjectUnderMouse();
 
-                log.Debug($"Clicked {closest.ObjectName}");
-                if (mapObjectSprite != closest)
+                log.Debug($"Closest: {closest?.ObjectName}");
+                if (mapObject != closest)
                 {
                     // ignore events from all but the closest mapobject
                     return;
                 }
+
                 if (@event is InputEventMouseButton eventMouseButton && eventMouseButton.Shift)
                 {
                     if (commandedMapObject is FleetSprite commandedFleet)
@@ -561,53 +613,68 @@ namespace CraigStars
                 }
                 else
                 {
-                    if (closest != selectedMapObject)
+                    // we have clicked on a map object
+                    var mapObjectsAtLocation = mapObjectsByLocation[mapObject.MapObject.Position];
+                    log.Debug($"{mapObjectsAtLocation.Count} MapObjects at {mapObject.MapObject.Position} with {mapObject}");
+                    if (mapObjectsAtLocation.Contains(selectedMapObject))
                     {
-                        // We selected a new MapObject. Select it and update our sprite
-                        if (selectedMapObject?.State == ScannerState.Selected)
+                        // the currently selected mapObject is at the same location as the mapObject we just clicked
+                        if (mapObjectsAtLocation.Contains(commandedMapObject))
                         {
-                            log.Debug($"Deselected map object {selectedMapObject.ObjectName}");
-                            // deselect the old one if it's selected.
-                            selectedMapObject?.Deselect();
-                        }
-                        selectedMapObject = closest;
-                        if (selectedMapObject.State != ScannerState.Commanded)
-                        {
-                            log.Debug($"Selected map object {selectedMapObject.ObjectName}");
-                            selectedMapObject.Select();
-                            selectedWaypoint = null;
-                        }
-                        UpdateSelectedIndicator();
-
-
-                        Signals.PublishMapObjectSelectedEvent(selectedMapObject);
-                    }
-                    else if (closest == selectedMapObject)
-                    {
-                        if (closest.OwnedByMe)
-                        {
-                            if (commandedMapObject != null && commandedMapObject == closest || closest.HasActivePeer())
+                            if (commandedMapObjectIndex + 1 == mapObjectsAtLocation.Count)
                             {
-                                CommandNextPeer(commandedMapObject);
+                                // we are at the end of the list, go back to the beginning
+                                commandedMapObjectIndex = 0;
                             }
                             else
                             {
-                                // we aren't commanding anything yet, so command this
-                                commandedMapObject?.Deselect();
-                                commandedMapObject = closest;
+                                // go to the next one
+                                commandedMapObjectIndex++;
+                            }
+                            // the commanded map object also exists at the same location as the mapObject we just clicked
+                            // we should command the next mapObject we own at this location
+                            for (int i = commandedMapObjectIndex; i < mapObjectsAtLocation.Count; i++)
+                            {
+                                if (mapObjectsAtLocation[i].OwnedByMe)
+                                {
+                                    commandedMapObjectIndex = i;
+                                    break;
+                                }
+                            }
 
-                                log.Debug($"Commanded map object {commandedMapObject.ObjectName}");
+                            var newCommandedMapObject = mapObjectsAtLocation[commandedMapObjectIndex];
+                            log.Debug($"Commanding MapObject {newCommandedMapObject} (index {commandedMapObjectIndex})");
+                            Signals.PublishCommandMapObjectEvent(newCommandedMapObject.MapObject);
+                        }
+                        else if (selectedMapObject == mapObject && selectedMapObject.OwnedByMe)
+                        {
+                            var newCommandedMapObject = selectedMapObject;
+                            commandedMapObjectIndex = 0;
+                            log.Debug($"Commanding MapObject {newCommandedMapObject} (index 0)");
+                            Signals.PublishCommandMapObjectEvent(newCommandedMapObject.MapObject);
+                        }
+                        else if (selectedMapObject == mapObject && !selectedMapObject.OwnedByMe && mapObjectsAtLocation.Count > 1)
+                        {
+                            log.Debug($"Selected MapObject we don't own {mapObject}");
+                            for (int i = 1; i < mapObjectsAtLocation.Count; i++)
+                            {
+                                var otherMapObject = mapObjectsAtLocation[i];
+                                if (otherMapObject.OwnedByMe)
+                                {
+                                    var newCommandedMapObject = otherMapObject;
+                                    commandedMapObjectIndex = i;
+                                    log.Debug($"Commanding MapObject {newCommandedMapObject} (index 0)");
+                                    Signals.PublishCommandMapObjectEvent(newCommandedMapObject.MapObject);
+                                }
                             }
                         }
-                        else if (closest.GetPeers().Count > 0)
-                        {
-                            // this closest isn't owned by me.
-                            CommandNextPeer(closest);
-                        }
-
-                        commandedMapObject.Command();
-                        UpdateSelectedIndicator();
-                        Signals.PublishMapObjectActivatedEvent(commandedMapObject);
+                    }
+                    else
+                    {
+                        var newSelectedMapObject = mapObject;
+                        selectedMapObjectIndex = 0;
+                        log.Debug($"Selecting MapObject {newSelectedMapObject} (index 0)");
+                        Signals.PublishSelectMapObjectEvent(newSelectedMapObject.MapObject);
                     }
                 }
 
@@ -617,66 +684,33 @@ namespace CraigStars
         /// <summary>
         /// Update the sprite showing which object is selected. If the object is commanded, or it has a commanded fleet, we show the bigger icon
         /// </summary>
-        void UpdateSelectedIndicator()
+        void UpdateSelectedMapObjectIndicator()
         {
-            if (selectedMapObjectSprite != null)
+            if (selectedMapObjectIndicatorSprite != null)
             {
 
                 if (selectedWaypoint != null)
                 {
-                    selectedMapObjectSprite.Select(selectedWaypoint.Position);
+                    selectedMapObjectIndicatorSprite.Select(selectedWaypoint.Position);
                 }
                 else
                 {
-                    if (selectedMapObject == commandedMapObject || (commandedMapObject != null && commandedMapObject.GetPeers().Contains(selectedMapObject)))
+                    // if the selected object (or one of its peers) is currently being commanded, it'll need a large
+                    // selected object indicator
+                    if (selectedMapObject == commandedMapObject ||
+                    (commandedMapObject != null && commandedMapObject.GetPeers().Contains(selectedMapObject)) ||
+                    (commandedMapObject is FleetSprite commandedFleet && commandedFleet.Orbiting == selectedMapObject))
                     {
-                        selectedMapObjectSprite.SelectLarge(selectedMapObject.Position);
+                        selectedMapObjectIndicatorSprite.SelectLarge(selectedMapObject.Position);
                     }
                     else
                     {
-                        selectedMapObjectSprite.Select(selectedMapObject.Position);
+                        selectedMapObjectIndicatorSprite.Select(selectedMapObject.Position);
                     }
 
                 }
             }
 
-        }
-
-        void CommandNextPeer(MapObjectSprite mapObject)
-        {
-            // we selected the object we are commanding again
-            // if it has peers, command the next peer
-            var peers = mapObject.GetPeers();
-            var activePeer = peers.Find(p => p.State == ScannerState.Commanded);
-            if (peers.Count > 0)
-            {
-                if (commandedMapObject is PlanetSprite)
-                {
-                    // leave planets selected
-                    commandedMapObject.State = ScannerState.Selected;
-                }
-                else
-                {
-                    commandedMapObject.Deselect();
-                }
-
-                if (activePeer != null)
-                {
-                    var activePeerPeers = activePeer.GetPeers();
-                    if (activePeerPeers.Count > 0)
-                    {
-                        // command the next peer
-                        commandedMapObject = activePeer.GetPeers()[0] as MapObjectSprite;
-                    }
-                }
-                else
-                {
-                    // command the first peer
-                    commandedMapObject = peers[0] as MapObjectSprite;
-                }
-            }
-
-            log.Debug($"Commanding Next Peer {commandedMapObject.ObjectName}");
         }
 
         /// <summary>
@@ -701,8 +735,8 @@ namespace CraigStars
             waypointAreas.ForEach(wpa => { RemoveChild(wpa); wpa.DisconnectAll(); wpa.QueueFree(); });
             waypointAreas.Clear();
             Planets.ForEach(p => p.OrbitingFleets.Clear());
-            ActiveFleet = null;
-            ActivePlanet = null;
+            CommandedFleet = null;
+            CommandedPlanet = null;
 
             // add in new fleets
             Fleets.AddRange(Me.AllFleets.Select(fleet =>
@@ -759,11 +793,21 @@ namespace CraigStars
                     fleetSprite.Orbiting = planetSprite;
                 }
 
+                // Add these fleets to our dictionaries
                 FleetsByGuid[fleet.Guid] = fleetSprite;
+                if (mapObjectsByLocation.TryGetValue(fleet.Position, out var mapObjectsAtLocation))
+                {
+                    mapObjectsAtLocation.Add(fleetSprite);
+                }
+                else
+                {
+                    mapObjectsByLocation[fleet.Position] = new List<MapObjectSprite>() { fleetSprite };
+                }
                 return fleetSprite;
             }).ToList();
 
             Fleets.AddRange(newFleetSprites);
+
 
             Fleets.ForEach(f =>
             {
@@ -823,6 +867,13 @@ namespace CraigStars
             Planets.ForEach(p => p.UpdateSprite());
             Fleets.ForEach(f => f.UpdateSprite());
             log.Debug("Finished Updating Sprites");
+
+            // build a list of all map objects and all map objects per location
+            mapObjects.Clear();
+            mapObjects.AddRange(Planets);
+            mapObjects.AddRange(Fleets);
+            mapObjectsByLocation = mapObjects.ToLookup(mo => mo.MapObject.Position).ToDictionary(lookup => lookup.Key, lookup => lookup.ToList());
+
         }
 
         #region New Turn functions
@@ -843,9 +894,9 @@ namespace CraigStars
 
                 selectedMapObject.Select();
                 commandedMapObject.Command();
-                UpdateSelectedIndicator();
+                UpdateSelectedMapObjectIndicator();
                 Signals.PublishMapObjectSelectedEvent(homeworld);
-                Signals.PublishMapObjectActivatedEvent(homeworld);
+                Signals.PublishMapObjectCommandedEvent(homeworld);
             }
         }
 

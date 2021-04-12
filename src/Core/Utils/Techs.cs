@@ -1608,6 +1608,47 @@ namespace CraigStars
             })
         };
 
+        public static readonly TechHull Dreadnought = new TechHull("Dreadnought", new Cost(140, 30, 25, 275), new TechRequirements(construction: 16, prtRequired: PRT.WM), 110, TechCategory.ShipHull)
+        {
+            Type = TechHullType.Fighter,
+            Mass = 250,
+            Armor = 4500,
+            Initiative = 10,
+            FuelCapacity = 4500,
+            Slots = new List<TechHullSlot>(new TechHullSlot[] {
+                new TechHullSlot(HullSlotType.Engine, 5, true),
+                new TechHullSlot(HullSlotType.ShieldArmor, 4, false),
+                new TechHullSlot(HullSlotType.ShieldArmor, 4, false),
+                new TechHullSlot(HullSlotType.Weapon, 6, false),
+                new TechHullSlot(HullSlotType.Weapon, 6, false),
+                new TechHullSlot(HullSlotType.Electrical, 4, false),
+                new TechHullSlot(HullSlotType.Electrical, 4, false),
+                new TechHullSlot(HullSlotType.Weapon, 8, false),
+                new TechHullSlot(HullSlotType.Weapon, 8, false),
+                new TechHullSlot(HullSlotType.Armor, 8, false),
+                new TechHullSlot(HullSlotType.WeaponShield, 5, false),
+                new TechHullSlot(HullSlotType.WeaponShield, 5, false),
+                new TechHullSlot(HullSlotType.General, 2, false),
+            })
+        };
+
+        public static readonly TechHull Privateer = new TechHull("Privateer", new Cost(50, 3, 3, 50), new TechRequirements(construction: 4), 120, TechCategory.ShipHull)
+        {
+            Type = TechHullType.ArmedFreighter,
+            Mass = 65,
+            Armor = 150,
+            Initiative = 3,
+            FuelCapacity = 650,
+            CargoCapacity = 250,
+            Slots = new List<TechHullSlot>(new TechHullSlot[] {
+                new TechHullSlot(HullSlotType.Engine, 1, true),
+                new TechHullSlot(HullSlotType.ShieldArmor, 2, false),
+                new TechHullSlot(HullSlotType.ShieldElectricalMechanical, 1, false),
+                new TechHullSlot(HullSlotType.General, 1, false),
+                new TechHullSlot(HullSlotType.General, 1, false)
+            })
+        };
+
         public static readonly TechHull MiniColonyShip = new TechHull("Mini-Colony Ship", new Cost(2, 0, 2, 3), new TechRequirements(prtRequired: PRT.HE), 150, TechCategory.ShipHull)
         {
             Type = TechHullType.Colonizer,
@@ -2013,6 +2054,8 @@ namespace CraigStars
                 Cruiser,
                 BattleCruiser,
                 Battleship,
+                Dreadnought,
+                Privateer,
                 MiniColonyShip,
                 ColonyShip,
                 MiniBomber,

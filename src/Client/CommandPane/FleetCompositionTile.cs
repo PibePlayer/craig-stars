@@ -50,10 +50,10 @@ namespace CraigStars
 
         void OnBattlePlanOptionButtonItemSelected(int index)
         {
-            if (ActiveFleet != null && index >= 0 && index < Me?.BattlePlans?.Count)
+            if (CommandedFleet != null && index >= 0 && index < Me?.BattlePlans?.Count)
             {
                 var plan = Me.BattlePlans[index];
-                ActiveFleet.Fleet.BattlePlan = plan;
+                CommandedFleet.Fleet.BattlePlan = plan;
             }
         }
 
@@ -64,7 +64,7 @@ namespace CraigStars
 
         void OnSplitAllButtonPressed()
         {
-            var order = new SplitAllFleetOrder() { Source = ActiveFleet.Fleet };
+            var order = new SplitAllFleetOrder() { Source = CommandedFleet.Fleet };
             Me.SplitFleetOrders.Add(order);
             Me.FleetOrders.Add(order);
 
@@ -73,7 +73,7 @@ namespace CraigStars
             // TODO: this is a bit fragile. If we add these fleets to the player's
             // Fleets in the Fleet.Split, we end up adding the fleets to the player's list twice.
             // This Fleet.Split should probably be handled differently...
-            var fleets = ActiveFleet.Fleet.Split(order);
+            var fleets = CommandedFleet.Fleet.Split(order);
             fleets.ForEach(newFleet =>
             {
                 Me.FleetsByGuid[newFleet.Guid] = newFleet;
@@ -85,14 +85,14 @@ namespace CraigStars
 
         void OnMergeButtonPressed()
         {
-            Signals.PublishMergeFleetsDialogRequestedEvent(ActiveFleet);
+            Signals.PublishMergeFleetsDialogRequestedEvent(CommandedFleet);
         }
 
         void AddItemsToTree()
         {
             tokensTree.Clear();
             var root = tokensTree.CreateItem();
-            foreach (var token in ActiveFleet.Fleet.Tokens)
+            foreach (var token in CommandedFleet.Fleet.Tokens)
             {
                 var item = tokensTree.CreateItem(root);
                 item.SetText(0, token.Design.Name);
@@ -101,10 +101,10 @@ namespace CraigStars
             }
         }
 
-        protected override void OnNewActiveFleet()
+        protected override void OnNewCommandedFleet()
         {
-            base.OnNewActiveFleet();
-            if (ActiveFleet == null)
+            base.OnNewCommandedFleet();
+            if (CommandedFleet == null)
             {
                 tokensTree.Clear();
             }
@@ -118,14 +118,14 @@ namespace CraigStars
         protected override void UpdateControls()
         {
             base.UpdateControls();
-            if (ActiveFleet != null)
+            if (CommandedFleet != null)
             {
                 int selectedBattlePlanIndex = -1;
                 battlePlanOptionButton.Clear();
                 Me.BattlePlans.Each((plan, index) =>
                 {
                     battlePlanOptionButton.AddItem(plan.Name);
-                    if (plan == ActiveFleet.Fleet.BattlePlan)
+                    if (plan == CommandedFleet.Fleet.BattlePlan)
                     {
                         selectedBattlePlanIndex = index;
                     }
@@ -136,18 +136,18 @@ namespace CraigStars
                     battlePlanOptionButton.Select(selectedBattlePlanIndex);
                 }
 
-                estimatedRange.Text = $"{ActiveFleet.Fleet.GetEstimatedRange()} l.y.";
-                if (ActiveFleet.Fleet.Aggregate.CloakPercent == 0)
+                estimatedRange.Text = $"{CommandedFleet.Fleet.GetEstimatedRange()} l.y.";
+                if (CommandedFleet.Fleet.Aggregate.CloakPercent == 0)
                 {
                     percentCloaked.Text = "None";
                 }
                 else
                 {
-                    percentCloaked.Text = $"{ActiveFleet.Fleet.Aggregate.CloakPercent:.#}%";
+                    percentCloaked.Text = $"{CommandedFleet.Fleet.Aggregate.CloakPercent:.#}%";
                 }
 
                 // enable/disable buttons
-                if (ActiveFleet.Fleet.Tokens.Count == 1 && ActiveFleet.Fleet.Tokens[0].Quantity == 1)
+                if (CommandedFleet.Fleet.Tokens.Count == 1 && CommandedFleet.Fleet.Tokens[0].Quantity == 1)
                 {
                     splitAllButton.Disabled = splitButton.Disabled = true;
                 }
@@ -156,7 +156,7 @@ namespace CraigStars
                     splitAllButton.Disabled = splitButton.Disabled = false;
                 }
 
-                if (ActiveFleet.Fleet.OtherFleets.Count == 0)
+                if (CommandedFleet.Fleet.OtherFleets.Count == 0)
                 {
                     mergeButton.Disabled = true;
                 }

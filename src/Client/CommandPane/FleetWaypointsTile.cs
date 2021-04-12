@@ -65,19 +65,19 @@ namespace CraigStars
 
         void OnItemSelected(int index)
         {
-            if (ActiveFleet != null && index >= 0 && index < ActiveFleet.Fleet.Waypoints.Count)
+            if (CommandedFleet != null && index >= 0 && index < CommandedFleet.Fleet.Waypoints.Count)
             {
                 // Select this waypoint and let listeners know (like ourselves and the viewport)
-                Signals.PublishWaypointSelectedEvent(ActiveFleet.Fleet.Waypoints[index]);
+                Signals.PublishWaypointSelectedEvent(CommandedFleet.Fleet.Waypoints[index]);
             }
         }
 
-        protected override void OnNewActiveFleet()
+        protected override void OnNewCommandedFleet()
         {
-            base.OnNewActiveFleet();
+            base.OnNewCommandedFleet();
             // when we have a new active fleet, set the active waypoint to the
             // first waypoint
-            ActiveWaypoint = ActiveFleet?.Fleet.Waypoints[0];
+            ActiveWaypoint = CommandedFleet?.Fleet.Waypoints[0];
         }
 
         string GetItemText(Waypoint waypoint)
@@ -97,12 +97,12 @@ namespace CraigStars
         protected override void UpdateControls()
         {
             base.UpdateControls();
-            if (ActiveFleet != null)
+            if (CommandedFleet != null)
             {
                 int index = 0;
                 int selectedIndex = 0;
                 waypoints.Clear();
-                foreach (var wp in ActiveFleet.Fleet.Waypoints)
+                foreach (var wp in CommandedFleet.Fleet.Waypoints)
                 {
                     waypoints.AddItem(GetItemText(wp));
                     if (ActiveWaypoint == wp)
@@ -113,7 +113,7 @@ namespace CraigStars
                     index++;
                 }
 
-                if (ActiveFleet.Fleet.Waypoints.Count > 1)
+                if (CommandedFleet.Fleet.Waypoints.Count > 1)
                 {
                     selectedWaypointGrid.Visible = true;
                     distanceLabel.Visible = true;
@@ -132,8 +132,8 @@ namespace CraigStars
                     Waypoint to;
                     if (selectedIndex == 0)
                     {
-                        from = ActiveFleet.Fleet.Waypoints[selectedIndex];
-                        to = ActiveFleet.Fleet.Waypoints[selectedIndex + 1];
+                        from = CommandedFleet.Fleet.Waypoints[selectedIndex];
+                        to = CommandedFleet.Fleet.Waypoints[selectedIndex + 1];
                         nextWaypointLabel.Visible = true;
                         nextWaypoint.Visible = true;
                         comingFromLabel.Visible = false;
@@ -145,8 +145,8 @@ namespace CraigStars
                     }
                     else
                     {
-                        from = ActiveFleet.Fleet.Waypoints[selectedIndex - 1];
-                        to = ActiveFleet.Fleet.Waypoints[selectedIndex];
+                        from = CommandedFleet.Fleet.Waypoints[selectedIndex - 1];
+                        to = CommandedFleet.Fleet.Waypoints[selectedIndex];
                         nextWaypointLabel.Visible = false;
                         nextWaypoint.Visible = false;
                         comingFromLabel.Visible = true;
@@ -161,7 +161,7 @@ namespace CraigStars
                     var waypointDistance = Math.Abs(from.Position.DistanceTo(to.Position));
                     distance.Text = $"{waypointDistance:.##} l.y.";
                     travelTime.Text = $"{Math.Ceiling(from.GetTimeToWaypoint(to))} years";
-                    estimatedFuelUsage.Text = $"{ActiveFleet.Fleet.GetFuelCost(to.WarpFactor, waypointDistance)}mg";
+                    estimatedFuelUsage.Text = $"{CommandedFleet.Fleet.GetFuelCost(to.WarpFactor, waypointDistance)}mg";
                 }
                 else
                 {
@@ -169,7 +169,7 @@ namespace CraigStars
                     nextWaypoint.Visible = false;
                     comingFromLabel.Visible = true;
                     comingFrom.Visible = true;
-                    comingFrom.Text = $"{ActiveFleet.Fleet.Waypoints[0].TargetName}";
+                    comingFrom.Text = $"{CommandedFleet.Fleet.Waypoints[0].TargetName}";
 
                     distanceLabel.Visible = false;
                     distance.Visible = false;

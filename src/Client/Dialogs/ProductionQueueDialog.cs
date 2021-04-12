@@ -87,12 +87,12 @@ namespace CraigStars
             Connect("about_to_show", this, nameof(OnAboutToShow));
             Connect("popup_hide", this, nameof(OnPopupHide));
 
-            Signals.MapObjectActivatedEvent += OnMapObjectActivated;
+            Signals.MapObjectCommandedEvent += OnMapObjectCommanded;
         }
 
         public override void _ExitTree()
         {
-            Signals.MapObjectActivatedEvent -= OnMapObjectActivated;
+            Signals.MapObjectCommandedEvent -= OnMapObjectCommanded;
         }
 
 
@@ -102,7 +102,7 @@ namespace CraigStars
             queuedItemsTree.Clear();
         }
 
-        void OnMapObjectActivated(MapObjectSprite mapObject)
+        void OnMapObjectCommanded(MapObjectSprite mapObject)
         {
             // if the player is currently looking at the production queue and a new item comes up, reset ourselves to its
             // items

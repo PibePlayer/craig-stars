@@ -38,14 +38,19 @@ namespace CraigStars
         public override void _Ready()
         {
             // wire up signals
-            Signals.MapObjectActivatedEvent += OnMapObjectActivated;
+            Signals.MapObjectCommandedEvent += OnMapObjectCommanded;
             Signals.TurnPassedEvent += OnTurnPassed;
         }
 
         public override void _ExitTree()
         {
-            Signals.MapObjectActivatedEvent -= OnMapObjectActivated;
+            Signals.MapObjectCommandedEvent -= OnMapObjectCommanded;
             Signals.TurnPassedEvent -= OnTurnPassed;
+        }
+
+        public override string ToString()
+        {
+            return $"{GetType().Name}: {ObjectName}";
         }
 
         /// <summary>
@@ -90,7 +95,7 @@ namespace CraigStars
 
         #region Virtuals
 
-        protected virtual void OnMapObjectActivated(MapObjectSprite mapObject)
+        protected virtual void OnMapObjectCommanded(MapObjectSprite mapObject)
         {
             // in case one of our peers is activated, update our sprite on activate
             UpdateSprite();

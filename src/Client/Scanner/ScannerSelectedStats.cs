@@ -27,14 +27,14 @@ namespace CraigStars
 
             Signals.MapObjectHighlightedEvent += OnMapObjectHighlighted;
             Signals.MapObjectSelectedEvent += OnMapObjectSelected;
-            Signals.MapObjectActivatedEvent += OnMapObjectActivated;
+            Signals.MapObjectCommandedEvent += OnMapObjectCommanded;
         }
 
         public override void _ExitTree()
         {
             Signals.MapObjectHighlightedEvent -= OnMapObjectHighlighted;
             Signals.MapObjectSelectedEvent -= OnMapObjectSelected;
-            Signals.MapObjectActivatedEvent -= OnMapObjectActivated;
+            Signals.MapObjectCommandedEvent -= OnMapObjectCommanded;
         }
 
         void OnMapObjectHighlighted(MapObjectSprite mapObject)
@@ -79,7 +79,7 @@ namespace CraigStars
 
         }
 
-        void OnMapObjectActivated(MapObjectSprite mapObject)
+        void OnMapObjectCommanded(MapObjectSprite mapObject)
         {
             commandedMapObject = mapObject;
         }

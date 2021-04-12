@@ -8,7 +8,7 @@ namespace CraigStars
 {
     public class MapObjectSummaryTile : Control
     {
-        public MapObjectSprite ActiveMapObject
+        public MapObjectSprite CommandedMapObject
         {
             get => mapObject; set
             {
@@ -36,12 +36,12 @@ namespace CraigStars
             prevButton.Connect("pressed", this, nameof(OnPrevButtonPressed));
             renameButton.Connect("pressed", this, nameof(OnRenameButtonPressed));
 
-            Signals.MapObjectActivatedEvent += OnMapObjectActivated;
+            Signals.MapObjectCommandedEvent += OnMapObjectCommanded;
         }
 
         public override void _ExitTree()
         {
-            Signals.MapObjectActivatedEvent -= OnMapObjectActivated;
+            Signals.MapObjectCommandedEvent -= OnMapObjectCommanded;
         }
 
         void OnNextButtonPressed()
@@ -56,27 +56,27 @@ namespace CraigStars
 
         void OnRenameButtonPressed()
         {
-            if (ActiveMapObject is FleetSprite fleetSprite)
+            if (CommandedMapObject is FleetSprite fleetSprite)
             {
                 Signals.PublishRenameFleetRequestedEvent(fleetSprite);
             }
         }
 
-        void OnMapObjectActivated(MapObjectSprite mapObject)
+        void OnMapObjectCommanded(MapObjectSprite mapObject)
         {
-            ActiveMapObject = mapObject;
+            CommandedMapObject = mapObject;
         }
 
         void UpdateControls()
         {
-            if (ActiveMapObject != null)
+            if (CommandedMapObject != null)
             {
                 nameLabel.Text = mapObject.ObjectName;
-                if (ActiveMapObject is PlanetSprite planetSprite)
+                if (CommandedMapObject is PlanetSprite planetSprite)
                 {
                     textureRect.Texture = TextureLoader.Instance.FindTexture(planetSprite.Planet);
                 }
-                else if (ActiveMapObject is FleetSprite fleetSprite)
+                else if (CommandedMapObject is FleetSprite fleetSprite)
                 {
                     textureRect.Texture = TextureLoader.Instance.FindTexture(fleetSprite.Fleet.Tokens[0].Design);
                 }

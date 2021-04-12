@@ -35,14 +35,14 @@ namespace CraigStars
         protected override void UpdateControls()
         {
             base.UpdateControls();
-            if (ActivePlanet != null)
+            if (CommandedPlanet != null)
             {
-                if (ActivePlanet.Planet.HasStarbase)
+                if (CommandedPlanet.Planet.HasStarbase)
                 {
                     title.Text = "Starbase";
                     statsContainer.Visible = true;
 
-                    var starbase = ActivePlanet.Planet.Starbase;
+                    var starbase = CommandedPlanet.Planet.Starbase;
                     dockCapacity.Text = starbase.DockCapacity == TechHull.UnlimitedSpaceDock ? "Unlimited" : $"{starbase.Aggregate.SpaceDock}kT";
                     armor.Text = $"{starbase.Aggregate.Armor}dp";
                     shields.Text = $"{starbase.Aggregate.Shield}dp";

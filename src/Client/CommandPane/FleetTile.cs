@@ -8,19 +8,19 @@ public class FleetTile : MarginContainer
 {
     public Player Me { get => PlayersManager.Me; }
 
-    public FleetSprite ActiveFleet
+    public FleetSprite CommandedFleet
     {
-        get => activeFleet;
+        get => commandedFleet;
         set
         {
-            if (activeFleet != value)
+            if (commandedFleet != value)
             {
-                activeFleet = value;
-                OnNewActiveFleet();
+                commandedFleet = value;
+                OnNewCommandedFleet();
             }
         }
     }
-    FleetSprite activeFleet;
+    FleetSprite commandedFleet;
 
     protected Label titleLabel;
 
@@ -28,7 +28,7 @@ public class FleetTile : MarginContainer
     {
         titleLabel = GetNode<Label>("VBoxContainer/Title/Name");
 
-        Signals.MapObjectActivatedEvent += OnMapObjectActivated;
+        Signals.MapObjectCommandedEvent += OnMapObjectActivated;
         Signals.TurnPassedEvent += OnTurnPassed;
         Signals.FleetDeletedEvent += OnFleetDeleted;
         Signals.FleetsCreatedEvent += OnFleetsCreated;
@@ -37,7 +37,7 @@ public class FleetTile : MarginContainer
     public override void _ExitTree()
     {
         base._ExitTree();
-        Signals.MapObjectActivatedEvent -= OnMapObjectActivated;
+        Signals.MapObjectCommandedEvent -= OnMapObjectActivated;
         Signals.TurnPassedEvent -= OnTurnPassed;
         Signals.FleetDeletedEvent -= OnFleetDeleted;
         Signals.FleetsCreatedEvent -= OnFleetsCreated;
@@ -45,13 +45,13 @@ public class FleetTile : MarginContainer
 
     protected virtual void OnMapObjectActivated(MapObjectSprite mapObject)
     {
-        ActiveFleet = mapObject as FleetSprite;
+        CommandedFleet = mapObject as FleetSprite;
         UpdateControls();
     }
 
     protected virtual void OnTurnPassed(PublicGameInfo gameInfo)
     {
-        ActiveFleet = null;
+        CommandedFleet = null;
         UpdateControls();
     }
 
@@ -67,12 +67,12 @@ public class FleetTile : MarginContainer
 
     /// <summary>
     /// Called when a new active fleet has been selected
-    /// Note, this will be called when setting the ActiveFleet to null
+    /// Note, this will be called when setting the CommandedFleet to null
     /// </summary>
-    protected virtual void OnNewActiveFleet() { }
+    protected virtual void OnNewCommandedFleet() { }
     protected virtual void UpdateControls()
     {
-        Visible = ActiveFleet != null;
+        Visible = CommandedFleet != null;
     }
 
 }

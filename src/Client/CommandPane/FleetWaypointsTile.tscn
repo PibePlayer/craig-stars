@@ -5,8 +5,8 @@
 [ext_resource path="res://src/Client/CommandPane/WarpFactor.tscn" type="PackedScene" id=3]
 
 [node name="FleetWaypointsTile" type="MarginContainer"]
-margin_right = 207.0
-margin_bottom = 232.0
+margin_right = 217.0
+margin_bottom = 260.0
 rect_min_size = Vector2( 200, 190 )
 theme = ExtResource( 2 )
 custom_constants/margin_right = 10
@@ -22,7 +22,7 @@ __meta__ = {
 margin_left = 10.0
 margin_top = 10.0
 margin_right = 207.0
-margin_bottom = 222.0
+margin_bottom = 250.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -31,7 +31,7 @@ __meta__ = {
 margin_left = 10.0
 margin_top = 10.0
 margin_right = 207.0
-margin_bottom = 222.0
+margin_bottom = 250.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -163,3 +163,9 @@ margin_right = 197.0
 margin_bottom = 110.0
 text = "1119mg"
 align = 2
+
+[node name="RepeatOrdersCheckBox" type="CheckBox" parent="VBoxContainer"]
+margin_top = 216.0
+margin_right = 197.0
+margin_bottom = 240.0
+text = "Repeat Orders"

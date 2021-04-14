@@ -1,10 +1,18 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://src/Client/Dialogs/TechBrowserDialog.cs" type="Script" id=1]
 [ext_resource path="res://src/Client/CostGrid.tscn" type="PackedScene" id=2]
 [ext_resource path="res://assets/gui/tech/Engine/Alpha Drive 8.png" type="Texture" id=3]
 [ext_resource path="res://src/Client/TechTree.tscn" type="PackedScene" id=4]
 [ext_resource path="res://src/Client/ShipDesigner/HullSummary.tscn" type="PackedScene" id=5]
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0, 0, 0, 1 )
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color( 0.223529, 0.227451, 0.266667, 1 )
 
 [node name="TechBrowserDialog" type="WindowDialog"]
 margin_right = 801.0
@@ -65,61 +73,76 @@ align = 1
 [node name="HBoxContainerCost" type="HBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainerContent/TechSummaryContainer/VBoxContainer"]
 margin_top = 18.0
 margin_right = 477.0
-margin_bottom = 86.0
+margin_bottom = 98.0
 size_flags_horizontal = 3
 custom_constants/separation = 5
 
 [node name="CenterContainer" type="CenterContainer" parent="MarginContainer/VBoxContainer/HBoxContainerContent/TechSummaryContainer/VBoxContainer/HBoxContainerCost"]
-margin_right = 155.0
-margin_bottom = 68.0
-size_flags_horizontal = 3
+margin_right = 130.0
+margin_bottom = 80.0
+rect_min_size = Vector2( 130, 80 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="IconTextureRect" type="TextureRect" parent="MarginContainer/VBoxContainer/HBoxContainerContent/TechSummaryContainer/VBoxContainer/HBoxContainerCost/CenterContainer"]
-margin_left = 45.0
-margin_top = 2.0
-margin_right = 109.0
-margin_bottom = 66.0
+margin_left = 33.0
+margin_top = 8.0
+margin_right = 97.0
+margin_bottom = 72.0
 mouse_filter = 0
 size_flags_horizontal = 3
 texture = ExtResource( 3 )
 
+[node name="Panel" type="Panel" parent="MarginContainer/VBoxContainer/HBoxContainerContent/TechSummaryContainer/VBoxContainer/HBoxContainerCost/CenterContainer/IconTextureRect"]
+show_behind_parent = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -8.0
+margin_top = -8.0
+margin_right = 8.0
+margin_bottom = 8.0
+mouse_filter = 2
+custom_styles/panel = SubResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="CostGrid" parent="MarginContainer/VBoxContainer/HBoxContainerContent/TechSummaryContainer/VBoxContainer/HBoxContainerCost" instance=ExtResource( 2 )]
-margin_left = 160.0
-margin_right = 316.0
+margin_left = 135.0
+margin_right = 303.0
+margin_bottom = 80.0
 
 [node name="MassGrid" type="GridContainer" parent="MarginContainer/VBoxContainer/HBoxContainerContent/TechSummaryContainer/VBoxContainer/HBoxContainerCost"]
-margin_left = 321.0
+margin_left = 308.0
 margin_right = 477.0
-margin_bottom = 68.0
+margin_bottom = 80.0
 size_flags_horizontal = 3
 columns = 2
 
 [node name="MassLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainerContent/TechSummaryContainer/VBoxContainer/HBoxContainerCost/MassGrid"]
-margin_right = 122.0
+margin_right = 135.0
 margin_bottom = 14.0
 size_flags_horizontal = 3
 text = "Mass:"
 align = 2
 
 [node name="MassAmountLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainerContent/TechSummaryContainer/VBoxContainer/HBoxContainerCost/MassGrid"]
-margin_left = 126.0
-margin_right = 156.0
+margin_left = 139.0
+margin_right = 169.0
 margin_bottom = 14.0
 text = "50kT"
 align = 2
 
 [node name="HBoxContainerStats" type="HBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainerContent/TechSummaryContainer/VBoxContainer"]
-margin_top = 90.0
+margin_top = 102.0
 margin_right = 477.0
 margin_bottom = 360.0
 size_flags_vertical = 3
 
 [node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainerContent/TechSummaryContainer/VBoxContainer/HBoxContainerStats"]
 margin_right = 130.0
-margin_bottom = 270.0
+margin_bottom = 258.0
 custom_constants/margin_right = 5
 custom_constants/margin_top = 5
 custom_constants/margin_left = 5
@@ -129,7 +152,7 @@ custom_constants/margin_bottom = 5
 margin_left = 5.0
 margin_top = 5.0
 margin_right = 125.0
-margin_bottom = 265.0
+margin_bottom = 253.0
 rect_min_size = Vector2( 120, 0 )
 
 [node name="RequirementsLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainerContent/TechSummaryContainer/VBoxContainer/HBoxContainerStats/MarginContainer/VBoxContainer"]
@@ -273,7 +296,7 @@ align = 1
 show_behind_parent = true
 margin_left = 134.0
 margin_right = 477.0
-margin_bottom = 270.0
+margin_bottom = 258.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
@@ -292,7 +315,7 @@ __meta__ = {
 margin_left = 5.0
 margin_top = 10.0
 margin_right = 338.0
-margin_bottom = 265.0
+margin_bottom = 253.0
 custom_constants/separation = 10
 
 [node name="StatsContainer" type="GridContainer" parent="MarginContainer/VBoxContainer/HBoxContainerContent/TechSummaryContainer/VBoxContainer/HBoxContainerStats/Panel/MarginContainer/VBoxContainerStatsLabels"]
@@ -322,7 +345,7 @@ text = "200"
 [node name="DescriptionContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainerContent/TechSummaryContainer/VBoxContainer/HBoxContainerStats/Panel/MarginContainer/VBoxContainerStatsLabels"]
 margin_top = 24.0
 margin_right = 333.0
-margin_bottom = 255.0
+margin_bottom = 243.0
 size_flags_vertical = 3
 
 [node name="LabelTraitRequirement" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainerContent/TechSummaryContainer/VBoxContainer"]

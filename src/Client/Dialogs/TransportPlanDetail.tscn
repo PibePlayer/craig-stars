@@ -1,0 +1,53 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://src/Client/Dialogs/TransportPlanDetail.cs" type="Script" id=1]
+[ext_resource path="res://src/Client/Dialogs/TransportTask.tscn" type="PackedScene" id=3]
+
+[node name="TransportPlanDetail" type="VBoxContainer"]
+margin_top = 18.0
+margin_right = 336.0
+margin_bottom = 182.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="NameContainer" type="HBoxContainer" parent="."]
+margin_right = 336.0
+margin_bottom = 24.0
+
+[node name="NameLabel" type="Label" parent="NameContainer"]
+margin_top = 5.0
+margin_right = 100.0
+margin_bottom = 19.0
+rect_min_size = Vector2( 100, 0 )
+text = "Name:"
+align = 2
+
+[node name="NameLineEdit" type="LineEdit" parent="NameContainer"]
+margin_left = 104.0
+margin_right = 336.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="FuelTransportTask" parent="." instance=ExtResource( 3 )]
+
+[node name="IroniumTransportTask" parent="." instance=ExtResource( 3 )]
+margin_top = 56.0
+margin_bottom = 80.0
+CargoType = 0
+
+[node name="BoraniumTransportTask" parent="." instance=ExtResource( 3 )]
+margin_top = 84.0
+margin_bottom = 108.0
+CargoType = 1
+
+[node name="GermaniumTransportTask" parent="." instance=ExtResource( 3 )]
+margin_top = 112.0
+margin_bottom = 136.0
+CargoType = 2
+
+[node name="ColonistsTransportTask" parent="." instance=ExtResource( 3 )]
+margin_top = 140.0
+margin_bottom = 164.0
+CargoType = 3

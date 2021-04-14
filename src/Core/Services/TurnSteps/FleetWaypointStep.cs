@@ -25,13 +25,13 @@ namespace CraigStars
         HashSet<Waypoint> processedWaypoints = new HashSet<Waypoint>();
         List<Fleet> scrappedFleets = new List<Fleet>();
 
-        List<FleetWaypoint> ScrapFleetTasks = new List<FleetWaypoint>();
-        List<FleetWaypoint> UnloadTasks = new List<FleetWaypoint>();
-        List<FleetWaypoint> ColonizeTasks = new List<FleetWaypoint>();
-        List<FleetWaypoint> LoadTasks = new List<FleetWaypoint>();
-        List<FleetWaypoint> LoadDunnageTasks = new List<FleetWaypoint>();
-        List<FleetWaypoint> OtherTasks = new List<FleetWaypoint>();
-        List<PlanetInvasion> Invasions = new List<PlanetInvasion>();
+        List<FleetWaypoint> scrapFleetTasks = new List<FleetWaypoint>();
+        List<FleetWaypoint> unloadTasks = new List<FleetWaypoint>();
+        List<FleetWaypoint> colonizeTasks = new List<FleetWaypoint>();
+        List<FleetWaypoint> loadTasks = new List<FleetWaypoint>();
+        List<FleetWaypoint> loadDunnageTasks = new List<FleetWaypoint>();
+        List<FleetWaypoint> otherTasks = new List<FleetWaypoint>();
+        List<PlanetInvasion> invasions = new List<PlanetInvasion>();
 
         InvasionProcessor invasionProcessor;
 
@@ -47,6 +47,13 @@ namespace CraigStars
             invasionProcessor = new InvasionProcessor();
             processedWaypoints.Clear();
             scrappedFleets.Clear();
+            scrapFleetTasks.Clear();
+            unloadTasks.Clear();
+            colonizeTasks.Clear();
+            loadTasks.Clear();
+            loadDunnageTasks.Clear();
+            otherTasks.Clear();
+            invasions.Clear();
 
             if (Context.Context.TryGetValue(ProcessedWaypointsContextKey, out var waypoints)
             && waypoints is HashSet<Waypoint> processedWaypointsFromContext)
@@ -63,16 +70,16 @@ namespace CraigStars
             Game.Fleets.ForEach(fleet => BuildWaypointTasks(fleet));
 
             // scrap
-            ScrapFleetTasks.ForEach(task => ProcessScrapFleetTask(task));
-            ColonizeTasks.ForEach(task => ProcessColonizeTask(task));
+            scrapFleetTasks.ForEach(task => ProcessScrapFleetTask(task));
+            colonizeTasks.ForEach(task => ProcessColonizeTask(task));
             scrappedFleets.ForEach(fleet => EventManager.PublishFleetDeletedEvent(fleet));
 
             // 
-            UnloadTasks.ForEach(task => ProcessUnloadTask(task));
-            Invasions.ForEach(task => ProcessInvasionTask(task));
-            LoadTasks.ForEach(task => ProcessLoadTask(task));
-            LoadDunnageTasks.ForEach(task => ProcessLoadDunnageTask(task));
-            OtherTasks.ForEach(task => ProcessOtherTask(task));
+            unloadTasks.ForEach(task => ProcessUnloadTask(task));
+            invasions.ForEach(task => ProcessInvasionTask(task));
+            loadTasks.ForEach(task => ProcessLoadTask(task));
+            loadDunnageTasks.ForEach(task => ProcessLoadDunnageTask(task));
+            otherTasks.ForEach(task => ProcessOtherTask(task));
 
             // notify the player about idle fleets after
             // we have scrapped, colonized, etc
@@ -109,7 +116,7 @@ namespace CraigStars
                 switch (wp.Task)
                 {
                     case WaypointTask.Colonize:
-                        ColonizeTasks.Add(new FleetWaypoint(fleet, wp));
+                        colonizeTasks.Add(new FleetWaypoint(fleet, wp));
                         break;
                     case WaypointTask.LayMineField:
                     case WaypointTask.MergeWithFleet:
@@ -117,10 +124,10 @@ namespace CraigStars
                     case WaypointTask.RemoteMining:
                     case WaypointTask.Route:
                     case WaypointTask.TransferFleet:
-                        OtherTasks.Add(new FleetWaypoint(fleet, wp));
+                        otherTasks.Add(new FleetWaypoint(fleet, wp));
                         break;
                     case WaypointTask.ScrapFleet:
-                        ScrapFleetTasks.Add(new FleetWaypoint(fleet, wp));
+                        scrapFleetTasks.Add(new FleetWaypoint(fleet, wp));
                         break;
                     case WaypointTask.Transport:
                         var unload = new FleetWaypoint(fleet, wp);
@@ -156,15 +163,15 @@ namespace CraigStars
                         // split these orders into load/unload/dunnage
                         if (unload.Tasks.Count > 0)
                         {
-                            UnloadTasks.Add(unload);
+                            unloadTasks.Add(unload);
                         }
                         if (load.Tasks.Count > 0)
                         {
-                            LoadTasks.Add(load);
+                            loadTasks.Add(load);
                         }
                         if (loadDunnage.Tasks.Count > 0)
                         {
-                            LoadDunnageTasks.Add(load);
+                            loadDunnageTasks.Add(load);
                         }
                         break;
 
@@ -211,6 +218,7 @@ namespace CraigStars
                     if (transferAmount > 0)
                     {
                         // we are unloading so add cargo to the destination
+                        Message.FleetTransferred(fleet.Player, fleet, task.cargoType, cargoDestination, transferAmount);
                         Transfer(fleet, cargoDestination, task.cargoType, transferAmount);
                     }
                 }
@@ -228,7 +236,6 @@ namespace CraigStars
             if (wp.Target is ICargoHolder cargoSource)
             {
                 var capacity = fleet.Aggregate.CargoCapacity - fleet.Cargo.Total;
-                Cargo cargoToUnload;
                 foreach (var task in fleetWaypoint.Tasks)
                 {
                     int transferAmount = 0;
@@ -248,13 +255,13 @@ namespace CraigStars
                             break;
                         default:
                             log.Error($"{Game.Year}: {fleet.Player} {fleet.Name} Trying to process an unsupported unload task action: {task.action}");
-                            cargoToUnload = Cargo.Empty;
                             break;
                     }
 
                     if (transferAmount > 0)
                     {
                         // we are loading, so take cargo away from the source and add it to us
+                        Message.FleetTransferred(fleet.Player, fleet, task.cargoType, cargoSource, -transferAmount);
                         Transfer(fleet, cargoSource, task.cargoType, -transferAmount);
                     }
                 }
@@ -285,7 +292,7 @@ namespace CraigStars
                 {
                     if (transferAmount > 0)
                     {
-                        Invasions.Add(new PlanetInvasion()
+                        invasions.Add(new PlanetInvasion()
                         {
                             Planet = planet,
                             Fleet = fleet,
@@ -313,7 +320,7 @@ namespace CraigStars
                     // this is just a regular transfer
                     fleet.AttemptTransfer(Cargo.OfAmount(cargoType, -transferAmount));
                     cargoHolderTarget.AttemptTransfer(Cargo.OfAmount(cargoType, transferAmount), 0);
-                    log.Debug($"{Game.Year}: {fleet.Player} {fleet.Name} ");
+                    log.Debug($"{Game.Year}: {fleet.Player} {fleet.Name} transferred {transferAmount} of {cargoType} to {cargoHolderTarget.Name}");
                 }
             }
             else

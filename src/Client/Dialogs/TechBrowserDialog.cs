@@ -165,6 +165,14 @@ namespace CraigStars
                 if (tech is TechHull hull)
                 {
                     massLabel.Visible = massAmountLabel.Visible = false;
+                    AddStatsLabel("Fuel Capacity", $"{hull.FuelCapacity}mg");
+                    if (hull.CargoCapacity > 0)
+                    {
+                        AddStatsLabel("Cargo Capacity", $"{hull.CargoCapacity}kT");
+                    }
+                    AddStatsLabel("Armor Strength", hull.Armor.ToString());
+                    AddStatsLabel("Initiative", hull.Initiative.ToString());
+
                 }
                 else if (tech is TechPlanetaryScanner planetaryScanner)
                 {
@@ -317,7 +325,7 @@ namespace CraigStars
         {
             statsContainer.AddChild(new Label()
             {
-                Text = name,
+                Text = name + ":",
                 SizeFlagsHorizontal = (int)Godot.Control.SizeFlags.ExpandFill,
                 Align = Label.AlignEnum.Right,
             });

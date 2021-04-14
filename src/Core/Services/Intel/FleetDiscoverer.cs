@@ -58,14 +58,37 @@ namespace CraigStars
         protected override void DiscoverOwn(Player player, Fleet item, Fleet itemReport)
         {
             itemReport.Player = player;
+            itemReport.RepeatOrders = item.RepeatOrders;
             itemReport.Waypoints.Clear();
             // copy waypoints
             item.Waypoints.ForEach(wp =>
             {
-                if (wp.Target is Planet)
+                if (wp.Target is MapObject mapObject)
                 {
-                    var targetedPlanetReport = player.PlanetsByGuid[wp.Target.Guid];
-                    itemReport.Waypoints.Add(Waypoint.TargetWaypoint(targetedPlanetReport, wp.WarpFactor, wp.Task, wp.TransportTasks));
+                    if (player.MapObjectsByGuid.TryGetValue(mapObject.Guid, out var playerMapObject))
+                    {
+                        var target = playerMapObject;
+                        var playerWaypoint = Waypoint.TargetWaypoint(target, wp.WarpFactor, wp.Task, wp.TransportTasks);
+                        playerWaypoint.OriginalPosition = wp.OriginalPosition;
+
+                        if (wp.OriginalTarget is MapObject originalTarget)
+                        {
+                            if (player.MapObjectsByGuid.TryGetValue(originalTarget.Guid, out var playerOriginalTarget))
+                            {
+                                playerWaypoint.OriginalTarget = playerOriginalTarget;
+                            }
+                            else
+                            {
+                                log.Error($"Game Fleet has OriginalTarget {originalTarget} but no matching mapObject in player.MapObjectsByGuid.");
+                            }
+                        }
+
+                        itemReport.Waypoints.Add(playerWaypoint);
+                    }
+                    else
+                    {
+                        log.Error($"Game Fleet has target {mapObject} but no matching mapObject in player.MapObjectsByGuid.");
+                    }
                 }
                 else
                 {

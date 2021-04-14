@@ -22,7 +22,23 @@ namespace CraigStars
         }
         MapObject target;
 
+        [JsonProperty(IsReference = true)]
+        public MapObject OriginalTarget
+        {
+            get => originalTarget;
+            set
+            {
+                originalTarget = value;
+                if (originalTarget != null)
+                {
+                    Position = originalTarget.Position;
+                }
+            }
+        }
+        MapObject originalTarget;
+
         public Vector2 Position { get; set; }
+        public Vector2 OriginalPosition { get; set; }
 
         public int WarpFactor { get; set; }
 

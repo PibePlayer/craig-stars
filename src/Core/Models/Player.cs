@@ -74,6 +74,7 @@ namespace CraigStars
         /// Each player automatically has the Default battle plan
         /// </summary>
         public List<BattlePlan> BattlePlans { get; set; } = new List<BattlePlan>();
+        public List<TransportPlan> TransportPlans { get; set; } = new List<TransportPlan>();
 
         public List<FleetComposition> FleetCompositions { get; set; } = new List<FleetComposition>();
 
@@ -122,9 +123,19 @@ namespace CraigStars
         [JsonIgnore] public List<Fleet> ForeignFleets { get => FleetIntel.Foriegn; }
         [JsonIgnore] public IEnumerable<Fleet> AllFleets { get => FleetIntel.All; }
         [JsonIgnore] public Dictionary<Guid, Fleet> FleetsByGuid { get => FleetIntel.ItemsByGuid; }
+
+        /// <summary>
+        /// All map objects by their guid, for lookups
+        /// </summary>
+        [JsonIgnore] public Dictionary<Guid, MapObject> MapObjectsByGuid { get; set; } = new Dictionary<Guid, MapObject>();
+
+        /// <summary>
+        /// All battles by their guid, for lookups
+        /// </summary>
         [JsonIgnore] public Dictionary<Guid, BattleRecord> BattlesByGuid { get; set; }
 
         [JsonIgnore] public Dictionary<Guid, BattlePlan> BattlePlansByGuid = new Dictionary<Guid, BattlePlan>();
+        [JsonIgnore] public Dictionary<Guid, TransportPlan> TransportPlansByGuid = new Dictionary<Guid, TransportPlan>();
 
         /// <summary>
         /// These fleets have been merged into other fleets and no longer exist
@@ -174,6 +185,7 @@ namespace CraigStars
             PlanetIntel.SetupItemsByGuid();
             FleetIntel.SetupItemsByGuid();
             BattlePlansByGuid = BattlePlans.ToLookup(plan => plan.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
+            TransportPlansByGuid = TransportPlans.ToLookup(plan => plan.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
             BattlesByGuid = Battles.ToLookup(battle => battle.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
 
 
@@ -181,6 +193,7 @@ namespace CraigStars
             mapObjects.AddRange(PlanetIntel.All);
             mapObjects.AddRange(FleetIntel.All);
             MapObjectsByLocation = mapObjects.ToLookup(mo => mo.Position).ToDictionary(lookup => lookup.Key, lookup => lookup.ToList());
+            MapObjectsByGuid = mapObjects.ToLookup(mo => mo.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
 
             Fleets.ForEach(fleet =>
             {

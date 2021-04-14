@@ -106,79 +106,89 @@ margin_top = 5.0
 margin_right = 509.0
 margin_bottom = 895.0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer"]
+[node name="ScrollContainer" type="ScrollContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer"]
 margin_right = 504.0
-margin_bottom = 530.0
+margin_bottom = 528.0
+size_flags_vertical = 3
+scroll_horizontal_enabled = false
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer"]
+margin_right = 504.0
+margin_bottom = 528.0
 size_flags_vertical = 3
 
-[node name="LeftCommandPane" type="VBoxContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/HBoxContainer"]
+[node name="LeftCommandPane" type="VBoxContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer"]
 margin_right = 250.0
-margin_bottom = 530.0
+margin_bottom = 528.0
 rect_min_size = Vector2( 250, 0 )
 
-[node name="MapObjectSummaryTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 9 )]
-
-[node name="FleetOrbitingTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 23 )]
-visible = false
-margin_top = 204.0
+[node name="MapObjectSummaryTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 9 )]
 margin_right = 250.0
-margin_bottom = 279.0
 
-[node name="FleetWaypointsTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 10 )]
-visible = false
-margin_top = 204.0
-margin_right = 250.0
-margin_bottom = 436.0
-
-[node name="OtherFleetsHereTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 24 )]
+[node name="FleetCompositionTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 25 )]
 visible = false
 margin_left = 254.0
 margin_top = 164.0
 margin_right = 504.0
-margin_bottom = 246.0
+margin_bottom = 366.0
 
-[node name="PlanetMineralsOnHandTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 6 )]
-margin_top = 170.0
-margin_right = 250.0
-margin_bottom = 310.0
-
-[node name="PlanetStatusTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 19 )]
-margin_top = 314.0
-margin_right = 250.0
-margin_bottom = 504.0
-
-[node name="RightCommandPange" type="VBoxContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/HBoxContainer"]
+[node name="FleetCargoTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 12 )]
+visible = false
 margin_left = 254.0
 margin_right = 504.0
-margin_bottom = 530.0
+margin_bottom = 148.0
+
+[node name="PlanetMineralsOnHandTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 6 )]
+margin_top = 138.0
+margin_right = 250.0
+margin_bottom = 278.0
+
+[node name="PlanetStatusTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 19 )]
+margin_top = 282.0
+margin_right = 250.0
+margin_bottom = 472.0
+
+[node name="RightCommandPange" type="VBoxContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer"]
+margin_left = 254.0
+margin_right = 504.0
+margin_bottom = 528.0
 rect_min_size = Vector2( 250, 0 )
 
-[node name="PlanetProductionTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 7 )]
+[node name="PlanetProductionTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 7 )]
 margin_right = 250.0
 margin_bottom = 160.0
 
-[node name="FleetCompositionTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 25 )]
+[node name="FleetOrbitingTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 23 )]
+visible = false
+margin_left = -254.0
+margin_top = 204.0
+margin_right = -4.0
+margin_bottom = 279.0
+
+[node name="OtherFleetsHereTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 24 )]
 visible = false
 margin_top = 164.0
 margin_right = 250.0
-margin_bottom = 366.0
+margin_bottom = 246.0
 
-[node name="FleetCargoTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 12 )]
-visible = false
-margin_right = 250.0
-margin_bottom = 148.0
-
-[node name="FleetsInOrbitTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 22 )]
+[node name="FleetsInOrbitTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 22 )]
 margin_top = 164.0
 margin_right = 250.0
 margin_bottom = 282.0
 
-[node name="PlanetStarbaseTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 5 )]
+[node name="PlanetStarbaseTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 5 )]
 margin_top = 286.0
 margin_right = 250.0
 margin_bottom = 478.0
 
-[node name="FleetWaypointTaskTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 4 )]
+[node name="FleetWaypointsTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 10 )]
+visible = false
+margin_left = -254.0
+margin_top = 204.0
+margin_right = -4.0
+margin_bottom = 464.0
+
+[node name="FleetWaypointTaskTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 4 )]
 visible = false
 margin_left = -254.0
 margin_top = 204.0
@@ -186,14 +196,15 @@ margin_right = -4.0
 margin_bottom = 269.0
 
 [node name="MessagesPane" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer" instance=ExtResource( 8 )]
-margin_top = 534.0
+margin_top = 532.0
 margin_right = 504.0
-margin_bottom = 682.0
+margin_bottom = 680.0
 
 [node name="SelectionSummaryPane" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer" instance=ExtResource( 11 )]
-margin_top = 686.0
+margin_top = 684.0
 margin_right = 504.0
 margin_bottom = 890.0
+rect_min_size = Vector2( 400, 206 )
 theme = null
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer"]
@@ -219,6 +230,7 @@ margin_top = 848.0
 [node name="ResearchDialog" parent="CanvasLayer" instance=ExtResource( 15 )]
 
 [node name="TechBrowserDialog" parent="CanvasLayer" instance=ExtResource( 17 )]
+visible = false
 
 [node name="ProductionQueueDialog" parent="CanvasLayer" instance=ExtResource( 13 )]
 

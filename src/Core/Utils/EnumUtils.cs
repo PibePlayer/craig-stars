@@ -104,6 +104,33 @@ namespace CraigStars.Utils
             }
         }
 
+        public static string GetLabelForWaypointTaskTransportAction(WaypointTaskTransportAction action)
+        {
+            switch (action)
+            {
+                case WaypointTaskTransportAction.LoadAll:
+                    return "Load All";
+                case WaypointTaskTransportAction.LoadAmount:
+                    return "Load Amount";
+                case WaypointTaskTransportAction.FillPercent:
+                    return "Fill Percent";
+                case WaypointTaskTransportAction.WaitForPercent:
+                    return "Wait for Percent";
+                case WaypointTaskTransportAction.LoadDunnage:
+                    return "Load Dunnage";
+                case WaypointTaskTransportAction.UnloadAll:
+                    return "Unload All";
+                case WaypointTaskTransportAction.UnloadAmount:
+                    return "Unload Amount";
+                case WaypointTaskTransportAction.SetAmountTo:
+                    return "Set Amount To";
+                case WaypointTaskTransportAction.SetWaypointTo:
+                    return "Set Waypoint To";
+                default:
+                    return action.ToString();
+            }
+        }
+
         public static string GetLabelForSpendLeftoverPointsOn(SpendLeftoverPointsOn value)
         {
             switch (value)

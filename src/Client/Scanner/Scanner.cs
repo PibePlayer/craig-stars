@@ -160,7 +160,7 @@ namespace CraigStars
         {
             // update all the sprites
             mapObjectsUnderMouse.Clear();
-            waypointAreas.ForEach(wpa => { RemoveChild(wpa); wpa.DisconnectAll(); wpa.QueueFree(); });
+            waypointAreas.ForEach(wpa => { if (IsInstanceValid(wpa)) { RemoveChild(wpa); wpa.DisconnectAll(); wpa.QueueFree(); } });
             waypointAreas.Clear();
             selectedMapObject = null;
             selectedWaypoint = null;
@@ -392,7 +392,7 @@ namespace CraigStars
         void OnCommandedFleetChanged()
         {
             log.Debug($"CommandedFleetChanged to {CommandedFleet}");
-            waypointAreas.ForEach(wpa => { RemoveChild(wpa); wpa.DisconnectAll(); wpa.QueueFree(); });
+            waypointAreas.ForEach(wpa => { if (IsInstanceValid(wpa)) { RemoveChild(wpa); wpa.DisconnectAll(); wpa.QueueFree(); } });
             waypointAreas.Clear();
             selectedWaypoint = null;
             CommandedFleet?.Fleet?.Waypoints.Each((wp, index) => AddWaypointArea(CommandedFleet.Fleet, wp));
@@ -693,7 +693,7 @@ namespace CraigStars
                 {
                     selectedMapObjectIndicatorSprite.Select(selectedWaypoint.Position);
                 }
-                else
+                else if (selectedMapObject != null)
                 {
                     // if the selected object (or one of its peers) is currently being commanded, it'll need a large
                     // selected object indicator
@@ -732,7 +732,7 @@ namespace CraigStars
             Fleets.Clear();
             FleetsByGuid.Clear();
 
-            waypointAreas.ForEach(wpa => { RemoveChild(wpa); wpa.DisconnectAll(); wpa.QueueFree(); });
+            waypointAreas.ForEach(wpa => { if (IsInstanceValid(wpa)) { RemoveChild(wpa); wpa.DisconnectAll(); wpa.QueueFree(); } });
             waypointAreas.Clear();
             Planets.ForEach(p => p.OrbitingFleets.Clear());
             CommandedFleet = null;

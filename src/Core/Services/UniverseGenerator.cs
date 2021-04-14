@@ -32,7 +32,7 @@ namespace CraigStars
 
                 // initialize this player
                 InitTechLevels(player);
-                player.BattlePlans.Add(new BattlePlan("Default"));
+                InitPlans(player);
                 InitPlayerPlanetReports(player, planets);
                 InitShipDesigns(player);
 
@@ -422,6 +422,20 @@ namespace CraigStars
                 // Improved Fuel Efficiency and Cheap Engines increases propulsion by 1
                 player.TechLevels.Propulsion++;
             }
+        }
+
+        internal void InitPlans(Player player)
+        {
+            player.BattlePlans.Add(new BattlePlan("Default"));
+            player.TransportPlans.Add(new TransportPlan("Default"));
+            player.TransportPlans.Add(new TransportPlan("Load Colonists")
+            {
+                Tasks = new WaypointTransportTasks(colonists: new WaypointTransportTask(WaypointTaskTransportAction.LoadAll))
+            });
+            player.TransportPlans.Add(new TransportPlan("Unload Colonists")
+            {
+                Tasks = new WaypointTransportTasks(colonists: new WaypointTransportTask(WaypointTaskTransportAction.UnloadAll))
+            });
         }
 
         /// <summary>

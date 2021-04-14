@@ -133,6 +133,29 @@ namespace CraigStars
             player.Messages.Add(new Message(MessageType.BuiltShip, text, fleet));
         }
 
+        public static void FleetTransferred(Player player, Fleet fleet, CargoType cargoType, ICargoHolder cargoTarget, int transferAmount)
+        {
+            string text = "";
+            if (cargoType == CargoType.Colonists)
+            {
+                if (transferAmount < 0)
+                {
+                    text = $"{fleet.Name} has beamed {-transferAmount * 100} {cargoType} from {cargoTarget.Name}";
+                }
+                else
+                {
+                    text = $"{fleet.Name} has beamed {transferAmount * 100} {cargoType} to {cargoTarget.Name}";
+                }
+            }
+            else
+            {
+                var action = transferAmount > 0 ? "loaded" : "unloaded";
+                text = $"{fleet.Name} has {action} {transferAmount} {cargoType} from {cargoTarget.Name}";
+            }
+            player.Messages.Add(new Message(MessageType.CargoTransferred, text, fleet));
+        }
+
+
         public static void PlanetDiscovered(Player player, Planet planet)
         {
             long habValue = player.Race.GetPlanetHabitability(planet.Hab.Value);

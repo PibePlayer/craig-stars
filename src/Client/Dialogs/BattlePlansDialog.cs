@@ -13,6 +13,7 @@ namespace CraigStars
 
         ItemList battlePlansItemList;
         LineEdit nameLineEdit;
+        Label detailPlanNameLabel;
         OptionButton primaryTargetOptionButton;
         OptionButton secondaryTargetOptionButton;
         OptionButton tacticOptionButton;
@@ -31,6 +32,7 @@ namespace CraigStars
         {
 
             battlePlansItemList = GetNode<ItemList>("MarginContainer/VBoxContainer/HBoxContainer/VBoxContainerList/BattlePlansItemList");
+            detailPlanNameLabel = GetNode<Label>("MarginContainer/VBoxContainer/HBoxContainer/VBoxContainerDetail/DetailPlanNameLabel");
             nameLineEdit = GetNode<LineEdit>("MarginContainer/VBoxContainer/HBoxContainer/VBoxContainerDetail/GridContainer/NameLineEdit");
             primaryTargetOptionButton = GetNode<OptionButton>("MarginContainer/VBoxContainer/HBoxContainer/VBoxContainerDetail/GridContainer/PrimaryTargetOptionButton");
             secondaryTargetOptionButton = GetNode<OptionButton>("MarginContainer/VBoxContainer/HBoxContainer/VBoxContainerDetail/GridContainer/SecondaryTargetOptionButton");
@@ -211,6 +213,7 @@ namespace CraigStars
                     deleteButton.Disabled = false;
                 }
                 selectedPlan = battlePlans[index];
+                detailPlanNameLabel.Text = selectedPlan.Name;
                 nameLineEdit.Text = selectedPlan.Name;
                 primaryTargetOptionButton.Select((int)selectedPlan.PrimaryTarget);
                 secondaryTargetOptionButton.Select((int)selectedPlan.SecondaryTarget);

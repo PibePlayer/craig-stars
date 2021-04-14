@@ -1649,6 +1649,27 @@ namespace CraigStars
             })
         };
 
+        public static readonly TechHull Rogue = new TechHull("Rogue", new Cost(80, 5, 5, 60), new TechRequirements(construction: 8, prtRequired: PRT.SS), 130, TechCategory.ShipHull)
+        {
+            Type = TechHullType.ArmedFreighter,
+            Mass = 75,
+            Armor = 450,
+            Initiative = 4,
+            FuelCapacity = 2250,
+            CargoCapacity = 500,
+            Slots = new List<TechHullSlot>(new TechHullSlot[] {
+                new TechHullSlot(HullSlotType.Engine, 2, true),
+                new TechHullSlot(HullSlotType.ShieldArmor, 3, false),
+                new TechHullSlot(HullSlotType.MineElectricalMechanical, 2, false),
+                new TechHullSlot(HullSlotType.Scanner, 1, false),
+                new TechHullSlot(HullSlotType.General, 2, false),
+                new TechHullSlot(HullSlotType.General, 2, false),
+                new TechHullSlot(HullSlotType.MineElectricalMechanical, 2, false),
+                new TechHullSlot(HullSlotType.Electrical, 1, false),
+                new TechHullSlot(HullSlotType.Electrical, 1, false),
+            })
+        };
+
         public static readonly TechHull MiniColonyShip = new TechHull("Mini-Colony Ship", new Cost(2, 0, 2, 3), new TechRequirements(prtRequired: PRT.HE), 150, TechCategory.ShipHull)
         {
             Type = TechHullType.Colonizer,
@@ -2056,6 +2077,7 @@ namespace CraigStars
                 Battleship,
                 Dreadnought,
                 Privateer,
+                Rogue,
                 MiniColonyShip,
                 ColonyShip,
                 MiniBomber,

@@ -55,6 +55,7 @@ namespace CraigStars
 
         #region Computed Members
 
+        [JsonIgnore] public Dictionary<Guid, MapObject> MapObjectsByGuid { get; set; } = new Dictionary<Guid, MapObject>();
         [JsonIgnore] public Dictionary<Guid, Planet> PlanetsByGuid { get; set; } = new Dictionary<Guid, Planet>();
         [JsonIgnore] public Dictionary<Guid, ShipDesign> DesignsByGuid { get; set; } = new Dictionary<Guid, ShipDesign>();
         [JsonIgnore] public Dictionary<Guid, Fleet> FleetsByGuid { get; set; } = new Dictionary<Guid, Fleet>();
@@ -104,7 +105,7 @@ namespace CraigStars
 
             // Update the Game dictionaries used for lookups, like PlanetsByGuid, FleetsByGuid, etc.
             UpdateDictionaries();
-            
+
             // make sure AIs submit their turns
             SubmitAITurns();
         }
@@ -171,6 +172,7 @@ namespace CraigStars
         {
             log.Info($"{Year}: {player} submitted turn");
             turnSubmitter.SubmitTurn(player);
+            SaveGame();
         }
 
         public void UnsubmitTurn(Player player)
@@ -178,6 +180,7 @@ namespace CraigStars
             // TODO: what happens if we are in the middle of generating a turn?
             // it should just be a no-op, but we should tell the player somehow
             player.SubmittedTurn = false;
+            SaveGame();
         }
 
         public Boolean AllPlayersSubmitted()
@@ -320,6 +323,10 @@ namespace CraigStars
             PlanetsByGuid = Planets.ToLookup(p => p.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
             FleetsByGuid = Fleets.ToLookup(p => p.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
 
+            MapObjectsByGuid.Clear();
+            Planets.ForEach(planet => MapObjectsByGuid[planet.Guid] = planet);
+            Fleets.ForEach(fleet => MapObjectsByGuid[fleet.Guid] = fleet);
+
             CargoHoldersByGuid = new Dictionary<Guid, ICargoHolder>();
             Planets.ForEach(p => CargoHoldersByGuid[p.Guid] = p);
             Fleets.ForEach(f => CargoHoldersByGuid[f.Guid] = f);
@@ -370,6 +377,7 @@ namespace CraigStars
             log.Debug($"Created new fleet {fleet.Name} - {fleet.Guid}");
             Fleets.Add(fleet);
             FleetsByGuid[fleet.Guid] = fleet;
+            MapObjectsByGuid[fleet.Guid] = fleet;
             CargoHoldersByGuid[fleet.Guid] = fleet;
         }
 
@@ -381,6 +389,7 @@ namespace CraigStars
             }
             Fleets.Remove(fleet);
             FleetsByGuid.Remove(fleet.Guid);
+            MapObjectsByGuid.Remove(fleet.Guid);
             CargoHoldersByGuid.Remove(fleet.Guid);
             log.Debug($"Deleted fleet {fleet.Name} - {fleet.Guid}");
         }

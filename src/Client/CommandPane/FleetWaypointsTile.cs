@@ -20,6 +20,7 @@ namespace CraigStars
         Label travelTimeLabel;
         Label estimatedFuelUsage;
         Label estimatedFuelUsageLabel;
+        CheckBox repeatOrdersCheckBox;
 
         public override void _Ready()
         {
@@ -37,11 +38,13 @@ namespace CraigStars
             estimatedFuelUsage = FindNode("EstimatedFuelUsage") as Label;
             travelTimeLabel = FindNode("TravelTimeLabel") as Label;
             estimatedFuelUsageLabel = FindNode("EstimatedFuelUsageLabel") as Label;
+            repeatOrdersCheckBox = GetNode<CheckBox>("VBoxContainer/RepeatOrdersCheckBox");
 
             selectedWaypointGrid.Visible = false;
             base._Ready();
 
             waypoints.Connect("item_selected", this, nameof(OnItemSelected));
+            repeatOrdersCheckBox.Connect("toggled", this, nameof(OnRepeatOrdersCheckBoxToggled));
             warpFactor.WarpSpeedChangedEvent += OnWarpSpeedChanged;
             Signals.WaypointMovedEvent += OnWaypointMoved;
         }
@@ -69,6 +72,14 @@ namespace CraigStars
             {
                 // Select this waypoint and let listeners know (like ourselves and the viewport)
                 Signals.PublishWaypointSelectedEvent(CommandedFleet.Fleet.Waypoints[index]);
+            }
+        }
+
+        void OnRepeatOrdersCheckBoxToggled(bool toggled)
+        {
+            if (CommandedFleet != null)
+            {
+                CommandedFleet.Fleet.RepeatOrders = toggled;
             }
         }
 
@@ -112,6 +123,8 @@ namespace CraigStars
                     }
                     index++;
                 }
+
+                repeatOrdersCheckBox.Pressed = CommandedFleet.Fleet.RepeatOrders;
 
                 if (CommandedFleet.Fleet.Waypoints.Count > 1)
                 {

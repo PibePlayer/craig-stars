@@ -3,5 +3,9 @@
 /// </summary>
 public enum CargoType
 {
-    Ironium, Boranium, Germanium, Colonists, Fuel
+    Ironium,
+    Boranium,
+    Germanium,
+    Colonists,
+    Fuel
 }

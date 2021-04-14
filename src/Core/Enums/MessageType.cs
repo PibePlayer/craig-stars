@@ -31,5 +31,6 @@ namespace CraigStars
         MyPlanetInvaded                 = 1 << 19,
         EnemyPlanetInvaded              = 1 << 20,
         Battle                          = 1 << 21,
+        CargoTransferred                = 1 << 22,
     }
 }

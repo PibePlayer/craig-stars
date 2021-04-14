@@ -94,6 +94,7 @@ namespace CraigStars
                 if (Game.FleetsByGuid.TryGetValue(playerFleet.Guid, out var fleet) && fleet.Player == player)
                 {
                     fleet.BattlePlan = playerFleet.BattlePlan.Clone();
+                    fleet.RepeatOrders = playerFleet.RepeatOrders;
                     // Keep waypoint 0 so the client can't move the fleet
                     // remove all the other waypoints for this fleet and replace them with what was sent by the player
                     fleet.Waypoints.RemoveRange(1, fleet.Waypoints.Count - 1);
@@ -102,6 +103,8 @@ namespace CraigStars
                         // copy player waypoint data, but reset the target/position
                         var wp0 = fleet.Waypoints[0];
                         wp0.Target = fleet.Orbiting;
+                        wp0.OriginalTarget = fleet.Waypoints[0].OriginalTarget;
+                        wp0.OriginalPosition = fleet.Waypoints[0].OriginalPosition;
                         if (wp0.Target == null)
                         {
                             wp0.Position = fleet.Position;
@@ -124,19 +127,27 @@ namespace CraigStars
                                 // don't let the client submit multiple waypoints to the same location in a row
                                 continue;
                             }
-                            if (playerWaypoint.Target is Planet planet)
+                            if (playerWaypoint.Target is MapObject mapObject)
                             {
-                                if (Game.PlanetsByGuid.TryGetValue(planet.Guid, out var gamePlanet))
+                                if (Game.MapObjectsByGuid.TryGetValue(mapObject.Guid, out var gameMapObject))
                                 {
                                     log.Debug($"{Game.Year}: Adding player defined waypoint for {fleet.Name} to {playerWaypoint.TargetName} -> {playerWaypoint.Task}");
                                     // add the server side version of this planet as a waypoint
-                                    fleet.Waypoints.Add(Waypoint.TargetWaypoint(gamePlanet, playerWaypoint.WarpFactor, playerWaypoint.Task, playerWaypoint.TransportTasks));
+                                    fleet.Waypoints.Add(Waypoint.TargetWaypoint(gameMapObject, playerWaypoint.WarpFactor, playerWaypoint.Task, playerWaypoint.TransportTasks));
                                 }
                             }
                             else
                             {
                                 fleet.Waypoints.Add(playerWaypoint);
                             }
+
+                            // make sure the original target maps to a game object
+                            if (playerWaypoint.OriginalTarget is MapObject gameOriginalTarget)
+                            {
+                                fleet.Waypoints[fleet.Waypoints.Count - 1].OriginalTarget = gameOriginalTarget;
+                            }
+                            fleet.Waypoints[fleet.Waypoints.Count - 1].OriginalPosition = playerWaypoint.OriginalPosition;
+
                         };
                     }
                 }

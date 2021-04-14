@@ -1,0 +1,53 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://src/Client/Dialogs/TransportTask.cs" type="Script" id=1]
+[ext_resource path="res://src/Client/GUIColors.tres" type="Resource" id=2]
+
+[node name="TransportTask" type="HBoxContainer"]
+margin_top = 28.0
+margin_right = 350.0
+margin_bottom = 52.0
+rect_min_size = Vector2( 350, 0 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+CargoType = 4
+GUIColors = ExtResource( 2 )
+
+[node name="CargoTypeLabel" type="Label" parent="."]
+modulate = Color( 1, 0, 0, 1 )
+margin_top = 2.0
+margin_right = 100.0
+margin_bottom = 22.0
+rect_min_size = Vector2( 100, 20 )
+hint_tooltip = "Fuel"
+mouse_filter = 1
+text = "Fuel"
+align = 2
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="WaypointTaskTransportActionOptionButton" type="OptionButton" parent="."]
+margin_left = 104.0
+margin_right = 246.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+text = "None"
+items = [ "None", null, false, 0, null, "Load All", null, false, 1, null, "Unload All", null, false, 2, null, "Load Amount", null, false, 3, null, "Unload Amount", null, false, 4, null, "Fill Percent", null, false, 5, null, "Wait for Percent", null, false, 6, null, "Load Dunnage", null, false, 7, null, "Set Amount To", null, false, 8, null, "Set Waypoint To", null, false, 9, null ]
+selected = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AmountSpinBox" type="SpinBox" parent="."]
+margin_left = 250.0
+margin_right = 350.0
+margin_bottom = 24.0
+rect_min_size = Vector2( 100, 0 )
+editable = false
+__meta__ = {
+"_edit_use_anchors_": false
+}

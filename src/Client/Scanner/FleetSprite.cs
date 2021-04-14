@@ -107,11 +107,13 @@ namespace CraigStars
                 index = Fleet.Waypoints.FindIndex(wp => wp == after);
             }
             int warpFactor = Fleet.GetDefaultWarpFactor();
+            WaypointTask task = Fleet.Waypoints[index].Task;
+            WaypointTransportTasks transportTasks = Fleet.Waypoints[index].TransportTasks;
             if (index >= 0)
             {
                 warpFactor = Fleet.Waypoints[index].WarpFactor;
             }
-            var waypoint = Waypoint.TargetWaypoint(mapObject, warpFactor);
+            var waypoint = Waypoint.TargetWaypoint(mapObject, warpFactor, task, transportTasks);
 
 
             Fleet.Waypoints.Insert(index + 1, waypoint);

@@ -29,6 +29,7 @@ namespace CraigStars
 
         public bool Scrapped { get; set; }
         public List<Waypoint> Waypoints { get; set; } = new List<Waypoint>();
+        public bool RepeatOrders { get; set; }
 
         [JsonProperty(IsReference = true)]
         public BattlePlan BattlePlan { get; set; } = new BattlePlan();

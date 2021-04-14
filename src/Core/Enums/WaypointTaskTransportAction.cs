@@ -1,16 +1,19 @@
-/// <summary>
-/// The transport action for Transport waypoint tasks  
-/// </summary>
-public enum WaypointTaskTransportAction
+namespace CraigStars
 {
-    None,
-    LoadAll,
-    UnloadAll,
-    LoadAmount,
-    UnloadAmount,
-    FillPercent,
-    WaitForPercent,
-    LoadDunnage,
-    SetAmountTo,
-    SetWaypointTo,
+    /// <summary>
+    /// The transport action for Transport waypoint tasks  
+    /// </summary>
+    public enum WaypointTaskTransportAction
+    {
+        None,
+        LoadAll,
+        UnloadAll,
+        LoadAmount,
+        UnloadAmount,
+        FillPercent,
+        WaitForPercent,
+        LoadDunnage,
+        SetAmountTo,
+        SetWaypointTo,
+    }
 }

@@ -8,11 +8,11 @@ namespace CraigStars
     /// </summary>
     public struct WaypointTransportTasks
     {
-        public readonly WaypointTransportTask Fuel;
-        public readonly WaypointTransportTask Ironium;
-        public readonly WaypointTransportTask Boranium;
-        public readonly WaypointTransportTask Germanium;
-        public readonly WaypointTransportTask Colonists;
+        public WaypointTransportTask Fuel;
+        public WaypointTransportTask Ironium;
+        public WaypointTransportTask Boranium;
+        public WaypointTransportTask Germanium;
+        public WaypointTransportTask Colonists;
 
         [JsonConstructor]
         public WaypointTransportTasks(
@@ -61,6 +61,29 @@ namespace CraigStars
                         return Colonists;
                     case CargoType.Fuel:
                         return Fuel;
+                    default:
+                        throw new IndexOutOfRangeException($"Index {field} out of range for {this.GetType().ToString()}");
+                }
+            }
+            set
+            {
+                switch (field)
+                {
+                    case CargoType.Ironium:
+                        Ironium = value;
+                        break;
+                    case CargoType.Boranium:
+                        Boranium = value;
+                        break;
+                    case CargoType.Germanium:
+                        Germanium = value;
+                        break;
+                    case CargoType.Colonists:
+                        Colonists = value;
+                        break;
+                    case CargoType.Fuel:
+                        Fuel = value;
+                        break;
                     default:
                         throw new IndexOutOfRangeException($"Index {field} out of range for {this.GetType().ToString()}");
                 }

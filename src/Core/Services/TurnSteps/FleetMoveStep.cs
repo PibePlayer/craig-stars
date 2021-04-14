@@ -80,9 +80,22 @@ namespace CraigStars
                     {
                         fleet.Orbiting = planet;
                         planet.OrbitingFleets.Add(fleet);
+                        if (fleet.Player == planet.Player && planet.HasStarbase)
+                        {
+                            // refuel at starbases
+                            fleet.Fuel = fleet.Aggregate.FuelCapacity;
+                        }
                     }
 
                     // remove the previous waypoint, it's been processed already
+                    if (fleet.RepeatOrders)
+                    {
+                        var wpToRepeat = fleet.Waypoints[0];
+                        wpToRepeat.Target = wpToRepeat.OriginalTarget;
+                        wpToRepeat.OriginalPosition = wpToRepeat.OriginalPosition;
+                        // if we are supposed to repeat orders, 
+                        fleet.Waypoints.Add(wpToRepeat);
+                    }
                     fleet.Waypoints.RemoveAt(0);
 
                     // we arrived, process the current task (the previous waypoint)
@@ -103,6 +116,11 @@ namespace CraigStars
                     // move this fleet closer to the next waypoint
                     fleet.WarpSpeed = wp1.WarpFactor;
                     fleet.Heading = (wp1.Position - fleet.Position).Normalized();
+                    if (wp0.OriginalTarget == null || wp0.OriginalPosition == Vector2.Zero)
+                    {
+                        wp0.OriginalTarget = wp0.Target;
+                        wp0.OriginalPosition = wp0.Position;
+                    }
                     wp0.Target = null;
 
                     fleet.Position += fleet.Heading * dist;

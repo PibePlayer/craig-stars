@@ -266,6 +266,8 @@ namespace CraigStars
                         return "Weapon\nor\nShield";
                     case HullSlotType.ScannerElectricalMechanical:
                         return "Scanner\nElec\nMech";
+                    case HullSlotType.MineElectricalMechanical:
+                        return "Mine\nElec\nMech";
                     case HullSlotType.General:
                         return "General Purpose";
                     default:

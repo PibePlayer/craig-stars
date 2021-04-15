@@ -34,5 +34,15 @@ namespace CraigStars
         {
             ItemsByGuid = All.ToLookup(item => item.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
         }
+
+        /// <summary>
+        /// Clear out this intel so it can be re-populated on a new scan step
+        /// </summary>
+        public void Clear()
+        {
+            Owned.Clear();
+            Foriegn.Clear();
+            ItemsByGuid.Clear();
+        }
     }
 }

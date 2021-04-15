@@ -52,6 +52,9 @@ namespace CraigStars
         public List<Fleet> Fleets { get; set; } = new List<Fleet>();
         public List<MineralPacket> MineralPackets { get; set; } = new List<MineralPacket>();
         public List<MineField> MineFields { get; set; } = new List<MineField>();
+        public List<Salvage> Salvage { get; set; } = new List<Salvage>();
+        public List<Wormhole> Wormholes { get; set; } = new List<Wormhole>();
+        public List<MysteryTrader> MysteryTraders { get; set; } = new List<MysteryTrader>();
 
         #region Computed Members
 
@@ -59,6 +62,10 @@ namespace CraigStars
         [JsonIgnore] public Dictionary<Guid, Planet> PlanetsByGuid { get; set; } = new Dictionary<Guid, Planet>();
         [JsonIgnore] public Dictionary<Guid, ShipDesign> DesignsByGuid { get; set; } = new Dictionary<Guid, ShipDesign>();
         [JsonIgnore] public Dictionary<Guid, Fleet> FleetsByGuid { get; set; } = new Dictionary<Guid, Fleet>();
+        [JsonIgnore] public Dictionary<Guid, MineField> MineFieldsByGuid { get; set; } = new Dictionary<Guid, MineField>();
+        [JsonIgnore] public Dictionary<Guid, Salvage> SalvageByGuid { get; set; } = new Dictionary<Guid, Salvage>();
+        [JsonIgnore] public Dictionary<Guid, Wormhole> WormholesByGuid { get; set; } = new Dictionary<Guid, Wormhole>();
+        [JsonIgnore] public Dictionary<Guid, MysteryTrader> MysteryTradersByGuid { get; set; } = new Dictionary<Guid, MysteryTrader>();
         [JsonIgnore] public Dictionary<Guid, ICargoHolder> CargoHoldersByGuid { get; set; } = new Dictionary<Guid, ICargoHolder>();
         [JsonIgnore] public IEnumerable<Planet> OwnedPlanets { get => Planets.Where(p => p.Player != null); }
         [JsonIgnore] public Dictionary<Vector2, List<MapObject>> MapObjectsByLocation = new Dictionary<Vector2, List<MapObject>>();
@@ -82,17 +89,17 @@ namespace CraigStars
             gameSerializer = new GameSerializer(this);
 
             turnGenerator.TurnGeneratorAdvancedEvent += OnTurnGeneratorAdvanced;
-            EventManager.FleetCreatedEvent += OnFleetCreated;
-            EventManager.FleetDeletedEvent += OnFleetDeleted;
             EventManager.PlanetPopulationEmptiedEvent += OnPlanetPopulationEmptied;
+            EventManager.MapObjectCreatedEvent += OnMapObjectCreated;
+            EventManager.MapObjectDeletedEvent += OnMapObjectDeleted;
         }
 
         ~Game()
         {
-            EventManager.FleetCreatedEvent -= OnFleetCreated;
-            EventManager.FleetDeletedEvent -= OnFleetDeleted;
-            EventManager.PlanetPopulationEmptiedEvent -= OnPlanetPopulationEmptied;
             turnGenerator.TurnGeneratorAdvancedEvent -= OnTurnGeneratorAdvanced;
+            EventManager.PlanetPopulationEmptiedEvent -= OnPlanetPopulationEmptied;
+            EventManager.MapObjectCreatedEvent -= OnMapObjectCreated;
+            EventManager.MapObjectDeletedEvent -= OnMapObjectDeleted;
         }
 
         [OnDeserialized]
@@ -126,6 +133,9 @@ namespace CraigStars
             mapObjects.AddRange(Fleets);
             mapObjects.AddRange(MineralPackets);
             mapObjects.AddRange(MineFields);
+            mapObjects.AddRange(Salvage);
+            mapObjects.AddRange(Wormholes);
+            mapObjects.AddRange(MysteryTraders);
 
             MapObjectsByLocation = mapObjects.ToLookup(mo => mo.Position).ToDictionary(lookup => lookup.Key, lookup => lookup.ToList());
         }
@@ -202,6 +212,7 @@ namespace CraigStars
         /// </summary>
         public async Task GenerateTurn()
         {
+            await aiSubmittingTask;
             GameInfo.Lifecycle = GameLifecycle.GeneratingTurn;
             await Task.Factory.StartNew(() =>
             {
@@ -321,16 +332,25 @@ namespace CraigStars
             // build game dictionaries by guid
             DesignsByGuid = Designs.ToLookup(d => d.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
             PlanetsByGuid = Planets.ToLookup(p => p.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
-            FleetsByGuid = Fleets.ToLookup(p => p.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
+            FleetsByGuid = Fleets.ToLookup(f => f.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
+            MineFieldsByGuid = MineFields.ToLookup(mf => mf.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
+            SalvageByGuid = Salvage.ToLookup(s => s.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
+            WormholesByGuid = Wormholes.ToLookup(w => w.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
+            MysteryTradersByGuid = MysteryTraders.ToLookup(mt => mt.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
 
             MapObjectsByGuid.Clear();
-            Planets.ForEach(planet => MapObjectsByGuid[planet.Guid] = planet);
-            Fleets.ForEach(fleet => MapObjectsByGuid[fleet.Guid] = fleet);
+            Planets.ForEach(p => MapObjectsByGuid[p.Guid] = p);
+            Fleets.ForEach(f => MapObjectsByGuid[f.Guid] = f);
+            MineFields.ForEach(mf => MapObjectsByGuid[mf.Guid] = mf);
+            Salvage.ForEach(s => MapObjectsByGuid[s.Guid] = s);
+            Wormholes.ForEach(w => MapObjectsByGuid[w.Guid] = w);
+            MysteryTraders.ForEach(mt => MapObjectsByGuid[mt.Guid] = mt);
 
             CargoHoldersByGuid = new Dictionary<Guid, ICargoHolder>();
             Planets.ForEach(p => CargoHoldersByGuid[p.Guid] = p);
             Fleets.ForEach(f => CargoHoldersByGuid[f.Guid] = f);
             MineralPackets.ForEach(mp => CargoHoldersByGuid[mp.Guid] = mp);
+            Salvage.ForEach(s => CargoHoldersByGuid[s.Guid] = s);
 
         }
 
@@ -365,33 +385,85 @@ namespace CraigStars
 
         #region Event Handlers
 
-        void OnFleetCreated(Fleet fleet)
+        void OnMapObjectCreated<T>(T mapObject, List<T> items, Dictionary<Guid, T> itemsByGuid) where T : MapObject
         {
-            foreach (var token in fleet.Tokens)
+            items.Add(mapObject);
+            itemsByGuid[mapObject.Guid] = mapObject;
+            MapObjectsByGuid[mapObject.Guid] = mapObject;
+            if (mapObject is ICargoHolder cargoHolder)
             {
-                if (token.Design.Slots.Count == 0)
-                {
-                    log.Error("Built token with no design slots!");
-                }
+                CargoHoldersByGuid[cargoHolder.Guid] = cargoHolder;
             }
-            log.Debug($"Created new fleet {fleet.Name} - {fleet.Guid}");
-            Fleets.Add(fleet);
-            FleetsByGuid[fleet.Guid] = fleet;
-            MapObjectsByGuid[fleet.Guid] = fleet;
-            CargoHoldersByGuid[fleet.Guid] = fleet;
+
+            log.Debug($"Created new {typeof(T)} {mapObject.Name} - {mapObject.Guid}");
         }
 
-        void OnFleetDeleted(Fleet fleet)
+        void OnMapObjectDeleted<T>(T mapObject, List<T> items, Dictionary<Guid, T> itemsByGuid) where T : MapObject
         {
-            if (fleet.Orbiting != null)
+            items.Remove(mapObject);
+            itemsByGuid.Remove(mapObject.Guid);
+            MapObjectsByGuid.Remove(mapObject.Guid);
+
+            if (mapObject is ICargoHolder cargoHolder)
             {
-                fleet.Orbiting.OrbitingFleets.Remove(fleet);
+                CargoHoldersByGuid.Remove(cargoHolder.Guid);
             }
-            Fleets.Remove(fleet);
-            FleetsByGuid.Remove(fleet.Guid);
-            MapObjectsByGuid.Remove(fleet.Guid);
-            CargoHoldersByGuid.Remove(fleet.Guid);
-            log.Debug($"Deleted fleet {fleet.Name} - {fleet.Guid}");
+
+            log.Debug($"Created new {typeof(T)} {mapObject.Name} - {mapObject.Guid}");
+        }
+
+        void OnMapObjectCreated(MapObject mapObject)
+        {
+            if (mapObject is Fleet fleet)
+            {
+                OnMapObjectCreated(fleet, Fleets, FleetsByGuid);
+            }
+            else if (mapObject is MineField mineField)
+            {
+                OnMapObjectCreated(mineField, MineFields, MineFieldsByGuid);
+            }
+            else if (mapObject is Salvage salvage)
+            {
+                OnMapObjectCreated(salvage, Salvage, SalvageByGuid);
+            }
+            else if (mapObject is Wormhole wormhole)
+            {
+                OnMapObjectCreated(wormhole, Wormholes, WormholesByGuid);
+            }
+            else if (mapObject is MysteryTrader mysteryTrader)
+            {
+                OnMapObjectCreated(mysteryTrader, MysteryTraders, MysteryTradersByGuid);
+            }
+        }
+
+        void OnMapObjectDeleted(MapObject mapObject)
+        {
+            if (mapObject is Fleet fleet)
+            {
+                if (fleet.Orbiting != null)
+                {
+                    fleet.Orbiting.OrbitingFleets.Remove(fleet);
+                }
+
+                OnMapObjectDeleted(fleet, Fleets, FleetsByGuid);
+            }
+            else if (mapObject is MineField mineField)
+            {
+                OnMapObjectDeleted(mineField, MineFields, MineFieldsByGuid);
+            }
+            else if (mapObject is Salvage salvage)
+            {
+                OnMapObjectDeleted(salvage, Salvage, SalvageByGuid);
+            }
+            else if (mapObject is Wormhole wormhole)
+            {
+                OnMapObjectDeleted(wormhole, Wormholes, WormholesByGuid);
+            }
+            else if (mapObject is MysteryTrader mysteryTrader)
+            {
+                OnMapObjectDeleted(mysteryTrader, MysteryTraders, MysteryTradersByGuid);
+            }
+
         }
 
         void OnPlanetPopulationEmptied(Planet planet)

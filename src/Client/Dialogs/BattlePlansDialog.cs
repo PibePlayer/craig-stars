@@ -7,10 +7,8 @@ using System.Linq;
 
 namespace CraigStars
 {
-    public class BattlePlansDialog : WindowDialog
+    public class BattlePlansDialog : GameViewDialog
     {
-        Player Me { get => PlayersManager.Me; }
-
         ItemList battlePlansItemList;
         LineEdit nameLineEdit;
         Label detailPlanNameLabel;
@@ -30,7 +28,7 @@ namespace CraigStars
 
         public override void _Ready()
         {
-
+            base._Ready();
             battlePlansItemList = GetNode<ItemList>("MarginContainer/VBoxContainer/HBoxContainer/VBoxContainerList/BattlePlansItemList");
             detailPlanNameLabel = GetNode<Label>("MarginContainer/VBoxContainer/HBoxContainer/VBoxContainerDetail/DetailPlanNameLabel");
             nameLineEdit = GetNode<LineEdit>("MarginContainer/VBoxContainer/HBoxContainer/VBoxContainerDetail/GridContainer/NameLineEdit");
@@ -62,8 +60,6 @@ namespace CraigStars
             newButton.Connect("pressed", this, nameof(OnNewButtonPressed));
             deleteButton.Connect("pressed", this, nameof(OnDeleteButtonPressed));
 
-            Connect("visibility_changed", this, nameof(OnVisibilityChanged));
-
             // uncomment to test in scene
             // PlayersManager.Instance.SetupPlayers();
             // Me.BattlePlans.Add(new BattlePlan("Default"));
@@ -80,8 +76,9 @@ namespace CraigStars
         /// <summary>
         /// When the dialog becomes visible, update the controls for this player
         /// </summary>
-        void OnVisibilityChanged()
+        protected override void OnVisibilityChanged()
         {
+            base.OnVisibilityChanged();
             if (Visible)
             {
                 deletedPlans.Clear();

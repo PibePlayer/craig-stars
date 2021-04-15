@@ -31,6 +31,7 @@ namespace CraigStars
         CargoTransferDialog cargoTransferDialog;
         ResearchDialog researchDialog;
         BattlePlansDialog battlePlansDialog;
+        TransportPlansDialog transportPlansDialog;
         ReportsDialog reportsDialog;
         TechBrowserDialog techBrowserDialog;
         RaceDesignerDialog raceDesignerDialog;
@@ -58,6 +59,7 @@ namespace CraigStars
             cargoTransferDialog = GetNode<CargoTransferDialog>("CanvasLayer/CargoTransferDialog");
             researchDialog = GetNode<ResearchDialog>("CanvasLayer/ResearchDialog");
             battlePlansDialog = GetNode<BattlePlansDialog>("CanvasLayer/BattlePlansDialog");
+            transportPlansDialog = GetNode<TransportPlansDialog>("CanvasLayer/TransportPlansDialog");
             reportsDialog = GetNode<ReportsDialog>("CanvasLayer/ReportsDialog");
             techBrowserDialog = GetNode<TechBrowserDialog>("CanvasLayer/TechBrowserDialog");
             raceDesignerDialog = GetNode<RaceDesignerDialog>("CanvasLayer/RaceDesignerDialog");
@@ -72,6 +74,7 @@ namespace CraigStars
             Signals.CargoTransferRequestedEvent += OnCargoTransferRequested;
             Signals.ResearchDialogRequestedEvent += OnResearchDialogRequested;
             Signals.BattlePlansDialogRequestedEvent += OnBattlePlansDialogRequested;
+            Signals.TransportPlansDialogRequestedEvent += OnTransportPlansDialogRequested;
             Signals.ReportsDialogRequestedEvent += OnReportsDialogRequested;
             Signals.ShipDesignerDialogRequestedEvent += OnShipDesignerDialogRequested;
             Signals.TechBrowserDialogRequestedEvent += OnTechBrowserDialogRequested;
@@ -128,6 +131,7 @@ namespace CraigStars
             Signals.CargoTransferRequestedEvent -= OnCargoTransferRequested;
             Signals.ResearchDialogRequestedEvent -= OnResearchDialogRequested;
             Signals.BattlePlansDialogRequestedEvent -= OnBattlePlansDialogRequested;
+            Signals.TransportPlansDialogRequestedEvent -= OnTransportPlansDialogRequested;
             Signals.ReportsDialogRequestedEvent -= OnReportsDialogRequested;
             Signals.ShipDesignerDialogRequestedEvent -= OnShipDesignerDialogRequested;
             Signals.TechBrowserDialogRequestedEvent -= OnTechBrowserDialogRequested;
@@ -243,6 +247,11 @@ namespace CraigStars
         void OnBattlePlansDialogRequested()
         {
             battlePlansDialog.PopupCentered();
+        }
+
+        void OnTransportPlansDialogRequested()
+        {
+            transportPlansDialog.PopupCentered();
         }
 
         void OnCargoTransferRequested(ICargoHolder source, ICargoHolder dest)

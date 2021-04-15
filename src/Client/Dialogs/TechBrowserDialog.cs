@@ -7,7 +7,7 @@ using CraigStars.Utils;
 
 namespace CraigStars
 {
-    public class TechBrowserDialog : WindowDialog
+    public class TechBrowserDialog : GameViewDialog
     {
         Tech SelectedTech;
         TechTree techTree;
@@ -47,10 +47,9 @@ namespace CraigStars
         PopupPanel hullSummaryPopup;
         HullSummary hullSummary;
 
-        Player Me { get => PlayersManager.Me; }
-
         public override void _Ready()
         {
+            base._Ready();
             okButton = FindNode("OKButton") as Button;
             techTree = FindNode("TechTree") as TechTree;
             costGrid = FindNode("CostGrid") as CostGrid;
@@ -93,7 +92,6 @@ namespace CraigStars
             okButton.Connect("pressed", this, nameof(OnOk));
 
             techTree.TechSelectedEvent += OnTechSelected;
-            Connect("visibility_changed", this, nameof(OnVisible));
 
             // PlayersManager.Instance.SetupPlayers();
             // Show();
@@ -104,9 +102,13 @@ namespace CraigStars
             techTree.TechSelectedEvent -= OnTechSelected;
         }
 
-        void OnVisible()
+        protected override void OnVisibilityChanged()
         {
-            techTree.FocusSearch();
+            base.OnVisibilityChanged();
+            if (Visible)
+            {
+                techTree.FocusSearch();
+            }
         }
 
         /// <summary>

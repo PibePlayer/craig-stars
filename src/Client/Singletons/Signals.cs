@@ -56,6 +56,7 @@ namespace CraigStars.Singletons
         public static event Action<PlanetSprite> ChangeProductionQueuePressedEvent;
         public static event Action ResearchDialogRequestedEvent;
         public static event Action BattlePlansDialogRequestedEvent;
+        public static event Action TransportPlansDialogRequestedEvent;
         public static event Action ReportsDialogRequestedEvent;
         public static event Action TechBrowserDialogRequestedEvent;
         public static event Action RaceDesignerDialogRequestedEvent;
@@ -179,6 +180,7 @@ namespace CraigStars.Singletons
         public static void PublishChangeProductionQueuePressedEvent(PlanetSprite planet) => ChangeProductionQueuePressedEvent?.Invoke(planet);
         public static void PublishResearchDialogRequestedEvent() => ResearchDialogRequestedEvent?.Invoke();
         public static void PublishBattlePlansDialogRequestedEvent() => BattlePlansDialogRequestedEvent?.Invoke();
+        public static void PublishTransportPlansDialogRequestedEvent() => TransportPlansDialogRequestedEvent?.Invoke();
         public static void PublishReportsDialogRequestedEvent() => ReportsDialogRequestedEvent?.Invoke();
         public static void PublishShipDesignerDialogRequestedEvent() => ShipDesignerDialogRequestedEvent?.Invoke();
         public static void PublishTechBrowserDialogRequestedEvent() => TechBrowserDialogRequestedEvent?.Invoke();

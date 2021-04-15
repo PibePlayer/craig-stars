@@ -8,14 +8,12 @@ using CraigStars.Utils;
 
 namespace CraigStars
 {
-    public class ProductionQueueDialog : WindowDialog
+    public class ProductionQueueDialog : GameViewDialog
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(ProductionQueueDialog));
 
         // the planet to use in this dialog
         public Planet Planet { get; set; } = new Planet();
-
-        public Player Me { get; set; }
 
         Tree queuedItemsTree;
         Tree availableItemsTree;
@@ -46,6 +44,8 @@ namespace CraigStars
 
         public override void _Ready()
         {
+            base._Ready();
+
             queuedItemsTree = (Tree)FindNode("QueuedItemsTree");
             availableItemsTree = (Tree)FindNode("AvailableItemsTree");
 
@@ -95,24 +95,6 @@ namespace CraigStars
             Signals.MapObjectCommandedEvent -= OnMapObjectCommanded;
         }
 
-
-        void OnPopupHide()
-        {
-            availableItemsTree.Clear();
-            queuedItemsTree.Clear();
-        }
-
-        void OnMapObjectCommanded(MapObjectSprite mapObject)
-        {
-            // if the player is currently looking at the production queue and a new item comes up, reset ourselves to its
-            // items
-            if (Visible && mapObject is PlanetSprite planet)
-            {
-                Planet = planet.Planet;
-                OnAboutToShow();
-            }
-        }
-
         /// <summary>
         /// Update our planet queu
         /// </summary>
@@ -126,8 +108,6 @@ namespace CraigStars
             queuedItemsTreeRoot = queuedItemsTree.CreateItem();
 
             availableItemsTree.SetColumnMinWidth(1, (int)availableItemsTree.GetFont("").GetStringSize("9999").x);
-
-            Me = PlayersManager.Me;
 
             // add each design
             var availableItemIndex = 0;
@@ -157,6 +137,23 @@ namespace CraigStars
             }
 
             contributesOnlyLeftoverToResearchCheckbox.Pressed = Planet.ContributesOnlyLeftoverToResearch;
+        }
+
+        void OnPopupHide()
+        {
+            availableItemsTree.Clear();
+            queuedItemsTree.Clear();
+        }
+
+        void OnMapObjectCommanded(MapObjectSprite mapObject)
+        {
+            // if the player is currently looking at the production queue and a new item comes up, reset ourselves to its
+            // items
+            if (Visible && mapObject is PlanetSprite planet)
+            {
+                Planet = planet.Planet;
+                OnAboutToShow();
+            }
         }
 
         void AddAvailableItem(ProductionQueueItem item, int index)

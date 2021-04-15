@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace CraigStars
 {
-    public class BattleViewerDialog : WindowDialog
+    public class BattleViewerDialog : GameViewDialog
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(BattleViewerDialog));
 
@@ -69,6 +69,7 @@ namespace CraigStars
 
         public override void _Ready()
         {
+            base._Ready();
             for (int y = 0; y < GridSize; y++)
             {
                 for (int x = 0; x < GridSize; x++)
@@ -116,7 +117,6 @@ namespace CraigStars
             nextAttackActionButton.Connect("pressed", this, nameof(OnNextAttackActionButtonPressed));
             resetBoardButton.Connect("pressed", this, nameof(OnResetBoardButtonPressed));
             prevActionButton.Connect("pressed", this, nameof(OnPrevActionButtonPressed));
-            Connect("visibility_changed", this, nameof(OnVisibilityChanged));
 
             SetAsMinsize();
 
@@ -131,7 +131,7 @@ namespace CraigStars
         /// <summary>
         /// When the dialog becomes visible, this will setup the board with whatever information we have in the BattleRecord
         /// </summary>
-        void OnVisibilityChanged()
+        protected override void OnVisibilityChanged()
         {
             if (Visible)
             {

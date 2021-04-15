@@ -72,7 +72,7 @@ namespace CraigStars
             // scrap
             scrapFleetTasks.ForEach(task => ProcessScrapFleetTask(task));
             colonizeTasks.ForEach(task => ProcessColonizeTask(task));
-            scrappedFleets.ForEach(fleet => EventManager.PublishFleetDeletedEvent(fleet));
+            scrappedFleets.ForEach(fleet => EventManager.PublishMapObjectDeletedEvent(fleet));
 
             // 
             unloadTasks.ForEach(task => ProcessUnloadTask(task));

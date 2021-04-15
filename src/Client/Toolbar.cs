@@ -9,37 +9,51 @@ namespace CraigStars
         ToolButton normalViewToolButton;
         ToolButton percentViewToolButton;
 
-        Button techsBrowserButton;
-        Button raceDesignerButton;
-        Button shipDesignerButton;
-        Button researchButton;
-        Button battlePlansButton;
+        PopupMenu commandsMenu;
+        PopupMenu plansMenu;
+        PopupMenu infoMenu;
         Button reportsButton;
         Button submitTurnButton;
 
+        enum MenuItem
+        {
+            ShipDesigner,
+            Research,
+            BattlePlans,
+            TransportPlans,
+            ProductionPlans,
+            Race,
+            TechBrowser,
+        }
+
         public override void _Ready()
         {
+            commandsMenu = GetNode<MenuButton>("Panel/HBoxContainerRight/CommandsMenuButton").GetPopup();
+            plansMenu = GetNode<MenuButton>("Panel/HBoxContainerRight/PlansMenuButton").GetPopup();
+            infoMenu = GetNode<MenuButton>("Panel/HBoxContainerRight/InfoMenuButton").GetPopup();
             normalViewToolButton = (ToolButton)FindNode("NormalViewToolButton");
             percentViewToolButton = (ToolButton)FindNode("PercentViewToolButton");
 
-            techsBrowserButton = (Button)FindNode("TechsBrowserButton");
-            raceDesignerButton = (Button)FindNode("RaceDesignerButton");
-            shipDesignerButton = (Button)FindNode("ShipDesignerButton");
-            researchButton = (Button)FindNode("ResearchButton");
-            battlePlansButton = (Button)FindNode("BattlePlansButton");
             reportsButton = (Button)FindNode("ReportsButton");
             submitTurnButton = (Button)FindNode("SubmitTurnButton");
+
+            commandsMenu.AddItem("Ship Designer", (int)MenuItem.ShipDesigner);
+            commandsMenu.AddItem("Research", (int)MenuItem.Research);
+            plansMenu.AddItem("Battle Plans", (int)MenuItem.BattlePlans);
+            plansMenu.AddItem("Transport Plans", (int)MenuItem.TransportPlans);
+            plansMenu.AddItem("Production Plans", (int)MenuItem.ProductionPlans);
+            infoMenu.AddItem("View Race", (int)MenuItem.Race);
+            infoMenu.AddItem("Technology Browser", (int)MenuItem.TechBrowser);
 
             normalViewToolButton.Connect("pressed", this, nameof(OnNormalViewToolButtonPressed));
             percentViewToolButton.Connect("pressed", this, nameof(OnPercentViewToolButtonPressed));
 
-            techsBrowserButton.Connect("pressed", this, nameof(OnTechBrowserButtonPressed));
-            raceDesignerButton.Connect("pressed", this, nameof(OnRaceDesignerButtonPressed));
-            shipDesignerButton.Connect("pressed", this, nameof(OnShipDesignerButtonPressed));
-            researchButton.Connect("pressed", this, nameof(OnResearchButtonPressed));
-            battlePlansButton.Connect("pressed", this, nameof(OnBattlePlansButtonPressed));
             reportsButton.Connect("pressed", this, nameof(OnReportsButtonPressed));
             submitTurnButton.Connect("pressed", this, nameof(OnSubmitTurnButtonPressed));
+
+            commandsMenu.Connect("id_pressed", this, nameof(OnMenuItemIdPressed));
+            plansMenu.Connect("id_pressed", this, nameof(OnMenuItemIdPressed));
+            infoMenu.Connect("id_pressed", this, nameof(OnMenuItemIdPressed));
 
             Signals.TurnGeneratingEvent += OnTurnGenerating;
             Signals.UnsubmitTurnRequestedEvent += OnUnsubmitTurnButtonPressed;
@@ -50,6 +64,33 @@ namespace CraigStars
         {
             Signals.TurnGeneratingEvent -= OnTurnGenerating;
             Signals.TurnPassedEvent -= OnTurnPassed;
+        }
+
+        void OnMenuItemIdPressed(int id)
+        {
+            switch ((MenuItem)id)
+            {
+                case MenuItem.ShipDesigner:
+                    Signals.PublishShipDesignerDialogRequestedEvent();
+                    break;
+                case MenuItem.BattlePlans:
+                    Signals.PublishBattlePlansDialogRequestedEvent();
+                    break;
+                case MenuItem.Research:
+                    Signals.PublishResearchDialogRequestedEvent();
+                    break;
+                case MenuItem.TransportPlans:
+                    Signals.PublishTransportPlansDialogRequestedEvent();
+                    break;
+                case MenuItem.ProductionPlans:
+                    break;
+                case MenuItem.Race:
+                    Signals.PublishRaceDesignerDialogRequestedEvent();
+                    break;
+                case MenuItem.TechBrowser:
+                    Signals.PublishTechBrowserDialogRequestedEvent();
+                    break;
+            }
         }
 
         void EnableSubmitButton()
@@ -87,34 +128,9 @@ namespace CraigStars
             Signals.PublishPlanetViewStateUpdatedEvent();
         }
 
-        void OnTechBrowserButtonPressed()
-        {
-            Signals.PublishTechBrowserDialogRequestedEvent();
-        }
-
-        void OnRaceDesignerButtonPressed()
-        {
-            Signals.PublishRaceDesignerDialogRequestedEvent();
-        }
-
-        void OnShipDesignerButtonPressed()
-        {
-            Signals.PublishShipDesignerDialogRequestedEvent();
-        }
-
-        void OnResearchButtonPressed()
-        {
-            Signals.PublishResearchDialogRequestedEvent();
-        }
-
         void OnReportsButtonPressed()
         {
             Signals.PublishReportsDialogRequestedEvent();
-        }
-
-        void OnBattlePlansButtonPressed()
-        {
-            Signals.PublishBattlePlansDialogRequestedEvent();
         }
 
         void OnSubmitTurnButtonPressed()

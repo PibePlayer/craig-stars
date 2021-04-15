@@ -5,9 +5,8 @@ using System.Linq;
 
 namespace CraigStars
 {
-    public class TurnGenerationDialog : WindowDialog
+    public class TurnGenerationDialog : GameViewDialog
     {
-        Player Me { get => PlayersManager.Me; }
         PublicGameInfo GameInfo { get; set; }
 
         Label yearLabel;
@@ -19,6 +18,7 @@ namespace CraigStars
         // Called when the node enters the scene tree for the first time.
         public override void _Ready()
         {
+            base._Ready();
             yearLabel = GetNode<Label>("MarginContainer/VBoxContainer/YearLabel");
             playerStatusContainer = (Container)FindNode("PlayerStatusContainer");
             cancelButton = (Button)FindNode("CancelButton");

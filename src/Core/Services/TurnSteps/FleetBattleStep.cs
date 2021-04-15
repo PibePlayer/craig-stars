@@ -77,7 +77,7 @@ namespace CraigStars
                             if (!hasTokens)
                             {
                                 // this fleet was destroyed
-                                EventManager.PublishFleetDeletedEvent(fleet);
+                                EventManager.PublishMapObjectDeletedEvent(fleet);
                             }
 
                         }

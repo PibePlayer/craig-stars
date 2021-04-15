@@ -12,7 +12,6 @@ namespace CraigStars
     public class Planet : MapObject, SerializableMapObject, ICargoHolder
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(Planet));
-        public const int Unexplored = -1;
         public const int UnlimitedFuel = -1;
 
         #region Scannable Stats

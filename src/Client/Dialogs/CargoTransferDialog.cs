@@ -5,7 +5,7 @@ using System;
 
 namespace CraigStars
 {
-    public class CargoTransferDialog : WindowDialog
+    public class CargoTransferDialog : GameViewDialog
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(CargoTransferDialog));
 
@@ -43,6 +43,7 @@ namespace CraigStars
 
         public override void _Ready()
         {
+            base._Ready();
             sourceFleetCargoTransfer = FindNode("SourceFleetCargoTransfer") as FleetCargoTransfer;
             sourcePlanetCargoTransfer = FindNode("SourcePlanetCargoTransfer") as PlanetCargoTransfer;
             destFleetCargoTransfer = FindNode("DestFleetCargoTransfer") as FleetCargoTransfer;

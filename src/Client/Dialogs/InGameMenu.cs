@@ -4,7 +4,7 @@ using System;
 
 namespace CraigStars
 {
-    public class InGameMenu : WindowDialog
+    public class InGameMenu : GameViewDialog
     {
         Button saveTurnButton;
         Button exitGameButton;
@@ -13,6 +13,7 @@ namespace CraigStars
 
         public override void _Ready()
         {
+            base._Ready();
             saveTurnButton = GetNode<Button>("MarginContainer/CenterContainer/VBoxContainer/SaveTurnButton");
             exitGameButton = GetNode<Button>("MarginContainer/CenterContainer/VBoxContainer/ExitGameButton");
             exitToMainMenuButton = GetNode<Button>("MarginContainer/CenterContainer/VBoxContainer/ExitToMainMenuButton");
@@ -29,7 +30,8 @@ namespace CraigStars
 
         public override void _UnhandledInput(InputEvent @event)
         {
-            if (@event.IsActionReleased("in_game_menu"))
+            // if the user presses escape and we don't have other dialogs open, show this one
+            if (Input.IsActionJustPressed("in_game_menu") && DialogManager.DialogRefCount == 0)
             {
                 PopupCentered();
             }

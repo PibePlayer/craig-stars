@@ -2,6 +2,7 @@
 using Godot;
 using System;
 using CraigStars.Singletons;
+using System.Collections.Generic;
 
 namespace CraigStars
 {
@@ -22,6 +23,8 @@ namespace CraigStars
         }
         MapObjectSprite mapObject;
 
+        List<MapObject> mapObjectsHere = new List<MapObject>();
+        int mapObjectIndex = 0;
 
         PlanetSummaryContainer planetSummaryContainer;
         Control unknownPlanetContainer;
@@ -53,32 +56,24 @@ namespace CraigStars
         {
             if (mapObject != null)
             {
-                if (mapObject is PlanetSprite planet && planet.OrbitingFleets.Count > 0)
+                mapObjectIndex++;
+                if (mapObjectsHere.Count > 0)
                 {
-                    var fleet = planet.OrbitingFleets[0];
-                    if (fleet.OwnedByMe)
+                    if (mapObjectIndex >= mapObjectsHere.Count - 1)
+                    {
+                        mapObjectIndex = 0;
+                    }
+
+                    var mapObject = mapObjectsHere[mapObjectIndex];
+                    if (mapObject.Player == Me)
                     {
                         // select the first orbiting fleet
-                        Signals.PublishCommandMapObjectEvent(fleet.Fleet);
+                        Signals.PublishCommandMapObjectEvent(mapObject);
                     }
                     else
                     {
                         // select the first orbiting fleet
-                        Signals.PublishMapObjectSelectedEvent(planet.OrbitingFleets[0]);
-                    }
-                }
-                else if (mapObject is FleetSprite fleet && fleet.OtherFleets.Count > 0)
-                {
-                    var otherFleet = fleet.OtherFleets[0];
-                    if (otherFleet.OwnedByMe)
-                    {
-                        // select the first orbiting fleet
-                        Signals.PublishCommandMapObjectEvent(otherFleet.Fleet);
-                    }
-                    else
-                    {
-                        // select the first orbiting fleet
-                        Signals.PublishMapObjectSelectedEvent(otherFleet);
+                        Signals.PublishSelectMapObjectEvent(mapObject);
                     }
 
                 }
@@ -88,6 +83,11 @@ namespace CraigStars
         void OnMapObjectSelected(MapObjectSprite mapObject)
         {
             MapObject = mapObject;
+            mapObjectsHere.Clear();
+            if (MapObject != null && Me.MapObjectsByLocation.TryGetValue(MapObject.MapObject.Position, out var mapObjectsAtLocation))
+            {
+                mapObjectsHere.AddRange(mapObjectsAtLocation);
+            }
         }
 
         void OnTurnPassed(PublicGameInfo gameInfo)

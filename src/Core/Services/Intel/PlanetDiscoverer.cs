@@ -24,7 +24,7 @@ namespace CraigStars
             Guid = item.Guid,
             Id = item.Id,
             Name = item.Name,
-            ReportAge = Planet.Unexplored,
+            ReportAge = MapObject.Unexplored,
         };
 
         protected override void DiscoverForeign(Player player, Planet item, Planet itemReport, bool penScanned)
@@ -67,7 +67,7 @@ namespace CraigStars
 
                 }
 
-                if (reportAge == Planet.Unexplored)
+                if (reportAge == MapObject.Unexplored)
                 {
                     Message.PlanetDiscovered(player, itemReport);
                 }

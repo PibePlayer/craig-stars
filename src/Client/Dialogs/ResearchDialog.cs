@@ -5,9 +5,8 @@ using System;
 namespace CraigStars
 {
 
-    public class ResearchDialog : WindowDialog
+    public class ResearchDialog : GameViewDialog
     {
-        Player Me { get => PlayersManager.Me; }
 
         CheckBox energyCheckBox;
         CheckBox weaponsCheckBox;
@@ -31,6 +30,7 @@ namespace CraigStars
 
         public override void _Ready()
         {
+            base._Ready();
             energyCheckBox = FindNode("EnergyCheckBox") as CheckBox;
             weaponsCheckBox = FindNode("WeaponsCheckBox") as CheckBox;
             propulsionCheckBox = FindNode("PropulsionCheckBox") as CheckBox;

@@ -13,7 +13,7 @@ namespace CraigStars
         public int Shield { get; set; }
         public int Cloak { get; set; }
         public bool CloakUnarmedOnly { get; set; }
-        
+
         /// <summary>
         /// This cumulative bonus decreases innaccuracy of torpedos on the ship
         /// i.e. 75% accurate torpedo with two .3f torpedo bonus
@@ -65,14 +65,10 @@ namespace CraigStars
         public int MaxRange { get; set; }
         public int MiningRate { get; set; }
         public int TerraformRate { get; set; }
-        public int MineLayingRate { get; set; }
-        public int MaxSpeed { get; set; }
-        public int ChanceOfHit { get; set; }
-        public int DamagePerEngine { get; set; }
-        public int DamagePerEngineRS { get; set; }
-        public int MinDamagePerFleet { get; set; }
-        public int MinDamagePerFleetRS { get; set; }
 
+        // minelayers
+        public MineFieldType MineFieldType { get; set; }
+        public int MineLayingRate { get; set; }
 
         public TechHullComponent() { }
 

@@ -277,20 +277,20 @@ namespace CraigStars
         /// <param name="mapObject"></param>
         void OnCommandMapObject(MapObject mapObject)
         {
-            MapObjectSprite mapObjectToActivate = null;
+            MapObjectSprite mapObjectToCommand = null;
             if (mapObject is Planet planet && PlanetsByGuid.TryGetValue(planet.Guid, out var planetSprite))
             {
-                mapObjectToActivate = planetSprite;
+                mapObjectToCommand = planetSprite;
             }
             else if (mapObject is Fleet fleet && FleetsByGuid.TryGetValue(fleet.Guid, out var fleetSprite))
             {
-                mapObjectToActivate = fleetSprite;
+                mapObjectToCommand = fleetSprite;
             }
 
             // activate this object
-            if (mapObjectToActivate != null)
+            if (mapObjectToCommand != null)
             {
-                CommandMapObject(mapObjectToActivate);
+                CommandMapObject(mapObjectToCommand);
             }
         }
 
@@ -383,6 +383,8 @@ namespace CraigStars
             commandedMapObject.Command();
             commandedMapObject.UpdateSprite();
             Signals.PublishMapObjectCommandedEvent(mapObject);
+
+            SelectMapObject(mapObject);
             UpdateSelectedMapObjectIndicator();
         }
 

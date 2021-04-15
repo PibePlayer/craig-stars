@@ -109,7 +109,7 @@ namespace CraigStars
                             MergingFleets = mergingFleets
                         });
 
-                        mergingFleets.ForEach(f => EventManager.PublishFleetDeletedEvent(f));
+                        mergingFleets.ForEach(f => EventManager.PublishMapObjectDeletedEvent(f));
                     }
                 }
                 else
@@ -131,7 +131,7 @@ namespace CraigStars
                 {
                     var newFleets = source.Split(new SplitAllFleetOrder { Source = source, NewFleetGuids = order.NewFleetGuids });
 
-                    newFleets.ForEach(f => EventManager.PublishFleetCreatedEvent(f));
+                    newFleets.ForEach(f => EventManager.PublishMapObjectCreatedEvent(f));
                     log.Debug($"Executing user SplitAllFleetOrder for {source.Name}");
                 }
                 else

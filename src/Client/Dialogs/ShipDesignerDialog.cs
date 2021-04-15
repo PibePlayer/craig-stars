@@ -5,11 +5,10 @@ using System.Threading.Tasks;
 
 namespace CraigStars
 {
-    public class ShipDesignerDialog : WindowDialog
+    public class ShipDesignerDialog : GameViewDialog
     {
 
         Button okButton;
-        Player Me { get => PlayersManager.Me; }
 
         CSConfirmDialog confirmationDialog;
 
@@ -36,6 +35,7 @@ namespace CraigStars
 
         public override void _Ready()
         {
+            base._Ready();
             okButton = FindNode("OKButton") as Button;
             tabContainer = FindNode("TabContainer") as TabContainer;
             confirmationDialog = FindNode("ConfirmationDialog") as CSConfirmDialog;

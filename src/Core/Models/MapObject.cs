@@ -9,6 +9,11 @@ namespace CraigStars
     [JsonObject(IsReference = true)]
     public abstract class MapObject : SerializableMapObject, Discoverable
     {
+        /// <summary>
+        /// Constant for this object being unexplored
+        /// Used by Planets and MineFields
+        /// </summary>
+        public const int Unexplored = -1;
 
         public int Id { get; set; }
         public Guid Guid { get; set; } = Guid.NewGuid();

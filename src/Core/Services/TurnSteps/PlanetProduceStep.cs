@@ -198,7 +198,7 @@ namespace CraigStars
             planet.OrbitingFleets.Add(fleet);
 
             Message.FleetBuilt(planet.Player, item.Design, fleet, numBuilt);
-            EventManager.PublishFleetCreatedEvent(fleet);
+            EventManager.PublishMapObjectCreatedEvent(fleet);
 
             // }
         }

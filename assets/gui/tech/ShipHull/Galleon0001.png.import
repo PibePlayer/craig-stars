@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Privateer0001.png-f4557346ac531c0ca8a422750f507ffa.stex"
+path="res://.import/Galleon0001.png-cd1ffc4083c8fb7c99ffa0b4442479ba.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/gui/tech/Privateer0001.png"
-dest_files=[ "res://.import/Privateer0001.png-f4557346ac531c0ca8a422750f507ffa.stex" ]
+source_file="res://assets/gui/tech/ShipHull/Galleon0001.png"
+dest_files=[ "res://.import/Galleon0001.png-cd1ffc4083c8fb7c99ffa0b4442479ba.stex" ]
 
 [params]
 

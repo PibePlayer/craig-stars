@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using Newtonsoft.Json;
 
@@ -136,6 +137,50 @@ namespace CraigStars
         /// </summary>
         [DefaultValue(1 / 8f)]
         public float TorpedoSplashDamage = 1 / 8f;
+
+        /// <summary>
+        /// MineFields are cloaked to 75% until spotted
+        /// </summary>
+        [DefaultValue(.75f)]
+        public float WormholeCloak = .75f;
+
+        /// <summary>
+        /// MineFields are cloaked to 75% until spotted
+        /// </summary>
+        [DefaultValue(.75f)]
+        public float MineFieldCloak = .75f;
+
+        /// <summary>
+        /// Each minefield type has stats
+        /// </summary>
+        public Dictionary<MineFieldType, MineFieldStats> MineFieldStatsByType = new Dictionary<MineFieldType, MineFieldStats>() {
+            {
+                MineFieldType.Normal,
+                new MineFieldStats() {
+                    MinDamagePerFleetRS = 600,
+                    DamagePerEngineRS = 125,
+                    MaxSpeed = 4,
+                    ChanceOfHit = 3,
+                    MinDamagePerFleet = 500,
+                    DamagePerEngine = 100,
+            } },
+            {
+                MineFieldType.Heavy,
+                new MineFieldStats() {
+                    MinDamagePerFleetRS = 2500,
+                    DamagePerEngineRS = 600,
+                    MaxSpeed = 6,
+                    ChanceOfHit = 1,
+                    MinDamagePerFleet = 2000,
+                    DamagePerEngine = 500,
+            } },
+            {
+                MineFieldType.Speed,
+                new MineFieldStats() {
+                    MaxSpeed = 5,
+                    ChanceOfHit = 35,
+            } },
+        };
 
         /// <summary>
         /// Get the Area of the universe

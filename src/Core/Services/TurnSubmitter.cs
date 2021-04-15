@@ -135,6 +135,10 @@ namespace CraigStars
                                     // add the server side version of this planet as a waypoint
                                     fleet.Waypoints.Add(Waypoint.TargetWaypoint(gameMapObject, playerWaypoint.WarpFactor, playerWaypoint.Task, playerWaypoint.TransportTasks));
                                 }
+                                else
+                                {
+                                    log.Error($"{Game.Year}: Player waypoint Target {mapObject} was not found in Game MapObjects.");
+                                }
                             }
                             else
                             {
@@ -142,9 +146,16 @@ namespace CraigStars
                             }
 
                             // make sure the original target maps to a game object
-                            if (playerWaypoint.OriginalTarget is MapObject gameOriginalTarget)
+                            if (playerWaypoint.OriginalTarget is MapObject originalTarget)
                             {
-                                fleet.Waypoints[fleet.Waypoints.Count - 1].OriginalTarget = gameOriginalTarget;
+                                if (Game.MapObjectsByGuid.TryGetValue(originalTarget.Guid, out var gameOriginalTarget))
+                                {
+                                    fleet.Waypoints[fleet.Waypoints.Count - 1].OriginalTarget = gameOriginalTarget;
+                                }
+                                else
+                                {
+                                    log.Error($"{Game.Year}: Player waypoint OriginalTarget {originalTarget} was not found in Game MapObjects.");
+                                }
                             }
                             fleet.Waypoints[fleet.Waypoints.Count - 1].OriginalPosition = playerWaypoint.OriginalPosition;
 

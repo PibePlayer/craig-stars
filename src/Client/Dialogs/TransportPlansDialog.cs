@@ -7,10 +7,8 @@ using System.Collections.Generic;
 namespace CraigStars
 {
 
-    public class TransportPlansDialog : WindowDialog
+    public class TransportPlansDialog : GameViewDialog
     {
-        Player Me { get => PlayersManager.Me; }
-
         ItemList transportPlansItemList;
         TransportPlanDetail transportPlanDetail;
         Label detailPlanNameLabel;
@@ -26,6 +24,7 @@ namespace CraigStars
 
         public override void _Ready()
         {
+            base._Ready();
             transportPlansItemList = GetNode<ItemList>("MarginContainer/VBoxContainer/HBoxContainer/VBoxContainerList/TransportPlansItemList");
             transportPlanDetail = GetNode<TransportPlanDetail>("MarginContainer/VBoxContainer/HBoxContainer/VBoxContainerDetail/TransportPlanDetail");
             detailPlanNameLabel = GetNode<Label>("MarginContainer/VBoxContainer/HBoxContainer/VBoxContainerDetail/DetailPlanNameLabel");
@@ -40,26 +39,25 @@ namespace CraigStars
             newButton.Connect("pressed", this, nameof(OnNewButtonPressed));
             deleteButton.Connect("pressed", this, nameof(OnDeleteButtonPressed));
 
-            Connect("visibility_changed", this, nameof(OnVisibilityChanged));
 
             // uncomment to test in scene
-            PlayersManager.Instance.SetupPlayers();
-            Me.TransportPlans.Add(new TransportPlan("Default"));
-            Me.TransportPlans.Add(new TransportPlan("Load Colonists")
-            {
-                Tasks = new WaypointTransportTasks(colonists: new WaypointTransportTask(WaypointTaskTransportAction.LoadAll))
-            });
-            Me.TransportPlans.Add(new TransportPlan("Unload Colonists")
-            {
-                Tasks = new WaypointTransportTasks(colonists: new WaypointTransportTask(WaypointTaskTransportAction.UnloadAll))
-            });
-            Show();
+            // PlayersManager.Instance.SetupPlayers();
+            // Me.TransportPlans.Add(new TransportPlan("Default"));
+            // Me.TransportPlans.Add(new TransportPlan("Load Colonists")
+            // {
+            //     Tasks = new WaypointTransportTasks(colonists: new WaypointTransportTask(WaypointTaskTransportAction.LoadAll))
+            // });
+            // Me.TransportPlans.Add(new TransportPlan("Unload Colonists")
+            // {
+            //     Tasks = new WaypointTransportTasks(colonists: new WaypointTransportTask(WaypointTaskTransportAction.UnloadAll))
+            // });
+            // Show();
         }
 
         /// <summary>
         /// When the dialog becomes visible, update the controls for this player
         /// </summary>
-        void OnVisibilityChanged()
+        protected override void OnVisibilityChanged()
         {
             if (Visible)
             {

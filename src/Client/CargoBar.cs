@@ -145,7 +145,7 @@ namespace CraigStars
                     {
                         // get the width of our rectangle
                         // it's a percentage of the totaly width based on capacity and quantity
-                        float width = panel.RectSize.x * ((float)Fuel / (float)Capacity) - (borderWidth);
+                        float width = panel.RectSize.x * ((float)Fuel / (float)Capacity);
                         DrawRect(new Rect2(
                             panel.RectPosition,
                             new Vector2(width, panel.RectSize.y - (borderHeight / 2))),

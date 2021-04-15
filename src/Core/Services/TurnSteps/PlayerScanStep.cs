@@ -69,12 +69,12 @@ namespace CraigStars
         {
             // clear out old fleets
             // we rebuild this list each turn
-            playerIntel.ClearFleetReports(player);
+            playerIntel.ClearTransientReports(player);
 
             foreach (var planet in player.AllPlanets)
             {
                 planet.OrbitingFleets.Clear();
-                if (planet.ReportAge != Planet.Unexplored)
+                if (planet.ReportAge != MapObject.Unexplored)
                 {
                     // increase the report age. We'll reset it to 0
                     // if we scan it
@@ -106,6 +106,15 @@ namespace CraigStars
             foreach (var fleet in Game.Fleets.Where(f => f.Player == player && f.Aggregate.Scanner && (f.Orbiting == null || f.Orbiting.Player != player)))
             {
                 scanners.Add(new Scanner(fleet.Position, fleet.Aggregate.ScanRange * fleet.Aggregate.ScanRange, fleet.Aggregate.ScanRangePen * fleet.Aggregate.ScanRangePen));
+            }
+
+            // Space demolition minefields act as scanners
+            if (player.Race.PRT == PRT.SD)
+            {
+                foreach (var mineField in Game.MineFields.Where(mf => mf.Player == player))
+                {
+                    scanners.Add(new Scanner(mineField.Position, mineField.Radius, 0));
+                }
             }
 
             // discover our own designs
@@ -145,8 +154,9 @@ namespace CraigStars
 
                 foreach (var scanner in scanners)
                 {
+                    var distance = scanner.Position.DistanceSquaredTo(fleet.Position);
                     // if we pen scanned this, update the report
-                    if (scanner.RangePen >= scanner.Position.DistanceSquaredTo(fleet.Position))
+                    if (scanner.RangePen >= distance)
                     {
                         // update the fleet report with pen scanners
                         playerIntel.Discover(player, fleet, true);
@@ -154,12 +164,108 @@ namespace CraigStars
                     }
 
                     // if we aren't orbiting a planet, we can be seen with regular scanners
-                    if (fleet.Orbiting == null && scanner.Range >= scanner.Position.DistanceSquaredTo(fleet.Position))
+                    if (fleet.Orbiting == null && scanner.Range >= distance)
                     {
                         playerIntel.Discover(player, fleet, false);
                     }
                 }
             }
+
+            foreach (var mineField in player.AllMineFields)
+            {
+                if (mineField.ReportAge != MapObject.Unexplored)
+                {
+                    // increase the report age. We'll reset it to 0
+                    // if we scan it
+                    mineField.ReportAge++;
+                }
+            }
+
+            // salvage is only scanned by normal scanners
+            foreach (var mineField in Game.MineFields)
+            {
+                if (mineField.Player == player)
+                {
+                    // discover our own minefields
+                    playerIntel.Discover(player, mineField, true);
+                    break;
+                }
+
+                // minefields are cloaked if we haven't discovered them before
+                var cloakFactor = player.MineFieldsByGuid.ContainsKey(mineField.Guid) ? 1f : 1 - Game.Rules.MineFieldCloak;
+
+                foreach (var scanner in scanners)
+                {
+                    var distance = scanner.Position.DistanceSquaredTo(mineField.Position);
+
+                    // multiple the scanRange by the cloak factor, i.e. if we are 75% cloaked, our scanner range is effectively 25% of what it normally is
+                    if (scanner.RangePen * cloakFactor >= distance)
+                    {
+                        // update the fleet report with pen scanners
+                        playerIntel.Discover(player, mineField, true);
+                        continue;
+                    }
+
+                    // if we aren't orbiting a planet, we can be seen with regular scanners
+                    if (scanner.Range * cloakFactor >= distance)
+                    {
+                        playerIntel.Discover(player, mineField, false);
+                    }
+                }
+            }
+
+            // salvage is only scanned by normal scanners
+            foreach (var salvage in Game.Salvage)
+            {
+                foreach (var scanner in scanners)
+                {
+                    // if we aren't orbiting a planet, we can be seen with regular scanners
+                    if (scanner.Range >= scanner.Position.DistanceSquaredTo(salvage.Position))
+                    {
+                        playerIntel.Discover(player, salvage, false);
+                    }
+                }
+            }
+
+            // increment the report age of wormholes
+            foreach (var wormhole in player.Wormholes)
+            {
+                if (wormhole.ReportAge != MapObject.Unexplored)
+                {
+                    // increase the report age. We'll reset it to 0
+                    // if we scan it
+                    wormhole.ReportAge++;
+                }
+            }
+            
+            // wormholes
+            foreach (var wormhole in Game.Wormholes)
+            {
+                // wormholes are cloaked if we haven't discovered them before
+                var cloakFactor = player.WormholesByGuid.ContainsKey(wormhole.Guid) ? 1f : 1 - Game.Rules.WormholeCloak;
+                foreach (var scanner in scanners)
+                {
+                    // we only care about regular scanners for wormholes
+                    if (scanner.Range * cloakFactor >= scanner.Position.DistanceSquaredTo(wormhole.Position))
+                    {
+                        playerIntel.Discover(player, wormhole, false);
+                    }
+                }
+            }
+
+            // mysteryTraders
+            foreach (var mysterytrader in Game.MysteryTraders)
+            {
+                foreach (var scanner in scanners)
+                {
+                    // we only careabout regular scanners for mysteryTraders
+                    if (scanner.Range >= scanner.Position.DistanceSquaredTo(mysterytrader.Position))
+                    {
+                        playerIntel.Discover(player, mysterytrader, false);
+                    }
+                }
+            }
+
         }
 
     }

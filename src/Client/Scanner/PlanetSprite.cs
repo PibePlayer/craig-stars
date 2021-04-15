@@ -136,7 +136,7 @@ namespace CraigStars
         public override void UpdateSprite()
         {
 
-            ownerAllyState = Planet.ReportAge == Planet.Unexplored ? ScannerOwnerAlly.Unknown : ScannerOwnerAlly.Known;
+            ownerAllyState = Planet.ReportAge == MapObject.Unexplored ? ScannerOwnerAlly.Unknown : ScannerOwnerAlly.Known;
             hasActivePeer = HasActivePeer();
             orbitingState = Orbiting.None;
             isActive = hasActivePeer || State == ScannerState.Commanded;

@@ -769,104 +769,7 @@ namespace CraigStars
 
         #region Electronics
 
-        public static readonly TechHullComponent BattleComputer = new TechHullComponent("Battle Computer", new Cost(0, 0, 13, 5), new TechRequirements(), 0, TechCategory.Electrical)
-        {
-            Mass = 1,
-            InitiativeBonus = 1,
-            TorpedoBonus = .2f,
-            HullSlotType = HullSlotType.Electrical,
-        };
-
-        public static readonly TechHullComponent BattleNexus = new TechHullComponent("Battle Nexus", new Cost(0, 0, 30, 15), new TechRequirements(energy: 10, electronics: 19), 0, TechCategory.Electrical)
-        {
-            Mass = 1,
-            InitiativeBonus = 3,
-            TorpedoBonus = .5f,
-            HullSlotType = HullSlotType.Electrical,
-        };
-
-        public static readonly TechHullComponent BattleSuperComputer = new TechHullComponent("Battle Super Computer", new Cost(0, 0, 25, 14), new TechRequirements(energy: 5, electronics: 11), 0, TechCategory.Electrical)
-        {
-            Mass = 1,
-            InitiativeBonus = 2,
-            TorpedoBonus = .3f,
-            HullSlotType = HullSlotType.Electrical,
-        };
-
-        public static readonly TechHullComponent EnergyCapacitor = new TechHullComponent("Energy Capacitor", new Cost(0, 0, 8, 5), new TechRequirements(energy: 7, electronics: 4), 0, TechCategory.Electrical)
-        {
-            Mass = 1,
-            BeamBonus = 1,
-            HullSlotType = HullSlotType.Electrical,
-        };
-
-        public static readonly TechHullComponent EnergyDampener = new TechHullComponent("Energy Dampener", new Cost(5, 10, 0, 50), new TechRequirements(energy: 14, propulsion: 8, prtRequired: PRT.SD), 0, TechCategory.Electrical)
-        {
-            Mass = 2,
-            ReduceMovement = 1,
-            HullSlotType = HullSlotType.Electrical,
-        };
-
-        public static readonly TechHullComponent FluxCapacitor = new TechHullComponent("Flux Capacitor", new Cost(0, 0, 8, 5), new TechRequirements(energy: 14, electronics: 8, prtRequired: PRT.HE), 0, TechCategory.Electrical)
-        {
-            Mass = 1,
-            BeamBonus = 1,
-            HullSlotType = HullSlotType.Electrical,
-        };
-
-        public static readonly TechHullComponent Jammer10 = new TechHullComponent("Jammer 10", new Cost(0, 0, 2, 6), new TechRequirements(energy: 2, electronics: 6, prtRequired: PRT.IS), 0, TechCategory.Electrical)
-        {
-            Mass = 1,
-            TorpedoJamming = 1,
-            HullSlotType = HullSlotType.Electrical,
-        };
-
-        public static readonly TechHullComponent Jammer20 = new TechHullComponent("Jammer 20", new Cost(1, 0, 5, 20), new TechRequirements(energy: 4, electronics: 10), 0, TechCategory.Electrical)
-        {
-            Mass = 1,
-            TorpedoJamming = 2,
-            HullSlotType = HullSlotType.Electrical,
-        };
-
-        public static readonly TechHullComponent Jammer30 = new TechHullComponent("Jammer 30", new Cost(1, 0, 6, 20), new TechRequirements(energy: 8, electronics: 16), 0, TechCategory.Electrical)
-        {
-            Mass = 1,
-            TorpedoJamming = 3,
-            HullSlotType = HullSlotType.Electrical,
-        };
-
-        public static readonly TechHullComponent Jammer50 = new TechHullComponent("Jammer 50", new Cost(2, 0, 7, 20), new TechRequirements(energy: 16, electronics: 22), 0, TechCategory.Electrical)
-        {
-            Mass = 1,
-            TorpedoJamming = 5,
-            HullSlotType = HullSlotType.Electrical,
-        };
-
-
-        #endregion
-
         #region Cloaks
-
-        public static readonly TechHullComponent StealthCloak = new TechHullComponent("Stealth Cloak", new Cost(2, 0, 2, 5), new TechRequirements(energy: 2, electronics: 5), 0, TechCategory.Electrical)
-        {
-            Mass = 2,
-            Cloak = 35,
-            HullSlotType = HullSlotType.Electrical,
-        };
-
-        public static readonly TechHullComponent SuperStealthCloak = new TechHullComponent("Super-Stealth Cloak", new Cost(8, 0, 8, 15), new TechRequirements(energy: 4, electronics: 10), 0, TechCategory.Electrical)
-        {
-            Mass = 3,
-            Cloak = 55,
-            HullSlotType = HullSlotType.Electrical,
-        };
-
-        public static readonly TechHullComponent TachyonDetector = new TechHullComponent("Tachyon Detector", new Cost(1, 5, 0, 70), new TechRequirements(energy: 8, electronics: 14, prtRequired: PRT.IS), 0, TechCategory.Electrical)
-        {
-            Mass = 1,
-            ReduceCloaking = 5,
-            HullSlotType = HullSlotType.Electrical,
-        };
 
         public static readonly TechHullComponent TransportCloaking = new TechHullComponent("Transport Cloaking", new Cost(2, 0, 2, 3), new TechRequirements(prtRequired: PRT.SS), 0, TechCategory.Electrical)
         {
@@ -876,7 +779,21 @@ namespace CraigStars
             HullSlotType = HullSlotType.Electrical,
         };
 
-        public static readonly TechHullComponent UltraStealthCloak = new TechHullComponent("Ultra-Stealth Cloak", new Cost(10, 0, 10, 25), new TechRequirements(energy: 10, electronics: 12, prtRequired: PRT.SS), 0, TechCategory.Electrical)
+        public static readonly TechHullComponent StealthCloak = new TechHullComponent("Stealth Cloak", new Cost(2, 0, 2, 5), new TechRequirements(energy: 2, electronics: 5), 10, TechCategory.Electrical)
+        {
+            Mass = 2,
+            Cloak = 35,
+            HullSlotType = HullSlotType.Electrical,
+        };
+
+        public static readonly TechHullComponent SuperStealthCloak = new TechHullComponent("Super-Stealth Cloak", new Cost(8, 0, 8, 15), new TechRequirements(energy: 4, electronics: 10), 20, TechCategory.Electrical)
+        {
+            Mass = 3,
+            Cloak = 55,
+            HullSlotType = HullSlotType.Electrical,
+        };
+
+        public static readonly TechHullComponent UltraStealthCloak = new TechHullComponent("Ultra-Stealth Cloak", new Cost(10, 0, 10, 25), new TechRequirements(energy: 10, electronics: 12, prtRequired: PRT.SS), 30, TechCategory.Electrical)
         {
             Mass = 5,
             Cloak = 85,
@@ -885,116 +802,182 @@ namespace CraigStars
 
         #endregion
 
-        #region Mine Layers
-
-        public static readonly TechHullComponent HeavyDispenser110 = new TechHullComponent("Heavy Dispenser 110", new Cost(2, 20, 5, 50), new TechRequirements(energy: 9, biotechnology: 5, prtRequired: PRT.SD), 0, TechCategory.MineLayer)
+        public static readonly TechHullComponent BattleComputer = new TechHullComponent("Battle Computer", new Cost(0, 0, 13, 5), new TechRequirements(), 40, TechCategory.Electrical)
         {
-            Mass = 15,
-            MinDamagePerFleetRS = 2500,
-            DamagePerEngineRS = 600,
-            MaxSpeed = 6,
-            ChanceOfHit = 1,
-            MinDamagePerFleet = 2000,
-            DamagePerEngine = 500,
-            HullSlotType = HullSlotType.Mine,
+            Mass = 1,
+            InitiativeBonus = 1,
+            TorpedoBonus = .2f,
+            HullSlotType = HullSlotType.Electrical,
         };
 
-        public static readonly TechHullComponent HeavyDispenser200 = new TechHullComponent("Heavy Dispenser 200", new Cost(2, 45, 5, 90), new TechRequirements(energy: 14, biotechnology: 7, prtRequired: PRT.SD), 0, TechCategory.MineLayer)
+        public static readonly TechHullComponent BattleSuperComputer = new TechHullComponent("Battle Super Computer", new Cost(0, 0, 25, 14), new TechRequirements(energy: 5, electronics: 11), 50, TechCategory.Electrical)
         {
-            Mass = 20,
-            MinDamagePerFleetRS = 2500,
-            DamagePerEngineRS = 600,
-            MaxSpeed = 6,
-            ChanceOfHit = 1,
-            MinDamagePerFleet = 2000,
-            DamagePerEngine = 500,
-            HullSlotType = HullSlotType.Mine,
+            Mass = 1,
+            InitiativeBonus = 2,
+            TorpedoBonus = .3f,
+            HullSlotType = HullSlotType.Electrical,
         };
 
-        public static readonly TechHullComponent HeavyDispenser50 = new TechHullComponent("Heavy Dispenser 50", new Cost(2, 20, 5, 50), new TechRequirements(energy: 5, biotechnology: 3, prtRequired: PRT.SD), 0, TechCategory.MineLayer)
+        public static readonly TechHullComponent BattleNexus = new TechHullComponent("Battle Nexus", new Cost(0, 0, 30, 15), new TechRequirements(energy: 10, electronics: 19), 60, TechCategory.Electrical)
+        {
+            Mass = 1,
+            InitiativeBonus = 3,
+            TorpedoBonus = .5f,
+            HullSlotType = HullSlotType.Electrical,
+        };
+
+        public static readonly TechHullComponent Jammer10 = new TechHullComponent("Jammer 10", new Cost(0, 0, 2, 6), new TechRequirements(energy: 2, electronics: 6, prtRequired: PRT.IS), 70, TechCategory.Electrical)
+        {
+            Mass = 1,
+            TorpedoJamming = 1,
+            HullSlotType = HullSlotType.Electrical,
+        };
+
+        public static readonly TechHullComponent Jammer20 = new TechHullComponent("Jammer 20", new Cost(1, 0, 5, 20), new TechRequirements(energy: 4, electronics: 10), 80, TechCategory.Electrical)
+        {
+            Mass = 1,
+            TorpedoJamming = 2,
+            HullSlotType = HullSlotType.Electrical,
+        };
+
+        public static readonly TechHullComponent Jammer30 = new TechHullComponent("Jammer 30", new Cost(1, 0, 6, 20), new TechRequirements(energy: 8, electronics: 16), 90, TechCategory.Electrical)
+        {
+            Mass = 1,
+            TorpedoJamming = 3,
+            HullSlotType = HullSlotType.Electrical,
+        };
+
+        public static readonly TechHullComponent Jammer50 = new TechHullComponent("Jammer 50", new Cost(2, 0, 7, 20), new TechRequirements(energy: 16, electronics: 22), 100, TechCategory.Electrical)
+        {
+            Mass = 1,
+            TorpedoJamming = 5,
+            HullSlotType = HullSlotType.Electrical,
+        };
+
+        public static readonly TechHullComponent EnergyCapacitor = new TechHullComponent("Energy Capacitor", new Cost(0, 0, 8, 5), new TechRequirements(energy: 7, electronics: 4), 110, TechCategory.Electrical)
+        {
+            Mass = 1,
+            BeamBonus = 1,
+            HullSlotType = HullSlotType.Electrical,
+        };
+
+        public static readonly TechHullComponent FluxCapacitor = new TechHullComponent("Flux Capacitor", new Cost(0, 0, 8, 5), new TechRequirements(energy: 14, electronics: 8, prtRequired: PRT.HE), 120, TechCategory.Electrical)
+        {
+            Mass = 1,
+            BeamBonus = 1,
+            HullSlotType = HullSlotType.Electrical,
+        };
+
+        public static readonly TechHullComponent EnergyDampener = new TechHullComponent("Energy Dampener", new Cost(5, 10, 0, 50), new TechRequirements(energy: 14, propulsion: 8, prtRequired: PRT.SD), 130, TechCategory.Electrical)
+        {
+            Mass = 2,
+            ReduceMovement = 1,
+            HullSlotType = HullSlotType.Electrical,
+        };
+
+        public static readonly TechHullComponent TachyonDetector = new TechHullComponent("Tachyon Detector", new Cost(1, 5, 0, 70), new TechRequirements(energy: 8, electronics: 14, prtRequired: PRT.IS), 140, TechCategory.Electrical)
+        {
+            Mass = 1,
+            ReduceCloaking = 5,
+            HullSlotType = HullSlotType.Electrical,
+        };
+
+        #endregion
+
+        #region MysteryTrader
+
+        public static readonly TechHullComponent AntiMatterGenerator = new TechHullComponent("Anti-Matter Generator", new Cost(8, 3, 3, 10), new TechRequirements(weapons: 12, biotechnology: 7, prtRequired: PRT.IT), 150, TechCategory.Electrical)
         {
             Mass = 10,
-            MinDamagePerFleetRS = 2500,
-            DamagePerEngineRS = 600,
-            MaxSpeed = 6,
-            ChanceOfHit = 1,
-            MinDamagePerFleet = 2000,
-            DamagePerEngine = 500,
-            HullSlotType = HullSlotType.Mine,
+            FuelRegenerationRate = 50,
+            FuelBonus = 200,
+            HullSlotType = HullSlotType.Electrical,
         };
 
-        public static readonly TechHullComponent MineDispenser130 = new TechHullComponent("Mine Dispenser 130", new Cost(2, 18, 10, 80), new TechRequirements(energy: 6, biotechnology: 12, prtRequired: PRT.SD), 0, TechCategory.MineLayer)
-        {
-            Mass = 30,
-            MinDamagePerFleetRS = 600,
-            DamagePerEngineRS = 125,
-            MaxSpeed = 4,
-            ChanceOfHit = 3,
-            MinDamagePerFleet = 500,
-            DamagePerEngine = 100,
-            HullSlotType = HullSlotType.Mine,
-        };
+        #endregion
+
+
+        #region Mine Layers
 
         public static readonly TechHullComponent MineDispenser40 = new TechHullComponent("Mine Dispenser 40", new Cost(2, 9, 7, 40), new TechRequirements(prtRequired: PRT.SD), 0, TechCategory.MineLayer)
         {
             Mass = 25,
-            MinDamagePerFleetRS = 600,
-            DamagePerEngineRS = 125,
-            MaxSpeed = 4,
-            ChanceOfHit = 3,
-            MinDamagePerFleet = 500,
-            DamagePerEngine = 100,
+            MineFieldType = MineFieldType.Normal,
+            MineLayingRate = 40,
             HullSlotType = HullSlotType.Mine,
         };
 
-        public static readonly TechHullComponent MineDispenser50 = new TechHullComponent("Mine Dispenser 50", new Cost(2, 12, 10, 55), new TechRequirements(energy: 2, biotechnology: 4), 0, TechCategory.MineLayer)
+        public static readonly TechHullComponent MineDispenser50 = new TechHullComponent("Mine Dispenser 50", new Cost(2, 12, 10, 55), new TechRequirements(energy: 2, biotechnology: 4), 10, TechCategory.MineLayer)
         {
             Mass = 30,
-            MinDamagePerFleetRS = 600,
-            DamagePerEngineRS = 125,
-            MaxSpeed = 4,
-            ChanceOfHit = 3,
-            MinDamagePerFleet = 500,
-            DamagePerEngine = 100,
+            MineFieldType = MineFieldType.Normal,
+            MineLayingRate = 50,
             HullSlotType = HullSlotType.Mine,
         };
 
-        public static readonly TechHullComponent MineDispenser80 = new TechHullComponent("Mine Dispenser 80", new Cost(2, 12, 10, 65), new TechRequirements(energy: 3, biotechnology: 7, prtRequired: PRT.SD), 0, TechCategory.MineLayer)
+        public static readonly TechHullComponent MineDispenser80 = new TechHullComponent("Mine Dispenser 80", new Cost(2, 12, 10, 65), new TechRequirements(energy: 3, biotechnology: 7, prtRequired: PRT.SD), 20, TechCategory.MineLayer)
         {
             Mass = 30,
-            MinDamagePerFleetRS = 600,
-            DamagePerEngineRS = 125,
-            MaxSpeed = 4,
-            ChanceOfHit = 3,
-            MinDamagePerFleet = 500,
-            DamagePerEngine = 100,
+            MineFieldType = MineFieldType.Normal,
+            MineLayingRate = 80,
             HullSlotType = HullSlotType.Mine,
         };
 
-        public static readonly TechHullComponent SpeedTrap20 = new TechHullComponent("Speed Trap 20", new Cost(29, 0, 12, 58), new TechRequirements(propulsion: 2, biotechnology: 2, prtRequired: PRT.IS), 0, TechCategory.MineLayer)
+        public static readonly TechHullComponent MineDispenser130 = new TechHullComponent("Mine Dispenser 130", new Cost(2, 18, 10, 80), new TechRequirements(energy: 6, biotechnology: 12, prtRequired: PRT.SD), 30, TechCategory.MineLayer)
+        {
+            Mass = 30,
+            MineFieldType = MineFieldType.Normal,
+            MineLayingRate = 130,
+            HullSlotType = HullSlotType.Mine,
+        };
+
+        public static readonly TechHullComponent HeavyDispenser50 = new TechHullComponent("Heavy Dispenser 50", new Cost(2, 20, 5, 50), new TechRequirements(energy: 5, biotechnology: 3, prtRequired: PRT.SD), 40, TechCategory.MineLayer)
+        {
+            Mass = 10,
+            MineFieldType = MineFieldType.Heavy,
+            MineLayingRate = 50,
+            HullSlotType = HullSlotType.Mine,
+        };
+
+        public static readonly TechHullComponent HeavyDispenser110 = new TechHullComponent("Heavy Dispenser 110", new Cost(2, 20, 5, 50), new TechRequirements(energy: 9, biotechnology: 5, prtRequired: PRT.SD), 50, TechCategory.MineLayer)
+        {
+            Mass = 15,
+            MineFieldType = MineFieldType.Heavy,
+            MineLayingRate = 110,
+            HullSlotType = HullSlotType.Mine,
+        };
+
+        public static readonly TechHullComponent HeavyDispenser200 = new TechHullComponent("Heavy Dispenser 200", new Cost(2, 45, 5, 90), new TechRequirements(energy: 14, biotechnology: 7, prtRequired: PRT.SD), 60, TechCategory.MineLayer)
+        {
+            Mass = 20,
+            MineFieldType = MineFieldType.Heavy,
+            MineLayingRate = 200,
+            HullSlotType = HullSlotType.Mine,
+        };
+
+        public static readonly TechHullComponent SpeedTrap20 = new TechHullComponent("Speed Trap 20", new Cost(29, 0, 12, 58), new TechRequirements(propulsion: 2, biotechnology: 2, prtRequired: PRT.IS), 70, TechCategory.MineLayer)
         {
             Mass = 100,
-            MaxSpeed = 5,
-            ChanceOfHit = 35,
+            MineFieldType = MineFieldType.Speed,
+            MineLayingRate = 20,
             HullSlotType = HullSlotType.Mine,
         };
 
-        public static readonly TechHullComponent SpeedTrap30 = new TechHullComponent("Speed Trap 30", new Cost(32, 0, 14, 72), new TechRequirements(propulsion: 3, biotechnology: 6, prtRequired: PRT.IS), 0, TechCategory.MineLayer)
+        public static readonly TechHullComponent SpeedTrap30 = new TechHullComponent("Speed Trap 30", new Cost(32, 0, 14, 72), new TechRequirements(propulsion: 3, biotechnology: 6, prtRequired: PRT.IS), 80, TechCategory.MineLayer)
         {
             Mass = 135,
-            MaxSpeed = 5,
-            ChanceOfHit = 35,
+            MineFieldType = MineFieldType.Speed,
+            MineLayingRate = 30,
             HullSlotType = HullSlotType.Mine,
         };
 
-        public static readonly TechHullComponent SpeedTrap50 = new TechHullComponent("Speed Trap 50", new Cost(40, 0, 15, 80), new TechRequirements(propulsion: 5, biotechnology: 11, prtRequired: PRT.IS), 0, TechCategory.MineLayer)
+        public static readonly TechHullComponent SpeedTrap50 = new TechHullComponent("Speed Trap 50", new Cost(40, 0, 15, 80), new TechRequirements(propulsion: 5, biotechnology: 11, prtRequired: PRT.IS), 90, TechCategory.MineLayer)
         {
             Mass = 140,
-            MaxSpeed = 5,
-            ChanceOfHit = 35,
+            MineFieldType = MineFieldType.Speed,
+            MineLayingRate = 50,
             HullSlotType = HullSlotType.Mine,
         };
-
 
         #endregion
 
@@ -1263,17 +1246,6 @@ namespace CraigStars
             HullSlotType = HullSlotType.Weapon,
             Range = 2
         };
-        #endregion
-
-        #region MysteryTrader
-        public static readonly TechHullComponent AntiMatterGenerator = new TechHullComponent("Anti-Matter Generator", new Cost(8, 3, 3, 10), new TechRequirements(weapons: 12, biotechnology: 7, prtRequired: PRT.IT), 0, TechCategory.Electrical)
-        {
-            Mass = 10,
-            FuelRegenerationRate = 50,
-            FuelBonus = 200,
-            HullSlotType = HullSlotType.Electrical,
-        };
-
         #endregion
 
         #region Torpedos
@@ -1667,6 +1639,26 @@ namespace CraigStars
                 new TechHullSlot(HullSlotType.MineElectricalMechanical, 2, false),
                 new TechHullSlot(HullSlotType.Electrical, 1, false),
                 new TechHullSlot(HullSlotType.Electrical, 1, false),
+            })
+        };
+
+        public static readonly TechHull Galleon = new TechHull("Galleon", new Cost(70, 5, 5, 105), new TechRequirements(construction: 11), 140, TechCategory.ShipHull)
+        {
+            Type = TechHullType.ArmedFreighter,
+            Mass = 125,
+            Armor = 900,
+            Initiative = 4,
+            FuelCapacity = 2500,
+            CargoCapacity = 1000,
+            Slots = new List<TechHullSlot>(new TechHullSlot[] {
+                new TechHullSlot(HullSlotType.Engine, 4, true),
+                new TechHullSlot(HullSlotType.ShieldArmor, 2, false),
+                new TechHullSlot(HullSlotType.ShieldArmor, 2, false),
+                new TechHullSlot(HullSlotType.General, 3, false),
+                new TechHullSlot(HullSlotType.General, 3, false),
+                new TechHullSlot(HullSlotType.MineElectricalMechanical, 2, false),
+                new TechHullSlot(HullSlotType.MineElectricalMechanical, 2, false),
+                new TechHullSlot(HullSlotType.Scanner, 2, false),
             })
         };
 
@@ -2078,6 +2070,7 @@ namespace CraigStars
                 Dreadnought,
                 Privateer,
                 Rogue,
+                Galleon,
                 MiniColonyShip,
                 ColonyShip,
                 MiniBomber,

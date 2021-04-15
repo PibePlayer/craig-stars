@@ -16,8 +16,8 @@ namespace CraigStars.Singletons
 
         #region Server Events
 
-        public static event Action<Fleet> FleetCreatedEvent;
-        public static event Action<Fleet> FleetDeletedEvent;
+        public static event Action<MapObject> MapObjectCreatedEvent;
+        public static event Action<MapObject> MapObjectDeletedEvent;
         public static event Action<Planet> PlanetPopulationEmptiedEvent;
         public static event Action<Player, TechField, int> PlayerResearchLevelIncreasedEvent;
         public static event Action<Battle> BattleRunEvent;
@@ -26,8 +26,8 @@ namespace CraigStars.Singletons
 
         #region Event Publishers
 
-        internal static void PublishFleetCreatedEvent(Fleet fleet) => FleetCreatedEvent?.Invoke(fleet);
-        internal static void PublishFleetDeletedEvent(Fleet fleet) => FleetDeletedEvent?.Invoke(fleet);
+        internal static void PublishMapObjectCreatedEvent(MapObject mapObject) => MapObjectCreatedEvent?.Invoke(mapObject);
+        internal static void PublishMapObjectDeletedEvent(MapObject mapObject) => MapObjectDeletedEvent?.Invoke(mapObject);
         internal static void PublishPlanetPopulationEmptiedEvent(Planet planet) => PlanetPopulationEmptiedEvent?.Invoke(planet);
         internal static void PublishPlayerResearchLevelIncreasedEvent(Player player, TechField field, int level) => PlayerResearchLevelIncreasedEvent?.Invoke(player, field, level);
         internal static void PublishBattleRunEvent(Battle battle) => BattleRunEvent?.Invoke(battle);

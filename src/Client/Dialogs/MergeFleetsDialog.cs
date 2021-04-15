@@ -6,10 +6,9 @@ using System.Linq;
 
 namespace CraigStars
 {
-    public class MergeFleetsDialog : WindowDialog
+    public class MergeFleetsDialog : GameViewDialog
     {
         public FleetSprite SourceFleet { get; set; }
-        public Player Me { get => PlayersManager.Me; }
 
         Button okButton;
         Button cancelButton;
@@ -21,6 +20,7 @@ namespace CraigStars
 
         public override void _Ready()
         {
+            base._Ready();
             okButton = (Button)FindNode("OKButton");
             cancelButton = (Button)FindNode("CancelButton");
             selectAllButton = (Button)FindNode("SelectAllButton");
@@ -28,15 +28,15 @@ namespace CraigStars
 
             fleetsItemList = (ItemList)FindNode("FleetsItemList");
 
-            Connect("visibility_changed", this, nameof(OnVisibilityChanged));
             okButton.Connect("pressed", this, nameof(OnOK));
             cancelButton.Connect("pressed", this, nameof(OnCancel));
             selectAllButton.Connect("pressed", this, nameof(OnSelectAll));
             unselectAllButton.Connect("pressed", this, nameof(OnUnselectAll));
         }
 
-        void OnVisibilityChanged()
+        protected override void OnVisibilityChanged()
         {
+            base.OnVisibilityChanged();
             fleetsItemList.Clear();
             if (SourceFleet != null)
             {

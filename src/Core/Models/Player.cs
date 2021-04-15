@@ -92,6 +92,10 @@ namespace CraigStars
         public Intel<ShipDesign> DesignIntel { get; set; } = new Intel<ShipDesign>();
         public Intel<Planet> PlanetIntel { get; set; } = new Intel<Planet>();
         public Intel<Fleet> FleetIntel { get; set; } = new Intel<Fleet>();
+        public Intel<MineField> MineFieldIntel { get; set; } = new Intel<MineField>();
+        public Intel<Salvage> SalvageIntel { get; set; } = new Intel<Salvage>();
+        public Intel<Wormhole> WormholeIntel { get; set; } = new Intel<Wormhole>();
+        public Intel<MysteryTrader> MysteryTraderIntel { get; set; } = new Intel<MysteryTrader>();
         public List<BattleRecord> Battles { get; set; } = new List<BattleRecord>();
 
         #endregion
@@ -123,6 +127,20 @@ namespace CraigStars
         [JsonIgnore] public List<Fleet> ForeignFleets { get => FleetIntel.Foriegn; }
         [JsonIgnore] public IEnumerable<Fleet> AllFleets { get => FleetIntel.All; }
         [JsonIgnore] public Dictionary<Guid, Fleet> FleetsByGuid { get => FleetIntel.ItemsByGuid; }
+
+        [JsonIgnore] public List<Salvage> Salvage { get => SalvageIntel.Foriegn; }
+        [JsonIgnore] public Dictionary<Guid, Salvage> SalvageByGuid { get => SalvageIntel.ItemsByGuid; }
+
+        [JsonIgnore] public List<Wormhole> Wormholes { get => WormholeIntel.Foriegn; }
+        [JsonIgnore] public Dictionary<Guid, Wormhole> WormholesByGuid { get => WormholeIntel.ItemsByGuid; }
+
+        [JsonIgnore] public List<MysteryTrader> MysteryTraders { get => MysteryTraderIntel.Foriegn; }
+        [JsonIgnore] public Dictionary<Guid, MysteryTrader> MysteryTradersByGuid { get => MysteryTraderIntel.ItemsByGuid; }
+
+        [JsonIgnore] public List<MineField> MineFields { get => MineFieldIntel.Owned; }
+        [JsonIgnore] public List<MineField> ForeignMineFields { get => MineFieldIntel.Foriegn; }
+        [JsonIgnore] public IEnumerable<MineField> AllMineFields { get => MineFieldIntel.All; }
+        [JsonIgnore] public Dictionary<Guid, MineField> MineFieldsByGuid { get => MineFieldIntel.ItemsByGuid; }
 
         /// <summary>
         /// All map objects by their guid, for lookups
@@ -184,6 +202,10 @@ namespace CraigStars
             DesignIntel.SetupItemsByGuid();
             PlanetIntel.SetupItemsByGuid();
             FleetIntel.SetupItemsByGuid();
+            MineFieldIntel.SetupItemsByGuid();
+            SalvageIntel.SetupItemsByGuid();
+            WormholeIntel.SetupItemsByGuid();
+            MysteryTraderIntel.SetupItemsByGuid();
             BattlePlansByGuid = BattlePlans.ToLookup(plan => plan.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
             TransportPlansByGuid = TransportPlans.ToLookup(plan => plan.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
             BattlesByGuid = Battles.ToLookup(battle => battle.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
@@ -192,6 +214,10 @@ namespace CraigStars
             List<MapObject> mapObjects = new List<MapObject>();
             mapObjects.AddRange(PlanetIntel.All);
             mapObjects.AddRange(FleetIntel.All);
+            mapObjects.AddRange(MineFieldIntel.All);
+            mapObjects.AddRange(SalvageIntel.All);
+            mapObjects.AddRange(WormholeIntel.All);
+            mapObjects.AddRange(MysteryTraderIntel.All);
             MapObjectsByLocation = mapObjects.ToLookup(mo => mo.Position).ToDictionary(lookup => lookup.Key, lookup => lookup.ToList());
             MapObjectsByGuid = mapObjects.ToLookup(mo => mo.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
 

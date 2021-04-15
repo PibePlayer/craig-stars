@@ -1,12 +1,13 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://src/Client/Toolbar.cs" type="Script" id=1]
 
 [sub_resource type="ButtonGroup" id=1]
 
+[sub_resource type="ButtonGroup" id=2]
+
 [node name="Toolbar" type="MarginContainer"]
-margin_right = 1440.0
-margin_bottom = 40.0
+anchor_right = 1.0
 rect_min_size = Vector2( 0, 40 )
 script = ExtResource( 1 )
 __meta__ = {
@@ -18,8 +19,8 @@ margin_right = 1440.0
 margin_bottom = 40.0
 
 [node name="HBoxContainerLeft" type="HBoxContainer" parent="Panel"]
-anchor_bottom = 1.0
 margin_right = 84.0
+margin_bottom = 40.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -53,55 +54,55 @@ __meta__ = {
 [node name="HBoxContainerRight" type="HBoxContainer" parent="Panel"]
 anchor_left = 1.0
 anchor_right = 1.0
-margin_left = -447.0
+margin_left = -585.0
 margin_bottom = 40.0
+alignment = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="TechsBrowserButton" type="Button" parent="Panel/HBoxContainerRight"]
-margin_right = 49.0
+[node name="CommandsMenuButton" type="MenuButton" parent="Panel/HBoxContainerRight"]
+margin_left = 284.0
+margin_right = 368.0
 margin_bottom = 40.0
-size_flags_horizontal = 0
-text = "Techs"
+focus_mode = 2
+group = SubResource( 2 )
+text = "Commands"
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
-[node name="RaceDesignerButton" type="Button" parent="Panel/HBoxContainerRight"]
-margin_left = 53.0
-margin_right = 95.0
+[node name="PlansMenuButton" type="MenuButton" parent="Panel/HBoxContainerRight"]
+margin_left = 372.0
+margin_right = 418.0
 margin_bottom = 40.0
-size_flags_horizontal = 0
-text = "Race"
+focus_mode = 2
+group = SubResource( 2 )
+text = "Plans"
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
-[node name="ShipDesignerButton" type="Button" parent="Panel/HBoxContainerRight"]
-margin_left = 99.0
-margin_right = 155.0
+[node name="InfoMenuButton" type="MenuButton" parent="Panel/HBoxContainerRight"]
+margin_left = 422.0
+margin_right = 459.0
 margin_bottom = 40.0
-size_flags_horizontal = 0
-text = "Design"
-
-[node name="ResearchButton" type="Button" parent="Panel/HBoxContainerRight"]
-margin_left = 159.0
-margin_right = 229.0
-margin_bottom = 40.0
-size_flags_horizontal = 0
-text = "Research"
-
-[node name="BattlePlansButton" type="Button" parent="Panel/HBoxContainerRight"]
-margin_left = 233.0
-margin_right = 321.0
-margin_bottom = 40.0
-size_flags_horizontal = 0
-text = "Battle Plans"
+focus_mode = 2
+group = SubResource( 2 )
+text = "Info"
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="ReportsButton" type="Button" parent="Panel/HBoxContainerRight"]
-margin_left = 325.0
-margin_right = 386.0
+margin_left = 463.0
+margin_right = 524.0
 margin_bottom = 40.0
 size_flags_horizontal = 0
 text = "Reports"
 
 [node name="SubmitTurnButton" type="Button" parent="Panel/HBoxContainerRight"]
-margin_left = 390.0
-margin_right = 447.0
+margin_left = 528.0
+margin_right = 585.0
 margin_bottom = 40.0
 text = "Submit"

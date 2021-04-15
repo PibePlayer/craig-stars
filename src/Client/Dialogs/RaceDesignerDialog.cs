@@ -6,7 +6,7 @@ using System;
 
 namespace CraigStars
 {
-    public class RaceDesignerDialog : WindowDialog
+    public class RaceDesignerDialog : GameViewDialog
     {
         /// <summary>
         /// The race the editor is editing
@@ -97,6 +97,7 @@ namespace CraigStars
 
         public override void _Ready()
         {
+            base._Ready();
             advantagePoints = (Label)FindNode("AdvantagePoints");
 
             tabContainer = (TabContainer)FindNode("TabContainer");
@@ -216,7 +217,6 @@ namespace CraigStars
             biotechnologyResearchCost.ResearchCostLevelChangedEvent += OnResearchCostChanged;
             techsStartHighCheckBox.Connect("toggled", this, nameof(OnTechsStartHighCheckBoxToggled));
 
-            Connect("visibility_changed", this, nameof(OnVisibilityChanged));
             okButton.Connect("pressed", this, nameof(OnOk));
 
             SetAsMinsize();
@@ -267,8 +267,9 @@ namespace CraigStars
             }
         }
 
-        void OnVisibilityChanged()
+        protected override void OnVisibilityChanged()
         {
+            base.OnVisibilityChanged();
             if (Visible)
             {
                 loadingRace = true;

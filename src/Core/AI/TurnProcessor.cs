@@ -9,6 +9,12 @@ namespace CraigStars
     /// </summary>
     public abstract class TurnProcessor
     {
+        public PublicGameInfo GameInfo { get; set; }
+        public TurnProcessor(PublicGameInfo gameInfo)
+        {
+            GameInfo = gameInfo;
+        }
+
         protected Planet ClosestPlanet(Fleet fleet, List<Planet> unknownPlanets)
         {
             Planet closest = null;
@@ -40,7 +46,7 @@ namespace CraigStars
         /// <summary>
         /// Process a turn
         /// </summary>
-        public abstract void Process(int year, Player player);
+        public abstract void Process(Player player);
 
     }
 }

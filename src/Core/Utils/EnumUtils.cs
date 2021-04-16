@@ -28,6 +28,8 @@ namespace CraigStars.Utils
                     return ShipDesignPurpose.Miner;
                 case TechHullType.MineLayer:
                     return ShipDesignPurpose.MineLayer;
+                case TechHullType.Starbase:
+                    return ShipDesignPurpose.Starbase;
                 default:
                     // everything is a scout unless we specify otherwise
                     return ShipDesignPurpose.Scout;

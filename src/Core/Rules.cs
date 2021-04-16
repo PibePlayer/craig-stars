@@ -12,6 +12,7 @@ namespace CraigStars
 
         public Size Size { get; set; } = Size.Small;
         public Density Density { get; set; } = Density.Normal;
+        public GameStartMode StartMode { get; set; } = GameStartMode.MidGame;
 
         [DefaultValue(15)]
         public int PlanetMinDistance { get; } = 15;

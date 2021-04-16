@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=2]
+[gd_scene load_steps=34 format=2]
 
 [ext_resource path="res://src/Client/Scanner/Scanner.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/Client/Scanner/ScannerSelectedStats.tscn" type="PackedScene" id=2]
@@ -31,6 +31,7 @@
 [ext_resource path="res://src/Client/Dialogs/InGameMenu.tscn" type="PackedScene" id=29]
 [ext_resource path="res://src/Client/Dialogs/BattlePlansDialog.tscn" type="PackedScene" id=30]
 [ext_resource path="res://src/Client/Dialogs/TransportPlansDialog.tscn" type="PackedScene" id=31]
+[ext_resource path="res://src/Client/Scanner/OtherObjectsPopupMenu.tscn" type="PackedScene" id=32]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.145098, 0.145098, 0.168627, 1 )
@@ -258,3 +259,5 @@ Editable = false
 [node name="TransportPlansDialog" parent="CanvasLayer" instance=ExtResource( 31 )]
 
 [node name="BattlePlansDialog" parent="CanvasLayer" instance=ExtResource( 30 )]
+
+[node name="OtherObjectsPopupMenu" parent="CanvasLayer" instance=ExtResource( 32 )]

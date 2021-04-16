@@ -13,15 +13,19 @@ namespace CraigStars
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(ScoutTurnProcessor));
 
+        public ScoutTurnProcessor(PublicGameInfo gameInfo) : base(gameInfo) { }
+
         /// <summary>
         /// a new turn! build some ships
         /// </summary>
-        public override void Process(int year, Player player)
+        public override void Process(Player player)
         {
 
             // find the first scout ship design
             // TODO: pick the best one
-            ShipDesign scoutShip = player.Designs.Find(design => design.Hull.Name == "Scout");
+            ShipDesign scoutShip = player.Designs.FindLast(design => design.Purpose == ShipDesignPurpose.Scout);
+
+            log.Debug($"{GameInfo.Year}: {player} Found best scout design: {scoutShip.Name} v{scoutShip.Version}");
 
             // find all the planets we don't know about yet
             List<Planet> unknownPlanets = player.AllPlanets.Where(planet => !planet.Explored).ToList();
@@ -89,7 +93,7 @@ namespace CraigStars
                         {
                             isBuilding = true;
                             queuedToBeBuilt++;
-                            log.Debug($"planet {planet.Name} is already building a scout ship");
+                            log.Debug($"{GameInfo.Year}: {planet.Player} planet {planet.Name} is already building a scout ship");
                         }
                     }
 
@@ -107,7 +111,7 @@ namespace CraigStars
                     if (queuedToBeBuilt < numShipsNeeded)
                     {
                         planet.ProductionQueue?.Items.Add(new ProductionQueueItem(QueueItemType.ShipToken, 1, scoutShip));
-                        log.Debug($"Added scout ship to planet queue: {planet.Name}");
+                        log.Debug($"{GameInfo.Year}: {planet.Player} Added scout ship to planet queue: {planet.Name}");
                         queuedToBeBuilt++;
                     }
                 }

@@ -476,6 +476,36 @@ namespace CraigStars
         }
 
         /// <summary>
+        /// Get the best mine layer this player has access to
+        /// </summary>
+        /// <param name="techStore"></param>
+        /// <returns></returns>
+        public TechHullComponent GetBestStargate()
+        {
+            var techs = TechStore.GetTechsByCategory(TechCategory.Orbital).Where(t => t is TechHullComponent hc && hc.SafeRange > 0).ToList();
+
+            techs.Sort((t1, t2) => t2.Ranking.CompareTo(t1.Ranking));
+            var tech = techs.Find(t => HasTech(t));
+
+            return tech as TechHullComponent;
+        }
+
+        /// <summary>
+        /// Get the best mine layer this player has access to
+        /// </summary>
+        /// <param name="techStore"></param>
+        /// <returns></returns>
+        public TechHullComponent GetBestMassDriver()
+        {
+            var techs = TechStore.GetTechsByCategory(TechCategory.Orbital).Where(t => t is TechHullComponent hc && hc.PacketSpeed > 0).ToList();
+
+            techs.Sort((t1, t2) => t2.Ranking.CompareTo(t1.Ranking));
+            var tech = techs.Find(t => HasTech(t));
+
+            return tech as TechHullComponent;
+        }
+
+        /// <summary>
         /// Get the best tech by category
         /// </summary>
         /// <typeparam name="T"></typeparam>

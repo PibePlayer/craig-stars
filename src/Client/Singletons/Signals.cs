@@ -44,7 +44,8 @@ namespace CraigStars.Singletons
         public static event Action<Fleet, Waypoint> WaypointMovedEvent;
         public static event Action<Waypoint> WaypointSelectedEvent;
         public static event Action<Waypoint> WaypointDeletedEvent;
-
+        public static event Action<MapObjectSprite> ViewportAlternateSelectEvent;
+        
         #endregion
 
         #region UI Events
@@ -149,6 +150,7 @@ namespace CraigStars.Singletons
         public static void PublishRenameFleetRequestedEvent(FleetSprite fleetSprite) => RenameFleetRequestedEvent?.Invoke(fleetSprite);
         public static void PublishGotoMapObjectEvent(MapObjectSprite mapObjectSprite) => GotoMapObjectSpriteEvent?.Invoke(mapObjectSprite);
         public static void PublishGotoMapObjectEvent(MapObject mapObject) => GotoMapObjectEvent?.Invoke(mapObject);
+        public static void PublishViewportAlternateSelect(MapObjectSprite mapObject) => ViewportAlternateSelectEvent?.Invoke(mapObject);
 
         #endregion
 

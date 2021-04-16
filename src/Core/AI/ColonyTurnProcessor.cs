@@ -18,10 +18,12 @@ namespace CraigStars
         // max of its growth rate (over 1/4 crowded)
         private const float PopulationDensityRequired = .25f;
 
+        public ColonyTurnProcessor(PublicGameInfo gameInfo) : base(gameInfo) { }
+
         /// <summary>
         /// a new turn! build some ships
         /// </summary>
-        public override void Process(int year, Player player)
+        public override void Process(Player player)
         {
             // find the first colony ship design
             // TODO: pick the best one

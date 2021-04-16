@@ -43,6 +43,42 @@ namespace CraigStars.Utils
             }
         }
 
+        /// <summary>
+        /// Many controls use quantity modifiers
+        /// </summary>
+        public static int UpdateQuantityModifer(this Node node, InputEvent @event, int quantityModifier)
+        {
+            if (@event is InputEventKey key)
+            {
+                if (key.Scancode == (uint)KeyList.Shift)
+                {
+                    if (key.Pressed)
+                    {
+                        return quantityModifier * 10;
+                    }
+                    else
+                    {
+                        return quantityModifier / 10;
+                    }
+                }
+                else if (key.Scancode == (uint)KeyList.Control || key.Scancode == (uint)KeyList.Meta)
+                {
+                    if (key.Pressed)
+                    {
+                        return quantityModifier * 100;
+                    }
+                    else
+                    {
+                        return quantityModifier / 100;
+                    }
+                }
+                // this quantity modifier works, but ctrl clicking stuff doesn't register...
+                // log.Debug($"quantityModifier: {quantityModifier}");
+            }
+            return 1;
+
+        }
+
     }
 }
 

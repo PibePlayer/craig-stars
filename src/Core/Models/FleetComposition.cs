@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace CraigStars
@@ -7,6 +8,7 @@ namespace CraigStars
     /// </summary>
     public class FleetComposition
     {
+        public Guid Guid { get; set; }
         public List<ShipToken> Tokens { get; set; } = new List<ShipToken>();
     }
 }

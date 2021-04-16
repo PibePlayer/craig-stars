@@ -226,6 +226,7 @@ namespace CraigStars
 
         void OnRaceDesignerDialogRequested()
         {
+            raceDesignerDialog.Race = PlayersManager.Me.Race;
             raceDesignerDialog.PopupCentered();
         }
 

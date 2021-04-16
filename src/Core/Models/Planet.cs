@@ -40,11 +40,11 @@ namespace CraigStars
 
         public Mineral MineYears { get; set; }
         public Cargo Cargo { get; set; }
-        
-        [JsonIgnore] 
+
+        [JsonIgnore]
         public int AvailableCapacity { get => int.MaxValue; }
-        
-        [JsonIgnore] 
+
+        [JsonIgnore]
         public int Fuel
         {
             get => Starbase != null ? UnlimitedFuel : 0;
@@ -57,11 +57,13 @@ namespace CraigStars
 
         public int Mines { get; set; }
         public int MaxMines { get => (Population > 0 && Player != null) ? Population * Player.Race.NumMines / 10000 : 0; }
+        public int MaxPossibleMines { get => (Population > 0 && Player != null) ? GetMaxPopulation(Player.Race, Player.Rules) * Player.Race.NumMines / 10000 : 0; }
         public int Factories { get; set; }
         public int MaxFactories { get => (Population > 0 && Player != null) ? Population * Player.Race.NumFactories / 10000 : 0; }
+        public int MaxPossibleFactories { get => (Population > 0 && Player != null) ? GetMaxPopulation(Player.Race, Player.Rules) * Player.Race.NumFactories / 10000 : 0; }
 
         public int Defenses { get; set; }
-        public int MaxDefenses { get => (Population > 0 && Player != null) ? Population * 10 / 10000 : 0; }
+        public int MaxDefenses { get => (Population > 0 && Player != null) ? 100 : 0; }
         public bool ContributesOnlyLeftoverToResearch { get; set; }
         public bool Homeworld { get; set; }
         public bool Scanner { get; set; }

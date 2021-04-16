@@ -371,7 +371,7 @@ namespace CraigStars
 
         #region Stargates
 
-        public static readonly TechHullComponent Stargate100_250 = new TechHullComponent("Stargate 100-250", new Cost(50, 20, 20, 200), new TechRequirements(propulsion: 5, construction: 5), 0, TechCategory.Orbital)
+        public static readonly TechHullComponent Stargate100_250 = new TechHullComponent("Stargate 100-250", new Cost(50, 20, 20, 200), new TechRequirements(propulsion: 5, construction: 5, prtDenied: PRT.HE), 0, TechCategory.Orbital)
         {
             Mass = 0,
             MaxRange = 1250,
@@ -380,14 +380,14 @@ namespace CraigStars
             MaxHullMass = 500,
             HullSlotType = HullSlotType.Orbital,
         };
-        public static readonly TechHullComponent Stargate100_Any = new TechHullComponent("Stargate 100-any", new Cost(50, 20, 20, 700), new TechRequirements(propulsion: 16, construction: 12, prtRequired: PRT.IT), 0, TechCategory.Orbital)
+        public static readonly TechHullComponent Stargate100_Any = new TechHullComponent("Stargate 100-any", new Cost(50, 20, 20, 700), new TechRequirements(propulsion: 16, construction: 12, prtRequired: PRT.IT, prtDenied: PRT.HE), 10, TechCategory.Orbital)
         {
             Mass = 0,
             SafeHullMass = 100,
             MaxHullMass = 500,
             HullSlotType = HullSlotType.Orbital,
         };
-        public static readonly TechHullComponent Stargate150_600 = new TechHullComponent("Stargate 150-600", new Cost(50, 20, 20, 500), new TechRequirements(propulsion: 11, construction: 7), 0, TechCategory.Orbital)
+        public static readonly TechHullComponent Stargate150_600 = new TechHullComponent("Stargate 150-600", new Cost(50, 20, 20, 500), new TechRequirements(propulsion: 11, construction: 7, prtDenied: PRT.HE), 20, TechCategory.Orbital)
         {
             Mass = 0,
             MaxRange = 3000,
@@ -396,7 +396,7 @@ namespace CraigStars
             MaxHullMass = 7,
             HullSlotType = HullSlotType.Orbital,
         };
-        public static readonly TechHullComponent Stargate300_500 = new TechHullComponent("Stargate 300-500", new Cost(50, 20, 20, 600), new TechRequirements(propulsion: 9, construction: 13), 0, TechCategory.Orbital)
+        public static readonly TechHullComponent Stargate300_500 = new TechHullComponent("Stargate 300-500", new Cost(50, 20, 20, 600), new TechRequirements(propulsion: 9, construction: 13, prtDenied: PRT.HE), 30, TechCategory.Orbital)
         {
             Mass = 0,
             MaxRange = 2500,
@@ -405,21 +405,21 @@ namespace CraigStars
             MaxHullMass = 15,
             HullSlotType = HullSlotType.Orbital,
         };
-        public static readonly TechHullComponent StargateAny_300 = new TechHullComponent("Stargate any-300", new Cost(50, 20, 20, 250), new TechRequirements(propulsion: 6, construction: 10, prtRequired: PRT.IT), 0, TechCategory.Orbital)
+        public static readonly TechHullComponent StargateAny_300 = new TechHullComponent("Stargate any-300", new Cost(50, 20, 20, 250), new TechRequirements(propulsion: 6, construction: 10, prtRequired: PRT.IT, prtDenied: PRT.HE), 40, TechCategory.Orbital)
         {
             Mass = 0,
             MaxRange = 1500,
             SafeRange = 300,
             HullSlotType = HullSlotType.Orbital,
         };
-        public static readonly TechHullComponent StargateAny_800 = new TechHullComponent("Stargate any-800", new Cost(50, 20, 20, 700), new TechRequirements(propulsion: 12, construction: 18, prtRequired: PRT.IT), 0, TechCategory.Orbital)
+        public static readonly TechHullComponent StargateAny_800 = new TechHullComponent("Stargate any-800", new Cost(50, 20, 20, 700), new TechRequirements(propulsion: 12, construction: 18, prtRequired: PRT.IT, prtDenied: PRT.HE), 50, TechCategory.Orbital)
         {
             Mass = 0,
             MaxRange = 4000,
             SafeRange = 800,
             HullSlotType = HullSlotType.Orbital,
         };
-        public static readonly TechHullComponent StargateAny_Any = new TechHullComponent("Stargate any-any", new Cost(50, 20, 20, 800), new TechRequirements(propulsion: 19, construction: 24, prtRequired: PRT.IT), 0, TechCategory.Orbital)
+        public static readonly TechHullComponent StargateAny_Any = new TechHullComponent("Stargate any-any", new Cost(50, 20, 20, 800), new TechRequirements(propulsion: 19, construction: 24, prtRequired: PRT.IT, prtDenied: PRT.HE), 60, TechCategory.Orbital)
         {
             Mass = 0,
             HullSlotType = HullSlotType.Orbital,

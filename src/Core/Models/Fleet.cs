@@ -5,6 +5,7 @@ using log4net;
 using Newtonsoft.Json;
 using System.Runtime.Serialization;
 using Godot;
+using CraigStars.Singletons;
 
 namespace CraigStars
 {
@@ -41,6 +42,16 @@ namespace CraigStars
         public int Mass { get => Aggregate.Mass; set => Aggregate.Mass = value; }
 
         [JsonIgnore] public FleetAggregate Aggregate { get; } = new FleetAggregate();
+
+        public Fleet()
+        {
+            EventManager.PlayerResearchLevelIncreasedEvent += OnPlayerResearchLevelIncreased;
+        }
+
+        ~Fleet()
+        {
+            EventManager.PlayerResearchLevelIncreasedEvent -= OnPlayerResearchLevelIncreased;
+        }
 
         #endregion
 
@@ -501,6 +512,26 @@ namespace CraigStars
             });
 
             Aggregate.Computed = true;
+        }
+
+        /// <summary>
+        /// Update aggregates on level advance
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="field"></param>
+        /// <param name="level"></param>
+        void OnPlayerResearchLevelIncreased(Player player, TechField field, int level)
+        {
+            if (player != Player) return;
+
+            if (player.Race != null &&
+                player.Race.PRT == PRT.JoaT &&
+                field == TechField.Electronics &&
+                Tokens.Any(token => token.Design.Hull.BuiltInScannerForJoaT))
+            {
+                // update any fleets with JoaT hulls
+                ComputeAggregate(recompute: true);
+            }
         }
 
         /// <summary>

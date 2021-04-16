@@ -473,6 +473,7 @@ namespace CraigStars
             }
         }
 
+
         #endregion
 
         public void InitMapObjects()
@@ -540,7 +541,7 @@ namespace CraigStars
         {
             if (IsInstanceValid(mapObject))
             {
-                log.Debug($"Highlighted map object {mapObject.ObjectName}");
+                // log.Debug($"Highlighted map object {mapObject.ObjectName}");
                 mapObjectsUnderMouse.Add(mapObject);
                 Signals.PublishMapObjectHightlightedEvent(mapObject);
             }
@@ -554,7 +555,7 @@ namespace CraigStars
         {
             if (IsInstanceValid(mapObject))
             {
-                log.Debug($"Mouse Left map object {mapObject.ObjectName}");
+                // log.Debug($"Mouse Left map object {mapObject.ObjectName}");
                 mapObjectsUnderMouse.Remove(mapObject);
                 Signals.PublishMapObjectHightlightedEvent(mapObject);
             }
@@ -680,6 +681,11 @@ namespace CraigStars
                     }
                 }
 
+            }
+            else if (@event.IsActionPressed("viewport_alternate_select"))
+            {
+                // let the popupmenu listener know we have a request to pick from objects at this location
+                Signals.PublishViewportAlternateSelect(mapObject);
             }
         }
 

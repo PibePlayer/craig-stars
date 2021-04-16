@@ -181,7 +181,7 @@ namespace CraigStars
                     Aggregate.Shield += slot.HullComponent.Shield * slot.Quantity;
                     Aggregate.CargoCapacity += slot.HullComponent.CargoBonus * slot.Quantity;
                     Aggregate.FuelCapacity += slot.HullComponent.FuelBonus * slot.Quantity;
-                    Aggregate.Colonizer = slot.HullComponent.ColonizationModule || slot.HullComponent.OrbitalConstructionModule;
+                    Aggregate.Colonizer = Aggregate.Colonizer || slot.HullComponent.ColonizationModule || slot.HullComponent.OrbitalConstructionModule;
                     Aggregate.Movement += slot.HullComponent.MovementBonus * slot.Quantity;
                     // i.e. two .3f battle computers is (1 -.3) * (1 - .3) or (.7 * .7) or it decreases innaccuracy by 49%
                     // so a 75% accurate torpedo would be 100 - (100 - 75) * .49 = 100 - 12.25 or 88% accurate
@@ -344,7 +344,7 @@ namespace CraigStars
         {
             if (player != Player) return;
 
-            if (player.Race != null && player.Race.PRT == PRT.JoaT && Hull != null && Hull.BuiltInScannerForJoaT)
+            if (player.Race != null && player.Race.PRT == PRT.JoaT && Hull != null && Hull.BuiltInScannerForJoaT && field == TechField.Electronics)
             {
                 // update our scanner aggregate
                 ComputeScanRanges(player);

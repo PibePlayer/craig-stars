@@ -298,13 +298,13 @@ namespace CraigStars
         public void RunTurnProcessors(Player player)
         {
             List<TurnProcessor> processors = new List<TurnProcessor>() {
-                new ShipDesignerTurnProcessor(),
-                new ScoutTurnProcessor(),
-                new ColonyTurnProcessor(),
-                new BomberTurnProcessor(),
-                new PlanetProductionTurnProcessor()
+                new ShipDesignerTurnProcessor(GameInfo),
+                new ScoutTurnProcessor(GameInfo),
+                new ColonyTurnProcessor(GameInfo),
+                new BomberTurnProcessor(GameInfo),
+                new PlanetProductionTurnProcessor(GameInfo)
             };
-            processors.ForEach(processor => processor.Process(Year, player));
+            processors.ForEach(processor => processor.Process(player));
         }
 
         internal void SaveGame()
@@ -364,7 +364,7 @@ namespace CraigStars
             // submit AI turns
             foreach (var player in Players)
             {
-                if (player.AIControlled)
+                if (player.AIControlled && !player.SubmittedTurn)
                 {
                     tasks.Add(Task.Run(() =>
                     {

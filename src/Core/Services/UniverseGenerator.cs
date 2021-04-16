@@ -64,6 +64,10 @@ namespace CraigStars
 
             Game.Planets.AddRange(planets);
             Game.Fleets.AddRange(fleets);
+
+            // accelerate some stuff, if necessary
+            GameStartModeModifier gameStartModeModifier = new GameStartModeModifier();
+            gameStartModeModifier.AdvanceGame(Game);
         }
 
         /// <summary>
@@ -462,6 +466,7 @@ namespace CraigStars
             starbase.HullSetNumber = player.DefaultHullSet;
             starbase.Name = "Starbase";
             starbase.Player = player;
+            starbase.Purpose = ShipDesignPurpose.Starbase;
             Game.Designs.Add(starbase);
 
             Game.Designs.ForEach(design =>

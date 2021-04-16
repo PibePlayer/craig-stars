@@ -33,6 +33,14 @@ namespace CraigStars
             int numShields = 0;
             int numArmor = 0;
 
+
+            var bestStargate = player.GetBestStargate();
+            var bestMassDriver = player.GetBestMassDriver();
+
+            // if we have no stargate available, that's the same as already assigning one
+            bool stargate = !(bestStargate != null);
+            bool massDriver = !(bestMassDriver != null);
+
             // populate each slot for this design
             hull.Slots.Each((hullSlot, index) =>
             {
@@ -49,6 +57,7 @@ namespace CraigStars
                         slot.HullComponent = player.GetBestEngine();
                         break;
                     case HullSlotType.Electrical:
+                        // TODO: use GetBestBattleComputer()/GetBestJammer()
                         slot.HullComponent = Techs.BattleComputer;
                         break;
                     case HullSlotType.Scanner:
@@ -92,6 +101,24 @@ namespace CraigStars
                         break;
                     case HullSlotType.Mine:
                         slot.HullComponent = player.GetBestMineLayer();
+                        break;
+                    case HullSlotType.Orbital:
+                    case HullSlotType.OrbitalElectrical:
+                        if (!stargate)
+                        {
+                            slot.HullComponent = bestStargate;
+                            stargate = true;
+                        }
+                        else if (!massDriver)
+                        {
+                            slot.HullComponent = bestMassDriver;
+                            massDriver = true;
+                        }
+                        else if (hullSlot.Type == HullSlotType.OrbitalElectrical)
+                        {
+                            // TODO: write GetBestJammer()
+                            // slot.HullComponent = player.GetBestJammer();
+                        }
                         break;
                     case HullSlotType.Bomb:
                         slot.HullComponent = player.GetBestBomb();

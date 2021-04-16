@@ -74,21 +74,7 @@ namespace CraigStars
         /// </summary>
         public override void _Input(InputEvent @event)
         {
-            if (@event is InputEventKey key)
-            {
-                if (key.Pressed && key.Scancode == (uint)KeyList.Shift)
-                {
-                    quantityModifier *= 10;
-                }
-                else if (key.Pressed && key.Scancode == (uint)KeyList.Control)
-                {
-                    quantityModifier *= 100;
-                }
-                else
-                {
-                    quantityModifier = 1;
-                }
-            }
+            quantityModifier = this.UpdateQuantityModifer(@event, quantityModifier);
         }
 
         void SubscribeHullComponentEvents()

@@ -294,21 +294,7 @@ namespace CraigStars
         /// </summary>
         public override void _Input(InputEvent @event)
         {
-            if (@event is InputEventKey key)
-            {
-                if (key.Pressed && key.Scancode == (uint)KeyList.Shift)
-                {
-                    quantityModifier *= 10;
-                }
-                else if (key.Pressed && key.Scancode == (uint)KeyList.Control)
-                {
-                    quantityModifier *= 100;
-                }
-                else
-                {
-                    quantityModifier = 1;
-                }
-            }
+            quantityModifier = this.UpdateQuantityModifer(@event, quantityModifier);
         }
 
         /// <summary>
@@ -391,8 +377,26 @@ namespace CraigStars
                 if (selectedQueueItem.HasValue)
                 {
                     // add below the selected item
-                    queuedItems.Insert(selectedQueuedItemIndex + 1, newItem);
-                    log.Debug($"Inserted new item to at {selectedQueuedItemIndex + 1} - {newItem}");
+                    if (queuedItems.Count > selectedQueuedItemIndex + 1)
+                    {
+                        var nextItem = queuedItems[selectedQueuedItemIndex + 1];
+                        if (nextItem.type == newItem.type && nextItem.Design == newItem.Design)
+                        {
+                            // increase quantity
+                            nextItem.quantity += quantityModifier;
+                            queuedItems[selectedQueuedItemIndex + 1] = nextItem;
+                        }
+                        else
+                        {
+                            queuedItems.Insert(selectedQueuedItemIndex + 1, newItem);
+                            log.Debug($"Inserted new item to at {selectedQueuedItemIndex + 1} - {newItem}");
+                        }
+                    }
+                    else
+                    {
+                        queuedItems.Insert(selectedQueuedItemIndex + 1, newItem);
+                        log.Debug($"Inserted new item to at {selectedQueuedItemIndex + 1} - {newItem}");
+                    }
                 }
                 else
                 {

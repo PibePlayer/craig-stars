@@ -76,6 +76,11 @@ namespace CraigStars
         {
         }
 
+        public override string ToString()
+        {
+            return $"{GetType().Name} {Name}";
+        }
+
         public bool OwnedBy(Player player)
         {
             return Player == player;

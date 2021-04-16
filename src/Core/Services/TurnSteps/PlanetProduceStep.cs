@@ -53,10 +53,43 @@ namespace CraigStars
                 Cost costPer = item.GetCostOfOne(rules, planet.Player.Race);
                 int numBuilt = (int)(allocated / costPer);
 
+                // if we are autobuilding, don't build more than our max
+                // i.e. if we have 95 mines, 100 max mines, and we are autobuilding 10 mines
+                // we should only actually autobuild 5 mines
+                int quantityDesired = item.quantity;
+                switch (item.type)
+                {
+                    case QueueItemType.AutoMine:
+                        quantityDesired = Math.Min(quantityDesired, planet.MaxMines - planet.Mines);
+                        break;
+                    case QueueItemType.AutoFactory:
+                        quantityDesired = Math.Min(quantityDesired, planet.MaxFactories - planet.Factories);
+                        break;
+                    case QueueItemType.AutoDefense:
+                        quantityDesired = Math.Min(quantityDesired, planet.MaxDefenses - planet.Defenses);
+                        break;
+                    case QueueItemType.Mine:
+                        quantityDesired = Math.Min(quantityDesired, planet.MaxPossibleMines - planet.Mines);
+                        break;
+                    case QueueItemType.Factory:
+                        quantityDesired = Math.Min(quantityDesired, planet.MaxPossibleFactories - planet.Factories);
+                        break;
+                    case QueueItemType.Defense:
+                        quantityDesired = Math.Min(quantityDesired, planet.MaxDefenses - planet.Defenses);
+                        break;
+                }
+
+                // no need to build anymore
+                if (quantityDesired <= 0)
+                {
+                    index++;
+                    continue;
+                }
+
                 // log.debug('Building item: %s cost_per: %s allocated: %s num_build: %s', item,
                 // cost_per, allocated, numBuilt)
                 // If we can build some, but not all
-                if (0 < numBuilt && numBuilt < item.quantity)
+                if (0 < numBuilt && numBuilt < quantityDesired)
                 {
                     // build however many we can
                     allocated = BuildItem(planet, item, numBuilt, allocated);
@@ -76,10 +109,10 @@ namespace CraigStars
                     queue.Allocated = AllocateToQueue(costPer, allocated);
                     allocated -= queue.Allocated;
                 }
-                else if (numBuilt >= item.quantity)
+                else if (numBuilt >= quantityDesired)
                 {
                     // only build the amount required
-                    numBuilt = item.quantity;
+                    numBuilt = quantityDesired;
                     allocated = BuildItem(planet, item, numBuilt, allocated);
 
                     // remove this cost from our allocated amount
@@ -128,17 +161,21 @@ namespace CraigStars
         {
             if (item.type == QueueItemType.Mine || item.type == QueueItemType.AutoMine)
             {
+                // TODO: return resources from overbuild back to player
                 planet.Mines += numBuilt;
+                planet.Mines = Mathf.Clamp(planet.Mines, 0, planet.MaxPossibleMines);
                 Message.Mine(planet.Player, planet, numBuilt);
             }
             else if (item.type == QueueItemType.Factory || item.type == QueueItemType.AutoFactory)
             {
                 planet.Factories += numBuilt;
+                planet.Factories = Mathf.Clamp(planet.Factories, 0, planet.MaxPossibleFactories);
                 Message.Factory(planet.Player, planet, numBuilt);
             }
             else if (item.type == QueueItemType.Defense || item.type == QueueItemType.AutoDefense)
             {
                 planet.Defenses += numBuilt;
+                planet.Defenses = Mathf.Clamp(planet.Defenses, 0, planet.MaxDefenses);
                 Message.Defense(planet.Player, planet, numBuilt);
             }
             else if (item.type == QueueItemType.Alchemy || item.type == QueueItemType.AutoAlchemy)

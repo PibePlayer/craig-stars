@@ -109,7 +109,7 @@ namespace CraigStars
                 {
                     case QueueItemType.Starbase:
                     case QueueItemType.ShipToken:
-                        return Design.Name;
+                        return $"{Design.Name} v{Design.Version}";
                     case QueueItemType.AutoAlchemy:
                         return "Alchemy (Auto Build)";
                     case QueueItemType.AutoMine:

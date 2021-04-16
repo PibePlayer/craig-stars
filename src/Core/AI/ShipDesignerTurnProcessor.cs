@@ -15,10 +15,12 @@ namespace CraigStars
 
         ShipDesignGenerator shipDesignGenerator = new ShipDesignGenerator();
 
+        public ShipDesignerTurnProcessor(PublicGameInfo gameInfo) : base(gameInfo) { }
+
         /// <summary>
         /// a new turn! build some ships
         /// </summary>
-        public override void Process(int year, Player player)
+        public override void Process(Player player)
         {
             var hulls = player.TechStore.Hulls.Where(tech => player.HasTech(tech)).ToList();
             var designsByHull = player.Designs.ToLookup(design => design.Hull).ToDictionary(lookup => lookup.Key, lookup => lookup.ToList());

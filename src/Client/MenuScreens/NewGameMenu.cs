@@ -17,15 +17,22 @@ namespace CraigStars
         [Export]
         public Density Density { get; set; }
 
+        Loader loader;
         CheckButton fastHotseatCheckButton;
         LineEdit nameLineEdit;
         OptionButton sizeOptionButton;
         OptionButton densityOptionButton;
         Container playersContainer;
         Button addPlayerButton;
+        Button startButton;
+        Button backButton;
 
         public override void _Ready()
         {
+            loader = GetNode<Loader>("VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/BottomHBoxContainer/Loader");
+            startButton = GetNode<Button>("VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/StartButton");
+            backButton = GetNode<Button>("VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/BackButton");
+
             nameLineEdit = (LineEdit)FindNode("NameLineEdit");
             sizeOptionButton = (OptionButton)FindNode("SizeOptionButton");
             densityOptionButton = (OptionButton)FindNode("DensityOptionButton");
@@ -56,9 +63,10 @@ namespace CraigStars
             fastHotseatCheckButton.Pressed = Settings.Instance.FastHotseat;
             fastHotseatCheckButton.Connect("toggled", this, nameof(OnFastHotseatToggled));
             addPlayerButton.Connect("pressed", this, nameof(OnAddPlayerButtonPressed));
-            ((Button)FindNode("BackButton")).Connect("pressed", this, nameof(OnBackPressed));
-            ((Button)FindNode("StartButton")).Connect("pressed", this, nameof(OnStartPressed));
+            backButton.Connect("pressed", this, nameof(OnBackPressed));
+            startButton.Connect("pressed", this, nameof(OnStartPressed));
 
+            backButton.Disabled = startButton.Disabled = false;
         }
 
         void OnFastHotseatToggled(bool toggled)
@@ -84,7 +92,9 @@ namespace CraigStars
             RulesManager.Rules.Size = (Size)sizeOptionButton.Selected;
             RulesManager.Rules.Density = (Density)densityOptionButton.Selected;
             Settings.Instance.GameName = nameLineEdit.Text;
-            GetTree().ChangeScene("res://src/Client/GameView.tscn");
+
+            loader.LoadScene("res://src/Client/GameView.tscn");
+            backButton.Disabled = startButton.Disabled = true;
         }
 
     }

@@ -12,6 +12,8 @@ namespace CraigStars
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(Scanner));
 
+        protected Player Me { get => PlayersManager.Me; }
+
         PackedScene waypointAreaScene;
         PackedScene scannerCoverageScene;
         PackedScene planetScene;
@@ -62,7 +64,6 @@ namespace CraigStars
         FleetSprite commandedFleet;
 
         public PlanetSprite CommandedPlanet { get; set; }
-        Player Me { get => PlayersManager.Me; }
 
         bool movingWaypoint = false;
         WaypointArea activeWaypointArea;
@@ -523,7 +524,7 @@ namespace CraigStars
                         {
                             log.Debug($"Adding waypoint in space for {commandedFleet.Name} to {GetLocalMousePosition()}");
                             commandedFleet?.AddWaypoint(GetLocalMousePosition(), selectedWaypoint);
-                            PlayersManager.Me.Dirty = true;
+                            Me.Dirty = true;
                             Signals.PublishPlayerDirtyEvent();
                         }
                     }
@@ -532,7 +533,7 @@ namespace CraigStars
             if (@event.IsActionPressed("delete") && selectedWaypoint != null && commandedFleet != null)
             {
                 commandedFleet.DeleteWaypoint(selectedWaypoint);
-                PlayersManager.Me.Dirty = true;
+                Me.Dirty = true;
                 Signals.PublishPlayerDirtyEvent();
             }
         }
@@ -610,7 +611,7 @@ namespace CraigStars
                         // this was shift+clicked, so let the viewport know it's supposed to be added as a waypoint
                         log.Debug($"Adding waypoint for {commandedFleet.Name} to {closest.Name}");
                         commandedFleet.AddWaypoint(closest.MapObject, selectedWaypoint);
-                        PlayersManager.Me.Dirty = true;
+                        Me.Dirty = true;
                         Signals.PublishPlayerDirtyEvent();
                     }
                 }

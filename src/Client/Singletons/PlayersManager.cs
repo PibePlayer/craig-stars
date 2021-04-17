@@ -109,6 +109,11 @@ namespace CraigStars.Singletons
                 }
                 return Instance.me;
             }
+            set
+            {
+                Instance.me = value;
+                Instance.Players[value.Num] = value;
+            }
         }
 
         /// <summary>

@@ -44,8 +44,10 @@ namespace CraigStars
 
             Signals.TurnPassedEvent += OnTurnPassed;
             Signals.PostStartGameEvent += OnPostStartGame;
-            Signals.PlayerDirtyEvent += OnPlayerDirty;
+            Signals.PlayerDirtyChangedEvent += OnPlayerDirty;
             Signals.MapObjectSelectedEvent += OnMapObjectSelected;
+            Signals.PlayerDirtyChangedEvent += OnPlayerDirtyChanged;
+
             UpdateControls();
         }
 
@@ -53,8 +55,15 @@ namespace CraigStars
         {
             Signals.TurnPassedEvent -= OnTurnPassed;
             Signals.PostStartGameEvent -= OnPostStartGame;
-            Signals.PlayerDirtyEvent -= OnPlayerDirty;
+            Signals.PlayerDirtyChangedEvent -= OnPlayerDirty;
             Signals.MapObjectSelectedEvent -= OnMapObjectSelected;
+            Signals.PlayerDirtyChangedEvent -= OnPlayerDirtyChanged;
+
+        }
+
+        private void OnPlayerDirtyChanged()
+        {
+            UpdateControls();
         }
 
         void OnMapObjectSelected(MapObjectSprite mapObject)

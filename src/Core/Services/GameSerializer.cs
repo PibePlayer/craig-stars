@@ -34,7 +34,7 @@ namespace CraigStars
         public GameJson SerializeGame(Game game)
         {
             log.Info($"{game.Year}: Serializing game to JSON.");
-            GameJson gameJson = new GameJson(game.Players.Count);
+            GameJson gameJson = new GameJson(game.Name, game.Year, game.Players.Count);
             var saveTasks = new List<Task>();
             saveTasks.Add(Task.Factory.StartNew(() =>
                 {

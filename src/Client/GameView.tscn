@@ -45,7 +45,9 @@ expand_margin_right = 5.0
 expand_margin_top = 5.0
 expand_margin_bottom = 5.0
 
-[node name="GameView" type="Node2D"]
+[node name="GameView" type="Node2D" groups=[
+"GameView",
+]]
 script = ExtResource( 3 )
 
 [node name="Scanner" parent="." instance=ExtResource( 1 )]

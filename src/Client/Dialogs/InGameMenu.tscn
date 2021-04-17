@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://src/Client/Dialogs/InGameMenu.cs" type="Script" id=1]
 [ext_resource path="res://src/Client/Dialogs/ConfirmDialog.tscn" type="PackedScene" id=2]
+[ext_resource path="res://src/Client/Loader.tscn" type="PackedScene" id=3]
 
 [node name="InGameMenu" type="WindowDialog"]
 pause_mode = 2
@@ -33,15 +34,19 @@ margin_bottom = 221.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/CenterContainer"]
 margin_left = 95.0
-margin_top = 86.0
+margin_top = 68.0
 margin_right = 222.0
-margin_bottom = 130.0
+margin_bottom = 148.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="Loader" parent="MarginContainer/CenterContainer/VBoxContainer" instance=ExtResource( 3 )]
+margin_left = 47.0
+margin_right = 79.0
+size_flags_horizontal = 4
+
 [node name="SaveTurnButton" type="Button" parent="MarginContainer/CenterContainer/VBoxContainer"]
-visible = false
 margin_right = 127.0
 margin_bottom = 20.0
 hint_tooltip = "Save your turn without submitting."
@@ -61,17 +66,18 @@ __meta__ = {
 }
 
 [node name="ExitToMainMenuButton" type="Button" parent="MarginContainer/CenterContainer/VBoxContainer"]
+margin_top = 36.0
 margin_right = 127.0
-margin_bottom = 20.0
+margin_bottom = 56.0
 text = "Exit to Main Menu"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="ExitGameButton" type="Button" parent="MarginContainer/CenterContainer/VBoxContainer"]
-margin_top = 24.0
+margin_top = 60.0
 margin_right = 127.0
-margin_bottom = 44.0
+margin_bottom = 80.0
 text = "Exit Game"
 
 [node name="ConfirmDialog" parent="." instance=ExtResource( 2 )]

@@ -50,7 +50,7 @@ namespace CraigStars.Singletons
 
         #region UI Events
 
-        public static event Action PlayerDirtyEvent;
+        public static event Action PlayerDirtyChangedEvent;
         public static event Action<Player> SubmitTurnRequestedEvent;
         public static event Action<Player> UnsubmitTurnRequestedEvent;
         public static event Action<int> PlayTurnRequestedEvent;
@@ -139,7 +139,7 @@ namespace CraigStars.Singletons
 
 
         # region Scanner Objects
-        public static void PublishPlayerDirtyEvent() => PlayerDirtyEvent?.Invoke();
+        public static void PublishPlayerDirtyEvent() => PlayerDirtyChangedEvent?.Invoke();
         public static void PublishMapObjectHightlightedEvent(MapObjectSprite mapObjectSprite) => MapObjectHighlightedEvent?.Invoke(mapObjectSprite);
         public static void PublishMapObjectSelectedEvent(MapObjectSprite mapObjectSprite) => MapObjectSelectedEvent?.Invoke(mapObjectSprite);
         public static void PublishMapObjectCommandedEvent(MapObjectSprite mapObjectSprite) => MapObjectCommandedEvent?.Invoke(mapObjectSprite);

@@ -6,7 +6,6 @@ namespace CraigStars
 {
     public class MainMenu : MarginContainer
     {
-
         WindowDialog hostWindow;
         WindowDialog joinWindow;
         LineEdit joinHostEdit;

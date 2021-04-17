@@ -164,6 +164,7 @@ namespace CraigStars.Singletons
                 if (!raceFile.FileExists(path))
                 {
                     log.Error($"Race file {filename} does not exist at {path}");
+                    return;
                 }
                 log.Info($"Deleting race from {path}");
 

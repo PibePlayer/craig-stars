@@ -75,7 +75,7 @@ namespace CraigStars.Tests
         {
             var game = new Game() { SaveToDisk = false };
             var rules = new Rules(0);
-            game.Init(new List<Player>() { new Player() }, rules, StaticTechStore.Instance);
+            game.Init(new List<Player>() { new Player() }, rules, StaticTechStore.Instance, new TestGamesManager());
             game.GenerateUniverse();
 
             Assert.AreEqual(rules.NumPlanets, game.Planets.Count);
@@ -90,7 +90,7 @@ namespace CraigStars.Tests
             var game = new Game() { SaveToDisk = false };
             var player = new Player();
             var rules = new Rules(0);
-            game.Init(new List<Player>() { player }, rules, StaticTechStore.Instance);
+            game.Init(new List<Player>() { player }, rules, StaticTechStore.Instance, new TestGamesManager());
             game.GenerateUniverse();
 
             // submit the player
@@ -119,7 +119,7 @@ namespace CraigStars.Tests
                 Size = Size.Huge,
                 Density = Density.Packed
             };
-            game.Init(new List<Player>() { player, aiPlayer }, rules, StaticTechStore.Instance);
+            game.Init(new List<Player>() { player, aiPlayer }, rules, StaticTechStore.Instance, new TestGamesManager());
             game.GenerateUniverse();
 
             // turn off logging but for errors

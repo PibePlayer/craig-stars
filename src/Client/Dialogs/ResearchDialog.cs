@@ -114,6 +114,9 @@ namespace CraigStars
             Me.ResearchAmount = (int)resourcesBudgetedAmount.Value;
             Me.NextResearchField = (NextResearchField)nextFieldToResearchMenuButton.Selected;
 
+            Me.Dirty = true;
+            Signals.PublishPlayerDirtyEvent();
+
             Hide();
         }
 

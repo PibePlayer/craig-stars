@@ -6,6 +6,7 @@ namespace CraigStars
 {
     public class InGameMenu : GameViewDialog
     {
+        Loader loader;
         Button saveTurnButton;
         Button exitGameButton;
         Button exitToMainMenuButton;
@@ -14,18 +15,32 @@ namespace CraigStars
         public override void _Ready()
         {
             base._Ready();
+            loader = GetNode<Loader>("MarginContainer/CenterContainer/VBoxContainer/Loader");
             saveTurnButton = GetNode<Button>("MarginContainer/CenterContainer/VBoxContainer/SaveTurnButton");
             exitGameButton = GetNode<Button>("MarginContainer/CenterContainer/VBoxContainer/ExitGameButton");
             exitToMainMenuButton = GetNode<Button>("MarginContainer/CenterContainer/VBoxContainer/ExitToMainMenuButton");
             confirmDialog = GetNode<CSConfirmDialog>("ConfirmDialog");
 
-            saveTurnButton.Connect("pressed", this, nameof(OnSaveGameButtonPressed));
+            saveTurnButton.Connect("pressed", this, nameof(OnSaveTurnButtonPressed));
             exitGameButton.Connect("pressed", this, nameof(OnExitGameButtonPressed));
             exitToMainMenuButton.Connect("pressed", this, nameof(OnExitToMainMenuButtonPressed));
 
             Connect("about_to_show", this, nameof(OnAboutToShow));
             Connect("popup_hide", this, nameof(OnPopupHide));
 
+            Signals.PlayerDirtyChangedEvent += OnPlayerDirtyChanged;
+        }
+
+        public override void _ExitTree()
+        {
+            base._ExitTree();
+            DialogManager.DialogRefCount = 0;
+            Signals.PlayerDirtyChangedEvent -= OnPlayerDirtyChanged;
+        }
+
+        void OnPlayerDirtyChanged()
+        {
+            saveTurnButton.Disabled = !Me.Dirty;
         }
 
         public override void _UnhandledInput(InputEvent @event)
@@ -34,6 +49,11 @@ namespace CraigStars
             if (Input.IsActionJustPressed("in_game_menu") && DialogManager.DialogRefCount == 0)
             {
                 PopupCentered();
+            }
+
+            if (Input.IsActionPressed("save_turn"))
+            {
+                OnSaveTurnButtonPressed();
             }
         }
 
@@ -47,14 +67,16 @@ namespace CraigStars
             GetTree().Paused = false;
         }
 
-        void OnSaveGameButtonPressed()
+        void OnSaveTurnButtonPressed()
         {
-            // TODO: do this
+            GamesManager.Instance.SavePlayer(Me);
+            Me.Dirty = false;
+            Signals.PublishPlayerDirtyEvent();
         }
 
         void OnExitGameButtonPressed()
         {
-            if (PlayersManager.Me.Dirty)
+            if (Me.Dirty)
             {
                 confirmDialog.Show("You have unsaved changes to your turn, are you sure you want to exit?",
                 () => GetTree().Quit());
@@ -67,14 +89,14 @@ namespace CraigStars
 
         void OnExitToMainMenuButtonPressed()
         {
-            if (PlayersManager.Me.Dirty)
+            if (Me.Dirty)
             {
                 confirmDialog.Show("You have unsaved changes to your turn, are you sure you want to exit?",
-                () => GetTree().ChangeScene("res://src/Client/MainMenu.tscn"));
+                () => loader.LoadScene("res://src/Client/MainMenu.tscn"));
             }
             else
             {
-                GetTree().ChangeScene("res://src/Client/MainMenu.tscn");
+                loader.LoadScene("res://src/Client/MainMenu.tscn");
             }
         }
 

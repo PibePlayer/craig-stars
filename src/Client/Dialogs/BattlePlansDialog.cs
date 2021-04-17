@@ -135,6 +135,9 @@ namespace CraigStars
                 }
             }
 
+            Me.Dirty = true;
+            Signals.PublishPlayerDirtyEvent();
+
             Hide();
         }
 

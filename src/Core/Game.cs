@@ -29,6 +29,11 @@ namespace CraigStars
         /// </summary>
         [JsonIgnore] public ITechStore TechStore { get; set; }
 
+        /// <summary>
+        /// The GamesManager is used to save turns
+        /// </summary>
+        [JsonIgnore] public IGamesManager GamesManager { get; set; }
+
         #region PublicGameInfo
 
         /// <summary>
@@ -77,16 +82,12 @@ namespace CraigStars
 
         TurnGenerator turnGenerator;
         TurnSubmitter turnSubmitter;
-        GameSerializer gameSerializer;
-        GameSaver gameSaver;
         Task aiSubmittingTask;
 
         public Game()
         {
             turnGenerator = new TurnGenerator(this);
             turnSubmitter = new TurnSubmitter(this);
-            gameSaver = new GameSaver(this);
-            gameSerializer = new GameSerializer(this);
 
             turnGenerator.TurnGeneratorAdvancedEvent += OnTurnGeneratorAdvanced;
             EventManager.PlanetPopulationEmptiedEvent += OnPlanetPopulationEmptied;
@@ -140,7 +141,7 @@ namespace CraigStars
             MapObjectsByLocation = mapObjects.ToLookup(mo => mo.Position).ToDictionary(lookup => lookup.Key, lookup => lookup.ToList());
         }
 
-        public void Init(List<Player> players, Rules rules, ITechStore techStore)
+        public void Init(List<Player> players, Rules rules, ITechStore techStore, IGamesManager gamesManager)
         {
             Players.Clear();
             Players.AddRange(players);
@@ -150,6 +151,7 @@ namespace CraigStars
             Players.ForEach(player => player.Game = GameInfo);
 
             TechStore = techStore;
+            GamesManager = gamesManager;
             Rules = rules;
         }
 
@@ -313,12 +315,12 @@ namespace CraigStars
             {
                 // serialize the game to JSON. This must complete before we can
                 // modify any state
-                var gameJson = gameSerializer.SerializeGame(this);
+                var gameJson = GamesManager.SerializeGame(this);
 
                 // now that we have our json, we can save the game to dis in a separate task
                 _ = Task.Run(() =>
                 {
-                    gameSaver.SaveGame(gameJson);
+                    GamesManager.SaveGame(gameJson);
                 });
             }
         }

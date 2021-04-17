@@ -77,7 +77,6 @@ namespace CraigStars
                     Squares[y, x] = GetNode<BattleGridSquare>($"MarginContainer/VBoxContainer/BattleContainer/BattleGrid/BattleGridSquare{(x + 1) + y * GridSize}");
                     Squares[y, x].Coordinates = new Vector2(y, x);
                     Squares[y, x].SelectedEvent += OnBattleGridSquareSelected;
-                    log.Debug($"Loading square MarginContainer/VBoxContainer/BattleContainer/BattleGrid/BattleGridSquare{(x + 1) + y * GridSize}");
                 }
             }
 

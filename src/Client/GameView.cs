@@ -86,16 +86,20 @@ namespace CraigStars
             // init the server and send a notice to all players that it's time to start
             if (this.IsServerOrSinglePlayer())
             {
-                Game = new Game() { TechStore = TechStore.Instance, Mode = Settings.Instance.GameMode, Name = Settings.Instance.GameName };
                 if (Settings.Instance.ShouldContinueGame)
                 {
-                    GameSaver saver = new GameSaver(Game);
-                    saver.LoadGame(Settings.Instance.ContinueGame, Settings.Instance.ContinueYear, TechStore.Instance);
+                    Game = GamesManager.Instance.LoadGame(TechStore.Instance, Settings.Instance.ContinueGame, Settings.Instance.ContinueYear);
                     PlayersManager.Instance.InitPlayersFromGame(Game.Players);
+
+                    if (GamesManager.Instance.HasPlayerSave(PlayersManager.Me))
+                    {
+                        GamesManager.Instance.LoadPlayerSave(PlayersManager.Me);
+                    }
                 }
                 else
                 {
-                    Game.Init(PlayersManager.Instance.Players.Cast<Player>().ToList(), RulesManager.Rules, TechStore.Instance);
+                    Game = new Game();
+                    Game.Init(PlayersManager.Instance.Players.Cast<Player>().ToList(), RulesManager.Rules, TechStore.Instance, GamesManager.Instance);
                     Game.GenerateUniverse();
                 }
 

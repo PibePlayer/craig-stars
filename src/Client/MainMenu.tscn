@@ -8,7 +8,9 @@
 size = 50
 font_data = ExtResource( 2 )
 
-[node name="MainMenu" type="MarginContainer"]
+[node name="MainMenu" type="MarginContainer" groups=[
+"Menu",
+]]
 anchor_right = 1.0
 anchor_bottom = 1.0
 custom_constants/margin_right = 0

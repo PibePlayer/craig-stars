@@ -131,7 +131,7 @@ namespace CraigStars.Tests
 
             // generate a tiny universe
             Game game = new Game() { SaveToDisk = false };
-            game.Init(new List<Player>() { player1, player2 }, new Rules(0) { Size = Size.Tiny, Density = Density.Sparse }, StaticTechStore.Instance);
+            game.Init(new List<Player>() { player1, player2 }, new Rules(0) { Size = Size.Tiny, Density = Density.Sparse }, StaticTechStore.Instance, new TestGamesManager());
             game.GenerateUniverse();
 
             var gameSettings = Serializers.CreateGameSettings(game);

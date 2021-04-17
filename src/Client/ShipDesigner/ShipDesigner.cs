@@ -7,6 +7,8 @@ namespace CraigStars
 {
     public class ShipDesigner : HBoxContainer
     {
+        protected Player Me { get => PlayersManager.Me; }
+
         /// <summary>
         /// This is the source ship design we use to populate the hull designer
         /// </summary>
@@ -122,6 +124,8 @@ namespace CraigStars
             SourceShipDesign = designerHullSummary.ShipDesign;
             ResetDesignerShipDesignFromSource();
             UpdateControls();
+            Me.Dirty = true;
+            Signals.PublishPlayerDirtyEvent();
         }
 
         void OnCancelDesignButtonPressed()

@@ -8,11 +8,15 @@ namespace CraigStars
     public class GameJson
     {
         public GameJson() { }
-        public GameJson(int numPlayers)
+        public GameJson(string name, int year, int numPlayers)
         {
+            this.Name = name;
+            this.Year = year;
             Players = new string[numPlayers];
         }
 
+        public string Name { get; private set; }
+        public int Year { get; private set; }
         public string Game { get; set; }
         public string[] Players { get; set; }
     }

@@ -186,6 +186,32 @@ namespace CraigStars
 
         #region Serializer Helpers
 
+        [OnDeserializing]
+        internal void OnDeserializingMethod(StreamingContext context)
+        {
+            // reset our various lists
+            // the populate will add to them
+            DesignIntel.Clear();
+            PlanetIntel.Clear();
+            FleetIntel.Clear();
+            MineFieldIntel.Clear();
+            SalvageIntel.Clear();
+            WormholeIntel.Clear();
+            MysteryTraderIntel.Clear();
+            Battles.Clear();
+
+            BattlePlans.Clear();
+            TransportPlans.Clear();
+            FleetCompositions.Clear();
+            CargoTransferOrders.Clear();
+            MergeFleetOrders.Clear();
+            SplitFleetOrders.Clear();
+            FleetOrders.Clear();
+            DeletedDesigns.Clear();
+            MergedFleets.Clear();
+            Messages.Clear();
+        }
+
         /// <summary>
         /// When a player is deserialized, we have to calculate all the computed values
         /// </summary>

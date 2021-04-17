@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://src/Client/MenuScreens/NewGameMenu.cs" type="Script" id=1]
 [ext_resource path="res://assets/gui/DroidSans.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://src/Client/Loader.tscn" type="PackedScene" id=3]
 [ext_resource path="res://src/Client/Dialogs/CSConfirmDialog.cs" type="Script" id=4]
 [ext_resource path="res://src/Client/MenuScreens/Components/PlayerChooser.tscn" type="PackedScene" id=5]
 
@@ -9,7 +10,9 @@
 size = 50
 font_data = ExtResource( 2 )
 
-[node name="NewGameMenu" type="MarginContainer"]
+[node name="NewGameMenu" type="MarginContainer" groups=[
+"Menu",
+]]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -198,11 +201,21 @@ margin_top = 0.0
 margin_right = 390.0
 margin_bottom = 96.0
 
-[node name="FastHotseatCheckButton" type="CheckButton" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons"]
-margin_left = 240.0
+[node name="BottomHBoxContainer" type="HBoxContainer" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons"]
 margin_top = 402.0
 margin_right = 400.0
 margin_bottom = 442.0
+alignment = 2
+
+[node name="Loader" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/BottomHBoxContainer" instance=ExtResource( 3 )]
+margin_right = 236.0
+margin_bottom = 40.0
+size_flags_horizontal = 3
+
+[node name="FastHotseatCheckButton" type="CheckButton" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/BottomHBoxContainer"]
+margin_left = 240.0
+margin_right = 400.0
+margin_bottom = 40.0
 hint_tooltip = "When a player submits their  turn, automatically advance to the next player."
 size_flags_horizontal = 8
 text = "Fast Hotseat"

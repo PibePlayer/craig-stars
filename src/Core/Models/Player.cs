@@ -186,6 +186,14 @@ namespace CraigStars
 
         #region Serializer Helpers
 
+        /// <summary>
+        /// We use object references for players all over the place. Because of
+        /// this, we "populate" our player object rather than load it into a new object
+        /// I'm not super happy with this, but it's where the code is for now.
+        /// Because of this population, we need to wipe out various lists the player
+        /// object has. The serializer will re-add to them on load.
+        /// </summary>
+        /// <param name="context"></param>
         [OnDeserializing]
         internal void OnDeserializingMethod(StreamingContext context)
         {

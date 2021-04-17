@@ -98,7 +98,7 @@ namespace CraigStars
                 }
                 else
                 {
-                    Game = new Game();
+                    Game = new Game() { Name = Settings.Instance.GameName };
                     Game.Init(PlayersManager.Instance.Players.Cast<Player>().ToList(), RulesManager.Rules, TechStore.Instance, GamesManager.Instance);
                     Game.GenerateUniverse();
                 }

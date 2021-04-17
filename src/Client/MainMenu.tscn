@@ -61,11 +61,18 @@ __meta__ = {
 }
 
 [node name="NewGameButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MenuButtons"]
-margin_top = 180.0
+margin_top = 168.0
 margin_right = 400.0
-margin_bottom = 200.0
+margin_bottom = 188.0
 size_flags_horizontal = 3
 text = "New Game"
+
+[node name="LoadGameButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MenuButtons"]
+margin_top = 192.0
+margin_right = 400.0
+margin_bottom = 212.0
+size_flags_horizontal = 3
+text = "Load Game"
 
 [node name="ContinueGameButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MenuButtons"]
 visible = false
@@ -98,33 +105,33 @@ value = 2400.0
 align = 2
 
 [node name="HostGameButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MenuButtons"]
-margin_top = 204.0
+margin_top = 216.0
 margin_right = 400.0
-margin_bottom = 224.0
+margin_bottom = 236.0
 text = "Host Game"
 
 [node name="JoinGameButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MenuButtons"]
-margin_top = 228.0
+margin_top = 240.0
 margin_right = 400.0
-margin_bottom = 248.0
+margin_bottom = 260.0
 text = "Join Game"
 
 [node name="CustomRacesButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MenuButtons"]
-margin_top = 252.0
+margin_top = 264.0
 margin_right = 400.0
-margin_bottom = 272.0
+margin_bottom = 284.0
 text = "Custom Races"
 
 [node name="SettingsButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MenuButtons"]
-margin_top = 276.0
+margin_top = 288.0
 margin_right = 400.0
-margin_bottom = 296.0
+margin_bottom = 308.0
 text = "Settings"
 
 [node name="ExitButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MenuButtons"]
-margin_top = 300.0
+margin_top = 312.0
 margin_right = 400.0
-margin_bottom = 320.0
+margin_bottom = 332.0
 text = "Exit"
 
 [node name="JoinWindow" type="WindowDialog" parent="."]

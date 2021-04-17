@@ -52,6 +52,7 @@ namespace CraigStars
             FindNode("ExitButton").Connect("pressed", this, nameof(OnExitButtonPressed));
             FindNode("SettingsButton").Connect("pressed", this, nameof(OnSettingsButtonPressed));
             FindNode("NewGameButton").Connect("pressed", this, nameof(OnNewGameButtonPressed));
+            FindNode("LoadGameButton").Connect("pressed", this, nameof(OnLoadGameButtonPressed));
             FindNode("HostGameButton").Connect("pressed", this, nameof(OnHostGameButtonPressed));
             FindNode("JoinGameButton").Connect("pressed", this, nameof(OnJoinGameButtonPressed));
             FindNode("CustomRacesButton").Connect("pressed", this, nameof(OnCustomRacesButtonPressed));
@@ -100,6 +101,11 @@ namespace CraigStars
         void OnNewGameButtonPressed()
         {
             GetTree().ChangeScene("res://src/Client/MenuScreens/NewGameMenu.tscn");
+        }
+
+        void OnLoadGameButtonPressed()
+        {
+            GetTree().ChangeScene("res://src/Client/MenuScreens/LoadGameMenu.tscn");
         }
 
         void OnContinueGameButtonPressed()

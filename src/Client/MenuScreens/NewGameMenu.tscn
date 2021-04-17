@@ -106,7 +106,7 @@ rect_min_size = Vector2( 80, 0 )
 text = "Name:"
 align = 2
 
-[node name="LineEdit" type="LineEdit" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/GridContainer"]
+[node name="NameLineEdit" type="LineEdit" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/GridContainer"]
 margin_left = 101.0
 margin_right = 400.0
 margin_bottom = 24.0

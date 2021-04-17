@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CraigStars.Utils;
 using Godot;
 using log4net;
 using log4net.Appender;
@@ -80,7 +81,7 @@ namespace CraigStars.Singletons
             using (var directory = new Directory())
             {
                 directory.Open(SaveDirPath);
-                directory.ListDirBegin(skipHidden: true);
+                directory.ListDirBegin(skipNavigational: true, skipHidden: true);
                 while (true)
                 {
                     string file = directory.GetNext();
@@ -166,7 +167,7 @@ namespace CraigStars.Singletons
                     return;
                 }
                 log.Info($"Deleting game from {path}");
-                gameDirectory.Remove(path);
+                gameDirectory.Remove(path, true);
             }
         }
 

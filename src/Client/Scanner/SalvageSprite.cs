@@ -33,7 +33,7 @@ namespace CraigStars
             {
                 return;
             }
-            DrawRect(new Rect2(0, 0, 4, 4), Colors.Yellow, false, 1, true);
+            DrawRect(new Rect2(-2, -2, 4, 4), Colors.Yellow, false, 1, true);
         }
 
         public override void UpdateSprite()

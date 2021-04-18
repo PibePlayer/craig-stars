@@ -6,6 +6,7 @@ namespace CraigStars
     public enum WaypointTaskTransportAction
     {
         None,
+        LoadOptimal,
         LoadAll,
         UnloadAll,
         LoadAmount,

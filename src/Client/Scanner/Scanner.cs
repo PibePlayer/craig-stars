@@ -707,8 +707,8 @@ namespace CraigStars
             CommandedPlanet = null;
 
             // rebuild our MapObjectsByGuid
-            MapObjectsByGuid = Planets.Cast<MapObjectSprite>().ToLookup(p => p.MapObject.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
             RemoveMapObjects(transientMapObjects);
+            MapObjectsByGuid = Planets.Cast<MapObjectSprite>().ToLookup(p => p.MapObject.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
 
             // clear out existing waypoint areas
             waypointAreas.ForEach(wpa => { if (IsInstanceValid(wpa)) { RemoveChild(wpa); wpa.DisconnectAll(); wpa.QueueFree(); } });
@@ -803,7 +803,6 @@ namespace CraigStars
             // reset the FleetsByGuid dictionary
             FleetsByGuid = Fleets.ToLookup(f => f.Fleet.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
 
-            Planets.ForEach(p => p.OrbitingFleets.Clear());
             Fleets.ForEach(f =>
             {
                 f.OtherFleets.Clear();

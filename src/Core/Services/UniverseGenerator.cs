@@ -440,6 +440,24 @@ namespace CraigStars
         {
             player.BattlePlans.Add(new BattlePlan("Default"));
             player.TransportPlans.Add(new TransportPlan("Default"));
+            player.TransportPlans.Add(new TransportPlan("Quick Load")
+            {
+                Tasks = new WaypointTransportTasks(
+                    fuel: new WaypointTransportTask(WaypointTaskTransportAction.LoadOptimal),
+                    ironium: new WaypointTransportTask(WaypointTaskTransportAction.LoadAll),
+                    boranium: new WaypointTransportTask(WaypointTaskTransportAction.LoadAll),
+                    germanium: new WaypointTransportTask(WaypointTaskTransportAction.LoadAll)
+                    )
+            });
+            player.TransportPlans.Add(new TransportPlan("Quick Drop")
+            {
+                Tasks = new WaypointTransportTasks(
+                    fuel: new WaypointTransportTask(WaypointTaskTransportAction.LoadOptimal),
+                    ironium: new WaypointTransportTask(WaypointTaskTransportAction.UnloadAll),
+                    boranium: new WaypointTransportTask(WaypointTaskTransportAction.UnloadAll),
+                    germanium: new WaypointTransportTask(WaypointTaskTransportAction.UnloadAll)
+                    )
+            });
             player.TransportPlans.Add(new TransportPlan("Load Colonists")
             {
                 Tasks = new WaypointTransportTasks(colonists: new WaypointTransportTask(WaypointTaskTransportAction.LoadAll))

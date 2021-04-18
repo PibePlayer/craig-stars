@@ -235,9 +235,9 @@ namespace CraigStars
             var wp = fleetWaypoint.Waypoint;
             if (wp.Target is ICargoHolder cargoSource)
             {
-                var capacity = fleet.Aggregate.CargoCapacity - fleet.Cargo.Total;
                 foreach (var task in fleetWaypoint.Tasks)
                 {
+                    var capacity = fleet.Aggregate.CargoCapacity - fleet.Cargo.Total;
                     int transferAmount = 0;
                     switch (task.action)
                     {
@@ -388,7 +388,13 @@ namespace CraigStars
             }
             else
             {
-                // TODO: put some scrap in space...
+                var salvage = new Salvage()
+                {
+                    // todo does owned scrap make sense?
+                    // Player = fleet.Player,
+                    Cargo = cargo
+                };
+                EventManager.PublishMapObjectCreatedEvent(salvage);
             }
         }
 

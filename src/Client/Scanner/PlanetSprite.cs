@@ -35,7 +35,7 @@ namespace CraigStars
         public List<FleetSprite> OrbitingFleets { get; set; } = new List<FleetSprite>();
 
         bool hasActivePeer;
-        bool isActive;
+        bool isCommanded;
         Orbiting orbitingState = Orbiting.None;
         ScannerOwnerAlly ownerAllyState = ScannerOwnerAlly.Unknown;
 
@@ -91,7 +91,7 @@ namespace CraigStars
                 case PlanetViewState.Normal:
                     if (Planet.HasStarbase)
                     {
-                        if (isActive)
+                        if (isCommanded)
                         {
                             DrawCircle(new Vector2(7f, -4f), 2.5f, Colors.Yellow);
                         }
@@ -139,7 +139,7 @@ namespace CraigStars
             ownerAllyState = Planet.ReportAge == MapObject.Unexplored ? ScannerOwnerAlly.Unknown : ScannerOwnerAlly.Known;
             hasActivePeer = HasActivePeer();
             orbitingState = Orbiting.None;
-            isActive = hasActivePeer || State == ScannerState.Commanded;
+            isCommanded = hasActivePeer || State == ScannerState.Commanded;
 
             // TODO: make this work with multiple types
             if (Planet.OrbitingFleets.Count > 0)
@@ -211,7 +211,7 @@ namespace CraigStars
                     unknown.Visible = true;
                     break;
                 case ScannerOwnerAlly.Known:
-                    if (isActive)
+                    if (isCommanded)
                     {
                         inhabitedCommanded.Visible = true;
                     }
@@ -221,7 +221,7 @@ namespace CraigStars
                     }
                     break;
                 case ScannerOwnerAlly.Owned:
-                    if (isActive)
+                    if (isCommanded)
                     {
                         inhabitedCommanded.Visible = true;
                         inhabitedCommanded.Modulate = GUIColors.OwnedColor;
@@ -233,7 +233,7 @@ namespace CraigStars
                     }
                     break;
                 case ScannerOwnerAlly.Friend:
-                    if (isActive)
+                    if (isCommanded)
                     {
                         inhabitedCommanded.Visible = true;
                         inhabitedCommanded.Modulate = Planet.Owner.Color;
@@ -245,7 +245,7 @@ namespace CraigStars
                     }
                     break;
                 case ScannerOwnerAlly.Enemy:
-                    if (isActive)
+                    if (isCommanded)
                     {
                         inhabitedCommanded.Visible = true;
                         inhabitedCommanded.Modulate = Planet.Owner.Color;
@@ -277,7 +277,7 @@ namespace CraigStars
 
             if (orbitingState != Orbiting.None)
             {
-                if (isActive)
+                if (isCommanded)
                 {
                     orbitingCommanded.Visible = true;
                 }

@@ -24,9 +24,6 @@ namespace CraigStars
             Guid = item.Guid,
             Id = item.Id,
             Name = item.Name,
-            RaceName = item.Player.Race.Name,
-            RacePluralName = item.Player.Race.PluralName,
-            Owner = item.Owner,
             Cargo = item.Cargo
         };
 

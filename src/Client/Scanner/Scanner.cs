@@ -18,6 +18,7 @@ namespace CraigStars
         PackedScene scannerCoverageScene;
         PackedScene planetScene;
         PackedScene fleetScene;
+        PackedScene salvageScene;
 
         /// <summary>
         /// The index of the currently selected map object (if there are more than one at a location)
@@ -35,6 +36,7 @@ namespace CraigStars
 
         List<MapObjectSprite> mapObjectsUnderMouse = new List<MapObjectSprite>();
         List<MapObjectSprite> mapObjects = new List<MapObjectSprite>();
+        List<MapObjectSprite> transientMapObjects = new List<MapObjectSprite>();
         Dictionary<Vector2, List<MapObjectSprite>> mapObjectsByLocation = new Dictionary<Vector2, List<MapObjectSprite>>();
 
         SelectedMapObjectIndicatorSprite selectedMapObjectIndicatorSprite;
@@ -44,7 +46,7 @@ namespace CraigStars
 
         public List<PlanetSprite> Planets { get; } = new List<PlanetSprite>();
         public List<FleetSprite> Fleets { get; } = new List<FleetSprite>();
-        public Dictionary<Guid, PlanetSprite> PlanetsByGuid { get; set; } = new Dictionary<Guid, PlanetSprite>();
+        public Dictionary<Guid, MapObjectSprite> MapObjectsByGuid { get; set; } = new Dictionary<Guid, MapObjectSprite>();
         public Dictionary<Guid, FleetSprite> FleetsByGuid { get; set; } = new Dictionary<Guid, FleetSprite>();
         public List<WaypointArea> waypointAreas = new List<WaypointArea>();
         public List<ScannerCoverage> Scanners { get; set; } = new List<ScannerCoverage>();
@@ -74,6 +76,7 @@ namespace CraigStars
             scannerCoverageScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/ScannerCoverage.tscn");
             planetScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/PlanetSprite.tscn");
             fleetScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/FleetSprite.tscn");
+            salvageScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/SalvageSprite.tscn");
 
             // get some nodes
             selectedMapObjectIndicatorSprite = GetNode<SelectedMapObjectIndicatorSprite>("SelectedMapObjectIndicatorSprite");
@@ -170,7 +173,7 @@ namespace CraigStars
             commandedMapObjectIndex = 0;
             selectedMapObjectIndex = 0;
 
-            CallDeferred(nameof(AddFleetsToViewport));
+            CallDeferred(nameof(RefreshTransientViewportObjects));
             CallDeferred(nameof(ResetScannerToHome));
         }
 
@@ -209,16 +212,7 @@ namespace CraigStars
 
         void OnGotoMapObject(MapObject mapObject)
         {
-            MapObjectSprite mapObjectSprite = null;
-
-            if (mapObject is Planet planet && PlanetsByGuid.TryGetValue(planet.Guid, out var planetSprite))
-            {
-                mapObjectSprite = planetSprite;
-            }
-            else if (mapObject is Fleet fleet && FleetsByGuid.TryGetValue(fleet.Guid, out var fleetSprite))
-            {
-                mapObjectSprite = fleetSprite;
-            }
+            MapObjectsByGuid.TryGetValue(mapObject.Guid, out var mapObjectSprite);
 
             if (mapObjectSprite != null)
             {
@@ -278,20 +272,12 @@ namespace CraigStars
         /// <param name="mapObject"></param>
         void OnCommandMapObject(MapObject mapObject)
         {
-            MapObjectSprite mapObjectToCommand = null;
-            if (mapObject is Planet planet && PlanetsByGuid.TryGetValue(planet.Guid, out var planetSprite))
-            {
-                mapObjectToCommand = planetSprite;
-            }
-            else if (mapObject is Fleet fleet && FleetsByGuid.TryGetValue(fleet.Guid, out var fleetSprite))
-            {
-                mapObjectToCommand = fleetSprite;
-            }
+            MapObjectsByGuid.TryGetValue(mapObject.Guid, out var mapObjectSprite);
 
             // activate this object
-            if (mapObjectToCommand != null)
+            if (mapObjectSprite != null)
             {
-                CommandMapObject(mapObjectToCommand);
+                CommandMapObject(mapObjectSprite);
             }
         }
 
@@ -302,20 +288,12 @@ namespace CraigStars
         /// <param name="mapObject"></param>
         void OnSelectMapObject(MapObject mapObject)
         {
-            MapObjectSprite mapObjectToSelect = null;
-            if (mapObject is Planet planet && PlanetsByGuid.TryGetValue(planet.Guid, out var planetSprite))
-            {
-                mapObjectToSelect = planetSprite;
-            }
-            else if (mapObject is Fleet fleet && FleetsByGuid.TryGetValue(fleet.Guid, out var fleetSprite))
-            {
-                mapObjectToSelect = fleetSprite;
-            }
+            MapObjectsByGuid.TryGetValue(mapObject.Guid, out var mapObjectSprite);
 
             // activate this object
-            if (mapObjectToSelect != null)
+            if (mapObjectSprite != null)
             {
-                SelectMapObject(mapObjectToSelect);
+                SelectMapObject(mapObjectSprite);
             }
         }
 
@@ -501,9 +479,8 @@ namespace CraigStars
             Planets.ForEach(p => p.Connect("input_event", this, nameof(OnInputEvent), new Godot.Collections.Array() { p }));
             Planets.ForEach(p => p.Connect("mouse_entered", this, nameof(OnMouseEntered), new Godot.Collections.Array() { p }));
             Planets.ForEach(p => p.Connect("mouse_exited", this, nameof(OnMouseExited), new Godot.Collections.Array() { p }));
-            PlanetsByGuid = Planets.ToLookup(p => p.Planet.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
 
-            AddFleetsToViewport();
+            RefreshTransientViewportObjects();
 
             CallDeferred(nameof(ResetScannerToHome));
         }
@@ -719,50 +696,114 @@ namespace CraigStars
 
                 }
             }
+        }
 
+        /// <summary>
+        /// After turn generation, refresh all the transient mapobjects like fleet, salvage, etc. Basically anything but Planets
+        /// </summary>
+        void RefreshTransientViewportObjects()
+        {
+            CommandedFleet = null;
+            CommandedPlanet = null;
+
+            // rebuild our MapObjectsByGuid
+            MapObjectsByGuid = Planets.Cast<MapObjectSprite>().ToLookup(p => p.MapObject.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
+            RemoveMapObjects(transientMapObjects);
+
+            // clear out existing waypoint areas
+            waypointAreas.ForEach(wpa => { if (IsInstanceValid(wpa)) { RemoveChild(wpa); wpa.DisconnectAll(); wpa.QueueFree(); } });
+            waypointAreas.Clear();
+
+            // rebuild our list of transient map objects nad the guid
+            transientMapObjects.Clear();
+            transientMapObjects.AddRange(AddFleetsToViewport());
+            transientMapObjects.AddRange(AddMapObjectsToViewport<Salvage, SalvageSprite>(Me.Salvage, salvageScene, GetNode("Salvage")));
+
+            mapObjects.Clear();
+            mapObjects.AddRange(Planets);
+            mapObjects.AddRange(transientMapObjects);
+            mapObjects.ForEach(mo => mo.UpdateSprite());
+
+            mapObjectsByLocation = mapObjects.ToLookup(mo => mo.MapObject.Position).ToDictionary(lookup => lookup.Key, lookup => lookup.ToList());
+
+        }
+
+        /// <summary>
+        /// Remove and Disconnect mapObjects from the scanner
+        /// </summary>
+        /// <param name="mapObjects"></param>
+        /// <typeparam name="T"></typeparam>
+        void RemoveMapObjects<T>(List<T> mapObjects) where T : MapObjectSprite
+        {
+            mapObjects.ForEach(mo =>
+            {
+                mo.Disconnect("input_event", this, nameof(OnInputEvent));
+                mo.Disconnect("mouse_entered", this, nameof(OnMouseEntered));
+                mo.Disconnect("mouse_exited", this, nameof(OnMouseExited));
+                MapObjectsByGuid.Remove(mo.MapObject.Guid);
+                mo.QueueFree();
+            });
+            mapObjects.Clear();
+
+        }
+
+        /// <summary>
+        /// Add map objects to the viewport as sprites
+        /// </summary>
+        /// <param name="mapObjects"></param>
+        /// <param name="spriteScene"></param>
+        /// <param name="root"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="U"></typeparam>
+        /// <returns></returns>
+        List<U> AddMapObjectsToViewport<T, U>(IEnumerable<T> mapObjects, PackedScene spriteScene, Node root)
+            where T : MapObject
+            where U : MapObjectSprite
+        {
+            List<U> sprites = new List<U>();
+
+            sprites.AddRange(mapObjects.Select(mapObject =>
+            {
+                var sprite = spriteScene.Instance() as U;
+                sprite.MapObject = mapObject;
+                sprite.Position = mapObject.Position;
+                MapObjectsByGuid[mapObject.Guid] = sprite;
+
+                root.AddChild(sprite);
+
+                sprite.Connect("input_event", this, nameof(OnInputEvent), new Godot.Collections.Array() { sprite });
+                sprite.Connect("mouse_entered", this, nameof(OnMouseEntered), new Godot.Collections.Array() { sprite });
+                sprite.Connect("mouse_exited", this, nameof(OnMouseExited), new Godot.Collections.Array() { sprite });
+                return sprite;
+            }));
+
+            return sprites;
         }
 
         /// <summary>
         /// Add new fleet data to the viewport, clearing out the old data first
         /// </summary>
-        void AddFleetsToViewport()
+        List<FleetSprite> AddFleetsToViewport()
         {
             log.Debug("Resetting viewport Fleets");
 
-            // clear out any existing fleets
-            Fleets.ForEach(f =>
-            {
-                RemoveChild(f);
-                f.Disconnect("input_event", this, nameof(OnInputEvent));
-                f.Disconnect("mouse_entered", this, nameof(OnMouseEntered));
-                f.Disconnect("mouse_exited", this, nameof(OnMouseExited));
-                f.QueueFree();
-            });
             Fleets.Clear();
-            FleetsByGuid.Clear();
+            Fleets.AddRange(AddMapObjectsToViewport<Fleet, FleetSprite>(Me.AllFleets, fleetScene, GetNode("Fleets")));
 
-            waypointAreas.ForEach(wpa => { if (IsInstanceValid(wpa)) { RemoveChild(wpa); wpa.DisconnectAll(); wpa.QueueFree(); } });
-            waypointAreas.Clear();
-            Planets.ForEach(p => p.OrbitingFleets.Clear());
-            CommandedFleet = null;
-            CommandedPlanet = null;
-
-            // add in new fleets
-            Fleets.AddRange(Me.AllFleets.Select(fleet =>
+            Fleets.ForEach(fleetSprite =>
             {
-                var fleetSprite = fleetScene.Instance() as FleetSprite;
-                fleetSprite.Fleet = fleet;
-                fleetSprite.Position = fleet.Position;
-                if (fleet.Orbiting != null && PlanetsByGuid.TryGetValue(fleet.Orbiting.Guid, out var planetSprite))
+                var fleet = fleetSprite.Fleet;
+                if (fleet.Orbiting != null && MapObjectsByGuid.TryGetValue(fleet.Orbiting.Guid, out var mapObjectSprite) && mapObjectSprite is PlanetSprite planetSprite)
                 {
                     planetSprite.OrbitingFleets.Add(fleetSprite);
                     fleetSprite.Orbiting = planetSprite;
                 }
-                return fleetSprite;
-            }));
+            });
 
+            // reset the FleetsByGuid dictionary
             FleetsByGuid = Fleets.ToLookup(f => f.Fleet.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
 
+            Planets.ForEach(p => p.OrbitingFleets.Clear());
             Fleets.ForEach(f =>
             {
                 f.OtherFleets.Clear();
@@ -776,10 +817,7 @@ namespace CraigStars
                 }
             });
 
-            Fleets.ForEach(f => AddChild(f));
-            Fleets.ForEach(f => f.Connect("input_event", this, nameof(OnInputEvent), new Godot.Collections.Array() { f }));
-            Fleets.ForEach(f => f.Connect("mouse_entered", this, nameof(OnMouseEntered), new Godot.Collections.Array() { f }));
-            Fleets.ForEach(f => f.Connect("mouse_exited", this, nameof(OnMouseExited), new Godot.Collections.Array() { f }));
+            return Fleets;
         }
 
         /// <summary>
@@ -796,7 +834,7 @@ namespace CraigStars
                 var fleetSprite = fleetScene.Instance() as FleetSprite;
                 fleetSprite.Fleet = fleet;
                 fleetSprite.Position = fleet.Position;
-                if (fleet.Orbiting != null && PlanetsByGuid.TryGetValue(fleet.Orbiting.Guid, out var planetSprite))
+                if (fleet.Orbiting != null && MapObjectsByGuid.TryGetValue(fleet.Orbiting.Guid, out var mapObjectSprite) && mapObjectSprite is PlanetSprite planetSprite)
                 {
                     planetSprite.OrbitingFleets.Add(fleetSprite);
                     fleetSprite.Orbiting = planetSprite;
@@ -868,21 +906,8 @@ namespace CraigStars
 
         public void ResetScannerToHome()
         {
-            log.Debug("Resetting Scanner to homeview");
             FocusHomeworld();
-            log.Debug("Updating scanners");
             UpdateScanners();
-            log.Debug("Updating Sprites");
-            Planets.ForEach(p => p.UpdateSprite());
-            Fleets.ForEach(f => f.UpdateSprite());
-            log.Debug("Finished Updating Sprites");
-
-            // build a list of all map objects and all map objects per location
-            mapObjects.Clear();
-            mapObjects.AddRange(Planets);
-            mapObjects.AddRange(Fleets);
-            mapObjectsByLocation = mapObjects.ToLookup(mo => mo.MapObject.Position).ToDictionary(lookup => lookup.Key, lookup => lookup.ToList());
-
         }
 
         #region New Turn functions

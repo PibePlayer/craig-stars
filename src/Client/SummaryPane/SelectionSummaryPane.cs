@@ -29,6 +29,8 @@ namespace CraigStars
         PlanetSummaryContainer planetSummaryContainer;
         Control unknownPlanetContainer;
         Control fleetSummaryContainer;
+        Control salvageContainer;
+        CargoGrid salvageCargoGrid;
         Label nameLabel;
         Button otherFleetsButton;
 
@@ -37,6 +39,8 @@ namespace CraigStars
             planetSummaryContainer = GetNode<PlanetSummaryContainer>("VBoxContainer/PlanetSummaryContainer");
             unknownPlanetContainer = GetNode<Control>("VBoxContainer/UnknownPlanetContainer");
             fleetSummaryContainer = GetNode<Control>("VBoxContainer/FleetSummaryContainer");
+            salvageContainer = GetNode<Control>("VBoxContainer/SalvageContainer");
+            salvageCargoGrid = GetNode<CargoGrid>("VBoxContainer/SalvageContainer/HBoxContainer/CargoGrid");
             nameLabel = GetNode<Label>("VBoxContainer/Title/Name");
             otherFleetsButton = GetNode<Button>("VBoxContainer/Title/OtherFleetsButton");
 
@@ -97,6 +101,10 @@ namespace CraigStars
 
         void UpdateControls()
         {
+            salvageContainer.Visible = false;
+            fleetSummaryContainer.Visible = false;
+            planetSummaryContainer.Visible = false;
+            unknownPlanetContainer.Visible = false;
 
             if (MapObject != null)
             {
@@ -107,27 +115,26 @@ namespace CraigStars
                     if (planet.Explored && planet.Hab is Hab hab)
                     {
                         planetSummaryContainer.Visible = true;
-                        unknownPlanetContainer.Visible = false;
                     }
                     else
                     {
-                        planetSummaryContainer.Visible = false;
                         unknownPlanetContainer.Visible = true;
                     }
-                    fleetSummaryContainer.Visible = false;
                 }
                 else if (MapObject.MapObject is Fleet fleet)
                 {
-                    planetSummaryContainer.Visible = false;
-                    unknownPlanetContainer.Visible = false;
                     fleetSummaryContainer.Visible = true;
+                }
+                else if (MapObject.MapObject is Salvage salvage)
+                {
+                    salvageCargoGrid.Cargo = salvage.Cargo;
+                    nameLabel.Text = "Salvage";
+                    salvageContainer.Visible = true;
                 }
                 else
                 {
                     nameLabel.Text = "Unknown";
-                    fleetSummaryContainer.Visible = false;
-                    planetSummaryContainer.Visible = false;
-                    unknownPlanetContainer.Visible = false;
+                    unknownPlanetContainer.Visible = true;
                 }
             }
         }

@@ -275,6 +275,14 @@ namespace CraigStars
             planet.Starbase.ComputeAggregate();
 
             Message.HomePlanet(player, planet);
+
+            Salvage salvage = new Salvage()
+            {
+                Name = "Bonus Salvage!",
+                Cargo = new Cargo(1000, 900, 800),
+                Position = planet.Position + new Vector2(20, 20)
+            };
+            Game.Salvage.Add(salvage);
         }
 
         void MakeExtraWorld(Rules rules, Player player, Planet planet)

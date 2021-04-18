@@ -13,6 +13,8 @@ script = ExtResource( 1 )
 
 [node name="Pen" type="Node2D" parent="Scanners"]
 
+[node name="MineFields" type="Node2D" parent="."]
+
 [node name="Planets" type="Node2D" parent="."]
 
 [node name="Fleets" type="Node2D" parent="."]

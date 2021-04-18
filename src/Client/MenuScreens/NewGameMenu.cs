@@ -27,11 +27,14 @@ namespace CraigStars
         Button startButton;
         Button backButton;
 
+        CSConfirmDialog confirmDialog;
+
         public override void _Ready()
         {
             loader = GetNode<Loader>("VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/BottomHBoxContainer/Loader");
             startButton = GetNode<Button>("VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/StartButton");
             backButton = GetNode<Button>("VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/BackButton");
+            confirmDialog = GetNode<CSConfirmDialog>("ConfirmationDialog");
 
             nameLineEdit = (LineEdit)FindNode("NameLineEdit");
             sizeOptionButton = (OptionButton)FindNode("SizeOptionButton");
@@ -91,10 +94,24 @@ namespace CraigStars
         {
             RulesManager.Rules.Size = (Size)sizeOptionButton.Selected;
             RulesManager.Rules.Density = (Density)densityOptionButton.Selected;
-            Settings.Instance.GameName = nameLineEdit.Text;
+            var gameName = nameLineEdit.Text;
+            Settings.Instance.GameName = gameName;
 
-            loader.LoadScene("res://src/Client/GameView.tscn");
-            backButton.Disabled = startButton.Disabled = true;
+            if (GamesManager.Instance.GameExists(gameName))
+            {
+                confirmDialog.Show($"A game named {gameName} already exists. Are you sure you want to overwrite it?", () =>
+                {
+                    GamesManager.Instance.DeleteGame(gameName);
+                    loader.LoadScene("res://src/Client/GameView.tscn");
+                    backButton.Disabled = startButton.Disabled = true;
+                });
+            }
+            else
+            {
+                loader.LoadScene("res://src/Client/GameView.tscn");
+                backButton.Disabled = startButton.Disabled = true;
+            }
+
         }
 
     }

@@ -19,6 +19,7 @@ namespace CraigStars
         PackedScene planetScene;
         PackedScene fleetScene;
         PackedScene salvageScene;
+        PackedScene mineFieldScene;
 
         /// <summary>
         /// The index of the currently selected map object (if there are more than one at a location)
@@ -47,7 +48,6 @@ namespace CraigStars
         public List<PlanetSprite> Planets { get; } = new List<PlanetSprite>();
         public List<FleetSprite> Fleets { get; } = new List<FleetSprite>();
         public Dictionary<Guid, MapObjectSprite> MapObjectsByGuid { get; set; } = new Dictionary<Guid, MapObjectSprite>();
-        public Dictionary<Guid, FleetSprite> FleetsByGuid { get; set; } = new Dictionary<Guid, FleetSprite>();
         public List<WaypointArea> waypointAreas = new List<WaypointArea>();
         public List<ScannerCoverage> Scanners { get; set; } = new List<ScannerCoverage>();
         public List<ScannerCoverage> PenScanners { get; set; } = new List<ScannerCoverage>();
@@ -77,6 +77,7 @@ namespace CraigStars
             planetScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/PlanetSprite.tscn");
             fleetScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/FleetSprite.tscn");
             salvageScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/SalvageSprite.tscn");
+            mineFieldScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/MineFieldSprite.tscn");
 
             // get some nodes
             selectedMapObjectIndicatorSprite = GetNode<SelectedMapObjectIndicatorSprite>("SelectedMapObjectIndicatorSprite");
@@ -460,7 +461,6 @@ namespace CraigStars
             // remove old planets, in case we switched players
             Planets.ForEach(oldPlanet =>
             {
-                RemoveChild(oldPlanet);
                 oldPlanet.Disconnect("input_event", this, nameof(OnInputEvent));
                 oldPlanet.Disconnect("mouse_entered", this, nameof(OnMouseEntered));
                 oldPlanet.Disconnect("mouse_exited", this, nameof(OnMouseExited));
@@ -475,7 +475,8 @@ namespace CraigStars
                 planetSprite.Position = planet.Position;
                 return planetSprite;
             }));
-            Planets.ForEach(p => AddChild(p));
+            var planetsNode = GetNode("Planets");
+            Planets.ForEach(p => planetsNode.AddChild(p));
             Planets.ForEach(p => p.Connect("input_event", this, nameof(OnInputEvent), new Godot.Collections.Array() { p }));
             Planets.ForEach(p => p.Connect("mouse_entered", this, nameof(OnMouseEntered), new Godot.Collections.Array() { p }));
             Planets.ForEach(p => p.Connect("mouse_exited", this, nameof(OnMouseExited), new Godot.Collections.Array() { p }));
@@ -718,6 +719,7 @@ namespace CraigStars
             transientMapObjects.Clear();
             transientMapObjects.AddRange(AddFleetsToViewport());
             transientMapObjects.AddRange(AddMapObjectsToViewport<Salvage, SalvageSprite>(Me.Salvage, salvageScene, GetNode("Salvage")));
+            transientMapObjects.AddRange(AddMapObjectsToViewport<MineField, MineFieldSprite>(Me.AllMineFields, mineFieldScene, GetNode("MineFields")));
 
             mapObjects.Clear();
             mapObjects.AddRange(Planets);
@@ -800,9 +802,6 @@ namespace CraigStars
                 }
             });
 
-            // reset the FleetsByGuid dictionary
-            FleetsByGuid = Fleets.ToLookup(f => f.Fleet.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
-
             Fleets.ForEach(f =>
             {
                 f.OtherFleets.Clear();
@@ -810,7 +809,7 @@ namespace CraigStars
                 {
                     foreach (var fleet in f.Fleet.OtherFleets)
                     {
-                        var fleetSprite = FleetsByGuid[fleet.Guid];
+                        var fleetSprite = MapObjectsByGuid[fleet.Guid] as FleetSprite;
                         f.OtherFleets.Add(fleetSprite);
                     }
                 }
@@ -840,7 +839,6 @@ namespace CraigStars
                 }
 
                 // Add these fleets to our dictionaries
-                FleetsByGuid[fleet.Guid] = fleetSprite;
                 if (mapObjectsByLocation.TryGetValue(fleet.Position, out var mapObjectsAtLocation))
                 {
                     mapObjectsAtLocation.Add(fleetSprite);
@@ -862,7 +860,7 @@ namespace CraigStars
                 {
                     foreach (var fleet in f.Fleet.OtherFleets)
                     {
-                        if (FleetsByGuid.TryGetValue(fleet.Guid, out var fleetSprite))
+                        if (MapObjectsByGuid.TryGetValue(fleet.Guid, out var mapObjectSprite) && mapObjectSprite is FleetSprite fleetSprite)
                         {
                             f.OtherFleets.Add(fleetSprite);
                         }
@@ -893,7 +891,6 @@ namespace CraigStars
             {
                 fleet.Orbiting.OrbitingFleets.Remove(fleet);
             }
-            FleetsByGuid.Remove(fleet.Fleet.Guid);
 
             // remove the fleet from the scanner
             RemoveChild(fleet);

@@ -139,7 +139,7 @@ namespace CraigStars.Singletons
         {
             using (var directory = new Directory())
             {
-                return directory.FileExists(GetSaveGameFolder(gameName));
+                return directory.DirExists(GetSaveGameFolder(gameName));
             }
         }
 
@@ -158,6 +158,11 @@ namespace CraigStars.Singletons
 
         public void DeleteGame(string gameName)
         {
+            if (gameName == null && gameName.Empty())
+            {
+                // can't delete an empty game name (it will delete the whole save folder, very bad.)
+                return;
+            }
             using (var gameDirectory = new Directory())
             {
                 var path = GetSaveGameFolder(gameName);

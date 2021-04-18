@@ -30,6 +30,7 @@ namespace CraigStars
         Control unknownPlanetContainer;
         Control fleetSummaryContainer;
         Control salvageContainer;
+        Control mineFieldContainer;
         CargoGrid salvageCargoGrid;
         Label nameLabel;
         Button otherFleetsButton;
@@ -41,6 +42,7 @@ namespace CraigStars
             fleetSummaryContainer = GetNode<Control>("VBoxContainer/FleetSummaryContainer");
             salvageContainer = GetNode<Control>("VBoxContainer/SalvageContainer");
             salvageCargoGrid = GetNode<CargoGrid>("VBoxContainer/SalvageContainer/HBoxContainer/CargoGrid");
+            mineFieldContainer = GetNode<Control>("VBoxContainer/MineFieldContainer");
             nameLabel = GetNode<Label>("VBoxContainer/Title/Name");
             otherFleetsButton = GetNode<Button>("VBoxContainer/Title/OtherFleetsButton");
 
@@ -105,6 +107,7 @@ namespace CraigStars
             fleetSummaryContainer.Visible = false;
             planetSummaryContainer.Visible = false;
             unknownPlanetContainer.Visible = false;
+            mineFieldContainer.Visible = false;
 
             if (MapObject != null)
             {
@@ -130,6 +133,11 @@ namespace CraigStars
                     salvageCargoGrid.Cargo = salvage.Cargo;
                     nameLabel.Text = "Salvage";
                     salvageContainer.Visible = true;
+                }
+                else if (MapObject.MapObject is MineField mineField)
+                {
+                    mineFieldContainer.Visible = true;
+                    nameLabel.Text = $"{mineField.RacePluralName} Mine Field";
                 }
                 else
                 {

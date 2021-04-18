@@ -276,6 +276,7 @@ namespace CraigStars
 
             Message.HomePlanet(player, planet);
 
+            // test, add salvage
             Salvage salvage = new Salvage()
             {
                 Name = "Bonus Salvage!",
@@ -283,6 +284,8 @@ namespace CraigStars
                 Position = planet.Position + new Vector2(20, 20)
             };
             Game.Salvage.Add(salvage);
+
+
         }
 
         void MakeExtraWorld(Rules rules, Player player, Planet planet)
@@ -317,6 +320,18 @@ namespace CraigStars
             planet.Factories = rules.StartingFactories;
 
             planet.ContributesOnlyLeftoverToResearch = true;
+
+            // make a test minefield here
+            MineField mineField = new MineField()
+            {
+                Position = planet.Position,
+                Player = player,
+                Name = "Normal MineField",
+                Radius = 128,
+                NumMines = 1000,
+                Type = MineFieldType.Normal
+            };
+            Game.MineFields.Add(mineField);
         }
 
         void RandomizePlanet(Rules rules, Planet planet)

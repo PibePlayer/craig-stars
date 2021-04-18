@@ -10,7 +10,7 @@ namespace CraigStars
     public class MineField : MapObject
     {
         public int ReportAge = Unexplored;
-        public MineFieldType Type { get; set; }
+        public MineFieldType Type { get; set; } = MineFieldType.Normal;
         public int NumMines { get; set; }
         public int Radius { get; set; }
     }

@@ -14,6 +14,8 @@ namespace CraigStars
 
         protected Player Me { get => PlayersManager.Me; }
 
+        public virtual bool Commandable { get => false; }
+
         public ScannerState State
         {
             get => state;

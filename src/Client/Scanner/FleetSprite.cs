@@ -25,6 +25,8 @@ namespace CraigStars
             }
         }
 
+        public override bool Commandable { get => true; }
+
         /// <summary>
         /// A planet sprite this fleet is orbiting
         /// </summary>

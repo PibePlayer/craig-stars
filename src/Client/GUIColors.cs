@@ -47,6 +47,8 @@ namespace CraigStars
         [Export]
         public Color GermaniumConcentrationColor { get; set; } = new Color("7F7F00");
 
+        [Export]
+        public Color OwnedMineFieldColor { get; set; } = new Color("0900FF");
 
         [Export]
         public Color WaypointLineColor { get; set; } = new Color("0900FF");

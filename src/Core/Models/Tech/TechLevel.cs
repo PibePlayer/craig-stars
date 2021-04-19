@@ -144,6 +144,25 @@ namespace CraigStars
         }
 
         /// <summary>
+        /// Get the lowest field value. this is used for minaturization
+        /// </summary>
+        /// <returns></returns>
+        public int Min()
+        {
+            var lowest = int.MaxValue;
+            foreach (TechField field in Enum.GetValues(typeof(TechField)))
+            {
+                var level = this[field];
+                if (level < lowest)
+                {
+                    lowest = level;
+                }
+            }
+
+            return lowest == int.MaxValue ? 0 : lowest;
+        }
+
+        /// <summary>
         /// Sum up the total number of tech levels in this list.
         /// This is used for determining research costs
         /// </summary>

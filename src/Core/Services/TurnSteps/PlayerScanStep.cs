@@ -139,6 +139,7 @@ namespace CraigStars
                     if (scanner.RangePen >= scanner.Position.DistanceSquaredTo(planet.Position))
                     {
                         playerIntel.Discover(player, planet, true);
+                        break;
                     }
                 }
             }
@@ -152,21 +153,25 @@ namespace CraigStars
                     continue;
                 }
 
+                // only scan this once. If we pen scan it, we break out of the loop
+                // and go to the next fleet
+                bool scanned = false;
                 foreach (var scanner in scanners)
                 {
                     var distance = scanner.Position.DistanceSquaredTo(fleet.Position);
                     // if we pen scanned this, update the report
-                    if (scanner.RangePen >= distance)
+                    if (!scanned && scanner.RangePen >= distance)
                     {
                         // update the fleet report with pen scanners
                         playerIntel.Discover(player, fleet, true);
-                        continue;
+                        scanned = true;
                     }
 
                     // if we aren't orbiting a planet, we can be seen with regular scanners
                     if (fleet.Orbiting == null && scanner.Range >= distance)
                     {
                         playerIntel.Discover(player, fleet, false);
+                        break;
                     }
                 }
             }
@@ -188,7 +193,7 @@ namespace CraigStars
                 {
                     // discover our own minefields
                     playerIntel.Discover(player, mineField, true);
-                    break;
+                    continue;
                 }
 
                 // minefields are cloaked if we haven't discovered them before
@@ -199,17 +204,18 @@ namespace CraigStars
                     var distance = scanner.Position.DistanceSquaredTo(mineField.Position);
 
                     // multiple the scanRange by the cloak factor, i.e. if we are 75% cloaked, our scanner range is effectively 25% of what it normally is
-                    if (scanner.RangePen * cloakFactor >= distance)
+                    if (scanner.RangePen * cloakFactor >= distance - (mineField.Radius * mineField.Radius))
                     {
                         // update the fleet report with pen scanners
                         playerIntel.Discover(player, mineField, true);
-                        continue;
+                        break;
                     }
 
                     // if we aren't orbiting a planet, we can be seen with regular scanners
-                    if (scanner.Range * cloakFactor >= distance)
+                    if (scanner.Range * cloakFactor >= distance - (mineField.Radius * mineField.Radius))
                     {
                         playerIntel.Discover(player, mineField, false);
+                        break;
                     }
                 }
             }
@@ -223,6 +229,7 @@ namespace CraigStars
                     if (scanner.Range >= scanner.Position.DistanceSquaredTo(salvage.Position))
                     {
                         playerIntel.Discover(player, salvage, false);
+                        break;
                     }
                 }
             }
@@ -237,7 +244,7 @@ namespace CraigStars
                     wormhole.ReportAge++;
                 }
             }
-            
+
             // wormholes
             foreach (var wormhole in Game.Wormholes)
             {
@@ -249,6 +256,7 @@ namespace CraigStars
                     if (scanner.Range * cloakFactor >= scanner.Position.DistanceSquaredTo(wormhole.Position))
                     {
                         playerIntel.Discover(player, wormhole, false);
+                        break;
                     }
                 }
             }
@@ -262,6 +270,7 @@ namespace CraigStars
                     if (scanner.Range >= scanner.Position.DistanceSquaredTo(mysterytrader.Position))
                     {
                         playerIntel.Discover(player, mysterytrader, false);
+                        break;
                     }
                 }
             }

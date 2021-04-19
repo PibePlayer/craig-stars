@@ -131,9 +131,10 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/MineFieldContainer"]
-margin_left = 102.0
-margin_right = 278.0
-margin_bottom = 68.0
+margin_left = 158.0
+margin_top = 2.0
+margin_right = 222.0
+margin_bottom = 66.0
 custom_constants/separation = 10
 
 [node name="TextureRect" type="TextureRect" parent="VBoxContainer/MineFieldContainer/HBoxContainer"]

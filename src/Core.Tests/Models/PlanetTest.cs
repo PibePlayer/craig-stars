@@ -46,7 +46,7 @@ namespace CraigStars.Tests
             var player = new Player();
             planet.Player = player;
             planet.Population = 10000;
-            Assert.AreEqual(10, planet.MaxDefenses);
+            Assert.AreEqual(100, planet.MaxDefenses);
         }
 
         [Test]

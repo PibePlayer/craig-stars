@@ -230,7 +230,7 @@ namespace CraigStars
                 queuedItemCostGrid.Visible = true;
 
                 // figure out how much this queue item costs
-                var cost = item.GetCostOfOne(RulesManager.Rules, Me.Race) * item.quantity;
+                var cost = item.GetCostOfOne(RulesManager.Rules, Me) * item.quantity;
                 queuedItemCostGrid.Cost = cost;
                 costOfQueuedLabel.Text = $"Cost of {item.ShortName} x {item.quantity}";
 
@@ -242,7 +242,7 @@ namespace CraigStars
                 for (int i = 0; i < selectedQueuedItemIndex; i++)
                 {
                     var previousItem = queuedItems[i];
-                    previousItemCost += previousItem.GetCostOfOne(RulesManager.Rules, Me.Race) * previousItem.quantity;
+                    previousItemCost += previousItem.GetCostOfOne(RulesManager.Rules, Me) * previousItem.quantity;
                 }
 
 
@@ -353,7 +353,7 @@ namespace CraigStars
 
             if (item != null)
             {
-                availableItemCostGrid.Cost = item.Value.GetCostOfOne(RulesManager.Rules, Me.Race);
+                availableItemCostGrid.Cost = item.Value.GetCostOfOne(RulesManager.Rules, Me);
             }
         }
 

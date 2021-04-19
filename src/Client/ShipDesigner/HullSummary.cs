@@ -141,6 +141,8 @@ namespace CraigStars
         /// <param name="slot"></param>
         void OnSlotUpdated(ShipDesignSlot slot)
         {
+            ShipDesign.ComputeAggregate(PlayersManager.Me, true);
+            UpdateControls();
             SlotUpdatedEvent?.Invoke(slot);
         }
 

@@ -130,8 +130,9 @@ namespace CraigStars
         /// <param name="rules"></param>
         /// <param name="race"></param>
         /// <returns></returns>
-        public Cost GetCostOfOne(Rules rules, Race race)
+        public Cost GetCostOfOne(Rules rules, Player player)
         {
+            var race = player.Race;
             int resources = 0;
             int germanium = 0;
             if (type == QueueItemType.Mine || type == QueueItemType.AutoMine)

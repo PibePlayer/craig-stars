@@ -74,6 +74,16 @@ namespace CraigStars
             );
         }
 
+        public static Cost operator *(Cost a, double b)
+        {
+            return new Cost(
+                (int)(a.Ironium * b),
+                (int)(a.Boranium * b),
+                (int)(a.Germanium * b),
+                (int)(a.Resources * b)
+            );
+        }
+
         /// <summary>
         /// Divide two costs to find the number of times Cost b fits into Cost a
         /// </summary>

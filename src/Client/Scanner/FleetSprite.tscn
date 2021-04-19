@@ -9,7 +9,6 @@
 radius = 32.0
 
 [node name="FleetSprite" type="Area2D"]
-z_index = 20
 script = ExtResource( 3 )
 GUIColors = ExtResource( 4 )
 
@@ -17,7 +16,6 @@ GUIColors = ExtResource( 4 )
 shape = SubResource( 1 )
 
 [node name="Waypoints" type="Line2D" parent="."]
-z_as_relative = false
 width = 2.0
 default_color = Color( 0.0352941, 0, 1, 1 )
 

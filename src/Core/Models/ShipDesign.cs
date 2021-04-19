@@ -137,7 +137,7 @@ namespace CraigStars
             Aggregate.CargoCapacity = 0;
             Aggregate.FuelCapacity = Hull.FuelCapacity;
             Aggregate.Colonizer = false;
-            Aggregate.Cost = Hull.Cost;
+            Aggregate.Cost = Hull.GetPlayerCost(player);
             Aggregate.SpaceDock = 0;
             Aggregate.CargoCapacity += Hull.CargoCapacity;
             Aggregate.MineSweep = 0;
@@ -174,7 +174,7 @@ namespace CraigStars
                         }
                         Aggregate.MineSweep += slot.Quantity * slot.HullComponent.Power * ((slot.HullComponent.Range + Hull.RangeBonus) * slot.HullComponent.Range) * gattlingMultiplier;
                     }
-                    Cost cost = slot.HullComponent.Cost * slot.Quantity;
+                    Cost cost = slot.HullComponent.GetPlayerCost(player) * slot.Quantity;
                     Aggregate.Cost += cost;
                     Aggregate.Mass += slot.HullComponent.Mass * slot.Quantity;
                     Aggregate.Armor += slot.HullComponent.Armor * slot.Quantity;
@@ -259,9 +259,25 @@ namespace CraigStars
             }
 
             // compute the scan ranges
-            ComputeScanRanges(player);
+            ComputeScanRanges();
 
             Aggregate.Computed = true;
+        }
+
+        /// <summary>
+        /// Recompute the cost every time a player gains a level.
+        /// </summary>
+        void ComputeCost()
+        {
+            Aggregate.Cost = Hull.GetPlayerCost(Player);
+            foreach (ShipDesignSlot slot in Slots)
+            {
+                if (slot.HullComponent != null)
+                {
+                    Cost cost = slot.HullComponent.GetPlayerCost(Player) * slot.Quantity;
+                    Aggregate.Cost += cost;
+                }
+            }
         }
 
         /// <summary>
@@ -270,16 +286,16 @@ namespace CraigStars
         /// </summary>
         /// <param name="player"></param>
         /// <param name="rules"></param>
-        void ComputeScanRanges(Player player)
+        void ComputeScanRanges()
         {
             long scanRange = TechHullComponent.NoScanner;
             long scanRangePen = TechHullComponent.NoScanner;
 
             // compu thecanner as a built in JoaT scanner if it's build in
-            if (player.Race.PRT == PRT.JoaT && Hull.BuiltInScannerForJoaT)
+            if (Player.Race.PRT == PRT.JoaT && Hull.BuiltInScannerForJoaT)
             {
-                scanRange = (long)(player.TechLevels.Electronics * player.Rules.BuiltInScannerJoaTMultiplier);
-                if (!player.Race.HasLRT(LRT.NAS))
+                scanRange = (long)(Player.TechLevels.Electronics * Player.Rules.BuiltInScannerJoaTMultiplier);
+                if (!Player.Race.HasLRT(LRT.NAS))
                 {
                     scanRangePen = (long)Math.Pow(scanRange / 2, 4);
                 }
@@ -344,11 +360,13 @@ namespace CraigStars
         {
             if (player != Player) return;
 
-            if (player.Race != null && player.Race.PRT == PRT.JoaT && Hull != null && Hull.BuiltInScannerForJoaT && field == TechField.Electronics)
+            if (Player.Race.PRT == PRT.JoaT && Hull != null && Hull.BuiltInScannerForJoaT && field == TechField.Electronics)
             {
                 // update our scanner aggregate
-                ComputeScanRanges(player);
+                ComputeScanRanges();
             }
+
+            ComputeCost();
         }
 
         #endregion

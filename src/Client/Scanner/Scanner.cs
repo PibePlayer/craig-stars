@@ -344,6 +344,11 @@ namespace CraigStars
         /// <param name="mapObject"></param>
         void CommandMapObject(MapObjectSprite mapObject)
         {
+            if (mapObject == null || !mapObject.Commandable)
+            {
+                return;
+            }
+
             // deselect the current map object
             commandedMapObject.Deselect();
             commandedMapObject.UpdateSprite();
@@ -554,7 +559,7 @@ namespace CraigStars
             var validMapObjects = mapObjectsUnderMouse.Where(mo => IsInstanceValid(mo)).ToList();
             if (validMapObjects.Count > 0)
             {
-                return validMapObjects.Aggregate((curMin, mo) => (curMin == null || (mo.Position.DistanceSquaredTo(localMousePosition)) < curMin.Position.DistanceSquaredTo(localMousePosition) ? mo : curMin));
+                return validMapObjects.Reverse<MapObjectSprite>().Aggregate((curMin, mo) => (curMin == null || (mo.Position.DistanceSquaredTo(localMousePosition)) < curMin.Position.DistanceSquaredTo(localMousePosition) ? mo : curMin));
             }
             else
             {
@@ -663,6 +668,16 @@ namespace CraigStars
             }
             else if (@event.IsActionPressed("viewport_alternate_select"))
             {
+                log.Debug($"viewport_alternate_select event {mapObject}");
+                MapObjectSprite closest = GetClosestMapObjectUnderMouse();
+
+                log.Debug($"Closest: {closest?.ObjectName}");
+                if (mapObject != closest)
+                {
+                    // ignore events from all but the closest mapobject
+                    return;
+                }
+
                 // let the popupmenu listener know we have a request to pick from objects at this location
                 Signals.PublishViewportAlternateSelect(mapObject);
             }
@@ -739,6 +754,7 @@ namespace CraigStars
         {
             mapObjects.ForEach(mo =>
             {
+                mo.GetParent().RemoveChild(mo);
                 mo.Disconnect("input_event", this, nameof(OnInputEvent));
                 mo.Disconnect("mouse_entered", this, nameof(OnMouseEntered));
                 mo.Disconnect("mouse_exited", this, nameof(OnMouseExited));

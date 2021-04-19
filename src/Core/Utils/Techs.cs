@@ -1471,7 +1471,7 @@ namespace CraigStars
             })
         };
 
-        public static readonly TechHull Scout = new TechHull("Scout", new Cost(4, 2, 4, 9), new TechRequirements(), 50, TechCategory.ShipHull)
+        public static readonly TechHull Scout = new TechHull("Scout", new Cost(4, 2, 4, 10), new TechRequirements(), 50, TechCategory.ShipHull)
         {
             Type = TechHullType.Scout,
             Mass = 8,

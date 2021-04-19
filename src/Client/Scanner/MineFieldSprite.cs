@@ -5,6 +5,10 @@ namespace CraigStars
 {
     public class MineFieldSprite : MapObjectSprite
     {
+
+        [Export]
+        public GUIColors GUIColors { get; set; } = new GUIColors();
+
         [Export]
         int CirclePoints
         {
@@ -76,7 +80,15 @@ namespace CraigStars
 
         public override void UpdateSprite()
         {
-            // do nothing (maybe we will change color on select)
+            // TODO: change color on select?
+            if (OwnedByMe)
+            {
+                Modulate = GUIColors.OwnedMineFieldColor;
+            }
+            else
+            {
+                Modulate = MineField.Owner.Color;
+            }
         }
     }
 }

@@ -152,7 +152,7 @@ namespace CraigStars
             if (Editable && Selected && @event.IsActionPressed("delete"))
             {
                 RemoveHullComponent();
-                GetTree().SetInputAsHandled();
+                GetTree()?.SetInputAsHandled();
             }
         }
 

@@ -32,6 +32,8 @@ namespace CraigStars
             }
         }
 
+        public override bool Commandable { get => true; }
+
         public List<FleetSprite> OrbitingFleets { get; set; } = new List<FleetSprite>();
 
         bool hasActivePeer;

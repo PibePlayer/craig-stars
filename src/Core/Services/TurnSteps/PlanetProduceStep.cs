@@ -50,7 +50,7 @@ namespace CraigStars
             while (index < queue.Items.Count)
             {
                 ProductionQueueItem item = queue.Items[index];
-                Cost costPer = item.GetCostOfOne(rules, planet.Player.Race);
+                Cost costPer = item.GetCostOfOne(rules, planet.Player);
                 int numBuilt = (int)(allocated / costPer);
 
                 // if we are autobuilding, don't build more than our max

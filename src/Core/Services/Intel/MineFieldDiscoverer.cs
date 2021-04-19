@@ -43,6 +43,7 @@ namespace CraigStars
 
         protected override void DiscoverOwn(Player player, MineField item, MineField itemReport)
         {
+            itemReport.Player = player;
             itemReport.Radius = item.Radius;
             itemReport.NumMines = item.NumMines;
             itemReport.Type = item.Type;

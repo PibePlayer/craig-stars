@@ -11,7 +11,7 @@ namespace CraigStars
     /// </summary>
     public class PlayerResearchStep : Step
     {
-        public PlayerResearchStep(Game game, TurnGeneratorState state) : base(game, state) { }
+        public PlayerResearchStep(Game game) : base(game, TurnGeneratorState.Research) { }
 
         public override void Process()
         {

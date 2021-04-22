@@ -18,6 +18,7 @@ namespace CraigStars
         Tree queuedItemsTree;
         Tree availableItemsTree;
         TreeItem queuedItemsTreeRoot;
+        TreeItem topOfQueueItem;
         TreeItem availableItemsTreeRoot;
 
         Button addButton;
@@ -107,14 +108,21 @@ namespace CraigStars
             availableItemsTreeRoot = availableItemsTree.CreateItem();
             queuedItemsTreeRoot = queuedItemsTree.CreateItem();
 
-            availableItemsTree.SetColumnMinWidth(1, (int)availableItemsTree.GetFont("").GetStringSize("9999").x);
-
             // add each design
             var availableItemIndex = 0;
             Me.Designs.ForEach(design =>
             {
-                AddAvailableItem(new ProductionQueueItem(QueueItemType.ShipToken, design: design), index: availableItemIndex++);
+                if (design.Hull.Starbase)
+                {
+                    AddAvailableItem(new ProductionQueueItem(QueueItemType.Starbase, design: design), index: availableItemIndex++);
+                }
+                else
+                {
+                    AddAvailableItem(new ProductionQueueItem(QueueItemType.ShipToken, design: design), index: availableItemIndex++);
+                }
             });
+
+            availableItemsTree.SetColumnMinWidth(1, (int)availableItemsTree.GetFont("").GetStringSize("9999").x);
 
             // add each type of item.
             AddAvailableItem(new ProductionQueueItem(QueueItemType.Factory), index: availableItemIndex++);
@@ -135,6 +143,9 @@ namespace CraigStars
                     AddQueuedItem(item, index);
                 });
             }
+
+            // select the top of the queue on startup
+            topOfQueueItem.Select(0);
 
             contributesOnlyLeftoverToResearchCheckbox.Pressed = Planet.ContributesOnlyLeftoverToResearch;
         }
@@ -213,9 +224,9 @@ namespace CraigStars
 
         void AddTopOfQueueItem()
         {
-            var treeItem = queuedItemsTree.CreateItem(queuedItemsTreeRoot);
-            treeItem.SetText(0, Planet.ProductionQueue.Items.Count == 0 ? "-- Queue is Empty --" : "-- Top of the Queue --");
-            treeItem.SetMetadata(0, -1);
+            topOfQueueItem = queuedItemsTree.CreateItem(queuedItemsTreeRoot);
+            topOfQueueItem.SetText(0, Planet.ProductionQueue.Items.Count == 0 ? "-- Queue is Empty --" : "-- Top of the Queue --");
+            topOfQueueItem.SetMetadata(0, -1);
         }
 
         /// <summary>
@@ -231,6 +242,10 @@ namespace CraigStars
 
                 // figure out how much this queue item costs
                 var cost = item.GetCostOfOne(RulesManager.Rules, Me) * item.quantity;
+                if (item.type == QueueItemType.Starbase && Planet.HasStarbase)
+                {
+                    cost = Planet.Starbase.GetUpgradeCost(item.Design);
+                }
                 queuedItemCostGrid.Cost = cost;
                 costOfQueuedLabel.Text = $"Cost of {item.ShortName} x {item.quantity}";
 
@@ -353,7 +368,12 @@ namespace CraigStars
 
             if (item != null)
             {
-                availableItemCostGrid.Cost = item.Value.GetCostOfOne(RulesManager.Rules, Me);
+                var cost = item.Value.GetCostOfOne(RulesManager.Rules, Me);
+                if (item.Value.type == QueueItemType.Starbase && Planet.HasStarbase)
+                {
+                    cost = Planet.Starbase.GetUpgradeCost(item.Value.Design);
+                }
+                availableItemCostGrid.Cost = cost;
             }
         }
 
@@ -400,8 +420,8 @@ namespace CraigStars
                 }
                 else
                 {
-                    queuedItems.Add(newItem);
-                    selectedQueuedItemIndex = queuedItems.Count - 1;
+                    queuedItems.Insert(0, newItem);
+                    selectedQueuedItemIndex = 0;
                     log.Debug($"Added new item to at {selectedQueuedItemIndex} - {newItem}");
                 }
                 UpdateQueuedItems();

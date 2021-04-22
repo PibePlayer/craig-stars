@@ -70,6 +70,8 @@ namespace CraigStars
 
         [DefaultValue(Unexplored)]
         public int ReportAge { get; set; } = Unexplored;
+        // true if the player has remote mined this planet
+        public bool RemoteMined { get; set; } = false;
         public bool Explored { get => ReportAge != Unexplored; }
         public bool Uninhabited { get => Owner == null; }
 
@@ -191,15 +193,25 @@ namespace CraigStars
                 var race = Player?.Race;
                 if (race != null)
                 {
-                    var mineOutput = race.MineOutput;
-                    return new Mineral(
-                        MineralsPerYear(MineralConcentration.Ironium, Mines, mineOutput),
-                        MineralsPerYear(MineralConcentration.Boranium, Mines, mineOutput),
-                        MineralsPerYear(MineralConcentration.Germanium, Mines, mineOutput)
-                    );
+                    return GetMineralOutput(Mines, race.MineOutput);
                 }
                 return Mineral.Empty;
             }
+        }
+
+        /// <summary>
+        /// Get the amount of minerals this planet outputs for a a certain number of mines, given a race mineOutput
+        /// </summary>
+        /// <param name="mineOutput"></param>
+        /// <returns></returns>
+        public Mineral GetMineralOutput(int numMines, int mineOutput = 10)
+        {
+            return new Mineral(
+                MineralsPerYear(MineralConcentration.Ironium, numMines, mineOutput),
+                MineralsPerYear(MineralConcentration.Boranium, numMines, mineOutput),
+                MineralsPerYear(MineralConcentration.Germanium, numMines, mineOutput)
+            );
+
         }
 
         /// <summary>

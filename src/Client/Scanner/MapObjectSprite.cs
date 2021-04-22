@@ -22,6 +22,14 @@ namespace CraigStars
             set
             {
                 state = value;
+                if (state == ScannerState.Selected)
+                {
+                    ZIndex = 1;
+                }
+                else
+                {
+                    ZIndex = 0;
+                }
                 UpdateSprite();
             }
         }

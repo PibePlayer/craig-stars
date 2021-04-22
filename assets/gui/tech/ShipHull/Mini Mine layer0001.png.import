@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/mine-field-large.png-874df9eb4a8c20caada6fcc75912b137.stex"
+path="res://.import/Mini Mine layer0001.png-c2f0e89b6162ea4a4aa2c03a2856e966.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/gui/icons/mine-field-large.png"
-dest_files=[ "res://.import/mine-field-large.png-874df9eb4a8c20caada6fcc75912b137.stex" ]
+source_file="res://assets/gui/tech/ShipHull/Mini Mine layer0001.png"
+dest_files=[ "res://.import/Mini Mine layer0001.png-c2f0e89b6162ea4a4aa2c03a2856e966.stex" ]
 
 [params]
 

@@ -22,7 +22,7 @@ namespace CraigStars
         {
             // find the first colony ship design
             // TODO: pick the best one
-            ShipDesign bomber = player.Designs.Find(design => design.Purpose == ShipDesignPurpose.Bomber);
+            ShipDesign bomber = player.GetLatestDesign(ShipDesignPurpose.Bomber);
 
             if (bomber == null)
             {

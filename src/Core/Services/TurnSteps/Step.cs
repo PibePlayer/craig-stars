@@ -19,7 +19,7 @@ namespace CraigStars
 
         Stopwatch stopwatch = new Stopwatch();
 
-        public Step(Game game, TurnGeneratorState state)
+        protected Step(Game game, TurnGeneratorState state)
         {
             Game = game;
             State = state;
@@ -31,15 +31,16 @@ namespace CraigStars
         public void Execute(TurnGenerationContext context, List<Planet> ownedPlanets)
         {
             stopwatch.Start();
-            log.Debug($"Beginning {this.GetType().ToString()}");
+            log.Debug($"{Game.Year}: Beginning {this.GetType().ToString()}");
             Context = context;
-            
+
             PreProcess(ownedPlanets);
             Process();
             PostProcess();
 
             stopwatch.Stop();
-            log.Debug($"Completed {this.GetType().ToString()} ({stopwatch.ElapsedMilliseconds}ms)");
+            log.Debug($"{Game.Year}: Completed {this.GetType().ToString()} ({stopwatch.ElapsedMilliseconds}ms)");
+            // log.Debug($"{Game.Year}: Completed {this.GetType().ToString()})");
         }
 
         /// <summary>

@@ -88,6 +88,7 @@ namespace CraigStars
                 Hull = Hull,
                 HullSetNumber = HullSetNumber,
                 Purpose = Purpose,
+                Version = Version,
                 Slots = Slots.Select(s => new ShipDesignSlot(s.HullComponent, s.HullSlotIndex, s.Quantity)).ToList()
             };
             return clone;
@@ -146,9 +147,12 @@ namespace CraigStars
             Aggregate.Bombs.Clear();
             Aggregate.HasWeapons = false;
             Aggregate.WeaponSlots.Clear();
+            Aggregate.Initiative = Hull.Initiative;
             Aggregate.Movement = 0;
             Aggregate.TorpedoInaccuracyFactor = 1;
             Aggregate.NumEngines = 0;
+            Aggregate.MineLayingRateByMineType = new Dictionary<MineFieldType, int>();
+            Aggregate.MiningRate = 0;
 
             var idealSpeed = 0;
 
@@ -168,9 +172,9 @@ namespace CraigStars
                         var gattlingMultiplier = 1;
                         if (slot.HullComponent.Gattling)
                         {
-                            // gattlings are 4x more mine-sweepery
+                            // gattlings are 4x more mine-sweepery (all gatlings have range of 2)
                             // lol, 4x, get it?
-                            gattlingMultiplier = 4;
+                            gattlingMultiplier = slot.HullComponent.Range * slot.HullComponent.Range;
                         }
                         Aggregate.MineSweep += slot.Quantity * slot.HullComponent.Power * ((slot.HullComponent.Range + Hull.RangeBonus) * slot.HullComponent.Range) * gattlingMultiplier;
                     }
@@ -182,7 +186,20 @@ namespace CraigStars
                     Aggregate.CargoCapacity += slot.HullComponent.CargoBonus * slot.Quantity;
                     Aggregate.FuelCapacity += slot.HullComponent.FuelBonus * slot.Quantity;
                     Aggregate.Colonizer = Aggregate.Colonizer || slot.HullComponent.ColonizationModule || slot.HullComponent.OrbitalConstructionModule;
+                    Aggregate.Initiative += slot.HullComponent.InitiativeBonus;
                     Aggregate.Movement += slot.HullComponent.MovementBonus * slot.Quantity;
+                    Aggregate.MiningRate += slot.HullComponent.MiningRate * slot.Quantity;
+
+                    // Add this mine type to the layers this design has
+                    if (slot.HullComponent.MineLayingRate > 0)
+                    {
+                        if (!Aggregate.MineLayingRateByMineType.ContainsKey(slot.HullComponent.MineFieldType))
+                        {
+                            Aggregate.MineLayingRateByMineType[slot.HullComponent.MineFieldType] = 0;
+                        }
+                        Aggregate.MineLayingRateByMineType[slot.HullComponent.MineFieldType] += slot.HullComponent.MineLayingRate * slot.Quantity;
+                    }
+
                     // i.e. two .3f battle computers is (1 -.3) * (1 - .3) or (.7 * .7) or it decreases innaccuracy by 49%
                     // so a 75% accurate torpedo would be 100 - (100 - 75) * .49 = 100 - 12.25 or 88% accurate
                     // a 75% accurate torpedo with two 30% comps and one 50% comp would be

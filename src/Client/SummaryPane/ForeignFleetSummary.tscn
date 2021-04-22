@@ -13,12 +13,18 @@ __meta__ = {
 }
 
 [node name="ShipCountLabel" type="Label" parent="."]
-margin_right = 107.0
+margin_right = 114.0
 margin_bottom = 14.0
 text = "Ship Count: 2"
 
 [node name="MassLabel" type="Label" parent="."]
 margin_top = 18.0
-margin_right = 107.0
+margin_right = 114.0
 margin_bottom = 32.0
 text = "Fleet Mass: 42kT"
+
+[node name="WarpFactorLabel" type="Label" parent="."]
+margin_top = 36.0
+margin_right = 114.0
+margin_bottom = 50.0
+text = "Warp Speed: 5"

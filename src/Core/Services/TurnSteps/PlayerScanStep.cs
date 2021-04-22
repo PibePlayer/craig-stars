@@ -14,7 +14,7 @@ namespace CraigStars
     public class PlayerScanStep : Step
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(PlayerScanStep));
-        public PlayerScanStep(Game game, TurnGeneratorState state) : base(game, state) { }
+        public PlayerScanStep(Game game) : base(game, TurnGeneratorState.Scan) { }
 
         /// <summary>
         /// Helper class for sorting scanners
@@ -113,7 +113,7 @@ namespace CraigStars
             {
                 foreach (var mineField in Game.MineFields.Where(mf => mf.Player == player))
                 {
-                    scanners.Add(new Scanner(mineField.Position, mineField.Radius, 0));
+                    scanners.Add(new Scanner(mineField.Position, (int)mineField.Radius, 0));
                 }
             }
 

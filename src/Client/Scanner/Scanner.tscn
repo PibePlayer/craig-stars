@@ -19,6 +19,8 @@ script = ExtResource( 1 )
 
 [node name="Salvage" type="Node2D" parent="."]
 
+[node name="Wormholes" type="Node2D" parent="."]
+
 [node name="Fleets" type="Node2D" parent="."]
 
 [node name="SelectedMapObjectIndicatorSprite" parent="." instance=ExtResource( 2 )]

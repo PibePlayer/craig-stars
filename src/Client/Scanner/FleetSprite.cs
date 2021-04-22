@@ -101,7 +101,7 @@ namespace CraigStars
         /// <param name="mapObject"></param>
         /// <param name="after"></param>
         /// <returns></returns>
-        public Waypoint AddWaypoint(MapObject mapObject, Waypoint after = null)
+        public void AddWaypoint(MapObject mapObject, Waypoint after = null)
         {
             var index = Fleet.Waypoints.Count - 1;
             if (after != null)
@@ -117,13 +117,16 @@ namespace CraigStars
             }
             var waypoint = Waypoint.TargetWaypoint(mapObject, warpFactor, task, transportTasks);
 
+            if (Fleet.Waypoints[index].Target == mapObject || Fleet.Waypoints[index].Position == mapObject.Position)
+            {
+                return;
+            }
 
             Fleet.Waypoints.Insert(index + 1, waypoint);
 
             UpdateWaypointsLine();
 
             Signals.PublishWaypointAddedEvent(Fleet, waypoint);
-            return waypoint;
         }
 
         /// <summary>
@@ -132,7 +135,7 @@ namespace CraigStars
         /// <param name="position"></param>
         /// <param name="after"></param>
         /// <returns></returns>
-        public Waypoint AddWaypoint(Vector2 position, Waypoint after = null)
+        public void AddWaypoint(Vector2 position, Waypoint after = null)
         {
             var index = Fleet.Waypoints.Count - 1;
             if (after != null)
@@ -157,7 +160,6 @@ namespace CraigStars
             UpdateWaypointsLine();
 
             Signals.PublishWaypointAddedEvent(Fleet, waypoint);
-            return waypoint;
         }
 
         public void DeleteWaypoint(Waypoint waypoint)
@@ -229,6 +231,11 @@ namespace CraigStars
 
         public override void UpdateSprite()
         {
+            if (!IsInstanceValid(this))
+            {
+                return;
+            }
+
             // turn them all off
 
             stateSprites.ForEach(s => s.Visible = false);

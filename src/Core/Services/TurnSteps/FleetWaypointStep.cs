@@ -7,7 +7,7 @@ using log4net;
 namespace CraigStars
 {
     /// <summary>
-    /// Process Waypoint 0 actions
+    /// Process Waypoint actions
     /// Note: this will be called twice, once at the beginning of a turn, and once after fleets move
     ///
     /// From TurnGenerator.cs: 
@@ -16,6 +16,9 @@ namespace CraigStars
     ///     Waypoint 0 Colonization/Ground Combat resolution (w/possible tech gain) 
     ///     Waypoint 0 load tasks 
     ///     Other Waypoint 0 tasks * 
+    ///     
+    /// TODO: If we leave wp0 and head towards another waypoint, some actions only run at half capacity, If we remote mine or lay mines
+    /// it needs to only do half that if we are leaving to a new waypoint
     /// </summary>
     public class FleetWaypointStep : Step
     {
@@ -25,6 +28,7 @@ namespace CraigStars
         HashSet<Waypoint> processedWaypoints = new HashSet<Waypoint>();
         List<Fleet> scrappedFleets = new List<Fleet>();
 
+        List<FleetWaypoint> remoteMiningTasks = new List<FleetWaypoint>();
         List<FleetWaypoint> scrapFleetTasks = new List<FleetWaypoint>();
         List<FleetWaypoint> unloadTasks = new List<FleetWaypoint>();
         List<FleetWaypoint> colonizeTasks = new List<FleetWaypoint>();
@@ -34,8 +38,15 @@ namespace CraigStars
         List<PlanetInvasion> invasions = new List<PlanetInvasion>();
 
         InvasionProcessor invasionProcessor;
+        PlanetDiscoverer planetDiscoverer;
 
-        public FleetWaypointStep(Game game, TurnGeneratorState state) : base(game, state) { }
+        // some things (like remote mining) only happen on wp1
+        int waypointIndex = 0;
+
+        public FleetWaypointStep(Game game, int waypointIndex) : base(game, TurnGeneratorState.Waypoint)
+        {
+            this.waypointIndex = waypointIndex;
+        }
 
         /// <summary>
         /// Override PreProcess() to get processed waypoints to the TurnGeneratorContext
@@ -43,10 +54,12 @@ namespace CraigStars
         public override void PreProcess(List<Planet> ownedPlanets)
         {
             base.PreProcess(ownedPlanets);
-
+            
             invasionProcessor = new InvasionProcessor();
+            planetDiscoverer = new PlanetDiscoverer();
             processedWaypoints.Clear();
             scrappedFleets.Clear();
+            remoteMiningTasks.Clear();
             scrapFleetTasks.Clear();
             unloadTasks.Clear();
             colonizeTasks.Clear();
@@ -65,7 +78,6 @@ namespace CraigStars
 
         public override void Process()
         {
-
             // Separate our waypoint tasks into groups
             Game.Fleets.ForEach(fleet => BuildWaypointTasks(fleet));
 
@@ -74,7 +86,13 @@ namespace CraigStars
             colonizeTasks.ForEach(task => ProcessColonizeTask(task));
             scrappedFleets.ForEach(fleet => EventManager.PublishMapObjectDeletedEvent(fleet));
 
-            // 
+            // remote mining happens in wp1, before transport tasks
+            if (waypointIndex == 1)
+            {
+                remoteMiningTasks.ForEach(task => ProcessRemoteMiningTask(task));
+            }
+
+            // do unloads, invasions, then loads
             unloadTasks.ForEach(task => ProcessUnloadTask(task));
             invasions.ForEach(task => ProcessInvasionTask(task));
             loadTasks.ForEach(task => ProcessLoadTask(task));
@@ -118,13 +136,8 @@ namespace CraigStars
                     case WaypointTask.Colonize:
                         colonizeTasks.Add(new FleetWaypoint(fleet, wp));
                         break;
-                    case WaypointTask.LayMineField:
-                    case WaypointTask.MergeWithFleet:
-                    case WaypointTask.Patrol:
                     case WaypointTask.RemoteMining:
-                    case WaypointTask.Route:
-                    case WaypointTask.TransferFleet:
-                        otherTasks.Add(new FleetWaypoint(fleet, wp));
+                        remoteMiningTasks.Add(new FleetWaypoint(fleet, wp));
                         break;
                     case WaypointTask.ScrapFleet:
                         scrapFleetTasks.Add(new FleetWaypoint(fleet, wp));
@@ -174,7 +187,14 @@ namespace CraigStars
                             loadDunnageTasks.Add(load);
                         }
                         break;
-
+                    case WaypointTask.LayMineField:
+                    case WaypointTask.MergeWithFleet:
+                    case WaypointTask.Patrol:
+                    case WaypointTask.Route:
+                    case WaypointTask.TransferFleet:
+                    default:
+                        otherTasks.Add(new FleetWaypoint(fleet, wp));
+                        break;
                 }
             }
             else
@@ -223,6 +243,63 @@ namespace CraigStars
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Remoting mining tasks happen at the beginning of WP1
+        /// </summary>
+        /// <param name="fleetWaypoint"></param>
+        void ProcessRemoteMiningTask(FleetWaypoint fleetWaypoint)
+        {
+            var fleet = fleetWaypoint.Fleet;
+            var wp = fleetWaypoint.Waypoint;
+            var planet = fleet.Orbiting;
+
+            if (ValidateRemoteMining(fleet, wp, planet))
+            {
+                // remote mine!
+                planet.Cargo += planet.GetMineralOutput(fleet.Aggregate.MiningRate);
+                planetDiscoverer.DiscoverRemoteMined(fleet.Player, planet);
+            }
+            else
+            {
+                // cancel this task
+                fleet.Waypoints[0].Task = WaypointTask.None;
+            }
+        }
+
+        /// <summary>
+        /// Validate remote mining orders
+        /// </summary>
+        /// <param name="fleet"></param>
+        /// <param name="waypoint"></param>
+        /// <param name="planet"></param>
+        /// <returns></returns>
+        internal bool ValidateRemoteMining(Fleet fleet, Waypoint waypoint, Planet planet)
+        {
+            if (planet == null)
+            {
+                Message.RemoteMineDeepSpace(fleet.Player, fleet);
+                return false;
+            }
+
+            if (planet.Owner != null)
+            {
+                // AR races can remote mine their own planets
+                if (!(fleet.Player.Race.PRT == PRT.AR && planet.Owner == fleet.Player))
+                {
+                    Message.RemoteMineInhabited(fleet.Player, fleet, planet);
+                    return false;
+                }
+            }
+
+            if (fleet.Aggregate.MiningRate == 0)
+            {
+                Message.RemoteMineNoMiners(fleet.Player, fleet, planet);
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -379,12 +456,12 @@ namespace CraigStars
 
             // add in any cargo the fleet was holding
             cargo += fleet.Cargo;
+            scrappedFleets.Add(fleet);
 
             if (wp.Target is Planet planet)
             {
                 planet.Cargo += cargo;
                 fleet.Scrapped = true;
-                scrappedFleets.Add(fleet);
             }
             else
             {
@@ -392,6 +469,8 @@ namespace CraigStars
                 {
                     // todo does owned scrap make sense?
                     // Player = fleet.Player,
+                    Name = "Salvage",
+                    Position = wp.Position,
                     Cargo = cargo
                 };
                 EventManager.PublishMapObjectCreatedEvent(salvage);
@@ -466,6 +545,11 @@ namespace CraigStars
             switch (wp.Task)
             {
                 case WaypointTask.LayMineField:
+                    if (!fleet.Aggregate.CanLayMines)
+                    {
+                        wp.Task = WaypointTask.None;
+                        Message.MinesLaidFailed(fleet.Player, fleet);
+                    }
                     break;
                 case WaypointTask.MergeWithFleet:
                     break;
@@ -479,6 +563,7 @@ namespace CraigStars
                     break;
             }
         }
+
 
         /// <summary>
         /// Notify the Player if this fleet has completed it's assigned task

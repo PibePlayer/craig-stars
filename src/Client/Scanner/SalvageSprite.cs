@@ -16,15 +16,6 @@ namespace CraigStars
         public Salvage Salvage
         {
             get => MapObject as Salvage;
-            set
-            {
-                MapObject = value;
-            }
-        }
-
-        public override void _Ready()
-        {
-            base._Ready();
         }
 
         public override void _Draw()
@@ -38,7 +29,11 @@ namespace CraigStars
 
         public override void UpdateSprite()
         {
-            Update();
+            if (!IsInstanceValid(this))
+            {
+                return;
+            }
+
             // do nothing
         }
     }

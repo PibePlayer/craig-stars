@@ -5,6 +5,10 @@ namespace CraigStars
     /// </summary>
     public enum Size
     {
-        Tiny, Small, Medium, Large, Huge
+        Tiny, 
+        Small, 
+        Medium, 
+        Large, 
+        Huge
     }
 }

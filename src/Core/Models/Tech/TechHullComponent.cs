@@ -6,6 +6,8 @@ namespace CraigStars
     public class TechHullComponent : Tech
     {
         public const int NoScanner = -1;
+        public const int NoGate = -1;
+        public const int InfinteGate = int.MaxValue;
 
         public HullSlotType HullSlotType { get; set; }
         public int Mass { get; set; }
@@ -51,19 +53,24 @@ namespace CraigStars
         public int Range { get; set; }
         public int Initiative { get; set; }
         public int Accuracy { get; set; }
-        public int MineSweep { get; set; }
         public bool Gattling { get; set; }
         public bool HitsAllTargets { get; set; }
         public bool DamageShieldsOnly { get; set; }
         public bool CapitalShipMissile { get; set; }
 
-        // other
-        public int PacketSpeed { get; set; }
-        public int SafeHullMass { get; set; }
-        public int SafeRange { get; set; }
-        public int MaxHullMass { get; set; }
-        public int MaxRange { get; set; }
+        // remote mining
         public int MiningRate { get; set; }
+
+        // mass driver
+        public int PacketSpeed { get; set; }
+
+        // gates
+        public int SafeHullMass { get; set; } = NoGate;
+        public int SafeRange { get; set; } = NoGate;
+        public int MaxHullMass { get; set; } = NoGate;
+        public int MaxRange { get; set; } = NoGate;
+
+        // Remote Terraforming
         public int TerraformRate { get; set; }
 
         // minelayers

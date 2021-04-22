@@ -310,74 +310,15 @@ namespace CraigStars
 
         #endregion Engines
 
-        #region Mass Drivers
-
-        public static readonly TechHullComponent MassDriver5 = new TechHullComponent("Mass Driver 5", new Cost(24, 20, 20, 70), new TechRequirements(energy: 4, prtRequired: PRT.PP), 0, TechCategory.Orbital)
-        {
-            Mass = 0,
-            PacketSpeed = 5,
-            HullSlotType = HullSlotType.Orbital,
-        };
-        public static readonly TechHullComponent MassDriver6 = new TechHullComponent("Mass Driver 6", new Cost(24, 20, 20, 144), new TechRequirements(energy: 7, prtRequired: PRT.PP), 0, TechCategory.Orbital)
-        {
-            Mass = 0,
-            PacketSpeed = 6,
-            HullSlotType = HullSlotType.Orbital,
-        };
-        public static readonly TechHullComponent MassDriver7 = new TechHullComponent("Mass Driver 7", new Cost(100, 100, 100, 512), new TechRequirements(energy: 9), 0, TechCategory.Orbital)
-        {
-            Mass = 0,
-            PacketSpeed = 7,
-            HullSlotType = HullSlotType.Orbital,
-        };
-        public static readonly TechHullComponent SuperDriver8 = new TechHullComponent("Super Driver 8", new Cost(24, 20, 20, 256), new TechRequirements(energy: 11, prtRequired: PRT.PP), 0, TechCategory.Orbital)
-        {
-            Mass = 0,
-            PacketSpeed = 8,
-            HullSlotType = HullSlotType.Orbital,
-        };
-        public static readonly TechHullComponent SuperDriver9 = new TechHullComponent("Super Driver 9", new Cost(24, 20, 20, 324), new TechRequirements(energy: 13, prtRequired: PRT.PP), 0, TechCategory.Orbital)
-        {
-            Mass = 0,
-            PacketSpeed = 9,
-            HullSlotType = HullSlotType.Orbital,
-        };
-        public static readonly TechHullComponent UltraDriver10 = new TechHullComponent("Ultra Driver 10", new Cost(100, 100, 100, 968), new TechRequirements(energy: 15), 0, TechCategory.Orbital)
-        {
-            Mass = 0,
-            PacketSpeed = 10,
-            HullSlotType = HullSlotType.Orbital,
-        };
-        public static readonly TechHullComponent UltraDriver11 = new TechHullComponent("Ultra Driver 11", new Cost(24, 20, 20, 484), new TechRequirements(energy: 17, prtRequired: PRT.PP), 0, TechCategory.Orbital)
-        {
-            Mass = 0,
-            PacketSpeed = 11,
-            HullSlotType = HullSlotType.Orbital,
-        };
-        public static readonly TechHullComponent UltraDriver12 = new TechHullComponent("Ultra Driver 12", new Cost(24, 20, 20, 576), new TechRequirements(energy: 20, prtRequired: PRT.PP), 0, TechCategory.Orbital)
-        {
-            Mass = 0,
-            PacketSpeed = 12,
-            HullSlotType = HullSlotType.Orbital,
-        };
-        public static readonly TechHullComponent UltraDriver13 = new TechHullComponent("Ultra Driver 13", new Cost(24, 20, 20, 676), new TechRequirements(energy: 24, prtRequired: PRT.PP), 0, TechCategory.Orbital)
-        {
-            Mass = 0,
-            PacketSpeed = 13,
-            HullSlotType = HullSlotType.Orbital,
-        };
-
-        #endregion
-
         #region Stargates
 
         public static readonly TechHullComponent Stargate100_250 = new TechHullComponent("Stargate 100-250", new Cost(50, 20, 20, 200), new TechRequirements(propulsion: 5, construction: 5, prtDenied: PRT.HE), 0, TechCategory.Orbital)
         {
             Mass = 0,
-            MaxRange = 1250,
             SafeHullMass = 100,
-            SafeRange = 250,
             MaxHullMass = 500,
+            SafeRange = 250,
+            MaxRange = 1250,
             HullSlotType = HullSlotType.Orbital,
         };
         public static readonly TechHullComponent Stargate100_Any = new TechHullComponent("Stargate 100-any", new Cost(50, 20, 20, 700), new TechRequirements(propulsion: 16, construction: 12, prtRequired: PRT.IT, prtDenied: PRT.HE), 10, TechCategory.Orbital)
@@ -385,48 +326,116 @@ namespace CraigStars
             Mass = 0,
             SafeHullMass = 100,
             MaxHullMass = 500,
+            SafeRange = TechHullComponent.InfinteGate,
+            MaxRange = TechHullComponent.InfinteGate,
             HullSlotType = HullSlotType.Orbital,
         };
         public static readonly TechHullComponent Stargate150_600 = new TechHullComponent("Stargate 150-600", new Cost(50, 20, 20, 500), new TechRequirements(propulsion: 11, construction: 7, prtDenied: PRT.HE), 20, TechCategory.Orbital)
         {
             Mass = 0,
-            MaxRange = 3000,
             SafeHullMass = 150,
+            MaxHullMass = 750,
             SafeRange = 600,
-            MaxHullMass = 7,
+            MaxRange = 3000,
             HullSlotType = HullSlotType.Orbital,
         };
         public static readonly TechHullComponent Stargate300_500 = new TechHullComponent("Stargate 300-500", new Cost(50, 20, 20, 600), new TechRequirements(propulsion: 9, construction: 13, prtDenied: PRT.HE), 30, TechCategory.Orbital)
         {
             Mass = 0,
-            MaxRange = 2500,
             SafeHullMass = 300,
+            MaxHullMass = 1500,
             SafeRange = 500,
-            MaxHullMass = 15,
+            MaxRange = 2500,
             HullSlotType = HullSlotType.Orbital,
         };
         public static readonly TechHullComponent StargateAny_300 = new TechHullComponent("Stargate any-300", new Cost(50, 20, 20, 250), new TechRequirements(propulsion: 6, construction: 10, prtRequired: PRT.IT, prtDenied: PRT.HE), 40, TechCategory.Orbital)
         {
             Mass = 0,
-            MaxRange = 1500,
+            SafeHullMass = TechHullComponent.InfinteGate,
+            MaxHullMass = TechHullComponent.InfinteGate,
             SafeRange = 300,
+            MaxRange = 1500,
             HullSlotType = HullSlotType.Orbital,
         };
         public static readonly TechHullComponent StargateAny_800 = new TechHullComponent("Stargate any-800", new Cost(50, 20, 20, 700), new TechRequirements(propulsion: 12, construction: 18, prtRequired: PRT.IT, prtDenied: PRT.HE), 50, TechCategory.Orbital)
         {
             Mass = 0,
-            MaxRange = 4000,
+            SafeHullMass = TechHullComponent.InfinteGate,
+            MaxHullMass = TechHullComponent.InfinteGate,
             SafeRange = 800,
+            MaxRange = 4000,
             HullSlotType = HullSlotType.Orbital,
         };
         public static readonly TechHullComponent StargateAny_Any = new TechHullComponent("Stargate any-any", new Cost(50, 20, 20, 800), new TechRequirements(propulsion: 19, construction: 24, prtRequired: PRT.IT, prtDenied: PRT.HE), 60, TechCategory.Orbital)
         {
             Mass = 0,
+            SafeHullMass = TechHullComponent.InfinteGate,
+            MaxHullMass = TechHullComponent.InfinteGate,
+            SafeRange = TechHullComponent.InfinteGate,
+            MaxRange = TechHullComponent.InfinteGate,
             HullSlotType = HullSlotType.Orbital,
         };
 
         #endregion
 
+        #region Mass Drivers
+
+        public static readonly TechHullComponent MassDriver5 = new TechHullComponent("Mass Driver 5", new Cost(24, 20, 20, 70), new TechRequirements(energy: 4, prtRequired: PRT.PP), 70, TechCategory.Orbital)
+        {
+            Mass = 0,
+            PacketSpeed = 5,
+            HullSlotType = HullSlotType.Orbital,
+        };
+        public static readonly TechHullComponent MassDriver6 = new TechHullComponent("Mass Driver 6", new Cost(24, 20, 20, 144), new TechRequirements(energy: 7, prtRequired: PRT.PP), 80, TechCategory.Orbital)
+        {
+            Mass = 0,
+            PacketSpeed = 6,
+            HullSlotType = HullSlotType.Orbital,
+        };
+        public static readonly TechHullComponent MassDriver7 = new TechHullComponent("Mass Driver 7", new Cost(100, 100, 100, 512), new TechRequirements(energy: 9), 90, TechCategory.Orbital)
+        {
+            Mass = 0,
+            PacketSpeed = 7,
+            HullSlotType = HullSlotType.Orbital,
+        };
+        public static readonly TechHullComponent SuperDriver8 = new TechHullComponent("Super Driver 8", new Cost(24, 20, 20, 256), new TechRequirements(energy: 11, prtRequired: PRT.PP), 100, TechCategory.Orbital)
+        {
+            Mass = 0,
+            PacketSpeed = 8,
+            HullSlotType = HullSlotType.Orbital,
+        };
+        public static readonly TechHullComponent SuperDriver9 = new TechHullComponent("Super Driver 9", new Cost(24, 20, 20, 324), new TechRequirements(energy: 13, prtRequired: PRT.PP), 110, TechCategory.Orbital)
+        {
+            Mass = 0,
+            PacketSpeed = 9,
+            HullSlotType = HullSlotType.Orbital,
+        };
+        public static readonly TechHullComponent UltraDriver10 = new TechHullComponent("Ultra Driver 10", new Cost(100, 100, 100, 968), new TechRequirements(energy: 15), 120, TechCategory.Orbital)
+        {
+            Mass = 0,
+            PacketSpeed = 10,
+            HullSlotType = HullSlotType.Orbital,
+        };
+        public static readonly TechHullComponent UltraDriver11 = new TechHullComponent("Ultra Driver 11", new Cost(24, 20, 20, 484), new TechRequirements(energy: 17, prtRequired: PRT.PP), 130, TechCategory.Orbital)
+        {
+            Mass = 0,
+            PacketSpeed = 11,
+            HullSlotType = HullSlotType.Orbital,
+        };
+        public static readonly TechHullComponent UltraDriver12 = new TechHullComponent("Ultra Driver 12", new Cost(24, 20, 20, 576), new TechRequirements(energy: 20, prtRequired: PRT.PP), 140, TechCategory.Orbital)
+        {
+            Mass = 0,
+            PacketSpeed = 12,
+            HullSlotType = HullSlotType.Orbital,
+        };
+        public static readonly TechHullComponent UltraDriver13 = new TechHullComponent("Ultra Driver 13", new Cost(24, 20, 20, 676), new TechRequirements(energy: 24, prtRequired: PRT.PP), 150, TechCategory.Orbital)
+        {
+            Mass = 0,
+            PacketSpeed = 13,
+            HullSlotType = HullSlotType.Orbital,
+        };
+
+        #endregion
         #region Miners
 
         public static readonly TechHullComponent OrbitalAdjuster = new TechHullComponent("Orbital Adjuster", new Cost(25, 25, 25, 50), new TechRequirements(biotechnology: 6, prtRequired: PRT.CA), 0, TechCategory.MineRobot)
@@ -902,33 +911,33 @@ namespace CraigStars
         public static readonly TechHullComponent MineDispenser40 = new TechHullComponent("Mine Dispenser 40", new Cost(2, 9, 7, 40), new TechRequirements(prtRequired: PRT.SD), 0, TechCategory.MineLayer)
         {
             Mass = 25,
-            MineFieldType = MineFieldType.Normal,
+            MineFieldType = MineFieldType.Standard,
             MineLayingRate = 40,
-            HullSlotType = HullSlotType.Mine,
+            HullSlotType = HullSlotType.MineLayer,
         };
 
         public static readonly TechHullComponent MineDispenser50 = new TechHullComponent("Mine Dispenser 50", new Cost(2, 12, 10, 55), new TechRequirements(energy: 2, biotechnology: 4), 10, TechCategory.MineLayer)
         {
             Mass = 30,
-            MineFieldType = MineFieldType.Normal,
+            MineFieldType = MineFieldType.Standard,
             MineLayingRate = 50,
-            HullSlotType = HullSlotType.Mine,
+            HullSlotType = HullSlotType.MineLayer,
         };
 
         public static readonly TechHullComponent MineDispenser80 = new TechHullComponent("Mine Dispenser 80", new Cost(2, 12, 10, 65), new TechRequirements(energy: 3, biotechnology: 7, prtRequired: PRT.SD), 20, TechCategory.MineLayer)
         {
             Mass = 30,
-            MineFieldType = MineFieldType.Normal,
+            MineFieldType = MineFieldType.Standard,
             MineLayingRate = 80,
-            HullSlotType = HullSlotType.Mine,
+            HullSlotType = HullSlotType.MineLayer,
         };
 
         public static readonly TechHullComponent MineDispenser130 = new TechHullComponent("Mine Dispenser 130", new Cost(2, 18, 10, 80), new TechRequirements(energy: 6, biotechnology: 12, prtRequired: PRT.SD), 30, TechCategory.MineLayer)
         {
             Mass = 30,
-            MineFieldType = MineFieldType.Normal,
+            MineFieldType = MineFieldType.Standard,
             MineLayingRate = 130,
-            HullSlotType = HullSlotType.Mine,
+            HullSlotType = HullSlotType.MineLayer,
         };
 
         public static readonly TechHullComponent HeavyDispenser50 = new TechHullComponent("Heavy Dispenser 50", new Cost(2, 20, 5, 50), new TechRequirements(energy: 5, biotechnology: 3, prtRequired: PRT.SD), 40, TechCategory.MineLayer)
@@ -936,7 +945,7 @@ namespace CraigStars
             Mass = 10,
             MineFieldType = MineFieldType.Heavy,
             MineLayingRate = 50,
-            HullSlotType = HullSlotType.Mine,
+            HullSlotType = HullSlotType.MineLayer,
         };
 
         public static readonly TechHullComponent HeavyDispenser110 = new TechHullComponent("Heavy Dispenser 110", new Cost(2, 20, 5, 50), new TechRequirements(energy: 9, biotechnology: 5, prtRequired: PRT.SD), 50, TechCategory.MineLayer)
@@ -944,7 +953,7 @@ namespace CraigStars
             Mass = 15,
             MineFieldType = MineFieldType.Heavy,
             MineLayingRate = 110,
-            HullSlotType = HullSlotType.Mine,
+            HullSlotType = HullSlotType.MineLayer,
         };
 
         public static readonly TechHullComponent HeavyDispenser200 = new TechHullComponent("Heavy Dispenser 200", new Cost(2, 45, 5, 90), new TechRequirements(energy: 14, biotechnology: 7, prtRequired: PRT.SD), 60, TechCategory.MineLayer)
@@ -952,31 +961,31 @@ namespace CraigStars
             Mass = 20,
             MineFieldType = MineFieldType.Heavy,
             MineLayingRate = 200,
-            HullSlotType = HullSlotType.Mine,
+            HullSlotType = HullSlotType.MineLayer,
         };
 
-        public static readonly TechHullComponent SpeedTrap20 = new TechHullComponent("Speed Trap 20", new Cost(29, 0, 12, 58), new TechRequirements(propulsion: 2, biotechnology: 2, prtRequired: PRT.IS), 70, TechCategory.MineLayer)
+        public static readonly TechHullComponent SpeedTrap20 = new TechHullComponent("Speed Trap 20", new Cost(29, 0, 12, 58), new TechRequirements(propulsion: 2, biotechnology: 2, prtRequired: PRT.SD), 70, TechCategory.MineLayer)
         {
             Mass = 100,
-            MineFieldType = MineFieldType.Speed,
+            MineFieldType = MineFieldType.SpeedBump,
             MineLayingRate = 20,
-            HullSlotType = HullSlotType.Mine,
+            HullSlotType = HullSlotType.MineLayer,
         };
 
-        public static readonly TechHullComponent SpeedTrap30 = new TechHullComponent("Speed Trap 30", new Cost(32, 0, 14, 72), new TechRequirements(propulsion: 3, biotechnology: 6, prtRequired: PRT.IS), 80, TechCategory.MineLayer)
+        public static readonly TechHullComponent SpeedTrap30 = new TechHullComponent("Speed Trap 30", new Cost(32, 0, 14, 72), new TechRequirements(propulsion: 3, biotechnology: 6, prtRequired: PRT.SD), 80, TechCategory.MineLayer)
         {
             Mass = 135,
-            MineFieldType = MineFieldType.Speed,
+            MineFieldType = MineFieldType.SpeedBump,
             MineLayingRate = 30,
-            HullSlotType = HullSlotType.Mine,
+            HullSlotType = HullSlotType.MineLayer,
         };
 
-        public static readonly TechHullComponent SpeedTrap50 = new TechHullComponent("Speed Trap 50", new Cost(40, 0, 15, 80), new TechRequirements(propulsion: 5, biotechnology: 11, prtRequired: PRT.IS), 90, TechCategory.MineLayer)
+        public static readonly TechHullComponent SpeedTrap50 = new TechHullComponent("Speed Trap 50", new Cost(40, 0, 15, 80), new TechRequirements(propulsion: 5, biotechnology: 11, prtRequired: PRT.SD), 90, TechCategory.MineLayer)
         {
             Mass = 140,
-            MineFieldType = MineFieldType.Speed,
+            MineFieldType = MineFieldType.SpeedBump,
             MineLayingRate = 50,
-            HullSlotType = HullSlotType.Mine,
+            HullSlotType = HullSlotType.MineLayer,
         };
 
         #endregion
@@ -1065,7 +1074,7 @@ namespace CraigStars
         {
             Mass = 3,
             Initiative = 12,
-            MineSweep = 208,
+            Gattling = true,
             Power = 16,
             HitsAllTargets = true,
             HullSlotType = HullSlotType.Weapon,
@@ -1122,7 +1131,7 @@ namespace CraigStars
         {
             Mass = 3,
             Initiative = 12,
-            MineSweep = 496,
+            Gattling = true,
             Power = 31,
             HitsAllTargets = true,
             HullSlotType = HullSlotType.Weapon,
@@ -1173,7 +1182,7 @@ namespace CraigStars
         {
             Mass = 3,
             Initiative = 13,
-            MineSweep = 1280,
+            Gattling = true,
             Power = 80,
             HitsAllTargets = true,
             HullSlotType = HullSlotType.Weapon,
@@ -1224,7 +1233,7 @@ namespace CraigStars
         {
             Mass = 3,
             Initiative = 13,
-            MineSweep = 3264,
+            Gattling = true,
             Power = 204,
             HitsAllTargets = true,
             HullSlotType = HullSlotType.Weapon,
@@ -1726,6 +1735,35 @@ namespace CraigStars
             })
         };
 
+        public static readonly TechHull MiniMineLayer = new TechHull("Mini Mine Layer", new Cost(8, 2, 5, 20), new TechRequirements(prtRequired: PRT.SD), 280, TechCategory.ShipHull)
+        {
+            Type = TechHullType.MineLayer,
+            Mass = 10,
+            Armor = 60,
+            FuelCapacity = 400,
+            Slots = new List<TechHullSlot>(new TechHullSlot[] {
+                new TechHullSlot(HullSlotType.Engine, 1, true),
+                new TechHullSlot(HullSlotType.MineLayer, 2),
+                new TechHullSlot(HullSlotType.MineLayer, 2),
+                new TechHullSlot(HullSlotType.ScannerElectricalMechanical, 1),
+            })
+        };
+
+        public static readonly TechHull SuperMineLayer = new TechHull("Super Mine Layer", new Cost(20, 3, 9, 30), new TechRequirements(construction: 15, prtRequired: PRT.SD), 290, TechCategory.ShipHull)
+        {
+            Type = TechHullType.MineLayer,
+            Mass = 30,
+            Armor = 1200,
+            FuelCapacity = 2200,
+            Slots = new List<TechHullSlot>(new TechHullSlot[] {
+                new TechHullSlot(HullSlotType.Engine, 1, true),
+                new TechHullSlot(HullSlotType.MineLayer, 8),
+                new TechHullSlot(HullSlotType.MineLayer, 8),
+                new TechHullSlot(HullSlotType.ShieldArmor, 4),
+                new TechHullSlot(HullSlotType.ScannerElectricalMechanical, 3),
+                new TechHullSlot(HullSlotType.MineElectricalMechanical, 3),
+            })
+        };
         #endregion
 
         #region StarbaseHulls
@@ -2076,6 +2114,8 @@ namespace CraigStars
                 MiniBomber,
                 MiniMiner,
                 FuelTransport,
+                MiniMineLayer,
+                SuperMineLayer,
 
                 // starbases
                 SpaceStation,

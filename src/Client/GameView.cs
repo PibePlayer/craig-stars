@@ -48,6 +48,7 @@ namespace CraigStars
             {
                 log.Warn("Resetting Players. This probably means you are executing the Game scene directly during development. If not, this is a problem.");
                 PlayersManager.Instance.SetupPlayers();
+                // PlayersManager.Me.Race.PRT = PRT.SD;
             }
 
         }
@@ -191,7 +192,9 @@ namespace CraigStars
                 RPC.Instance.SendTurnPassed(Game.GameInfo);
             }
 
+            log.Debug($"{Game.Year} Publishing client side turn passed event.");
             Signals.PublishTurnPassedEvent(Game.GameInfo);
+            log.Debug($"{Game.Year} Done publishing client side turn passed event.");
         }
 
         void OnUnsubmitTurnRequested(Player player)

@@ -1,0 +1,100 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://src/Client/SummaryPane/MineFieldSummaryContainer.cs" type="Script" id=1]
+[ext_resource path="res://assets/gui/minefields/StandardMineField.png" type="Texture" id=2]
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0, 0, 0, 1 )
+
+[node name="MineFieldSummaryContainer" type="CenterContainer"]
+margin_top = 190.0
+margin_right = 380.0
+margin_bottom = 258.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+margin_left = 47.0
+margin_right = 333.0
+margin_bottom = 68.0
+custom_constants/separation = 10
+
+[node name="Panel" type="Panel" parent="HBoxContainer"]
+show_behind_parent = true
+margin_right = 64.0
+margin_bottom = 68.0
+rect_min_size = Vector2( 64, 64 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_styles/panel = SubResource( 1 )
+
+[node name="Icon" type="TextureRect" parent="HBoxContainer/Panel"]
+margin_right = 64.0
+margin_bottom = 68.0
+rect_min_size = Vector2( 64, 64 )
+texture = ExtResource( 2 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="GridContainer" type="GridContainer" parent="HBoxContainer"]
+margin_left = 74.0
+margin_right = 286.0
+margin_bottom = 68.0
+columns = 2
+
+[node name="LocationLabel" type="Label" parent="HBoxContainer/GridContainer"]
+margin_right = 81.0
+margin_bottom = 14.0
+text = "Location:"
+
+[node name="Location" type="Label" parent="HBoxContainer/GridContainer"]
+margin_left = 85.0
+margin_right = 212.0
+margin_bottom = 14.0
+text = "(1234, 3244)"
+
+[node name="FieldTypeLabel" type="Label" parent="HBoxContainer/GridContainer"]
+margin_top = 18.0
+margin_right = 81.0
+margin_bottom = 32.0
+text = "Field Type:"
+
+[node name="FieldType" type="Label" parent="HBoxContainer/GridContainer"]
+margin_left = 85.0
+margin_top = 18.0
+margin_right = 212.0
+margin_bottom = 32.0
+text = "Standard"
+
+[node name="FieldRadiusLabel" type="Label" parent="HBoxContainer/GridContainer"]
+margin_top = 36.0
+margin_right = 81.0
+margin_bottom = 50.0
+text = "Field Radius:"
+
+[node name="FieldRadius" type="Label" parent="HBoxContainer/GridContainer"]
+margin_left = 85.0
+margin_top = 36.0
+margin_right = 212.0
+margin_bottom = 50.0
+text = "67 l.y. (4228 mines)"
+
+[node name="DecayRateLabel" type="Label" parent="HBoxContainer/GridContainer"]
+margin_top = 54.0
+margin_right = 81.0
+margin_bottom = 68.0
+text = "Decay Rate:"
+
+[node name="DecayRate" type="Label" parent="HBoxContainer/GridContainer"]
+margin_left = 85.0
+margin_top = 54.0
+margin_right = 212.0
+margin_bottom = 68.0
+text = "591 / year"

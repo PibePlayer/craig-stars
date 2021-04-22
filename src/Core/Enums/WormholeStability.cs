@@ -3,10 +3,14 @@ namespace CraigStars
     /// <summary>
     /// Each minefield has a type which determines it's damage, chance to hit, etc
     /// </summary>
-    public enum MineFieldType
+    public enum WormholeStability
     {
-        Normal, 
-        Heavy, 
-        Speed
+        RockSolid,
+        Stable,
+        MostlyStable,
+        Average,
+        SlightlyVolatile,
+        Volatile,
+        ExtremelyVolatile
     }
 }

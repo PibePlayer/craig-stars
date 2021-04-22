@@ -80,6 +80,11 @@ namespace CraigStars
 
         public override void UpdateSprite()
         {
+            if (MineField != null)
+            {
+                Radius = MineField.Radius;
+                UpdatePolygon();
+            }
             // TODO: change color on select?
             if (OwnedByMe)
             {
@@ -88,6 +93,10 @@ namespace CraigStars
             else
             {
                 Modulate = MineField.Owner.Color;
+            }
+
+            if (State == ScannerState.Selected) {
+                Modulate = Modulate.Lightened(.5f);
             }
         }
     }

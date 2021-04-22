@@ -27,6 +27,21 @@ namespace CraigStars
             ReportAge = MapObject.Unexplored,
         };
 
+        /// <summary>
+        /// This special PlanetDiscoverer function is for discovering surface minerals through remote mining
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="item"></param>
+        /// <param name="itemReport"></param>
+        public void DiscoverRemoteMined(Player player, Planet item)
+        {
+            if (player.PlanetsByGuid.TryGetValue(item.Guid, out var itemReport))
+            {
+                itemReport.RemoteMined = true;
+                itemReport.Cargo = item.Cargo;
+            }
+        }
+
         protected override void DiscoverForeign(Player player, Planet item, Planet itemReport, bool penScanned)
         {
             if (penScanned)
@@ -35,7 +50,11 @@ namespace CraigStars
                 // our scanned population is ± 20%
                 var randomPopulationError = player.Rules.Random.NextDouble() * (player.Rules.PopulationScannerError - (-player.Rules.PopulationScannerError)) - player.Rules.PopulationScannerError;
 
-                itemReport.Cargo = Cargo.Empty;
+                // if we remote mine a planet, we discover its surface minerals, otherwise we don't know
+                if (!itemReport.RemoteMined)
+                {
+                    itemReport.Cargo = Cargo.Empty;
+                }
                 itemReport.Population = (int)(item.Population * (1 - randomPopulationError));
                 itemReport.MineralConcentration = item.MineralConcentration;
                 itemReport.Hab = item.Hab;
@@ -105,21 +124,21 @@ namespace CraigStars
             itemReport.ProductionQueue.Allocated = item.ProductionQueue.Allocated;
             itemReport.ProductionQueue.LeftoverResources = item.ProductionQueue.LeftoverResources;
             itemReport.ProductionQueue.Items.Clear();
-            itemReport.ProductionQueue.Items.AddRange(item.ProductionQueue.Items.Select(planet =>
+            itemReport.ProductionQueue.Items.AddRange(item.ProductionQueue.Items.Select(queueItem =>
             {
-                if (planet.Design != null)
+                if (queueItem.Design != null)
                 {
-                    if (player.DesignsByGuid.TryGetValue(planet.Design.Guid, out var playerDesign))
+                    if (player.DesignsByGuid.TryGetValue(queueItem.Design.Guid, out var playerDesign))
                     {
                         // use the Game design, not the player one
-                        planet.Design = playerDesign;
+                        queueItem.Design = playerDesign;
                     }
                     else
                     {
                         log.Error($"Player ProductionQueueItem has unknown design: {player} - {playerDesign.Name}");
                     }
                 }
-                return planet;
+                return queueItem;
             }));
 
             if (item.HasStarbase)
@@ -134,8 +153,14 @@ namespace CraigStars
                     Player = player,
                     BattlePlan = player.BattlePlansByGuid[item.Starbase.BattlePlan.Guid]
                 };
-                itemReport.Starbase.Tokens.AddRange(item.Starbase.Tokens);
-                itemReport.Starbase.ComputeAggregate();
+
+                if (!player.DesignsByGuid.ContainsKey(item.Starbase.Design.Guid))
+                {
+                    designDiscoverer.Discover(player, item.Starbase.Design, true);
+                }
+
+                itemReport.Starbase.Tokens.Add(new ShipToken(player.DesignsByGuid[item.Starbase.Design.Guid], 1));
+                itemReport.Starbase.ComputeAggregate(true);
             }
         }
     }

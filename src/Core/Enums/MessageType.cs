@@ -23,7 +23,7 @@ namespace CraigStars
         FleetOutOfFuel                  = 1 << 12,
         FleetGeneratedFuel              = 1 << 12,
         FleetScrapped                   = 1 << 13,
-        ColonizeInvalid                 = 1 << 14,
+        Invalid                        = 1 << 14,
         PlanetColonized                 = 1 << 15,
         GainTechLevel                   = 1 << 16,
         MyPlanetBombed                  = 1 << 17,
@@ -32,5 +32,8 @@ namespace CraigStars
         EnemyPlanetInvaded              = 1 << 20,
         Battle                          = 1 << 21,
         CargoTransferred                = 1 << 22,
+        MinesSwept                      = 1 << 23,
+        MinesLaid                       = 1 << 24,
+        MineFieldHit                    = 1 << 26,
     }
 }

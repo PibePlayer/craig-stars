@@ -506,7 +506,27 @@ namespace CraigStars
         /// <returns></returns>
         public TechHullComponent GetBestMineLayer()
         {
-            return GetBestTech<TechHullComponent>(TechStore, TechCategory.MineLayer);
+            var techs = TechStore.GetTechsByCategory(TechCategory.MineLayer).Where(t => t is TechHullComponent hc && hc.MineFieldType != MineFieldType.SpeedBump).ToList();
+
+            techs.Sort((t1, t2) => t2.Ranking.CompareTo(t1.Ranking));
+            var tech = techs.Find(t => HasTech(t));
+
+            return tech as TechHullComponent;
+        }
+
+        /// <summary>
+        /// Get the best mine layer this player has access to
+        /// </summary>
+        /// <param name="techStore"></param>
+        /// <returns></returns>
+        public TechHullComponent GetBestSpeedTrapLayer()
+        {
+            var techs = TechStore.GetTechsByCategory(TechCategory.MineLayer).Where(t => t is TechHullComponent hc && hc.MineFieldType == MineFieldType.SpeedBump).ToList();
+
+            techs.Sort((t1, t2) => t2.Ranking.CompareTo(t1.Ranking));
+            var tech = techs.Find(t => HasTech(t));
+
+            return tech as TechHullComponent;
         }
 
         /// <summary>
@@ -559,6 +579,11 @@ namespace CraigStars
             return Designs.Find(d => d.Name == name);
         }
 
+        public ShipDesign GetLatestDesign(ShipDesignPurpose purpose)
+        {
+            return Designs.Where(d => d.Purpose == purpose).OrderByDescending(d => d.Version).FirstOrDefault();
+        }
+
         /// <summary>
         /// Merge
         /// </summary>
@@ -581,28 +606,14 @@ namespace CraigStars
         {
             foreach (var message in Messages)
             {
-                if (message.Target != null)
+                if (message.Target != null && MapObjectsByGuid.TryGetValue(message.Target.Guid, out var playerMapObject))
                 {
-                    if (message.Target is Fleet)
-                    {
-                        if (FleetsByGuid.TryGetValue(message.Target.Guid, out var fleet))
-                        {
-                            message.Target = fleet;
-                        }
-                        else
-                        {
-                            log.Error($"Found a Message Target with a fleet the player hasn't discovered: {message.Target.Name}");
-                        }
-                    }
-                    else if (message.Target is Planet)
-                    {
-                        message.Target = PlanetsByGuid[message.Target.Guid];
-                    }
-                    else
-                    {
-                        log.Error("Found a Message Target with an unknown type, setting to null.");
-                        message.Target = null;
-                    }
+                    message.Target = playerMapObject;
+                }
+                else
+                {
+                    // this could be because it's null, or because haven't scanned it, or the target was destroyed
+                    message.Target = null;
                 }
             }
         }

@@ -77,8 +77,14 @@ namespace CraigStars
 
         #endregion
 
+        /// <summary>
+        /// We purge deleted map objects after every turn step
+        /// </summary>
+        [JsonIgnore]
+        List<MapObject> deletedMapObjects = new List<MapObject>();
+
         // for tests or fast generation
-        [JsonIgnore] public bool SaveToDisk { get; set; } = true;
+        [JsonIgnore] public bool SaveToDisk { get; set; } = true; // false; 
 
         TurnGenerator turnGenerator;
         TurnSubmitter turnSubmitter;
@@ -122,6 +128,10 @@ namespace CraigStars
         {
             Designs.ForEach(d => d.ComputeAggregate(d.Player));
             Fleets.ForEach(f => f.ComputeAggregate());
+            foreach (var planet in OwnedPlanets.Where(p => p.HasStarbase))
+            {
+                planet.Starbase.ComputeAggregate();
+            }
         }
 
         /// <summary>
@@ -169,7 +179,7 @@ namespace CraigStars
             AfterTurnGeneration();
 
             // update player intel with new universe
-            var scanStep = new PlayerScanStep(this, TurnGeneratorState.Scan);
+            var scanStep = new PlayerScanStep(this);
             scanStep.Execute(new TurnGenerationContext(), OwnedPlanets.ToList());
 
             UpdatePlayers();
@@ -269,6 +279,7 @@ namespace CraigStars
         /// </summary>
         internal void AfterTurnGeneration()
         {
+            log.Debug($"{Year} Updating internal dictionaries and player dictionaries");
             TurnGeneratorAdvancedEvent?.Invoke(TurnGeneratorState.UpdatingPlayers);
             // Update the Game dictionaries used for lookups, like PlanetsByGuid, FleetsByGuid, etc.
             UpdateDictionaries();
@@ -304,6 +315,7 @@ namespace CraigStars
                 new ScoutTurnProcessor(GameInfo),
                 new ColonyTurnProcessor(GameInfo),
                 new BomberTurnProcessor(GameInfo),
+                new MineLayerTurnProcessor(GameInfo),
                 new PlanetProductionTurnProcessor(GameInfo)
             };
             processors.ForEach(processor => processor.Process(player));
@@ -400,7 +412,7 @@ namespace CraigStars
             log.Debug($"Created new {typeof(T)} {mapObject.Name} - {mapObject.Guid}");
         }
 
-        void OnMapObjectDeleted<T>(T mapObject, List<T> items, Dictionary<Guid, T> itemsByGuid) where T : MapObject
+        void DeleteMapObject<T>(T mapObject, List<T> items, Dictionary<Guid, T> itemsByGuid) where T : MapObject
         {
             items.Remove(mapObject);
             itemsByGuid.Remove(mapObject.Guid);
@@ -411,7 +423,55 @@ namespace CraigStars
                 CargoHoldersByGuid.Remove(cargoHolder.Guid);
             }
 
-            log.Debug($"Created new {typeof(T)} {mapObject.Name} - {mapObject.Guid}");
+            log.Debug($"Deleted {typeof(T)} {mapObject.Name} - {mapObject.Guid}");
+        }
+
+        /// <summary>
+        /// Remove all deleted map objects from the ame
+        /// </summary>
+        public void PurgeDeletedMapObjects()
+        {
+            deletedMapObjects.ForEach(mapObject =>
+            {
+                if (mapObject is Fleet fleet)
+                {
+                    if (fleet.Orbiting != null)
+                    {
+                        fleet.Orbiting.OrbitingFleets.Remove(fleet);
+                    }
+
+                    DeleteMapObject(fleet, Fleets, FleetsByGuid);
+                }
+                else if (mapObject is MineField mineField)
+                {
+                    DeleteMapObject(mineField, MineFields, MineFieldsByGuid);
+                }
+                else if (mapObject is Salvage salvage)
+                {
+                    DeleteMapObject(salvage, Salvage, SalvageByGuid);
+                }
+                else if (mapObject is Wormhole wormhole)
+                {
+                    DeleteMapObject(wormhole, Wormholes, WormholesByGuid);
+                    Players.ForEach(player =>
+                    {
+                        if (player.WormholesByGuid.TryGetValue(wormhole.Guid, out var playerWormhole))
+                        {
+                            if (playerWormhole.Destination != null)
+                            {
+                                // make the other wormhole forget about this one
+                                playerWormhole.Destination.Destination = null;
+                            }
+                            player.Wormholes.Remove(playerWormhole);
+                        }
+                    });
+                }
+                else if (mapObject is MysteryTrader mysteryTrader)
+                {
+                    DeleteMapObject(mysteryTrader, MysteryTraders, MysteryTradersByGuid);
+                }
+            });
+            deletedMapObjects.Clear();
         }
 
         void OnMapObjectCreated(MapObject mapObject)
@@ -440,32 +500,8 @@ namespace CraigStars
 
         void OnMapObjectDeleted(MapObject mapObject)
         {
-            if (mapObject is Fleet fleet)
-            {
-                if (fleet.Orbiting != null)
-                {
-                    fleet.Orbiting.OrbitingFleets.Remove(fleet);
-                }
-
-                OnMapObjectDeleted(fleet, Fleets, FleetsByGuid);
-            }
-            else if (mapObject is MineField mineField)
-            {
-                OnMapObjectDeleted(mineField, MineFields, MineFieldsByGuid);
-            }
-            else if (mapObject is Salvage salvage)
-            {
-                OnMapObjectDeleted(salvage, Salvage, SalvageByGuid);
-            }
-            else if (mapObject is Wormhole wormhole)
-            {
-                OnMapObjectDeleted(wormhole, Wormholes, WormholesByGuid);
-            }
-            else if (mapObject is MysteryTrader mysteryTrader)
-            {
-                OnMapObjectDeleted(mysteryTrader, MysteryTraders, MysteryTradersByGuid);
-            }
-
+            // add these to the deletedMapObjects list for future deletion
+            deletedMapObjects.Add(mapObject);
         }
 
         void OnPlanetPopulationEmptied(Planet planet)

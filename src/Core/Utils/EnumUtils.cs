@@ -5,6 +5,16 @@ namespace CraigStars.Utils
 {
     public static class EnumUtils
     {
+        public static string GetLabelForMineFieldType(MineFieldType type)
+        {
+            switch (type)
+            {
+                case MineFieldType.SpeedBump:
+                    return "Speed Bump";
+                default:
+                    return type.ToString();
+            }
+        }
 
         public static ShipDesignPurpose GetPurposeForTechHullType(TechHullType type)
         {
@@ -27,7 +37,7 @@ namespace CraigStars.Utils
                 case TechHullType.Miner:
                     return ShipDesignPurpose.Miner;
                 case TechHullType.MineLayer:
-                    return ShipDesignPurpose.MineLayer;
+                    return ShipDesignPurpose.DamageMineLayer;
                 case TechHullType.Starbase:
                     return ShipDesignPurpose.Starbase;
                 default:

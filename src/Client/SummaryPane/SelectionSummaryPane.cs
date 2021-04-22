@@ -29,9 +29,8 @@ namespace CraigStars
         PlanetSummaryContainer planetSummaryContainer;
         Control unknownPlanetContainer;
         Control fleetSummaryContainer;
-        Control salvageContainer;
-        Control mineFieldContainer;
-        CargoGrid salvageCargoGrid;
+        Control salvageSummaryContainer;
+        Control mineFieldSummaryContainer;
         Label nameLabel;
         Button otherFleetsButton;
 
@@ -40,9 +39,8 @@ namespace CraigStars
             planetSummaryContainer = GetNode<PlanetSummaryContainer>("VBoxContainer/PlanetSummaryContainer");
             unknownPlanetContainer = GetNode<Control>("VBoxContainer/UnknownPlanetContainer");
             fleetSummaryContainer = GetNode<Control>("VBoxContainer/FleetSummaryContainer");
-            salvageContainer = GetNode<Control>("VBoxContainer/SalvageContainer");
-            salvageCargoGrid = GetNode<CargoGrid>("VBoxContainer/SalvageContainer/HBoxContainer/CargoGrid");
-            mineFieldContainer = GetNode<Control>("VBoxContainer/MineFieldContainer");
+            salvageSummaryContainer = GetNode<Control>("VBoxContainer/SalvageSummaryContainer");
+            mineFieldSummaryContainer = GetNode<Control>("VBoxContainer/MineFieldSummaryContainer");
             nameLabel = GetNode<Label>("VBoxContainer/Title/Name");
             otherFleetsButton = GetNode<Button>("VBoxContainer/Title/OtherFleetsButton");
 
@@ -65,7 +63,7 @@ namespace CraigStars
                 mapObjectIndex++;
                 if (mapObjectsHere.Count > 0)
                 {
-                    if (mapObjectIndex >= mapObjectsHere.Count - 1)
+                    if (mapObjectIndex > mapObjectsHere.Count - 1)
                     {
                         mapObjectIndex = 0;
                     }
@@ -81,18 +79,30 @@ namespace CraigStars
                         // select the first orbiting fleet
                         Signals.PublishSelectMapObjectEvent(mapObject);
                     }
-
+                }
+                else
+                {
+                    mapObjectIndex = 0;
                 }
             }
         }
 
         void OnMapObjectSelected(MapObjectSprite mapObject)
         {
-            MapObject = mapObject;
-            mapObjectsHere.Clear();
-            if (MapObject != null && Me.MapObjectsByLocation.TryGetValue(MapObject.MapObject.Position, out var mapObjectsAtLocation))
+            // reset otherObjectsHere if we select a mapobject with a different position (or an empty one)
+            if (MapObject == null || MapObject.MapObject.Position != mapObject?.MapObject?.Position)
             {
-                mapObjectsHere.AddRange(mapObjectsAtLocation);
+                mapObjectIndex = 0;
+                MapObject = mapObject;
+                mapObjectsHere.Clear();
+                if (MapObject != null && Me.MapObjectsByLocation.TryGetValue(MapObject.MapObject.Position, out var mapObjectsAtLocation))
+                {
+                    mapObjectsHere.AddRange(mapObjectsAtLocation);
+                }
+            }
+            else
+            {
+                MapObject = mapObject;
             }
         }
 
@@ -103,11 +113,11 @@ namespace CraigStars
 
         void UpdateControls()
         {
-            salvageContainer.Visible = false;
+            salvageSummaryContainer.Visible = false;
             fleetSummaryContainer.Visible = false;
             planetSummaryContainer.Visible = false;
             unknownPlanetContainer.Visible = false;
-            mineFieldContainer.Visible = false;
+            mineFieldSummaryContainer.Visible = false;
 
             if (MapObject != null)
             {
@@ -130,13 +140,12 @@ namespace CraigStars
                 }
                 else if (MapObject.MapObject is Salvage salvage)
                 {
-                    salvageCargoGrid.Cargo = salvage.Cargo;
-                    nameLabel.Text = "Salvage";
-                    salvageContainer.Visible = true;
+                    nameLabel.Text = $"Salvage Summary";
+                    salvageSummaryContainer.Visible = true;
                 }
                 else if (MapObject.MapObject is MineField mineField)
                 {
-                    mineFieldContainer.Visible = true;
+                    mineFieldSummaryContainer.Visible = true;
                     nameLabel.Text = $"{mineField.RacePluralName} Mine Field";
                 }
                 else

@@ -85,6 +85,11 @@ namespace CraigStars
 
         public override void _Draw()
         {
+            if (!IsInstanceValid(this))
+            {
+                return;
+            }
+
             switch (PlayersManager.Me.UISettings.PlanetViewState)
             {
                 // just use sprites
@@ -137,6 +142,10 @@ namespace CraigStars
 
         public override void UpdateSprite()
         {
+            if (!IsInstanceValid(this))
+            {
+                return;
+            }
 
             ownerAllyState = Planet.ReportAge == MapObject.Unexplored ? ScannerOwnerAlly.Unknown : ScannerOwnerAlly.Known;
             hasActivePeer = HasActivePeer();

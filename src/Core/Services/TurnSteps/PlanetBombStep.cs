@@ -35,7 +35,7 @@ namespace CraigStars
     /// </summary>
     public class PlanetBombStep : Step
     {
-        public PlanetBombStep(Game game, TurnGeneratorState state) : base(game, state) { }
+        public PlanetBombStep(Game game) : base(game, TurnGeneratorState.Bomb) { }
 
         public override void Process()
         {

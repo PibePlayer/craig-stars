@@ -1,12 +1,14 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://src/Client/CommandPane/PlanetStarbaseTile.cs" type="Script" id=1]
 [ext_resource path="res://src/Client/TileTheme.tres" type="Theme" id=2]
+[ext_resource path="res://src/Client/ShipDesigner/HullSummary.tscn" type="PackedScene" id=3]
 
 [node name="PlanetStarbaseTile" type="MarginContainer"]
 margin_right = 207.0
-margin_bottom = 180.0
+margin_bottom = 192.0
 rect_min_size = Vector2( 200, 180 )
+rect_pivot_offset = Vector2( -196.485, 284.291 )
 theme = ExtResource( 2 )
 custom_constants/margin_right = 10
 custom_constants/margin_top = 10
@@ -61,6 +63,7 @@ margin_bottom = 172.0
 [node name="StatsGrid" type="GridContainer" parent="VBoxContainer/StatsContainer"]
 margin_right = 187.0
 margin_bottom = 68.0
+mouse_default_cursor_shape = 16
 size_flags_horizontal = 3
 columns = 2
 
@@ -127,8 +130,28 @@ margin_top = 72.0
 margin_right = 187.0
 margin_bottom = 76.0
 
-[node name="MassDriverGrid" type="GridContainer" parent="VBoxContainer/StatsContainer"]
+[node name="StargateGrid" type="GridContainer" parent="VBoxContainer/StatsContainer"]
 margin_top = 80.0
+margin_right = 187.0
+margin_bottom = 94.0
+size_flags_horizontal = 3
+columns = 2
+
+[node name="StargateLabel" type="Label" parent="VBoxContainer/StatsContainer/StargateGrid"]
+margin_right = 151.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+text = "Stargate"
+
+[node name="Stargate" type="Label" parent="VBoxContainer/StatsContainer/StargateGrid"]
+margin_left = 155.0
+margin_right = 187.0
+margin_bottom = 14.0
+text = "none"
+align = 2
+
+[node name="MassDriverGrid" type="GridContainer" parent="VBoxContainer/StatsContainer"]
+margin_top = 98.0
 margin_right = 187.0
 margin_bottom = 154.0
 size_flags_horizontal = 3
@@ -147,38 +170,42 @@ margin_bottom = 14.0
 text = "none"
 align = 2
 
-[node name="StargateLabel" type="Label" parent="VBoxContainer/StatsContainer/MassDriverGrid"]
-margin_top = 18.0
-margin_right = 151.0
-margin_bottom = 32.0
-size_flags_horizontal = 3
-text = "Stargate"
-
-[node name="Stargate" type="Label" parent="VBoxContainer/StatsContainer/MassDriverGrid"]
-margin_left = 155.0
-margin_top = 18.0
-margin_right = 187.0
-margin_bottom = 32.0
-text = "none"
-align = 2
-
 [node name="DestinationLabel" type="Label" parent="VBoxContainer/StatsContainer/MassDriverGrid"]
-margin_top = 36.0
+margin_top = 18.0
 margin_right = 151.0
-margin_bottom = 50.0
+margin_bottom = 32.0
+hint_tooltip = "The planet to fling packets at"
+mouse_filter = 1
 size_flags_horizontal = 3
 text = "Destination"
 
 [node name="Destination" type="Label" parent="VBoxContainer/StatsContainer/MassDriverGrid"]
 margin_left = 155.0
-margin_top = 36.0
+margin_top = 18.0
 margin_right = 187.0
-margin_bottom = 50.0
+margin_bottom = 32.0
 text = "none"
 align = 2
 
 [node name="SetDestinationButton" type="Button" parent="VBoxContainer/StatsContainer/MassDriverGrid"]
-margin_top = 54.0
+margin_top = 36.0
 margin_right = 151.0
-margin_bottom = 74.0
+margin_bottom = 56.0
 text = "Set Destination"
+
+[node name="HullSummaryPopup" type="PopupPanel" parent="."]
+margin_left = 10.0
+margin_top = 10.0
+margin_right = 538.0
+margin_bottom = 688.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HullSummary" parent="HullSummaryPopup" instance=ExtResource( 3 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 4.0
+margin_top = 4.0
+margin_right = 524.0
+margin_bottom = 674.0

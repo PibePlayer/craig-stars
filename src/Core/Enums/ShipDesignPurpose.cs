@@ -14,6 +14,7 @@ public enum ShipDesignPurpose
     FuelFreighter, // use fuel tanks where possible
     ArmedFreighter, // i.e. a Privateer
     Miner,
-    MineLayer,
+    DamageMineLayer,
+    SpeedMineLayer,
     Starbase,
 }

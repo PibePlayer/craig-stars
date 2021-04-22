@@ -20,6 +20,7 @@ namespace CraigStars
         PackedScene fleetScene;
         PackedScene salvageScene;
         PackedScene mineFieldScene;
+        PackedScene wormholeScene;
 
         /// <summary>
         /// The index of the currently selected map object (if there are more than one at a location)
@@ -78,6 +79,7 @@ namespace CraigStars
             fleetScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/FleetSprite.tscn");
             salvageScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/SalvageSprite.tscn");
             mineFieldScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/MineFieldSprite.tscn");
+            wormholeScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/WormholeSprite.tscn");
 
             // get some nodes
             selectedMapObjectIndicatorSprite = GetNode<SelectedMapObjectIndicatorSprite>("SelectedMapObjectIndicatorSprite");
@@ -100,6 +102,7 @@ namespace CraigStars
             Signals.WaypointSelectedEvent += OnWaypointSelected;
             Signals.WaypointDeletedEvent += OnWaypointDeleted;
             Signals.PlanetViewStateUpdatedEvent += OnPlanetViewStateUpdatedEvent;
+            Signals.TurnSubmittedEvent += OnTurnSubmittedEvent;
         }
 
         public override void _ExitTree()
@@ -118,6 +121,7 @@ namespace CraigStars
             Signals.WaypointSelectedEvent -= OnWaypointSelected;
             Signals.WaypointDeletedEvent -= OnWaypointDeleted;
             Signals.PlanetViewStateUpdatedEvent -= OnPlanetViewStateUpdatedEvent;
+            Signals.TurnSubmittedEvent -= OnTurnSubmittedEvent;
         }
 
         /// <summary>
@@ -160,6 +164,15 @@ namespace CraigStars
         {
             Planets.ForEach(p => p.UpdateSprite());
         }
+
+        void OnTurnSubmittedEvent(PublicPlayerInfo player)
+        {
+            if (player == Me)
+            {
+                //   FocusHomeworld();
+            }
+        }
+
 
         void OnTurnPassed(PublicGameInfo gameInfo)
         {
@@ -549,6 +562,7 @@ namespace CraigStars
             }
         }
 
+        ScannerMapObjectPickerComparer scannerMapObjectPickerComparer = new ScannerMapObjectPickerComparer();
         /// <summary>
         /// Get the closest map object sprite under our mouse
         /// </summary>
@@ -559,7 +573,7 @@ namespace CraigStars
             var validMapObjects = mapObjectsUnderMouse.Where(mo => IsInstanceValid(mo)).ToList();
             if (validMapObjects.Count > 0)
             {
-                return validMapObjects.Reverse<MapObjectSprite>().Aggregate((curMin, mo) => (curMin == null || (mo.Position.DistanceSquaredTo(localMousePosition)) < curMin.Position.DistanceSquaredTo(localMousePosition) ? mo : curMin));
+                return validMapObjects.OrderBy(mo => mo, scannerMapObjectPickerComparer).Aggregate((curMin, mo) => (curMin == null || (mo.Position.DistanceSquaredTo(localMousePosition)) < curMin.Position.DistanceSquaredTo(localMousePosition) ? mo : curMin));
             }
             else
             {
@@ -719,10 +733,12 @@ namespace CraigStars
         /// </summary>
         void RefreshTransientViewportObjects()
         {
+            log.Debug($"{Me.Game.Year} Refreshing transient viewport objects.");
             CommandedFleet = null;
             CommandedPlanet = null;
 
             // rebuild our MapObjectsByGuid
+            Fleets.ForEach(fleet => { if (fleet.Orbiting != null) { fleet.Orbiting.OrbitingFleets.Clear(); } });
             RemoveMapObjects(transientMapObjects);
             MapObjectsByGuid = Planets.Cast<MapObjectSprite>().ToLookup(p => p.MapObject.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
 
@@ -734,6 +750,7 @@ namespace CraigStars
             transientMapObjects.Clear();
             transientMapObjects.AddRange(AddFleetsToViewport());
             transientMapObjects.AddRange(AddMapObjectsToViewport<Salvage, SalvageSprite>(Me.Salvage, salvageScene, GetNode("Salvage")));
+            transientMapObjects.AddRange(AddMapObjectsToViewport<Wormhole, WormholeSprite>(Me.Wormholes, wormholeScene, GetNode("Wormholes")));
             transientMapObjects.AddRange(AddMapObjectsToViewport<MineField, MineFieldSprite>(Me.AllMineFields, mineFieldScene, GetNode("MineFields")));
 
             mapObjects.Clear();
@@ -743,6 +760,7 @@ namespace CraigStars
 
             mapObjectsByLocation = mapObjects.ToLookup(mo => mo.MapObject.Position).ToDictionary(lookup => lookup.Key, lookup => lookup.ToList());
 
+            log.Debug($"{Me.Game.Year} Done refreshing transient viewport objects.");
         }
 
         /// <summary>
@@ -754,12 +772,15 @@ namespace CraigStars
         {
             mapObjects.ForEach(mo =>
             {
-                mo.GetParent().RemoveChild(mo);
-                mo.Disconnect("input_event", this, nameof(OnInputEvent));
-                mo.Disconnect("mouse_entered", this, nameof(OnMouseEntered));
-                mo.Disconnect("mouse_exited", this, nameof(OnMouseExited));
-                MapObjectsByGuid.Remove(mo.MapObject.Guid);
-                mo.QueueFree();
+                if (IsInstanceValid(mo))
+                {
+                    mo.GetParent().RemoveChild(mo);
+                    mo.Disconnect("input_event", this, nameof(OnInputEvent));
+                    mo.Disconnect("mouse_entered", this, nameof(OnMouseEntered));
+                    mo.Disconnect("mouse_exited", this, nameof(OnMouseExited));
+                    MapObjectsByGuid.Remove(mo.MapObject.Guid);
+                    mo.QueueFree();
+                }
             });
             mapObjects.Clear();
 

@@ -9,8 +9,13 @@ using CraigStars.Singletons;
 
 namespace CraigStars
 {
+    interface IAggregatable<T> where T : ShipDesignAggregate
+    {
+        T Aggregate { get; }
+    }
+
     [JsonObject(IsReference = true)]
-    public class Fleet : MapObject, SerializableMapObject, ICargoHolder
+    public class Fleet : MapObject, SerializableMapObject, ICargoHolder, IAggregatable<FleetAggregate>
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(Fleet));
 
@@ -21,6 +26,8 @@ namespace CraigStars
         public int AvailableCapacity { get => Aggregate.CargoCapacity - Cargo.Total; }
 
         public int Fuel { get; set; }
+        [JsonIgnore] public int FuelCapacity { get => Aggregate.FuelCapacity; }
+        [JsonIgnore] public int FuelMissing { get => Aggregate.FuelCapacity - Fuel; }
         public int Damage { get; set; }
 
         [JsonProperty(IsReference = true)]
@@ -39,6 +46,8 @@ namespace CraigStars
         public List<ShipToken> Tokens { get; set; } = new List<ShipToken>();
         public Vector2 Heading { get; set; }
         public int WarpSpeed { get; set; }
+
+        [JsonIgnore]
         public int Mass { get => Aggregate.Mass; set => Aggregate.Mass = value; }
 
         [JsonIgnore] public FleetAggregate Aggregate { get; } = new FleetAggregate();
@@ -243,7 +252,7 @@ namespace CraigStars
         /// <param name = "ifeFactor" > The factor for improved fuel efficiency (.85 if you have the LRT)</param>
         /// <param name = "engine" > The engine being used</param>
         /// <return> The amount of mg of fuel used</return>
-        internal int GetFuelCost(int warpFactor, int mass, double dist, double ifeFactor, TechEngine engine)
+        internal virtual int GetFuelCost(int warpFactor, int mass, double dist, double ifeFactor, TechEngine engine)
         {
             if (warpFactor == 0)
             {
@@ -319,21 +328,7 @@ namespace CraigStars
             var warpFactor = 5;
             if (Aggregate.Engine != null)
             {
-                var lowestFuelUsage = 0;
-                for (int i = 1; i < Aggregate.Engine.FuelUsage.Length; i++)
-                {
-                    // find the lowest fuel usage until we use more than 100%
-                    var fuelUsage = Aggregate.Engine.FuelUsage[i];
-                    if (fuelUsage > 100)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        lowestFuelUsage = fuelUsage;
-                        warpFactor = i;
-                    }
-                }
+                return Aggregate.Engine.IdealSpeed;
             }
             return warpFactor;
         }
@@ -431,7 +426,7 @@ namespace CraigStars
             return willAttack;
         }
 
-        public void ComputeAggregate(bool recompute = false)
+        public virtual void ComputeAggregate(bool recompute = false)
         {
             if (Aggregate.Computed && !recompute)
             {
@@ -450,17 +445,25 @@ namespace CraigStars
             Aggregate.ScanRangePen = TechHullComponent.NoScanner;
             Aggregate.Engine = null;
             Aggregate.MineSweep = 0;
+            Aggregate.MiningRate = 0;
             Aggregate.Purposes.Clear();
 
             Aggregate.Bomber = false;
             Aggregate.Bombs.Clear();
 
+            Aggregate.MineLayingRateByMineType = new Dictionary<MineFieldType, int>();
+
             Aggregate.HasWeapons = false;
+
+            Aggregate.TotalShips = 0;
 
             // compute each token's 
             Tokens.ForEach(token =>
             {
                 token.Design.ComputeAggregate(Player);
+
+                // update our total ship count
+                Aggregate.TotalShips += token.Quantity;
 
                 Aggregate.Purposes.Add(token.Design.Purpose);
 
@@ -488,10 +491,27 @@ namespace CraigStars
                 // minesweep
                 Aggregate.MineSweep += token.Design.Aggregate.MineSweep * token.Quantity;
 
+                // remote mining
+                Aggregate.MiningRate += token.Design.Aggregate.MiningRate * token.Quantity;
+
+
                 // colonization
                 if (token.Design.Aggregate.Colonizer)
                 {
                     Aggregate.Colonizer = true;
+                }
+
+                // aggregate all mine layers in the fleet
+                if (token.Design.Aggregate.CanLayMines)
+                {
+                    foreach (var entry in token.Design.Aggregate.MineLayingRateByMineType)
+                    {
+                        if (!Aggregate.MineLayingRateByMineType.ContainsKey(entry.Key))
+                        {
+                            Aggregate.MineLayingRateByMineType[entry.Key] = 0;
+                        }
+                        Aggregate.MineLayingRateByMineType[entry.Key] += token.Design.Aggregate.MineLayingRateByMineType[entry.Key] * token.Quantity;
+                    }
                 }
 
                 // We should only have one ship stack with spacdock capabilities, but for this logic just go with the max

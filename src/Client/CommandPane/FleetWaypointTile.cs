@@ -6,7 +6,7 @@ namespace CraigStars
 {
     public class FleetWaypointTile : FleetTile
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(FleetWaypointTaskTile));
+        private static readonly ILog log = LogManager.GetLogger(typeof(FleetWaypointTile));
 
         /// <summary>
         /// Return a copy of the active waypoint, or null if we don't have one
@@ -19,6 +19,7 @@ namespace CraigStars
             Signals.WaypointSelectedEvent += OnWaypointSelected;
             Signals.WaypointAddedEvent += OnWaypointAdded;
             Signals.WaypointDeletedEvent += OnWaypointDeleted;
+            Signals.WaypointMovedEvent += OnWaypointMoved;
         }
 
         public override void _ExitTree()
@@ -27,6 +28,7 @@ namespace CraigStars
             Signals.WaypointSelectedEvent -= OnWaypointSelected;
             Signals.WaypointAddedEvent -= OnWaypointAdded;
             Signals.WaypointDeletedEvent -= OnWaypointDeleted;
+            Signals.WaypointMovedEvent -= OnWaypointMoved;
         }
 
         void OnWaypointSelected(Waypoint waypoint)
@@ -52,6 +54,14 @@ namespace CraigStars
             }
             UpdateControls();
         }
+
+        void OnWaypointMoved(Fleet fleet, Waypoint waypoint)
+        {
+            log.Debug($"Moved waypoint {waypoint.TargetName}");
+            ActiveWaypoint = waypoint;
+            UpdateControls();
+        }
+
 
     }
 }

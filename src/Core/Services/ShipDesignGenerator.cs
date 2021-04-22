@@ -99,8 +99,15 @@ namespace CraigStars
                     case HullSlotType.Mining:
                         slot.HullComponent = player.GetBestMineRobot();
                         break;
-                    case HullSlotType.Mine:
-                        slot.HullComponent = player.GetBestMineLayer();
+                    case HullSlotType.MineLayer:
+                        if (design.Purpose == ShipDesignPurpose.SpeedMineLayer)
+                        {
+                            slot.HullComponent = player.GetBestMineLayer();
+                        }
+                        else
+                        {
+                            slot.HullComponent = player.GetBestSpeedTrapLayer();
+                        }
                         break;
                     case HullSlotType.Orbital:
                     case HullSlotType.OrbitalElectrical:
@@ -137,6 +144,9 @@ namespace CraigStars
                                 break;
                             case ShipDesignPurpose.FighterScout:
                                 slot.HullComponent = player.GetBestScanner();
+                                break;
+                            case ShipDesignPurpose.DamageMineLayer:
+                                slot.HullComponent = player.GetBestMineLayer();
                                 break;
                             default:
                                 slot.HullComponent = Techs.FuelTank;

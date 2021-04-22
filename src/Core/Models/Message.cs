@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CraigStars.Utils;
 using Godot;
 using Newtonsoft.Json;
 
@@ -72,27 +73,27 @@ namespace CraigStars
         public static void ColonizeNonPlanet(Player player, Fleet fleet)
         {
             string text = $"{fleet.Name} has attempted to colonize a waypoint with no Planet.";
-            player.Messages.Add(new Message(MessageType.ColonizeInvalid, text, fleet));
+            player.Messages.Add(new Message(MessageType.Invalid, text, fleet));
         }
 
         public static void ColonizeOwnedPlanet(Player player, Fleet fleet)
         {
             string text = $"{fleet.Name} has attempted to colonize a planet that is already inhabited.";
-            player.Messages.Add(new Message(MessageType.ColonizeInvalid, text, fleet));
+            player.Messages.Add(new Message(MessageType.Invalid, text, fleet));
 
         }
 
         public static void ColonizeWithNoModule(Player player, Fleet fleet)
         {
             string text = $"{fleet.Name} has attempted to colonize a planet without a colonization module.";
-            player.Messages.Add(new Message(MessageType.ColonizeInvalid, text, fleet));
+            player.Messages.Add(new Message(MessageType.Invalid, text, fleet));
 
         }
 
         public static void ColonizeWithNoColonists(Player player, Fleet fleet)
         {
             string text = $"{fleet.Name} has attempted to colonize a planet without bringing any colonists.";
-            player.Messages.Add(new Message(MessageType.ColonizeInvalid, text, fleet));
+            player.Messages.Add(new Message(MessageType.Invalid, text, fleet));
         }
 
         public static void PlanetColonized(Player player, Planet planet)
@@ -149,12 +150,35 @@ namespace CraigStars
             }
             else
             {
-                var action = transferAmount > 0 ? "loaded" : "unloaded";
-                text = $"{fleet.Name} has {action} {transferAmount} {cargoType} from {cargoTarget.Name}";
+                if (transferAmount < 0)
+                {
+                    text = $"{fleet.Name} has unloaded {-transferAmount} {cargoType} from {cargoTarget.Name}";
+                }
+                else
+                {
+                    text = $"{fleet.Name} has loaded {transferAmount} {cargoType} from {cargoTarget.Name}";
+                }
             }
             player.Messages.Add(new Message(MessageType.CargoTransferred, text, fleet));
         }
 
+        public static void RemoteMineNoMiners(Player player, Fleet fleet, Planet planet)
+        {
+            player.Messages.Add(new Message(MessageType.Invalid,
+                $"{fleet.Name} had orders to mine {planet.Name}, but the fleet doesn't have any remote mining modules. The order has been canceled.", fleet));
+        }
+
+        public static void RemoteMineInhabited(Player player, Fleet fleet, Planet planet)
+        {
+            player.Messages.Add(new Message(MessageType.Invalid,
+                $"Remote mining robots from {fleet.Name} had orders to mine {planet.Name}, but the planet is inhabited. The order has been canceled.", fleet));
+        }
+
+        public static void RemoteMineDeepSpace(Player player, Fleet fleet)
+        {
+            player.Messages.Add(new Message(MessageType.Invalid,
+                $"Remote mining robots from {fleet.Name} had orders to mine in deep space. The order has been canceled.", fleet));
+        }
 
         public static void PlanetDiscovered(Player player, Planet planet)
         {
@@ -252,7 +276,7 @@ namespace CraigStars
         public static void InvadeEmptyPlanet(Player player, Fleet fleet, Planet planet)
         {
             string text = $"{fleet.Name} has attempted to invade {planet.Name}, but the planet is uninhabited.";
-            player.Messages.Add(new Message(MessageType.ColonizeInvalid, text, planet));
+            player.Messages.Add(new Message(MessageType.Invalid, text, planet));
         }
 
 
@@ -294,12 +318,123 @@ namespace CraigStars
         public static void Battle(Player player, Planet planet, Vector2 position, BattleRecord record)
         {
             string text;
-            string location = planet != null ? $"at {planet.Name}" : $"in deep space at ({position.x:.##}, {position.y:.##})";
+            string location = planet != null ? $"at {planet.Name}" : $"in deep space at {TextUtils.GetPositionString(position)}";
 
             // TODO: this should be more descriptive like "A battle took place at Zebra against the Cleavers. Neither your 7 forces nor the
             // Cleaver Smaugarian Peeping Tom were completely wiped out. You lost 0."
             text = $"A battle took place {location}";
             player.Messages.Add(new Message(MessageType.Battle, text, planet) { BattleGuid = record.Guid });
+        }
+
+        public static void FleetHitMineField(Player player, Fleet fleet, MineField mineField, int damage, int shipsDestroyed)
+        {
+            string text = "";
+            MapObject messageTarget = mineField;
+            if (fleet.Player == player)
+            {
+                // it's our fleet, it must be someone else's minefield
+                if (fleet.Aggregate.TotalShips <= shipsDestroyed)
+                {
+                    text = $"{fleet.Name} has been annihilated in a {mineField.Type} mine field at {TextUtils.GetPositionString(mineField.Position)}";
+                }
+                else
+                {
+                    messageTarget = fleet;
+                    text = $"{fleet.Name} has been stopped in a {mineField.Type} mine field at {TextUtils.GetPositionString(mineField.Position)}.";
+                    if (damage > 0)
+                    {
+                        if (shipsDestroyed > 0)
+                        {
+                            text += $" Your fleet has taken {damage} damage points and {shipsDestroyed} ships were destroyed.";
+                        }
+                        else
+                        {
+                            text += $" Your fleet has taken {damage} damage points but none of your ships were destroyed.";
+                        }
+                    }
+                    else
+                    {
+                        text = $"{fleet.Name} has been stopped in a {mineField.Type} mine field at {TextUtils.GetPositionString(mineField.Position)}.";
+                    }
+                }
+            }
+            else
+            {
+                // it's not our fleet, it must be our minefield
+                if (fleet.Aggregate.TotalShips <= shipsDestroyed)
+                {
+                    text = $"{fleet.RaceName} {fleet.Name} has been annihilated in your {mineField.Type} mine field at {TextUtils.GetPositionString(mineField.Position)}";
+                }
+                else
+                {
+                    messageTarget = fleet;
+                    text = $"{fleet.RaceName} {fleet.Name} has been stopped in your {mineField.Type} mine field at {TextUtils.GetPositionString(mineField.Position)}.";
+                    if (damage > 0)
+                    {
+                        if (shipsDestroyed > 0)
+                        {
+                            text += $" Your mines have inflicted {damage} damage points and destroyed {shipsDestroyed} ships.";
+                        }
+                        else
+                        {
+                            text += $" Your mines have inflicted {damage} damage points but you didn't manage to destroy any ships.";
+                        }
+                    }
+                    else
+                    {
+                        text = $"{fleet.Name} has been stopped in your {mineField.Type} mine field at {TextUtils.GetPositionString(mineField.Position)}.";
+                    }
+                }
+            }
+
+            player.Messages.Add(new Message(MessageType.MineFieldHit, text, messageTarget));
+        }
+
+        public static void MinesLaid(Player player, Fleet fleet, MineField mineField, int numMinesLaid)
+        {
+            string text = "";
+            if (mineField.NumMines == numMinesLaid)
+            {
+                text = $"{fleet.Name} has dispersed {numMinesLaid} mines.";
+            }
+            else
+            {
+                text = $"{fleet.Name} has increased a minefield by {numMinesLaid} mines.";
+            }
+            player.Messages.Add(new Message(MessageType.MinesLaid, text, fleet));
+        }
+
+        public static void MinesLaidFailed(Player player, Fleet fleet)
+        {
+            var text = $"{fleet.Name} has attempted to lay mines. The order has been cancelled because the fleet has no mine layers.";
+            player.Messages.Add(new Message(MessageType.Invalid, text, fleet));
+        }
+
+        public static void MineFieldSwept(Player player, Fleet fleet, MineField mineField, long numMinesSwept)
+        {
+            string text = "";
+            MapObject target = mineField;
+            if (fleet.Player == player)
+            {
+                text = $"{fleet.Name} has swept {numMinesSwept} from a mineField at {TextUtils.GetPositionString(mineField.Position)}";
+            }
+            else
+            {
+                text = $"Somone has swept {numMinesSwept} from your mineField at {TextUtils.GetPositionString(mineField.Position)}";
+            }
+            if (mineField.NumMines <= 10)
+            {
+                if (fleet.Player == player)
+                {
+                    // target the fleet if the mineField is gone
+                    target = fleet;
+                }
+                else
+                {
+                    target = null;
+                }
+            }
+            player.Messages.Add(new Message(MessageType.MinesSwept, text, target));
         }
     }
 }

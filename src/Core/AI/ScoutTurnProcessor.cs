@@ -23,7 +23,7 @@ namespace CraigStars
 
             // find the first scout ship design
             // TODO: pick the best one
-            ShipDesign scoutShip = player.Designs.FindLast(design => design.Purpose == ShipDesignPurpose.Scout);
+            ShipDesign scoutShip = player.GetLatestDesign(ShipDesignPurpose.Scout);
 
             log.Debug($"{GameInfo.Year}: {player} Found best scout design: {scoutShip.Name} v{scoutShip.Version}");
 

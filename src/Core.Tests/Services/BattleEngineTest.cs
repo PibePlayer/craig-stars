@@ -38,7 +38,7 @@ namespace CraigStars.Tests
         public void TestFindTargets()
         {
             // create a new battle from two test fleets
-            var battle = battleEngine.BuildBattle(Battles.GetFleetsForSimpleBattle());
+            var battle = battleEngine.BuildBattle(TestBattleUtils.GetFleetsForSimpleBattle());
 
             // find some targets!
             battleEngine.FindMoveTargets(battle);
@@ -55,7 +55,7 @@ namespace CraigStars.Tests
         public void TestPlaceTokensOnBoard()
         {
             // create a new battle from two test fleets
-            var battle = battleEngine.BuildBattle(Battles.GetFleetsForSimpleBattle());
+            var battle = battleEngine.BuildBattle(TestBattleUtils.GetFleetsForSimpleBattle());
 
             // find some targets!
             battleEngine.PlaceTokensOnBoard(battle);
@@ -71,7 +71,7 @@ namespace CraigStars.Tests
         public void TestBuildMovement()
         {
             // create a new battle from two test fleets
-            var battle = battleEngine.BuildBattle(Battles.GetFleetsForSimpleBattle());
+            var battle = battleEngine.BuildBattle(TestBattleUtils.GetFleetsForSimpleBattle());
             var token1 = battle.Tokens[0];
             var token2 = battle.Tokens[1];
 
@@ -95,7 +95,7 @@ namespace CraigStars.Tests
         public void TestRunAway()
         {
             // create a new battle from two test fleets
-            var battle = battleEngine.BuildBattle(Battles.GetFleetsForSimpleBattle());
+            var battle = battleEngine.BuildBattle(TestBattleUtils.GetFleetsForSimpleBattle());
             var attacker = battle.Tokens[0];
             var defender = battle.Tokens[1];
             var player1 = attacker.Fleet.Player;
@@ -122,7 +122,7 @@ namespace CraigStars.Tests
         public void TestMaximizeDamage()
         {
             // create a new battle from two test fleets
-            var battle = battleEngine.BuildBattle(Battles.GetFleetsForSimpleBattle());
+            var battle = battleEngine.BuildBattle(TestBattleUtils.GetFleetsForSimpleBattle());
             var attacker = battle.Tokens[0];
             var defender = battle.Tokens[1];
             var player1 = attacker.Fleet.Player;
@@ -151,7 +151,7 @@ namespace CraigStars.Tests
         public void TestFireWeaponSlot()
         {
             // create a new battle from two test fleets
-            var battle = battleEngine.BuildBattle(Battles.GetFleetsForSimpleBattle());
+            var battle = battleEngine.BuildBattle(TestBattleUtils.GetFleetsForSimpleBattle());
             var attacker = battle.Tokens[0];
             var defender = battle.Tokens[1];
             var player1 = attacker.Fleet.Player;
@@ -179,7 +179,7 @@ namespace CraigStars.Tests
         public void TestRunBattle1()
         {
             // create a new battle from two test fleets
-            var battle = battleEngine.BuildBattle(Battles.GetFleetsForSimpleBattle());
+            var battle = battleEngine.BuildBattle(TestBattleUtils.GetFleetsForSimpleBattle());
             var attacker = battle.Tokens[0];
             var defender = battle.Tokens[1];
             var player1 = attacker.Fleet.Player;
@@ -195,7 +195,7 @@ namespace CraigStars.Tests
         public void TestRunBattle2()
         {
             // create a new battle from two test fleets
-            var battle = battleEngine.BuildBattle(Battles.GetFleetsForSimpleBattle());
+            var battle = battleEngine.BuildBattle(TestBattleUtils.GetFleetsForSimpleBattle());
             var attacker = battle.Tokens[0];
             var defender = battle.Tokens[1];
 
@@ -217,7 +217,7 @@ namespace CraigStars.Tests
             var player2 = new Player() { Num = 1, Name = "Ted" };
             player2.TechLevels = new TechLevel(6, 6, 6, 6, 6, 6);
 
-            var battle = battleEngine.BuildBattle(Battles.GetFleetsForDesignsBattle(
+            var battle = battleEngine.BuildBattle(TestBattleUtils.GetFleetsForDesignsBattle(
                 player1,
                 player2,
                 new HashSet<string>() { "Destroyer", "Space Station" },

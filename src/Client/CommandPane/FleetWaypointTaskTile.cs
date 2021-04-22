@@ -25,6 +25,8 @@ namespace CraigStars
         Button transportPlanEditOKButton;
         TransportPlanDetail transportPlanDetail;
 
+        RemoteMiningWaypointTaskContainer remoteMiningWaypointTaskContainer;
+
         Texture loadTexture;
         Texture unloadTexture;
         Texture noneTexture;
@@ -51,6 +53,8 @@ namespace CraigStars
             transportPlanEditOKButton = GetNode<Button>("TransportPlanEditPopupPanel/VBoxContainer/TransportPlanEditOKButton");
             transportPlanDetail = GetNode<TransportPlanDetail>("TransportPlanEditPopupPanel/VBoxContainer/TransportPlanDetail");
             transportPlanDetail.ShowName = false;
+
+            remoteMiningWaypointTaskContainer = GetNode<RemoteMiningWaypointTaskContainer>("VBoxContainer/RemoteMiningWaypointTaskContainer");
 
             waypointTask.PopulateOptionButton<WaypointTask>((task) => EnumUtils.GetLabelForWaypointTask(task));
 
@@ -120,6 +124,8 @@ namespace CraigStars
             base.UpdateControls();
             var wp = ActiveWaypoint;
             transportContainer.Visible = false;
+            remoteMiningWaypointTaskContainer.Visible = false;
+
             if (waypointTask != null && wp != null)
             {
                 waypointTask.Selected = (int)wp.Task;
@@ -138,6 +144,12 @@ namespace CraigStars
                     {
                         applyPlanMenuButton.GetPopup().AddItem(plan.Name);
                     });
+                }
+                else if (wp.Task == WaypointTask.RemoteMining)
+                {
+                    remoteMiningWaypointTaskContainer.Visible = true;
+                    remoteMiningWaypointTaskContainer.Planet = ActiveWaypoint.Target as Planet;
+                    remoteMiningWaypointTaskContainer.Fleet = CommandedFleet.Fleet;
                 }
             }
         }

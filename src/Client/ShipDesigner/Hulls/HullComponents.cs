@@ -13,6 +13,7 @@ namespace CraigStars
     {
 
         public event Action<ShipDesignSlot> SlotUpdatedEvent;
+        public event Action<HullComponentPanel, TechHullComponent> SlotPressedEvent;
 
         public TechHull Hull
         {
@@ -105,6 +106,8 @@ namespace CraigStars
                 }
             });
 
+            // inform any listeners that a slot was pressed
+            SlotPressedEvent?.Invoke(hullComponentPanel, hullComponent);
         }
 
         void OnAddHullComponent(HullComponentPanel hullComponentPanel, TechHullComponent hullComponent)

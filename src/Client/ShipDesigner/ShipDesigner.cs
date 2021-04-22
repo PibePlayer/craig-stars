@@ -21,6 +21,8 @@ namespace CraigStars
         public bool IsDirty { get; private set; } = false;
 
         TechTree hullComponentsTechTree;
+        CostGrid hullComponentCostGrid;
+        Label hullComponentCostLabel;
         HullSummary designerHullSummary;
         Button saveDesignButton;
         Button cancelDesignButton;
@@ -30,6 +32,8 @@ namespace CraigStars
         public override void _Ready()
         {
             hullComponentsTechTree = FindNode("HullComponentsTechTree") as TechTree;
+            hullComponentCostGrid = FindNode("HullComponentCostGrid") as CostGrid;
+            hullComponentCostLabel = FindNode("HullComponentCostLabel") as Label;
             designerHullSummary = FindNode("DesignerHullSummary") as HullSummary;
             saveDesignButton = FindNode("SaveDesignButton") as Button;
             cancelDesignButton = FindNode("CancelDesignButton") as Button;
@@ -42,6 +46,7 @@ namespace CraigStars
             hullComponentsTechTree.TechSelectedEvent += OnHullComponentSelectedEvent;
 
             designerHullSummary.SlotUpdatedEvent += OnSlotUpdated;
+            designerHullSummary.SlotPressedEvent += OnSlotPressed;
 
             Connect("visibility_changed", this, nameof(OnVisible));
         }
@@ -49,7 +54,17 @@ namespace CraigStars
         public override void _ExitTree()
         {
             designerHullSummary.SlotUpdatedEvent -= OnSlotUpdated;
+            designerHullSummary.SlotPressedEvent -= OnSlotPressed;
             hullComponentsTechTree.TechSelectedEvent -= OnHullComponentSelectedEvent;
+        }
+
+        void OnSlotPressed(HullComponentPanel hullComponentPanel, TechHullComponent hullComponent)
+        {
+            if (hullComponent != null)
+            {
+                hullComponentCostLabel.Text = $"Cost of one {hullComponent.Name}";
+                hullComponentCostGrid.Cost = hullComponent.GetPlayerCost(Me);
+            }
         }
 
         void OnSlotUpdated(ShipDesignSlot slot)
@@ -88,7 +103,8 @@ namespace CraigStars
         {
             if (tech is TechHullComponent hullComponent)
             {
-                // todo do something with the designer
+                hullComponentCostLabel.Text = $"Cost of one {hullComponent.Name}";
+                hullComponentCostGrid.Cost = hullComponent.GetPlayerCost(Me);
             }
         }
 

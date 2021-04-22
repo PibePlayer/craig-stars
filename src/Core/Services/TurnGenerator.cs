@@ -31,12 +31,10 @@ namespace CraigStars
         ///     In-space packets move and decay 
         ///     PP packets (de)terraform 
         ///     Packets cause damage 
-        ///     Wormhole entry points jiggle 
         ///     Fleets move (run out of fuel, hit minefields (fields reduce as they are hit), stargate, wormhole travel) 
         ///     Inner Strength colonists grow in fleets 
         ///     Mass Packets still in space and Salvage decay 
-        ///     Wormhole exit points jiggle 
-        ///     Wormhole endpoints degrade/jump 
+        ///     Wormholes Jiggle
         ///     SD Minefields detonate (possibly damaging again fleet that hit minefield during movement) 
         ///     Mining 
         ///     Production (incl. research, packet launch, fleet/starbase construction) 
@@ -50,6 +48,7 @@ namespace CraigStars
         ///     Waypoint 1 unload tasks 
         ///     Waypoint 1 Colonization/Ground Combat resolution (w/possible tech gain) 
         ///     Waypoint 1 load tasks 
+        ///     Mine Decay 
         ///     Mine Laying 
         ///     Fleet Transfer 
         ///     CA Instaforming 
@@ -64,16 +63,22 @@ namespace CraigStars
         {
             Game = game;
             steps = new List<Step>() {
-                new FleetWaypointStep(game, TurnGeneratorState.Waypoint), // wp0
-                new FleetMoveStep(game, TurnGeneratorState.MoveFleets),
-                new PlanetMineStep(game, TurnGeneratorState.Mining),
-                new PlanetProduceStep(game, TurnGeneratorState.Production),
-                new PlayerResearchStep(game, TurnGeneratorState.Research),
-                new PlanetGrowStep(game, TurnGeneratorState.Grow),
-                new FleetBattleStep(game, TurnGeneratorState.Battle),
-                new PlanetBombStep(game, TurnGeneratorState.Bomb),
-                new FleetWaypointStep(game, TurnGeneratorState.Waypoint), // wp1
-                new PlayerScanStep(game, TurnGeneratorState.Scan),
+                new FleetWaypointStep(game, 0), // wp0
+                new FleetMoveStep(game),
+                new DecaySalvageStep(game),
+                new WormholeJiggleStep(game),
+                new DetonateMinesStep(game),
+                new PlanetMineStep(game),
+                new PlanetProduceStep(game),
+                new PlayerResearchStep(game),
+                new PlanetGrowStep(game),
+                new FleetBattleStep(game),
+                new PlanetBombStep(game),
+                new FleetWaypointStep(game, 1), // wp1
+                new DecayMinesStep(game),
+                new FleetLayMinesStep(game),
+                new FleetSweepMinesStep(game),
+                new PlayerScanStep(game),
             };
         }
 
@@ -87,7 +92,7 @@ namespace CraigStars
             Game.Year++;
 
             // reset the players for a new turn
-            log.Debug("Resetting players");
+            log.Debug($"{Game.Year}: Resetting players");
             Game.Players.ForEach(p =>
             {
                 p.SubmittedTurn = false;
@@ -100,6 +105,7 @@ namespace CraigStars
             var ownedPlanets = Game.OwnedPlanets.ToList();
             foreach (var step in steps)
             {
+                Game.PurgeDeletedMapObjects();
                 PublishTurnGeneratorAdvancedEvent(step.State);
                 step.Execute(context, ownedPlanets);
             }

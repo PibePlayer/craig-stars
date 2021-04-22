@@ -7,7 +7,7 @@ namespace CraigStars
     /// </summary>
     public class PlanetMineStep : Step
     {
-        public PlanetMineStep(Game game, TurnGeneratorState state) : base(game, state) { }
+        public PlanetMineStep(Game game) : base(game, TurnGeneratorState.Mining) { }
 
         public override void Process()
         {

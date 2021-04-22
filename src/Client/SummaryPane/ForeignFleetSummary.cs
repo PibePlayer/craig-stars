@@ -9,12 +9,14 @@ namespace CraigStars
     {
         Label shipCountLabel;
         Label massLabel;
+        Label warpFactorLabel;
 
         public override void _Ready()
         {
             base._Ready();
-            shipCountLabel = (Label)FindNode("ShipCountLabel");
-            massLabel = (Label)FindNode("MassLabel");
+            shipCountLabel = GetNode<Label>("ShipCountLabel");
+            massLabel = GetNode<Label>("MassLabel");
+            warpFactorLabel = GetNode<Label>("WarpFactorLabel");
         }
 
         protected override void UpdateControls()
@@ -29,6 +31,7 @@ namespace CraigStars
                     Visible = true;
                     shipCountLabel.Text = $"Ship Count: {fleet.Tokens.Count}";
                     massLabel.Text = $"Fleet Mass: {fleet.Mass}kT";
+                    warpFactorLabel.Text = $"Warp Speed: {fleet.WarpSpeed}";
                 }
                 else
                 {

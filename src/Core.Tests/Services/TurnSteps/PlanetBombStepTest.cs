@@ -11,7 +11,7 @@ namespace CraigStars.Tests
     [TestFixture]
     public class PlanetBombStepTest
     {
-        PlanetBombStep planetBomber = new PlanetBombStep(GameTest.GetSingleUnitGame(), TurnGeneratorState.Bomb);
+        PlanetBombStep planetBomber = new PlanetBombStep(GameTest.GetSingleUnitGame());
 
         [Test]
         public void TestGetColonistsKilled()

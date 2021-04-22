@@ -15,7 +15,7 @@ namespace CraigStars
 
         BattleEngine battleEngine;
 
-        public FleetBattleStep(Game game, TurnGeneratorState state) : base(game, state)
+        public FleetBattleStep(Game game) : base(game, TurnGeneratorState.Battle)
         {
             battleEngine = new BattleEngine(Game.Rules);
         }
@@ -79,7 +79,11 @@ namespace CraigStars
                                 // this fleet was destroyed
                                 EventManager.PublishMapObjectDeletedEvent(fleet);
                             }
-
+                            else
+                            {
+                                // update aggregates after battle
+                                fleet.ComputeAggregate(true);
+                            }
                         }
 
                         foreach (var playerEntry in battle.PlayerRecords)

@@ -18,7 +18,7 @@ namespace CraigStars
             QueueItemType.AutoFactory
         };
 
-        public PlanetProduceStep(Game game, TurnGeneratorState state) : base(game, state) { }
+        public PlanetProduceStep(Game game) : base(game, TurnGeneratorState.Production) { }
 
         public override void Process()
         {
@@ -51,6 +51,10 @@ namespace CraigStars
             {
                 ProductionQueueItem item = queue.Items[index];
                 Cost costPer = item.GetCostOfOne(rules, planet.Player);
+                if (item.type == QueueItemType.Starbase && planet.HasStarbase)
+                {
+                    costPer = planet.Starbase.GetUpgradeCost(item.Design);
+                }
                 int numBuilt = (int)(allocated / costPer);
 
                 // if we are autobuilding, don't build more than our max
@@ -254,9 +258,18 @@ namespace CraigStars
             }
             else
             {
-                planet.Starbase = new Starbase() { Name = item.Design.Name };
+                planet.Starbase = new Starbase()
+                {
+                    Player = planet.Player,
+                    Orbiting = planet,
+                    Position = planet.Position,
+                    BattlePlan = planet.Player.BattlePlans[0]
+                };
             }
+            planet.Starbase.Name = item.Design.Name;
             planet.Starbase.Tokens.Add(new ShipToken(item.Design, 1));
+            planet.Starbase.ComputeAggregate(true);
+            // Message.StarbaseBuilt(planet.Player, item.Design, planet);
 
         }
 

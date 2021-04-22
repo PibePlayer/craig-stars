@@ -570,7 +570,7 @@ namespace CraigStars
             player2.TechLevels = new TechLevel(6, 6, 6, 6, 6, 6);
 
             var battleEngine = new BattleEngine(RulesManager.Rules);
-            var battle = battleEngine.BuildBattle(Battles.GetFleetsForDesignsBattle(
+            var battle = battleEngine.BuildBattle(TestBattleUtils.GetFleetsForDesignsBattle(
                 player1,
                 player2,
                 new HashSet<string>() { "Destroyer", "Space Station" },

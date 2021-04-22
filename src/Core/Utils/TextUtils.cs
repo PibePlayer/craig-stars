@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Godot;
 
 namespace CraigStars.Utils
 {
@@ -74,6 +75,16 @@ Propulsion tech by 1 level. All engines use 15% less fuel.".Replace("\n", "");
                 default:
                     return lrt.ToString();
             }
+        }
+
+        /// <summary>
+        /// Get a position string like (21.32, 256.2) for printing coords
+        /// </summary>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        public static string GetPositionString(Vector2 position)
+        {
+            return $"({position.x:.##}, {position.y:.##})";
         }
 
         public static string GetGravString(int grav)

@@ -20,6 +20,11 @@ namespace CraigStars
         public Vector2 Position { get; set; }
 
         /// <summary>
+        /// The fleets involved in the battle
+        /// </summary>
+        public List<Fleet> Fleets { get; set; } = new List<Fleet>();
+
+        /// <summary>
         /// The tokens for this battle
         /// </summary>
         public List<BattleToken> Tokens { get; set; } = new List<BattleToken>();

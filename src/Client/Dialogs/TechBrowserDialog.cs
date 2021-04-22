@@ -231,9 +231,9 @@ namespace CraigStars
                     {
                         AddDescription($"This weapon hits all targets in range each time it is fired.");
                     }
-                    if (hullComponent.MineSweep > 0)
+                    if (hullComponent.Gattling)
                     {
-                        AddDescription($"This weapon also makes an excellent mine sweeper, capable of sweeping {hullComponent.MineSweep} mines per year.");
+                        AddDescription($"This weapon also makes an excellent mine sweeper, capable of sweeping {hullComponent.Power * Math.Pow(hullComponent.Range, 4)} mines per year.");
                     }
                     if (hullComponent.DamageShieldsOnly)
                     {

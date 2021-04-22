@@ -25,14 +25,18 @@ namespace CraigStars
         public int ScanRangePen { get; set; }
         public bool Colonizer { get; set; }
         public int SpaceDock { get; set; }
+        public int MiningRate { get; set; }
+
         public int MineSweep { get; set; }
         public float CloakPercent { get; set; }
         public float TorpedoInaccuracyFactor { get; set; }
+
 
         /// <summary>
         /// The number of movement points in battle spread across 4 rounds
         /// </summary>
         /// <value></value>
+        public int Initiative { get; set; }
         public int Movement { get; set; }
 
         /// <summary>
@@ -57,6 +61,16 @@ namespace CraigStars
         /// </summary>
         /// <value></value>
         public bool Scanner { get => ScanRange != TechHullComponent.NoScanner; }
+
+        /// <summary>
+        /// Can this design lay mines?
+        /// </summary>
+        public bool CanLayMines { get => MineLayingRateByMineType.Count > 0; }
+
+        /// <summary>
+        /// The total number of mines this design can lay in a year
+        /// </summary>
+        public Dictionary<MineFieldType, int> MineLayingRateByMineType { get; set; } = new Dictionary<MineFieldType, int>();
 
         /// <summary>
         /// True if this ship design is in active use

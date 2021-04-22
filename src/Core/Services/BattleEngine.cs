@@ -375,14 +375,7 @@ namespace CraigStars
                     {
                         // find all available targets for this weapon
                         FindTargets(battle, weaponSlot);
-
-                        // if this weapon belongs to a token still on the board and is still targetting
-                        // if (!weaponSlot.Token.Destroyed && !weaponSlot.Token.RanAway
-                        //     && !weaponSlot.Token.Target.Destroyed && !weaponSlot.Token.Target.RanAway
-                        //     && weaponSlot.IsInRange())
-                        // {
                         FireWeaponSlot(battle, weaponSlot);
-                        // }
                     }
                 }
                 else

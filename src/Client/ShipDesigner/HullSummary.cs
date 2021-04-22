@@ -10,6 +10,7 @@ namespace CraigStars
         // TODO: if we ever get more than 99 hull sets, make this smarter.
         public static int MaxHullSets = 99;
         public event Action<ShipDesignSlot> SlotUpdatedEvent;
+        public event Action<HullComponentPanel, TechHullComponent> SlotPressedEvent;
 
         [Export]
         public bool ShowIconSelector { get; set; } = false;
@@ -115,6 +116,7 @@ namespace CraigStars
                     if (child is HullComponents hullComponents)
                     {
                         hullComponents.SlotUpdatedEvent -= OnSlotUpdated;
+                        hullComponents.SlotPressedEvent -= OnSlotPressed;
                     }
                     hullComponentsContainer.RemoveChild(child);
                     child.QueueFree();
@@ -131,8 +133,19 @@ namespace CraigStars
                 hullComponents.ShipDesign = ShipDesign;
                 hullComponents.Editable = Editable;
                 hullComponents.SlotUpdatedEvent += OnSlotUpdated;
+                hullComponents.SlotPressedEvent += OnSlotPressed;
                 hullComponentsContainer.AddChild(hullComponents);
             }
+        }
+
+        /// <summary>
+        /// Propogate slot pressed events up to any listeners (so we can update costs or labels)
+        /// </summary>
+        /// <param name="hullComponentPanel"></param>
+        /// <param name="hullComponent"></param>
+        void OnSlotPressed(HullComponentPanel hullComponentPanel, TechHullComponent hullComponent)
+        {
+            SlotPressedEvent?.Invoke(hullComponentPanel, hullComponent);
         }
 
         /// <summary>
@@ -213,14 +226,14 @@ namespace CraigStars
                     icon.Texture = TextureLoader.Instance.FindTexture(shipDesign);
 
                     shipDesign.ComputeAggregate(PlayersManager.Me);
-                    costTitleLabel.Text = $"Cost of one {shipDesign.Name}";
+                    costTitleLabel.Text = shipDesign.Name.Empty() ? "Cost of design" : $"Cost of one {shipDesign.Name}";
                     costGrid.Cost = shipDesign.Aggregate.Cost;
                     maxFuelAmountLabel.Text = $"{shipDesign.Aggregate.FuelCapacity}mg";
                     armorAmountLabel.Text = $"{shipDesign.Aggregate.Armor}dp";
                     massLabel.Text = $"{shipDesign.Aggregate.Mass}kT";
-                    shieldsAmountLabel.Text = $"{(shipDesign.Aggregate.Shield > 0 ? shipDesign.Aggregate.Shield.ToString() : "")}dp";
+                    shieldsAmountLabel.Text = $"{(shipDesign.Aggregate.Shield > 0 ? $"{shipDesign.Aggregate.Shield}dp" : "none")}";
                     cloakJamAmountLabel.Text = $"0/0"; // TODO: support cloak
-                    initiativeMovesAmountLabel.Text = $"0/1"; // TODO: support moves
+                    initiativeMovesAmountLabel.Text = $"{shipDesign.Aggregate.Initiative}/{shipDesign.Aggregate.Movement}";
                     if (shipDesign.Aggregate.Scanner)
                     {
                         scannerRangeLabel.Visible = scannerRangeAmountLabel.Visible = true;

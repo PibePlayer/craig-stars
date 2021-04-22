@@ -13,6 +13,10 @@ namespace CraigStars
 
         PlayerIntel playerIntel = new PlayerIntel();
 
+        PlanetGenerator planetGenerator = new PlanetGenerator();
+        WormholeGenerator wormholeGenerator = new WormholeGenerator();
+        TechLevelInitializer techLevelInitializer = new TechLevelInitializer();
+
         public UniverseGenerator(Game game)
         {
             Game = game;
@@ -20,7 +24,7 @@ namespace CraigStars
 
         public void Generate()
         {
-            List<Planet> planets = GeneratePlanets(Game.Rules);
+            List<Planet> planets = planetGenerator.GeneratePlanets(Game.Rules);
             List<Fleet> fleets = new List<Fleet>();
             List<Planet> ownedPlanets = new List<Planet>();
 
@@ -31,7 +35,7 @@ namespace CraigStars
                 var player = Game.Players[i];
 
                 // initialize this player
-                InitTechLevels(player);
+                player.TechLevels = techLevelInitializer.GetStartingTechLevels(player.Race);
                 InitPlans(player);
                 InitPlayerPlanetReports(player, planets);
                 InitShipDesigns(player);
@@ -49,20 +53,21 @@ namespace CraigStars
 
             // add extra planets for this player
             Game.Players.ForEach(player =>
-                {
-                    for (var extraPlanetNum = 0; extraPlanetNum < Game.Rules.StartWithExtraPlanets; extraPlanetNum++)
                     {
-                        var planet = planets.FirstOrDefault(p => p.Player == null && p.Position.DistanceTo(player.Homeworld.Position) < 100);
-                        if (planet != null)
+                        for (var extraPlanetNum = 0; extraPlanetNum < Game.Rules.StartWithExtraPlanets; extraPlanetNum++)
                         {
-                            MakeExtraWorld(Game.Rules, player, planet);
-                            ownedPlanets.Add(planet);
+                            var planet = planets.FirstOrDefault(p => p.Player == null && p.Position.DistanceTo(player.Homeworld.Position) < 100);
+                            if (planet != null)
+                            {
+                                MakeExtraWorld(Game.Rules, player, planet);
+                                ownedPlanets.Add(planet);
+                            }
                         }
-                    }
 
-                });
+                    });
 
             Game.Planets.AddRange(planets);
+            Game.Wormholes = wormholeGenerator.GenerateWormholes(Game.Rules, planets);
             Game.Fleets.AddRange(fleets);
 
             // accelerate some stuff, if necessary
@@ -81,52 +86,17 @@ namespace CraigStars
             return (int)otherPlanets.Min(otherPlanet => p.Position.DistanceTo(otherPlanet.Position));
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="rules"></param>
-        /// <returns></returns>
-        List<Planet> GeneratePlanets(Rules rules)
-        {
-            var planets = new List<Planet>();
-            int width, height;
-            width = height = rules.Area;
-
-            var numPlanets = rules.NumPlanets;
-            var ng = new NameGenerator();
-            var names = ng.RandomNames;
-
-            Random random = new Random();
-            var planetLocs = new Dictionary<Vector2, bool>();
-            for (int i = 0; i < numPlanets; i++)
-            {
-                var loc = new Vector2(random.Next(width), random.Next(height));
-
-                // make sure this location is ok
-                while (!IsValidLocation(loc, planetLocs, rules.PlanetMinDistance))
-                {
-                    loc = new Vector2(random.Next(width), random.Next(height));
-                }
-
-                // add a new planet
-                planetLocs[loc] = true;
-                Planet planet = new Planet();
-                RandomizePlanet(rules, planet);
-                planet.Id = i + 1;
-                planet.Name = names[i];
-                planet.Position = loc;
-                // planet.Randomize();
-                planets.Add(planet);
-            }
-
-            return planets;
-        }
-
         List<Fleet> GenerateFleets(Rules rules, Player player, Planet homeworld)
         {
             var fleets = new List<Fleet>();
             switch (player.Race.PRT)
             {
+                case PRT.SD:
+                    fleets.Add(CreateFleet(player.GetDesign(ShipDesigns.LongRangeScount.Name), player, 1, homeworld));
+                    fleets.Add(CreateFleet(player.GetDesign(ShipDesigns.SantaMaria.Name), player, 1, homeworld));
+                    fleets.Add(CreateFleet(player.GetLatestDesign(ShipDesignPurpose.DamageMineLayer), player, 1, homeworld));
+                    fleets.Add(CreateFleet(player.GetLatestDesign(ShipDesignPurpose.SpeedMineLayer), player, 1, homeworld));
+                    break;
                 case PRT.JoaT:
                     fleets.Add(CreateFleet(player.GetDesign(ShipDesigns.LongRangeScount.Name), player, 1, homeworld));
                     fleets.Add(CreateFleet(player.GetDesign(ShipDesigns.ArmoredProbe.Name), player, 2, homeworld));
@@ -168,48 +138,6 @@ namespace CraigStars
             fleet.Fuel = fleet.Aggregate.FuelCapacity;
 
             return fleet;
-        }
-
-        /// <summary>
-        /// Return true if the location is not already in (or close to another planet) planet_locs
-        /// </summary>
-        /// <param name="loc">The location to check</param>
-        /// <param name="planetLocs">The locations of every planet so far</param>
-        /// <param name="offset">The offset to check for</param>
-        /// <returns>True if this location (or near it) is not already in use</returns>
-        bool IsValidLocation(Vector2 loc, Dictionary<Vector2, bool> planetLocs, int offset)
-        {
-            float x = loc.x;
-            float y = loc.y;
-            if (planetLocs.ContainsKey(loc))
-            {
-                return false;
-            }
-
-            for (int yOffset = 0; yOffset < offset; yOffset++)
-            {
-                for (int xOffset = 0; xOffset < offset; xOffset++)
-                {
-                    if (planetLocs.ContainsKey(new Vector2(x + xOffset, y + yOffset)))
-                    {
-                        return false;
-                    }
-                    if (planetLocs.ContainsKey(new Vector2(x - xOffset, y + yOffset)))
-                    {
-                        return false;
-                    }
-                    if (planetLocs.ContainsKey(new Vector2(x - xOffset, y - yOffset)))
-                    {
-                        return false;
-                    }
-                    if (planetLocs.ContainsKey(new Vector2(x + xOffset, y - yOffset)))
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            return true;
         }
 
         void MakeHomeworld(Rules rules, Player player, Planet planet, int year)
@@ -275,17 +203,6 @@ namespace CraigStars
             planet.Starbase.ComputeAggregate();
 
             Message.HomePlanet(player, planet);
-
-            // test, add salvage
-            Salvage salvage = new Salvage()
-            {
-                Name = "Bonus Salvage!",
-                Cargo = new Cargo(1000, 900, 800),
-                Position = planet.Position + new Vector2(20, 20)
-            };
-            Game.Salvage.Add(salvage);
-
-
         }
 
         void MakeExtraWorld(Rules rules, Player player, Planet planet)
@@ -320,63 +237,6 @@ namespace CraigStars
             planet.Factories = rules.StartingFactories;
 
             planet.ContributesOnlyLeftoverToResearch = true;
-
-            // make a test minefield here
-            MineField mineField = new MineField()
-            {
-                Position = planet.Position,
-                Player = player,
-                Name = "Normal MineField",
-                Radius = 128,
-                NumMines = 1000,
-                Type = MineFieldType.Normal
-            };
-            Game.MineFields.Add(mineField);
-        }
-
-        void RandomizePlanet(Rules rules, Planet planet)
-        {
-            var random = rules.Random;
-            planet.InitEmptyPlanet();
-
-            int minConc = rules.MinMineralConcentration;
-            int maxConc = rules.MaxStartingMineralConcentration;
-            planet.MineralConcentration = new Mineral(
-                random.Next(maxConc) + minConc,
-                random.Next(maxConc) + minConc,
-                random.Next(maxConc) + minConc
-            );
-
-            // generate hab range of this planet
-            int grav = random.Next(100);
-            if (grav > 1)
-            {
-                // this is a "normal" planet, so put it in the 10 to 89 range
-                grav = random.Next(89) + 10;
-            }
-            else
-            {
-                grav = (int)(11 - (float)(random.Next(100)) / 100.0 * 10.0);
-            }
-
-            int temp = random.Next(100);
-            if (temp > 1)
-            {
-                // this is a "normal" planet, so put it in the 10 to 89 range
-                temp = random.Next(89) + 10;
-            }
-            else
-            {
-                temp = (int)(11 - (float)(random.Next(100)) / 100.0 * 10.0);
-            }
-
-            int rad = random.Next(98) + 1;
-
-            planet.Hab = new Hab(
-                grav,
-                temp,
-                rad
-            );
 
         }
 
@@ -490,12 +350,16 @@ namespace CraigStars
         internal void InitShipDesigns(Player player)
         {
             ShipDesignGenerator designer = new ShipDesignGenerator();
+            Game.Designs.Add(designer.DesignShip(Techs.Scout, "Long Range Scout", player, player.DefaultHullSet, ShipDesignPurpose.Scout));
+            Game.Designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player, player.DefaultHullSet, ShipDesignPurpose.Colonizer));
             switch (player.Race.PRT)
             {
+                case PRT.SD:
+                    Game.Designs.Add(designer.DesignShip(Techs.MiniMineLayer, "Trapper", player, player.DefaultHullSet, ShipDesignPurpose.DamageMineLayer));
+                    Game.Designs.Add(designer.DesignShip(Techs.MiniMineLayer, "Keeper", player, player.DefaultHullSet, ShipDesignPurpose.SpeedMineLayer));
+                    break;
                 case PRT.JoaT:
-                    Game.Designs.Add(designer.DesignShip(Techs.Scout, "Long Range Scout", player, player.DefaultHullSet, ShipDesignPurpose.Scout));
                     Game.Designs.Add(designer.DesignShip(Techs.Scout, "Armed Probe", player, player.DefaultHullSet, ShipDesignPurpose.ArmedScout));
-                    Game.Designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player, player.DefaultHullSet, ShipDesignPurpose.Colonizer));
                     Game.Designs.Add(designer.DesignShip(Techs.MediumFreighter, "Teamster", player, player.DefaultHullSet, ShipDesignPurpose.Freighter));
                     Game.Designs.Add(designer.DesignShip(Techs.MiniMiner, "Cotton Picker", player, player.DefaultHullSet, ShipDesignPurpose.Miner));
                     Game.Designs.Add(designer.DesignShip(Techs.Destroyer, "Stalwart Defender", player, player.DefaultHullSet, ShipDesignPurpose.FighterScout));

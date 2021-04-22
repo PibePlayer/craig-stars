@@ -27,7 +27,7 @@ namespace CraigStars
         {
             // find the first colony ship design
             // TODO: pick the best one
-            ShipDesign colonyShip = player.Designs.Find(design => design.Hull.Name == "Colony Ship");
+            ShipDesign colonyShip = player.GetLatestDesign(ShipDesignPurpose.Colonizer);
 
             var colonizablePlanets = player.AllPlanets.Where(planet => planet.Explored && planet.Uninhabited && player.Race.GetPlanetHabitability(planet.Hab.Value) > 0).ToList();
             var buildablePlanets = player.Planets.Where(planet => planet.CanBuild(player, colonyShip.Aggregate.Mass)).ToList();

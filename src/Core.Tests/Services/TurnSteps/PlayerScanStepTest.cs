@@ -14,9 +14,9 @@ using System.Linq;
 namespace CraigStars.Tests
 {
     [TestFixture]
-    public class ScanStepTest
+    public class PlayerScanStepTest
     {
-        static ILog log = LogManager.GetLogger(typeof(ScanStepTest));
+        static ILog log = LogManager.GetLogger(typeof(PlayerScanStepTest));
 
         [Test]
         public void TestScan()
@@ -32,7 +32,7 @@ namespace CraigStars.Tests
             game.UpdateDictionaries();
             game.UpdatePlayers();
 
-            var scanStep = new PlayerScanStep(game, TurnGeneratorState.Scan);
+            var scanStep = new PlayerScanStep(game);
             scanStep.Execute(new TurnGenerationContext(), game.OwnedPlanets.ToList());
 
             // our player should know about the planet updates

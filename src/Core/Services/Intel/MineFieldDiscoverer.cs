@@ -28,14 +28,12 @@ namespace CraigStars
             RacePluralName = item.Player.Race.PluralName,
             Owner = item.Owner,
             ReportAge = 0,
-            Radius = item.Radius,
             NumMines = item.NumMines,
             Type = item.Type
         };
 
         protected override void DiscoverForeign(Player player, MineField item, MineField itemReport, bool penScanned)
         {
-            itemReport.Radius = item.Radius;
             itemReport.NumMines = item.NumMines;
             itemReport.Type = item.Type;
             itemReport.ReportAge = 0;
@@ -44,7 +42,6 @@ namespace CraigStars
         protected override void DiscoverOwn(Player player, MineField item, MineField itemReport)
         {
             itemReport.Player = player;
-            itemReport.Radius = item.Radius;
             itemReport.NumMines = item.NumMines;
             itemReport.Type = item.Type;
             itemReport.ReportAge = 0;

@@ -7,7 +7,7 @@ namespace CraigStars
     /// <summary>
     /// This is a helper to generate battles
     /// </summary>
-    public static class Battles
+    public static class TestBattleUtils
     {
         /// <summary>
         /// Build a simple battle between two players, one with a Stalwart Defender, one with a Long Range Scout

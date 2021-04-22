@@ -12,7 +12,7 @@ namespace CraigStars
 
         public Size Size { get; set; } = Size.Small;
         public Density Density { get; set; } = Density.Normal;
-        public GameStartMode StartMode { get; set; } = GameStartMode.MidGame;
+        public GameStartMode StartMode { get; set; } = GameStartMode.Normal;
 
         [DefaultValue(15)]
         public int PlanetMinDistance { get; } = 15;
@@ -145,6 +145,12 @@ namespace CraigStars
         [DefaultValue(.75f)]
         public float WormholeCloak = .75f;
 
+        [DefaultValue(.1f)]
+        public float SalvageDecayRate = .1f;
+        [DefaultValue(10)]
+        public int SalvageDecayMin = 10;
+
+
         /// <summary>
         /// MineFields are cloaked to 75% until spotted
         /// </summary>
@@ -152,18 +158,66 @@ namespace CraigStars
         public float MineFieldCloak = .75f;
 
         /// <summary>
+        /// Space Demolition fleets can travel 2 warp speeds faster through minefields
+        /// </summary>
+        [DefaultValue(2)]
+        public int SDSafeWarpBonus = 2;
+        [DefaultValue(.25f)]
+        public float SDMinDecayFactor = .25f;
+        [DefaultValue(.02f)]
+        public float MineFieldBaseDecayRate = .02f;
+        [DefaultValue(.04f)]
+        public float MineFieldPlanetDecayRate = .04f;
+        [DefaultValue(.25f)]
+        public float MineFieldDetonateDecayRate = .25f;
+        [DefaultValue(.5f)]
+        public float MineFieldMaxDecayRate = .5f;
+
+        /// <summary>
+        /// The minimum distance between a wormhole and any other object
+        /// </summary>
+        [DefaultValue(20)]
+        public int WormholeMinDistance = 30;
+
+        /// <summary>
+        /// Every year wormholes degrage, jiggle, and sometimes jump
+        /// </summary>
+        public Dictionary<WormholeStability, WormholeStats> WormholeStatsByStability = new Dictionary<WormholeStability, WormholeStats>() {
+            { WormholeStability.RockSolid, new WormholeStats(10, 0) },
+            { WormholeStability.Stable, new WormholeStats(5, .005f) },
+            { WormholeStability.MostlyStable, new WormholeStats(5, .02f) },
+            { WormholeStability.Average, new WormholeStats(5, .04f) },
+            { WormholeStability.SlightlyVolatile, new WormholeStats(5, .03f) },
+            { WormholeStability.Volatile, new WormholeStats(5, .06f) },
+            { WormholeStability.ExtremelyVolatile, new WormholeStats(int.MaxValue, .04f) },
+        };
+
+        /// <summary>
+        /// The number of wormhole pairs for the size of the universe
+        /// </summary>
+        public Dictionary<Size, int> WormholePairsForSize = new Dictionary<Size, int>() {
+            { Size.Tiny, 1},
+            { Size.Small, 3},
+            { Size.Medium, 4},
+            { Size.Large, 5},
+            { Size.Huge, 6},
+        };
+
+        /// <summary>
         /// Each minefield type has stats
         /// </summary>
         public Dictionary<MineFieldType, MineFieldStats> MineFieldStatsByType = new Dictionary<MineFieldType, MineFieldStats>() {
             {
-                MineFieldType.Normal,
+                MineFieldType.Standard,
                 new MineFieldStats() {
                     MinDamagePerFleetRS = 600,
                     DamagePerEngineRS = 125,
                     MaxSpeed = 4,
-                    ChanceOfHit = 3,
+                    ChanceOfHit = .003f,
                     MinDamagePerFleet = 500,
                     DamagePerEngine = 100,
+                    CanDetonate = true,
+                    MinDecay = 10,
             } },
             {
                 MineFieldType.Heavy,
@@ -171,15 +225,17 @@ namespace CraigStars
                     MinDamagePerFleetRS = 2500,
                     DamagePerEngineRS = 600,
                     MaxSpeed = 6,
-                    ChanceOfHit = 1,
+                    ChanceOfHit = .01f,
                     MinDamagePerFleet = 2000,
                     DamagePerEngine = 500,
+                    MinDecay = 10,
             } },
             {
-                MineFieldType.Speed,
+                MineFieldType.SpeedBump,
                 new MineFieldStats() {
                     MaxSpeed = 5,
-                    ChanceOfHit = 35,
+                    ChanceOfHit = .035f,
+                    SweepFactor = 1f/3, // speed hump minds are swept at 1/3rd the normal rate
             } },
         };
 

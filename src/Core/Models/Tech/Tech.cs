@@ -35,7 +35,7 @@ namespace CraigStars
         /// </summary>
         /// <param name="tech"></param>
         /// <returns></returns>
-        internal Cost GetPlayerCost(Player player)
+        public Cost GetPlayerCost(Player player)
         {
             Cost cost = Cost;
 

@@ -252,6 +252,8 @@ namespace CraigStars
             {
                 switch (Type)
                 {
+                    case HullSlotType.MineLayer:
+                        return "Mine\nLayer";
                     case HullSlotType.Mechanical:
                         return "Mech";
                     case HullSlotType.SpaceDock:

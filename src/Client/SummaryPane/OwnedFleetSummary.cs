@@ -64,7 +64,7 @@ namespace CraigStars
                     massLabel.Text = $"Fleet Mass: {fleet.Aggregate.Mass}";
                     if (fleet.Waypoints.Count > 1)
                     {
-                        var wp1 = fleet.Waypoints[0];
+                        var wp1 = fleet.Waypoints[1];
                         waypointLabel.Text = $"Next Waypoint: {wp1.TargetName}";
                         waypointTaskLabel.Text = $"Waypoint Task: {EnumUtils.GetLabelForWaypointTask(wp1.Task)}";
                         warpLabel.Text = $"Warp Speed: {wp1.WarpFactor}";

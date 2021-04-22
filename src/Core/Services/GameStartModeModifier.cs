@@ -27,19 +27,19 @@ namespace CraigStars
         void AdvanceToMidGame(Game game)
         {
             int growthYears = 20;
-            int techBonus = 15000; // resources to spend on research.
+            int techBonus = 40000; // resources to spend on research.
             int mineFactoryBonus = 500;
             int defenseBonus = 90;
             var ownedPlanets = game.OwnedPlanets.ToList();
 
-            PlayerResearchStep playerResearchStep = new PlayerResearchStep(game, TurnGeneratorState.Research);
+            PlayerResearchStep playerResearchStep = new PlayerResearchStep(game);
             playerResearchStep.PreProcess(ownedPlanets);
             game.Players.ForEach(player =>
             {
                 playerResearchStep.ResearchNextLevel(player, techBonus);
             });
 
-            PlanetGrowStep planetGrowStep = new PlanetGrowStep(game, TurnGeneratorState.Grow);
+            PlanetGrowStep planetGrowStep = new PlanetGrowStep(game);
             planetGrowStep.PreProcess(ownedPlanets);
             for (int i = 0; i < growthYears; i++)
             {
@@ -53,6 +53,8 @@ namespace CraigStars
                 planet.Factories = Mathf.Clamp(planet.Factories + mineFactoryBonus, 0, planet.MaxPossibleFactories);
                 planet.Defenses = Mathf.Clamp(planet.Defenses + defenseBonus, 0, planet.MaxDefenses);
             });
+
+
 
         }
     }

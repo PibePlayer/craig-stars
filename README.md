@@ -6,7 +6,7 @@ A clone of the 4X game Stars!
 
 # Development
 
-This clone is done using the [Godot](https://godotengine.org) game engine. To launch this project, install Godot Mono 3.2.3 or greater (and [the required .net sdks](https://docs.godotengine.org/en/stable/getting_started/scripting/c_sharp/c_sharp_basics.html?highlight=mono#setting-up-c-for-godot)), open project.godot in the editor and click the Play button.
+This clone is done using the [Godot](https://godotengine.org) game engine. To launch this project, install Godot Mono 3.3 or greater (and [the required .net sdks](https://docs.godotengine.org/en/stable/getting_started/scripting/c_sharp/c_sharp_basics.html?highlight=mono#setting-up-c-for-godot)), open project.godot in the editor and click the Play button.
 
 To run unit Core.Tests, install [.NET Core 3.1](https://dotnet.microsoft.com/download).
 

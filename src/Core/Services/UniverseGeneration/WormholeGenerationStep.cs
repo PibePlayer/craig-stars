@@ -5,13 +5,20 @@ using System.Linq;
 using CraigStars;
 using static CraigStars.Utils.Utils;
 
-namespace CraigStars
+namespace CraigStars.UniverseGeneration
 {
     /// <summary>
     /// Places wormholes in the universe
     /// </summary>
-    public class WormholeGenerator
+    public class WormholeGenerationStep : UniverseGenerationStep
     {
+        public WormholeGenerationStep(Game game) : base(game, UniverseGenerationState.Wormholes) { }
+
+        public override void Process()
+        {
+            Game.Wormholes = GenerateWormholes(Game.Rules, Game.Planets);
+        }
+
         public List<Wormhole> GenerateWormholes(Rules rules, List<Planet> planets)
         {
             var wormholes = new List<Wormhole>();

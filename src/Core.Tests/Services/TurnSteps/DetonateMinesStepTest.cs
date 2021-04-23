@@ -41,6 +41,7 @@ namespace CraigStars.Tests
             step.Detonate(mineField);
 
             // bye bye scout
+            game.PurgeDeletedMapObjects();
             Assert.AreEqual(0, game.Fleets.Count);
 
         }

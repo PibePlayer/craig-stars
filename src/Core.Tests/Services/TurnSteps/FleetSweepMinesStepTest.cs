@@ -70,6 +70,7 @@ namespace CraigStars.Tests
             // make sure it destroys a minefield that is low
             mineField.NumMines = 250;
             step.Process();
+            game.PurgeDeletedMapObjects();
             Assert.AreEqual(1, game.MineFields.Count);
             Assert.AreEqual(1000, game.MineFields[0].NumMines);
             Assert.AreEqual(fleet.Player, game.MineFields[0].Player);

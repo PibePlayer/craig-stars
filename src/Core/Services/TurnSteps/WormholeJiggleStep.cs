@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CraigStars.Singletons;
+using CraigStars.UniverseGeneration;
 using CraigStars.Utils;
 using Godot;
 using log4net;
@@ -14,19 +15,21 @@ namespace CraigStars
     /// 
     /// https://starsautohost.org/sahforum2/index.php?t=msg&th=2775&rid=0#msg_24279
     /// </summary>
-    public class WormholeJiggleStep : Step
+    public class WormholeJiggleStep : TurnGenerationStep
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(WormholeJiggleStep));
 
-        WormholeGenerator wormholeGenerator = new WormholeGenerator();
+        WormholeGenerationStep wormholeGenerator;
         HashSet<Vector2> planetPositions;
         HashSet<Vector2> wormholePositions;
         List<Wormhole> newWormholes;
 
-        public WormholeJiggleStep(Game game) : base(game, TurnGeneratorState.WormholeJiggle) { }
+        public WormholeJiggleStep(Game game) : base(game, TurnGenerationState.WormholeJiggle) { }
 
         public override void Process()
         {
+            wormholeGenerator = new WormholeGenerationStep(Game);
+
             planetPositions = Game.Planets.Select(planet => planet.Position).ToHashSet();
             wormholePositions = Game.Wormholes.Select(wh => wh.Position).ToHashSet();
 

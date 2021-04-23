@@ -31,7 +31,6 @@ visible = false
 texture = ExtResource( 3 )
 
 [node name="Inhabited" type="Sprite" parent="Sprite"]
-visible = false
 texture = ExtResource( 5 )
 
 [node name="InhabitedCommanded" type="Sprite" parent="Sprite"]

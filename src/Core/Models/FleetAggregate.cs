@@ -13,7 +13,7 @@ namespace CraigStars
         // starbase fields
         // TODO: generisize these
         public bool HasMassDriver { get => PacketSpeed > 0; }
-        public bool HasGate { get => SafeHullMass != TechHullComponent.NoGate; }
+        public bool HasStargate { get => SafeHullMass != TechHullComponent.NoGate; }
         public int PacketSpeed { get; set; }
         public int SafeHullMass { get; set; } = TechHullComponent.NoGate;
         public int MaxHullMass { get; set; } = TechHullComponent.NoGate;

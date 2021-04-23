@@ -50,7 +50,7 @@ namespace CraigStars
                         continue;
                     }
                     // see if this design can be updated
-                    if (design.Aggregate.InUse)
+                    if (design.InUse)
                     {
                         log.Debug($"{Game.Year}: Not updating Player Design: {player} - {design.Name}. It is in use");
                     }

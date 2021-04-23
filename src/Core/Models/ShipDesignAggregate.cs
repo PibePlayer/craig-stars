@@ -72,10 +72,5 @@ namespace CraigStars
         /// </summary>
         public Dictionary<MineFieldType, int> MineLayingRateByMineType { get; set; } = new Dictionary<MineFieldType, int>();
 
-        /// <summary>
-        /// True if this ship design is in active use
-        /// </summary>
-        /// <value></value>
-        public bool InUse { get; set; }
     }
 }

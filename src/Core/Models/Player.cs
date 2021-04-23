@@ -3,6 +3,7 @@ using log4net;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -275,6 +276,29 @@ namespace CraigStars
             Designs.ForEach(d => d.ComputeAggregate(this));
             Fleets.ForEach(f => f.ComputeAggregate());
             Planets.ForEach(p => p.Starbase?.ComputeAggregate());
+
+            ComputeDesignsInUse();
+        }
+
+        internal void ComputeDesignsInUse()
+        {
+            // sum up all designs in use
+            // get fleet designs
+            var designsInUse = Fleets.SelectMany(f => f.Tokens).Select(token => token.Design).ToLookup(design => design).ToDictionary(lookup => lookup.Key, lookup => lookup.Count());
+            // add in starbase designs
+            var starbaseDesignsInUse = Planets.Where(planet => planet.HasStarbase).Select(planet => planet.Starbase.Design).ToLookup(design => design).ToDictionary(lookup => lookup.Key, lookup => lookup.Count());
+            foreach (var starbaseDesign in starbaseDesignsInUse)
+            {
+                designsInUse.Add(starbaseDesign.Key, starbaseDesign.Value);
+            }
+
+            Designs.ForEach(design =>
+            {
+                if (designsInUse.TryGetValue(design, out int numInUse))
+                {
+                    design.NumInUse = numInUse;
+                }
+            });
         }
 
         #endregion
@@ -569,8 +593,7 @@ namespace CraigStars
         public T GetBestTech<T>(ITechStore techStore, TechCategory category) where T : Tech
         {
             var techs = techStore.GetTechsByCategory(category);
-            techs.Sort((t1, t2) => t2.Ranking.CompareTo(t1.Ranking));
-            var tech = techs.Find(t => HasTech(t));
+            var tech = techs.OrderBy(t => t.Ranking).FirstOrDefault(t => HasTech(t));
             return tech as T;
         }
 

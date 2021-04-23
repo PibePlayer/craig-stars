@@ -24,16 +24,14 @@ namespace CraigStars
         [JsonIgnore]
         public Random Random { get; set; } = new Random();
 
-        /// <summary>
-        /// For debugging, start with extra planets
-        /// </summary>
-        /// <value></value>
-        [DefaultValue(0)]
-        public int StartWithExtraPlanets { get; set; } = 1;
-
-
         [DefaultValue(2400)]
         public int StartingYear { get; set; } = 2400;
+
+        [DefaultValue(150)]
+        public int MaxExtraWorldDistance { get; set; } = 180;
+
+        [DefaultValue(150)]
+        public int MinExtraWorldDistance { get; set; } = 130;
 
         // Mineral rules that we don't currently modify
         [DefaultValue(30)]
@@ -63,8 +61,10 @@ namespace CraigStars
         // Population rules
         [DefaultValue(25000)]
         public int StartingPopulation { get; set; } = 25000;
-        [DefaultValue(12500)]
-        public int StartingPopulationExtraPlanet { get; set; } = 12500;
+        [DefaultValue(20000)]
+        public int StartingPopulationWithExtraPlanet { get; set; } = 20000;
+        [DefaultValue(10000)]
+        public int StartingPopulationExtraPlanet { get; set; } = 10000;
         [DefaultValue(.7f)]
         public float LowStartingPopulationFactor { get; set; } = .7f;
 
@@ -89,6 +89,32 @@ namespace CraigStars
 
         [DefaultValue(25)]
         public int MineralAlchemyLRTCost { get; set; } = 25;
+
+        [DefaultValue(10)]
+        public int PacketResourceCost { get; set; } = 10;
+        [DefaultValue(5)]
+        public int PacketResourceCostPP { get; set; } = 5;
+
+        /// <summary>
+        /// The amount of minerals in a single ironium, boranium, or germanium packet
+        /// </summary>
+        /// <value></value>
+        [DefaultValue(110)]
+        public int MineralsPerSingleMineralPacket { get; set; } = 110;
+
+        /// <summary>
+        /// The amount of minerals in a mixed (all minerals at once) packet
+        /// </summary>
+        /// <value></value>
+        [DefaultValue(44)]
+        public int MineralsPerMixedMineralPacket { get; set; } = 44;
+
+        [DefaultValue(70)]
+        public int MineralsPerSingleMineralPacketPP { get; set; } = 70;
+
+        [DefaultValue(25)]
+        public int MineralsPerMixedMineralPacketPP { get; set; } = 25;
+
 
         [DefaultValue(20)]
         public int BuiltInScannerJoaTMultiplier = 20;

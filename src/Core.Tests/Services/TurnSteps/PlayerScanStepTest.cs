@@ -10,6 +10,7 @@ using log4net.Core;
 using log4net.Repository.Hierarchy;
 using System.Threading.Tasks;
 using System.Linq;
+using CraigStars.UniverseGeneration;
 
 namespace CraigStars.Tests
 {
@@ -25,7 +26,7 @@ namespace CraigStars.Tests
 
             // setup initial player knowledge
             var ug = new UniverseGenerator(game);
-            ug.InitPlayerPlanetReports(game.Players[0], game.Planets);
+            ug.Generate();
 
             game.Planets[0].Population = 120000;
 

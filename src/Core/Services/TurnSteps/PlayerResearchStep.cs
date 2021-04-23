@@ -9,9 +9,9 @@ namespace CraigStars
     /// <summary>
     /// Apply leftover and allocated resources to research
     /// </summary>
-    public class PlayerResearchStep : Step
+    public class PlayerResearchStep : TurnGenerationStep
     {
-        public PlayerResearchStep(Game game) : base(game, TurnGeneratorState.Research) { }
+        public PlayerResearchStep(Game game) : base(game, TurnGenerationState.Research) { }
 
         public override void Process()
         {

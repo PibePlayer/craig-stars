@@ -41,7 +41,7 @@ namespace CraigStars
                     var updatedDesign = shipDesignGenerator.DesignShip(existingDesignForHull.Hull, existingDesignForHull.Name, player, existingDesignForHull.HullSetNumber, existingDesignForHull.Purpose);
                     if (!AreEquivalent(existingDesignForHull, updatedDesign))
                     {
-                        if (!existingDesignForHull.Aggregate.InUse)
+                        if (!existingDesignForHull.InUse)
                         {
                             // this design is not in use, update the old one
                             for (int i = 0; i < existingDesignForHull.Slots.Count; i++)

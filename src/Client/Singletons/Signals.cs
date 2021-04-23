@@ -21,7 +21,7 @@ namespace CraigStars.Singletons
         public delegate void GameStart(PublicGameInfo gameInfo);
         public static event YearUpdate TurnPassedEvent;
         public static event Action TurnGeneratingEvent;
-        public static event Action<TurnGeneratorState> TurnGeneratorAdvancedEvent;
+        public static event Action<TurnGenerationState> TurnGeneratorAdvancedEvent;
 
         /// <summary>
         /// Triggered when any player has submitted their turn to the server
@@ -29,7 +29,7 @@ namespace CraigStars.Singletons
         public static event Action<PublicPlayerInfo> TurnSubmittedEvent;
 
         public static void PublishTurnPassedEvent(PublicGameInfo gameInfo) => TurnPassedEvent?.Invoke(gameInfo);
-        public static void PublishTurnGeneratorAdvancedEvent(TurnGeneratorState state) => TurnGeneratorAdvancedEvent?.Invoke(state);
+        public static void PublishTurnGeneratorAdvancedEvent(TurnGenerationState state) => TurnGeneratorAdvancedEvent?.Invoke(state);
         public static void PublishTurnGeneratingEvent() => TurnGeneratingEvent?.Invoke();
         public static void PublishTurnSubmittedEvent(PublicPlayerInfo player) => TurnSubmittedEvent?.Invoke(player);
 

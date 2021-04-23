@@ -9,16 +9,16 @@ namespace CraigStars
     /// <summary>
     /// Move Fleets in space
     /// </summary>
-    public class PlanetProduceStep : Step
+    public class PlanetProduceStep : TurnGenerationStep
     {
         static HashSet<QueueItemType> AutoBuildTypes = new HashSet<QueueItemType>() {
-            QueueItemType.AutoAlchemy,
-            QueueItemType.AutoMine,
-            QueueItemType.AutoDefense,
-            QueueItemType.AutoFactory
+            QueueItemType.AutoMineralAlchemy,
+            QueueItemType.AutoMines,
+            QueueItemType.AutoDefenses,
+            QueueItemType.AutoFactories
         };
 
-        public PlanetProduceStep(Game game) : base(game, TurnGeneratorState.Production) { }
+        public PlanetProduceStep(Game game) : base(game, TurnGenerationState.Production) { }
 
         public override void Process()
         {
@@ -63,13 +63,13 @@ namespace CraigStars
                 int quantityDesired = item.quantity;
                 switch (item.type)
                 {
-                    case QueueItemType.AutoMine:
+                    case QueueItemType.AutoMines:
                         quantityDesired = Math.Min(quantityDesired, planet.MaxMines - planet.Mines);
                         break;
-                    case QueueItemType.AutoFactory:
+                    case QueueItemType.AutoFactories:
                         quantityDesired = Math.Min(quantityDesired, planet.MaxFactories - planet.Factories);
                         break;
-                    case QueueItemType.AutoDefense:
+                    case QueueItemType.AutoDefenses:
                         quantityDesired = Math.Min(quantityDesired, planet.MaxDefenses - planet.Defenses);
                         break;
                     case QueueItemType.Mine:
@@ -78,7 +78,7 @@ namespace CraigStars
                     case QueueItemType.Factory:
                         quantityDesired = Math.Min(quantityDesired, planet.MaxPossibleFactories - planet.Factories);
                         break;
-                    case QueueItemType.Defense:
+                    case QueueItemType.Defenses:
                         quantityDesired = Math.Min(quantityDesired, planet.MaxDefenses - planet.Defenses);
                         break;
                 }
@@ -163,26 +163,26 @@ namespace CraigStars
         /// <returns></returns>
         private Cost BuildItem(Planet planet, ProductionQueueItem item, int numBuilt, Cost allocated)
         {
-            if (item.type == QueueItemType.Mine || item.type == QueueItemType.AutoMine)
+            if (item.type == QueueItemType.Mine || item.type == QueueItemType.AutoMines)
             {
                 // TODO: return resources from overbuild back to player
                 planet.Mines += numBuilt;
                 planet.Mines = Mathf.Clamp(planet.Mines, 0, planet.MaxPossibleMines);
                 Message.Mine(planet.Player, planet, numBuilt);
             }
-            else if (item.type == QueueItemType.Factory || item.type == QueueItemType.AutoFactory)
+            else if (item.type == QueueItemType.Factory || item.type == QueueItemType.AutoFactories)
             {
                 planet.Factories += numBuilt;
                 planet.Factories = Mathf.Clamp(planet.Factories, 0, planet.MaxPossibleFactories);
                 Message.Factory(planet.Player, planet, numBuilt);
             }
-            else if (item.type == QueueItemType.Defense || item.type == QueueItemType.AutoDefense)
+            else if (item.type == QueueItemType.Defenses || item.type == QueueItemType.AutoDefenses)
             {
                 planet.Defenses += numBuilt;
                 planet.Defenses = Mathf.Clamp(planet.Defenses, 0, planet.MaxDefenses);
                 Message.Defense(planet.Player, planet, numBuilt);
             }
-            else if (item.type == QueueItemType.Alchemy || item.type == QueueItemType.AutoAlchemy)
+            else if (item.type == QueueItemType.MineralAlchemy || item.type == QueueItemType.AutoMineralAlchemy)
             {
                 // add the minerals back to our allocated amount
                 allocated += new Cost(numBuilt, numBuilt, numBuilt, 0);

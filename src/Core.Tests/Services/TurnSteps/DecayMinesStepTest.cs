@@ -55,6 +55,7 @@ namespace CraigStars.Tests
             // minefield goes away
             mineField.NumMines = 20;
             step.Decay(mineField);
+            game.PurgeDeletedMapObjects();
             Assert.AreEqual(10, mineField.NumMines);
             Assert.AreEqual(0, game.MineFields.Count);
 

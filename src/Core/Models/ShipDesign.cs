@@ -42,6 +42,11 @@ namespace CraigStars
         public int HullSetNumber { get; set; }
         public List<ShipDesignSlot> Slots { get; set; } = new List<ShipDesignSlot>();
 
+        [JsonIgnore]
+        public bool InUse { get => NumInUse > 0; }
+        public int NumInUse { get; set; }
+        public int NumBuilt { get; set; }
+
         /// <summary>
         /// An aggregate of all components of a ship design
         /// </summary>
@@ -61,6 +66,11 @@ namespace CraigStars
         ~ShipDesign()
         {
             EventManager.PlayerResearchLevelIncreasedEvent -= OnPlayerResearchLevelIncreased;
+        }
+
+        public override string ToString()
+        {
+            return $"{Player?.Name} {Name}";
         }
 
         /// <summary>
@@ -255,24 +265,6 @@ namespace CraigStars
             else
             {
                 Aggregate.Movement = 0;
-            }
-
-            // this ship design is in use if any fleets use it
-            if (Player != null)
-            {
-                if (Hull.Starbase)
-                {
-                    // look for starbases in use
-                    Aggregate.InUse = Player.Planets.Any(planet => planet.Starbase?.Tokens[0].Design.Guid == this.Guid);
-                }
-                else
-                {
-                    // look for fleets in use
-                    Aggregate.InUse = Player.Fleets.Any(fleet => fleet.Tokens.Any(token =>
-                    {
-                        return token.Design.Guid == this.Guid;
-                    }));
-                }
             }
 
             // compute the scan ranges

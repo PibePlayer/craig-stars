@@ -92,14 +92,14 @@ namespace CraigStars
         {
             shipHullSummary.ShipDesign = design;
             shipHullSummary.Hull = design.Hull;
-            editDesignButton.Disabled = design.Aggregate.InUse;
+            editDesignButton.Disabled = design.InUse;
         }
 
         void OnStarbaseDesignSelectedEvent(ShipDesign design)
         {
             starbaseHullSummary.ShipDesign = design;
             starbaseHullSummary.Hull = design.Hull;
-            editStarbaseDesignButton.Disabled = design.Aggregate.InUse;
+            editStarbaseDesignButton.Disabled = design.InUse;
         }
 
         void OnHullSelectedEvent(Tech tech)
@@ -164,7 +164,7 @@ namespace CraigStars
                 var design = Me.Designs[designIndex];
 
                 var message = $"Are you sure you want to delete the design {shipHullSummary.ShipDesign.Name}?";
-                if (design.Aggregate.InUse)
+                if (design.InUse)
                 {
                     message = $"{shipHullSummary.ShipDesign.Name} is in use. All fleet tokens with this design will be immediately deleted. Are you sure you want to delete the design {shipHullSummary.ShipDesign.Name}?";
                 }
@@ -211,7 +211,7 @@ namespace CraigStars
             noDesignLabel.Visible = false;
             shipDesigner.EditingExisting = false;
             shipDesigner.Hull = hullHullSummary.Hull;
-            shipDesigner.SourceShipDesign = new ShipDesign() { Hull = shipDesigner.Hull };
+            shipDesigner.SourceShipDesign = new ShipDesign() { Player = Me, Hull = shipDesigner.Hull };
             shipDesigner.Visible = true;
 
             tabContainer.CurrentTab = 3;

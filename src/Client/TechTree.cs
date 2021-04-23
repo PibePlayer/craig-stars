@@ -78,7 +78,7 @@ namespace CraigStars
 
         public void UpdateTreeItems()
         {
-            List<Tech> techsToShow;
+            IEnumerable<Tech> techsToShow;
             switch (TechsToDisplay)
             {
                 case DisplayType.HullComponents:
@@ -118,7 +118,7 @@ namespace CraigStars
         /// Add categories for our techs
         /// </summary>
         /// <param name="techs"></param>
-        void AddCategoriesToTree(List<Tech> techs)
+        void AddCategoriesToTree(IEnumerable<Tech> techs)
         {
             // get a list of categories, sorted.
             foreach (var category in TechStore.Instance.GetCategoriesForTechs(techs))
@@ -133,7 +133,7 @@ namespace CraigStars
         /// <summary>
         /// Add techs to the tree, sorted by category
         /// </summary>
-        void AddTechsToTree(List<Tech> techsToAdd)
+        void AddTechsToTree(IEnumerable<Tech> techsToAdd)
         {
             techs = new List<Tech>(techsToAdd);
             techs.Sort((t1, t2) => t1.Ranking.CompareTo(t2.Ranking));

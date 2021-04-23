@@ -127,12 +127,12 @@ namespace CraigStars
             // add each type of item.
             AddAvailableItem(new ProductionQueueItem(QueueItemType.Factory), index: availableItemIndex++);
             AddAvailableItem(new ProductionQueueItem(QueueItemType.Mine), index: availableItemIndex++);
-            AddAvailableItem(new ProductionQueueItem(QueueItemType.Defense), index: availableItemIndex++);
-            AddAvailableItem(new ProductionQueueItem(QueueItemType.Alchemy), index: availableItemIndex++);
-            AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoFactory), index: availableItemIndex++);
-            AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoMine), index: availableItemIndex++);
-            AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoDefense), index: availableItemIndex++);
-            AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoAlchemy), index: availableItemIndex++);
+            AddAvailableItem(new ProductionQueueItem(QueueItemType.Defenses), index: availableItemIndex++);
+            AddAvailableItem(new ProductionQueueItem(QueueItemType.MineralAlchemy), index: availableItemIndex++);
+            AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoFactories), index: availableItemIndex++);
+            AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoMines), index: availableItemIndex++);
+            AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoDefenses), index: availableItemIndex++);
+            AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoMineralAlchemy), index: availableItemIndex++);
 
             if (Planet.ProductionQueue != null)
             {

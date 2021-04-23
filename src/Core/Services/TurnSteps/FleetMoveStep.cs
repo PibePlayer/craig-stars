@@ -9,11 +9,11 @@ namespace CraigStars
     /// <summary>
     /// Move Fleets in space
     /// </summary>
-    public class FleetMoveStep : Step
+    public class FleetMoveStep : TurnGenerationStep
     {
         MineFieldDamager mineFieldDamager = new MineFieldDamager();
         ShipDesignDiscoverer shipDesignDiscoverer = new ShipDesignDiscoverer();
-        public FleetMoveStep(Game game) : base(game, TurnGeneratorState.MoveFleets) { }
+        public FleetMoveStep(Game game) : base(game, TurnGenerationState.MoveFleets) { }
 
         public override void Process()
         {

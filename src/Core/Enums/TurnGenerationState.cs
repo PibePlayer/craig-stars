@@ -3,7 +3,7 @@ namespace CraigStars
     /// <summary>
     /// The field for A tech
     /// </summary>
-    public enum TurnGeneratorState
+    public enum TurnGenerationState
     {
         WaitingForPlayers,
         Scrapping,

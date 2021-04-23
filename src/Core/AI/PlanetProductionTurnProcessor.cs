@@ -27,8 +27,8 @@ namespace CraigStars
         {
             foreach (var planet in player.Planets)
             {
-                planet.ProductionQueue.EnsureHasItem(new ProductionQueueItem(QueueItemType.AutoMine, 25), 1);
-                planet.ProductionQueue.EnsureHasItem(new ProductionQueueItem(QueueItemType.AutoFactory, 25), 2);
+                planet.ProductionQueue.EnsureHasItem(new ProductionQueueItem(QueueItemType.AutoMines, 25), 1);
+                planet.ProductionQueue.EnsureHasItem(new ProductionQueueItem(QueueItemType.AutoFactories, 25), 2);
             }
         }
 

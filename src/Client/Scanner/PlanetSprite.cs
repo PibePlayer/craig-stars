@@ -98,13 +98,39 @@ namespace CraigStars
                 case PlanetViewState.Normal:
                     if (Planet.HasStarbase)
                     {
+                        var color = GUIColors.StarbaseWithoutDock;
+                        if (Planet.Starbase.DockCapacity > 0) {
+                            color = GUIColors.StarbaseWithDock;
+                        }
                         if (isCommanded)
                         {
-                            DrawCircle(new Vector2(7f, -4f), 2.5f, Colors.Yellow);
+                            DrawCircle(new Vector2(7f, -4f), 2.5f, color);
                         }
                         else
                         {
-                            DrawRect(new Rect2(3f, -4, 3, 3), Colors.Yellow, true);
+                            DrawRect(new Rect2(4f, -5, 3, 3), color, true);
+                        }
+                    }
+                    if (Planet.HasMassDriver)
+                    {
+                        if (isCommanded)
+                        {
+                            DrawCircle(new Vector2(0f, -9f), 2.5f, GUIColors.MassDriverColor);
+                        }
+                        else
+                        {
+                            DrawRect(new Rect2(-1.5f, -7, 3, 3), GUIColors.MassDriverColor, true);
+                        }
+                    }
+                    if (Planet.HasStargate)
+                    {
+                        if (isCommanded)
+                        {
+                            DrawCircle(new Vector2(-7f, -4f), 2.5f, GUIColors.StargateColor);
+                        }
+                        else
+                        {
+                            DrawRect(new Rect2(-7f, -5, 3, 3), GUIColors.StargateColor, true);
                         }
                     }
                     break;

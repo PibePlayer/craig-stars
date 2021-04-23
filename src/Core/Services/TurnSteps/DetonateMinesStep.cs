@@ -11,13 +11,13 @@ namespace CraigStars
     /// <summary>
     /// SD can set their mines to detonate, damaging ships inside the radius
     /// </summary>
-    public class DetonateMinesStep : Step
+    public class DetonateMinesStep : TurnGenerationStep
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(DecayMinesStep));
 
         MineFieldDamager mineFieldDamager = new MineFieldDamager();
 
-        public DetonateMinesStep(Game game) : base(game, TurnGeneratorState.DetonateMines) { }
+        public DetonateMinesStep(Game game) : base(game, TurnGenerationState.DetonateMines) { }
 
         public override void Process()
         {

@@ -104,7 +104,16 @@ namespace CraigStars
         public Color WarpDamageColor { get; set; } = new Color("FFFF00");
 
         [Export]
-        public Color StargateColor { get; set; } = new Color("FFFF00");
+        public Color MassDriverColor { get; set; } = Colors.Purple.Darkened(.25f);
+
+        [Export]
+        public Color StarbaseWithoutDock { get; set; } = new Color("020085");
+
+        [Export]
+        public Color StarbaseWithDock { get; set; } = Colors.Yellow;
+
+        [Export]
+        public Color StargateColor { get; set; } = new Color("7F7F00");
 
     }
 }

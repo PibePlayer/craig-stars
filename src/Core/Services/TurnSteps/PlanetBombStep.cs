@@ -33,9 +33,9 @@ namespace CraigStars
     /// c a *b            156      Total minimum kill
     /// ============================================================================    
     /// </summary>
-    public class PlanetBombStep : Step
+    public class PlanetBombStep : TurnGenerationStep
     {
-        public PlanetBombStep(Game game) : base(game, TurnGeneratorState.Bomb) { }
+        public PlanetBombStep(Game game) : base(game, TurnGenerationState.Bomb) { }
 
         public override void Process()
         {

@@ -5,13 +5,20 @@ using System.Linq;
 using CraigStars;
 using static CraigStars.Utils.Utils;
 
-namespace CraigStars
+namespace CraigStars.UniverseGeneration
 {
     /// <summary>
-    /// Places wormholes in the universe
+    /// Initialize players with their default tech levels
     /// </summary>
-    public class TechLevelInitializer
+    public class PlayerTechLevelsGenerationStep : UniverseGenerationStep
     {
+        public PlayerTechLevelsGenerationStep(Game game) : base(game, UniverseGenerationState.TechLevels) { }
+
+        public override void Process()
+        {
+            Game.Players.ForEach(player => player.TechLevels = GetStartingTechLevels(player.Race));
+        }
+
         public TechLevel GetStartingTechLevels(Race race)
         {
             var techLevels = new TechLevel();

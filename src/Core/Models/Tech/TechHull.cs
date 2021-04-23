@@ -5,7 +5,7 @@ namespace CraigStars
 {
     public class TechHull : Tech
     {
-        public const int UnlimitedSpaceDock = -1;
+        public const int UnlimitedSpaceDock = int.MaxValue;
         public TechHullType Type { get; set; }
         public int Mass { get; set; }
         public int Armor { get; set; }

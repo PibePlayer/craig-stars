@@ -11,11 +11,11 @@ namespace CraigStars
     /// <summary>
     /// Lay mines
     /// </summary>
-    public class DecaySalvageStep : Step
+    public class DecaySalvageStep : TurnGenerationStep
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(DecaySalvageStep));
 
-        public DecaySalvageStep(Game game) : base(game, TurnGeneratorState.DecaySalvage) { }
+        public DecaySalvageStep(Game game) : base(game, TurnGenerationState.DecaySalvage) { }
 
         public override void Process()
         {

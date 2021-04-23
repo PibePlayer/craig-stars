@@ -181,6 +181,7 @@ namespace CraigStars
             waypointAreas.ForEach(wpa => { if (IsInstanceValid(wpa)) { RemoveChild(wpa); wpa.DisconnectAll(); wpa.QueueFree(); } });
             waypointAreas.Clear();
             selectedMapObject = null;
+            commandedMapObject = null;
             selectedWaypoint = null;
             commandedFleet = null;
             activeWaypointArea = null;

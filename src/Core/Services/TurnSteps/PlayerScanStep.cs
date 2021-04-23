@@ -11,10 +11,10 @@ namespace CraigStars
     /// <summary>
     /// For each player, discover new planets, fleets, minefields, packets, etc
     /// </summary>
-    public class PlayerScanStep : Step
+    public class PlayerScanStep : TurnGenerationStep
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(PlayerScanStep));
-        public PlayerScanStep(Game game) : base(game, TurnGeneratorState.Scan) { }
+        public PlayerScanStep(Game game) : base(game, TurnGenerationState.Scan) { }
 
         /// <summary>
         /// Helper class for sorting scanners
@@ -40,7 +40,9 @@ namespace CraigStars
 
             log.Debug("Before we scan, make sure all of our aggregates are up to date");
             Game.Fleets.ForEach(f => f.ComputeAggregate());
-            Game.Planets.ForEach(p => p.Starbase?.ComputeAggregate());
+            foreach (var planet in ownedPlanets) {
+                planet.Starbase?.ComputeAggregate();
+            }
         }
 
         public override void Process()

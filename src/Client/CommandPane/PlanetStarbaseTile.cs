@@ -78,7 +78,7 @@ namespace CraigStars
                     shields.Text = $"{starbase.Aggregate.Shield}dp";
                     damage.Text = starbase.Damage == 0 ? "none" : $"{starbase.Damage}dp";
 
-                    if (starbase.Aggregate.HasGate)
+                    if (starbase.Aggregate.HasStargate)
                     {
                         var safeHullMass = $"{(starbase.Aggregate.SafeHullMass == TechHullComponent.InfinteGate ? "any" : $"{starbase.Aggregate.SafeHullMass}")}";
                         var safeRange = $"{(starbase.Aggregate.SafeRange == TechHullComponent.InfinteGate ? "any" : $"{starbase.Aggregate.SafeRange}")}";

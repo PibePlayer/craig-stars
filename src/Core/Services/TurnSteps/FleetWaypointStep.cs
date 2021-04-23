@@ -20,7 +20,7 @@ namespace CraigStars
     /// TODO: If we leave wp0 and head towards another waypoint, some actions only run at half capacity, If we remote mine or lay mines
     /// it needs to only do half that if we are leaving to a new waypoint
     /// </summary>
-    public class FleetWaypointStep : Step
+    public class FleetWaypointStep : TurnGenerationStep
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(FleetWaypointStep));
         public const string ProcessedWaypointsContextKey = "ProcessedWaypoints";
@@ -43,7 +43,7 @@ namespace CraigStars
         // some things (like remote mining) only happen on wp1
         int waypointIndex = 0;
 
-        public FleetWaypointStep(Game game, int waypointIndex) : base(game, TurnGeneratorState.Waypoint)
+        public FleetWaypointStep(Game game, int waypointIndex) : base(game, TurnGenerationState.Waypoint)
         {
             this.waypointIndex = waypointIndex;
         }

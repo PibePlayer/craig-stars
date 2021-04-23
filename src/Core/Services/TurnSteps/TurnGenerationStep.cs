@@ -7,19 +7,19 @@ namespace CraigStars
     /// <summary>
     /// A single step in turn generation, like moving fleets, bombing planets, etc
     /// </summary>
-    public abstract class Step
+    public abstract class TurnGenerationStep
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(Step));
+        private static readonly ILog log = LogManager.GetLogger(typeof(TurnGenerationStep));
 
         public Game Game { get; private set; }
-        public TurnGeneratorState State { get; private set; }
+        public TurnGenerationState State { get; private set; }
         public TurnGenerationContext Context { get; private set; }
 
         public List<Planet> OwnedPlanets { get; private set; }
 
         Stopwatch stopwatch = new Stopwatch();
 
-        protected Step(Game game, TurnGeneratorState state)
+        protected TurnGenerationStep(Game game, TurnGenerationState state)
         {
             Game = game;
             State = state;

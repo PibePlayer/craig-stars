@@ -6,13 +6,14 @@ namespace CraigStars
 {
     public class StaticTechStore : ITechStore
     {
-        public List<Tech> Techs { get; set; } = new List<Tech>();
+        public IEnumerable<Tech> Techs { get => techs; }
+        List<Tech> techs = new List<Tech>();
 
         /// <summary>
         /// A list of Hull Components
         /// </summary>
         /// <value></value>
-        public List<TechHullComponent> HullComponents
+        public IEnumerable<TechHullComponent> HullComponents
         {
             get
             {
@@ -29,7 +30,7 @@ namespace CraigStars
         /// A list of Ship Hulls
         /// </summary>
         /// <value></value>
-        public List<TechHull> Hulls
+        public IEnumerable<TechHull> Hulls
         {
             get
             {
@@ -46,7 +47,7 @@ namespace CraigStars
         /// A list of Ship Hulls
         /// </summary>
         /// <value></value>
-        public List<TechHull> ShipHulls
+        public IEnumerable<TechHull> ShipHulls
         {
             get
             {
@@ -63,7 +64,7 @@ namespace CraigStars
         /// A list of Starbase Hulls
         /// </summary>
         /// <value></value>
-        public List<TechHull> StarbaseHulls
+        public IEnumerable<TechHull> StarbaseHulls
         {
             get
             {
@@ -76,15 +77,15 @@ namespace CraigStars
         }
         List<TechHull> starbaseHulls;
 
-        public Dictionary<String, Tech> TechsByName { get; set; } = new Dictionary<String, Tech>();
-        public Dictionary<TechCategory, List<Tech>> TechsByCategory { get; set; } = new Dictionary<TechCategory, List<Tech>>();
-        public List<TechCategory> Categories
+        Dictionary<String, Tech> TechsByName { get; set; } = new Dictionary<String, Tech>();
+        Dictionary<TechCategory, List<Tech>> TechsByCategory { get; set; } = new Dictionary<TechCategory, List<Tech>>();
+        public IEnumerable<TechCategory> Categories
         {
             get
             {
                 if (categories == null || categories.Count == 0)
                 {
-                    categories = GetCategoriesForTechs(Techs);
+                    categories = GetCategoriesForTechs(Techs).ToList();
                 }
                 return categories;
             }
@@ -111,12 +112,12 @@ namespace CraigStars
 
             // for now, just use our statically defined techs. Eventually we might want to load these techs
             // from a file or something like that
-            Techs.AddRange(CraigStars.Techs.AllTechs);
-            Techs.ForEach(t => TechsByName[t.Name] = t);
-            TechsByCategory = Techs.GroupBy(t => t.Category).ToDictionary(group => group.Key, group => group.ToList());
+            techs.AddRange(CraigStars.Techs.AllTechs);
+            techs.ForEach(t => TechsByName[t.Name] = t);
+            TechsByCategory = Techs.ToLookup(lookup => lookup.Category).ToDictionary(Lookup => Lookup.Key, lookup => lookup.OrderBy(t => t.Ranking).ToList());
         }
 
-        public List<Tech> GetTechsByCategory(TechCategory category)
+        public IEnumerable<Tech> GetTechsByCategory(TechCategory category)
         {
             TechsByCategory.TryGetValue(category, out var techs);
             return techs;
@@ -139,7 +140,7 @@ namespace CraigStars
         /// </summary>
         /// <param name="player"></param>
         /// <returns></returns>
-        public List<Tech> GetAvailableTechs(Player player)
+        public IEnumerable<Tech> GetAvailableTechs(Player player)
         {
             return Techs.Where(tech => player.HasTech(tech)).ToList();
         }
@@ -149,7 +150,7 @@ namespace CraigStars
         /// </summary>
         /// <param name="techs">The techs to get categories for</param>
         /// <returns>A list of categories, sorted by name</returns>
-        public List<TechCategory> GetCategoriesForTechs(List<Tech> techs)
+        public IEnumerable<TechCategory> GetCategoriesForTechs(IEnumerable<Tech> techs)
         {
             var categories = techs.Select(tech => tech.Category).Distinct().ToList();
             categories.Sort();

@@ -87,13 +87,13 @@ namespace CraigStars
                     case QueueItemType.Starbase:
                     case QueueItemType.ShipToken:
                         return Design.Name;
-                    case QueueItemType.AutoMine:
+                    case QueueItemType.AutoMines:
                         return "Mine (Auto)";
-                    case QueueItemType.AutoFactory:
+                    case QueueItemType.AutoFactories:
                         return "Factory (Auto)";
-                    case QueueItemType.AutoDefense:
+                    case QueueItemType.AutoDefenses:
                         return "Defenses (Auto)";
-                    case QueueItemType.AutoAlchemy:
+                    case QueueItemType.AutoMineralAlchemy:
                         return "Alchemy (Auto)";
                     default:
                         return type.ToString();
@@ -110,13 +110,13 @@ namespace CraigStars
                     case QueueItemType.Starbase:
                     case QueueItemType.ShipToken:
                         return $"{Design.Name} v{Design.Version}";
-                    case QueueItemType.AutoAlchemy:
+                    case QueueItemType.AutoMineralAlchemy:
                         return "Alchemy (Auto Build)";
-                    case QueueItemType.AutoMine:
+                    case QueueItemType.AutoMines:
                         return "Mine (Auto Build)";
-                    case QueueItemType.AutoFactory:
+                    case QueueItemType.AutoFactories:
                         return "Factory (Auto Build)";
-                    case QueueItemType.AutoDefense:
+                    case QueueItemType.AutoDefenses:
                         return "Defense (Auto Build)";
                     default:
                         return type.ToString();
@@ -135,11 +135,11 @@ namespace CraigStars
             var race = player.Race;
             int resources = 0;
             int germanium = 0;
-            if (type == QueueItemType.Mine || type == QueueItemType.AutoMine)
+            if (type == QueueItemType.Mine || type == QueueItemType.AutoMines)
             {
                 resources = race.MineCost;
             }
-            else if (type == QueueItemType.Factory || type == QueueItemType.AutoFactory)
+            else if (type == QueueItemType.Factory || type == QueueItemType.AutoFactories)
             {
                 resources = race.FactoryCost;
                 germanium = rules.FactoryCostGermanium;
@@ -148,7 +148,7 @@ namespace CraigStars
                     germanium = germanium - 1;
                 }
             }
-            else if (type == QueueItemType.Alchemy || type == QueueItemType.AutoAlchemy)
+            else if (type == QueueItemType.MineralAlchemy || type == QueueItemType.AutoMineralAlchemy)
             {
                 if (race.HasLRT(LRT.MA))
                 {
@@ -159,7 +159,7 @@ namespace CraigStars
                     resources = rules.MineralAlchemyCost;
                 }
             }
-            else if (type == QueueItemType.Defense || type == QueueItemType.AutoDefense)
+            else if (type == QueueItemType.Defenses || type == QueueItemType.AutoDefenses)
             {
                 return rules.DefenseCost;
             }

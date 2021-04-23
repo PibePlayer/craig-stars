@@ -98,13 +98,13 @@ namespace CraigStars
             }
         }
 
-        void OnTurnGeneratorAdvanced(TurnGeneratorState state)
+        void OnTurnGeneratorAdvanced(TurnGenerationState state)
         {
             yearLabel.Text = $"Year {GameInfo.Year}";
             string labelText;
             switch (state)
             {
-                case TurnGeneratorState.WaitingForPlayers:
+                case TurnGenerationState.WaitingForPlayers:
                     labelText = "Waiting for Players";
                     break;
                 default:
@@ -113,7 +113,7 @@ namespace CraigStars
             }
 
             label.Text = labelText;
-            progressBar.Value = 100 * ((int)state / (float)(Enum.GetValues(typeof(TurnGeneratorState)).Length));
+            progressBar.Value = 100 * ((int)state / (float)(Enum.GetValues(typeof(TurnGenerationState)).Length));
         }
 
         void OnTurnPassed(PublicGameInfo gameInfo)

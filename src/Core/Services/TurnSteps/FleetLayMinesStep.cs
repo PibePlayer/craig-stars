@@ -12,11 +12,11 @@ namespace CraigStars
     /// <summary>
     /// Lay mines
     /// </summary>
-    public class FleetLayMinesStep : Step
+    public class FleetLayMinesStep : TurnGenerationStep
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(FleetLayMinesStep));
 
-        public FleetLayMinesStep(Game game) : base(game, TurnGeneratorState.MineLaying) { }
+        public FleetLayMinesStep(Game game) : base(game, TurnGenerationState.MineLaying) { }
 
         public override void Process()
         {

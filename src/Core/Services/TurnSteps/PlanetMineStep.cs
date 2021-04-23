@@ -5,9 +5,9 @@ namespace CraigStars
     /// <summary>
     /// Mine planets for resources
     /// </summary>
-    public class PlanetMineStep : Step
+    public class PlanetMineStep : TurnGenerationStep
     {
-        public PlanetMineStep(Game game) : base(game, TurnGeneratorState.Mining) { }
+        public PlanetMineStep(Game game) : base(game, TurnGenerationState.Mining) { }
 
         public override void Process()
         {

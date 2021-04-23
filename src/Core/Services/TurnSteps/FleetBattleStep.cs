@@ -9,13 +9,13 @@ namespace CraigStars
     /// <summary>
     /// Move Fleets in space
     /// </summary>
-    public class FleetBattleStep : Step
+    public class FleetBattleStep : TurnGenerationStep
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(FleetBattleStep));
 
         BattleEngine battleEngine;
 
-        public FleetBattleStep(Game game) : base(game, TurnGeneratorState.Battle)
+        public FleetBattleStep(Game game) : base(game, TurnGenerationState.Battle)
         {
             battleEngine = new BattleEngine(Game.Rules);
         }

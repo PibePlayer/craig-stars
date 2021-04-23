@@ -17,4 +17,5 @@ public enum ShipDesignPurpose
     DamageMineLayer,
     SpeedMineLayer,
     Starbase,
+    Fort,
 }

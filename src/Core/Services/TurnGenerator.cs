@@ -11,13 +11,13 @@ namespace CraigStars
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(TurnGenerator));
 
-        public event Action<TurnGeneratorState> TurnGeneratorAdvancedEvent;
-        public void PublishTurnGeneratorAdvancedEvent(TurnGeneratorState state) => TurnGeneratorAdvancedEvent?.Invoke(state);
+        public event Action<TurnGenerationState> TurnGeneratorAdvancedEvent;
+        public void PublishTurnGeneratorAdvancedEvent(TurnGenerationState state) => TurnGeneratorAdvancedEvent?.Invoke(state);
 
         Game Game { get; }
 
         // the steps executed by the TurnGenerator
-        List<Step> steps;
+        List<TurnGenerationStep> steps;
 
         /// <summary>
         /// Stars! Order of Events
@@ -62,7 +62,7 @@ namespace CraigStars
         public TurnGenerator(Game game)
         {
             Game = game;
-            steps = new List<Step>() {
+            steps = new List<TurnGenerationStep>() {
                 new FleetWaypointStep(game, 0), // wp0
                 new FleetMoveStep(game),
                 new DecaySalvageStep(game),
@@ -88,7 +88,7 @@ namespace CraigStars
         /// </summary>
         public void GenerateTurn()
         {
-            PublishTurnGeneratorAdvancedEvent(TurnGeneratorState.Scrapping);
+            PublishTurnGeneratorAdvancedEvent(TurnGenerationState.Scrapping);
             Game.Year++;
 
             // reset the players for a new turn

@@ -5,21 +5,23 @@ using System.Linq;
 using CraigStars;
 using CraigStars.Utils;
 
-namespace CraigStars
+namespace CraigStars.UniverseGeneration
 {
     /// <summary>
     /// If we have a GameStartModifier set, grow planets, do research, add mines and factories, etc.
     /// </summary>
-    public class GameStartModeModifier
+    public class GameStartModeModifierStep : UniverseGenerationStep
     {
-        public void AdvanceGame(Game game)
+        public GameStartModeModifierStep(Game game) : base(game, UniverseGenerationState.GameStartMode) { }
+
+        public override void Process()
         {
-            switch (game.Rules.StartMode)
+            switch (Game.Rules.StartMode)
             {
                 case GameStartMode.MidGame:
                 case GameStartMode.LateGame:
                 case GameStartMode.EndGame:
-                    AdvanceToMidGame(game);
+                    AdvanceToMidGame(Game);
                     break;
             }
         }

@@ -48,7 +48,7 @@ namespace CraigStars
             {
                 log.Warn("Resetting Players. This probably means you are executing the Game scene directly during development. If not, this is a problem.");
                 PlayersManager.Instance.SetupPlayers();
-                // PlayersManager.Me.Race.PRT = PRT.SD;
+                // PlayersManager.Me.Race.PRT = PRT.PP;
             }
 
         }
@@ -159,7 +159,7 @@ namespace CraigStars
             }
         }
 
-        void OnTurnGeneratorAdvanced(TurnGeneratorState state)
+        void OnTurnGeneratorAdvanced(TurnGenerationState state)
         {
             Signals.PublishTurnGeneratorAdvancedEvent(state);
         }

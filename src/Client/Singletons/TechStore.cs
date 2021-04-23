@@ -13,17 +13,17 @@ namespace CraigStars
     {
         private static ITechStore techStore = StaticTechStore.Instance;
 
-        public List<Tech> Techs => techStore.Techs;
+        public IEnumerable<Tech> Techs => techStore.Techs;
 
-        public List<TechHullComponent> HullComponents => techStore.HullComponents;
+        public IEnumerable<TechHullComponent> HullComponents => techStore.HullComponents;
 
-        public List<TechHull> Hulls => techStore.Hulls;
+        public IEnumerable<TechHull> Hulls => techStore.Hulls;
 
-        public List<TechHull> ShipHulls => techStore.ShipHulls;
+        public IEnumerable<TechHull> ShipHulls => techStore.ShipHulls;
 
-        public List<TechHull> StarbaseHulls => techStore.StarbaseHulls;
+        public IEnumerable<TechHull> StarbaseHulls => techStore.StarbaseHulls;
 
-        public List<TechCategory> Categories => techStore.Categories;
+        public IEnumerable<TechCategory> Categories => techStore.Categories;
 
         /// <summary>
         /// PlayersManager is a singleton
@@ -45,12 +45,12 @@ namespace CraigStars
         }
 
 
-        public List<Tech> GetAvailableTechs(Player player)
+        public IEnumerable<Tech> GetAvailableTechs(Player player)
         {
             return techStore.GetAvailableTechs(player);
         }
 
-        public List<TechCategory> GetCategoriesForTechs(List<Tech> techs)
+        public IEnumerable<TechCategory> GetCategoriesForTechs(IEnumerable<Tech> techs)
         {
             return techStore.GetCategoriesForTechs(techs);
         }
@@ -60,7 +60,7 @@ namespace CraigStars
             return techStore.GetTechByName<T>(name);
         }
 
-        public List<Tech> GetTechsByCategory(TechCategory category)
+        public IEnumerable<Tech> GetTechsByCategory(TechCategory category)
         {
             return techStore.GetTechsByCategory(category);
         }

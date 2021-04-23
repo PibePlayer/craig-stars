@@ -1624,7 +1624,7 @@ namespace CraigStars
             Slots = new List<TechHullSlot>(new TechHullSlot[] {
                 new TechHullSlot(HullSlotType.Engine, 1, true),
                 new TechHullSlot(HullSlotType.ShieldArmor, 2, false),
-                new TechHullSlot(HullSlotType.ShieldElectricalMechanical, 1, false),
+                new TechHullSlot(HullSlotType.ScannerElectricalMechanical, 1, false),
                 new TechHullSlot(HullSlotType.General, 1, false),
                 new TechHullSlot(HullSlotType.General, 1, false)
             })
@@ -1767,10 +1767,27 @@ namespace CraigStars
         #endregion
 
         #region StarbaseHulls
+
+        public static readonly TechHull OrbitalFort = new TechHull("Orbital Fort", new Cost(24, 0, 34, 80), new TechRequirements(), 10, TechCategory.StarbaseHull)
+        {
+            Type = TechHullType.Starbase,
+            Armor = 100,
+            Initiative = 10,
+            RangeBonus = 1,
+            Starbase = true,
+            SpaceDock = 0,
+            Slots = new List<TechHullSlot>(new TechHullSlot[] {
+                new TechHullSlot(HullSlotType.OrbitalElectrical, 1, false),
+                new TechHullSlot(HullSlotType.Weapon, 12, false),
+                new TechHullSlot(HullSlotType.ShieldArmor, 12, false),
+                new TechHullSlot(HullSlotType.Weapon, 12, false),
+                new TechHullSlot(HullSlotType.ShieldArmor, 12, false),
+            })
+        };
+
         public static readonly TechHull SpaceStation = new TechHull("Space Station", new Cost(106, 71, 220, 528), new TechRequirements(), 20, TechCategory.StarbaseHull)
         {
             Type = TechHullType.Starbase,
-            Mass = 0,
             Armor = 500,
             Initiative = 14,
             RangeBonus = 1,
@@ -2118,6 +2135,7 @@ namespace CraigStars
                 SuperMineLayer,
 
                 // starbases
+                OrbitalFort,
                 SpaceStation,
                 DeathStar,
 

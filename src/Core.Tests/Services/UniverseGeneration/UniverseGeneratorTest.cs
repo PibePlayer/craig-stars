@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
+using CraigStars.UniverseGeneration;
 
 namespace CraigStars.Tests
 {

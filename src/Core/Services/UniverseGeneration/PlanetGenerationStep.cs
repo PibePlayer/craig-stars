@@ -5,13 +5,20 @@ using System.Linq;
 using CraigStars;
 using static CraigStars.Utils.Utils;
 
-namespace CraigStars
+namespace CraigStars.UniverseGeneration
 {
     /// <summary>
-    /// Places wormholes in the universe
+    /// Generate planets in the universe
     /// </summary>
-    public class PlanetGenerator
+    public class PlanetGenerationStep : UniverseGenerationStep
     {
+        public PlanetGenerationStep(Game game) : base(game, UniverseGenerationState.Planets) { }
+
+        public override void Process()
+        {
+            Game.Planets = GeneratePlanets(Game.Rules);
+        }
+
         public List<Planet> GeneratePlanets(Rules rules)
         {
             var planets = new List<Planet>();
@@ -46,6 +53,10 @@ namespace CraigStars
                 // planet.Randomize();
                 planets.Add(planet);
             }
+
+            // shuffle these so id 1 is not always the first planet in the list
+            // later on we will add homeworlds based on first planet, second planet, etc
+            rules.Random.Shuffle(planets);
 
             return planets;
 

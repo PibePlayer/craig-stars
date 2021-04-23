@@ -6,7 +6,23 @@ namespace CraigStars
     /// </summary>
     public enum QueueItemType
     {
-        Mine, Factory, Defense, Alchemy, AutoMine, AutoFactory, AutoDefense, AutoAlchemy, AutoMinTerraform, AutoMaxTerraform, AutoMineralPacket, ShipToken, Starbase
+        IroniumMineralPacket,
+        BoraniumMineralPacket,
+        GermaniumMineralPacket,
+        MixedMineralPacket,
+        Factory,
+        Mine,
+        Defenses,
+        MineralAlchemy,
+        AutoMines,
+        AutoFactories,
+        AutoDefenses,
+        AutoMineralAlchemy,
+        AutoMinTerraform,
+        AutoMaxTerraform,
+        AutoMineralPacket,
+        ShipToken,
+        Starbase
     }
 
 }

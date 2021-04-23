@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using CraigStars.Singletons;
+using CraigStars.UniverseGeneration;
 using Godot;
 using log4net;
 using Newtonsoft.Json;
@@ -22,7 +23,7 @@ namespace CraigStars
         /// <summary>
         /// This event is triggered when turn events happen
         /// </summary>
-        public event Action<TurnGeneratorState> TurnGeneratorAdvancedEvent;
+        public event Action<TurnGenerationState> TurnGeneratorAdvancedEvent;
 
         /// <summary>
         /// The TechStore is set by the client on load (or the StaticTechStore for tests )
@@ -84,7 +85,7 @@ namespace CraigStars
         List<MapObject> deletedMapObjects = new List<MapObject>();
 
         // for tests or fast generation
-        [JsonIgnore] public bool SaveToDisk { get; set; } = true; // false; 
+        [JsonIgnore] public bool SaveToDisk { get; set; } = true;
 
         TurnGenerator turnGenerator;
         TurnSubmitter turnSubmitter;
@@ -132,6 +133,7 @@ namespace CraigStars
             {
                 planet.Starbase.ComputeAggregate();
             }
+
         }
 
         /// <summary>
@@ -176,13 +178,13 @@ namespace CraigStars
 
             ComputeAggregates();
 
-            AfterTurnGeneration();
+            UpdateDictionaries();
 
             // update player intel with new universe
             var scanStep = new PlayerScanStep(this);
             scanStep.Execute(new TurnGenerationContext(), OwnedPlanets.ToList());
 
-            UpdatePlayers();
+            AfterTurnGeneration();
 
             SaveGame();
 
@@ -214,7 +216,7 @@ namespace CraigStars
         /// Propogate turn generator events up to clients
         /// </summary>
         /// <param name="state"></param>
-        void OnTurnGeneratorAdvanced(TurnGeneratorState state)
+        void OnTurnGeneratorAdvanced(TurnGenerationState state)
         {
             TurnGeneratorAdvancedEvent?.Invoke(state);
         }
@@ -240,11 +242,11 @@ namespace CraigStars
                 // do any post-turn generation steps
                 AfterTurnGeneration();
 
-                TurnGeneratorAdvancedEvent?.Invoke(TurnGeneratorState.Saving);
+                TurnGeneratorAdvancedEvent?.Invoke(TurnGenerationState.Saving);
 
                 SaveGame();
 
-                TurnGeneratorAdvancedEvent?.Invoke(TurnGeneratorState.Finished);
+                TurnGeneratorAdvancedEvent?.Invoke(TurnGenerationState.Finished);
 
                 log.Info($"{Year} Generating turn complete");
 
@@ -280,7 +282,8 @@ namespace CraigStars
         internal void AfterTurnGeneration()
         {
             log.Debug($"{Year} Updating internal dictionaries and player dictionaries");
-            TurnGeneratorAdvancedEvent?.Invoke(TurnGeneratorState.UpdatingPlayers);
+            TurnGeneratorAdvancedEvent?.Invoke(TurnGenerationState.UpdatingPlayers);
+
             // Update the Game dictionaries used for lookups, like PlanetsByGuid, FleetsByGuid, etc.
             UpdateDictionaries();
 
@@ -298,7 +301,7 @@ namespace CraigStars
             Players.ForEach(p =>
             {
                 p.PlanetaryScanner = p.GetBestPlanetaryScanner();
-                p.Fleets.ForEach(f => f.ComputeAggregate());
+                p.ComputeAggregates();
                 p.SetupMapObjectMappings();
                 p.UpdateMessageTargets();
             });

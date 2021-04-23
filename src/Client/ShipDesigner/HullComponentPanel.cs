@@ -306,7 +306,7 @@ namespace CraigStars
                 {
                     SelfModulate = Colors.White;
                 }
-                if (ShipDesignSlot != null)
+                if (ShipDesignSlot != null && ShipDesignSlot.HullComponent != null)
                 {
                     hullComponentIcon.Visible = true;
                     var texture = TextureLoader.Instance.FindTexture(ShipDesignSlot.HullComponent);

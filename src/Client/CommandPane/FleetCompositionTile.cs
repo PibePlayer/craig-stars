@@ -8,7 +8,7 @@ namespace CraigStars
 {
     public class FleetCompositionTile : FleetTile
     {
-        Tree tokensTree;
+        FleetCompositionTileTokens tokens;
         Label estimatedRange;
         Label percentCloaked;
 
@@ -20,7 +20,7 @@ namespace CraigStars
         public override void _Ready()
         {
             base._Ready();
-            tokensTree = (Tree)FindNode("Tokens");
+            tokens = GetNode<FleetCompositionTileTokens>("VBoxContainer/Tokens");
             estimatedRange = (Label)FindNode("EstimatedRange");
             percentCloaked = (Label)FindNode("PercentCloaked");
 
@@ -34,18 +34,6 @@ namespace CraigStars
             splitAllButton.Connect("pressed", this, nameof(OnSplitAllButtonPressed));
             mergeButton.Connect("pressed", this, nameof(OnMergeButtonPressed));
             battlePlanOptionButton.Connect("item_selected", this, nameof(OnBattlePlanOptionButtonItemSelected));
-        }
-
-        protected override void OnFleetsCreated(List<Fleet> fleets)
-        {
-            base.OnFleetsCreated(fleets);
-            AddItemsToTree();
-        }
-
-        protected override void OnFleetDeleted(FleetSprite fleet)
-        {
-            base.OnFleetDeleted(fleet);
-            AddItemsToTree();
         }
 
         void OnBattlePlanOptionButtonItemSelected(int index)
@@ -88,30 +76,9 @@ namespace CraigStars
             Signals.PublishMergeFleetsDialogRequestedEvent(CommandedFleet);
         }
 
-        void AddItemsToTree()
-        {
-            tokensTree.Clear();
-            var root = tokensTree.CreateItem();
-            foreach (var token in CommandedFleet.Fleet.Tokens)
-            {
-                var item = tokensTree.CreateItem(root);
-                item.SetText(0, token.Design.Name);
-                item.SetText(1, $"{token.Quantity}");
-                item.SetTextAlign(1, TreeItem.TextAlign.Right);
-            }
-        }
-
         protected override void OnNewCommandedFleet()
         {
             base.OnNewCommandedFleet();
-            if (CommandedFleet == null)
-            {
-                tokensTree.Clear();
-            }
-            else
-            {
-                AddItemsToTree();
-            }
             UpdateControls();
         }
 

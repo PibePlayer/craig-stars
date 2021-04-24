@@ -110,17 +110,31 @@ namespace CraigStars
 
             // add each design
             var availableItemIndex = 0;
-            Me.Designs.ForEach(design =>
+            if (Planet.HasStarbase && Planet.Starbase.DockCapacity > 0)
             {
-                if (design.Hull.Starbase)
+                Me.Designs.ForEach(design =>
                 {
-                    AddAvailableItem(new ProductionQueueItem(QueueItemType.Starbase, design: design), index: availableItemIndex++);
-                }
-                else
+                    if (Planet.CanBuild(Me, design.Aggregate.Mass))
+                    {
+                        if (design.Hull.Starbase)
+                        {
+                            AddAvailableItem(new ProductionQueueItem(QueueItemType.Starbase, design: design), index: availableItemIndex++);
+                        }
+                        else
+                        {
+                            AddAvailableItem(new ProductionQueueItem(QueueItemType.ShipToken, design: design), index: availableItemIndex++);
+                        }
+                    }
+                });
+
+                if (Planet.HasMassDriver)
                 {
-                    AddAvailableItem(new ProductionQueueItem(QueueItemType.ShipToken, design: design), index: availableItemIndex++);
+                    AddAvailableItem(new ProductionQueueItem(QueueItemType.IroniumMineralPacket), index: availableItemIndex++);
+                    AddAvailableItem(new ProductionQueueItem(QueueItemType.BoraniumMineralPacket), index: availableItemIndex++);
+                    AddAvailableItem(new ProductionQueueItem(QueueItemType.GermaniumMineralPacket), index: availableItemIndex++);
+                    AddAvailableItem(new ProductionQueueItem(QueueItemType.MixedMineralPacket), index: availableItemIndex++);
                 }
-            });
+            }
 
             availableItemsTree.SetColumnMinWidth(1, (int)availableItemsTree.GetFont("").GetStringSize("9999").x);
 
@@ -133,6 +147,10 @@ namespace CraigStars
             AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoMines), index: availableItemIndex++);
             AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoDefenses), index: availableItemIndex++);
             AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoMineralAlchemy), index: availableItemIndex++);
+            if (Planet.HasMassDriver)
+            {
+                AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoMineralPacket), index: availableItemIndex++);
+            }
 
             if (Planet.ProductionQueue != null)
             {

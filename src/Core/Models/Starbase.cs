@@ -10,8 +10,9 @@ namespace CraigStars
     {
         public int DockCapacity { get => Tokens?[0]?.Design?.Hull?.SpaceDock ?? 0; }
 
-        [JsonProperty(IsReference = true)]
-        public Planet MassDriverTarget { get; set; }
+        // TODO: maybe it's better to store packet targets with teh starbase? it's doing the flinging...
+        // [JsonProperty(IsReference = true)]
+        // public Planet MassDriverTarget { get; set; }
 
         [JsonIgnore]
         public ShipDesign Design { get => Tokens[0].Design; }
@@ -32,31 +33,30 @@ namespace CraigStars
 
         public override void ComputeAggregate(bool recompute = false)
         {
-            base.ComputeAggregate(recompute);
-
             if (Aggregate.Computed && !recompute)
             {
                 return;
             }
 
-            Aggregate.PacketSpeed = 0;
-            Aggregate.SafeHullMass = TechHullComponent.NoGate;
-            Aggregate.MaxHullMass = TechHullComponent.NoGate;
-            Aggregate.SafeRange = TechHullComponent.NoGate;
-            Aggregate.MaxRange = TechHullComponent.NoGate;
+            base.ComputeAggregate(recompute);
+
+            Aggregate.Stargate = null;
+            Aggregate.MassDriver = null;
 
             foreach (var slot in Design.Slots)
             {
-                // take the best packet thrower
-                Aggregate.PacketSpeed = (int)Math.Max(Aggregate.PacketSpeed, slot.HullComponent.PacketSpeed);
-
-                // take the best gate
-                // TODO: this would turn two any/something something/any gates into any/any gates...
-                // maybe we should pick the best one for each situation, if it comes to it?
-                Aggregate.SafeHullMass = (int)Math.Max(Aggregate.SafeHullMass, slot.HullComponent.SafeHullMass);
-                Aggregate.MaxHullMass = (int)Math.Max(Aggregate.MaxHullMass, slot.HullComponent.MaxHullMass);
-                Aggregate.SafeRange = (int)Math.Max(Aggregate.SafeRange, slot.HullComponent.SafeRange);
-                Aggregate.MaxRange = (int)Math.Max(Aggregate.MaxRange, slot.HullComponent.MaxRange);
+                if (slot.HullComponent != null)
+                {
+                    // find the first massdriver and stargate
+                    if (Aggregate.MassDriver == null && slot.HullComponent.PacketSpeed > 0)
+                    {
+                        Aggregate.MassDriver = slot.HullComponent;
+                    }
+                    if (Aggregate.Stargate == null && slot.HullComponent.SafeHullMass > 0)
+                    {
+                        Aggregate.Stargate = slot.HullComponent;
+                    }
+                }
             }
         }
 

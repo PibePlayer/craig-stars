@@ -40,8 +40,20 @@ namespace CraigStars
         }
         ShipDesign shipDesign;
 
+        public ShipToken Token
+        {
+            get => token;
+            set
+            {
+                token = value;
+                UpdateControls();
+            }
+        }
+        ShipToken token;
+
         Label nameLabel;
         Label costTitleLabel;
+        Label maxFuelLabel;
         Label maxFuelAmountLabel;
         Label armorAmountLabel;
         Label shieldsLabel;
@@ -56,6 +68,8 @@ namespace CraigStars
         Label scannerRangeAmountLabel;
         Label purposeValueLabel;
         Label massLabel;
+        Label damageLabel;
+        Label damageAmountLabel;
 
         // icon
         Control iconButtonContainer;
@@ -79,6 +93,7 @@ namespace CraigStars
             nameLabel = FindNode("NameLabel") as Label;
             costTitleLabel = FindNode("CostTitleLabel") as Label;
             maxFuelAmountLabel = FindNode("MaxFuelAmountLabel") as Label;
+            maxFuelLabel = FindNode("MaxFuelLabel") as Label;
             armorAmountLabel = FindNode("ArmorAmountLabel") as Label;
             shieldsLabel = FindNode("ShieldsLabel") as Label;
             shieldsAmountLabel = FindNode("ShieldsAmountLabel") as Label;
@@ -91,6 +106,8 @@ namespace CraigStars
             scannerRangeLabel = FindNode("ScannerRangeLabel") as Label;
             scannerRangeAmountLabel = FindNode("ScannerRangeAmountLabel") as Label;
             purposeValueLabel = FindNode("PurposeValueLabel") as Label;
+            damageLabel = FindNode("DamageLabel") as Label;
+            damageAmountLabel = FindNode("DamageAmountLabel") as Label;
             massLabel = FindNode("MassLabel") as Label;
             icon = FindNode("Icon") as TextureRect;
             hullComponentsContainer = FindNode("HullComponentsContainer") as Control;
@@ -220,6 +237,17 @@ namespace CraigStars
 
                 ResetHullComponents();
 
+                if (token?.Damage > 0)
+                {
+                    damageLabel.Visible = damageAmountLabel.Visible = true;
+                    var damagePercent = ((float)Token.Damage * Token.QuantityDamaged) / (token.Design.Armor * Token.Quantity);
+                    damageAmountLabel.Text = $"{token.QuantityDamaged}@{damagePercent * 100:#}%";
+                }
+                else
+                {
+                    damageLabel.Visible = damageAmountLabel.Visible = false;
+                }
+
                 if (shipDesign != null)
                 {
                     nameLabel.Text = shipDesign.Name;
@@ -228,7 +256,15 @@ namespace CraigStars
                     shipDesign.ComputeAggregate(PlayersManager.Me);
                     costTitleLabel.Text = shipDesign.Name.Empty() ? "Cost of design" : $"Cost of one {shipDesign.Name}";
                     costGrid.Cost = shipDesign.Aggregate.Cost;
-                    maxFuelAmountLabel.Text = $"{shipDesign.Aggregate.FuelCapacity}mg";
+                    if (Hull.Starbase)
+                    {
+                        maxFuelLabel.Visible = maxFuelAmountLabel.Visible = false;
+                    }
+                    else
+                    {
+                        maxFuelAmountLabel.Text = $"{shipDesign.Aggregate.FuelCapacity}mg";
+                        maxFuelLabel.Visible = maxFuelAmountLabel.Visible = true;
+                    }
                     armorAmountLabel.Text = $"{shipDesign.Aggregate.Armor}dp";
                     massLabel.Text = $"{shipDesign.Aggregate.Mass}kT";
                     shieldsAmountLabel.Text = $"{(shipDesign.Aggregate.Shield > 0 ? $"{shipDesign.Aggregate.Shield}dp" : "none")}";
@@ -246,14 +282,12 @@ namespace CraigStars
 
                     shieldsLabel.Visible = true;
                     shieldsAmountLabel.Visible = true;
-                    ratingLabel.Visible = true;
+                    ratingLabel.Visible = true; // TODO: support rating
                     ratingAmountLabel.Visible = true;
                     cloakJamLabel.Visible = true;
                     cloakJamAmountLabel.Visible = true;
                     initiativeMovesLabel.Visible = true;
                     initiativeMovesAmountLabel.Visible = true;
-                    scannerRangeLabel.Visible = true;
-                    scannerRangeAmountLabel.Visible = true;
                     purposeValueLabel.Visible = true;
                     purposeValueLabel.Text = $"{shipDesign.Purpose}";
                 }

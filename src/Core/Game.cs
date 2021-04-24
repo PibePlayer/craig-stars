@@ -69,6 +69,7 @@ namespace CraigStars
         [JsonIgnore] public Dictionary<Guid, ShipDesign> DesignsByGuid { get; set; } = new Dictionary<Guid, ShipDesign>();
         [JsonIgnore] public Dictionary<Guid, Fleet> FleetsByGuid { get; set; } = new Dictionary<Guid, Fleet>();
         [JsonIgnore] public Dictionary<Guid, MineField> MineFieldsByGuid { get; set; } = new Dictionary<Guid, MineField>();
+        [JsonIgnore] public Dictionary<Guid, MineralPacket> MineralPacketsByGuid { get; set; } = new Dictionary<Guid, MineralPacket>();
         [JsonIgnore] public Dictionary<Guid, Salvage> SalvageByGuid { get; set; } = new Dictionary<Guid, Salvage>();
         [JsonIgnore] public Dictionary<Guid, Wormhole> WormholesByGuid { get; set; } = new Dictionary<Guid, Wormhole>();
         [JsonIgnore] public Dictionary<Guid, MysteryTrader> MysteryTradersByGuid { get; set; } = new Dictionary<Guid, MysteryTrader>();
@@ -351,6 +352,7 @@ namespace CraigStars
             PlanetsByGuid = Planets.ToLookup(p => p.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
             FleetsByGuid = Fleets.ToLookup(f => f.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
             MineFieldsByGuid = MineFields.ToLookup(mf => mf.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
+            MineralPacketsByGuid = MineralPackets.ToLookup(p => p.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
             SalvageByGuid = Salvage.ToLookup(s => s.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
             WormholesByGuid = Wormholes.ToLookup(w => w.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
             MysteryTradersByGuid = MysteryTraders.ToLookup(mt => mt.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
@@ -453,6 +455,10 @@ namespace CraigStars
                 {
                     DeleteMapObject(salvage, Salvage, SalvageByGuid);
                 }
+                else if (mapObject is MineralPacket packet)
+                {
+                    DeleteMapObject(packet, MineralPackets, MineralPacketsByGuid);
+                }
                 else if (mapObject is Wormhole wormhole)
                 {
                     DeleteMapObject(wormhole, Wormholes, WormholesByGuid);
@@ -486,6 +492,10 @@ namespace CraigStars
             else if (mapObject is MineField mineField)
             {
                 OnMapObjectCreated(mineField, MineFields, MineFieldsByGuid);
+            }
+            else if (mapObject is MineralPacket mineralPacket)
+            {
+                OnMapObjectCreated(mineralPacket, MineralPackets, MineralPacketsByGuid);
             }
             else if (mapObject is Salvage salvage)
             {

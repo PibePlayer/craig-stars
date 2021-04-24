@@ -94,6 +94,7 @@ namespace CraigStars
         public Intel<Planet> PlanetIntel { get; set; } = new Intel<Planet>();
         public Intel<Fleet> FleetIntel { get; set; } = new Intel<Fleet>();
         public Intel<MineField> MineFieldIntel { get; set; } = new Intel<MineField>();
+        public Intel<MineralPacket> MineralPacketIntel { get; set; } = new Intel<MineralPacket>();
         public Intel<Salvage> SalvageIntel { get; set; } = new Intel<Salvage>();
         public Intel<Wormhole> WormholeIntel { get; set; } = new Intel<Wormhole>();
         public Intel<MysteryTrader> MysteryTraderIntel { get; set; } = new Intel<MysteryTrader>();
@@ -142,6 +143,11 @@ namespace CraigStars
         [JsonIgnore] public List<MineField> ForeignMineFields { get => MineFieldIntel.Foriegn; }
         [JsonIgnore] public IEnumerable<MineField> AllMineFields { get => MineFieldIntel.All; }
         [JsonIgnore] public Dictionary<Guid, MineField> MineFieldsByGuid { get => MineFieldIntel.ItemsByGuid; }
+
+        [JsonIgnore] public List<MineralPacket> MineralPackets { get => MineralPacketIntel.Owned; }
+        [JsonIgnore] public List<MineralPacket> ForeignMineralPackets { get => MineralPacketIntel.Foriegn; }
+        [JsonIgnore] public IEnumerable<MineralPacket> AllMineralPackets { get => MineralPacketIntel.All; }
+        [JsonIgnore] public Dictionary<Guid, MineralPacket> MineralPacketsByGuid { get => MineralPacketIntel.ItemsByGuid; }
 
         /// <summary>
         /// All map objects by their guid, for lookups
@@ -204,6 +210,7 @@ namespace CraigStars
             PlanetIntel.Clear();
             FleetIntel.Clear();
             MineFieldIntel.Clear();
+            MineralPacketIntel.Clear();
             SalvageIntel.Clear();
             WormholeIntel.Clear();
             MysteryTraderIntel.Clear();
@@ -238,6 +245,7 @@ namespace CraigStars
             PlanetIntel.SetupItemsByGuid();
             FleetIntel.SetupItemsByGuid();
             MineFieldIntel.SetupItemsByGuid();
+            MineralPacketIntel.SetupItemsByGuid();
             SalvageIntel.SetupItemsByGuid();
             WormholeIntel.SetupItemsByGuid();
             MysteryTraderIntel.SetupItemsByGuid();
@@ -250,6 +258,7 @@ namespace CraigStars
             mapObjects.AddRange(PlanetIntel.All);
             mapObjects.AddRange(FleetIntel.All);
             mapObjects.AddRange(MineFieldIntel.All);
+            mapObjects.AddRange(MineralPacketIntel.All);
             mapObjects.AddRange(SalvageIntel.All);
             mapObjects.AddRange(WormholeIntel.All);
             mapObjects.AddRange(MysteryTraderIntel.All);
@@ -337,7 +346,7 @@ namespace CraigStars
         {
             // TODO: add some player relations...
             // WE HAVE NO FRIENDS
-            return false;
+            return Num == otherPlayer.Num;
         }
 
         /// <summary>

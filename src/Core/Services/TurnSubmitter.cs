@@ -203,6 +203,14 @@ namespace CraigStars
                     {
                         planet.Starbase.BattlePlan = playerPlanet.Starbase.BattlePlan;
                     }
+
+                    // update packet target
+                    planet.PacketSpeed = playerPlanet.PacketSpeed;
+                    planet.PacketTarget = null;
+                    if (playerPlanet.PacketTarget != null && Game.PlanetsByGuid.TryGetValue(playerPlanet.PacketTarget.Guid, out var target))
+                    {
+                        planet.PacketTarget = target;
+                    }
                 }
             }
         }

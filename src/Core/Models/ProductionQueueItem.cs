@@ -125,6 +125,20 @@ namespace CraigStars
         }
 
         /// <summary>
+        /// True if this is a mineral packet
+        /// </summary>
+        /// <value></value>
+        public bool IsPacket
+        {
+            get =>
+                type == QueueItemType.IroniumMineralPacket ||
+                type == QueueItemType.BoraniumMineralPacket ||
+                type == QueueItemType.GermaniumMineralPacket ||
+                type == QueueItemType.MixedMineralPacket ||
+                type == QueueItemType.AutoMineralPacket;
+        }
+
+        /// <summary>
         /// Get the cost of a single item in this ProductionQueueItem
         /// </summary>
         /// <param name="rules"></param>
@@ -162,6 +176,50 @@ namespace CraigStars
             else if (type == QueueItemType.Defenses || type == QueueItemType.AutoDefenses)
             {
                 return rules.DefenseCost;
+            }
+            else if (type == QueueItemType.IroniumMineralPacket)
+            {
+                if (race.PRT == PRT.PP)
+                {
+                    return new Cost(ironium: rules.MineralsPerSingleMineralPacketPP, resources: rules.PacketResourceCostPP);
+                }
+                else
+                {
+                    return new Cost(ironium: rules.MineralsPerSingleMineralPacket, resources: rules.PacketResourceCost);
+                }
+            }
+            else if (type == QueueItemType.BoraniumMineralPacket)
+            {
+                if (race.PRT == PRT.PP)
+                {
+                    return new Cost(boranium: rules.MineralsPerSingleMineralPacketPP, resources: rules.PacketResourceCostPP);
+                }
+                else
+                {
+                    return new Cost(boranium: rules.MineralsPerSingleMineralPacket, resources: rules.PacketResourceCost);
+                }
+            }
+            else if (type == QueueItemType.GermaniumMineralPacket)
+            {
+                if (race.PRT == PRT.PP)
+                {
+                    return new Cost(germanium: rules.MineralsPerSingleMineralPacketPP, resources: rules.PacketResourceCostPP);
+                }
+                else
+                {
+                    return new Cost(germanium: rules.MineralsPerSingleMineralPacket, resources: rules.PacketResourceCost);
+                }
+            }
+            else if (type == QueueItemType.MixedMineralPacket || type == QueueItemType.AutoMineralPacket)
+            {
+                if (race.PRT == PRT.PP)
+                {
+                    return new Cost(rules.MineralsPerMixedMineralPacketPP, rules.MineralsPerMixedMineralPacketPP, rules.MineralsPerMixedMineralPacketPP, resources: rules.PacketResourceCostPP);
+                }
+                else
+                {
+                    return new Cost(rules.MineralsPerMixedMineralPacket, rules.MineralsPerMixedMineralPacket, rules.MineralsPerMixedMineralPacket, resources: rules.PacketResourceCost);
+                }
             }
             else if (type == QueueItemType.ShipToken || type == QueueItemType.Starbase)
             {

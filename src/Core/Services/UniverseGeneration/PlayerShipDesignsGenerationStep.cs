@@ -47,8 +47,12 @@ namespace CraigStars.UniverseGeneration
             switch (player.Race.PRT)
             {
                 case PRT.SD:
-                    designs.Add(designer.DesignShip(Techs.MiniMineLayer, "Trapper", player, player.DefaultHullSet, ShipDesignPurpose.DamageMineLayer));
-                    designs.Add(designer.DesignShip(Techs.MiniMineLayer, "Keeper", player, player.DefaultHullSet, ShipDesignPurpose.SpeedMineLayer));
+                    designs.Add(designer.DesignShip(Techs.MiniMineLayer, "Little Hen", player, player.DefaultHullSet, ShipDesignPurpose.DamageMineLayer));
+                    designs.Add(designer.DesignShip(Techs.MiniMineLayer, "Speed Turtle", player, player.DefaultHullSet, ShipDesignPurpose.SpeedMineLayer));
+                    break;
+                case PRT.IT:
+                    designs.Add(designer.DesignShip(Techs.Privateer, "Swashbuckler", player, player.DefaultHullSet, ShipDesignPurpose.ArmedFreighter));
+                    designs.Add(designer.DesignShip(Techs.Destroyer, "Stalwart Defender", player, player.DefaultHullSet, ShipDesignPurpose.FighterScout));
                     break;
                 case PRT.JoaT:
                     designs.Add(designer.DesignShip(Techs.Scout, "Armed Probe", player, player.DefaultHullSet, ShipDesignPurpose.ArmedScout));

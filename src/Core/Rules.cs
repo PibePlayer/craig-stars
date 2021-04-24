@@ -165,12 +165,6 @@ namespace CraigStars
         [DefaultValue(1 / 8f)]
         public float TorpedoSplashDamage = 1 / 8f;
 
-        /// <summary>
-        /// MineFields are cloaked to 75% until spotted
-        /// </summary>
-        [DefaultValue(.75f)]
-        public float WormholeCloak = .75f;
-
         [DefaultValue(.1f)]
         public float SalvageDecayRate = .1f;
         [DefaultValue(10)]
@@ -198,6 +192,26 @@ namespace CraigStars
         public float MineFieldDetonateDecayRate = .25f;
         [DefaultValue(.5f)]
         public float MineFieldMaxDecayRate = .5f;
+
+        /// <summary>
+        /// The maximum factor for safe range, i.e. 5x safe range
+        /// is the max range of a stargate
+        /// </summary>
+        [DefaultValue(5)]
+        public int StargateMaxRangeFactor = 5;
+
+        /// <summary>
+        /// The maximum factor for safe hullmass, i.e. 5x safe hull mass
+        /// is the max mass of a stargate
+        /// </summary>
+        [DefaultValue(5)]
+        public int StargateMaxHullMassFactor = 5;
+
+        /// <summary>
+        /// MineFields are cloaked to 75% until spotted
+        /// </summary>
+        [DefaultValue(.75f)]
+        public float WormholeCloak = .75f;
 
         /// <summary>
         /// The minimum distance between a wormhole and any other object

@@ -1,3 +1,4 @@
+using CraigStars.Singletons;
 using Godot;
 using System;
 
@@ -43,7 +44,30 @@ namespace CraigStars
             hullSummaryPopup = GetNode<PopupPanel>("HullSummaryPopup");
             hullSummary = GetNode<HullSummary>("HullSummaryPopup/HullSummary");
 
+            setDestinationButton.Connect("pressed", this, nameof(OnSetDestinationButtonPressed));
+
             statsGrid.Connect("gui_input", this, nameof(OnStatsGridGUIInput));
+
+            Signals.PacketDestinationChangedEvent += OnPacketDestinationChanged;
+        }
+
+        public override void _ExitTree()
+        {
+            base._ExitTree();
+            Signals.PacketDestinationChangedEvent -= OnPacketDestinationChanged;
+        }
+
+        void OnPacketDestinationChanged(Planet planet, Planet target)
+        {
+            if (planet == CommandedPlanet.Planet)
+            {
+                UpdateControls();
+            }
+        }
+
+        void OnSetDestinationButtonPressed()
+        {
+            Signals.PublishPacketDestinationToggleEvent();
         }
 
         void OnStatsGridGUIInput(InputEvent @event)
@@ -80,8 +104,9 @@ namespace CraigStars
 
                     if (starbase.Aggregate.HasStargate)
                     {
-                        var safeHullMass = $"{(starbase.Aggregate.SafeHullMass == TechHullComponent.InfinteGate ? "any" : $"{starbase.Aggregate.SafeHullMass}")}";
-                        var safeRange = $"{(starbase.Aggregate.SafeRange == TechHullComponent.InfinteGate ? "any" : $"{starbase.Aggregate.SafeRange}")}";
+                        var gate = starbase.Aggregate.Stargate;
+                        var safeHullMass = $"{(gate.SafeHullMass == TechHullComponent.InfinteGate ? "any" : $"{gate.SafeHullMass}kT")}";
+                        var safeRange = $"{(gate.SafeRange == TechHullComponent.InfinteGate ? "any" : $"{gate.SafeRange} l.y.")}";
                         stargate.Text = $"{safeHullMass}/{safeRange}";
                     }
                     if (starbase.Aggregate.HasMassDriver)
@@ -89,10 +114,10 @@ namespace CraigStars
                         destination.Visible = true;
                         destinationLabel.Visible = true;
                         setDestinationButton.Visible = true;
-                        massDriver.Text = $"Warp {starbase.Aggregate.PacketSpeed}";
-                        if (starbase.MassDriverTarget != null)
+                        massDriver.Text = $"Warp {starbase.Aggregate.MassDriver.PacketSpeed}";
+                        if (CommandedPlanet.Planet.PacketTarget != null)
                         {
-                            destination.Text = starbase.MassDriverTarget.Name;
+                            destination.Text = CommandedPlanet.Planet.PacketTarget.Name;
                         }
                         else
                         {

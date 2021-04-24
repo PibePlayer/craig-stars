@@ -7,6 +7,7 @@ namespace CraigStars
 {
     public class Waypoint
     {
+        public const int StargateWarpFactor = 11;
         [JsonProperty(IsReference = true)]
         public MapObject Target
         {

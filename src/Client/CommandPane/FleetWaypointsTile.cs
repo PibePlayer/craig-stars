@@ -154,7 +154,7 @@ namespace CraigStars
                         nextWaypoint.Text = $"{to.TargetName}";
                         warpFactorText.Visible = true;
                         warpFactor.Visible = false;
-                        warpFactorText.Text = $"{to.WarpFactor}";
+                        warpFactorText.Text = $"{(to.WarpFactor == Waypoint.StargateWarpFactor ? "Stargate" : $"{to.WarpFactor}")}";
                     }
                     else
                     {
@@ -173,8 +173,16 @@ namespace CraigStars
 
                     var waypointDistance = Math.Abs(from.Position.DistanceTo(to.Position));
                     distance.Text = $"{waypointDistance:.##} l.y.";
-                    travelTime.Text = $"{Math.Ceiling(from.GetTimeToWaypoint(to))} years";
-                    estimatedFuelUsage.Text = $"{CommandedFleet.Fleet.GetFuelCost(to.WarpFactor, waypointDistance)}mg";
+                    if (to.WarpFactor == Waypoint.StargateWarpFactor)
+                    {
+                        travelTime.Text = "1 year";
+                        estimatedFuelUsage.Text = "none";
+                    }
+                    else
+                    {
+                        travelTime.Text = $"{Math.Ceiling(from.GetTimeToWaypoint(to))} years";
+                        estimatedFuelUsage.Text = $"{CommandedFleet.Fleet.GetFuelCost(to.WarpFactor, waypointDistance)}mg";
+                    }
                 }
                 else
                 {

@@ -238,7 +238,7 @@ namespace CraigStars
                     if (transferAmount > 0)
                     {
                         // we are unloading so add cargo to the destination
-                        Message.FleetTransferred(fleet.Player, fleet, task.cargoType, cargoDestination, transferAmount);
+                        Message.FleetTransportedCargo(fleet.Player, fleet, task.cargoType, cargoDestination, transferAmount);
                         Transfer(fleet, cargoDestination, task.cargoType, transferAmount);
                     }
                 }
@@ -338,7 +338,7 @@ namespace CraigStars
                     if (transferAmount > 0)
                     {
                         // we are loading, so take cargo away from the source and add it to us
-                        Message.FleetTransferred(fleet.Player, fleet, task.cargoType, cargoSource, -transferAmount);
+                        Message.FleetTransportedCargo(fleet.Player, fleet, task.cargoType, cargoSource, -transferAmount);
                         Transfer(fleet, cargoSource, task.cargoType, -transferAmount);
                     }
                 }

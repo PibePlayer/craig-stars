@@ -35,6 +35,7 @@ namespace CraigStars
         public override bool Commandable { get => true; }
 
         public List<FleetSprite> OrbitingFleets { get; set; } = new List<FleetSprite>();
+        public PlanetSprite PacketTarget { get; set; }
 
         bool hasActivePeer;
         bool isCommanded;
@@ -47,6 +48,7 @@ namespace CraigStars
         Sprite inhabitedCommanded;
         Sprite orbiting;
         Sprite orbitingCommanded;
+        Line2D packetTargetLine;
 
         List<Sprite> stateSprites = new List<Sprite>();
 
@@ -60,6 +62,7 @@ namespace CraigStars
             inhabitedCommanded = GetNode<Sprite>("Sprite/InhabitedCommanded");
             orbiting = GetNode<Sprite>("Sprite/Orbiting");
             orbitingCommanded = GetNode<Sprite>("Sprite/OrbitingActive");
+            packetTargetLine = GetNode<Line2D>("DestinationLine");
 
             // create a list of these sprites
             stateSprites.Add(known);
@@ -99,7 +102,8 @@ namespace CraigStars
                     if (Planet.HasStarbase)
                     {
                         var color = GUIColors.StarbaseWithoutDock;
-                        if (Planet.Starbase.DockCapacity > 0) {
+                        if (Planet.Starbase.DockCapacity > 0)
+                        {
                             color = GUIColors.StarbaseWithDock;
                         }
                         if (isCommanded)
@@ -178,6 +182,18 @@ namespace CraigStars
             orbitingState = Orbiting.None;
             isCommanded = hasActivePeer || State == ScannerState.Commanded;
 
+            if (PacketTarget != null)
+            {
+                packetTargetLine.Points = new Vector2[] {
+                    new Vector2(),
+                    Planet.PacketTarget.Position - Planet.Position
+                };
+            }
+            else
+            {
+                packetTargetLine.Points = new Vector2[] { Position };
+            }
+
             // TODO: make this work with multiple types
             if (Planet.OrbitingFleets.Count > 0)
             {
@@ -206,7 +222,6 @@ namespace CraigStars
                 {
                     orbitingState = Orbiting.OrbitingAlliesAndEnemies;
                 }
-
             }
 
             if (Planet.Owner != null)

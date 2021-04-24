@@ -25,19 +25,19 @@ namespace CraigStars.UniverseGeneration
         internal List<Fleet> GenerateFleets(Player player, Planet homeworld)
         {
             var fleets = new List<Fleet>();
-            fleets.Add(CreateFleet(player.GetDesign(ShipDesigns.LongRangeScount.Name), player, 1, homeworld));
-            fleets.Add(CreateFleet(player.GetDesign(ShipDesigns.SantaMaria.Name), player, 1, homeworld));
+            foreach(var design in player.Designs.Where(d => !d.Hull.Starbase)) {
+                fleets.Add(CreateFleet(design, player, 1, homeworld));
+            }
             switch (player.Race.PRT)
             {
-                case PRT.SD:
-                    fleets.Add(CreateFleet(player.GetLatestDesign(ShipDesignPurpose.DamageMineLayer), player, 1, homeworld));
-                    fleets.Add(CreateFleet(player.GetLatestDesign(ShipDesignPurpose.SpeedMineLayer), player, 1, homeworld));
-                    break;
-                case PRT.JoaT:
-                    fleets.Add(CreateFleet(player.GetDesign(ShipDesigns.ArmoredProbe.Name), player, 2, homeworld));
-                    fleets.Add(CreateFleet(player.GetDesign(ShipDesigns.Teamster.Name), player, 4, homeworld));
-                    fleets.Add(CreateFleet(player.GetDesign(ShipDesigns.CottonPicker.Name), player, 5, homeworld));
-                    fleets.Add(CreateFleet(player.GetDesign(ShipDesigns.StalwartDefender.Name), player, 6, homeworld));
+                // races with second planets get a scout
+                case PRT.PP:
+                case PRT.IT:
+                    if (player.Planets.Count > 1)
+                    {
+                        // add a scout to the second world
+                        fleets.Add(CreateFleet(player.GetLatestDesign(ShipDesignPurpose.Scout), player, 4, player.Planets[1]));
+                    }
                     break;
             }
 

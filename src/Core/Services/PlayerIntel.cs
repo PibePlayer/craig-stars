@@ -17,6 +17,7 @@ namespace CraigStars
         FleetDiscoverer fleetDiscoverer = new FleetDiscoverer();
         ShipDesignDiscoverer designDiscoverer = new ShipDesignDiscoverer();
         MineFieldDiscoverer mineFieldDiscoverer = new MineFieldDiscoverer();
+        MineralPacketDiscoverer mineralPacketDiscoverer = new MineralPacketDiscoverer();
         SalvageDiscoverer salvageDiscoverer = new SalvageDiscoverer();
         WormholeDiscoverer wormholeDiscoverer = new WormholeDiscoverer();
         MysteryTraderDiscoverer mysterytraderDiscoverer = new MysteryTraderDiscoverer();
@@ -57,9 +58,7 @@ namespace CraigStars
         }
 
         /// <summary>
-        /// Discover a new planet. This is called when the universe is being setup with penScanned = false
-        /// so we generate a bunch of empty planet reports.
-        /// When we later scan a planet, it'll be called with penScanned = true
+        /// Discover a minefield
         /// </summary>
         /// <param name="player"></param>
         /// <param name="mineField"></param>
@@ -67,6 +66,17 @@ namespace CraigStars
         public void Discover(Player player, MineField mineField, bool penScanned = false)
         {
             mineFieldDiscoverer.Discover(player, mineField, penScanned);
+        }
+
+        /// <summary>
+        /// Discover a mineral pacaket
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="mineralPacket"></param>
+        /// <param name="penScanned"></param>
+        public void Discover(Player player, MineralPacket mineralPacket, bool penScanned = false)
+        {
+            mineralPacketDiscoverer.Discover(player, mineralPacket, penScanned);
         }
 
         /// <summary>
@@ -111,6 +121,7 @@ namespace CraigStars
         {
             player.SalvageIntel.Clear();
             player.FleetIntel.Clear();
+            player.MineralPacketIntel.Clear();
             foreach (var planet in player.AllPlanets)
             {
                 planet.OrbitingFleets.Clear();

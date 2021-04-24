@@ -90,7 +90,7 @@ namespace CraigStars
         {
             for (int i = 0; i < fleetsItemList.Items.Count; i++)
             {
-                fleetsItemList.Select(i);
+                fleetsItemList.Select(i, false);
             }
         }
 

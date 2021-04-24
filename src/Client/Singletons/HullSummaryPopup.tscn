@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://src/Client/ShipDesigner/HullSummary.tscn" type="PackedScene" id=1]
+[ext_resource path="res://src/Client/Singletons/HullSummaryPopup.cs" type="Script" id=2]
+
+[node name="CanvasLayer" type="CanvasLayer"]
+
+[node name="HullSummaryPopup" type="PopupPanel" parent="."]
+margin_right = 508.0
+margin_bottom = 658.0
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HullSummary" parent="HullSummaryPopup" instance=ExtResource( 1 )]
+margin_left = 4.0
+margin_top = 4.0
+margin_right = -4.0
+margin_bottom = -4.0

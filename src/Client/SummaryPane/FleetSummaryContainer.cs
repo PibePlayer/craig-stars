@@ -9,8 +9,6 @@ namespace CraigStars
     {
         static ILog log = LogManager.GetLogger(typeof(FleetSummaryContainer));
 
-        PopupPanel hullSummaryPopup;
-        HullSummary hullSummary;
         TextureRect icon;
         Label fleetRaceLabel;
 
@@ -19,8 +17,6 @@ namespace CraigStars
             base._Ready();
             icon = (TextureRect)FindNode("Icon");
             fleetRaceLabel = (Label)FindNode("FleetRaceLabel");
-            hullSummaryPopup = GetNode<PopupPanel>("HullSummaryPopup");
-            hullSummary = GetNode<HullSummary>("HullSummaryPopup/HullSummary");
 
             icon.Connect("mouse_entered", this, nameof(OnIconMouseEntered));
             icon.Connect("mouse_exited", this, nameof(OnIconMouseExited));
@@ -29,20 +25,20 @@ namespace CraigStars
         void OnIconMouseEntered()
         {
             var design = Fleet.Fleet.GetPrimaryToken().Design;
-            hullSummary.Hull = design.Hull;
-            hullSummary.ShipDesign = design;
+            HullSummaryPopup.Instance.Hull = design.Hull;
+            HullSummaryPopup.Instance.ShipDesign = design;
 
             // position the summary view on the corner
             var position = icon.RectGlobalPosition;
             position.x += icon.RectSize.x + 2;
-            position.y -= hullSummary.RectSize.y + 2;
-            hullSummaryPopup.SetGlobalPosition(position);
-            hullSummaryPopup.Show();
+            position.y -= HullSummaryPopup.Instance.RectSize.y + 2;
+            HullSummaryPopup.Instance.SetGlobalPosition(position);
+            HullSummaryPopup.Instance.Show();
         }
 
         void OnIconMouseExited()
         {
-            hullSummaryPopup.Hide();
+            HullSummaryPopup.Instance.Hide();
         }
 
 

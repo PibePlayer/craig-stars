@@ -40,7 +40,8 @@ namespace CraigStars
 
             log.Debug("Before we scan, make sure all of our aggregates are up to date");
             Game.Fleets.ForEach(f => f.ComputeAggregate());
-            foreach (var planet in ownedPlanets) {
+            foreach (var planet in ownedPlanets)
+            {
                 planet.Starbase?.ComputeAggregate();
             }
         }
@@ -231,6 +232,26 @@ namespace CraigStars
                     if (scanner.Range >= scanner.Position.DistanceSquaredTo(salvage.Position))
                     {
                         playerIntel.Discover(player, salvage, false);
+                        break;
+                    }
+                }
+            }
+
+            // salvage is only scanned by normal scanners
+            foreach (var packet in Game.MineralPackets)
+            {
+                if (packet.Player == player)
+                {
+                    playerIntel.Discover(player, packet, true);
+                    continue;
+                }
+
+                foreach (var scanner in scanners)
+                {
+                    // if we aren't orbiting a planet, we can be seen with regular scanners
+                    if (scanner.Range >= scanner.Position.DistanceSquaredTo(packet.Position))
+                    {
+                        playerIntel.Discover(player, packet, false);
                         break;
                     }
                 }

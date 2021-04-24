@@ -110,19 +110,19 @@ align = 1
 [node name="HullComponentsContainer" type="CenterContainer" parent="Panel/MarginContainer/HullContainer"]
 margin_top = 124.0
 margin_right = 490.0
-margin_bottom = 460.0
+margin_bottom = 442.0
 size_flags_vertical = 3
 
 [node name="ScoutHullComponents" parent="Panel/MarginContainer/HullContainer/HullComponentsContainer" instance=ExtResource( 3 )]
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_left = 245.0
-margin_top = 168.0
+margin_top = 159.0
 margin_right = 245.0
-margin_bottom = 168.0
+margin_bottom = 159.0
 
 [node name="CostContainer" type="VBoxContainer" parent="Panel/MarginContainer/HullContainer"]
-margin_top = 464.0
+margin_top = 446.0
 margin_right = 490.0
 margin_bottom = 640.0
 
@@ -134,48 +134,48 @@ text = "Cost of 1 Scout Hull"
 [node name="MarginContainer" type="MarginContainer" parent="Panel/MarginContainer/HullContainer/CostContainer"]
 margin_top = 18.0
 margin_right = 490.0
-margin_bottom = 158.0
+margin_bottom = 176.0
 custom_constants/margin_right = 10
 custom_constants/margin_left = 10
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Panel/MarginContainer/HullContainer/CostContainer/MarginContainer"]
 margin_left = 10.0
 margin_right = 480.0
-margin_bottom = 140.0
+margin_bottom = 158.0
 custom_constants/separation = 10
 
 [node name="CostGrid" parent="Panel/MarginContainer/HullContainer/CostContainer/MarginContainer/HBoxContainer" instance=ExtResource( 2 )]
 margin_right = 230.0
-margin_bottom = 140.0
+margin_bottom = 158.0
 
 [node name="FuelArmorGrid" type="GridContainer" parent="Panel/MarginContainer/HullContainer/CostContainer/MarginContainer/HBoxContainer"]
 margin_left = 240.0
 margin_right = 470.0
-margin_bottom = 140.0
+margin_bottom = 158.0
 size_flags_horizontal = 3
 columns = 2
 
 [node name="MaxFuelLabel" type="Label" parent="Panel/MarginContainer/HullContainer/CostContainer/MarginContainer/HBoxContainer/FuelArmorGrid"]
-margin_right = 181.0
+margin_right = 178.0
 margin_bottom = 14.0
 size_flags_horizontal = 3
 text = "Max Fuel"
 
 [node name="MaxFuelAmountLabel" type="Label" parent="Panel/MarginContainer/HullContainer/CostContainer/MarginContainer/HBoxContainer/FuelArmorGrid"]
-margin_left = 185.0
+margin_left = 182.0
 margin_right = 230.0
 margin_bottom = 14.0
 text = "50mg"
 
 [node name="ArmorLabel" type="Label" parent="Panel/MarginContainer/HullContainer/CostContainer/MarginContainer/HBoxContainer/FuelArmorGrid"]
 margin_top = 18.0
-margin_right = 181.0
+margin_right = 178.0
 margin_bottom = 32.0
 size_flags_horizontal = 3
 text = "Armor"
 
 [node name="ArmorAmountLabel" type="Label" parent="Panel/MarginContainer/HullContainer/CostContainer/MarginContainer/HBoxContainer/FuelArmorGrid"]
-margin_left = 185.0
+margin_left = 182.0
 margin_top = 18.0
 margin_right = 230.0
 margin_bottom = 32.0
@@ -183,13 +183,13 @@ text = "20dp"
 
 [node name="ShieldsLabel" type="Label" parent="Panel/MarginContainer/HullContainer/CostContainer/MarginContainer/HBoxContainer/FuelArmorGrid"]
 margin_top = 36.0
-margin_right = 181.0
+margin_right = 178.0
 margin_bottom = 50.0
 size_flags_horizontal = 3
 text = "Shields"
 
 [node name="ShieldsAmountLabel" type="Label" parent="Panel/MarginContainer/HullContainer/CostContainer/MarginContainer/HBoxContainer/FuelArmorGrid"]
-margin_left = 185.0
+margin_left = 182.0
 margin_top = 36.0
 margin_right = 230.0
 margin_bottom = 50.0
@@ -197,13 +197,13 @@ text = "(none)"
 
 [node name="RatingLabel" type="Label" parent="Panel/MarginContainer/HullContainer/CostContainer/MarginContainer/HBoxContainer/FuelArmorGrid"]
 margin_top = 54.0
-margin_right = 181.0
+margin_right = 178.0
 margin_bottom = 68.0
 size_flags_horizontal = 3
 text = "Rating"
 
 [node name="RatingAmountLabel" type="Label" parent="Panel/MarginContainer/HullContainer/CostContainer/MarginContainer/HBoxContainer/FuelArmorGrid"]
-margin_left = 185.0
+margin_left = 182.0
 margin_top = 54.0
 margin_right = 230.0
 margin_bottom = 68.0
@@ -211,13 +211,13 @@ text = "15"
 
 [node name="CloakJamLabel" type="Label" parent="Panel/MarginContainer/HullContainer/CostContainer/MarginContainer/HBoxContainer/FuelArmorGrid"]
 margin_top = 72.0
-margin_right = 181.0
+margin_right = 178.0
 margin_bottom = 86.0
 size_flags_horizontal = 3
 text = "Cloak/Jam"
 
 [node name="CloakJamAmountLabel" type="Label" parent="Panel/MarginContainer/HullContainer/CostContainer/MarginContainer/HBoxContainer/FuelArmorGrid"]
-margin_left = 185.0
+margin_left = 182.0
 margin_top = 72.0
 margin_right = 230.0
 margin_bottom = 86.0
@@ -225,13 +225,13 @@ text = "0%/0%"
 
 [node name="InitiativeMovesLabel" type="Label" parent="Panel/MarginContainer/HullContainer/CostContainer/MarginContainer/HBoxContainer/FuelArmorGrid"]
 margin_top = 90.0
-margin_right = 181.0
+margin_right = 178.0
 margin_bottom = 104.0
 size_flags_horizontal = 3
 text = "Initiative/Moves"
 
 [node name="InitiativeMovesAmountLabel" type="Label" parent="Panel/MarginContainer/HullContainer/CostContainer/MarginContainer/HBoxContainer/FuelArmorGrid"]
-margin_left = 185.0
+margin_left = 182.0
 margin_top = 90.0
 margin_right = 230.0
 margin_bottom = 104.0
@@ -239,13 +239,13 @@ text = "4/.5"
 
 [node name="ScannerRangeLabel" type="Label" parent="Panel/MarginContainer/HullContainer/CostContainer/MarginContainer/HBoxContainer/FuelArmorGrid"]
 margin_top = 108.0
-margin_right = 181.0
+margin_right = 178.0
 margin_bottom = 122.0
 size_flags_horizontal = 3
 text = "Scanner Range"
 
 [node name="ScannerRangeAmountLabel" type="Label" parent="Panel/MarginContainer/HullContainer/CostContainer/MarginContainer/HBoxContainer/FuelArmorGrid"]
-margin_left = 185.0
+margin_left = 182.0
 margin_top = 108.0
 margin_right = 230.0
 margin_bottom = 122.0
@@ -253,22 +253,38 @@ text = "66/30"
 
 [node name="PurposeLabel" type="Label" parent="Panel/MarginContainer/HullContainer/CostContainer/MarginContainer/HBoxContainer/FuelArmorGrid"]
 margin_top = 126.0
-margin_right = 181.0
+margin_right = 178.0
 margin_bottom = 140.0
 size_flags_horizontal = 3
 text = "Purpose"
 
 [node name="PurposeValueLabel" type="Label" parent="Panel/MarginContainer/HullContainer/CostContainer/MarginContainer/HBoxContainer/FuelArmorGrid"]
-margin_left = 185.0
+margin_left = 182.0
 margin_top = 126.0
 margin_right = 230.0
 margin_bottom = 140.0
 text = "Scout"
 
+[node name="DamageLabel" type="Label" parent="Panel/MarginContainer/HullContainer/CostContainer/MarginContainer/HBoxContainer/FuelArmorGrid"]
+margin_top = 144.0
+margin_right = 178.0
+margin_bottom = 158.0
+size_flags_horizontal = 3
+custom_colors/font_color = Color( 1, 0, 0, 1 )
+text = "Damage"
+
+[node name="DamageAmountLabel" type="Label" parent="Panel/MarginContainer/HullContainer/CostContainer/MarginContainer/HBoxContainer/FuelArmorGrid"]
+margin_left = 182.0
+margin_top = 144.0
+margin_right = 230.0
+margin_bottom = 158.0
+custom_colors/font_color = Color( 1, 0, 0, 1 )
+text = "1@39%"
+
 [node name="MassLabel" type="Label" parent="Panel/MarginContainer/HullContainer/CostContainer"]
-margin_top = 162.0
+margin_top = 180.0
 margin_right = 490.0
-margin_bottom = 176.0
+margin_bottom = 194.0
 text = "Mass: 8kt"
 
 [node name="NoHullContainer" type="CenterContainer" parent="Panel/MarginContainer"]

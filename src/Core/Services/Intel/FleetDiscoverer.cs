@@ -51,7 +51,7 @@ namespace CraigStars
                 {
                     designDiscoverer.Discover(player, token.Design, penScanned);
                 }
-                itemReport.Tokens.Add(new ShipToken(player.DesignsByGuid[token.Design.Guid], token.Quantity));
+                itemReport.Tokens.Add(new ShipToken(player.DesignsByGuid[token.Design.Guid], token.Quantity, token.Damage, token.QuantityDamaged));
             }
         }
 
@@ -101,7 +101,7 @@ namespace CraigStars
             itemReport.Cargo = item.Cargo;
             itemReport.Fuel = item.Fuel;
             itemReport.BattlePlan = player.BattlePlansByGuid[item.BattlePlan.Guid];
-            itemReport.Tokens.AddRange(item.Tokens.Select(token => new ShipToken(player.DesignsByGuid[token.Design.Guid], token.Quantity)).ToList());
+            itemReport.Tokens.AddRange(item.Tokens.Select(token => new ShipToken(player.DesignsByGuid[token.Design.Guid], token.Quantity, token.Damage, token.QuantityDamaged)).ToList());
 
         }
     }

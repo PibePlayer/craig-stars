@@ -113,7 +113,7 @@ namespace CraigStars
         public Color StarbaseWithDock { get; set; } = Colors.Yellow;
 
         [Export]
-        public Color StargateColor { get; set; } = new Color("7F7F00");
+        public Color StargateColor { get; set; } = new Color("008100");
 
     }
 }

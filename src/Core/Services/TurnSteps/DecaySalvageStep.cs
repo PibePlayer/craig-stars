@@ -29,7 +29,7 @@ namespace CraigStars
         /// https://wiki.starsautohost.org/wiki/Guts_of_scrapping
         /// In deep space, each type of mineral decays 10%, or 10kT per year, whichever is higher. Salvage deposited on planets does not decay.
         /// </summary>
-        /// <param name="mineField"></param>
+        /// <param name="salvage"></param>
         internal void Decay(Salvage salvage)
         {
             // decay salvage by 10kt or 10%, whichever is greater

@@ -15,7 +15,8 @@ namespace CraigStars
             QueueItemType.AutoMineralAlchemy,
             QueueItemType.AutoMines,
             QueueItemType.AutoDefenses,
-            QueueItemType.AutoFactories
+            QueueItemType.AutoFactories,
+            QueueItemType.AutoMineralPacket
         };
 
         public PlanetProduceStep(Game game) : base(game, TurnGenerationState.Production) { }
@@ -50,6 +51,20 @@ namespace CraigStars
             while (index < queue.Items.Count)
             {
                 ProductionQueueItem item = queue.Items[index];
+
+                if (item.IsPacket && !planet.HasMassDriver)
+                {
+                    // can't built, break out
+                    Message.BuildMineralPacketNoMassDriver(planet.Player, planet);
+                    break;
+                }
+                if (item.IsPacket && planet.PacketTarget == null)
+                {
+                    // can't built, break out
+                    Message.BuildMineralPacketNoTarget(planet.Player, planet);
+                    break;
+                }
+
                 Cost costPer = item.GetCostOfOne(rules, planet.Player);
                 if (item.type == QueueItemType.Starbase && planet.HasStarbase)
                 {
@@ -187,6 +202,16 @@ namespace CraigStars
                 // add the minerals back to our allocated amount
                 allocated += new Cost(numBuilt, numBuilt, numBuilt, 0);
             }
+            else if (
+                item.type == QueueItemType.IroniumMineralPacket ||
+                item.type == QueueItemType.BoraniumMineralPacket ||
+                item.type == QueueItemType.GermaniumMineralPacket ||
+                item.type == QueueItemType.MixedMineralPacket ||
+                item.type == QueueItemType.AutoMineralPacket
+            )
+            {
+                BuildPacket(planet, item.type, numBuilt);
+            }
             else if (item.type == QueueItemType.ShipToken)
             {
                 BuildFleet(planet, item, numBuilt);
@@ -197,6 +222,20 @@ namespace CraigStars
             }
 
             return allocated;
+        }
+
+        void BuildPacket(Planet planet, QueueItemType item, int numBuilt)
+        {
+            MineralPacket packet = new MineralPacket()
+            {
+                Player = planet.Player,
+                Position = planet.Position,
+                WarpFactor = planet.PacketSpeed,
+                Target = planet.PacketTarget
+            };
+
+            Message.MineralPacket(planet.Player, planet, packet);
+            EventManager.PublishMapObjectCreatedEvent(packet);
         }
 
         /// <summary>

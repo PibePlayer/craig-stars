@@ -64,6 +64,26 @@ namespace CraigStars
 
         }
 
+        public static void MineralPacket(Player player, Planet planet, MineralPacket packet)
+        {
+            string text = $"{planet.Name} has produced a mineral packet which has a destination of {packet.Target.Name}";
+            player.Messages.Add(new Message(MessageType.BuiltDefense, text, planet));
+
+        }
+
+        public static void BuildMineralPacketNoMassDriver(Player player, Planet planet)
+        {
+            string text = $"You have attempted to build a mineral packate on {planet.Name}, but you have no Starbase equipped with a mass driver on this planet. Production for this planet has been cancelled.";
+            player.Messages.Add(new Message(MessageType.Invalid, text, planet));
+        }
+
+        public static void BuildMineralPacketNoTarget(Player player, Planet planet)
+        {
+            string text = $"You have attempted to build a mineral packate on {planet.Name}, but you have not specified a target. The minerals have been returned to the planet and production has been cancelled.";
+            player.Messages.Add(new Message(MessageType.Invalid, text, planet));
+
+        }
+
         public static void TechLevel(Player player, TechField field, int level, TechField nextField)
         {
             string text = $"Your scientists have completed research into Tech Level {level} for {field}.  They will continue their efforts in the {nextField} field.";
@@ -134,7 +154,123 @@ namespace CraigStars
             player.Messages.Add(new Message(MessageType.BuiltShip, text, fleet));
         }
 
-        public static void FleetTransferred(Player player, Fleet fleet, CargoType cargoType, ICargoHolder cargoTarget, int transferAmount)
+        public static void FleetStargateInvalidSource(Player player, Fleet fleet, Waypoint wp0)
+        {
+            player.Messages.Add(new Message(MessageType.Invalid,
+                $"{fleet.Name} attempted to use a stargate at {wp0.TargetName}, but no stargate exists there.",
+                fleet)
+            );
+        }
+
+        public static void FleetStargateInvalidSourceOwner(Player player, Fleet fleet, Waypoint wp0, Waypoint wp1)
+        {
+            player.Messages.Add(new Message(MessageType.Invalid,
+                $"{fleet.Name} attempted to use a stargate at {wp0.TargetName}, but could not because the starbase is not owned by you or a friend of yours.",
+                fleet)
+            );
+        }
+
+        public static void FleetStargateInvalidDest(Player player, Fleet fleet, Waypoint wp0, Waypoint wp1)
+        {
+            player.Messages.Add(new Message(MessageType.Invalid,
+                $"{fleet.Name} attempted to use a stargate at {wp0.TargetName} to reach {wp1.TargetName}, but no stargate could be detected at the destination.",
+                fleet)
+            );
+        }
+
+        public static void FleetStargateInvalidDestOwner(Player player, Fleet fleet, Waypoint wp0, Waypoint wp1)
+        {
+            player.Messages.Add(new Message(MessageType.Invalid,
+                $"{fleet.Name} attempted to use a stargate at {wp0.TargetName} to reach {wp1.TargetName}, but could not because the destination starbase is not owned by you or a friend of yours.",
+                fleet)
+            );
+        }
+
+        public static void FleetStargateInvalidRange(Player player, Fleet fleet, Waypoint wp0, Waypoint wp1, float totalDist)
+        {
+            player.Messages.Add(new Message(MessageType.Invalid,
+                $"{fleet.Name} attempted to use a stargate at {wp0.TargetName} to reach {wp1.TargetName}, but the distance of {totalDist:.#} l.y. was outside the max range of the stargates.",
+                fleet)
+            );
+        }
+
+        public static void FleetStargateInvalidMass(Player player, Fleet fleet, Waypoint wp0, Waypoint wp1)
+        {
+            player.Messages.Add(new Message(MessageType.Invalid,
+                $"{fleet.Name} attempted to use a stargate at {wp0.TargetName} to reach {wp1.TargetName}, but your ships are too massive.",
+                fleet)
+            );
+        }
+
+        public static void FleetStargateInvalidColonists(Player player, Fleet fleet, Waypoint wp0, Waypoint wp1)
+        {
+            player.Messages.Add(new Message(MessageType.Invalid,
+                $"{fleet.Name} attempted to use a stargate at {wp0.TargetName} to reach {wp1.TargetName}, but you are carrying colonists and can't drop them off as you don't own the planet.",
+                fleet)
+            );
+        }
+
+        public static void FleetStargateDumpedCargo(Player player, Fleet fleet, Waypoint wp0, Waypoint wp1, Cargo cargo)
+        {
+            string text = "";
+            if (cargo.HasColonists && cargo.HasMinerals)
+            {
+                text = $"{fleet.Name} has unloaded {cargo.Colonists * 100} colonists and {cargo.Total - cargo.Colonists}kT of minerals in preparation for jumping through the stargate at {wp0.TargetName} to reach {wp1.TargetName}.";
+            }
+            else if (cargo.HasColonists)
+            {
+                text = $"{fleet.Name} has unloaded {cargo.Colonists * 100} colonists in preparation for jumping through the stargate at {wp0.TargetName} to reach {wp1.TargetName}.";
+            }
+            else
+            {
+                text = $"{fleet.Name} has unloaded {cargo.Total}kT of minerals in preparation for jumping through the stargate at {wp0.TargetName} to reach {wp1.TargetName}.";
+            }
+            player.Messages.Add(new Message(MessageType.Invalid,
+                text,
+                fleet)
+            );
+        }
+
+        public static void FleetStargateDestroyed(Player player, Fleet fleet, Waypoint wp0, Waypoint wp1)
+        {
+            player.Messages.Add(new Message(MessageType.FleetStargateDamaged,
+                $"Heedless to the danger, {fleet.Name} attempted to use the stargate at {wp0.TargetName} to reach {wp0.TargetName}.  The fleet never arrived. The distance or mass must have been too great.",
+                fleet)
+            );
+        }
+
+        public static void FleetStargateDamaged(Player player, Fleet fleet, Waypoint wp0, Waypoint wp1, int damage, int startingShips, int shipsLostToDamage, int shipsLostToTheVoid)
+        {
+            var totalShipsLost = shipsLostToDamage + shipsLostToTheVoid;
+            string text = "";
+            if (totalShipsLost == 0)
+            {
+                text = $"{fleet.Name} used the stargate at {wp0.TargetName} to reach {wp1.TargetName} losing no ships but suffering {damage} dp of damage.  They exceeded the capability of the gates.";
+            }
+            else if (totalShipsLost < 5)
+            {
+                text = $"{fleet.Name} used the stargate at {wp0.TargetName} to reach {wp1.TargetName} losing only {totalShipsLost} ship{(totalShipsLost == 1 ? "" : "s")} to the treacherous void.  They were fortunate.  They exceeded the capability of the gates.";
+            }
+            else if (totalShipsLost >= 5 && totalShipsLost <= 10)
+            {
+                text = $"{fleet.Name} used the stargate at {wp0.TargetName} to reach {wp1.TargetName} losing {totalShipsLost} ships to the unforgiving void. Exceeding the capability of your stargates is not recommended.";
+            }
+            else if (totalShipsLost >= 10 && totalShipsLost <= 50)
+            {
+                text = $"{fleet.Name} used the stargate at {wp0.TargetName} to reach {wp1.TargetName} unfortunately losing {totalShipsLost} ships to the  great unknown. Exceeding the capability of your stargates is dangerous.";
+            }
+            else if (totalShipsLost >= 50)
+            {
+                text = $"{fleet.Name} used the stargate at {wp0.TargetName} to reach {wp1.TargetName} losing an unbelievable {totalShipsLost} ships. The jump was far in excess of the capabilities of starbases involved..";
+            }
+            player.Messages.Add(new Message(MessageType.FleetStargateDamaged,
+                text,
+                fleet)
+            );
+
+        }
+
+        public static void FleetTransportedCargo(Player player, Fleet fleet, CargoType cargoType, ICargoHolder cargoTarget, int transferAmount)
         {
             string text = "";
             if (cargoType == CargoType.Colonists)

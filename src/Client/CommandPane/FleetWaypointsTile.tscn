@@ -8,6 +8,7 @@
 margin_right = 217.0
 margin_bottom = 260.0
 rect_min_size = Vector2( 200, 190 )
+rect_rotation = -0.0495406
 theme = ExtResource( 2 )
 custom_constants/margin_right = 10
 custom_constants/margin_top = 10

@@ -44,3 +44,7 @@ texture = ExtResource( 4 )
 [node name="OrbitingActive" type="Sprite" parent="Sprite"]
 visible = false
 texture = ExtResource( 2 )
+
+[node name="DestinationLine" type="Line2D" parent="."]
+width = 2.0
+default_color = Color( 0.0313726, 0.505882, 0.0392157, 1 )

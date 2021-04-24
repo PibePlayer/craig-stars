@@ -20,6 +20,7 @@ namespace CraigStars
         PackedScene fleetScene;
         PackedScene salvageScene;
         PackedScene mineFieldScene;
+        PackedScene mineralPacketScene;
         PackedScene wormholeScene;
 
         /// <summary>
@@ -69,6 +70,7 @@ namespace CraigStars
         public PlanetSprite CommandedPlanet { get; set; }
 
         bool movingWaypoint = false;
+        bool pickingPacketDestination = false;
         WaypointArea activeWaypointArea;
 
         public override void _Ready()
@@ -79,6 +81,7 @@ namespace CraigStars
             fleetScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/FleetSprite.tscn");
             salvageScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/SalvageSprite.tscn");
             mineFieldScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/MineFieldSprite.tscn");
+            mineralPacketScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/MineralPacketSprite.tscn");
             wormholeScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/WormholeSprite.tscn");
 
             // get some nodes
@@ -101,8 +104,9 @@ namespace CraigStars
             Signals.WaypointAddedEvent += OnWaypointAdded;
             Signals.WaypointSelectedEvent += OnWaypointSelected;
             Signals.WaypointDeletedEvent += OnWaypointDeleted;
-            Signals.PlanetViewStateUpdatedEvent += OnPlanetViewStateUpdatedEvent;
-            Signals.TurnSubmittedEvent += OnTurnSubmittedEvent;
+            Signals.PlanetViewStateUpdatedEvent += OnPlanetViewStateUpdated;
+            Signals.TurnSubmittedEvent += OnTurnSubmitted;
+            Signals.PacketDestinationToggleEvent += OnPacketDestinationToggle;
         }
 
         public override void _ExitTree()
@@ -120,8 +124,15 @@ namespace CraigStars
             Signals.WaypointAddedEvent -= OnWaypointAdded;
             Signals.WaypointSelectedEvent -= OnWaypointSelected;
             Signals.WaypointDeletedEvent -= OnWaypointDeleted;
-            Signals.PlanetViewStateUpdatedEvent -= OnPlanetViewStateUpdatedEvent;
-            Signals.TurnSubmittedEvent -= OnTurnSubmittedEvent;
+            Signals.PlanetViewStateUpdatedEvent -= OnPlanetViewStateUpdated;
+            Signals.TurnSubmittedEvent -= OnTurnSubmitted;
+            Signals.PacketDestinationToggleEvent -= OnPacketDestinationToggle;
+        }
+
+        void OnPacketDestinationToggle()
+        {
+            pickingPacketDestination = !pickingPacketDestination;
+            Input.SetDefaultCursorShape(pickingPacketDestination ? Input.CursorShape.Cross : Input.CursorShape.Arrow);
         }
 
         /// <summary>
@@ -160,12 +171,12 @@ namespace CraigStars
             }
         }
 
-        void OnPlanetViewStateUpdatedEvent()
+        void OnPlanetViewStateUpdated()
         {
             Planets.ForEach(p => p.UpdateSprite());
         }
 
-        void OnTurnSubmittedEvent(PublicPlayerInfo player)
+        void OnTurnSubmitted(PublicPlayerInfo player)
         {
             if (player == Me)
             {
@@ -510,6 +521,17 @@ namespace CraigStars
         /// </summary>
         public override void _UnhandledInput(InputEvent @event)
         {
+            if (@event.IsActionPressed("ui_cancel"))
+            {
+                pickingPacketDestination = false;
+                Input.SetDefaultCursorShape(Input.CursorShape.Arrow);
+            }
+
+            if (@event is InputEventMouse mouse && mouse.Shift)
+            {
+                pickingPacketDestination = false;
+                Input.SetDefaultCursorShape(Input.CursorShape.Arrow);
+            }
             if (@event.IsActionPressed("viewport_select"))
             {
                 if (@event is InputEventMouseButton eventMouseButton && eventMouseButton.Shift)
@@ -600,6 +622,19 @@ namespace CraigStars
                 {
                     // ignore events from all but the closest mapobject
                     return;
+                }
+
+                if (pickingPacketDestination && mapObject is PlanetSprite planet)
+                {
+                    pickingPacketDestination = false;
+                    Input.SetDefaultCursorShape(Input.CursorShape.Arrow);
+                    if (CommandedPlanet != null)
+                    {
+                        CommandedPlanet.Planet.PacketTarget = planet.Planet;
+                        CommandedPlanet.PacketTarget = planet;
+                        Signals.PublishPacketDestinationChangedEvent(CommandedPlanet.Planet, planet.Planet);
+                        CommandedPlanet.UpdateSprite();
+                    }
                 }
 
                 if (@event is InputEventMouseButton eventMouseButton && eventMouseButton.Shift)
@@ -738,6 +773,17 @@ namespace CraigStars
             CommandedFleet = null;
             CommandedPlanet = null;
 
+            Planets.ForEach(planetSprite =>
+            {
+                if (
+                    planetSprite.Planet.PacketTarget != null &&
+                    MapObjectsByGuid.TryGetValue(planetSprite.Planet.PacketTarget.Guid, out var mapObjectSprite) &&
+                    mapObjectSprite is PlanetSprite target)
+                {
+                    planetSprite.PacketTarget = target;
+                }
+            });
+
             // rebuild our MapObjectsByGuid
             Fleets.ForEach(fleet => { if (fleet.Orbiting != null) { fleet.Orbiting.OrbitingFleets.Clear(); } });
             RemoveMapObjects(transientMapObjects);
@@ -753,6 +799,7 @@ namespace CraigStars
             transientMapObjects.AddRange(AddMapObjectsToViewport<Salvage, SalvageSprite>(Me.Salvage, salvageScene, GetNode("Salvage")));
             transientMapObjects.AddRange(AddMapObjectsToViewport<Wormhole, WormholeSprite>(Me.Wormholes, wormholeScene, GetNode("Wormholes")));
             transientMapObjects.AddRange(AddMapObjectsToViewport<MineField, MineFieldSprite>(Me.AllMineFields, mineFieldScene, GetNode("MineFields")));
+            transientMapObjects.AddRange(AddMapObjectsToViewport<MineralPacket, MineralPacketSprite>(Me.AllMineralPackets, mineralPacketScene, GetNode("MineralPackets")));
 
             mapObjects.Clear();
             mapObjects.AddRange(Planets);

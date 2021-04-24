@@ -143,6 +143,11 @@ namespace CraigStars
 
             if (item.HasStarbase)
             {
+                if (!player.DesignsByGuid.ContainsKey(item.Starbase.Design.Guid))
+                {
+                    designDiscoverer.Discover(player, item.Starbase.Design, true);
+                }
+
                 itemReport.Starbase = new Starbase()
                 {
                     Guid = item.Starbase.Guid,
@@ -153,11 +158,6 @@ namespace CraigStars
                     Player = player,
                     BattlePlan = player.BattlePlansByGuid[item.Starbase.BattlePlan.Guid]
                 };
-
-                if (!player.DesignsByGuid.ContainsKey(item.Starbase.Design.Guid))
-                {
-                    designDiscoverer.Discover(player, item.Starbase.Design, true);
-                }
 
                 itemReport.Starbase.Tokens.Add(new ShipToken(player.DesignsByGuid[item.Starbase.Design.Guid], 1));
                 itemReport.Starbase.ComputeAggregate(true);

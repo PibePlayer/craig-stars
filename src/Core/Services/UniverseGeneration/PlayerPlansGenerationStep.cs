@@ -20,6 +20,7 @@ namespace CraigStars.UniverseGeneration
             {
                 player.BattlePlans = GetBattlePlans();
                 player.TransportPlans = GetTransportPlans();
+                player.SetupMapObjectMappings();
             });
         }
 

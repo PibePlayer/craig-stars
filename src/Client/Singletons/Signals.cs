@@ -45,7 +45,7 @@ namespace CraigStars.Singletons
         public static event Action<Waypoint> WaypointSelectedEvent;
         public static event Action<Waypoint> WaypointDeletedEvent;
         public static event Action<MapObjectSprite> ViewportAlternateSelectEvent;
-        
+
         #endregion
 
         #region UI Events
@@ -55,6 +55,8 @@ namespace CraigStars.Singletons
         public static event Action<Player> UnsubmitTurnRequestedEvent;
         public static event Action<int> PlayTurnRequestedEvent;
         public static event Action<PlanetSprite> ChangeProductionQueuePressedEvent;
+        public static event Action PacketDestinationToggleEvent;
+        public static event Action<Planet, Planet> PacketDestinationChangedEvent;
         public static event Action ResearchDialogRequestedEvent;
         public static event Action BattlePlansDialogRequestedEvent;
         public static event Action TransportPlansDialogRequestedEvent;
@@ -154,6 +156,7 @@ namespace CraigStars.Singletons
 
         #endregion
 
+        public static void PublishPacketDestinationChangedEvent(Planet planet, Planet target) => PacketDestinationChangedEvent?.Invoke(planet, target);
 
 
         #region Waypoints
@@ -180,6 +183,7 @@ namespace CraigStars.Singletons
         public static void PublishUnsubmitTurnRequestedEvent(Player player) => UnsubmitTurnRequestedEvent?.Invoke(player);
         public static void PublishPlayTurnRequestedEvent(int playerNum) => PlayTurnRequestedEvent?.Invoke(playerNum);
         public static void PublishChangeProductionQueuePressedEvent(PlanetSprite planet) => ChangeProductionQueuePressedEvent?.Invoke(planet);
+        public static void PublishPacketDestinationToggleEvent() => PacketDestinationToggleEvent?.Invoke();
         public static void PublishResearchDialogRequestedEvent() => ResearchDialogRequestedEvent?.Invoke();
         public static void PublishBattlePlansDialogRequestedEvent() => BattlePlansDialogRequestedEvent?.Invoke();
         public static void PublishTransportPlansDialogRequestedEvent() => TransportPlansDialogRequestedEvent?.Invoke();

@@ -17,6 +17,7 @@ namespace CraigStars.UniverseGeneration
 
         public PlayerHomeworldGenerationStep(Game game) : base(game, UniverseGenerationState.Homeworlds) { }
 
+        PlanetDiscoverer planetDiscoverer = new PlanetDiscoverer();
         List<Planet> ownedPlanets = new List<Planet>();
 
         public override void Process()
@@ -33,6 +34,7 @@ namespace CraigStars.UniverseGeneration
 
             player.Homeworld = homeworld;
             InitHomeworld(player, homeworld);
+            planetDiscoverer.Discover(player, homeworld);
 
             if (player.Race.PRT == PRT.IT || player.Race.PRT == PRT.PP && Game.Rules.Size > Size.Tiny)
             {
@@ -45,6 +47,7 @@ namespace CraigStars.UniverseGeneration
                 if (planet != null)
                 {
                     InitExtraWorld(player, planet);
+                    planetDiscoverer.Discover(player, planet);
                     ownedPlanets.Add(planet);
                 }
                 else

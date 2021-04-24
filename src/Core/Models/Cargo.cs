@@ -20,6 +20,8 @@ namespace CraigStars
         }
 
         public int Total { get => Ironium + Boranium + Germanium + Colonists; }
+        public bool HasColonists { get => Colonists > 0; }
+        public bool HasMinerals { get => Ironium > 0 || Boranium > 0 || Germanium > 0; }
 
         /// <summary>
         /// A cargo can be converted to a cost, just sharing the mineral component

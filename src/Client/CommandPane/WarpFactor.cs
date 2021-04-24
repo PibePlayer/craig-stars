@@ -111,10 +111,10 @@ namespace CraigStars
                 }
                 // get the width of our rectangle
                 // it's a percentage of the speed, minus the line widths
-                float width = panel.RectSize.x * ((float)WarpSpeed / (float)MaxWarpFactor) - (borderWidth);
+                float width = panel.RectSize.x * ((float)WarpSpeed / (float)MaxWarpFactor);
                 DrawRect(new Rect2(
-                    panel.RectPosition,
-                    new Vector2(width, panel.RectSize.y - (borderHeight))),
+                    new Vector2(panel.RectPosition.x + borderWidth / 2, panel.RectPosition.y + borderHeight / 2),
+                    new Vector2(width - borderWidth, panel.RectSize.y - (borderHeight))),
                     color
                 );
             }

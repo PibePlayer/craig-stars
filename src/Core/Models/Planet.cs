@@ -29,9 +29,14 @@ namespace CraigStars
             }
         }
 
-        
+
         [JsonIgnore] public List<Fleet> OrbitingFleets { get; set; } = new List<Fleet>();
+
         public Starbase Starbase { get; set; }
+        public int PacketSpeed { get; set; } = 5;
+        [JsonProperty(IsReference = true)]
+        public Planet PacketTarget { get; set; }
+
         [JsonIgnore] public bool HasStarbase { get => Starbase != null; }
         [JsonIgnore] public bool HasMassDriver { get => Starbase != null && Starbase.Aggregate.HasMassDriver; }
         [JsonIgnore] public bool HasStargate { get => Starbase != null && Starbase.Aggregate.HasStargate; }
@@ -378,7 +383,7 @@ namespace CraigStars
         /// </summary>
         /// <param name="transfer"></param>
         /// <returns>true if we have minerals we can transfer</returns>
-        public bool AttemptTransfer(Cargo transfer, int fuel)
+        public bool AttemptTransfer(Cargo transfer, int fuel = 0)
         {
             if (fuel > 0 || fuel < 0 && Starbase == null)
             {

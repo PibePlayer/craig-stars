@@ -64,6 +64,7 @@ namespace CraigStars
             Game = game;
             steps = new List<TurnGenerationStep>() {
                 new FleetWaypointStep(game, 0), // wp0
+                new PacketMoveStep(game, 0),
                 new FleetMoveStep(game),
                 new DecaySalvageStep(game),
                 new WormholeJiggleStep(game),
@@ -72,6 +73,7 @@ namespace CraigStars
                 new PlanetProduceStep(game),
                 new PlayerResearchStep(game),
                 new PlanetGrowStep(game),
+                new PacketMoveStep(game, 1),
                 new FleetBattleStep(game),
                 new PlanetBombStep(game),
                 new FleetWaypointStep(game, 1), // wp1

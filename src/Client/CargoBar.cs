@@ -147,8 +147,8 @@ namespace CraigStars
                         // it's a percentage of the totaly width based on capacity and quantity
                         float width = panel.RectSize.x * ((float)Fuel / (float)Capacity);
                         DrawRect(new Rect2(
-                            panel.RectPosition,
-                            new Vector2(width, panel.RectSize.y - (borderHeight / 2))),
+                            new Vector2(panel.RectPosition.x + borderWidth / 2, panel.RectPosition.y + borderHeight / 2),
+                            new Vector2(width - borderWidth, panel.RectSize.y - (borderHeight))),
                             GUIColors.FuelColor
                         );
                     }
@@ -165,8 +165,8 @@ namespace CraigStars
                     {
                         ironiumWidth = panel.RectSize.x * ((float)Cargo.Ironium / (float)Capacity);
                         DrawRect(new Rect2(
-                            panel.RectPosition,
-                            new Vector2(ironiumWidth, panel.RectSize.y - (borderHeight / 2))),
+                            new Vector2(panel.RectPosition.x + borderWidth / 2, panel.RectPosition.y + borderHeight / 2),
+                            new Vector2(ironiumWidth, panel.RectSize.y - borderHeight)),
                             GUIColors.IroniumBarColor
                         );
                     }
@@ -174,8 +174,8 @@ namespace CraigStars
                     {
                         boraniumWidth = panel.RectSize.x * ((float)Cargo.Boranium / (float)Capacity);
                         DrawRect(new Rect2(
-                            new Vector2(panel.RectPosition.x + ironiumWidth, panel.RectPosition.y),
-                            new Vector2(boraniumWidth, panel.RectSize.y - (borderHeight / 2))),
+                            new Vector2(panel.RectPosition.x + borderWidth / 2 + ironiumWidth, panel.RectPosition.y + borderHeight / 2),
+                            new Vector2(boraniumWidth, panel.RectSize.y - borderHeight)),
                             GUIColors.BoraniumBarColor
                         );
                     }
@@ -183,8 +183,8 @@ namespace CraigStars
                     {
                         germaniumWidth = panel.RectSize.x * ((float)Cargo.Germanium / (float)Capacity);
                         DrawRect(new Rect2(
-                            new Vector2(panel.RectPosition.x + ironiumWidth + boraniumWidth, panel.RectPosition.y),
-                            new Vector2(germaniumWidth, panel.RectSize.y - (borderHeight / 2))),
+                            new Vector2(panel.RectPosition.x + borderWidth / 2 + ironiumWidth + boraniumWidth, panel.RectPosition.y + borderHeight / 2),
+                            new Vector2(germaniumWidth, panel.RectSize.y - borderHeight)),
                             GUIColors.GermaniumBarColor
                         );
                     }
@@ -192,8 +192,8 @@ namespace CraigStars
                     {
                         colonistsWidth = panel.RectSize.x * ((float)Cargo.Colonists / (float)Capacity);
                         DrawRect(new Rect2(
-                            new Vector2(panel.RectPosition.x + ironiumWidth + boraniumWidth + germaniumWidth, panel.RectPosition.y),
-                            new Vector2(colonistsWidth, panel.RectSize.y - (borderHeight / 2))),
+                            new Vector2(panel.RectPosition.x + borderWidth / 2 + ironiumWidth + boraniumWidth + germaniumWidth, panel.RectPosition.y + borderHeight / 2),
+                            new Vector2(colonistsWidth, panel.RectSize.y - borderHeight)),
                             Colors.White
                         );
 

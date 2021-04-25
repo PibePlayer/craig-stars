@@ -44,11 +44,10 @@ namespace CraigStars
             itemReport.WarpFactor = item.WarpFactor;
             itemReport.Heading = item.Heading;
             itemReport.Cargo = item.Cargo;
-            // copy waypoints
+            // copy target
             if (player.MapObjectsByGuid.TryGetValue(item.Target.Guid, out var playerPlanet))
             {
                 itemReport.Target = playerPlanet as Planet;
-
             }
             else
             {

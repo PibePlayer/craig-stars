@@ -210,7 +210,7 @@ namespace CraigStars
                 item.type == QueueItemType.AutoMineralPacket
             )
             {
-                BuildPacket(planet, item.type, numBuilt);
+                BuildPacket(planet, item.GetCostOfOne(Game.Rules, planet.Player), numBuilt);
             }
             else if (item.type == QueueItemType.ShipToken)
             {
@@ -224,14 +224,15 @@ namespace CraigStars
             return allocated;
         }
 
-        void BuildPacket(Planet planet, QueueItemType item, int numBuilt)
+        void BuildPacket(Planet planet, Cargo cargo, int numBuilt)
         {
             MineralPacket packet = new MineralPacket()
             {
                 Player = planet.Player,
                 Position = planet.Position,
                 WarpFactor = planet.PacketSpeed,
-                Target = planet.PacketTarget
+                Target = planet.PacketTarget,
+                Cargo = cargo * numBuilt
             };
 
             Message.MineralPacket(planet.Player, planet, packet);

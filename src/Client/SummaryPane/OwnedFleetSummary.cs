@@ -5,7 +5,7 @@ using CraigStars.Utils;
 
 namespace CraigStars
 {
-    public class OwnedFleetSummary : FleetSummary
+    public class OwnedFleetSummary : MapObjectSummary<FleetSprite>
     {
         Label shipCountLabel;
         Label massLabel;
@@ -43,19 +43,19 @@ namespace CraigStars
 
         void OnCargoBarPressed(int newValue)
         {
-            if (Fleet?.Fleet != null && Fleet.Fleet.Aggregate.CargoCapacity > 0 && Fleet?.Fleet?.Orbiting != null)
+            if (MapObject?.Fleet != null && MapObject.Fleet.Aggregate.CargoCapacity > 0 && MapObject?.Fleet?.Orbiting != null)
             {
                 // trigger a cargo transfer event between this fleet and the planet it is orbiting
-                Signals.PublishCargoTransferRequestedEvent(Fleet.Fleet, Fleet.Fleet.Orbiting);
+                Signals.PublishCargoTransferRequestedEvent(MapObject.Fleet, MapObject.Fleet.Orbiting);
             }
         }
 
         protected override void UpdateControls()
         {
-            if (Fleet != null)
+            if (MapObject != null)
             {
                 var race = Me.Race;
-                var fleet = Fleet.Fleet;
+                var fleet = MapObject.Fleet;
 
                 if (fleet.OwnedBy(Me))
                 {

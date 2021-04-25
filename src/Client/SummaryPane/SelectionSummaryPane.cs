@@ -31,6 +31,8 @@ namespace CraigStars
         Control fleetSummaryContainer;
         Control salvageSummaryContainer;
         Control mineFieldSummaryContainer;
+        Control wormholeSummaryContainer;
+        Control mineralPacketSummaryContainer;
         Label nameLabel;
         Button otherFleetsButton;
 
@@ -41,6 +43,8 @@ namespace CraigStars
             fleetSummaryContainer = GetNode<Control>("VBoxContainer/FleetSummaryContainer");
             salvageSummaryContainer = GetNode<Control>("VBoxContainer/SalvageSummaryContainer");
             mineFieldSummaryContainer = GetNode<Control>("VBoxContainer/MineFieldSummaryContainer");
+            wormholeSummaryContainer = GetNode<Control>("VBoxContainer/WormholeSummaryContainer");
+            mineralPacketSummaryContainer = GetNode<Control>("VBoxContainer/MineralPacketSummaryContainer");
             nameLabel = GetNode<Label>("VBoxContainer/Title/Name");
             otherFleetsButton = GetNode<Button>("VBoxContainer/Title/OtherFleetsButton");
 
@@ -118,6 +122,8 @@ namespace CraigStars
             planetSummaryContainer.Visible = false;
             unknownPlanetContainer.Visible = false;
             mineFieldSummaryContainer.Visible = false;
+            wormholeSummaryContainer.Visible = false;
+            mineralPacketSummaryContainer.Visible = false;
 
             if (MapObject != null)
             {
@@ -147,6 +153,16 @@ namespace CraigStars
                 {
                     mineFieldSummaryContainer.Visible = true;
                     nameLabel.Text = $"{mineField.RacePluralName} Mine Field";
+                }
+                else if (MapObject.MapObject is Wormhole wormhole)
+                {
+                    wormholeSummaryContainer.Visible = true;
+                    nameLabel.Text = $"Wormhole Summary";
+                }
+                else if (MapObject.MapObject is MineralPacket mineralPacket)
+                {
+                    mineralPacketSummaryContainer.Visible = true;
+                    nameLabel.Text = $"Mineral Packet Summary";
                 }
                 else
                 {

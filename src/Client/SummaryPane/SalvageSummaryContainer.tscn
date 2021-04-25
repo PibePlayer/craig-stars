@@ -9,7 +9,6 @@ atlas = ExtResource( 3 )
 region = Rect2( 33, 1, 14, 14 )
 
 [node name="SalvageSummaryContainer" type="CenterContainer"]
-visible = false
 margin_top = 190.0
 margin_right = 380.0
 margin_bottom = 258.0
@@ -35,3 +34,4 @@ stretch_mode = 5
 margin_left = 74.0
 margin_right = 176.0
 size_flags_vertical = 3
+ShowColonists = false

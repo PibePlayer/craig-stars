@@ -60,9 +60,22 @@ namespace CraigStars
             }
         }
 
+        [Export]
+        public bool ShowColonists
+        {
+            get => showColonists;
+            set
+            {
+                showColonists = value;
+                UpdateControls();
+            }
+        }
+        bool showColonists = true;
+
         Label ironiumAmountLabel;
         Label boraniumAmountLabel;
         Label germaniumAmountLabel;
+        Label colonistsLabel;
         Label colonistsAmountLabel;
 
         public override void _Ready()
@@ -70,13 +83,16 @@ namespace CraigStars
             ironiumAmountLabel = GetNode<Label>("IroniumAmount");
             boraniumAmountLabel = GetNode<Label>("BoraniumAmount");
             germaniumAmountLabel = GetNode<Label>("GermaniumAmount");
+            colonistsLabel = GetNode<Label>("Colonists");
             colonistsAmountLabel = GetNode<Label>("ColonistsAmount");
         }
 
         void UpdateControls()
         {
+
             if (ironiumAmountLabel != null)
             {
+                colonistsAmountLabel.Visible = colonistsLabel.Visible = ShowColonists;
                 ironiumAmountLabel.Text = $"{Ironium}kT";
                 boraniumAmountLabel.Text = $"{Boranium}kT";
                 germaniumAmountLabel.Text = $"{Germanium}kT";

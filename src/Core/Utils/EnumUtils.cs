@@ -68,6 +68,23 @@ namespace CraigStars.Utils
             }
         }
 
+        public static object GetLabelForWormholeStability(WormholeStability value)
+        {
+            switch (value)
+            {
+                case WormholeStability.ExtremelyVolatile:
+                    return "Extremely Volatile";
+                case WormholeStability.MostlyStable:
+                    return "Mostly Stable";
+                case WormholeStability.RockSolid:
+                    return "Rock Solid";
+                case WormholeStability.SlightlyVolatile:
+                    return "Slightly Volatile";
+                default:
+                    return value.ToString();
+            }
+        }
+
         public static string GetLabelForBattleAttackWho(BattleAttackWho value)
         {
             switch (value)

@@ -5,7 +5,7 @@ using log4net;
 
 namespace CraigStars
 {
-    public class FleetSummaryContainer : FleetSummary
+    public class FleetSummaryContainer : MapObjectSummary<FleetSprite>
     {
         static ILog log = LogManager.GetLogger(typeof(FleetSummaryContainer));
 
@@ -24,7 +24,7 @@ namespace CraigStars
 
         void OnIconMouseEntered()
         {
-            var design = Fleet.Fleet.GetPrimaryToken().Design;
+            var design = MapObject.Fleet.GetPrimaryToken().Design;
             HullSummaryPopup.Instance.Hull = design.Hull;
             HullSummaryPopup.Instance.ShipDesign = design;
 
@@ -45,10 +45,10 @@ namespace CraigStars
         protected override void UpdateControls()
         {
 
-            if (Fleet != null)
+            if (MapObject != null)
             {
                 var race = Me.Race;
-                var fleet = Fleet.Fleet;
+                var fleet = MapObject.Fleet;
 
                 icon.Texture = TextureLoader.Instance.FindTexture(fleet.GetPrimaryToken().Design);
                 fleetRaceLabel.Text = $"{fleet.Owner.RacePluralName}";

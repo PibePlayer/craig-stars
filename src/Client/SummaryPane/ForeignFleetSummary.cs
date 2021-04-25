@@ -5,7 +5,7 @@ using CraigStars.Utils;
 
 namespace CraigStars
 {
-    public class ForeignFleetSummary : FleetSummary
+    public class ForeignFleetSummary : MapObjectSummary<FleetSprite>
     {
         Label shipCountLabel;
         Label massLabel;
@@ -21,10 +21,10 @@ namespace CraigStars
 
         protected override void UpdateControls()
         {
-            if (Fleet != null)
+            if (MapObject != null)
             {
                 var race = Me.Race;
-                var fleet = Fleet.Fleet;
+                var fleet = MapObject.Fleet;
 
                 if (!fleet.OwnedBy(Me))
                 {

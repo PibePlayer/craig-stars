@@ -1,0 +1,104 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://assets/gui/mineral-packets/mineral-packet.png" type="Texture" id=1]
+[ext_resource path="res://src/Client/SummaryPane/MineralPacketSummaryContainer.cs" type="Script" id=2]
+[ext_resource path="res://src/Client/CargoGrid.tscn" type="PackedScene" id=3]
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0, 0, 0, 1 )
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color( 0.223529, 0.227451, 0.266667, 1 )
+
+[node name="MineralPacketSummaryContainer" type="Control"]
+margin_right = 380.0
+margin_bottom = 114.0
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+margin_right = 508.0
+margin_bottom = 140.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+margin_right = 508.0
+margin_bottom = 114.0
+
+[node name="IconContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer"]
+margin_right = 113.0
+margin_bottom = 114.0
+
+[node name="Icon" type="TextureRect" parent="VBoxContainer/HBoxContainer/IconContainer"]
+margin_right = 113.0
+margin_bottom = 96.0
+rect_min_size = Vector2( 96, 96 )
+mouse_filter = 0
+texture = ExtResource( 1 )
+stretch_mode = 4
+
+[node name="Panel" type="Panel" parent="VBoxContainer/HBoxContainer/IconContainer/Icon"]
+show_behind_parent = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 1
+custom_styles/panel = SubResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="RaceContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer/IconContainer"]
+margin_top = 100.0
+margin_right = 113.0
+margin_bottom = 114.0
+alignment = 1
+
+[node name="RaceLabel" type="Label" parent="VBoxContainer/HBoxContainer/IconContainer/RaceContainer"]
+margin_right = 113.0
+margin_bottom = 14.0
+text = "Humanoids"
+align = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer"]
+margin_left = 117.0
+margin_right = 317.0
+margin_bottom = 114.0
+rect_min_size = Vector2( 200, 0 )
+
+[node name="WarpFactorLabel" type="Label" parent="VBoxContainer/HBoxContainer/VBoxContainer"]
+margin_right = 200.0
+margin_bottom = 14.0
+text = "Traveling At Warp 10"
+
+[node name="DestinationContainer" type="GridContainer" parent="VBoxContainer/HBoxContainer/VBoxContainer"]
+margin_top = 18.0
+margin_right = 200.0
+margin_bottom = 32.0
+columns = 2
+
+[node name="DestinationLabel" type="Label" parent="VBoxContainer/HBoxContainer/VBoxContainer/DestinationContainer"]
+margin_right = 78.0
+margin_bottom = 14.0
+text = "Destination:"
+
+[node name="Destination" type="Label" parent="VBoxContainer/HBoxContainer/VBoxContainer/DestinationContainer"]
+margin_left = 82.0
+margin_right = 200.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+text = "Taurus"
+align = 2
+
+[node name="CargoGrid" parent="VBoxContainer/HBoxContainer/VBoxContainer" instance=ExtResource( 3 )]
+margin_top = 36.0
+margin_right = 200.0
+margin_bottom = 114.0
+size_flags_horizontal = 1
+size_flags_vertical = 3
+ShowColonists = false

@@ -5,20 +5,20 @@ using CraigStars.Utils;
 
 namespace CraigStars
 {
-    public class FleetSummary : Control
+    public abstract class MapObjectSummary<T> : Control where T : MapObjectSprite
     {
         protected Player Me { get => PlayersManager.Me; }
 
-        protected FleetSprite Fleet
+        protected T MapObject
         {
-            get => fleet;
+            get => mapObject;
             set
             {
-                fleet = value;
+                mapObject = value;
                 UpdateControls();
             }
         }
-        FleetSprite fleet;
+        T mapObject;
 
         public override void _Ready()
         {
@@ -34,17 +34,15 @@ namespace CraigStars
 
         void OnMapObjectSelected(MapObjectSprite mapObject)
         {
-            Fleet = mapObject as FleetSprite;
+            MapObject = mapObject as T;
         }
 
         void OnTurnPassed(PublicGameInfo gameInfo)
         {
-            Fleet = null;
+            MapObject = null;
             UpdateControls();
         }
 
-        protected virtual void UpdateControls()
-        {
-        }
+        protected abstract void UpdateControls();
     }
 }

@@ -37,6 +37,7 @@ namespace CraigStars
             if (player.WormholesByGuid.TryGetValue(item.Destination.Guid, out var playerDestination))
             {
                 itemReport.Destination = playerDestination;
+                playerDestination.Destination = itemReport;
             }
         }
 

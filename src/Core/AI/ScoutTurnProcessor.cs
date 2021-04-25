@@ -11,7 +11,7 @@ namespace CraigStars
     /// </summary>
     public class ScoutTurnProcessor : TurnProcessor
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(ScoutTurnProcessor));
+        static CSLog log = LogProvider.GetLogger(typeof(ScoutTurnProcessor));
 
         public ScoutTurnProcessor(PublicGameInfo gameInfo) : base(gameInfo) { }
 

@@ -149,7 +149,7 @@ namespace CraigStars
     /// </summary>
     public class BattleEngine
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(BattleEngine));
+        static CSLog log = LogProvider.GetLogger(typeof(BattleEngine));
 
         // TODO: make this algorithmic
         readonly Vector2[] PositionsByPlayer = new Vector2[] {

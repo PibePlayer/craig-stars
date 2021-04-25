@@ -7,7 +7,7 @@ namespace CraigStars
 {
     public class LoadGameMenu : MarginContainer
     {
-        static ILog log = LogManager.GetLogger(typeof(LoadGameMenu));
+        static CSLog log = LogProvider.GetLogger(typeof(LoadGameMenu));
 
         Loader loader;
         Button loadButton;

@@ -6,7 +6,7 @@ namespace CraigStars
 {
     public class Loader : Control
     {
-        static ILog log = LogManager.GetLogger(typeof(Loader));
+        static CSLog log = LogProvider.GetLogger(typeof(Loader));
         ResourceInteractiveLoader loader;
         TextureProgress progress;
         Tween tween;

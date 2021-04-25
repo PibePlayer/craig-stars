@@ -9,7 +9,7 @@ namespace CraigStars.Singletons
 {
     public class RPC : Node
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(RPC));
+        static CSLog log = LogProvider.GetLogger(typeof(RPC));
 
         private string LogPrefix { get => this.IsServer() ? "Server:" : "Client:"; }
 

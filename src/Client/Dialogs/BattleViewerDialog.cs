@@ -1,6 +1,5 @@
 using CraigStars.Singletons;
 using Godot;
-using log4net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +8,7 @@ namespace CraigStars
 {
     public class BattleViewerDialog : GameViewDialog
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(BattleViewerDialog));
+        static CSLog log = LogProvider.GetLogger(typeof(BattleViewerDialog));
 
         [Export]
         public int GridSize { get; set; } = 10;

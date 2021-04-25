@@ -1,6 +1,5 @@
 using CraigStars.Singletons;
 using Godot;
-using log4net;
 using System;
 
 namespace CraigStars
@@ -8,7 +7,7 @@ namespace CraigStars
 
     public class FleetCargoTransfer : VBoxContainer, ICargoTransferControl
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(FleetCargoTransfer));
+        static CSLog log = LogProvider.GetLogger(typeof(FleetCargoTransfer));
         public event CargoTransferRequested CargoTransferRequestedEvent;
 
         public ICargoHolder CargoHolder

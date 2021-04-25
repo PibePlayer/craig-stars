@@ -14,7 +14,7 @@ namespace CraigStars
     /// </summary>
     public class PublicGameInfo
     {
-        static ILog log = LogManager.GetLogger(typeof(PublicGameInfo));
+        static CSLog log = LogProvider.GetLogger(typeof(PublicGameInfo));
 
         public string Name { get; set; } = "A Barefoot Jaywalk";
         public int Year { get; set; } = 2400;

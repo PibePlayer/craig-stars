@@ -11,7 +11,7 @@ namespace CraigStars
     /// </summary>
     public class FleetOrderExecutor
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(FleetOrderExecutor));
+        static CSLog log = LogProvider.GetLogger(typeof(FleetOrderExecutor));
 
         public Game Game { get; }
 

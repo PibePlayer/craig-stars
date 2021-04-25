@@ -8,7 +8,7 @@ namespace CraigStars
 {
     public class PlayerNumConverter<T> : JsonConverter<T> where T : PublicPlayerInfo
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(PlayerNumConverter<T>));
+        static CSLog log = LogProvider.GetLogger(typeof(PlayerNumConverter<T>));
         public List<T> Players { get; }
 
         public PlayerNumConverter(List<T> players)

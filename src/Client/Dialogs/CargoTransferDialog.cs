@@ -1,14 +1,13 @@
 using CraigStars.Singletons;
 using CraigStars.Utils;
 using Godot;
-using log4net;
 using System;
 
 namespace CraigStars
 {
     public class CargoTransferDialog : GameViewDialog
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(CargoTransferDialog));
+        static CSLog log = LogProvider.GetLogger(typeof(CargoTransferDialog));
 
         public ICargoHolder Source { get; set; }
         public ICargoHolder Dest { get; set; }

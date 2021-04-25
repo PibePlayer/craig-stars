@@ -6,7 +6,7 @@ namespace CraigStars
 {
     public class TechNameConverter : JsonConverter<Tech>
     {
-        static ILog log = LogManager.GetLogger(typeof(TechNameConverter));
+        static CSLog log = LogProvider.GetLogger(typeof(TechNameConverter));
         public ITechStore TechStore { get; set; }
 
         public TechNameConverter(ITechStore techStore)

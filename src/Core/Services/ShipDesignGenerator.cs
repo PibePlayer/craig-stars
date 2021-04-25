@@ -11,7 +11,7 @@ namespace CraigStars
     /// </summary>
     public class ShipDesignGenerator
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(ShipDesignGenerator));
+        static CSLog log = LogProvider.GetLogger(typeof(ShipDesignGenerator));
 
         public delegate TechHullComponent FillGeneralSlotCallback(int index);
 

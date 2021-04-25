@@ -9,7 +9,7 @@ namespace CraigStars
     /// </summary>
     public abstract class TurnGenerationStep
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(TurnGenerationStep));
+        static CSLog log = LogProvider.GetLogger(typeof(TurnGenerationStep));
 
         public Game Game { get; private set; }
         public TurnGenerationState State { get; private set; }

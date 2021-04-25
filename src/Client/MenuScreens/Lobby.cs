@@ -8,7 +8,7 @@ namespace CraigStars
 {
     public class Lobby : MarginContainer
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(Lobby));
+        static CSLog log = LogProvider.GetLogger(typeof(Lobby));
 
         [Export]
         public PackedScene PlayerReadyContainerScene { get; set; }

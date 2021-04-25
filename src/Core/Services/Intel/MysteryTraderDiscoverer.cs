@@ -10,7 +10,7 @@ namespace CraigStars
     /// </summary>
     public class MysteryTraderDiscoverer : Discoverer<MysteryTrader>
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(MysteryTraderDiscoverer));
+        static CSLog log = LogProvider.GetLogger(typeof(MysteryTraderDiscoverer));
 
         ShipDesignDiscoverer designDiscoverer = new ShipDesignDiscoverer();
 

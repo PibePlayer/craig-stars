@@ -22,7 +22,7 @@ namespace CraigStars
     /// </summary>
     public class FleetWaypointStep : TurnGenerationStep
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(FleetWaypointStep));
+        static CSLog log = LogProvider.GetLogger(typeof(FleetWaypointStep));
         public const string ProcessedWaypointsContextKey = "ProcessedWaypoints";
 
         HashSet<Waypoint> processedWaypoints = new HashSet<Waypoint>();
@@ -54,7 +54,7 @@ namespace CraigStars
         public override void PreProcess(List<Planet> ownedPlanets)
         {
             base.PreProcess(ownedPlanets);
-            
+
             invasionProcessor = new InvasionProcessor();
             planetDiscoverer = new PlanetDiscoverer();
             processedWaypoints.Clear();

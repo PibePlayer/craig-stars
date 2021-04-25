@@ -16,7 +16,7 @@ namespace CraigStars.Tests
     [TestFixture]
     public class GameTest
     {
-        static ILog log = LogManager.GetLogger(typeof(GameTest));
+        static CSLog log = LogProvider.GetLogger(typeof(GameTest));
 
         /// <summary>
         /// Test helper method to return a simple game
@@ -122,9 +122,9 @@ namespace CraigStars.Tests
             game.Init(new List<Player>() { player, aiPlayer }, rules, StaticTechStore.Instance, new TestGamesManager());
             game.GenerateUniverse();
 
-            // turn off logging but for errors
-            var logger = (Logger)log.Logger;
-            logger.Hierarchy.Root.Level = Level.Error;
+            // // turn off logging but for errors
+            // var logger = (Logger)log.Logger;
+            // logger.Hierarchy.Root.Level = Level.Error;
 
             // generate a thousand turns
             var stopwatch = new Stopwatch();
@@ -143,7 +143,7 @@ namespace CraigStars.Tests
             stopwatch.Stop();
 
             // turn back on logging defaults
-            logger.Hierarchy.Root.Level = Level.All;
+            // logger.Hierarchy.Root.Level = Level.All;
             log.Debug($"Generated {numTurns} turns in {stopwatch.ElapsedMilliseconds / 1000.0f} seconds");
 
             // make sure our turn was generated and the player's report was updated

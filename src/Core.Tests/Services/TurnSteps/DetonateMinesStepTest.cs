@@ -16,7 +16,7 @@ namespace CraigStars.Tests
     [TestFixture]
     public class DetonateMinesStepTest
     {
-        static ILog log = LogManager.GetLogger(typeof(DetonateMinesStepTest));
+        static CSLog log = LogProvider.GetLogger(typeof(DetonateMinesStepTest));
 
         [Test]
         public void DetonateTest()

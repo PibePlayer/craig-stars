@@ -6,7 +6,7 @@ namespace CraigStars.Singletons
 {
     public class HullSummaryPopup : PopupPanel
     {
-        static ILog log = LogManager.GetLogger(typeof(HullSummaryPopup));
+        static CSLog log = LogProvider.GetLogger(typeof(HullSummaryPopup));
 
         private static HullSummaryPopup instance;
         public static HullSummaryPopup Instance

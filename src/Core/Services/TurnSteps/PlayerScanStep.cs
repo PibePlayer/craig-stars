@@ -13,7 +13,7 @@ namespace CraigStars
     /// </summary>
     public class PlayerScanStep : TurnGenerationStep
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(PlayerScanStep));
+        static CSLog log = LogProvider.GetLogger(typeof(PlayerScanStep));
         public PlayerScanStep(Game game) : base(game, TurnGenerationState.Scan) { }
 
         /// <summary>

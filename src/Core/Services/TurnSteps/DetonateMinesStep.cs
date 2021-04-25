@@ -13,7 +13,7 @@ namespace CraigStars
     /// </summary>
     public class DetonateMinesStep : TurnGenerationStep
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(DecayMinesStep));
+        static CSLog log = LogProvider.GetLogger(typeof(DecayMinesStep));
 
         MineFieldDamager mineFieldDamager = new MineFieldDamager();
 

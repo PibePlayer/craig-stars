@@ -13,7 +13,7 @@ namespace CraigStars
     /// </summary>
     public class DecaySalvageStep : TurnGenerationStep
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(DecaySalvageStep));
+        static CSLog log = LogProvider.GetLogger(typeof(DecaySalvageStep));
 
         public DecaySalvageStep(Game game) : base(game, TurnGenerationState.DecaySalvage) { }
 

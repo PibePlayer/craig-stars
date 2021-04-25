@@ -11,7 +11,7 @@ namespace CraigStars.Tests
     [TestFixture]
     public class GameSerializerTest
     {
-        ILog log = LogManager.GetLogger(typeof(GameSerializerTest));
+        static CSLog log = LogProvider.GetLogger(typeof(GameSerializerTest));
 
 
         [Test]

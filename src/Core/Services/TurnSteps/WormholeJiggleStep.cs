@@ -17,7 +17,7 @@ namespace CraigStars
     /// </summary>
     public class WormholeJiggleStep : TurnGenerationStep
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(WormholeJiggleStep));
+        static CSLog log = LogProvider.GetLogger(typeof(WormholeJiggleStep));
 
         WormholeGenerationStep wormholeGenerator;
         HashSet<Vector2> planetPositions;

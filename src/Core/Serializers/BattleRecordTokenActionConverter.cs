@@ -8,7 +8,7 @@ namespace CraigStars
 {
     public class BattleRecordTokenActionConverter : JsonConverter
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(BattleRecordTokenActionConverter));
+        static CSLog log = LogProvider.GetLogger(typeof(BattleRecordTokenActionConverter));
 
         public override bool CanConvert(Type objectType)
         {

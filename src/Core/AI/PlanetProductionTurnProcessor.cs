@@ -11,7 +11,7 @@ namespace CraigStars
     /// </summary>
     public class PlanetProductionTurnProcessor : TurnProcessor
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(PlanetProductionTurnProcessor));
+        static CSLog log = LogProvider.GetLogger(typeof(PlanetProductionTurnProcessor));
 
         // the required population density required of a planet in order to suck people off of it
         // setting this to .33 because we don't want to suck people off a planet until it's reached the

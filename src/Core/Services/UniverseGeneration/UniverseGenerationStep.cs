@@ -9,7 +9,7 @@ namespace CraigStars.UniverseGeneration
     /// </summary>
     public abstract class UniverseGenerationStep
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(UniverseGenerationStep));
+        static CSLog log = LogProvider.GetLogger(typeof(UniverseGenerationStep));
 
         public Game Game { get; private set; }
         public UniverseGenerationState State { get; private set; }

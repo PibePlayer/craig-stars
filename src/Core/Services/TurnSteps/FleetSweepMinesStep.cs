@@ -13,7 +13,7 @@ namespace CraigStars
     /// </summary>
     public class FleetSweepMinesStep : TurnGenerationStep
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(DecayMinesStep));
+        static CSLog log = LogProvider.GetLogger(typeof(DecayMinesStep));
 
         public FleetSweepMinesStep(Game game) : base(game, TurnGenerationState.MineSweeping) { }
 

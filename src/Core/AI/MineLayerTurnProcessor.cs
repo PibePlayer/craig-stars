@@ -11,7 +11,7 @@ namespace CraigStars
     /// </summary>
     public class MineLayerTurnProcessor : TurnProcessor
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(MineLayerTurnProcessor));
+        static CSLog log = LogProvider.GetLogger(typeof(MineLayerTurnProcessor));
 
         public MineLayerTurnProcessor(PublicGameInfo gameInfo) : base(gameInfo) { }
 

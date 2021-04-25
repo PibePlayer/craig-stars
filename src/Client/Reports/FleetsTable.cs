@@ -9,7 +9,7 @@ namespace CraigStars
 {
     public class FleetsTable : Table<Fleet>
     {
-        ILog log = LogManager.GetLogger(typeof(PlanetsTable));
+        static CSLog log = LogProvider.GetLogger(typeof(PlanetsTable));
 
         public bool ShowAll { get; set; }
 

@@ -16,7 +16,7 @@ namespace CraigStars.Tests
     [TestFixture]
     public class MineFieldDamagerTest
     {
-        static ILog log = LogManager.GetLogger(typeof(MineFieldDamagerTest));
+        static CSLog log = LogProvider.GetLogger(typeof(MineFieldDamagerTest));
 
         MineFieldDamager mineFieldDamager = new MineFieldDamager();
 

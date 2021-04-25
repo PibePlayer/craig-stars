@@ -9,7 +9,7 @@ namespace CraigStars
 {
     public class PublicPlayerInfoConverter : JsonConverter<PublicPlayerInfo>
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(PublicPlayerInfoConverter));
+        static CSLog log = LogProvider.GetLogger(typeof(PublicPlayerInfoConverter));
 
         public override PublicPlayerInfo ReadJson(JsonReader reader, Type objectType, PublicPlayerInfo existingValue, bool hasExistingValue, JsonSerializer serializer)
         {

@@ -11,7 +11,7 @@ namespace CraigStars
     /// </summary>
     public class ShipDesignerTurnProcessor : TurnProcessor
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(ShipDesignerTurnProcessor));
+        static CSLog log = LogProvider.GetLogger(typeof(ShipDesignerTurnProcessor));
 
         ShipDesignGenerator shipDesignGenerator = new ShipDesignGenerator();
 

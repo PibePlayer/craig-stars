@@ -9,7 +9,7 @@ namespace CraigStars
     [Tool]
     public class BattleGridSquare : Panel
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(BattleGridSquare));
+        static CSLog log = LogProvider.GetLogger(typeof(BattleGridSquare));
 
         public event Action<BattleGridSquare, BattleGridToken> SelectedEvent;
 

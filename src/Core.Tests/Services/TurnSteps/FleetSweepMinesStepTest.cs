@@ -16,7 +16,7 @@ namespace CraigStars.Tests
     [TestFixture]
     public class FleetSweepMinesStepTest
     {
-        static ILog log = LogManager.GetLogger(typeof(FleetSweepMinesStepTest));
+        static CSLog log = LogProvider.GetLogger(typeof(FleetSweepMinesStepTest));
 
         [Test]
         public void ProcessTest()

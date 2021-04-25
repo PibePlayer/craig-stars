@@ -7,7 +7,7 @@ namespace CraigStars
 {
     public class CustomRacesMenu : MarginContainer
     {
-        static ILog log = LogManager.GetLogger(typeof(CustomRacesMenu));
+        static CSLog log = LogProvider.GetLogger(typeof(CustomRacesMenu));
 
         Button newButton;
         Button editButton;

@@ -10,7 +10,7 @@ namespace CraigStars
     /// </summary>
     public class WormholeDiscoverer : Discoverer<Wormhole>
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(WormholeDiscoverer));
+        static CSLog log = LogProvider.GetLogger(typeof(WormholeDiscoverer));
 
         ShipDesignDiscoverer designDiscoverer = new ShipDesignDiscoverer();
 

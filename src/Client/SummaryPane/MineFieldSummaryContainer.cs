@@ -8,7 +8,7 @@ namespace CraigStars
 {
     public class MineFieldSummaryContainer : Container
     {
-        static ILog log = LogManager.GetLogger(typeof(MineFieldSummaryContainer));
+        static CSLog log = LogProvider.GetLogger(typeof(MineFieldSummaryContainer));
 
         MineFieldSprite mineField;
         TextureRect icon;
@@ -66,7 +66,8 @@ namespace CraigStars
                     decayRate.Text = $"{mineField.MineField.GetDecayRate()} mines / year";
                 }
 
-                switch(mineField.MineField.Type) {
+                switch (mineField.MineField.Type)
+                {
                     case MineFieldType.Standard:
                         icon.Texture = ResourceLoader.Load<Texture>("res://assets/gui/minefields/StandardMineField.png");
                         break;

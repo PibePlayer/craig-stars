@@ -3,14 +3,13 @@ using System;
 using System.Collections.Generic;
 
 using CraigStars.Singletons;
-using log4net;
 using CraigStars.Utils;
 
 namespace CraigStars
 {
     public class FleetOrbitingTile : FleetTile
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(FleetOrbitingTile));
+        static CSLog log = LogProvider.GetLogger(typeof(FleetOrbitingTile));
 
         Button gotoButton;
         Button cargoTransferButton;

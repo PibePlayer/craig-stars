@@ -11,7 +11,7 @@ namespace CraigStars
     /// </summary>
     public class FleetBattleStep : TurnGenerationStep
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(FleetBattleStep));
+        static CSLog log = LogProvider.GetLogger(typeof(FleetBattleStep));
 
         BattleEngine battleEngine;
 

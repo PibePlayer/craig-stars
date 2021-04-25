@@ -10,7 +10,7 @@ namespace CraigStars
     /// </summary>
     public class ShipDesignDiscoverer : Discoverer<ShipDesign>
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(ShipDesignDiscoverer));
+        static CSLog log = LogProvider.GetLogger(typeof(ShipDesignDiscoverer));
 
         protected override List<ShipDesign> GetOwnedItemReports(Player player) => player.Designs;
         protected override List<ShipDesign> GetForeignItemReports(Player player) => player.ForeignDesigns;

@@ -12,7 +12,7 @@ namespace CraigStars
     /// </summary>
     public class Battle
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(Battle));
+        static CSLog log = LogProvider.GetLogger(typeof(Battle));
 
         public Guid Guid { get; set; } = Guid.NewGuid();
 

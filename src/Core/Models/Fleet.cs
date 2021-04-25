@@ -17,7 +17,7 @@ namespace CraigStars
     [JsonObject(IsReference = true)]
     public class Fleet : MapObject, SerializableMapObject, ICargoHolder, IAggregatable<FleetAggregate>
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(Fleet));
+        static CSLog log = LogProvider.GetLogger(typeof(Fleet));
 
         #region Stats
 

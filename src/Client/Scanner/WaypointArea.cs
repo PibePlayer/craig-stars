@@ -7,7 +7,7 @@ namespace CraigStars
 {
     public class WaypointArea : Area2D
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(WaypointArea));
+        static CSLog log = LogProvider.GetLogger(typeof(WaypointArea));
 
         public Fleet Fleet { get; set; }
 

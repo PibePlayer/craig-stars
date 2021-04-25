@@ -14,7 +14,7 @@ namespace CraigStars
     /// </summary>
     public class FleetLayMinesStep : TurnGenerationStep
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(FleetLayMinesStep));
+        static CSLog log = LogProvider.GetLogger(typeof(FleetLayMinesStep));
 
         public FleetLayMinesStep(Game game) : base(game, TurnGenerationState.MineLaying) { }
 

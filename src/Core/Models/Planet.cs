@@ -11,7 +11,7 @@ namespace CraigStars
     [JsonObject(IsReference = true)]
     public class Planet : MapObject, SerializableMapObject, ICargoHolder
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(Planet));
+        static CSLog log = LogProvider.GetLogger(typeof(Planet));
         public const int UnlimitedFuel = -1;
 
         #region Scannable Stats

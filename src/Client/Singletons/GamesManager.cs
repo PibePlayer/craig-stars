@@ -16,7 +16,7 @@ namespace CraigStars.Singletons
     /// </summary>
     public class GamesManager : Node, IGamesManager
     {
-        static ILog log = LogManager.GetLogger(typeof(GamesManager));
+        static CSLog log = LogProvider.GetLogger(typeof(GamesManager));
 
         Dictionary<Game, GameSerializer> GameSerializerByGame = new Dictionary<Game, GameSerializer>();
 

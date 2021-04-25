@@ -10,7 +10,7 @@ namespace CraigStars
     /// </summary>
     public class MineralPacketDiscoverer : Discoverer<MineralPacket>
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(MineralPacketDiscoverer));
+        static CSLog log = LogProvider.GetLogger(typeof(MineralPacketDiscoverer));
 
         ShipDesignDiscoverer designDiscoverer = new ShipDesignDiscoverer();
 

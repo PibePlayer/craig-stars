@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 
 using CraigStars.Singletons;
-using log4net;
 using CraigStars.Utils;
 using System.Linq;
 
@@ -11,7 +10,7 @@ namespace CraigStars
 {
     public class OtherFleetsHereTile : FleetTile
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(OtherFleetsHereTile));
+        static CSLog log = LogProvider.GetLogger(typeof(OtherFleetsHereTile));
 
         OptionButton otherFleetsOptionButton;
         Button gotoButton;

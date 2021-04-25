@@ -9,7 +9,7 @@ namespace CraigStars.Tests
     [TestFixture]
     public class RaceSerializerTest
     {
-        ILog log = LogManager.GetLogger(typeof(RaceSerializerTest));
+        static CSLog log = LogProvider.GetLogger(typeof(RaceSerializerTest));
         [Test]
         public void TestSerialize()
         {

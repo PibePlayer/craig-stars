@@ -10,7 +10,7 @@ namespace CraigStars
 {
     public class Scanner : Node2D
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(Scanner));
+        static CSLog log = LogProvider.GetLogger(typeof(Scanner));
 
         protected Player Me { get => PlayersManager.Me; }
 

@@ -13,7 +13,7 @@ namespace CraigStars.UniverseGeneration
     /// </summary>
     public class PlayerHomeworldGenerationStep : UniverseGenerationStep
     {
-        static ILog log = LogManager.GetLogger(typeof(PlayerHomeworldGenerationStep));
+        static CSLog log = LogProvider.GetLogger(typeof(PlayerHomeworldGenerationStep));
 
         public PlayerHomeworldGenerationStep(Game game) : base(game, UniverseGenerationState.Homeworlds) { }
 

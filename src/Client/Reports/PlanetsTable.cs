@@ -10,7 +10,7 @@ namespace CraigStars
 {
     public class PlanetsTable : Table<Planet>
     {
-        ILog log = LogManager.GetLogger(typeof(PlanetsTable));
+        static CSLog log = LogProvider.GetLogger(typeof(PlanetsTable));
 
         public bool ShowAll { get; set; }
 

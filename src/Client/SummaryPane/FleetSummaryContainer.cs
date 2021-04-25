@@ -7,7 +7,7 @@ namespace CraigStars
 {
     public class FleetSummaryContainer : MapObjectSummary<FleetSprite>
     {
-        static ILog log = LogManager.GetLogger(typeof(FleetSummaryContainer));
+        static CSLog log = LogProvider.GetLogger(typeof(FleetSummaryContainer));
 
         TextureRect icon;
         Label fleetRaceLabel;

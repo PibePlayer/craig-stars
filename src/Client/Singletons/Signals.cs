@@ -15,7 +15,7 @@ namespace CraigStars.Singletons
     /// </summary>
     public static class Signals
     {
-        static ILog log = LogManager.GetLogger(typeof(Signals));
+        static CSLog log = LogProvider.GetLogger(typeof(Signals));
 
         public delegate void YearUpdate(PublicGameInfo gameInfo);
         public delegate void GameStart(PublicGameInfo gameInfo);

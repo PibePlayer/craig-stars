@@ -12,7 +12,7 @@ namespace CraigStars
     /// </summary>
     public class OtherObjectsPopupMenu : PopupMenu
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(OtherObjectsPopupMenu));
+        static CSLog log = LogProvider.GetLogger(typeof(OtherObjectsPopupMenu));
 
         protected Player Me { get => PlayersManager.Me; }
 

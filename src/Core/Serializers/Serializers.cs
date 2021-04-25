@@ -13,7 +13,7 @@ namespace CraigStars
     /// </summary>
     public static class Serializers
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(Serializers));
+        static CSLog log = LogProvider.GetLogger(typeof(Serializers));
         static ITraceWriter traceWriter = new MemoryTraceWriter();
         static JsonSerializerSettings simpleSettings;
 

@@ -18,7 +18,7 @@ namespace CraigStars
     /// </summary>
     public class Game
     {
-        static ILog log = LogManager.GetLogger(typeof(Game));
+        static CSLog log = LogProvider.GetLogger(typeof(Game));
 
         /// <summary>
         /// This event is triggered when turn events happen

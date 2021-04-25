@@ -8,7 +8,7 @@ namespace CraigStars
 {
     public class SalvageSummaryContainer : MapObjectSummary<SalvageSprite>
     {
-        static ILog log = LogManager.GetLogger(typeof(MineFieldSummaryContainer));
+        static CSLog log = LogProvider.GetLogger(typeof(MineFieldSummaryContainer));
 
         CargoGrid cargoGrid;
 

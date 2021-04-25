@@ -13,7 +13,7 @@ namespace CraigStars.Singletons
     /// </summary>
     public class RacesManager : Node
     {
-        static ILog log = LogManager.GetLogger(typeof(RacesManager));
+        static CSLog log = LogProvider.GetLogger(typeof(RacesManager));
 
         private static RacesManager instance;
 

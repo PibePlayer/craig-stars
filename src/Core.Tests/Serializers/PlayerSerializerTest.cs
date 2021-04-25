@@ -13,7 +13,7 @@ namespace CraigStars.Tests
     [TestFixture]
     public class PlayerSerializerTest
     {
-        ILog log = LogManager.GetLogger(typeof(PlayerSerializerTest));
+        static CSLog log = LogProvider.GetLogger(typeof(PlayerSerializerTest));
 
 
         [Test]

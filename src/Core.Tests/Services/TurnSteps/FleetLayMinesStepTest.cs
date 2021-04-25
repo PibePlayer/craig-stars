@@ -16,7 +16,7 @@ namespace CraigStars.Tests
     [TestFixture]
     public class FleetLayMinesStepTest
     {
-        static ILog log = LogManager.GetLogger(typeof(FleetLayMinesStepTest));
+        static CSLog log = LogProvider.GetLogger(typeof(FleetLayMinesStepTest));
 
         [Test]
         public void LayMineFieldTest()

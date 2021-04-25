@@ -9,7 +9,7 @@ namespace CraigStars
     [Tool]
     public class HullComponentPanel : Panel
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(HullComponentPanel));
+        static CSLog log = LogProvider.GetLogger(typeof(HullComponentPanel));
 
         public event Action<HullComponentPanel, TechHullComponent> AddHullComponentEvent;
         public event Action<HullComponentPanel, TechHullComponent> RemoveHullComponentEvent;

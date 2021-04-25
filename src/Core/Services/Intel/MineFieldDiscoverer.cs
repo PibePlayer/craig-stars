@@ -10,7 +10,7 @@ namespace CraigStars
     /// </summary>
     public class MineFieldDiscoverer : Discoverer<MineField>
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(MineFieldDiscoverer));
+        static CSLog log = LogProvider.GetLogger(typeof(MineFieldDiscoverer));
 
         ShipDesignDiscoverer designDiscoverer = new ShipDesignDiscoverer();
 

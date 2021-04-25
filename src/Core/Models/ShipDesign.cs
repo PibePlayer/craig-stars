@@ -12,7 +12,7 @@ namespace CraigStars
     [JsonObject(IsReference = true)]
     public class ShipDesign : Discoverable
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(ShipDesign));
+        static CSLog log = LogProvider.GetLogger(typeof(ShipDesign));
         public string Name { get; set; }
         public int Version { get; set; } = 1;
         public Guid Guid { get; set; } = Guid.NewGuid();

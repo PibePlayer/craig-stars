@@ -16,7 +16,7 @@ namespace CraigStars.Tests
     [TestFixture]
     public class DecayMinesStepTest
     {
-        static ILog log = LogManager.GetLogger(typeof(DecayMinesStepTest));
+        static CSLog log = LogProvider.GetLogger(typeof(DecayMinesStepTest));
 
         [Test]
         public void DecayTest()

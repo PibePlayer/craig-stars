@@ -14,7 +14,7 @@ namespace CraigStars
     /// </summary>
     public class GameSerializer
     {
-        static ILog log = LogManager.GetLogger(typeof(GameSerializer));
+        static CSLog log = LogProvider.GetLogger(typeof(GameSerializer));
 
         JsonSerializerSettings gameSerializerSettings;
         JsonSerializerSettings playerSerializerSettings;

@@ -15,7 +15,7 @@ namespace CraigStars
     /// </summary>
     public class PlayerContractResolver<T> : DefaultContractResolver where T : PublicPlayerInfo
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(PlayerContractResolver<T>));
+        static CSLog log = LogProvider.GetLogger(typeof(PlayerContractResolver<T>));
         List<T> players;
         PlayerNumConverter<T> playerNumConverter;
         TechNameConverter techNameConverter;

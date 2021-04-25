@@ -11,7 +11,7 @@ namespace CraigStars
     /// </summary>
     public class MineFieldDamager
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(MineFieldDamager));
+        static CSLog log = LogProvider.GetLogger(typeof(MineFieldDamager));
 
         /// <summary>
         /// Hit a minefield, taking damage

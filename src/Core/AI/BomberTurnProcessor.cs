@@ -11,7 +11,7 @@ namespace CraigStars
     /// </summary>
     public class BomberTurnProcessor : TurnProcessor
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(BomberTurnProcessor));
+        static CSLog log = LogProvider.GetLogger(typeof(BomberTurnProcessor));
 
         public BomberTurnProcessor(PublicGameInfo gameInfo) : base(gameInfo) { }
 

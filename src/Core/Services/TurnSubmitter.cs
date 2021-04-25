@@ -11,7 +11,7 @@ namespace CraigStars
     /// </summary>
     public class TurnSubmitter
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(TurnSubmitter));
+        static CSLog log = LogProvider.GetLogger(typeof(TurnSubmitter));
 
         public Game Game { get; }
         FleetOrderExecutor fleetOrderExecutor;

@@ -10,7 +10,7 @@ namespace CraigStars
 {
     public class ProductionQueueDialog : GameViewDialog
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(ProductionQueueDialog));
+        static CSLog log = LogProvider.GetLogger(typeof(ProductionQueueDialog));
 
         // the planet to use in this dialog
         public Planet Planet { get; set; } = new Planet();

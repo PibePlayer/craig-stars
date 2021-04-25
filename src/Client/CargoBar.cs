@@ -6,7 +6,7 @@ namespace CraigStars
 {
     public class CargoBar : Control
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(CargoBar));
+        static CSLog log = LogProvider.GetLogger(typeof(CargoBar));
 
         /// <summary>
         /// delegate function called when a value on the bar is clicked, or dragged, reporting the updated value

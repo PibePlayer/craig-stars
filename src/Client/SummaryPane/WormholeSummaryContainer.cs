@@ -8,7 +8,7 @@ namespace CraigStars
 {
     public class WormholeSummaryContainer : MapObjectSummary<WormholeSprite>
     {
-        static ILog log = LogManager.GetLogger(typeof(WormholeSummaryContainer));
+        static CSLog log = LogProvider.GetLogger(typeof(WormholeSummaryContainer));
 
         TextureRect icon;
         Label location;

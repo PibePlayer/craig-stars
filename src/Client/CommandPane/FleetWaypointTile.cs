@@ -1,12 +1,11 @@
 using System;
 using CraigStars.Singletons;
-using log4net;
 
 namespace CraigStars
 {
     public class FleetWaypointTile : FleetTile
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(FleetWaypointTile));
+        static CSLog log = LogProvider.GetLogger(typeof(FleetWaypointTile));
 
         /// <summary>
         /// Return a copy of the active waypoint, or null if we don't have one

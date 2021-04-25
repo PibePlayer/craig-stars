@@ -12,7 +12,7 @@ namespace CraigStars
 {
     public class GameView : Node
     {
-        ILog log = LogManager.GetLogger(typeof(GameView));
+        static CSLog log = LogProvider.GetLogger(typeof(GameView));
 
         /// <summary>
         /// The game node creates a server in single player or host mode

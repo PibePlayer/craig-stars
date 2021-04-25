@@ -27,7 +27,7 @@ namespace CraigStars.Singletons
         }
         int activePlayer = 0;
 
-        ILog log = LogManager.GetLogger(typeof(PlayersManager));
+        CSLog log = LogProvider.GetLogger(typeof(PlayersManager));
 
         public Color[] PlayerColors { get; } = new Color[] {
             new Color("c33232"),

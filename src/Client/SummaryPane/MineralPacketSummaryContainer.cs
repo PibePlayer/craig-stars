@@ -7,7 +7,7 @@ namespace CraigStars
 {
     public class MineralPacketSummaryContainer : MapObjectSummary<MineralPacketSprite>
     {
-        static ILog log = LogManager.GetLogger(typeof(MineralPacketSummaryContainer));
+        static CSLog log = LogProvider.GetLogger(typeof(MineralPacketSummaryContainer));
 
         TextureRect icon;
         Label mineralpacketRaceLabel;

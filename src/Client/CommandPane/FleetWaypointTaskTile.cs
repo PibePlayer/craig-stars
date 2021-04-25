@@ -3,14 +3,13 @@ using System;
 using System.Collections.Generic;
 
 using CraigStars.Singletons;
-using log4net;
 using CraigStars.Utils;
 
 namespace CraigStars
 {
     public class FleetWaypointTaskTile : FleetWaypointTile
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(FleetWaypointTaskTile));
+        static CSLog log = LogProvider.GetLogger(typeof(FleetWaypointTaskTile));
 
         OptionButton waypointTask;
         Control transportContainer;

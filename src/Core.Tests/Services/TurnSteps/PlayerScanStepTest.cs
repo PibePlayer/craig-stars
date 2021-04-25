@@ -17,7 +17,7 @@ namespace CraigStars.Tests
     [TestFixture]
     public class PlayerScanStepTest
     {
-        static ILog log = LogManager.GetLogger(typeof(PlayerScanStepTest));
+        static CSLog log = LogProvider.GetLogger(typeof(PlayerScanStepTest));
 
         [Test]
         public void TestScan()

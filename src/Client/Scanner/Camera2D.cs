@@ -5,7 +5,7 @@ namespace CraigStars
 {
     public class Camera2D : Godot.Camera2D
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(Camera2D));
+        static CSLog log = LogProvider.GetLogger(typeof(Camera2D));
 
         [Export]
         public float ZoomConstant { get; set; } = .05f;

@@ -10,7 +10,7 @@ namespace CraigStars
 {
     public class TechTree : VBoxContainer
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(TechTree));
+        static CSLog log = LogProvider.GetLogger(typeof(TechTree));
 
         /// <summary>
         /// Fired when the selected tech changes

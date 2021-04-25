@@ -10,7 +10,7 @@ namespace CraigStars
     /// </summary>
     public class FleetDiscoverer : Discoverer<Fleet>
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(FleetDiscoverer));
+        static CSLog log = LogProvider.GetLogger(typeof(FleetDiscoverer));
 
         ShipDesignDiscoverer designDiscoverer = new ShipDesignDiscoverer();
 

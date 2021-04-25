@@ -13,7 +13,7 @@ namespace CraigStars
     /// </summary>
     public class DecayMinesStep : TurnGenerationStep
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(DecayMinesStep));
+        static CSLog log = LogProvider.GetLogger(typeof(DecayMinesStep));
 
         public DecayMinesStep(Game game) : base(game, TurnGenerationState.MineLaying) { }
 

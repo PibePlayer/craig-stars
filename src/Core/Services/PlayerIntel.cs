@@ -11,7 +11,7 @@ namespace CraigStars
     /// </summary>
     public class PlayerIntel
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(PlayerIntel));
+        static CSLog log = LogProvider.GetLogger(typeof(PlayerIntel));
 
         PlanetDiscoverer planetDiscoverer = new PlanetDiscoverer();
         FleetDiscoverer fleetDiscoverer = new FleetDiscoverer();

@@ -1,5 +1,4 @@
 using Godot;
-using log4net;
 using System;
 
 namespace CraigStars
@@ -7,7 +6,7 @@ namespace CraigStars
     [Tool]
     public class WarpFactor : Control
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(WarpFactor));
+        static CSLog log = LogProvider.GetLogger(typeof(WarpFactor));
         public event Action<int> WarpSpeedChangedEvent;
 
         [Export]

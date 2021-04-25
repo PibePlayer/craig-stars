@@ -12,7 +12,7 @@ namespace CraigStars
 {
     public class Player : PublicPlayerInfo
     {
-        static ILog log = LogManager.GetLogger(typeof(Player));
+        static CSLog log = LogProvider.GetLogger(typeof(Player));
 
         /// <summary>
         /// /// The player needs to know information about the game

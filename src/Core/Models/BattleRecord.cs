@@ -12,7 +12,7 @@ namespace CraigStars
     /// </summary>
     public class BattleRecord : Discoverable
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(BattleRecord));
+        static CSLog log = LogProvider.GetLogger(typeof(BattleRecord));
 
 
         public Guid Guid { get; set; } = Guid.NewGuid();

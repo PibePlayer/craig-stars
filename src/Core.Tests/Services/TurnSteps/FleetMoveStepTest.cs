@@ -16,7 +16,7 @@ namespace CraigStars.Tests
     [TestFixture]
     public class FleetMoveStepTest
     {
-        static ILog log = LogManager.GetLogger(typeof(FleetMoveStepTest));
+        static CSLog log = LogProvider.GetLogger(typeof(FleetMoveStepTest));
 
         [Test]
         public void TestCheckForMineFieldHitSpeed()

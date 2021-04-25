@@ -9,7 +9,7 @@ namespace CraigStars
 {
     public class TurnGenerator
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(TurnGenerator));
+        static CSLog log = LogProvider.GetLogger(typeof(TurnGenerator));
 
         public event Action<TurnGenerationState> TurnGeneratorAdvancedEvent;
         public void PublishTurnGeneratorAdvancedEvent(TurnGenerationState state) => TurnGeneratorAdvancedEvent?.Invoke(state);

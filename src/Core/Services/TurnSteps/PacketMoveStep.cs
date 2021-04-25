@@ -14,7 +14,7 @@ namespace CraigStars
     /// </summary>
     public class PacketMoveStep : TurnGenerationStep
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(PacketMoveStep));
+        static CSLog log = LogProvider.GetLogger(typeof(PacketMoveStep));
         public const string ProcessedPacketsContextKey = "ProcessedPackets";
 
         HashSet<MineralPacket> processedMineralPackets = new HashSet<MineralPacket>();

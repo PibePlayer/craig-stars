@@ -14,4 +14,9 @@ mono_crash*
 
 obj
 bin
+
+# WAT and NUnit tests
+tests/results
+tests/test_metadata.json
+tests/results.xml
 TestResult.xml

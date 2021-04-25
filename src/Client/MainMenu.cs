@@ -76,7 +76,7 @@ namespace CraigStars
         void OnJoinWindowCancelButtonPressed()
         {
             joining = false;
-            Client.Instance.CloseConnection();
+            NetworkClient.Instance.CloseConnection();
             ((Button)joinWindow.FindNode("CancelButton")).Disabled = true;
             ((Button)joinWindow.FindNode("JoinButton")).Text = "Join";
         }
@@ -90,7 +90,7 @@ namespace CraigStars
             var port = int.Parse(((LineEdit)joinWindow.FindNode("PortEdit")).Text);
             Settings.Instance.ClientHost = host;
             Settings.Instance.ClientPort = port;
-            Client.Instance.JoinGame(host, port);
+            NetworkClient.Instance.JoinGame(host, port);
         }
 
         void OnExitButtonPressed()

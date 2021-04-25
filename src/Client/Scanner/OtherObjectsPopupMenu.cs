@@ -30,7 +30,7 @@ namespace CraigStars
         public override void _ExitTree()
         {
             base._ExitTree();
-            Signals.ViewportAlternateSelectEvent += OnViewportAlternateSelect;
+            Signals.ViewportAlternateSelectEvent -= OnViewportAlternateSelect;
         }
 
         /// <summary>

@@ -1,24 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
-    <RootNamespace>CraigStars.Tests</RootNamespace>
-    <IsTestProject>true</IsTestProject>
-    <GenerateProgramFile>false</GenerateProgramFile>
+    <PropertyGroup>
+        <TargetFramework>net472</TargetFramework>
+        <RootNamespace>CraigStars.Tests</RootNamespace>
+        <IsTestProject>true</IsTestProject>
+        <GenerateProgramFile>false</GenerateProgramFile>
+    </PropertyGroup>
 
-  </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="GodotSharp" Version="3.2.3" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
-    <PackageReference Include="NUnit" Version="3.11.0" />
-    <PackageReference Include="NUnitLite" Version="3.11.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
-    <PackageReference Include="log4net" Version="2.0.12"></PackageReference>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3"></PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Core\Core.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\craig-stars.csproj" />
+      </ItemGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="GodotSharp" Version="3.2.3" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
+        <PackageReference Include="NUnit" Version="3.11.0" />
+        <PackageReference Include="NUnitLite" Version="3.11.0" />
+        <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
+        <PackageReference Include="log4net" Version="2.0.12"></PackageReference>
+        <PackageReference Include="Newtonsoft.Json" Version="12.0.3"></PackageReference>
+    </ItemGroup>
 
 </Project>

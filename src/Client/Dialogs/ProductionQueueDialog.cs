@@ -136,7 +136,10 @@ namespace CraigStars
                 }
             }
 
-            availableItemsTree.SetColumnMinWidth(1, (int)availableItemsTree.GetFont("").GetStringSize("9999").x);
+            if (availableItemsTree.Columns > 1)
+            {
+                availableItemsTree.SetColumnMinWidth(1, (int)availableItemsTree.GetFont("").GetStringSize("9999").x);
+            }
 
             // add each type of item.
             AddAvailableItem(new ProductionQueueItem(QueueItemType.Factory), index: availableItemIndex++);

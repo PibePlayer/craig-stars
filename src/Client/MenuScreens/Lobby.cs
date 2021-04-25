@@ -127,7 +127,7 @@ namespace CraigStars
             }
             else
             {
-                Client.Instance.CloseConnection();
+                NetworkClient.Instance.CloseConnection();
             }
 
             PlayersManager.Instance.Reset();

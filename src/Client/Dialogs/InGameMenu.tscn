@@ -2,7 +2,7 @@
 
 [ext_resource path="res://src/Client/Dialogs/InGameMenu.cs" type="Script" id=1]
 [ext_resource path="res://src/Client/Dialogs/ConfirmDialog.tscn" type="PackedScene" id=2]
-[ext_resource path="res://src/Client/Loader.tscn" type="PackedScene" id=3]
+[ext_resource path="res://src/Client/Controls/Loader.tscn" type="PackedScene" id=3]
 
 [node name="InGameMenu" type="WindowDialog"]
 pause_mode = 2

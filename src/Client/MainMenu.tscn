@@ -2,7 +2,7 @@
 
 [ext_resource path="res://src/Client/MainMenu.cs" type="Script" id=1]
 [ext_resource path="res://assets/gui/DroidSans.ttf" type="DynamicFontData" id=2]
-[ext_resource path="res://src/Client/NumLineEdit.tscn" type="PackedScene" id=3]
+[ext_resource path="res://src/Client/Controls/NumLineEdit.tscn" type="PackedScene" id=3]
 
 [sub_resource type="DynamicFont" id=1]
 size = 50

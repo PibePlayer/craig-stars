@@ -3,7 +3,7 @@ using Godot;
 
 namespace CraigStars
 {
-    public class PlanetStatusTile : PlanetTile
+    public class PlanetStatus : PlanetTile
     {
         Label population;
         Label resources;

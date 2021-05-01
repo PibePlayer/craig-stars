@@ -7,40 +7,33 @@ using System.Linq;
 
 namespace CraigStars
 {
-    public class FleetsTable : Table<Fleet>
+    public class FleetsTable : ReportTable<Fleet>
     {
         static CSLog log = LogProvider.GetLogger(typeof(PlanetsTable));
 
         public bool ShowAll { get; set; }
 
-        public override void _Ready()
-        {
-            ResetColumns();
-            base._Ready();
-        }
+        public Column ownerColumn;
 
-        protected override void OnShowOwnedPressed() { ShowAll = false; ResetColumns(); UpdateItems(); }
-        protected override void OnShowAllPressed() { ShowAll = true; ResetColumns(); UpdateItems(); }
+        protected override void OnShowOwnedPressed() { ShowAll = false; ownerColumn.Hidden = !ShowAll; base.OnShowOwnedPressed(); }
+        protected override void OnShowAllPressed() { ShowAll = true; ownerColumn.Hidden = !ShowAll; base.OnShowAllPressed(); }
 
-        void ResetColumns()
+
+        protected override void AddColumns()
         {
-            Columns.Clear();
-            Columns.AddRange(new List<string>() {
+            ownerColumn = new Column("Owner", hidden: !ShowAll);
+            table.Data.AddColumns(
             "Name",
+            ownerColumn,
             "Id",
             "Location",
             "Destination",
             "ETA",
             "Task",
             "Fuel",
-            "Cargo",
-            "Mass",
-        });
-            // maybe we need a column header class with a "hidden" field?
-            if (ShowAll)
-            {
-                Columns.Insert(1, "Owner");
-            }
+            new Column("Cargo", scene: "res://src/Client/Controls/Table/CargoCell.tscn"),
+            "Mass"
+            );
         }
 
         /// <summary>
@@ -48,12 +41,13 @@ namespace CraigStars
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        protected override ColumnData[] CreateColumnData(Fleet item)
+        protected override List<Cell> CreateCellsForItem(Fleet item)
         {
             var player = PlayersManager.Me;
             var race = player.Race;
 
             var owner = "--";
+            var ownerColor = Colors.Gray;
             var location = $"Space: ({item.Position.x:.##}, {item.Position.y:.##})"; ;
             var destination = "--";
             var etaText = "--";
@@ -63,6 +57,14 @@ namespace CraigStars
             if (item.Owner != null)
             {
                 owner = $"{item.Owner.RacePluralName}";
+                if (item.OwnedBy(PlayersManager.Me))
+                {
+                    ownerColor = Colors.White;
+                }
+                else
+                {
+                    ownerColor = item.Owner.Color;
+                }
             }
             else
             {
@@ -80,17 +82,17 @@ namespace CraigStars
                 task = nextWaypoint.Task.ToString();
             }
 
-            return new ColumnData[] {
-                new ColumnData(item.Name, guid: item.Guid),
-                new ColumnData(item.Id),
-                new ColumnData(owner, hidden: !ShowAll),
-                new ColumnData(location),
-                new ColumnData(destination),
-                new ColumnData(etaText, eta),
-                new ColumnData(task),
-                new ColumnData($"{item.Fuel}mg", item.Fuel),
-                new ColumnData($"i: {item.Cargo.Ironium} b: {item.Cargo.Boranium} g: {item.Cargo.Germanium} c: {item.Cargo.Colonists}", item.Cargo.Total),
-                new ColumnData($"{item.Aggregate.Mass}kT", item.Aggregate.Mass),
+            return new List<Cell>() {
+                new Cell(item.Name),
+                new Cell(owner, color: ownerColor),
+                new Cell(item.Id),
+                new Cell(location),
+                new Cell(destination),
+                new Cell(etaText, eta),
+                new Cell(task),
+                new Cell($"{item.Fuel}mg", item.Fuel),
+                new Cell("Cargo", item.Cargo.Total, metadata: item.Cargo),
+                new Cell($"{item.Aggregate.Mass}kT", item.Aggregate.Mass),
             };
         }
 
@@ -106,23 +108,15 @@ namespace CraigStars
             }
         }
 
-        protected override void ItemSelected(TreeItem row, int col)
+        protected override void ItemSelected(Fleet item, Cell cell)
         {
-            Guid guid = Guid.Parse(row.GetMetadata(0).ToString());
-            if (PlayersManager.Me.FleetsByGuid.TryGetValue(guid, out var fleet))
+            if (item.OwnedBy(PlayersManager.Me))
             {
-                if (fleet.OwnedBy(PlayersManager.Me))
-                {
-                    Signals.PublishCommandMapObjectEvent(fleet);
-                }
-                else
-                {
-                    Signals.PublishSelectMapObjectEvent(fleet);
-                }
+                Signals.PublishCommandMapObjectEvent(item);
             }
             else
             {
-                log.Error($"Tried to command map object with unknown guid: {guid}");
+                Signals.PublishSelectMapObjectEvent(item);
             }
         }
     }

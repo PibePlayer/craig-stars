@@ -3,7 +3,7 @@
 [ext_resource path="res://src/Client/Dialogs/ShipDesignerDialog.cs" type="Script" id=1]
 [ext_resource path="res://src/Client/ShipDesigner/DesignTree.tscn" type="PackedScene" id=2]
 [ext_resource path="res://src/Client/ShipDesigner/HullSummary.tscn" type="PackedScene" id=3]
-[ext_resource path="res://src/Client/TechTree.tscn" type="PackedScene" id=4]
+[ext_resource path="res://src/Client/Controls/TechTree.tscn" type="PackedScene" id=4]
 [ext_resource path="res://src/Client/ShipDesigner/ShipDesigner.tscn" type="PackedScene" id=5]
 [ext_resource path="res://src/Client/Dialogs/CSConfirmDialog.cs" type="Script" id=6]
 

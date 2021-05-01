@@ -56,11 +56,9 @@ text = "^"
 
 [node name="Tokens" parent="VBoxContainer" instance=ExtResource( 3 )]
 margin_top = 18.0
-margin_right = 187.0
 margin_bottom = 98.0
 rect_min_size = Vector2( 0, 80 )
-size_flags_horizontal = 3
-size_flags_vertical = 3
+rect_rotation = 0.0
 
 [node name="BattlePlanHBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
 margin_top = 102.0

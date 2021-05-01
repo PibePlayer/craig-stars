@@ -6,8 +6,11 @@ using CraigStars.Singletons;
 
 namespace CraigStars
 {
-    public class MapObjectSummaryTile : Control
+    public class MapObjectSummary : Control, ITileContent
     {
+        public event UpdateTitleAction UpdateTitle;
+        public event UpdateVisibilityAction UpdateVisibility;
+
         public MapObjectSprite CommandedMapObject
         {
             get => mapObject; set
@@ -18,7 +21,6 @@ namespace CraigStars
         }
         MapObjectSprite mapObject;
 
-        Label nameLabel;
         TextureRect textureRect;
         Button nextButton;
         Button prevButton;
@@ -26,7 +28,6 @@ namespace CraigStars
 
         public override void _Ready()
         {
-            nameLabel = FindNode("Name") as Label;
             textureRect = FindNode("TextureRect") as TextureRect;
             nextButton = FindNode("NextButton") as Button;
             prevButton = FindNode("PrevButton") as Button;
@@ -71,7 +72,7 @@ namespace CraigStars
         {
             if (CommandedMapObject != null)
             {
-                nameLabel.Text = mapObject.ObjectName;
+                UpdateTitle?.Invoke(mapObject.ObjectName);
                 if (CommandedMapObject is PlanetSprite planetSprite)
                 {
                     textureRect.Texture = TextureLoader.Instance.FindTexture(planetSprite.Planet);
@@ -83,7 +84,7 @@ namespace CraigStars
             }
             else
             {
-                nameLabel.Text = "Unknown";
+                UpdateTitle?.Invoke("Unknown");
             }
         }
     }

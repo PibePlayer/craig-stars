@@ -90,6 +90,8 @@ namespace CraigStars
                 if (Settings.Instance.ShouldContinueGame)
                 {
                     Game = GamesManager.Instance.LoadGame(TechStore.Instance, Settings.Instance.ContinueGame, Settings.Instance.ContinueYear);
+                    Game.Multithreaded = Settings.Multithreaded;
+                    Game.SaveToDisk = Settings.SaveToDisk;
                     PlayersManager.Instance.InitPlayersFromGame(Game.Players);
 
                     if (GamesManager.Instance.HasPlayerSave(PlayersManager.Me))
@@ -100,7 +102,12 @@ namespace CraigStars
                 else
                 {
 
-                    Game = new Game() { Name = Settings.Instance.GameName };
+                    Game = new Game()
+                    {
+                        Name = Settings.Instance.GameName,
+                        Multithreaded = Settings.Multithreaded,
+                        SaveToDisk = Settings.SaveToDisk
+                    };
                     if (GamesManager.Instance.GameExists(Game.Name))
                     {
                         GamesManager.Instance.DeleteGame(Game.Name);
@@ -175,14 +182,14 @@ namespace CraigStars
             Signals.PublishTurnSubmittedEvent(player);
             if (Game.AllPlayersSubmitted())
             {
+                // once everyone is submitted, generate a new turn
+                Signals.PublishTurnGeneratingEvent();
                 CallDeferred(nameof(GenerateNewTurn));
             }
         }
 
         async void GenerateNewTurn()
         {
-            // once everyone is submitted, generate a new turn
-            Signals.PublishTurnGeneratingEvent();
             await Game.GenerateTurn();
 
             if (this.IsServer())

@@ -31,29 +31,47 @@ namespace CraigStars
         /// Serialize this game to json with multiple threads
         /// </summary>
         /// <param name="game"></param>
-        public GameJson SerializeGame(Game game)
+        public GameJson SerializeGame(Game game, bool multithreaded = true)
         {
             log.Info($"{game.Year}: Serializing game to JSON.");
             GameJson gameJson = new GameJson(game.Name, game.Year, game.Players.Count);
             var saveTasks = new List<Task>();
-            saveTasks.Add(Task.Factory.StartNew(() =>
+
+            if (multithreaded)
+            {
+                saveTasks.Add(Task.Factory.StartNew(() =>
                 {
                     gameJson.Game = Serializers.SerializeGame(game, gameSerializerSettings);
                 }));
-
+            }
+            else
+            {
+                gameJson.Game = Serializers.SerializeGame(game, gameSerializerSettings);
+            }
 
             for (int i = 0; i < game.Players.Count; i++)
             {
                 var player = game.Players[i];
                 var playerNum = i;
-                saveTasks.Add(Task.Factory.StartNew(() =>
-                    {
-                        var json = Serializers.Serialize(player, playerSerializerSettings);
-                        gameJson.Players[playerNum] = json;
-                    }));
+                if (multithreaded)
+                {
+                    saveTasks.Add(Task.Factory.StartNew(() =>
+                        {
+                            var json = Serializers.Serialize(player, playerSerializerSettings);
+                            gameJson.Players[playerNum] = json;
+                        }));
+                }
+                else
+                {
+                    var json = Serializers.Serialize(player, playerSerializerSettings);
+                    gameJson.Players[playerNum] = json;
+                }
             }
 
-            Task.WaitAll(saveTasks.ToArray());
+            if (multithreaded)
+            {
+                Task.WaitAll(saveTasks.ToArray());
+            }
             return gameJson;
         }
 

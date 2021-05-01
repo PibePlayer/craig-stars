@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://src/Client/TechTree.cs" type="Script" id=1]
-[ext_resource path="res://src/Client/DraggableTree.cs" type="Script" id=2]
+[ext_resource path="res://src/Client/Controls/TechTree.cs" type="Script" id=1]
+[ext_resource path="res://src/Client/Controls/DraggableTree.cs" type="Script" id=2]
 
 [node name="TechTree" type="VBoxContainer"]
 margin_right = 300.0

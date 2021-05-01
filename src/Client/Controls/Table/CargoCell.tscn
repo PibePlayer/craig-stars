@@ -1,0 +1,98 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://src/Client/Controls/Table/CargoCell.cs" type="Script" id=1]
+
+[node name="CargoCell" type="MarginContainer"]
+margin_right = 41.0
+margin_bottom = 16.0
+rect_min_size = Vector2( 16, 16 )
+size_flags_horizontal = 3
+custom_constants/margin_right = 3
+custom_constants/margin_top = 3
+custom_constants/margin_left = 3
+custom_constants/margin_bottom = 3
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+margin_left = 3.0
+margin_top = 3.0
+margin_right = 119.0
+margin_bottom = 17.0
+rect_pivot_offset = Vector2( -618.706, -10.0747 )
+
+[node name="Ironium" type="Label" parent="HBoxContainer"]
+margin_right = 8.0
+margin_bottom = 14.0
+hint_tooltip = "Ironium"
+mouse_filter = 1
+size_flags_vertical = 3
+custom_colors/font_color = Color( 0.0705882, 0.0392157, 0.996078, 1 )
+text = "5"
+valign = 1
+
+[node name="IroniumkTLabel" type="Label" parent="HBoxContainer"]
+margin_left = 12.0
+margin_right = 26.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "kT"
+
+[node name="Boranium" type="Label" parent="HBoxContainer"]
+margin_left = 30.0
+margin_right = 38.0
+margin_bottom = 14.0
+hint_tooltip = "Boranium"
+mouse_filter = 1
+size_flags_vertical = 3
+custom_colors/font_color = Color( 0.0313726, 0.505882, 0.0392157, 1 )
+text = "4"
+valign = 1
+
+[node name="BoraniumkTLabel" type="Label" parent="HBoxContainer"]
+margin_left = 42.0
+margin_right = 56.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "kT"
+
+[node name="Germanium" type="Label" parent="HBoxContainer"]
+margin_left = 60.0
+margin_right = 68.0
+margin_bottom = 14.0
+hint_tooltip = "Germanium"
+mouse_filter = 1
+size_flags_vertical = 3
+custom_colors/font_color = Color( 0.996078, 1, 0, 1 )
+text = "3"
+valign = 1
+
+[node name="GermaniumkTLabel" type="Label" parent="HBoxContainer"]
+margin_left = 72.0
+margin_right = 86.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "kT"
+
+[node name="Colonists" type="Label" parent="HBoxContainer"]
+margin_left = 90.0
+margin_right = 98.0
+margin_bottom = 14.0
+hint_tooltip = "Germanium"
+mouse_filter = 1
+size_flags_vertical = 3
+text = "3"
+valign = 1
+
+[node name="ColonistskTLabel" type="Label" parent="HBoxContainer"]
+margin_left = 102.0
+margin_right = 116.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "kT"

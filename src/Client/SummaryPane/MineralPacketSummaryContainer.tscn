@@ -2,7 +2,7 @@
 
 [ext_resource path="res://assets/gui/mineral-packets/mineral-packet.png" type="Texture" id=1]
 [ext_resource path="res://src/Client/SummaryPane/MineralPacketSummaryContainer.cs" type="Script" id=2]
-[ext_resource path="res://src/Client/CargoGrid.tscn" type="PackedScene" id=3]
+[ext_resource path="res://src/Client/Controls/CargoGrid.tscn" type="PackedScene" id=3]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0, 0, 0, 1 )

@@ -1,0 +1,47 @@
+using System;
+using System.Collections.Generic;
+using Godot;
+
+namespace CraigStars
+{
+    /// <summary>
+    /// A row in a table. This is basically a list of cells and some metadata
+    /// </summary>
+    public class Row
+    {
+        /// <summary>
+        /// The index of the row, updated during sort
+        /// </summary>
+        public int Index { get; set; }
+
+        /// <summary>
+        /// Metadata associated with the row
+        /// </summary>
+        public object Metadata { get; set; }
+
+        /// <summary>
+        /// The actual cell data used to render the row contents
+        /// </summary>
+        public List<Cell> Data { get; }
+
+        /// <summary>
+        /// The color to render each cell
+        /// </summary>
+        public Color? Color { get; set; }
+
+        /// <summary>
+        /// True to use an italic font for labels in the cell
+        /// </summary>
+        public bool Italic { get; set; }
+
+        public Row(int index, List<Cell> data, object metadata = null, Color? color = null, bool italic = false)
+        {
+            Index = index;
+            Metadata = metadata;
+            Data = data;
+            Color = color;
+            Italic = italic;
+        }
+    }
+
+}

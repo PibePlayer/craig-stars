@@ -87,6 +87,7 @@ namespace CraigStars
 
         // for tests or fast generation
         [JsonIgnore] public bool SaveToDisk { get; set; } = true;
+        [JsonIgnore] public bool Multithreaded { get; set; } = true;
 
         TurnGenerator turnGenerator;
         TurnSubmitter turnSubmitter;
@@ -229,7 +230,7 @@ namespace CraigStars
         {
             await aiSubmittingTask;
             GameInfo.Lifecycle = GameLifecycle.GeneratingTurn;
-            await Task.Factory.StartNew(() =>
+            Action generateTurn = () =>
             {
                 log.Info($"{Year} Generating new turn");
 
@@ -251,7 +252,16 @@ namespace CraigStars
 
                 log.Info($"{Year} Generating turn complete");
 
-            });
+            };
+
+            if (Multithreaded)
+            {
+                await Task.Factory.StartNew(generateTurn);
+            }
+            else
+            {
+                generateTurn();
+            }
             GameInfo.Lifecycle = GameLifecycle.WaitingForPlayers;
 
             // After we have notified players 
@@ -331,13 +341,19 @@ namespace CraigStars
             {
                 // serialize the game to JSON. This must complete before we can
                 // modify any state
-                var gameJson = GamesManager.SerializeGame(this);
+                var gameJson = GamesManager.SerializeGame(this, Multithreaded);
 
-                // now that we have our json, we can save the game to dis in a separate task
-                _ = Task.Run(() =>
+                if (Multithreaded)
                 {
-                    GamesManager.SaveGame(gameJson);
-                });
+                    // now that we have our json, we can save the game to dis in a separate task
+                    _ = Task.Run(() =>
+                    {
+                    });
+                }
+                else
+                {
+                    GamesManager.SaveGame(gameJson, Multithreaded);
+                }
             }
         }
 
@@ -385,7 +401,7 @@ namespace CraigStars
             {
                 if (player.AIControlled && !player.SubmittedTurn)
                 {
-                    tasks.Add(Task.Run(() =>
+                    Action submitAITurn = () =>
                     {
                         try
                         {
@@ -396,10 +412,25 @@ namespace CraigStars
                         {
                             log.Error($"Failed to submit AI turn ${player}", e);
                         }
-                    }));
+                    };
+                    if (Multithreaded)
+                    {
+                        tasks.Add(Task.Run(submitAITurn));
+                    }
+                    else
+                    {
+                        submitAITurn();
+                    }
                 }
             }
-            aiSubmittingTask = Task.Run(() => Task.WaitAll(tasks.ToArray()));
+            if (Multithreaded)
+            {
+                aiSubmittingTask = Task.Run(() => Task.WaitAll(tasks.ToArray()));
+            }
+            else
+            {
+                aiSubmittingTask = Task.CompletedTask;
+            }
         }
 
         #region Event Handlers

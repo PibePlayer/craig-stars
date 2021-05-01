@@ -16,6 +16,11 @@ namespace CraigStars.Tests
             return false;
         }
 
+        public bool GameSaveFolderExists()
+        {
+            return true;
+        }
+
         public List<string> GetSavedGames()
         {
             return new List<string>();
@@ -36,11 +41,11 @@ namespace CraigStars.Tests
             throw new System.NotImplementedException();
         }
 
-        public void SaveGame(Game game)
+        public void SaveGame(Game game, bool multithreaded = true)
         {
         }
 
-        public void SaveGame(GameJson gameJson)
+        public void SaveGame(GameJson gameJson, bool multithreaded = true)
         {
         }
 
@@ -51,6 +56,11 @@ namespace CraigStars.Tests
         public GameJson SerializeGame(Game game)
         {
             return new GameJson();
+        }
+
+        public GameJson SerializeGame(Game game, bool multithreaded = true)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

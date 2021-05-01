@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://src/Client/Dialogs/ReportsDialog.cs" type="Script" id=1]
-[ext_resource path="res://src/Client/Table.tscn" type="PackedScene" id=2]
+[ext_resource path="res://src/Client/Controls/ReportTable.tscn" type="PackedScene" id=2]
 [ext_resource path="res://src/Client/Reports/FleetsTable.cs" type="Script" id=3]
 [ext_resource path="res://src/Client/Reports/PlanetsTable.cs" type="Script" id=4]
 
@@ -31,6 +31,8 @@ margin_left = 10.0
 margin_top = 5.0
 margin_right = 1065.0
 margin_bottom = 762.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -38,6 +40,7 @@ __meta__ = {
 [node name="TabContainer" type="TabContainer" parent="MarginContainer/VBoxContainer"]
 margin_right = 1055.0
 margin_bottom = 733.0
+size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="Planets" type="MarginContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
@@ -49,6 +52,8 @@ margin_right = -4.0
 margin_bottom = -4.0
 
 [node name="PlanetsTable" parent="MarginContainer/VBoxContainer/TabContainer/Planets" instance=ExtResource( 2 )]
+size_flags_horizontal = 3
+size_flags_vertical = 3
 script = ExtResource( 4 )
 
 [node name="Fleets" type="MarginContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
@@ -61,6 +66,8 @@ margin_right = -4.0
 margin_bottom = -4.0
 
 [node name="FleetsTable" parent="MarginContainer/VBoxContainer/TabContainer/Fleets" instance=ExtResource( 2 )]
+size_flags_horizontal = 3
+size_flags_vertical = 3
 script = ExtResource( 3 )
 
 [node name="HBoxContainerButtons" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]

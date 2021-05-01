@@ -8,41 +8,34 @@ using System.Linq;
 
 namespace CraigStars
 {
-    public class PlanetsTable : Table<Planet>
+    public class PlanetsTable : ReportTable<Planet>
     {
         static CSLog log = LogProvider.GetLogger(typeof(PlanetsTable));
 
         public bool ShowAll { get; set; }
 
-        public override void _Ready()
+        public Column ownerColumn;
+
+        protected override void OnShowOwnedPressed() { ShowAll = false; ownerColumn.Hidden = !ShowAll; base.OnShowOwnedPressed(); }
+        protected override void OnShowAllPressed() { ShowAll = true; ownerColumn.Hidden = !ShowAll; base.OnShowAllPressed(); }
+
+        protected override void AddColumns()
         {
-            ResetColumns();
-            base._Ready();
-        }
+            ownerColumn = new Column("Owner", hidden: !ShowAll);
+            table.Data.AddColumns(
+                "Name",
+                ownerColumn,
+                "Starbase",
+                "Population",
+                "Cap (%)",
+                "Value (%)",
+                "Production",
+                "Mine",
+                "Factory",
+                "Defense",
+                new Column("Surface Minerals", scene: "res://src/Client/Controls/Table/MineralsCell.tscn")
+            );
 
-        protected override void OnShowOwnedPressed() { ShowAll = false; ResetColumns(); UpdateItems(); }
-        protected override void OnShowAllPressed() { ShowAll = true; ResetColumns(); UpdateItems(); }
-
-        void ResetColumns()
-        {
-            Columns.Clear();
-            Columns.AddRange(new List<string>() {
-            "Name",
-            "Starbase",
-            "Population",
-            "Cap (%)",
-            "Value (%)",
-            "Production",
-            "Mine",
-            "Factory",
-            "Defense",
-            });
-
-            // maybe we need a column header class with a "hidden" field?
-            if (ShowAll)
-            {
-                Columns.Insert(1, "Owner");
-            }
         }
 
         /// <summary>
@@ -50,7 +43,7 @@ namespace CraigStars
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        protected override ColumnData[] CreateColumnData(Planet item)
+        protected override List<Cell> CreateCellsForItem(Planet item)
         {
             var player = PlayersManager.Me;
             var race = player.Race;
@@ -59,9 +52,11 @@ namespace CraigStars
             var owned = item.OwnedBy(player);
 
             var owner = "(unexplored)";
+            var ownerColor = Colors.Gray;
             var capacity = 0.0;
             var habitability = int.MinValue;
             var habitabilityText = "(unexplored)";
+            var habColor = Colors.White;
             var foreign = false;
             if (explored)
             {
@@ -72,6 +67,11 @@ namespace CraigStars
                     {
                         // has an owner, but not owned by us
                         foreign = true;
+                        ownerColor = item.Owner.Color;
+                    }
+                    else
+                    {
+                        ownerColor = Colors.White;
                     }
                 }
                 else
@@ -81,6 +81,8 @@ namespace CraigStars
                 capacity = item.Population / (float)item.GetMaxPopulation(race, player.Rules);
                 habitability = race.GetPlanetHabitability(item.Hab.Value);
                 habitabilityText = $"{habitability:.#}%";
+                habColor = habitability > 0 ? Colors.Green : Colors.Red;
+
             }
             var production = "--";
             if (item.ProductionQueue?.Items.Count > 0)
@@ -88,17 +90,19 @@ namespace CraigStars
                 production = $"{item.ProductionQueue.Items[0].ShortName}";
             }
 
-            return new ColumnData[] {
-                new ColumnData(item.Name, guid: item.Guid),
-                new ColumnData(owner, hidden: !ShowAll),
-                new ColumnData($"{(item.Starbase != null ? item.Starbase.Name : "--")}"),
-                new ColumnData($"{(foreign ? "±" : "")}{item.Population}", item.Population),
-                new ColumnData($"{capacity*100:.#}%", capacity),
-                new ColumnData(habitabilityText, habitability),
-                new ColumnData(production),
-                (explored && owned) ? new ColumnData(item.Mines) : new ColumnData("--", -1),
-                (explored && owned) ? new ColumnData(item.Factories) : new ColumnData("--", -1),
-                (explored && owned) ? new ColumnData(item.Defenses) : new ColumnData("--", -1),
+
+            return new List<Cell>() {
+                new Cell(item.Name),
+                new Cell(owner),
+                new Cell($"{(item.Starbase != null ? item.Starbase.Name : "--")}"),
+                new Cell($"{(foreign ? "±" : "")}{item.Population}", item.Population),
+                new Cell($"{capacity*100:.#}%", capacity),
+                new Cell(habitabilityText, habitability, color: habColor),
+                new Cell(production),
+                (explored && owned) ? new Cell(item.Mines) : new Cell("--", -1),
+                (explored && owned) ? new Cell(item.Factories) : new Cell("--", -1),
+                (explored && owned) ? new Cell(item.Defenses) : new Cell("--", -1),
+                new Cell("Surface Minerals", item.Cargo.Total, metadata: item.Cargo)
             };
 
         }
@@ -115,23 +119,15 @@ namespace CraigStars
             }
         }
 
-        protected override void ItemSelected(TreeItem row, int col)
+        protected override void ItemSelected(Planet item, Cell cell)
         {
-            Guid guid = Guid.Parse(row.GetMetadata(0).ToString());
-            if (PlayersManager.Me.PlanetsByGuid.TryGetValue(guid, out var planet))
+            if (item.OwnedBy(PlayersManager.Me))
             {
-                if (planet.OwnedBy(PlayersManager.Me))
-                {
-                    Signals.PublishCommandMapObjectEvent(planet);
-                }
-                else
-                {
-                    Signals.PublishSelectMapObjectEvent(planet);
-                }
+                Signals.PublishCommandMapObjectEvent(item);
             }
             else
             {
-                log.Error($"Tried to command map object with unknown guid: {guid}");
+                Signals.PublishSelectMapObjectEvent(item);
             }
         }
 

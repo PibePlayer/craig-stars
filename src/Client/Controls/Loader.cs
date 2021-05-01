@@ -39,7 +39,7 @@ namespace CraigStars
                 Resource resource = loader.GetResource();
                 loader = null;
                 // fire this off, don't wait
-                var _ = SetNewScene((PackedScene)resource);
+                SetNewScene((PackedScene)resource);
                 return;
             }
             else if (err == Error.Ok)
@@ -56,7 +56,7 @@ namespace CraigStars
             progress.Value = loadProgress * 100;
         }
 
-        async public Task SetNewScene(PackedScene resource)
+        public void SetNewScene(PackedScene resource)
         {
             // await SceneChanger.Instance.Fade();
 

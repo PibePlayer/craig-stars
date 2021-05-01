@@ -19,6 +19,12 @@ namespace CraigStars
         List<int> GetSavedGameYears(string gameName);
 
         /// <summary>
+        /// Check if the user://saves folder exists
+        /// </summary>
+        /// <returns>true if the user://saves folder exists</returns>
+        bool GameSaveFolderExists();
+
+        /// <summary>
         /// Returns true if the given saved game exists
         /// </summary>
         /// <param name="gameName"></param>
@@ -44,19 +50,19 @@ namespace CraigStars
         /// Serialize a game to json
         /// </summary>
         /// <param name="game"></param>
-        GameJson SerializeGame(Game game);
+        GameJson SerializeGame(Game game, bool multithreaded = true);
 
         /// <summary>
         /// Save a game to disk
         /// </summary>
         /// <param name="game"></param>
-        void SaveGame(Game game);
+        void SaveGame(Game game, bool multithreaded = true);
 
         /// <summary>
         /// Save a game to disk
         /// </summary>
         /// <param name="game"></param>
-        void SaveGame(GameJson gameJson);
+        void SaveGame(GameJson gameJson, bool multithreaded = true);
 
         /// <summary>
         /// Save a player's current state to disk 

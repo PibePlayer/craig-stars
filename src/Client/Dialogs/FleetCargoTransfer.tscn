@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://src/Client/Dialogs/FleetCargoTransfer.cs" type="Script" id=1]
-[ext_resource path="res://src/Client/CargoBar.tscn" type="PackedScene" id=2]
+[ext_resource path="res://src/Client/Controls/CargoBar.tscn" type="PackedScene" id=2]
 
 [node name="FleetCargoTransfer" type="VBoxContainer"]
 margin_right = 252.0

@@ -1,0 +1,204 @@
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using CraigStars.Utils;
+using Godot;
+
+namespace CraigStars
+{
+    /// <summary>
+    /// Data for a table. This is used to render the table headers, rows and cells. The data
+    /// is what drives the table
+    /// </summary>
+    public class TableData
+    {
+        public delegate void SortAction(int sortColumn, SortDirection sortDirection);
+        public delegate void FilterAction(string filterText);
+        /// <summary>
+        /// Triggered when the rows are sorted
+        /// </summary>
+        public event SortAction SortEvent;
+
+        /// <summary>
+        /// Rows have been filtered by some value
+        /// </summary>
+        public event FilterAction FilterEvent;
+
+        public List<Column> Columns { get; set; } = new List<Column>();
+        public List<Row> SourceRows { get; set; } = new List<Row>();
+        public int SortColumn { get; set; }
+        public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
+        public string FilterText { get; set; } = "";
+
+        public void Clear()
+        {
+            SourceRows.Clear();
+            Columns.Clear();
+            SortColumn = 0;
+            SortDirection = SortDirection.Ascending;
+        }
+
+        public void AddColumn(Column column)
+        {
+            Columns.Add(new Column(column.Name, Columns.Count, column.Sortable, column.Hidden));
+        }
+
+        public void AddColumn(string name, bool sortable = true, bool hidden = false, Label.AlignEnum align = Label.AlignEnum.Left)
+        {
+            Columns.Add(new Column(name, Columns.Count, sortable, hidden, align));
+        }
+
+        public void AddColumns(IEnumerable<Column> columns)
+        {
+            foreach (var column in columns)
+            {
+                Columns.Add(new Column(column.Name, Columns.Count, column.Sortable, column.Hidden));
+            }
+        }
+
+        /// <summary>
+        /// Add columns, either as a string or Column object
+        /// </summary>
+        /// <param name="columns"></param>
+        public void AddColumns(params object[] columns)
+        {
+            foreach (var column in columns)
+            {
+                if (column is string name)
+                {
+                    Columns.Add(new Column(name, Columns.Count));
+                }
+                else if (column is Column col)
+                {
+                    col.Index = Columns.Count;
+                    Columns.Add(col);
+                }
+                else
+                {
+                    Columns.Add(new Column(column.ToString(), Columns.Count));
+                }
+            }
+        }
+
+        public void AddRow(List<Cell> cells, object metadata)
+        {
+            SourceRows.Add(new Row(SourceRows.Count, cells, metadata));
+        }
+
+        public void AddRow(params object[] cellData)
+        {
+            AddRow(Colors.White, cellData);
+        }
+
+        public void AddRow(Color color, params object[] cellData)
+        {
+            var cells = new List<Cell>();
+            foreach (var cell in cellData)
+            {
+                if (cell is string s)
+                {
+                    cells.Add(new Cell(s));
+                }
+                else if (cell is int i)
+                {
+                    cells.Add(new Cell(i));
+                }
+                else
+                {
+                    throw new InvalidCastException("Table Cells cannot be data of type " + cell.GetType());
+                }
+            }
+            SourceRows.Add(new Row(SourceRows.Count, cells, color: color));
+        }
+
+        public void AddRow(object metadata, Color color, params object[] cellData)
+        {
+            var cells = new List<Cell>();
+            foreach (var cell in cellData)
+            {
+                if (cell is string s)
+                {
+                    cells.Add(new Cell(s));
+                }
+                else if (cell is int i)
+                {
+                    cells.Add(new Cell(i));
+                }
+                else
+                {
+                    throw new InvalidCastException("Table Cells cannot be data of type " + cell.GetType());
+                }
+            }
+            SourceRows.Add(new Row(SourceRows.Count, cells, metadata: metadata, color: color));
+        }
+
+        /// <summary>
+        /// Create a new Comparer based on the sortColumn, for sorting rows
+        /// </summary>
+        /// <param name="sortColumn"></param>
+        /// <returns></returns>
+        protected virtual IComparer<List<Cell>> CreateComparer(int sortColumn)
+        {
+            return Comparer<List<Cell>>.Create((row1, row2) =>
+            {
+                return row1[sortColumn].Value.CompareTo(row2[sortColumn].Value);
+            });
+        }
+
+        public void Filter(String filterText)
+        {
+            FilterText = filterText;
+
+            FilterEvent?.Invoke(filterText);
+        }
+
+        public void Sort(Column column, SortDirection sortDirection)
+        {
+            SortColumn = column.Index;
+            SortDirection = sortDirection;
+
+            SortEvent?.Invoke(SortColumn, SortDirection);
+        }
+
+        public IEnumerable<Column> VisibleColumns { get => Columns.Where(col => !col.Hidden); }
+
+        /// <summary>
+        /// Get an enumerable of our rows sorted and filtered
+        /// </summary>
+        public IEnumerable<Row> Rows
+        {
+            get
+            {
+                IEnumerable<Row> rows = SourceRows;
+                var comparer = CreateComparer(SortColumn);
+
+                if (FilterText != "")
+                {
+                    var lowercaseFilterText = FilterText.ToLower();
+                    rows = rows.Where(row => row.Data.Any(cell => $"{cell.Value}".ToLower().Contains(lowercaseFilterText)));
+                }
+
+                if (SortDirection == SortDirection.Ascending)
+                {
+                    rows = rows.OrderBy(row => row.Data, comparer);
+                }
+                else
+                {
+                    rows = rows.OrderByDescending(row => row.Data, comparer);
+                }
+
+                // add an index to each row
+                int index = 0;
+                rows = rows.Select((row) =>
+                {
+                    row.Index = index++;
+                    return row;
+                });
+
+                return rows;
+            }
+        }
+    }
+
+}

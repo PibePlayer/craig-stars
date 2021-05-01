@@ -63,7 +63,7 @@ namespace CraigStars
                             useLog4Net = true;
                         }
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         // ignore it, bleh
                     }
@@ -77,7 +77,7 @@ namespace CraigStars
                     {
                         useLog4Net = OS.GetName().ToLower() != "html5";
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         useLog4Net = true;
                     }

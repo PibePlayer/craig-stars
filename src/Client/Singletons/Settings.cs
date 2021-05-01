@@ -89,6 +89,54 @@ namespace CraigStars
 
         #region Volatile Settings
 
+        /// <summary>
+        /// By default we are multithreaded, but we disable it on the web
+        /// </summary>
+        /// <value></value>
+        public static bool Multithreaded
+        {
+            get
+            {
+                if (!multithreaded.HasValue)
+                {
+                    try
+                    {
+                        multithreaded = OS.GetName().ToLower() != "html5";
+                    }
+                    catch (Exception)
+                    {
+                        multithreaded = true;
+                    }
+                }
+                return multithreaded.Value;
+            }
+        }
+        static bool? multithreaded;
+
+        /// <summary>
+        /// By default we save to disk, but we disable it on the web
+        /// </summary>
+        /// <value></value>
+        public static bool SaveToDisk
+        {
+            get
+            {
+                if (!saveToDisk.HasValue)
+                {
+                    try
+                    {
+                        saveToDisk = OS.GetName().ToLower() != "html5";
+                    }
+                    catch (Exception)
+                    {
+                        saveToDisk = true;
+                    }
+                }
+                return saveToDisk.Value;
+            }
+        }
+        static bool? saveToDisk;
+
         public GameMode GameMode { get; set; } = GameMode.SinglePlayer;
         public bool ShouldContinueGame { get; set; }
         public string GameName { get; set; } = "A Barefoot Jaywalk";
@@ -123,7 +171,7 @@ namespace CraigStars
                 clientHost = config.GetValue("network", "client_host", clientHost).ToString();
                 serverPort = int.Parse(config.GetValue("network", "server_port", serverPort).ToString());
 
-                if (config.HasSectionKey("game", "continue_game") && config.HasSectionKey("game", "continue_year"))
+                if (SaveToDisk && config.HasSectionKey("game", "continue_game") && config.HasSectionKey("game", "continue_year"))
                 {
                     continueGame = config.GetValue("game", "continue_game", continueGame).ToString();
                     continueYear = int.Parse(config.GetValue("game", "continue_year", continueYear).ToString());
@@ -146,13 +194,19 @@ namespace CraigStars
 
         private void OnTurnPassed(PublicGameInfo gameInfo)
         {
-            ContinueYear = gameInfo.Year;
+            if (SaveToDisk)
+            {
+                ContinueYear = gameInfo.Year;
+            }
         }
 
         private void OnPostStartGame(PublicGameInfo gameInfo)
         {
-            ContinueGame = gameInfo.Name;
-            ContinueYear = gameInfo.Year;
+            if (SaveToDisk)
+            {
+                ContinueGame = gameInfo.Name;
+                ContinueYear = gameInfo.Year;
+            }
         }
 
         void Save()

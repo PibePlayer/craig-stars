@@ -78,6 +78,11 @@ namespace CraigStars.Singletons
         {
             List<string> gameFolders = new List<string>();
 
+            if (!GameSaveFolderExists())
+            {
+                return gameFolders;
+            }
+
             using (var directory = new Directory())
             {
                 directory.Open(SaveDirPath);
@@ -129,6 +134,18 @@ namespace CraigStars.Singletons
             return gameYears;
         }
 
+        /// <summary>
+        /// Return true if a game with this name exists
+        /// </summary>
+        /// <param name="gameName"></param>
+        /// <returns></returns>
+        public bool GameSaveFolderExists()
+        {
+            using (var directory = new Directory())
+            {
+                return directory.DirExists(SaveDirPath);
+            }
+        }
 
         /// <summary>
         /// Return true if a game with this name exists
@@ -209,7 +226,7 @@ namespace CraigStars.Singletons
             return game;
         }
 
-        public GameJson SerializeGame(Game game)
+        public GameJson SerializeGame(Game game, bool multithreaded = true)
         {
             // serializers are expensive to create, so store them for later
             GameSerializer gameSerializer;
@@ -218,23 +235,23 @@ namespace CraigStars.Singletons
                 gameSerializer = new GameSerializer(game);
                 GameSerializerByGame[game] = gameSerializer;
             }
-            return gameSerializer.SerializeGame(game);
+            return gameSerializer.SerializeGame(game, multithreaded);
         }
 
         /// <summary>
         /// Save a game to disk
         /// </summary>
         /// <param name="game"></param>
-        public void SaveGame(Game game)
+        public void SaveGame(Game game, bool multithreaded = true)
         {
-            SaveGame(SerializeGame(game));
+            SaveGame(SerializeGame(game, multithreaded), multithreaded);
         }
 
         /// <summary>
         /// Save this game to disk
         /// </summary>
         /// <param name="game"></param>
-        public void SaveGame(GameJson gameJson)
+        public void SaveGame(GameJson gameJson, bool multithreaded = true)
         {
             var dirPath = GetSaveGameYearFolder(gameJson.Name, gameJson.Year);
             log.Info($"Saving game {gameJson.Year}:{gameJson.Name} to {dirPath}");
@@ -245,32 +262,56 @@ namespace CraigStars.Singletons
                 directory.MakeDirRecursive(dirPath);
             }
 
-            // queue up the various disk tasks
             var saveTasks = new List<Task>();
-            saveTasks.Add(Task.Factory.StartNew(() =>
+            if (multithreaded)
+            {
+                // queue up the various disk tasks
+                saveTasks.Add(Task.Factory.StartNew(() =>
+                {
+                    var saveGame = new File();
+                    saveGame.Open(GetSaveGameFile(gameJson.Name, gameJson.Year), File.ModeFlags.Write);
+
+                    saveGame.StoreString(gameJson.Game);
+                    saveGame.Close();
+                }));
+            }
+            else
             {
                 var saveGame = new File();
                 saveGame.Open(GetSaveGameFile(gameJson.Name, gameJson.Year), File.ModeFlags.Write);
 
                 saveGame.StoreString(gameJson.Game);
                 saveGame.Close();
-            }));
+            }
 
             for (int i = 0; i < gameJson.Players.Length; i++)
             {
                 // all these saves can happen in parallel
                 var playerJson = gameJson.Players[i];
                 var playerNum = i;
-                saveTasks.Add(Task.Factory.StartNew(() =>
+                if (multithreaded)
+                {
+                    saveTasks.Add(Task.Factory.StartNew(() =>
+                    {
+                        var playerSave = new File();
+                        playerSave.Open(GetSaveGamePlayerPath(gameJson.Name, gameJson.Year, playerNum), File.ModeFlags.Write);
+                        playerSave.StoreString(playerJson);
+                        playerSave.Close();
+                    }));
+                }
+                else
                 {
                     var playerSave = new File();
                     playerSave.Open(GetSaveGamePlayerPath(gameJson.Name, gameJson.Year, playerNum), File.ModeFlags.Write);
                     playerSave.StoreString(playerJson);
                     playerSave.Close();
-                }));
+                }
             }
 
-            Task.WaitAll(saveTasks.ToArray());
+            if (multithreaded)
+            {
+                Task.WaitAll(saveTasks.ToArray());
+            }
             log.Info($"{gameJson.Year}:{gameJson.Name} saved to {dirPath}");
         }
 

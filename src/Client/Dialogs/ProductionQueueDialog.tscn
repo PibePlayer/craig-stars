@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://src/Client/Controls/CostGrid.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/Client/Dialogs/ProductionQueueDialog.cs" type="Script" id=2]
+[ext_resource path="res://src/Client/Controls/Table/Table.tscn" type="PackedScene" id=3]
 
 [node name="ProductionQueueDialog" type="WindowDialog"]
 margin_right = 705.0
@@ -38,14 +39,19 @@ margin_right = 695.0
 margin_bottom = 336.0
 size_flags_vertical = 3
 
-[node name="AvailableItemsTree" type="Tree" parent="MarginContainer/VBoxContainer/HBoxContainerQueue"]
+[node name="AvailableItemsScrollContainer" type="ScrollContainer" parent="MarginContainer/VBoxContainer/HBoxContainerQueue"]
 margin_right = 297.0
 margin_bottom = 336.0
 size_flags_horizontal = 3
-allow_reselect = true
-hide_folding = true
-hide_root = true
-select_mode = 1
+size_flags_vertical = 3
+
+[node name="AvailableItemsTable" parent="MarginContainer/VBoxContainer/HBoxContainerQueue/AvailableItemsScrollContainer" instance=ExtResource( 3 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 297.0
+margin_bottom = 336.0
+BorderStyle = 0
+ShowHeader = false
 
 [node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainerQueue"]
 margin_left = 301.0

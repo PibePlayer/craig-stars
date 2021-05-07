@@ -25,8 +25,10 @@ namespace CraigStars.UniverseGeneration
         internal List<Fleet> GenerateFleets(Player player, Planet homeworld)
         {
             var fleets = new List<Fleet>();
-            foreach(var design in player.Designs.Where(d => !d.Hull.Starbase)) {
-                fleets.Add(CreateFleet(design, player, 1, homeworld));
+            var id = 0;
+            foreach (var design in player.Designs.Where(d => !d.Hull.Starbase))
+            {
+                fleets.Add(CreateFleet(design, player, id++, homeworld));
             }
             switch (player.Race.PRT)
             {
@@ -36,7 +38,7 @@ namespace CraigStars.UniverseGeneration
                     if (player.Planets.Count > 1)
                     {
                         // add a scout to the second world
-                        fleets.Add(CreateFleet(player.GetLatestDesign(ShipDesignPurpose.Scout), player, 4, player.Planets[1]));
+                        fleets.Add(CreateFleet(player.GetLatestDesign(ShipDesignPurpose.Scout), player, id++, player.Planets[1]));
                     }
                     break;
             }

@@ -7,10 +7,8 @@
 script = ExtResource( 1 )
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
-margin_left = 66.8942
-margin_top = 49.1869
-margin_right = 566.894
-margin_bottom = 97.1869
+margin_right = 500.0
+margin_bottom = 48.0
 rect_min_size = Vector2( 500, 0 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -18,7 +16,7 @@ __meta__ = {
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 margin_right = 500.0
-margin_bottom = 86.0
+margin_bottom = 47.0
 
 [node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer"]
 margin_right = 500.0
@@ -30,4 +28,6 @@ anchor_right = 0.0
 anchor_bottom = 0.0
 margin_top = 28.0
 margin_right = 500.0
-margin_bottom = 86.0
+margin_bottom = 47.0
+ShowHeader = false
+SelectColor = Color( 1, 1, 1, 0.5 )

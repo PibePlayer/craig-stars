@@ -30,11 +30,23 @@ namespace CraigStars
                 }
                 else if (Cell?.Metadata is Cargo cargo)
                 {
-                    colonistskTLabel.Visible = colonists.Visible = true;
-                    ironium.Text = $"{cargo.Ironium}";
-                    boranium.Text = $"{cargo.Boranium}";
-                    germanium.Text = $"{cargo.Germanium}";
-                    colonists.Text = $"{cargo.Colonists}";
+                    var fleet = Row.Metadata as Fleet;
+                    if (fleet != null && fleet.Aggregate.CargoCapacity == 0)
+                    {
+                        // if this cell is for a fleet with no cargo capacity, hide these controls
+                        container.Visible = false;
+                        emptyLabel.Visible = true;
+                    }
+                    else
+                    {
+                        container.Visible = true;
+                        emptyLabel.Visible = false;
+                        colonistskTLabel.Visible = colonists.Visible = true;
+                        ironium.Text = $"{cargo.Ironium}";
+                        boranium.Text = $"{cargo.Boranium}";
+                        germanium.Text = $"{cargo.Germanium}";
+                        colonists.Text = $"{cargo.Colonists}";
+                    }
                 }
             }
         }

@@ -15,11 +15,10 @@ namespace CraigStars
         // the planet to use in this dialog
         public Planet Planet { get; set; } = new Planet();
 
+        Table availableItemsTable;
         Tree queuedItemsTree;
-        Tree availableItemsTree;
         TreeItem queuedItemsTreeRoot;
         TreeItem topOfQueueItem;
-        TreeItem availableItemsTreeRoot;
 
         Button addButton;
         Button removeButton;
@@ -48,7 +47,7 @@ namespace CraigStars
             base._Ready();
 
             queuedItemsTree = (Tree)FindNode("QueuedItemsTree");
-            availableItemsTree = (Tree)FindNode("AvailableItemsTree");
+            availableItemsTable = (Table)FindNode("AvailableItemsTable");
 
             addButton = (Button)FindNode("AddButton");
             removeButton = (Button)FindNode("RemoveButton");
@@ -70,10 +69,7 @@ namespace CraigStars
             queuedItemsTree.SetColumnExpand(1, false);
             queuedItemsTree.SetColumnMinWidth(1, 60);
 
-            availableItemsTree.SetColumnExpand(0, true);
-            availableItemsTree.Connect("item_activated", this, nameof(OnAddItem));
             queuedItemsTree.Connect("item_selected", this, nameof(OnSelectQueuedItem));
-            availableItemsTree.Connect("item_selected", this, nameof(OnSelectAvailableItem));
 
             addButton.Connect("pressed", this, nameof(OnAddItem));
             clearButton.Connect("pressed", this, nameof(OnClear));
@@ -88,11 +84,16 @@ namespace CraigStars
             Connect("about_to_show", this, nameof(OnAboutToShow));
             Connect("popup_hide", this, nameof(OnPopupHide));
 
+            availableItemsTable.RowSelectedEvent += OnSelectAvailableItem;
+            availableItemsTable.RowActivatedEvent += OnAddItem;
+
             Signals.MapObjectCommandedEvent += OnMapObjectCommanded;
         }
 
         public override void _ExitTree()
         {
+            availableItemsTable.RowSelectedEvent -= OnSelectAvailableItem;
+            availableItemsTable.RowActivatedEvent -= OnAddItem;
             Signals.MapObjectCommandedEvent -= OnMapObjectCommanded;
         }
 
@@ -103,11 +104,11 @@ namespace CraigStars
         {
             queuedItems.Clear();
             availableItems.Clear();
-            availableItemsTree.Clear();
+            availableItemsTable.Data.Clear();
             queuedItemsTree.Clear();
-            availableItemsTreeRoot = availableItemsTree.CreateItem();
             queuedItemsTreeRoot = queuedItemsTree.CreateItem();
 
+            availableItemsTable.Data.AddColumn("Item");
             // add each design
             var availableItemIndex = 0;
             if (Planet.HasStarbase && Planet.Starbase.DockCapacity > 0)
@@ -134,11 +135,6 @@ namespace CraigStars
                     AddAvailableItem(new ProductionQueueItem(QueueItemType.GermaniumMineralPacket), index: availableItemIndex++);
                     AddAvailableItem(new ProductionQueueItem(QueueItemType.MixedMineralPacket), index: availableItemIndex++);
                 }
-            }
-
-            if (availableItemsTree.Columns > 1)
-            {
-                availableItemsTree.SetColumnMinWidth(1, (int)availableItemsTree.GetFont("").GetStringSize("9999").x);
             }
 
             // add each type of item.
@@ -168,12 +164,14 @@ namespace CraigStars
             // select the top of the queue on startup
             topOfQueueItem.Select(0);
 
+            var _ = availableItemsTable.ResetTable();
+
             contributesOnlyLeftoverToResearchCheckbox.Pressed = Planet.ContributesOnlyLeftoverToResearch;
         }
 
         void OnPopupHide()
         {
-            availableItemsTree.Clear();
+            availableItemsTable.Data.Clear();
             queuedItemsTree.Clear();
         }
 
@@ -191,7 +189,40 @@ namespace CraigStars
         void AddAvailableItem(ProductionQueueItem item, int index)
         {
             availableItems.Add(item);
-            AddTreeItem(availableItemsTree, availableItemsTreeRoot, item.FullName, item, index);
+
+            var cost = item.GetCostOfOne(RulesManager.Rules, Me);
+
+            // figure out how many resources we have per year
+            int yearlyResources = 0;
+            if (contributesOnlyLeftoverToResearchCheckbox.Pressed)
+            {
+                yearlyResources = Planet.ResourcesPerYear;
+            }
+            else
+            {
+                yearlyResources = Planet.ResourcesPerYearAvailable;
+            }
+
+            // this is how man resources and minerals our planet produces each year
+            var yearlyAvailableCost = new Cost(Planet.MineralOutput, yearlyResources);
+
+            // Get the total cost of this item plus any previous items in the queue
+            // and subtract what we have on hand (that will be applied this year)
+            Cost remainingCost = cost - Planet.Cargo.ToCost();
+
+            // If we have a bunch of leftover minerals because our planet is full, 0 those out
+            remainingCost = new Cost(
+                Math.Max(0, remainingCost.Ironium),
+                Math.Max(0, remainingCost.Boranium),
+                Math.Max(0, remainingCost.Germanium),
+                Math.Max(0, remainingCost.Resources)
+            );
+
+            int numYearsToBuild = remainingCost == Cost.Zero ? 1 : (int)Math.Ceiling(Mathf.Clamp(remainingCost / yearlyAvailableCost, 1, int.MaxValue));
+
+            var color = numYearsToBuild == 1 ? Colors.White : Colors.DarkGreen;
+
+            availableItemsTable.Data.AddRow(item, color, item.FullName);
         }
 
         void AddQueuedItem(ProductionQueueItem item, int index)
@@ -382,11 +413,10 @@ namespace CraigStars
             }
         }
 
-        void OnSelectAvailableItem()
+        private void OnSelectAvailableItem(int rowIndex, int colIndex, Cell cell, object metadata)
         {
-            selectedAvailableItemIndex = (int)availableItemsTree.GetSelected().GetMetadata(0);
+            selectedAvailableItemIndex = rowIndex;
             var item = GetSelectedAvailableItem();
-
             if (item != null)
             {
                 var cost = item.Value.GetCostOfOne(RulesManager.Rules, Me);
@@ -398,7 +428,8 @@ namespace CraigStars
             }
         }
 
-        void OnAddItem()
+
+        void OnAddItem(int rowIndex, int colIndex, Cell cell, object metadata)
         {
             var itemToAdd = GetSelectedAvailableItem();
             var selectedQueueItem = GetSelectedQueueItem();

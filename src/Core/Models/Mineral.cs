@@ -76,6 +76,35 @@ namespace CraigStars
             germanium = Germanium;
         }
 
+        public override bool Equals(object obj)
+        {
+            if (obj is Mineral mineral)
+            {
+                return Equals(mineral);
+            }
+            return false;
+        }
+
+        public bool Equals(Mineral other)
+        {
+            return Ironium == other.Ironium && Boranium == other.Boranium && Germanium == other.Germanium;
+        }
+
+        public static bool operator ==(Mineral a, Mineral b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(Mineral a, Mineral b)
+        {
+            return !a.Equals(b);
+        }
+
+        public override int GetHashCode()
+        {
+            return Ironium.GetHashCode() ^ Boranium.GetHashCode() ^ Germanium.GetHashCode();
+        }
+
         /// <summary>
         /// Get a copy of this, with updated Ironium
         /// </summary>

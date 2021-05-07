@@ -5,15 +5,16 @@
 [sub_resource type="ButtonGroup" id=1]
 
 [node name="Table" type="VBoxContainer"]
-margin_right = 1047.0
-margin_bottom = 697.0
+margin_right = 200.0
+margin_bottom = 200.0
+rect_min_size = Vector2( 500, 500 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Panel" type="Panel" parent="."]
 show_behind_parent = true
-margin_right = 1047.0
+margin_right = 500.0
 margin_bottom = 40.0
 rect_min_size = Vector2( 0, 40 )
 
@@ -44,7 +45,7 @@ flat = false
 
 [node name="SearchLineEdit" type="LineEdit" parent="Panel/HBoxContainer"]
 margin_left = 94.0
-margin_right = 1047.0
+margin_right = 500.0
 margin_bottom = 40.0
 size_flags_horizontal = 3
 align = 2
@@ -55,13 +56,13 @@ __meta__ = {
 
 [node name="ScrollContainer" type="ScrollContainer" parent="."]
 margin_top = 44.0
-margin_right = 1047.0
-margin_bottom = 697.0
+margin_right = 500.0
+margin_bottom = 500.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="Table" parent="ScrollContainer" instance=ExtResource( 1 )]
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_right = 1047.0
-margin_bottom = 653.0
+margin_right = 500.0
+margin_bottom = 456.0

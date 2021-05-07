@@ -32,7 +32,7 @@ namespace CraigStars
                 UpdateSort();
             }
         }
-        SortDirection sortDirection = SortDirection.Ascending;
+        SortDirection sortDirection = SortDirection.None;
 
         Label label;
         TextureRect sortButton;
@@ -71,7 +71,6 @@ namespace CraigStars
             if (label != null)
             {
                 label.Text = Column != null ? Column.Name : "";
-                // RectSize = label.RectSize + new Vector2(sortButton.RectSize.x, 0);
             }
         }
 
@@ -79,7 +78,15 @@ namespace CraigStars
         {
             if (sortButton != null)
             {
-                sortButton.FlipV = (sortDirection == SortDirection.Descending);
+                if (SortDirection == SortDirection.None)
+                {
+                    sortButton.Visible = false;
+                }
+                else
+                {
+                    sortButton.Visible = true;
+                    sortButton.FlipV = (sortDirection == SortDirection.Descending);
+                }
             }
         }
     }

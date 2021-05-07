@@ -34,6 +34,14 @@ namespace CraigStars
         /// </summary>
         public bool Italic { get; set; }
 
+        /// <summary>
+        /// The index of the sorted row. For example for 10 rows, if we reverse sort and Index is zero, SortIndex will be 9
+        /// we use this to move rows around rather than delete and re-instance them
+        /// </summary>
+        public int SortIndex { get; set; }
+
+        public bool Visible { get; set; } = true;
+
         public Row(int index, List<Cell> data, object metadata = null, Color? color = null, bool italic = false)
         {
             Index = index;

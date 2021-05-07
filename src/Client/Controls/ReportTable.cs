@@ -1,3 +1,4 @@
+using CraigStars.Singletons;
 using CraigStars.Utils;
 using Godot;
 using System;
@@ -11,6 +12,7 @@ namespace CraigStars
     /// </summary>
     public abstract class ReportTable<T> : VBoxContainer where T : class
     {
+        static CSLog log = LogProvider.GetLogger(typeof(ReportTable<T>));
         protected Table table;
         protected LineEdit searchLineEdit;
 
@@ -33,18 +35,26 @@ namespace CraigStars
             searchLineEdit.Connect("text_changed", this, nameof(OnSearchLineEditTextChanged));
             showOwnedButton.Connect("pressed", this, nameof(OnShowOwnedPressed));
             showAllButton.Connect("pressed", this, nameof(OnShowAllPressed));
-            Connect("visibility_changed", this, nameof(OnVisible));
 
+            Signals.TurnPassedEvent += OnTurnPassed;
             table.RowSelectedEvent += OnRowSelected;
         }
 
         public override void _ExitTree()
         {
             base._ExitTree();
+            Signals.TurnPassedEvent -= OnTurnPassed;
             table.RowSelectedEvent -= OnRowSelected;
         }
 
-        private void OnRowSelected(int rowIndex, int colIndex, Cell cell, object metadata)
+        void OnTurnPassed(PublicGameInfo gameInfo)
+        {
+            table.Data.Clear();
+            table.ClearTable();
+        }
+
+
+        void OnRowSelected(int rowIndex, int colIndex, Cell cell, object metadata)
         {
             if (metadata == null || metadata is T)
             {
@@ -52,26 +62,22 @@ namespace CraigStars
             }
         }
 
-        protected void OnVisible()
+        public void ResetTableData()
         {
-            ResetTableData();
-        }
-
-        void ResetTableData()
-        {
+            log.Info("Resettibng table data");
             table.Data.Clear();
+            
             AddColumns();
             foreach (T item in GetItems())
             {
                 table.Data.AddRow(CreateCellsForItem(item), item);
             }
-            table.UpdateTable();
+            var _ = table.ResetTable();
         }
 
         protected virtual void OnShowOwnedPressed()
         {
             ResetTableData();
-
         }
 
         protected virtual void OnShowAllPressed()

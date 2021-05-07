@@ -64,7 +64,7 @@ columns = 2
 margin_right = 154.0
 margin_bottom = 14.0
 size_flags_horizontal = 3
-custom_colors/font_color = Color( 0.0705882, 0.0392157, 0.996078, 1 )
+custom_colors/font_color = Color( 0.0352941, 0.376471, 1, 1 )
 text = "Ironium"
 
 [node name="Ironium" type="Label" parent="VBoxContainer/MineralsGrid"]

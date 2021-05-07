@@ -8,6 +8,7 @@ namespace CraigStars
         public event Action<ICellControl> MouseEnteredEvent;
         public event Action<ICellControl> MouseExitedEvent;
         public event Action<ICellControl, InputEvent> CellSelectedEvent;
+        public event Action<ICellControl, InputEvent> CellActivatedEvent;
 
         public Column Column { get; set; }
         public Cell Cell { get; set; }
@@ -25,7 +26,14 @@ namespace CraigStars
         {
             if (@event.IsActionPressed("ui_select"))
             {
-                CellSelectedEvent?.Invoke(this, @event);
+                if (@event is InputEventMouseButton mouseButton && mouseButton.Doubleclick)
+                {
+                    CellActivatedEvent?.Invoke(this, @event);
+                }
+                else
+                {
+                    CellSelectedEvent?.Invoke(this, @event);
+                }
             }
         }
 

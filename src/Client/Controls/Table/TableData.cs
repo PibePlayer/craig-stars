@@ -104,6 +104,10 @@ namespace CraigStars
                 {
                     cells.Add(new Cell(i));
                 }
+                else if (cell is Cell cellObj)
+                {
+                    cells.Add(cellObj);
+                }
                 else
                 {
                     throw new InvalidCastException("Table Cells cannot be data of type " + cell.GetType());
@@ -124,6 +128,10 @@ namespace CraigStars
                 else if (cell is int i)
                 {
                     cells.Add(new Cell(i));
+                }
+                else if (cell is Cell cellObj)
+                {
+                    cells.Add(cellObj);
                 }
                 else
                 {
@@ -176,7 +184,23 @@ namespace CraigStars
                 if (FilterText != "")
                 {
                     var lowercaseFilterText = FilterText.ToLower();
-                    rows = rows.Where(row => row.Data.Any(cell => $"{cell.Value}".ToLower().Contains(lowercaseFilterText)));
+                    // mark all rows as not visible. we will turn them visible if they exist after filtering
+                    rows = rows
+                        .Select((row) =>
+                        {
+                            row.Visible = row.Data.Any(cell => $"{cell.Value}".ToLower().Contains(lowercaseFilterText));
+                            return row;
+                        });
+                }
+                else
+                {
+                    // make all rows visible if we have no filter text
+                    rows = rows
+                        .Select((row) =>
+                        {
+                            row.Visible = true;
+                            return row;
+                        });
                 }
 
                 if (SortDirection == SortDirection.Ascending)
@@ -192,7 +216,7 @@ namespace CraigStars
                 int index = 0;
                 rows = rows.Select((row) =>
                 {
-                    row.Index = index++;
+                    row.SortIndex = index++;
                     return row;
                 });
 

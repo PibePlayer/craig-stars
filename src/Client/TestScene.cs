@@ -15,15 +15,21 @@ namespace CraigStars
             table = (Table)FindNode("Table");
 
             // add two columns
-            table.Data.AddColumns("Item", "Quantity", "Col3");
+            table.Data.AddColumns(
+                "Item",
+                "Quantity",
+                "Col3",
+                new Column("hidden", hidden: true),
+                new Column("Surface Minerals", scene: "res://src/Client/Controls/Table/MineralsCell.tscn")
+            );
 
             // add some rows of data
-            table.Data.AddRow(new Cost(1, 2, 3, 4), Colors.White, "A", 4, 2);
-            table.Data.AddRow(new Cost(2, 3, 4, 5), Colors.White, "B", 3, 1);
-            table.Data.AddRow("C", 2, 4);
-            table.Data.AddRow("D", 1, 3);
+            table.Data.AddRow(new Cost(2, 3, 4, 5), Colors.White, "B", 30, 1, "hidden", new Cell("Surface Minerals", 10, metadata: new Cargo(10)));
+            table.Data.AddRow(new Cost(1, 2, 3, 4), Colors.White, "A", 40, 2, "hidden", new Cell("Surface Minerals", 20, metadata: new Cargo(20)));
+            table.Data.AddRow("C", 20, 4, "hidden", new Cell("Surface Minerals", 30, metadata: new Cargo(30)));
+            table.Data.AddRow("D", 10, 3, "hidden", new Cell("Surface Minerals", 40, metadata: new Cargo(40)));
 
-            table.UpdateTable();
+            var _ = table.ResetTable();
 
             lineEdit.Connect("text_changed", this, nameof(OnSearchLineEditTextChanged));
         }

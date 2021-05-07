@@ -43,7 +43,7 @@ public class TileContainer : Control
 
     void UpdateControlsScene()
     {
-        if (ControlsScene != null)
+        if (ControlsScene != null && controls != null)
         {
             try
             {

@@ -1,4 +1,9 @@
 namespace CraigStars
 {
-    public enum SortDirection { Ascending, Descending };
+    public enum SortDirection
+    {
+        None,
+        Ascending,
+        Descending,
+    };
 }

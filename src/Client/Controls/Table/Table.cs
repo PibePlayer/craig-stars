@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace CraigStars
 {
@@ -16,8 +17,9 @@ namespace CraigStars
 
         public const int NoRowSelected = -1;
 
-        public delegate void RowSelected(int rowIndex, int colIndex, Cell cell, object metadata);
-        public event RowSelected RowSelectedEvent;
+        public delegate void RowAction(int rowIndex, int colIndex, Cell cell, object metadata);
+        public event RowAction RowSelectedEvent;
+        public event RowAction RowActivatedEvent;
 
         /// <summary>
         /// The scene that will be used to render each column header
@@ -28,7 +30,7 @@ namespace CraigStars
             get => columnHeaderScene; set
             {
                 columnHeaderScene = value;
-                UpdateTable();
+                // var _ = ResetTable();
             }
         }
         string columnHeaderScene = "res://src/Client/Controls/Table/ColumnHeader.tscn";
@@ -44,7 +46,6 @@ namespace CraigStars
             get => cellControlScene; set
             {
                 cellControlScene = value;
-                UpdateTable();
             }
         }
         string cellControlScene = "res://src/Client/Controls/Table/LabelCell.tscn";
@@ -59,7 +60,6 @@ namespace CraigStars
             set
             {
                 showHeader = value;
-                UpdateTable();
             }
         }
         bool showHeader = true;
@@ -77,7 +77,7 @@ namespace CraigStars
                 Update();
             }
         }
-        BorderStyle borderStyle = BorderStyle.None;
+        BorderStyle borderStyle = BorderStyle.Cell;
 
         /// <summary>
         /// The style of border to put around each cell
@@ -94,6 +94,22 @@ namespace CraigStars
         }
         Color borderColor = new Color("6e6e6e");
 
+
+        /// <summary>
+        /// The style of border to put around each cell
+        /// </summary>
+        [Export]
+        public Color SelectColor
+        {
+            get => selectColor;
+            set
+            {
+                selectColor = value;
+                Update();
+            }
+        }
+        Color selectColor = new Color(.5f, .5f, .5f, .5f);
+
         /// <summary>
         /// The data for the table
         /// </summary>
@@ -105,6 +121,16 @@ namespace CraigStars
         public int SelectedRow { get; set; } = NoRowSelected;
 
         /// <summary>
+        /// Note, very experimental (i.e. it errors if you have more than one table updating at a time)
+        /// </summary>
+        public bool Multithreaded { get; set; } = false;
+
+        /// <summary>
+        /// Task for resetting the table in a thread (instead of on the main thread)
+        /// </summary>
+        Task resetTableTask;
+
+        /// <summary>
         /// The GridContainer that we put headers and cells into
         /// </summary>
         GridContainer gridContainer;
@@ -112,7 +138,12 @@ namespace CraigStars
         /// <summary>
         /// Keep track of all the control elemeents by row,column so we can easily locate them for drawing
         /// </summary>
-        Control[,] cellControls;
+        Control[,] cellControls = new Control[0, 0];
+
+        /// <summary>
+        /// Keep track of column headers to toggle sort direction icons
+        /// </summary>
+        List<IColumnHeader> columnHeaders = new List<IColumnHeader>();
 
 
         public override void _Ready()
@@ -130,7 +161,11 @@ namespace CraigStars
                 Data.AddRow(Colors.Green, "Factory", 10);
             }
 
-            UpdateTable();
+            // var _ = ResetTable();
+
+            Connect("resized", this, nameof(OnResized));
+            Connect("visibility_changed", this, nameof(OnVisible));
+            Connect("item_rect_changed", this, nameof(OnResized));
 
             Data.SortEvent += OnDataSorted;
             Data.FilterEvent += OnDataFiltered;
@@ -145,7 +180,6 @@ namespace CraigStars
 
         public override void _Draw()
         {
-            base._Draw();
             if (gridContainer != null)
             {
                 if (BorderStyle == BorderStyle.Cell)
@@ -153,17 +187,27 @@ namespace CraigStars
                     // draw a rect around each cell
                     foreach (Node child in gridContainer.GetChildren())
                     {
-                        if (child is Control control)
+                        if (child is Control control && control.Visible)
                         {
                             DrawRect(control.GetRect(), BorderColor, false);
                         }
                     }
                 }
 
-                if (SelectedRow != NoRowSelected)
+                if (SelectedRow != NoRowSelected && cellControls.Length > 0)
                 {
-                    var firstSelectedCell = cellControls[SelectedRow, 0];
-                    DrawRect(new Rect2(gridContainer.RectPosition.x, firstSelectedCell.RectPosition.y, gridContainer.RectSize.x, firstSelectedCell.RectSize.y), new Color(1, 1, 1, .25f));
+                    var numVisibleColumns = Data.VisibleColumns.Count();
+                    if (numVisibleColumns > 0 && numVisibleColumns < gridContainer.GetChildCount())
+                    {
+                        // draw a rectangle around the first selected cell to the end of the column x
+                        var firstSelectedCell = cellControls[SelectedRow, 0];
+                        var lastSelectedColumnHeader = gridContainer.GetChild(numVisibleColumns - 1) as Control;
+                        if (firstSelectedCell != null)
+                        {
+                            DrawRect(new Rect2(gridContainer.RectPosition.x, firstSelectedCell.RectPosition.y, lastSelectedColumnHeader.RectPosition.x + lastSelectedColumnHeader.RectSize.x, firstSelectedCell.RectSize.y), SelectColor);
+                        }
+
+                    }
                 }
             }
 
@@ -172,7 +216,7 @@ namespace CraigStars
         /// <summary>
         /// Clear out all the nodes in the table (including the column headers
         /// </summary>
-        void ClearTable()
+        public void ClearTable()
         {
             SelectedRow = NoRowSelected;
             // clear out old rows
@@ -188,19 +232,44 @@ namespace CraigStars
                     cell.MouseEnteredEvent -= OnMouseEntered;
                     cell.MouseExitedEvent -= OnMouseExited;
                     cell.CellSelectedEvent -= OnCellSelected;
+                    cell.CellActivatedEvent -= OnCellActivated;
                 }
 
-                gridContainer.RemoveChild(child);
                 child.QueueFree();
             }
+
+            columnHeaders.Clear();
+            cellControls = new Control[0, 0];
         }
 
         /// <summary>
         /// Clear the table and redraw it with new/updated data
         /// </summary>
-        public void UpdateTable()
+        public async Task ResetTable()
         {
+            if (resetTableTask != null)
+            {
+                await resetTableTask;
+            }
+            log.Debug("Updating table");
+
             if (gridContainer != null && Data != null)
+            {
+                RemoveChild(gridContainer);
+
+                // after container removed, setup the table on a separate thread
+                CallDeferred(nameof(ResetTableAsync));
+            }
+        }
+
+        async void ResetTableAsync()
+        {
+            if (resetTableTask != null)
+            {
+                await resetTableTask;
+            }
+
+            Action generateTable = () =>
             {
                 ClearTable();
 
@@ -210,9 +279,25 @@ namespace CraigStars
 
                     AddColumnHeaders();
                     AddRows();
-                    Update();
+                    SelectedRow = 0;
+                    // Update();
                 }
+
+            };
+
+            if (Multithreaded)
+            {
+                resetTableTask = Task.Factory.StartNew(generateTable);
+                await resetTableTask;
             }
+            else
+            {
+                generateTable();
+            }
+
+            CallDeferred("add_child", gridContainer);
+            log.Debug("Done updating table");
+            resetTableTask = null;
         }
 
         /// <summary>
@@ -235,7 +320,9 @@ namespace CraigStars
                             header.SortDirection = Data.SortDirection;
                         }
                         header.SortEvent += OnSortEvent;
+                        columnHeaders.Add(header);
                     }
+                    columnHeaderInstance.Connect("item_rect_changed", this, nameof(OnResized));
                     gridContainer.AddChild(columnHeaderInstance);
                 }
             }
@@ -247,6 +334,7 @@ namespace CraigStars
         void AddRows()
         {
             int rowIndex = 0;
+            log.Debug("Adding rows to table");
 
             // each column could have a cell override
             var defaultScene = GD.Load<PackedScene>(CellControlScene);
@@ -262,7 +350,7 @@ namespace CraigStars
                 }
 
             }).ToArray();
-            var rows = Data.Rows.ToList();
+            var rows = Data.SourceRows;
             cellControls = new Control[rows.Count, Data.Columns.Count];
             foreach (var row in rows)
             {
@@ -285,6 +373,7 @@ namespace CraigStars
                     node.MouseEnteredEvent += OnMouseEntered;
                     node.MouseExitedEvent += OnMouseExited;
                     node.CellSelectedEvent += OnCellSelected;
+                    node.CellActivatedEvent += OnCellActivated;
 
 
                     if (node is Control control)
@@ -303,6 +392,49 @@ namespace CraigStars
                 }
                 rowIndex++;
             }
+
+            log.Debug("Done adding rows to table");
+        }
+
+        public void UpdateRows()
+        {
+            log.Debug("Updating rows in table");
+
+            var rows = Data.Rows.ToList();
+            var numVisibleColumns = Data.VisibleColumns.Count();
+            for (int rowIndex = 0; rowIndex < rows.Count; rowIndex++)
+            {
+                var row = rows[rowIndex];
+                for (int columnIndex = 0, nonHiddenColumnIndex = 0; columnIndex < Data.Columns.Count; columnIndex++)
+                {
+                    var col = Data.Columns[columnIndex];
+                    if (col.Hidden)
+                    {
+                        continue;
+                    }
+
+                    // get the control for this cell from our original cellControls list
+                    var node = cellControls[row.Index, columnIndex];
+                    node.Visible = row.Visible;
+
+                    // move this cell to its new location
+                    var newIndex = (row.SortIndex + 1) * numVisibleColumns + nonHiddenColumnIndex;
+
+                    gridContainer.MoveChild(node, newIndex);
+                    nonHiddenColumnIndex++;
+                }
+            }
+
+            log.Debug("Done updating rows to table");
+            if (rows.Count > 0)
+            {
+                SelectedRow = rows[0].Index;
+            }
+            else
+            {
+                SelectedRow = NoRowSelected;
+            }
+            Update();
         }
 
         #region Table Data Events
@@ -314,17 +446,40 @@ namespace CraigStars
         /// <param name="sortDirection"></param>
         void OnDataSorted(int sortColumn, SortDirection sortDirection)
         {
-            UpdateTable();
+            UpdateRows();
         }
 
         void OnDataFiltered(string filterText)
         {
-            UpdateTable();
+            UpdateRows();
         }
 
         #endregion
 
         #region Table Control Events
+
+        void OnResized()
+        {
+            // redraw on any resize event so our grid lines look right
+            Update();
+        }
+
+        void OnVisible()
+        {
+            if (Visible)
+            {
+                var firstRow = Data.Rows.FirstOrDefault();
+                if (firstRow != null)
+                {
+                    SelectedRow = firstRow.SortIndex;
+                }
+                else
+                {
+                    SelectedRow = NoRowSelected;
+                }
+                Update();
+            }
+        }
 
         void OnMouseEntered(ICellControl cell)
         {
@@ -341,8 +496,12 @@ namespace CraigStars
         /// <param name="columnHeader"></param>
         void OnSortEvent(ColumnHeader columnHeader)
         {
-            switch (columnHeader.SortDirection)
+            var sortDirection = columnHeader.SortDirection;
+            // reset all to none so we only have one column sort header active at a time
+            columnHeaders.ForEach(ch => ch.SortDirection = SortDirection.None);
+            switch (sortDirection)
             {
+                case SortDirection.None:
                 case SortDirection.Ascending:
                     columnHeader.SortDirection = SortDirection.Descending;
                     break;
@@ -367,13 +526,22 @@ namespace CraigStars
             var newSelectedRow = cell.Row.Index;
             if (newSelectedRow != SelectedRow)
             {
-                log.Debug($"SelectedRow Updated: {SelectedRow}");
+                log.Debug($"SelectedRow Updated: {SelectedRow} to {newSelectedRow}");
             }
 
-            SelectedRow = cell.Row.Index;
+            SelectedRow = newSelectedRow;
             RowSelectedEvent?.Invoke(SelectedRow, cell.Column.Index, cell.Cell, cell.Row.Metadata);
             Update();
         }
+
+        void OnCellActivated(ICellControl cell, InputEvent @event)
+        {
+            log.Debug($"Activated {cell.Cell.Text}, Metadata: {cell.Row.Metadata}");
+            var activatedRowIndex = cell.Row.Index;
+            RowActivatedEvent?.Invoke(activatedRowIndex, cell.Column.Index, cell.Cell, cell.Row.Metadata);
+        }
+
+
         #endregion
 
     }

@@ -8,7 +8,7 @@ namespace CraigStars
 
     public class PlanetProductionTile : PlanetTile
     {
-        GridContainer productionQueueContainer;
+        Table productionQueue;
         CSConfirmDialog confirmDialog;
         Button changeButton;
         Button clearButton;
@@ -23,7 +23,7 @@ namespace CraigStars
             clearButton = (Button)FindNode("ClearButton");
             routeButton = (Button)FindNode("RouteButton");
             routeTo = (Label)FindNode("RouteTo");
-            productionQueueContainer = GetNode<GridContainer>("VBoxContainer/MarginContainer/Panel/MarginContainer/ScrollContainer/ProductionQueueContainer");
+            productionQueue = GetNode<Table>("VBoxContainer/MarginContainer/ScrollContainer/ProductionQueue");
             confirmDialog = GetNode<CSConfirmDialog>("ConfirmDialog");
 
             changeButton.Connect("pressed", this, nameof(OnChangeButtonPressed));
@@ -48,22 +48,20 @@ namespace CraigStars
         protected override void UpdateControls()
         {
             base.UpdateControls();
-            foreach (Node node in productionQueueContainer.GetChildren())
-            {
-                productionQueueContainer.RemoveChild(node);
-                node.QueueFree();
-            }
+            productionQueue.ClearTable();
+            productionQueue.Data.Clear();
+            productionQueue.Data.AddColumn("Item");
+            productionQueue.Data.AddColumn("Quantity", align: Label.AlignEnum.Right);
             if (CommandedPlanet != null)
             {
                 // populate the production queue
                 CommandedPlanet.Planet.ProductionQueue?.Items.ForEach(item =>
                 {
-                    var nameLabel = new Label() { Text = item.ShortName };
-                    nameLabel.SizeFlagsHorizontal = (int)SizeFlags.ExpandFill;
-                    productionQueueContainer.AddChild(nameLabel);
-                    productionQueueContainer.AddChild(new Label() { Text = $"{item.quantity}", Align = Label.AlignEnum.Right });
+                    productionQueue.Data.AddRow(item.ShortName, item.quantity);
                 });
+
             }
+            var _ = productionQueue.ResetTable();
         }
 
         void OnChangeButtonPressed()

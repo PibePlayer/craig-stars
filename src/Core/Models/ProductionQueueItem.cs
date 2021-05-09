@@ -6,16 +6,16 @@ namespace CraigStars
     /// <summary>
     /// An item in a ProductionQueue
     /// </summary>
-    public struct ProductionQueueItem
+    public class ProductionQueueItem
     {
-        public readonly QueueItemType type;
-        public int quantity;
+        public QueueItemType Type { get; set; }
+        public int Quantity { get; set; }
 
         /// <summary>
         /// The name of the fleet to place this item into
         /// </summary>
         /// <value></value>
-        public readonly string fleetName;
+        public string FleetName { get; set; }
 
         /// <summary>
         /// If this is a ship building item, this is the design to build
@@ -24,65 +24,84 @@ namespace CraigStars
         [JsonProperty(IsReference = true)]
         public ShipDesign Design { get; set; }
 
+        [JsonIgnore]
+        public int yearsToBuild { get; set; } = -1;
+
+        [JsonIgnore]
+        public float percentComplete { get; set; } = 0;
+
         [JsonConstructor]
         public ProductionQueueItem(QueueItemType type, int quantity = 0, ShipDesign design = null, string fleetName = null)
         {
-            this.type = type;
-            this.quantity = quantity;
-            this.Design = design;
-            this.fleetName = fleetName;
+            Type = type;
+            Quantity = quantity;
+            Design = design;
+            FleetName = fleetName;
+        }
+
+        public ProductionQueueItem Clone()
+        {
+            return new ProductionQueueItem(Type, Quantity, Design, FleetName);
         }
 
         public override string ToString()
         {
-            return $"{type} {quantity}{(Design != null ? " " + Design.Name : "")}";
+            return $"{Type} {Quantity}{(Design != null ? " " + Design.Name : "")}";
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object obj) => this.Equals(obj as ProductionQueueItem);
+
+        public bool Equals(ProductionQueueItem p)
         {
-            if (obj is ProductionQueueItem item)
+            if (p is null)
             {
-                return Equals(item);
+                return false;
             }
-            return false;
-        }
 
-        public bool Equals(ProductionQueueItem other)
-        {
-            return type == other.type && quantity == other.quantity && Design == other.Design && fleetName == other.fleetName;
-        }
-
-        public static bool operator ==(ProductionQueueItem a, ProductionQueueItem b)
-        {
-            return a.Equals(b);
-        }
-
-        public static bool operator !=(ProductionQueueItem a, ProductionQueueItem b)
-        {
-            return !a.Equals(b);
-        }
-
-        public override int GetHashCode()
-        {
-            var hashCode = type.GetHashCode() ^ quantity.GetHashCode();
-            if (fleetName != null)
+            // Optimization for a common success case.
+            if (Object.ReferenceEquals(this, p))
             {
-                hashCode ^= fleetName.GetHashCode();
+                return true;
+            }
 
-            }
-            if (Design != null)
+            // If run-time types are not exactly the same, return false.
+            if (this.GetType() != p.GetType())
             {
-                hashCode ^= Design.GetHashCode();
+                return false;
             }
-            return hashCode;
+
+            // Return true if the fields match.
+            // Note that the base class is not invoked because it is
+            // System.Object, which defines Equals as reference equality.
+            return (Type == p.Type) && (Quantity == p.Quantity) && (Design == p.Design) && (FleetName == p.FleetName);
         }
+
+        public override int GetHashCode() => (Type, Quantity, Design, FleetName).GetHashCode();
+
+        public static bool operator ==(ProductionQueueItem lhs, ProductionQueueItem rhs)
+        {
+            if (lhs is null)
+            {
+                if (rhs is null)
+                {
+                    return true;
+                }
+
+                // Only the left side is null.
+                return false;
+            }
+            // Equals handles case of null on right side.
+            return lhs.Equals(rhs);
+        }
+
+        public static bool operator !=(ProductionQueueItem lhs, ProductionQueueItem rhs) => !(lhs == rhs);
 
 
         public string ShortName
         {
             get
             {
-                switch (type)
+                switch (Type)
                 {
                     case QueueItemType.Starbase:
                     case QueueItemType.ShipToken:
@@ -96,7 +115,7 @@ namespace CraigStars
                     case QueueItemType.AutoMineralAlchemy:
                         return "Alchemy (Auto)";
                     default:
-                        return type.ToString();
+                        return Type.ToString();
                 }
             }
         }
@@ -105,7 +124,7 @@ namespace CraigStars
         {
             get
             {
-                switch (type)
+                switch (Type)
                 {
                     case QueueItemType.Starbase:
                     case QueueItemType.ShipToken:
@@ -119,7 +138,7 @@ namespace CraigStars
                     case QueueItemType.AutoDefenses:
                         return "Defense (Auto Build)";
                     default:
-                        return type.ToString();
+                        return Type.ToString();
                 }
             }
         }
@@ -131,11 +150,28 @@ namespace CraigStars
         public bool IsPacket
         {
             get =>
-                type == QueueItemType.IroniumMineralPacket ||
-                type == QueueItemType.BoraniumMineralPacket ||
-                type == QueueItemType.GermaniumMineralPacket ||
-                type == QueueItemType.MixedMineralPacket ||
-                type == QueueItemType.AutoMineralPacket;
+                Type == QueueItemType.IroniumMineralPacket ||
+                Type == QueueItemType.BoraniumMineralPacket ||
+                Type == QueueItemType.GermaniumMineralPacket ||
+                Type == QueueItemType.MixedMineralPacket ||
+                Type == QueueItemType.AutoMineralPacket;
+        }
+
+
+        /// <summary>
+        /// True if this is a mineral packet
+        /// </summary>
+        /// <value></value>
+        public bool IsAuto
+        {
+            get =>
+                Type == QueueItemType.AutoDefenses ||
+                Type == QueueItemType.AutoFactories ||
+                Type == QueueItemType.AutoMaxTerraform ||
+                Type == QueueItemType.AutoMineralAlchemy ||
+                Type == QueueItemType.AutoMineralPacket ||
+                Type == QueueItemType.AutoMines ||
+                Type == QueueItemType.AutoMinTerraform;
         }
 
         /// <summary>
@@ -149,11 +185,11 @@ namespace CraigStars
             var race = player.Race;
             int resources = 0;
             int germanium = 0;
-            if (type == QueueItemType.Mine || type == QueueItemType.AutoMines)
+            if (Type == QueueItemType.Mine || Type == QueueItemType.AutoMines)
             {
                 resources = race.MineCost;
             }
-            else if (type == QueueItemType.Factory || type == QueueItemType.AutoFactories)
+            else if (Type == QueueItemType.Factory || Type == QueueItemType.AutoFactories)
             {
                 resources = race.FactoryCost;
                 germanium = rules.FactoryCostGermanium;
@@ -162,7 +198,7 @@ namespace CraigStars
                     germanium = germanium - 1;
                 }
             }
-            else if (type == QueueItemType.MineralAlchemy || type == QueueItemType.AutoMineralAlchemy)
+            else if (Type == QueueItemType.MineralAlchemy || Type == QueueItemType.AutoMineralAlchemy)
             {
                 if (race.HasLRT(LRT.MA))
                 {
@@ -173,11 +209,11 @@ namespace CraigStars
                     resources = rules.MineralAlchemyCost;
                 }
             }
-            else if (type == QueueItemType.Defenses || type == QueueItemType.AutoDefenses)
+            else if (Type == QueueItemType.Defenses || Type == QueueItemType.AutoDefenses)
             {
                 return rules.DefenseCost;
             }
-            else if (type == QueueItemType.IroniumMineralPacket)
+            else if (Type == QueueItemType.IroniumMineralPacket)
             {
                 if (race.PRT == PRT.PP)
                 {
@@ -188,7 +224,7 @@ namespace CraigStars
                     return new Cost(ironium: rules.MineralsPerSingleMineralPacket, resources: rules.PacketResourceCost);
                 }
             }
-            else if (type == QueueItemType.BoraniumMineralPacket)
+            else if (Type == QueueItemType.BoraniumMineralPacket)
             {
                 if (race.PRT == PRT.PP)
                 {
@@ -199,7 +235,7 @@ namespace CraigStars
                     return new Cost(boranium: rules.MineralsPerSingleMineralPacket, resources: rules.PacketResourceCost);
                 }
             }
-            else if (type == QueueItemType.GermaniumMineralPacket)
+            else if (Type == QueueItemType.GermaniumMineralPacket)
             {
                 if (race.PRT == PRT.PP)
                 {
@@ -210,7 +246,7 @@ namespace CraigStars
                     return new Cost(germanium: rules.MineralsPerSingleMineralPacket, resources: rules.PacketResourceCost);
                 }
             }
-            else if (type == QueueItemType.MixedMineralPacket || type == QueueItemType.AutoMineralPacket)
+            else if (Type == QueueItemType.MixedMineralPacket || Type == QueueItemType.AutoMineralPacket)
             {
                 if (race.PRT == PRT.PP)
                 {
@@ -221,7 +257,7 @@ namespace CraigStars
                     return new Cost(rules.MineralsPerMixedMineralPacket, rules.MineralsPerMixedMineralPacket, rules.MineralsPerMixedMineralPacket, resources: rules.PacketResourceCost);
                 }
             }
-            else if (type == QueueItemType.ShipToken || type == QueueItemType.Starbase)
+            else if (Type == QueueItemType.ShipToken || Type == QueueItemType.Starbase)
             {
                 // ship designs have their own cost
                 return Design.Aggregate.Cost;

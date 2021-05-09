@@ -15,10 +15,8 @@ namespace CraigStars
         // the planet to use in this dialog
         public Planet Planet { get; set; } = new Planet();
 
-        Table availableItemsTable;
-        Tree queuedItemsTree;
-        TreeItem queuedItemsTreeRoot;
-        TreeItem topOfQueueItem;
+        AvailablePlanetProductionQueueItems availableItemsTable;
+        QueuedPlanetProductionQueueItems queuedItemsTable;
 
         Button addButton;
         Button removeButton;
@@ -35,19 +33,14 @@ namespace CraigStars
         Label completionEstimateLabel;
         Label costOfQueuedLabel;
 
-        int selectedAvailableItemIndex = -1;
-        int selectedQueuedItemIndex = -1;
-        List<ProductionQueueItem> availableItems = new List<ProductionQueueItem>();
-        List<ProductionQueueItem> queuedItems = new List<ProductionQueueItem>();
-
         int quantityModifier = 1;
 
         public override void _Ready()
         {
             base._Ready();
 
-            queuedItemsTree = (Tree)FindNode("QueuedItemsTree");
-            availableItemsTable = (Table)FindNode("AvailableItemsTable");
+            queuedItemsTable = (QueuedPlanetProductionQueueItems)FindNode("QueuedItemsTable");
+            availableItemsTable = (AvailablePlanetProductionQueueItems)FindNode("AvailableItemsTable");
 
             addButton = (Button)FindNode("AddButton");
             removeButton = (Button)FindNode("RemoveButton");
@@ -64,18 +57,13 @@ namespace CraigStars
             completionEstimateLabel = (Label)FindNode("CompletionEstimateLabel");
             costOfQueuedLabel = (Label)FindNode("CostOfQueuedLabel");
 
-            queuedItemsTree.Columns = 2;
-            queuedItemsTree.SetColumnExpand(0, true);
-            queuedItemsTree.SetColumnExpand(1, false);
-            queuedItemsTree.SetColumnMinWidth(1, 60);
-
-            queuedItemsTree.Connect("item_selected", this, nameof(OnSelectQueuedItem));
 
             addButton.Connect("pressed", this, nameof(OnAddItem));
             clearButton.Connect("pressed", this, nameof(OnClear));
             removeButton.Connect("pressed", this, nameof(OnRemoveItem));
             itemUpButton.Connect("pressed", this, nameof(OnItemUp));
             itemDownButton.Connect("pressed", this, nameof(OnItemDown));
+            contributesOnlyLeftoverToResearchCheckbox.Connect("pressed", this, nameof(OnContributesOnlyLeftoverToResearchCheckboxPressed));
 
             nextButton.Connect("pressed", this, nameof(OnNextButtonPressed));
             prevButton.Connect("pressed", this, nameof(OnPrevButtonPressed));
@@ -87,6 +75,8 @@ namespace CraigStars
             availableItemsTable.RowSelectedEvent += OnSelectAvailableItem;
             availableItemsTable.RowActivatedEvent += OnAddItem;
 
+            queuedItemsTable.RowSelectedEvent += OnSelectQueuedItem;
+
             Signals.MapObjectCommandedEvent += OnMapObjectCommanded;
         }
 
@@ -94,6 +84,7 @@ namespace CraigStars
         {
             availableItemsTable.RowSelectedEvent -= OnSelectAvailableItem;
             availableItemsTable.RowActivatedEvent -= OnAddItem;
+            queuedItemsTable.RowSelectedEvent -= OnSelectQueuedItem;
             Signals.MapObjectCommandedEvent -= OnMapObjectCommanded;
         }
 
@@ -102,77 +93,20 @@ namespace CraigStars
         /// </summary>
         void OnAboutToShow()
         {
-            queuedItems.Clear();
-            availableItems.Clear();
-            availableItemsTable.Data.Clear();
-            queuedItemsTree.Clear();
-            queuedItemsTreeRoot = queuedItemsTree.CreateItem();
-
-            availableItemsTable.Data.AddColumn("Item");
-            // add each design
-            var availableItemIndex = 0;
-            if (Planet.HasStarbase && Planet.Starbase.DockCapacity > 0)
-            {
-                Me.Designs.ForEach(design =>
-                {
-                    if (Planet.CanBuild(Me, design.Aggregate.Mass))
-                    {
-                        if (design.Hull.Starbase)
-                        {
-                            AddAvailableItem(new ProductionQueueItem(QueueItemType.Starbase, design: design), index: availableItemIndex++);
-                        }
-                        else
-                        {
-                            AddAvailableItem(new ProductionQueueItem(QueueItemType.ShipToken, design: design), index: availableItemIndex++);
-                        }
-                    }
-                });
-
-                if (Planet.HasMassDriver)
-                {
-                    AddAvailableItem(new ProductionQueueItem(QueueItemType.IroniumMineralPacket), index: availableItemIndex++);
-                    AddAvailableItem(new ProductionQueueItem(QueueItemType.BoraniumMineralPacket), index: availableItemIndex++);
-                    AddAvailableItem(new ProductionQueueItem(QueueItemType.GermaniumMineralPacket), index: availableItemIndex++);
-                    AddAvailableItem(new ProductionQueueItem(QueueItemType.MixedMineralPacket), index: availableItemIndex++);
-                }
-            }
-
-            // add each type of item.
-            AddAvailableItem(new ProductionQueueItem(QueueItemType.Factory), index: availableItemIndex++);
-            AddAvailableItem(new ProductionQueueItem(QueueItemType.Mine), index: availableItemIndex++);
-            AddAvailableItem(new ProductionQueueItem(QueueItemType.Defenses), index: availableItemIndex++);
-            AddAvailableItem(new ProductionQueueItem(QueueItemType.MineralAlchemy), index: availableItemIndex++);
-            AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoFactories), index: availableItemIndex++);
-            AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoMines), index: availableItemIndex++);
-            AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoDefenses), index: availableItemIndex++);
-            AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoMineralAlchemy), index: availableItemIndex++);
-            if (Planet.HasMassDriver)
-            {
-                AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoMineralPacket), index: availableItemIndex++);
-            }
-
-            if (Planet.ProductionQueue != null)
-            {
-                AddTopOfQueueItem();
-                Planet.ProductionQueue.Items.Each((item, index) =>
-                {
-                    queuedItems.Add(item);
-                    AddQueuedItem(item, index);
-                });
-            }
-
             // select the top of the queue on startup
-            topOfQueueItem.Select(0);
+            queuedItemsTable.SelectedItemIndex = 0;
 
-            var _ = availableItemsTable.ResetTable();
+            availableItemsTable.Planet = Planet;
+            queuedItemsTable.Planet = Planet;
 
             contributesOnlyLeftoverToResearchCheckbox.Pressed = Planet.ContributesOnlyLeftoverToResearch;
+            queuedItemsTable.ContributesOnlyLeftoverToResearch = contributesOnlyLeftoverToResearchCheckbox.Pressed;
         }
 
         void OnPopupHide()
         {
-            availableItemsTable.Data.Clear();
-            queuedItemsTree.Clear();
+            queuedItemsTable.Clear();
+            availableItemsTable.Clear();
         }
 
         void OnMapObjectCommanded(MapObjectSprite mapObject)
@@ -186,164 +120,28 @@ namespace CraigStars
             }
         }
 
-        void AddAvailableItem(ProductionQueueItem item, int index)
-        {
-            availableItems.Add(item);
-
-            var cost = item.GetCostOfOne(RulesManager.Rules, Me);
-
-            // figure out how many resources we have per year
-            int yearlyResources = 0;
-            if (contributesOnlyLeftoverToResearchCheckbox.Pressed)
-            {
-                yearlyResources = Planet.ResourcesPerYear;
-            }
-            else
-            {
-                yearlyResources = Planet.ResourcesPerYearAvailable;
-            }
-
-            // this is how man resources and minerals our planet produces each year
-            var yearlyAvailableCost = new Cost(Planet.MineralOutput, yearlyResources);
-
-            // Get the total cost of this item plus any previous items in the queue
-            // and subtract what we have on hand (that will be applied this year)
-            Cost remainingCost = cost - Planet.Cargo.ToCost();
-
-            // If we have a bunch of leftover minerals because our planet is full, 0 those out
-            remainingCost = new Cost(
-                Math.Max(0, remainingCost.Ironium),
-                Math.Max(0, remainingCost.Boranium),
-                Math.Max(0, remainingCost.Germanium),
-                Math.Max(0, remainingCost.Resources)
-            );
-
-            int numYearsToBuild = remainingCost == Cost.Zero ? 1 : (int)Math.Ceiling(Mathf.Clamp(remainingCost / yearlyAvailableCost, 1, int.MaxValue));
-
-            var color = numYearsToBuild == 1 ? Colors.White : Colors.DarkGreen;
-
-            availableItemsTable.Data.AddRow(item, color, item.FullName);
-        }
-
-        void AddQueuedItem(ProductionQueueItem item, int index)
-        {
-            AddTreeItem(queuedItemsTree, queuedItemsTreeRoot, item.FullName, item, index);
-        }
-
-        void UpdateQueuedItems()
-        {
-            queuedItemsTree.Clear();
-            queuedItemsTreeRoot = queuedItemsTree.CreateItem();
-            AddTopOfQueueItem();
-            queuedItems.Each((item, index) =>
-            {
-                AddQueuedItem(item, index);
-            });
-
-            // re-select our selected item or select the top
-            if (selectedQueuedItemIndex >= 0 && selectedQueuedItemIndex < queuedItems.Count)
-            {
-                var item = queuedItemsTreeRoot.GetChildren().GetNext();
-                int i;
-                for (i = 0; i < selectedQueuedItemIndex; i++)
-                {
-                    item = item.GetNext();
-                }
-
-                log.Debug("selecting queued item " + i);
-                item.Select(0);
-            }
-            else
-            {
-                // select the top of queue
-                log.Debug("selecting top of queue");
-                queuedItemsTreeRoot.GetChildren().Select(0);
-            }
-        }
-
-        void AddTreeItem(Tree tree, TreeItem root, string text, ProductionQueueItem item, int index = 0)
-        {
-            var treeItem = tree.CreateItem(root);
-            treeItem.SetText(0, text);
-            treeItem.SetMetadata(0, index);
-
-            if (item.quantity != 0)
-            {
-                treeItem.SetText(1, $"{item.quantity}");
-                treeItem.SetTextAlign(1, TreeItem.TextAlign.Right);
-            }
-        }
-
-        void AddTopOfQueueItem()
-        {
-            topOfQueueItem = queuedItemsTree.CreateItem(queuedItemsTreeRoot);
-            topOfQueueItem.SetText(0, Planet.ProductionQueue.Items.Count == 0 ? "-- Queue is Empty --" : "-- Top of the Queue --");
-            topOfQueueItem.SetMetadata(0, -1);
-        }
-
         /// <summary>
         /// Update the time it takes to complete the selected item, or clear it if we have no item
         /// </summary>
         /// <param name="selectedQueueItem"></param>
-        void UpdateCompletionEstimate(ProductionQueueItem? selectedQueueItem = null)
+        void UpdateCompletionEstimate(ProductionQueueItem selectedQueueItem = null)
         {
             if (selectedQueueItem != null)
             {
-                ProductionQueueItem item = selectedQueueItem.Value;
+                ProductionQueueItem item = selectedQueueItem;
                 queuedItemCostGrid.Visible = true;
 
                 // figure out how much this queue item costs
-                var cost = item.GetCostOfOne(RulesManager.Rules, Me) * item.quantity;
-                if (item.type == QueueItemType.Starbase && Planet.HasStarbase)
+                var cost = item.GetCostOfOne(RulesManager.Rules, Me) * item.Quantity;
+                if (item.Type == QueueItemType.Starbase && Planet.HasStarbase)
                 {
                     cost = Planet.Starbase.GetUpgradeCost(item.Design);
                 }
                 queuedItemCostGrid.Cost = cost;
-                costOfQueuedLabel.Text = $"Cost of {item.ShortName} x {item.quantity}";
-
-                // see how much has been allocated for the top item in the queue
-                var allocatedSoFar = Planet.ProductionQueue.Allocated;
-
-                // figure out how much each previous item in the list is costing us
-                Cost previousItemCost = -allocatedSoFar;
-                for (int i = 0; i < selectedQueuedItemIndex; i++)
-                {
-                    var previousItem = queuedItems[i];
-                    previousItemCost += previousItem.GetCostOfOne(RulesManager.Rules, Me) * previousItem.quantity;
-                }
-
-
-                // figure out how many resources we have per year
-                int yearlyResources = 0;
-                if (contributesOnlyLeftoverToResearchCheckbox.Pressed)
-                {
-                    yearlyResources = Planet.ResourcesPerYear;
-                }
-                else
-                {
-                    yearlyResources = Planet.ResourcesPerYearAvailable;
-                }
-
-                // this is how man resources and minerals our planet produces each year
-                var yearlyAvailableCost = new Cost(Planet.MineralOutput, yearlyResources);
-
-                // Get the total cost of this item plus any previous items in the queue
-                // and subtract what we have on hand (that will be applied this year)
-                Cost remainingCost = cost + previousItemCost - Planet.Cargo.ToCost();
-
-                // If we have a bunch of leftover minerals because our planet is full, 0 those out
-                remainingCost = new Cost(
-                    Math.Max(0, remainingCost.Ironium),
-                    Math.Max(0, remainingCost.Boranium),
-                    Math.Max(0, remainingCost.Germanium),
-                    Math.Max(0, remainingCost.Resources)
-                );
-
-                float percentComplete = selectedQueuedItemIndex == 0 && allocatedSoFar != Cost.Zero ? Mathf.Clamp(allocatedSoFar / cost, 0, 1) : 0;
-                int numYearsToBuild = remainingCost == Cost.Zero ? 1 : (int)Math.Ceiling(Mathf.Clamp(remainingCost / yearlyAvailableCost, 1, int.MaxValue));
+                costOfQueuedLabel.Text = $"Cost of {item.ShortName} x {item.Quantity}";
 
                 completionEstimateLabel.Visible = true;
-                completionEstimateLabel.Text = $"{(int)(percentComplete * 100)}% Done. Completion {numYearsToBuild} year{(numYearsToBuild > 1 ? "s" : "")}";
+                completionEstimateLabel.Text = $"{(int)(item.percentComplete * 100)}% Done. Completion {item.yearsToBuild} year{(item.yearsToBuild > 1 ? "s" : "")}";
             }
             else
             {
@@ -378,7 +176,7 @@ namespace CraigStars
             if (Planet.ProductionQueue != null)
             {
                 Planet.ProductionQueue.Items.Clear();
-                Planet.ProductionQueue.Items.AddRange(queuedItems);
+                Planet.ProductionQueue.Items.AddRange(queuedItemsTable.Items);
             }
             else
             {
@@ -401,171 +199,54 @@ namespace CraigStars
             Signals.PublishActivePrevMapObjectEvent();
         }
 
-
-        void OnSelectQueuedItem()
+        void OnContributesOnlyLeftoverToResearchCheckboxPressed()
         {
-            selectedQueuedItemIndex = (int)queuedItemsTree.GetSelected().GetMetadata(0);
-            var item = GetSelectedQueueItem();
-            UpdateCompletionEstimate(item);
-            if (item.HasValue)
-            {
-                log.Debug($"Selected item {selectedQueuedItemIndex} - {(item.HasValue ? item.Value.ToString() : "(empty)")}");
-            }
+            queuedItemsTable.ContributesOnlyLeftoverToResearch = contributesOnlyLeftoverToResearchCheckbox.Pressed;
         }
 
-        private void OnSelectAvailableItem(int rowIndex, int colIndex, Cell cell, object metadata)
+
+        void OnSelectQueuedItem(int rowIndex, int colIndex, Cell cell, ProductionQueueItem item)
         {
-            selectedAvailableItemIndex = rowIndex;
-            var item = GetSelectedAvailableItem();
+            UpdateCompletionEstimate(item);
+        }
+
+        void OnSelectAvailableItem(int rowIndex, int colIndex, Cell cell, ProductionQueueItem item)
+        {
+            var cost = item.GetCostOfOne(RulesManager.Rules, Me);
+            if (item.Type == QueueItemType.Starbase && Planet.HasStarbase)
+            {
+                cost = Planet.Starbase.GetUpgradeCost(item.Design);
+            }
+            availableItemCostGrid.Cost = cost;
+        }
+
+        void OnAddItem(int rowIndex, int colIndex, Cell cell, ProductionQueueItem item)
+        {
             if (item != null)
             {
-                var cost = item.Value.GetCostOfOne(RulesManager.Rules, Me);
-                if (item.Value.type == QueueItemType.Starbase && Planet.HasStarbase)
-                {
-                    cost = Planet.Starbase.GetUpgradeCost(item.Value.Design);
-                }
-                availableItemCostGrid.Cost = cost;
-            }
-        }
-
-
-        void OnAddItem(int rowIndex, int colIndex, Cell cell, object metadata)
-        {
-            var itemToAdd = GetSelectedAvailableItem();
-            var selectedQueueItem = GetSelectedQueueItem();
-            if (itemToAdd.HasValue && selectedQueueItem.HasValue
-                && selectedQueueItem.Value.type == itemToAdd.Value.type &&
-                selectedQueueItem.Value.Design == itemToAdd.Value.Design)
-            {
-                var newItem = selectedQueueItem.Value;
-                newItem.quantity = newItem.quantity + quantityModifier;
-                queuedItems[selectedQueuedItemIndex] = newItem;
-                UpdateQueuedItems();
-            }
-            else if (itemToAdd != null)
-            {
-                var newItem = itemToAdd.Value;
-                newItem.quantity = quantityModifier;
-                if (selectedQueueItem.HasValue)
-                {
-                    // add below the selected item
-                    if (queuedItems.Count > selectedQueuedItemIndex + 1)
-                    {
-                        var nextItem = queuedItems[selectedQueuedItemIndex + 1];
-                        if (nextItem.type == newItem.type && nextItem.Design == newItem.Design)
-                        {
-                            // increase quantity
-                            nextItem.quantity += quantityModifier;
-                            queuedItems[selectedQueuedItemIndex + 1] = nextItem;
-                        }
-                        else
-                        {
-                            queuedItems.Insert(selectedQueuedItemIndex + 1, newItem);
-                            log.Debug($"Inserted new item to at {selectedQueuedItemIndex + 1} - {newItem}");
-                        }
-                    }
-                    else
-                    {
-                        queuedItems.Insert(selectedQueuedItemIndex + 1, newItem);
-                        log.Debug($"Inserted new item to at {selectedQueuedItemIndex + 1} - {newItem}");
-                    }
-                }
-                else
-                {
-                    queuedItems.Insert(0, newItem);
-                    selectedQueuedItemIndex = 0;
-                    log.Debug($"Added new item to at {selectedQueuedItemIndex} - {newItem}");
-                }
-                UpdateQueuedItems();
+                queuedItemsTable.AddItem(item.Clone(), quantityModifier);
             }
         }
 
         void OnClear()
         {
-            queuedItems.Clear();
-            queuedItemsTree.Clear();
-            queuedItemsTreeRoot = queuedItemsTree.CreateItem();
-            AddTopOfQueueItem();
+            queuedItemsTable.Items.Clear();
+            queuedItemsTable.UpdateItems();
         }
 
         void OnRemoveItem()
         {
-            var selectedQueueItem = GetSelectedQueueItem();
-            if (selectedQueueItem != null)
-            {
-                var item = selectedQueueItem.Value;
-                item.quantity -= quantityModifier;
-                if (item.quantity <= 0)
-                {
-                    queuedItems.RemoveAt(selectedQueuedItemIndex);
-                    if (selectedQueuedItemIndex > queuedItems.Count && queuedItems.Count > 0)
-                    {
-                        // if we removed the last item, set our index to the next last item
-                        selectedQueuedItemIndex = queuedItems.Count;
-                    }
-                    else
-                    {
-                        selectedQueuedItemIndex = -1;
-                    }
-                }
-                else
-                {
-                    queuedItems[selectedQueuedItemIndex] = item;
-                }
-                UpdateQueuedItems();
-            }
+            queuedItemsTable.RemoveItem(quantityModifier);
         }
 
         void OnItemUp()
         {
-            if (queuedItemsTree.GetSelected() != null)
-            {
-                if (selectedQueuedItemIndex > 0 && selectedQueuedItemIndex < queuedItems.Count)
-                {
-                    // swap items and redraw the tree
-                    var selectedItem = queuedItems[selectedQueuedItemIndex];
-                    var previousItem = queuedItems[selectedQueuedItemIndex - 1];
-                    queuedItems[selectedQueuedItemIndex] = previousItem;
-                    queuedItems[selectedQueuedItemIndex - 1] = selectedItem;
-                    selectedQueuedItemIndex--;
-                    UpdateQueuedItems();
-                }
-            }
+            queuedItemsTable.ItemUp();
         }
 
         void OnItemDown()
         {
-            if (queuedItemsTree.GetSelected() != null)
-            {
-                if (selectedQueuedItemIndex >= 0 && selectedQueuedItemIndex < queuedItems.Count - 1)
-                {
-                    // swap items and redraw the tree
-                    var selectedItem = queuedItems[selectedQueuedItemIndex];
-                    var nextItem = queuedItems[selectedQueuedItemIndex + 1];
-                    queuedItems[selectedQueuedItemIndex] = nextItem;
-                    queuedItems[selectedQueuedItemIndex + 1] = selectedItem;
-                    selectedQueuedItemIndex++;
-                    UpdateQueuedItems();
-                }
-            }
-        }
-
-        ProductionQueueItem? GetSelectedQueueItem()
-        {
-            if (selectedQueuedItemIndex >= 0 && selectedQueuedItemIndex < queuedItems.Count)
-            {
-                return queuedItems[selectedQueuedItemIndex];
-            }
-            return null;
-        }
-
-        ProductionQueueItem? GetSelectedAvailableItem()
-        {
-            if (selectedAvailableItemIndex >= 0 && selectedAvailableItemIndex < availableItems.Count)
-            {
-                return availableItems[selectedAvailableItemIndex];
-            }
-            return null;
+            queuedItemsTable.ItemDown();
         }
 
         #endregion

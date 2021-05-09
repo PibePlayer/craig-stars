@@ -6,18 +6,23 @@ using System.Threading.Tasks;
 
 namespace CraigStars
 {
+    public class Table : Table<object>
+    {
+
+    }
+
 
     /// <summary>
     /// A configurable Table control for showing reports as well as simple UI tables
     /// </summary>
     [Tool]
-    public class Table : Control
+    public class Table<T> : Control where T : class
     {
         static CSLog log = LogProvider.GetLogger(typeof(Table));
 
         public const int NoRowSelected = -1;
 
-        public delegate void RowAction(int rowIndex, int colIndex, Cell cell, object metadata);
+        public delegate void RowAction(int rowIndex, int colIndex, Cell cell, T metadata);
         public event RowAction RowSelectedEvent;
         public event RowAction RowActivatedEvent;
 
@@ -113,22 +118,12 @@ namespace CraigStars
         /// <summary>
         /// The data for the table
         /// </summary>
-        public TableData Data { get; set; } = new TableData();
+        public TableData<T> Data { get; set; } = new TableData<T>();
 
         /// <summary>
         /// The currently selected row index
         /// </summary>
         public int SelectedRow { get; set; } = NoRowSelected;
-
-        /// <summary>
-        /// Note, very experimental (i.e. it errors if you have more than one table updating at a time)
-        /// </summary>
-        public bool Multithreaded { get; set; } = false;
-
-        /// <summary>
-        /// Task for resetting the table in a thread (instead of on the main thread)
-        /// </summary>
-        Task resetTableTask;
 
         /// <summary>
         /// The GridContainer that we put headers and cells into
@@ -227,7 +222,7 @@ namespace CraigStars
                     columnHeader.SortEvent -= OnSortEvent;
                 }
 
-                if (child is ICellControl cell)
+                if (child is ICellControl<T> cell)
                 {
                     cell.MouseEnteredEvent -= OnMouseEntered;
                     cell.MouseExitedEvent -= OnMouseExited;
@@ -245,32 +240,13 @@ namespace CraigStars
         /// <summary>
         /// Clear the table and redraw it with new/updated data
         /// </summary>
-        public async Task ResetTable()
+        public void ResetTable()
         {
-            if (resetTableTask != null)
-            {
-                await resetTableTask;
-            }
-            log.Debug("Updating table");
+            log.Debug("Resetting table");
 
             if (gridContainer != null && Data != null)
             {
-                RemoveChild(gridContainer);
 
-                // after container removed, setup the table on a separate thread
-                CallDeferred(nameof(ResetTableAsync));
-            }
-        }
-
-        async void ResetTableAsync()
-        {
-            if (resetTableTask != null)
-            {
-                await resetTableTask;
-            }
-
-            Action generateTable = () =>
-            {
                 ClearTable();
 
                 if (Data.VisibleColumns.Count() > 0)
@@ -280,24 +256,13 @@ namespace CraigStars
                     AddColumnHeaders();
                     AddRows();
                     SelectedRow = 0;
-                    // Update();
+                    Update();
                 }
 
-            };
-
-            if (Multithreaded)
-            {
-                resetTableTask = Task.Factory.StartNew(generateTable);
-                await resetTableTask;
-            }
-            else
-            {
-                generateTable();
             }
 
-            CallDeferred("add_child", gridContainer);
-            log.Debug("Done updating table");
-            resetTableTask = null;
+            log.Debug("Done resetting table");
+
         }
 
         /// <summary>
@@ -365,7 +330,7 @@ namespace CraigStars
                     var cell = row.Data[columnIndex];
 
                     // instantiate an instance of this cell
-                    ICellControl node = sceneForColumn[columnIndex].Instance() as ICellControl;
+                    ICellControl<T> node = sceneForColumn[columnIndex].Instance() as ICellControl<T>;
                     node.Column = col;
                     node.Cell = cell;
                     node.Row = row;
@@ -481,11 +446,11 @@ namespace CraigStars
             }
         }
 
-        void OnMouseEntered(ICellControl cell)
+        void OnMouseEntered(ICellControl<T> cell)
         {
         }
 
-        void OnMouseExited(ICellControl cell)
+        void OnMouseExited(ICellControl<T> cell)
         {
         }
 
@@ -520,7 +485,7 @@ namespace CraigStars
         /// </summary>
         /// <param name="cell"></param>
         /// <param name="event"></param>
-        void OnCellSelected(ICellControl cell, InputEvent @event)
+        void OnCellSelected(ICellControl<T> cell, InputEvent @event)
         {
             log.Debug($"Clicked {cell.Cell.Text}, Metadata: {cell.Row.Metadata}");
             var newSelectedRow = cell.Row.Index;
@@ -534,7 +499,7 @@ namespace CraigStars
             Update();
         }
 
-        void OnCellActivated(ICellControl cell, InputEvent @event)
+        void OnCellActivated(ICellControl<T> cell, InputEvent @event)
         {
             log.Debug($"Activated {cell.Cell.Text}, Metadata: {cell.Row.Metadata}");
             var activatedRowIndex = cell.Row.Index;

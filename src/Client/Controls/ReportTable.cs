@@ -70,9 +70,9 @@ namespace CraigStars
             AddColumns();
             foreach (T item in GetItems())
             {
-                table.Data.AddRow(CreateCellsForItem(item), item);
+                table.Data.AddRowWithMetadata(CreateCellsForItem(item), item);
             }
-            var _ = table.ResetTable();
+            table.ResetTable();
         }
 
         protected virtual void OnShowOwnedPressed()

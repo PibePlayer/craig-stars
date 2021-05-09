@@ -124,7 +124,7 @@ namespace CraigStars
             itemReport.ProductionQueue.Allocated = item.ProductionQueue.Allocated;
             itemReport.ProductionQueue.LeftoverResources = item.ProductionQueue.LeftoverResources;
             itemReport.ProductionQueue.Items.Clear();
-            itemReport.ProductionQueue.Items.AddRange(item.ProductionQueue.Items.Select(queueItem =>
+            itemReport.ProductionQueue.Items.AddRange(item.ProductionQueue.Items.Select(queueItem => queueItem.Clone()).Select(queueItem =>
             {
                 if (queueItem.Design != null)
                 {

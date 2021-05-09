@@ -7,14 +7,20 @@ using Godot;
 
 namespace CraigStars
 {
+    public class TableData : TableData<object>
+    {
+
+    }
+
     /// <summary>
     /// Data for a table. This is used to render the table headers, rows and cells. The data
     /// is what drives the table
     /// </summary>
-    public class TableData
+    public class TableData<T> where T : class
     {
         public delegate void SortAction(int sortColumn, SortDirection sortDirection);
         public delegate void FilterAction(string filterText);
+
         /// <summary>
         /// Triggered when the rows are sorted
         /// </summary>
@@ -26,17 +32,28 @@ namespace CraigStars
         public event FilterAction FilterEvent;
 
         public List<Column> Columns { get; set; } = new List<Column>();
-        public List<Row> SourceRows { get; set; } = new List<Row>();
+        public List<Row<T>> SourceRows { get; set; } = new List<Row<T>>();
         public int SortColumn { get; set; }
         public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
         public string FilterText { get; set; } = "";
 
+        /// <summary>
+        /// Clear all data in the table
+        /// </summary>
         public void Clear()
         {
             SourceRows.Clear();
             Columns.Clear();
             SortColumn = 0;
             SortDirection = SortDirection.Ascending;
+        }
+
+        /// <summary>
+        /// Clear just the row data (leaving the columns as is)
+        /// </summary>
+        public void ClearRows()
+        {
+            SourceRows.Clear();
         }
 
         public void AddColumn(Column column)
@@ -81,17 +98,17 @@ namespace CraigStars
             }
         }
 
-        public void AddRow(List<Cell> cells, object metadata)
-        {
-            SourceRows.Add(new Row(SourceRows.Count, cells, metadata));
-        }
-
         public void AddRow(params object[] cellData)
         {
-            AddRow(Colors.White, cellData);
+            AddRowAdvanced(metadata: null, color: Colors.White, italic: false, cellData);
         }
 
-        public void AddRow(Color color, params object[] cellData)
+        public void AddRowWithMetadata(List<Cell> cells, T metadata)
+        {
+            SourceRows.Add(new Row<T>(SourceRows.Count, cells, metadata));
+        }
+
+        public void AddRowAdvanced(T metadata, Color color, bool italic, params object[] cellData)
         {
             var cells = new List<Cell>();
             foreach (var cell in cellData)
@@ -113,32 +130,7 @@ namespace CraigStars
                     throw new InvalidCastException("Table Cells cannot be data of type " + cell.GetType());
                 }
             }
-            SourceRows.Add(new Row(SourceRows.Count, cells, color: color));
-        }
-
-        public void AddRow(object metadata, Color color, params object[] cellData)
-        {
-            var cells = new List<Cell>();
-            foreach (var cell in cellData)
-            {
-                if (cell is string s)
-                {
-                    cells.Add(new Cell(s));
-                }
-                else if (cell is int i)
-                {
-                    cells.Add(new Cell(i));
-                }
-                else if (cell is Cell cellObj)
-                {
-                    cells.Add(cellObj);
-                }
-                else
-                {
-                    throw new InvalidCastException("Table Cells cannot be data of type " + cell.GetType());
-                }
-            }
-            SourceRows.Add(new Row(SourceRows.Count, cells, metadata: metadata, color: color));
+            SourceRows.Add(new Row<T>(SourceRows.Count, cells, metadata: metadata, color: color, italic: italic));
         }
 
         /// <summary>
@@ -174,11 +166,11 @@ namespace CraigStars
         /// <summary>
         /// Get an enumerable of our rows sorted and filtered
         /// </summary>
-        public IEnumerable<Row> Rows
+        public IEnumerable<Row<T>> Rows
         {
             get
             {
-                IEnumerable<Row> rows = SourceRows;
+                IEnumerable<Row<T>> rows = SourceRows;
                 var comparer = CreateComparer(SortColumn);
 
                 if (FilterText != "")

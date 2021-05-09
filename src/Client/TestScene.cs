@@ -29,7 +29,7 @@ namespace CraigStars
             table.Data.AddRow("C", 20, 4, "hidden", new Cell("Surface Minerals", 30, metadata: new Cargo(30)));
             table.Data.AddRow("D", 10, 3, "hidden", new Cell("Surface Minerals", 40, metadata: new Cargo(40)));
 
-            var _ = table.ResetTable();
+            table.ResetTable();
 
             lineEdit.Connect("text_changed", this, nameof(OnSearchLineEditTextChanged));
         }

@@ -181,7 +181,7 @@ namespace CraigStars
                     // replacing the player's design with our game design
 
                     planet.ProductionQueue.Items.Clear();
-                    planet.ProductionQueue.Items.AddRange(playerPlanet.ProductionQueue.Items.Select(item =>
+                    planet.ProductionQueue.Items.AddRange(playerPlanet.ProductionQueue.Items.Select(item => item.Clone()).Select(item =>
                     {
                         if (item.Design != null)
                         {

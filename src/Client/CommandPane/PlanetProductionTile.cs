@@ -57,11 +57,11 @@ namespace CraigStars
                 // populate the production queue
                 CommandedPlanet.Planet.ProductionQueue?.Items.ForEach(item =>
                 {
-                    productionQueue.Data.AddRow(item.ShortName, item.quantity);
+                    productionQueue.Data.AddRow(item.ShortName, item.Quantity);
                 });
 
             }
-            var _ = productionQueue.ResetTable();
+            productionQueue.ResetTable();
         }
 
         void OnChangeButtonPressed()

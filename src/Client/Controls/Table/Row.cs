@@ -4,10 +4,17 @@ using Godot;
 
 namespace CraigStars
 {
+    public class Row : Row<object>
+    {
+        public Row(int index, List<Cell> data, object metadata = null, Color? color = null, bool italic = false) : base(index, data, metadata, color, italic)
+        {
+        }
+    }
+
     /// <summary>
     /// A row in a table. This is basically a list of cells and some metadata
     /// </summary>
-    public class Row
+    public class Row<T> where T : class
     {
         /// <summary>
         /// The index of the row, updated during sort
@@ -17,7 +24,7 @@ namespace CraigStars
         /// <summary>
         /// Metadata associated with the row
         /// </summary>
-        public object Metadata { get; set; }
+        public T Metadata { get; set; }
 
         /// <summary>
         /// The actual cell data used to render the row contents
@@ -42,7 +49,7 @@ namespace CraigStars
 
         public bool Visible { get; set; } = true;
 
-        public Row(int index, List<Cell> data, object metadata = null, Color? color = null, bool italic = false)
+        public Row(int index, List<Cell> data, T metadata = null, Color? color = null, bool italic = false)
         {
             Index = index;
             Metadata = metadata;

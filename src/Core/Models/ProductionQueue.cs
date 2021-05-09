@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace CraigStars
@@ -24,6 +25,7 @@ namespace CraigStars
         {
             // remove this item if it already exists
             Items.Remove(item);
+
             // insert this item into the proper place if it doesn't already exist
             if (index < Items.Count && item != Items[index])
             {

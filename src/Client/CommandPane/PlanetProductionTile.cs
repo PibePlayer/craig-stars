@@ -2,13 +2,14 @@ using Godot;
 using System;
 
 using CraigStars.Singletons;
+using CraigStarsTable;
 
 namespace CraigStars
 {
 
     public class PlanetProductionTile : PlanetTile
     {
-        Table productionQueue;
+        CSTable productionQueue;
         CSConfirmDialog confirmDialog;
         Button changeButton;
         Button clearButton;
@@ -23,7 +24,7 @@ namespace CraigStars
             clearButton = (Button)FindNode("ClearButton");
             routeButton = (Button)FindNode("RouteButton");
             routeTo = (Label)FindNode("RouteTo");
-            productionQueue = GetNode<Table>("VBoxContainer/MarginContainer/ScrollContainer/ProductionQueue");
+            productionQueue = GetNode<CSTable>("VBoxContainer/MarginContainer/ScrollContainer/ProductionQueue");
             confirmDialog = GetNode<CSConfirmDialog>("ConfirmDialog");
 
             changeButton.Connect("pressed", this, nameof(OnChangeButtonPressed));

@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://src/Client/TestScene.cs" type="Script" id=1]
-[ext_resource path="res://src/Client/Controls/Table/Table.tscn" type="PackedScene" id=2]
+[ext_resource path="res://addons/CSTable/CSTable.cs" type="Script" id=2]
 
 [node name="Node2D" type="Node2D"]
 script = ExtResource( 1 )
@@ -16,18 +16,21 @@ __meta__ = {
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 margin_right = 500.0
-margin_bottom = 47.0
+margin_bottom = 48.0
 
 [node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer"]
 margin_right = 500.0
 margin_bottom = 24.0
 placeholder_text = "Search"
 
-[node name="Table" parent="MarginContainer/VBoxContainer" instance=ExtResource( 2 )]
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="CSTable" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
 margin_top = 28.0
 margin_right = 500.0
-margin_bottom = 47.0
-ShowHeader = false
-SelectColor = Color( 1, 1, 1, 0.5 )
+margin_bottom = 48.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_constants/margin_right = 0
+custom_constants/margin_top = 0
+custom_constants/margin_left = 0
+custom_constants/margin_bottom = 0
+script = ExtResource( 2 )

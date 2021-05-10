@@ -1,4 +1,5 @@
 using CraigStars.Singletons;
+using CraigStarsTable;
 using Godot;
 using log4net;
 using System;
@@ -31,7 +32,7 @@ namespace CraigStars
             "ETA",
             "Task",
             "Fuel",
-            new Column("Cargo", scene: "res://src/Client/Controls/Table/CargoCell.tscn"),
+            new Column("Cargo", scene: "res://src/Client/Controls/CargoCell.tscn"),
             "Mass"
             );
         }

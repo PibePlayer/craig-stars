@@ -1,5 +1,6 @@
 using CraigStars;
 using CraigStars.Singletons;
+using CraigStarsTable;
 using Godot;
 using log4net;
 using System;
@@ -33,7 +34,7 @@ namespace CraigStars
                 "Mine",
                 "Factory",
                 "Defense",
-                new Column("Surface Minerals", scene: "res://src/Client/Controls/Table/MineralsCell.tscn")
+                new Column("Surface Minerals", scene: "res://src/Client/Controls/MineralsCell.tscn")
             );
 
         }

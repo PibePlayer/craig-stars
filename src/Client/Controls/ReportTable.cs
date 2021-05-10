@@ -1,5 +1,6 @@
 using CraigStars.Singletons;
 using CraigStars.Utils;
+using CraigStarsTable;
 using Godot;
 using System;
 using System.Collections.Generic;

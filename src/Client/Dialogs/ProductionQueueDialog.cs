@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 using CraigStars.Singletons;
 using CraigStars.Utils;
+using CraigStarsTable;
 
 namespace CraigStars
 {
@@ -15,8 +16,8 @@ namespace CraigStars
         // the planet to use in this dialog
         public Planet Planet { get; set; } = new Planet();
 
-        AvailablePlanetProductionQueueItems availableItemsTable;
-        QueuedPlanetProductionQueueItems queuedItemsTable;
+        AvailablePlanetProductionQueueItems availableItems;
+        QueuedPlanetProductionQueueItems queuedItems;
 
         Button addButton;
         Button removeButton;
@@ -39,8 +40,8 @@ namespace CraigStars
         {
             base._Ready();
 
-            queuedItemsTable = (QueuedPlanetProductionQueueItems)FindNode("QueuedItemsTable");
-            availableItemsTable = (AvailablePlanetProductionQueueItems)FindNode("AvailableItemsTable");
+            queuedItems = (QueuedPlanetProductionQueueItems)FindNode("QueuedItems");
+            availableItems = (AvailablePlanetProductionQueueItems)FindNode("AvailableItems");
 
             addButton = (Button)FindNode("AddButton");
             removeButton = (Button)FindNode("RemoveButton");
@@ -72,19 +73,19 @@ namespace CraigStars
             Connect("about_to_show", this, nameof(OnAboutToShow));
             Connect("popup_hide", this, nameof(OnPopupHide));
 
-            availableItemsTable.RowSelectedEvent += OnSelectAvailableItem;
-            availableItemsTable.RowActivatedEvent += OnAddItem;
+            availableItems.RowSelectedEvent += OnSelectAvailableItem;
+            availableItems.RowActivatedEvent += OnAddItem;
 
-            queuedItemsTable.RowSelectedEvent += OnSelectQueuedItem;
+            queuedItems.RowSelectedEvent += OnSelectQueuedItem;
 
             Signals.MapObjectCommandedEvent += OnMapObjectCommanded;
         }
 
         public override void _ExitTree()
         {
-            availableItemsTable.RowSelectedEvent -= OnSelectAvailableItem;
-            availableItemsTable.RowActivatedEvent -= OnAddItem;
-            queuedItemsTable.RowSelectedEvent -= OnSelectQueuedItem;
+            availableItems.RowSelectedEvent -= OnSelectAvailableItem;
+            availableItems.RowActivatedEvent -= OnAddItem;
+            queuedItems.RowSelectedEvent -= OnSelectQueuedItem;
             Signals.MapObjectCommandedEvent -= OnMapObjectCommanded;
         }
 
@@ -94,19 +95,19 @@ namespace CraigStars
         void OnAboutToShow()
         {
             // select the top of the queue on startup
-            queuedItemsTable.SelectedItemIndex = 0;
+            queuedItems.SelectedItemIndex = 0;
 
-            availableItemsTable.Planet = Planet;
-            queuedItemsTable.Planet = Planet;
+            availableItems.Planet = Planet;
+            queuedItems.Planet = Planet;
 
             contributesOnlyLeftoverToResearchCheckbox.Pressed = Planet.ContributesOnlyLeftoverToResearch;
-            queuedItemsTable.ContributesOnlyLeftoverToResearch = contributesOnlyLeftoverToResearchCheckbox.Pressed;
+            queuedItems.ContributesOnlyLeftoverToResearch = contributesOnlyLeftoverToResearchCheckbox.Pressed;
         }
 
         void OnPopupHide()
         {
-            queuedItemsTable.Clear();
-            availableItemsTable.Clear();
+            queuedItems.Clear();
+            availableItems.Clear();
         }
 
         void OnMapObjectCommanded(MapObjectSprite mapObject)
@@ -176,7 +177,7 @@ namespace CraigStars
             if (Planet.ProductionQueue != null)
             {
                 Planet.ProductionQueue.Items.Clear();
-                Planet.ProductionQueue.Items.AddRange(queuedItemsTable.Items);
+                Planet.ProductionQueue.Items.AddRange(queuedItems.Items);
             }
             else
             {
@@ -201,7 +202,7 @@ namespace CraigStars
 
         void OnContributesOnlyLeftoverToResearchCheckboxPressed()
         {
-            queuedItemsTable.ContributesOnlyLeftoverToResearch = contributesOnlyLeftoverToResearchCheckbox.Pressed;
+            queuedItems.ContributesOnlyLeftoverToResearch = contributesOnlyLeftoverToResearchCheckbox.Pressed;
         }
 
 
@@ -224,29 +225,29 @@ namespace CraigStars
         {
             if (item != null)
             {
-                queuedItemsTable.AddItem(item.Clone(), quantityModifier);
+                queuedItems.AddItem(item.Clone(), quantityModifier);
             }
         }
 
         void OnClear()
         {
-            queuedItemsTable.Items.Clear();
-            queuedItemsTable.UpdateItems();
+            queuedItems.Items.Clear();
+            queuedItems.UpdateItems();
         }
 
         void OnRemoveItem()
         {
-            queuedItemsTable.RemoveItem(quantityModifier);
+            queuedItems.RemoveItem(quantityModifier);
         }
 
         void OnItemUp()
         {
-            queuedItemsTable.ItemUp();
+            queuedItems.ItemUp();
         }
 
         void OnItemDown()
         {
-            queuedItemsTable.ItemDown();
+            queuedItems.ItemDown();
         }
 
         #endregion

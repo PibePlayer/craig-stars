@@ -128,8 +128,8 @@ rect_min_size = Vector2( 250, 0 )
 [node name="MapObjectSummaryTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 33 )]
 margin_right = 250.0
 margin_bottom = 166.0
-ControlsScene = "res://src/Client/CommandPane/MapObjectSummary.tscn"
 Title = "Name"
+ControlsScene = "res://src/Client/CommandPane/MapObjectSummary.tscn"
 
 [node name="FleetCompositionTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 25 )]
 visible = false
@@ -152,8 +152,8 @@ margin_bottom = 310.0
 margin_top = 314.0
 margin_right = 250.0
 margin_bottom = 490.0
-ControlsScene = "res://src/Client/CommandPane/PlanetStatus.tscn"
 Title = "Status"
+ControlsScene = "res://src/Client/CommandPane/PlanetStatus.tscn"
 
 [node name="RightCommandPange" type="VBoxContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer"]
 margin_left = 254.0

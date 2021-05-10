@@ -49,15 +49,7 @@ namespace CraigStars
         {
             base._Ready();
 
-            // Our ProductionQueueItems control uses a custom Table for overriding the generic type.
-            // This allows us to use a type for the row metadata to be a ProductionQueueItem instead of an object.
-            table = new ProductionQueueItemsTable()
-            {
-                // we need our own default LabelCell scene to support cells with ProductionQueueItems as their type
-                SizeFlagsHorizontal = (int)SizeFlags.ExpandFill,
-                SizeFlagsVertical = (int)SizeFlags.ExpandFill,
-            };
-            AddChild(table);
+            table = GetNode<ProductionQueueItemsTable>("ProductionQueueItemsTable");
 
             table.RowSelectedEvent += OnSelectItem;
             table.RowActivatedEvent += OnActivateItem;

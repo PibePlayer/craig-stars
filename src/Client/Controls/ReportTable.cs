@@ -14,7 +14,7 @@ namespace CraigStars
     public abstract class ReportTable<T> : VBoxContainer where T : class
     {
         static CSLog log = LogProvider.GetLogger(typeof(ReportTable<T>));
-        protected Table table;
+        protected CSTable table;
         protected LineEdit searchLineEdit;
 
         ToolButton showOwnedButton;
@@ -24,7 +24,7 @@ namespace CraigStars
 
         public override void _Ready()
         {
-            table = GetNode<Table>("ScrollContainer/Table");
+            table = GetNode<CSTable>("ScrollContainer/CSTable");
             searchLineEdit = (LineEdit)FindNode("SearchLineEdit");
 
             showOwnedButton = (ToolButton)FindNode("ShowOwnedButton");

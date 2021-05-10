@@ -138,7 +138,7 @@ namespace CraigStarsTable
         /// </summary>
         List<IColumnHeader> columnHeaders = new List<IColumnHeader>();
 
-        public Table()
+        public override void _Ready()
         {
             SizeFlagsHorizontal = (int)SizeFlags.ExpandFill;
             SizeFlagsVertical = (int)SizeFlags.ExpandFill;
@@ -169,10 +169,6 @@ namespace CraigStarsTable
 
             AddChild(panel);
             AddChild(gridContainer);
-        }
-
-        public override void _Ready()
-        {
             if (Engine.EditorHint)
             {
                 // add two columns
@@ -192,6 +188,8 @@ namespace CraigStarsTable
 
             Data.SortEvent += OnDataSorted;
             Data.FilterEvent += OnDataFiltered;
+
+            ResetTable();
         }
 
         public override void _ExitTree()

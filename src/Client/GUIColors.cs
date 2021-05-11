@@ -28,6 +28,10 @@ namespace CraigStars
         [Export]
         public Color UninhabitablePlanetTextColor { get; set; } = new Color("8B0000");
 
+        # region Mineral Colors
+
+        [Export]
+        public Color IroniumLabelColor { get; set; } = new Color("0960ff");
 
         [Export]
         public Color IroniumBarColor { get; set; } = new Color("0900FF");
@@ -46,6 +50,8 @@ namespace CraigStars
 
         [Export]
         public Color GermaniumConcentrationColor { get; set; } = new Color("7F7F00");
+
+        #endregion
 
         [Export]
         public Color OwnedMineFieldColor { get; set; } = new Color("0900FF");
@@ -115,5 +121,20 @@ namespace CraigStars
         [Export]
         public Color StargateColor { get; set; } = new Color("008100");
 
+        #region ProductionQueue
+
+        [Export]
+        public Color ProductionQueueItemOneYearColor { get; set; } = new Color("4d8100");
+
+        [Export]
+        public Color ProductionQueueMoreThanOneYearColor { get; set; } = new Color("0997ff");
+
+        [Export]
+        public Color ProductionQueueNeverBuildColor { get; set; } = new Color("FF0000");
+
+        [Export]
+        public Color ProductionQueueSkippedColor { get; set; } = Colors.Gray;
+
+        #endregion
     }
 }

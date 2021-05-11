@@ -9,7 +9,7 @@ namespace CraigStars
 
     public class PlanetProductionTile : PlanetTile
     {
-        CSTable productionQueue;
+        QueuedPlanetProductionQueueItems productionQueue;
         CSConfirmDialog confirmDialog;
         Button changeButton;
         Button clearButton;
@@ -24,7 +24,7 @@ namespace CraigStars
             clearButton = (Button)FindNode("ClearButton");
             routeButton = (Button)FindNode("RouteButton");
             routeTo = (Label)FindNode("RouteTo");
-            productionQueue = GetNode<CSTable>("VBoxContainer/MarginContainer/ScrollContainer/ProductionQueue");
+            productionQueue = GetNode<QueuedPlanetProductionQueueItems>("VBoxContainer/MarginContainer/ProductionQueue");
             confirmDialog = GetNode<CSConfirmDialog>("ConfirmDialog");
 
             changeButton.Connect("pressed", this, nameof(OnChangeButtonPressed));
@@ -44,25 +44,6 @@ namespace CraigStars
             {
                 UpdateControls();
             }
-        }
-
-        protected override void UpdateControls()
-        {
-            base.UpdateControls();
-            productionQueue.ClearTable();
-            productionQueue.Data.Clear();
-            productionQueue.Data.AddColumn("Item");
-            productionQueue.Data.AddColumn("Quantity", align: Label.AlignEnum.Right);
-            if (CommandedPlanet != null)
-            {
-                // populate the production queue
-                CommandedPlanet.Planet.ProductionQueue?.Items.ForEach(item =>
-                {
-                    productionQueue.Data.AddRow(item.ShortName, item.Quantity);
-                });
-
-            }
-            productionQueue.ResetTable();
         }
 
         void OnChangeButtonPressed()
@@ -85,6 +66,12 @@ namespace CraigStars
                 });
 
             }
+        }
+
+        protected override void UpdateControls()
+        {
+            productionQueue.Planet = CommandedPlanet?.Planet;
+            base.UpdateControls();
         }
 
     }

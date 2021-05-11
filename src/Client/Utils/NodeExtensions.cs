@@ -72,10 +72,14 @@ namespace CraigStars.Utils
                         return quantityModifier / 100;
                     }
                 }
+                else
+                {
+                    return 1;
+                }
                 // this quantity modifier works, but ctrl clicking stuff doesn't register...
                 // log.Debug($"quantityModifier: {quantityModifier}");
             }
-            return 1;
+            return quantityModifier;
 
         }
 

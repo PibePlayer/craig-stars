@@ -94,33 +94,28 @@ namespace CraigStars
             {
                 Items.Add(item);
                 Color color = Colors.White;
-                bool italic = false;
-                if (item.IsAuto)
-                {
-                    // make italic
-                    italic = true;
-                }
-                else
-                {
+                bool italic = item.IsAuto;
 
-                    var cost = item.GetCostOfOne(RulesManager.Rules, Me);
+                // TODO: figure out skipping builds
+                bool skipped = false;
 
-                    // Get the total cost of this item plus any previous items in the queue
-                    // and subtract what we have on hand (that will be applied this year)
-                    Cost remainingCost = cost - availableCost;
+                var cost = item.GetCostOfOne(RulesManager.Rules, Me);
 
-                    // If we have a bunch of leftover minerals because our planet is full, 0 those out
-                    remainingCost = new Cost(
-                        Math.Max(0, remainingCost.Ironium),
-                        Math.Max(0, remainingCost.Boranium),
-                        Math.Max(0, remainingCost.Germanium),
-                        Math.Max(0, remainingCost.Resources)
-                    );
+                // Get the total cost of this item plus any previous items in the queue
+                // and subtract what we have on hand (that will be applied this year)
+                Cost remainingCost = cost - availableCost;
 
-                    int numYearsToBuild = remainingCost == Cost.Zero ? 1 : (int)Math.Ceiling(Mathf.Clamp(remainingCost / yearlyAvailableCost, 1, int.MaxValue));
+                // If we have a bunch of leftover minerals because our planet is full, 0 those out
+                remainingCost = new Cost(
+                    Math.Max(0, remainingCost.Ironium),
+                    Math.Max(0, remainingCost.Boranium),
+                    Math.Max(0, remainingCost.Germanium),
+                    Math.Max(0, remainingCost.Resources)
+                );
 
-                    color = numYearsToBuild > 1 ? Colors.Blue : Colors.Green;
-                }
+                int numYearsToBuild = remainingCost == Cost.Zero ? 1 : (int)Math.Ceiling(Mathf.Clamp(remainingCost / yearlyAvailableCost, 1, int.MaxValue));
+
+                color = GetColor(numYearsToBuild, skipped);
 
                 table.Data.AddRowAdvanced(metadata: item, color: color, italic: italic, item.FullName);
             }

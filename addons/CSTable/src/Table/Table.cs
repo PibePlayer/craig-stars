@@ -138,10 +138,14 @@ namespace CraigStarsTable
         /// </summary>
         List<IColumnHeader> columnHeaders = new List<IColumnHeader>();
 
-        public override void _Ready()
+        public Table()
         {
             SizeFlagsHorizontal = (int)SizeFlags.ExpandFill;
             SizeFlagsVertical = (int)SizeFlags.ExpandFill;
+        }
+
+        public override void _Ready()
+        {
 
             AddConstantOverride("margin_right", 0);
             AddConstantOverride("margin_top", 0);
@@ -169,6 +173,7 @@ namespace CraigStarsTable
 
             AddChild(panel);
             AddChild(gridContainer);
+
             if (Engine.EditorHint)
             {
                 // add two columns
@@ -177,7 +182,8 @@ namespace CraigStarsTable
 
                 // add some rows of data
                 Data.AddRow("Mine", 5);
-                Data.AddRow(Colors.Green, "Factory", 10);
+                Data.AddRowAdvanced(metadata: null, color: Colors.Green, italic: false, "Factory", 10);
+                Data.AddRowAdvanced(metadata: null, color: Colors.Gray, italic: true, "Auto Factory", 15);
             }
 
             // var _ = ResetTable();
@@ -218,7 +224,7 @@ namespace CraigStarsTable
                 if (SelectedRow != NoRowSelected && cellControls.Length > 0)
                 {
                     var numVisibleColumns = Data.VisibleColumns.Count();
-                    if (numVisibleColumns > 0 && numVisibleColumns < gridContainer.GetChildCount())
+                    if (numVisibleColumns > 0 && numVisibleColumns <= gridContainer.GetChildCount() && SelectedRow < cellControls.GetLength(0))
                     {
                         // draw a rectangle around the first selected cell to the end of the column x
                         var firstSelectedCell = cellControls[SelectedRow, 0];

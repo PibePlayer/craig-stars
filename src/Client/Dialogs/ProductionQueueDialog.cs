@@ -229,6 +229,15 @@ namespace CraigStars
             }
         }
 
+        void OnAddItem()
+        {
+            var item = availableItems.GetSelectedItem();
+            if (item != null)
+            {
+                queuedItems.AddItem(item.Clone(), quantityModifier);
+            }
+        }
+
         void OnClear()
         {
             queuedItems.Items.Clear();

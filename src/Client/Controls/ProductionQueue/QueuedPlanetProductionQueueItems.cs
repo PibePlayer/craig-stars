@@ -16,6 +16,9 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(QueuedPlanetProductionQueueItems));
 
+        [Export]
+        public bool ShowTopOfQueue { get; set; }
+
         public override void _Ready()
         {
             base._Ready();
@@ -29,6 +32,7 @@ namespace CraigStars
         /// </summary>
         protected override void OnPlanetUpdated()
         {
+            base.OnPlanetUpdated();
             Items.Clear();
             if (Planet != null && Planet.ProductionQueue != null)
             {
@@ -39,7 +43,7 @@ namespace CraigStars
         protected override void OnSelectItem(int rowIndex, int colIndex, Cell cell, ProductionQueueItem metadata)
         {
             base.OnSelectItem(rowIndex, colIndex, cell, metadata);
-            SelectedItemIndex = rowIndex - 1;
+            SelectedItemIndex = ShowTopOfQueue ? rowIndex - 1 : rowIndex;
             log.Debug($"Selected queue item index {SelectedItemIndex}");
         }
 
@@ -59,7 +63,7 @@ namespace CraigStars
 
                 table.ResetTable();
 
-                table.SelectedRow = SelectedItemIndex + 1;
+                table.SelectedRow = ShowTopOfQueue ? SelectedItemIndex + 1 : SelectedItemIndex;
 
                 table.Update();
             }
@@ -83,7 +87,9 @@ namespace CraigStars
         void AddQueuedItem(ProductionQueueItem item, int index)
         {
             var italic = item.IsAuto;
-            var color = Colors.White;
+            // TODO: figure out skipped items
+            var skipped = false;
+            var color = GetColor(item.yearsToBuild, skipped);
             table.Data.AddRowAdvanced(metadata: item, color: color, italic: italic, item.FullName, item.Quantity);
         }
 
@@ -105,7 +111,7 @@ namespace CraigStars
             // re-select our selected item or select the top
             if (SelectedItemIndex >= 0 && SelectedItemIndex < Items.Count)
             {
-                table.SelectedRow = SelectedItemIndex + 1;
+                table.SelectedRow = ShowTopOfQueue ? SelectedItemIndex + 1 : SelectedItemIndex;
             }
             else
             {
@@ -144,7 +150,10 @@ namespace CraigStars
 
         void AddTopOfQueueItem()
         {
-            table.Data.AddRow(Planet.ProductionQueue.Items.Count == 0 ? "-- Queue is Empty --" : "-- Top of the Queue --", "");
+            if (ShowTopOfQueue)
+            {
+                table.Data.AddRow(Planet.ProductionQueue.Items.Count == 0 ? "-- Queue is Empty --" : "-- Top of the Queue --", "");
+            }
         }
 
         /// <summary>

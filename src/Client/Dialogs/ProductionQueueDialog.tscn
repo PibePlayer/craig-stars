@@ -6,7 +6,6 @@
 [ext_resource path="res://src/Client/Controls/ProductionQueue/QueuedPlanetProductionQueueItems.tscn" type="PackedScene" id=4]
 
 [node name="ProductionQueueDialog" type="WindowDialog"]
-visible = true
 margin_right = 705.0
 margin_bottom = 482.0
 window_title = "Production Queue for Brin"
@@ -97,6 +96,7 @@ anchor_bottom = 0.0
 margin_left = 398.0
 margin_right = 695.0
 margin_bottom = 336.0
+ShowTopOfQueue = true
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 margin_top = 340.0

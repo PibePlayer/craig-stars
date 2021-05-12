@@ -1,7 +1,7 @@
 using CraigStars.Singletons;
 using Godot;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class PlanetMineralsOnHandTile : PlanetTile
     {

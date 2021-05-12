@@ -2,13 +2,11 @@ using CraigStars.Singletons;
 using Godot;
 using System;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
 
     public class PlanetStarbaseTile : PlanetTile
     {
-        Label title;
-        Control statsContainer;
         Control statsGrid;
 
         Label dockCapacity;
@@ -27,9 +25,7 @@ namespace CraigStars
         public override void _Ready()
         {
             base._Ready();
-            title = FindNode("Name") as Label;
-            statsContainer = FindNode("StatsContainer") as Control;
-            statsGrid = GetNode<Container>("VBoxContainer/StatsContainer/StatsGrid");
+            statsGrid = GetNode<Container>("StatsGrid");
 
             dockCapacity = FindNode("DockCapacity") as Label;
             armor = FindNode("Armor") as Label;
@@ -94,8 +90,8 @@ namespace CraigStars
                 if (CommandedPlanet.Planet.HasStarbase)
                 {
                     var starbase = CommandedPlanet.Planet.Starbase;
-                    title.Text = $"{starbase.Name} v{starbase.Tokens[0].Design.Version}";
-                    statsContainer.Visible = true;
+                    UpdateTitle($"{starbase.Name} v{starbase.Tokens[0].Design.Version}");
+                    Visible = true;
 
                     dockCapacity.Text = starbase.DockCapacity == TechHull.UnlimitedSpaceDock ? "Unlimited" : $"{starbase.Aggregate.SpaceDock}kT";
                     armor.Text = $"{starbase.Aggregate.Armor}dp";
@@ -127,8 +123,8 @@ namespace CraigStars
                 }
                 else
                 {
-                    title.Text = "No Starbase";
-                    statsContainer.Visible = false;
+                    UpdateTitle("No Starbase");
+                    Visible = false;
                 }
 
             }

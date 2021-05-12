@@ -6,7 +6,7 @@ using CraigStars.Singletons;
 using CraigStars.Utils;
 using System.Linq;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class OtherFleetsHereTile : FleetTile
     {
@@ -23,10 +23,10 @@ namespace CraigStars
         public override void _Ready()
         {
             base._Ready();
-            otherFleetsOptionButton = GetNode<OptionButton>("VBoxContainer/OtherFleetsOptionButton");
-            gotoButton = GetNode<Button>("VBoxContainer/HBoxContainer/GotoButton");
-            mergeButton = GetNode<Button>("VBoxContainer/HBoxContainer/MergeButton");
-            cargoTransferButton = GetNode<Button>("VBoxContainer/HBoxContainer/CargoTransferButton");
+            otherFleetsOptionButton = GetNode<OptionButton>("OtherFleetsOptionButton");
+            gotoButton = GetNode<Button>("HBoxContainer/GotoButton");
+            mergeButton = GetNode<Button>("HBoxContainer/MergeButton");
+            cargoTransferButton = GetNode<Button>("HBoxContainer/CargoTransferButton");
 
             gotoButton.Connect("pressed", this, nameof(OnGotoButtonPressed));
             mergeButton.Connect("pressed", this, nameof(OnMergeButtonPressed));

@@ -1,9 +1,9 @@
 using CraigStars.Singletons;
 using Godot;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
-    public class PlanetStatus : PlanetTile
+    public class PlanetStatusTile : PlanetTile
     {
         Label population;
         Label resources;

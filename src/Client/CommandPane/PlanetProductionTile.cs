@@ -4,7 +4,7 @@ using System;
 using CraigStars.Singletons;
 using CraigStarsTable;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
 
     public class PlanetProductionTile : PlanetTile
@@ -24,7 +24,7 @@ namespace CraigStars
             clearButton = (Button)FindNode("ClearButton");
             routeButton = (Button)FindNode("RouteButton");
             routeTo = (Label)FindNode("RouteTo");
-            productionQueue = GetNode<QueuedPlanetProductionQueueItems>("VBoxContainer/MarginContainer/ProductionQueue");
+            productionQueue = GetNode<QueuedPlanetProductionQueueItems>("MarginContainer/ProductionQueue");
             confirmDialog = GetNode<CSConfirmDialog>("ConfirmDialog");
 
             changeButton.Connect("pressed", this, nameof(OnChangeButtonPressed));

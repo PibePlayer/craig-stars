@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using CraigStars.Singletons;
 using CraigStars.Utils;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class FleetOrbitingTile : FleetTile
     {
@@ -17,8 +17,8 @@ namespace CraigStars
         public override void _Ready()
         {
             base._Ready();
-            gotoButton = GetNode<Button>("VBoxContainer/HBoxContainer/GotoButton");
-            cargoTransferButton = GetNode<Button>("VBoxContainer/HBoxContainer/CargoTransferButton");
+            gotoButton = GetNode<Button>("HBoxContainer/GotoButton");
+            cargoTransferButton = GetNode<Button>("HBoxContainer/CargoTransferButton");
 
             gotoButton.Connect("pressed", this, nameof(OnGotoButtonPressed));
             cargoTransferButton.Connect("pressed", this, nameof(OnCargoTransferButtonPressed));
@@ -48,7 +48,7 @@ namespace CraigStars
             {
                 if (CommandedFleet.Fleet.Orbiting != null)
                 {
-                    titleLabel.Text = $"Orbiting {CommandedFleet.Fleet.Orbiting.Name}";
+                    UpdateTitle($"Orbiting {CommandedFleet.Fleet.Orbiting.Name}");
                     if (CommandedFleet.Orbiting.OwnedByMe)
                     {
                         gotoButton.Disabled = false;
@@ -62,7 +62,7 @@ namespace CraigStars
                 }
                 else
                 {
-                    titleLabel.Text = "In Deep Space";
+                    UpdateTitle("In Deep Space");
                     cargoTransferButton.Text = "Jettison";
                     gotoButton.Disabled = true;
                 }

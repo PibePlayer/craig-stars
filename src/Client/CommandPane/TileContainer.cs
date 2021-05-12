@@ -51,8 +51,8 @@ public class TileContainer : Control
                 {
                     if (child is ITileContent childTileContent)
                     {
-                        childTileContent.UpdateTitle -= OnUpdateTitle;
-                        childTileContent.UpdateVisibility -= OnUpdateVisibility;
+                        childTileContent.UpdateTitleEvent -= OnUpdateTitle;
+                        childTileContent.UpdateVisibilityEvent -= OnUpdateVisibility;
                     }
 
                     controls.RemoveChild(child);
@@ -63,8 +63,8 @@ public class TileContainer : Control
 
                 if (instance is ITileContent titleContent)
                 {
-                    titleContent.UpdateTitle += OnUpdateTitle;
-                    titleContent.UpdateVisibility += OnUpdateVisibility;
+                    titleContent.UpdateTitleEvent += OnUpdateTitle;
+                    titleContent.UpdateVisibilityEvent += OnUpdateVisibility;
                 }
                 controls.AddChild(instance);
             }

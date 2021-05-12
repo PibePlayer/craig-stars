@@ -9,9 +9,9 @@ using System.Linq;
 
 namespace CraigStars
 {
-    public class PlanetsTable : ReportTable<Planet>
+    public class PlanetsReportTable : ReportTable<Planet>
     {
-        static CSLog log = LogProvider.GetLogger(typeof(PlanetsTable));
+        static CSLog log = LogProvider.GetLogger(typeof(PlanetsReportTable));
 
         public bool ShowAll { get; set; }
 

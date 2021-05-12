@@ -1,7 +1,7 @@
 using System;
 using CraigStars.Singletons;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class FleetWaypointTile : FleetTile
     {

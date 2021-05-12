@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using CraigStars.Singletons;
 using CraigStars.Utils;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class FleetWaypointTaskTile : FleetWaypointTile
     {
@@ -40,20 +40,20 @@ namespace CraigStars
 
             waypointTask = (OptionButton)FindNode("WaypointTask");
 
-            transportContainer = GetNode<Container>("VBoxContainer/TransportContainer");
-            fuelTask = GetNode<TextureRect>("VBoxContainer/TransportContainer/TransportSummaryContainer/FuelTask");
-            ironiumTask = GetNode<TextureRect>("VBoxContainer/TransportContainer/TransportSummaryContainer/IroniumTask");
-            boraniumTask = GetNode<TextureRect>("VBoxContainer/TransportContainer/TransportSummaryContainer/BoraniumTask");
-            germaniumTask = GetNode<TextureRect>("VBoxContainer/TransportContainer/TransportSummaryContainer/GermaniumTask");
-            colonistsTask = GetNode<TextureRect>("VBoxContainer/TransportContainer/TransportSummaryContainer/ColonistsTask");
-            editButton = GetNode<Button>("VBoxContainer/TransportContainer/TransportButtonsContainer/EditButton");
-            applyPlanMenuButton = GetNode<MenuButton>("VBoxContainer/TransportContainer/TransportButtonsContainer/ApplyPlanMenuButton");
+            transportContainer = GetNode<Container>("TransportContainer");
+            fuelTask = GetNode<TextureRect>("TransportContainer/TransportSummaryContainer/FuelTask");
+            ironiumTask = GetNode<TextureRect>("TransportContainer/TransportSummaryContainer/IroniumTask");
+            boraniumTask = GetNode<TextureRect>("TransportContainer/TransportSummaryContainer/BoraniumTask");
+            germaniumTask = GetNode<TextureRect>("TransportContainer/TransportSummaryContainer/GermaniumTask");
+            colonistsTask = GetNode<TextureRect>("TransportContainer/TransportSummaryContainer/ColonistsTask");
+            editButton = GetNode<Button>("TransportContainer/TransportButtonsContainer/EditButton");
+            applyPlanMenuButton = GetNode<MenuButton>("TransportContainer/TransportButtonsContainer/ApplyPlanMenuButton");
             transportPlanEditPopupPanel = GetNode<PopupPanel>("TransportPlanEditPopupPanel");
             transportPlanEditOKButton = GetNode<Button>("TransportPlanEditPopupPanel/VBoxContainer/TransportPlanEditOKButton");
             transportPlanDetail = GetNode<TransportPlanDetail>("TransportPlanEditPopupPanel/VBoxContainer/TransportPlanDetail");
             transportPlanDetail.ShowName = false;
 
-            remoteMiningWaypointTaskContainer = GetNode<RemoteMiningWaypointTaskContainer>("VBoxContainer/RemoteMiningWaypointTaskContainer");
+            remoteMiningWaypointTaskContainer = GetNode<RemoteMiningWaypointTaskContainer>("RemoteMiningWaypointTaskContainer");
 
             waypointTask.PopulateOptionButton<WaypointTask>((task) => EnumUtils.GetLabelForWaypointTask(task));
 
@@ -122,34 +122,38 @@ namespace CraigStars
         {
             base.UpdateControls();
             var wp = ActiveWaypoint;
-            transportContainer.Visible = false;
-            remoteMiningWaypointTaskContainer.Visible = false;
-
-            if (waypointTask != null && wp != null)
+            if (transportContainer != null && remoteMiningWaypointTaskContainer != null)
             {
-                waypointTask.Selected = (int)wp.Task;
+                transportContainer.Visible = false;
+                remoteMiningWaypointTaskContainer.Visible = false;
 
-                if (wp.Task == WaypointTask.Transport)
+                if (waypointTask != null && wp != null)
                 {
-                    transportContainer.Visible = true;
-                    UpdateTransportTaskIcon(fuelTask, CargoType.Fuel, wp.TransportTasks.Fuel);
-                    UpdateTransportTaskIcon(ironiumTask, CargoType.Ironium, wp.TransportTasks.Ironium);
-                    UpdateTransportTaskIcon(boraniumTask, CargoType.Boranium, wp.TransportTasks.Boranium);
-                    UpdateTransportTaskIcon(germaniumTask, CargoType.Germanium, wp.TransportTasks.Germanium);
-                    UpdateTransportTaskIcon(colonistsTask, CargoType.Colonists, wp.TransportTasks.Colonists);
+                    waypointTask.Selected = (int)wp.Task;
 
-                    applyPlanMenuButton.GetPopup().Clear();
-                    Me.TransportPlans.ForEach(plan =>
+                    if (wp.Task == WaypointTask.Transport)
                     {
-                        applyPlanMenuButton.GetPopup().AddItem(plan.Name);
-                    });
+                        transportContainer.Visible = true;
+                        UpdateTransportTaskIcon(fuelTask, CargoType.Fuel, wp.TransportTasks.Fuel);
+                        UpdateTransportTaskIcon(ironiumTask, CargoType.Ironium, wp.TransportTasks.Ironium);
+                        UpdateTransportTaskIcon(boraniumTask, CargoType.Boranium, wp.TransportTasks.Boranium);
+                        UpdateTransportTaskIcon(germaniumTask, CargoType.Germanium, wp.TransportTasks.Germanium);
+                        UpdateTransportTaskIcon(colonistsTask, CargoType.Colonists, wp.TransportTasks.Colonists);
+
+                        applyPlanMenuButton.GetPopup().Clear();
+                        Me.TransportPlans.ForEach(plan =>
+                        {
+                            applyPlanMenuButton.GetPopup().AddItem(plan.Name);
+                        });
+                    }
+                    else if (wp.Task == WaypointTask.RemoteMining)
+                    {
+                        remoteMiningWaypointTaskContainer.Visible = true;
+                        remoteMiningWaypointTaskContainer.Planet = ActiveWaypoint.Target as Planet;
+                        remoteMiningWaypointTaskContainer.Fleet = CommandedFleet.Fleet;
+                    }
                 }
-                else if (wp.Task == WaypointTask.RemoteMining)
-                {
-                    remoteMiningWaypointTaskContainer.Visible = true;
-                    remoteMiningWaypointTaskContainer.Planet = ActiveWaypoint.Target as Planet;
-                    remoteMiningWaypointTaskContainer.Fleet = CommandedFleet.Fleet;
-                }
+
             }
         }
 

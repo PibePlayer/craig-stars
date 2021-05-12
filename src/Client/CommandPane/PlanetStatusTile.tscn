@@ -1,8 +1,8 @@
 [gd_scene load_steps=2 format=2]
 
-[ext_resource path="res://src/Client/CommandPane/PlanetStatus.cs" type="Script" id=1]
+[ext_resource path="res://src/Client/CommandPane/PlanetStatusTile.cs" type="Script" id=1]
 
-[node name="PlanetStatus" type="VBoxContainer"]
+[node name="PlanetStatusTile" type="VBoxContainer"]
 margin_right = 1440.0
 margin_bottom = 900.0
 script = ExtResource( 1 )

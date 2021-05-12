@@ -15,10 +15,19 @@ namespace CraigStarsTable
         public Label.AlignEnum Align { get; set; } = Label.AlignEnum.Left;
 
         /// <summary>
-        /// Override the scene path for this cell
+        /// Override the Script path for this column's cells
+        /// When rendering a cell, first an override script is checked for, then an override cell.
+        /// If neither is present, it will use the default script (LabelCell.cs)
+        /// </summary>
+        public string Script { get; set; }
+
+        /// <summary>
+        /// Override the Sceme path for this column's cells
+        /// When rendering a cell, first an override script is checked for, then an override cell.
+        /// If neither is present, it will use the default script (LabelCell.cs)
         /// </summary>
         /// <value></value>
-        public string Scene { get; set; }
+        public string Scene { get; set; }        
 
         /// <summary>
         /// If set, use this scene to render cells instead of the table default

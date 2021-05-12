@@ -5,8 +5,8 @@
 
 [node name="TileContainer" type="MarginContainer"]
 margin_right = 200.0
-margin_bottom = 100.0
-rect_min_size = Vector2( 200, 100 )
+margin_bottom = 50.0
+rect_min_size = Vector2( 200, 50 )
 size_flags_horizontal = 3
 theme = ExtResource( 2 )
 script = ExtResource( 1 )
@@ -19,13 +19,13 @@ Title = "test"
 margin_left = 10.0
 margin_top = 10.0
 margin_right = 190.0
-margin_bottom = 90.0
+margin_bottom = 40.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 margin_left = 10.0
 margin_top = 10.0
 margin_right = 190.0
-margin_bottom = 90.0
+margin_bottom = 40.0
 
 [node name="CenterContainer" type="CenterContainer" parent="VBoxContainer"]
 margin_right = 180.0
@@ -40,6 +40,6 @@ text = "test"
 [node name="Controls" type="VBoxContainer" parent="VBoxContainer"]
 margin_top = 18.0
 margin_right = 180.0
-margin_bottom = 80.0
+margin_bottom = 30.0
 size_flags_horizontal = 3
 size_flags_vertical = 3

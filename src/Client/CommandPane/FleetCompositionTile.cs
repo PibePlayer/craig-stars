@@ -4,7 +4,7 @@ using CraigStars.Singletons;
 using System.Collections.Generic;
 using CraigStars.Utils;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class FleetCompositionTile : FleetTile
     {
@@ -20,7 +20,7 @@ namespace CraigStars
         public override void _Ready()
         {
             base._Ready();
-            tokens = GetNode<FleetCompositionTileTokens>("VBoxContainer/Tokens");
+            tokens = GetNode<FleetCompositionTileTokens>("Tokens");
             estimatedRange = (Label)FindNode("EstimatedRange");
             percentCloaked = (Label)FindNode("PercentCloaked");
 

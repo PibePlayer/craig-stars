@@ -4,21 +4,38 @@ using System;
 namespace CraigStarsTable
 {
     [Tool]
-    public class LabelCell : LabelCell<object>
+    public class CSLabelCell : CSLabelCell<object>
     {
     }
 
-    public class LabelCell<T> : CellControl<T> where T : class
+    public class CSLabelCell<T> : CSMarginContainerCellControl<T> where T : class
     {
         Label label;
 
         DynamicFontData italicFont;
 
+        public CSLabelCell() {
+            SizeFlagsHorizontal = (int)SizeFlags.ExpandFill;
+            RectMinSize = new Vector2(16, 16);
+        }
+
         public override void _Ready()
         {
             base._Ready();
-            label = GetNode<Label>("Label");
-            italicFont = ResourceLoader.Load<DynamicFontData>("res://assets/gui/OpenSans-Italic.ttf");
+
+            label = new Label()
+            {
+                SizeFlagsHorizontal = (int)SizeFlags.ExpandFill,
+                SizeFlagsVertical = (int)SizeFlags.Expand | (int)SizeFlags.ShrinkCenter,
+            };
+            AddChild(label);
+
+            AddConstantOverride("margin_right", 3);
+            AddConstantOverride("margin_top", 3);
+            AddConstantOverride("margin_left", 3);
+            AddConstantOverride("margin_bottom", 3);
+
+            italicFont = ResourceLoader.Load<DynamicFontData>("res://addons/CSTable/assets/OpenSans-Italic.ttf");
 
             UpdateCell();
         }

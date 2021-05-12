@@ -4,26 +4,35 @@ using CraigStars.Singletons;
 using CraigStars;
 using System.Collections.Generic;
 
-public class FleetTile : AbstractCommandedFleetControl
+namespace CraigStars.Client
 {
-
-    protected Label titleLabel;
-
-    public override void _Ready()
+    public class FleetTile : AbstractCommandedFleetControl, ITileContent
     {
-        base._Ready();
-        titleLabel = GetNode<Label>("VBoxContainer/Title/Name");
+
+        public event UpdateTitleAction UpdateTitleEvent;
+        public event UpdateVisibilityAction UpdateVisibilityEvent;
+
+        public override void _Ready()
+        {
+            base._Ready();
+        }
+
+        protected void UpdateTitle(string title)
+        {
+            UpdateTitleEvent?.Invoke(title);
+        }
+
+        /// <summary>
+        /// Called when a new active fleet has been selected
+        /// Note, this will be called when setting the CommandedFleet to null
+        /// </summary>
+        protected override void OnNewCommandedFleet() { }
+
+        protected override void UpdateControls()
+        {
+            Visible = CommandedFleet != null;
+            UpdateVisibilityEvent?.Invoke(Visible);
+        }
 
     }
-
-    /// <summary>
-    /// Called when a new active fleet has been selected
-    /// Note, this will be called when setting the CommandedFleet to null
-    /// </summary>
-    protected override void OnNewCommandedFleet() { }
-    protected override void UpdateControls()
-    {
-        Visible = CommandedFleet != null;
-    }
-
 }

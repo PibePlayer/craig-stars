@@ -9,15 +9,15 @@ namespace CraigStars
     {
         Button okButton;
 
-        PlanetsTable planetsTable;
-        FleetsTable fleetsTable;
+        PlanetsReportTable planetsTable;
+        FleetsReportTable fleetsTable;
 
         public override void _Ready()
         {
             base._Ready();
             okButton = FindNode("OKButton") as Button;
-            planetsTable = GetNode<PlanetsTable>("MarginContainer/VBoxContainer/TabContainer/Planets/PlanetsTable");
-            fleetsTable = GetNode<FleetsTable>("MarginContainer/VBoxContainer/TabContainer/Fleets/FleetsTable");
+            planetsTable = GetNode<PlanetsReportTable>("MarginContainer/VBoxContainer/TabContainer/Planets/PlanetsTable");
+            fleetsTable = GetNode<FleetsReportTable>("MarginContainer/VBoxContainer/TabContainer/Fleets/FleetsTable");
 
             okButton.Connect("pressed", this, nameof(OnOK));
         }

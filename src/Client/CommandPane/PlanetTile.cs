@@ -1,15 +1,15 @@
 using CraigStars.Singletons;
 using Godot;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class PlanetTile : Control, ITileContent
     {
         public PlanetSprite CommandedPlanet { get; set; }
         public Player Me { get => PlayersManager.Me; }
 
-        public event UpdateTitleAction UpdateTitle;
-        public event UpdateVisibilityAction UpdateVisibility;
+        public event UpdateTitleAction UpdateTitleEvent;
+        public event UpdateVisibilityAction UpdateVisibilityEvent;
 
         public override void _Ready()
         {
@@ -23,6 +23,11 @@ namespace CraigStars
             Signals.TurnPassedEvent -= OnTurnPassed;
         }
 
+        protected void UpdateTitle(string title)
+        {
+            UpdateTitleEvent?.Invoke(title);
+        }
+
         protected virtual void OnTurnPassed(PublicGameInfo gameInfo)
         {
             CommandedPlanet = null;
@@ -33,7 +38,7 @@ namespace CraigStars
         {
             CommandedPlanet = mapObject as PlanetSprite;
             Visible = CommandedPlanet != null;
-            UpdateVisibility?.Invoke(Visible);
+            UpdateVisibilityEvent?.Invoke(Visible);
             UpdateControls();
         }
 

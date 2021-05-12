@@ -2,7 +2,7 @@ using CraigStars.Singletons;
 using Godot;
 using System;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class FleetCargoTile : FleetTile
     {

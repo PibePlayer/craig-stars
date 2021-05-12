@@ -19,6 +19,7 @@ namespace CraigStarsTable
     public class Table<T> : Control where T : class
     {
         public const int NoRowSelected = -1;
+        public const string DefaultCellControlScript = "res://addons/CSTable/src/Table/CSLabelCell.cs";
 
         public delegate void RowAction(int rowIndex, int colIndex, Cell cell, T metadata);
         public event RowAction RowSelectedEvent;
@@ -51,7 +52,22 @@ namespace CraigStarsTable
                 cellControlScene = value;
             }
         }
-        string cellControlScene = "res://addons/CSTable/src/Table/LabelCell.tscn";
+        string cellControlScene = "";
+
+        /// <summary>
+        /// The scene that will be used to render each cell by default. Note, the control
+        /// class for this must implement the ICellControl interface
+        /// This defaults to a simple label
+        /// </summary>
+        [Export(PropertyHint.File, "*.cs")]
+        public string CellControlScript
+        {
+            get => cellControlScript; set
+            {
+                cellControlScript = value;
+            }
+        }
+        string cellControlScript = "";
 
         /// <summary>
         /// True to show the column headers
@@ -254,7 +270,7 @@ namespace CraigStarsTable
                     columnHeader.SortEvent -= OnSortEvent;
                 }
 
-                if (child is ICellControl<T> cell)
+                if (child is ICSCellControl<T> cell)
                 {
                     cell.MouseEnteredEvent -= OnMouseEntered;
                     cell.MouseExitedEvent -= OnMouseExited;
@@ -326,20 +342,44 @@ namespace CraigStarsTable
         {
             int rowIndex = 0;
 
-            // each column could have a cell override
-            var defaultScene = GD.Load<PackedScene>(CellControlScene);
-            var sceneForColumn = Data.Columns.Select(col =>
+            // Check for scene overrides
+            // 1. Each cell could have an override
+            // 2. The table could have an override for the default
+            // 
+            // We prioritize scenes over scripts.
+            var defaultScene = GD.Load<CSharpScript>(DefaultCellControlScript);
+            var sceneForColumn = Data.Columns.Select<Column, Resource>(col =>
             {
+                if (!String.IsNullOrEmpty(col.Scene) && !String.IsNullOrEmpty(col.Script))
+                {
+                    GD.Print($"Column {col.Name} contains a script and scene override. Will use {col.Scene}.");
+                }
+                else if (!String.IsNullOrEmpty(CellControlScript) && !String.IsNullOrEmpty(CellControlScene))
+                {
+                    GD.Print($"Table contains a script and scene override. Will use {CellControlScene}.");
+                }
                 if (col.Scene != null)
                 {
                     return GD.Load<PackedScene>(col.Scene);
+                }
+                else if (col.Script != null)
+                {
+                    return GD.Load<CSharpScript>(col.Script);
+                }
+                else if (!String.IsNullOrEmpty(CellControlScene))
+                {
+                    return GD.Load<PackedScene>(CellControlScene);
+                }
+                else if (!String.IsNullOrEmpty(CellControlScript))
+                {
+                    return GD.Load<CSharpScript>(CellControlScript);
                 }
                 else
                 {
                     return defaultScene;
                 }
-
             }).ToArray();
+
             var rows = Data.SourceRows;
             cellControls = new Control[rows.Count, Data.Columns.Count];
             foreach (var row in rows)
@@ -355,7 +395,26 @@ namespace CraigStarsTable
                     var cell = row.Data[columnIndex];
 
                     // instantiate an instance of this cell
-                    ICellControl<T> node = sceneForColumn[columnIndex].Instance() as ICellControl<T>;
+                    ICSCellControl<T> node;
+                    var scene = sceneForColumn[columnIndex];
+                    if (scene is CSharpScript script)
+                    {
+                        var instance = script.New();
+                        node = instance as ICSCellControl<T>;
+                    }
+                    else if (scene is PackedScene packedScene)
+                    {
+                        node = packedScene.Instance() as ICSCellControl<T>;
+                    }
+                    else
+                    {
+                        throw new Exception($"Table Cell Scene/Script {scene} is not a CSharpScript or PackedScene and can't be instanced.");
+                    }
+
+                    if (node == null)
+                    {
+                        throw new Exception($"Table Cell Scene/Script {scene} is not an ICellControl.");
+                    }
                     node.Column = col;
                     node.Cell = cell;
                     node.Row = row;
@@ -468,11 +527,11 @@ namespace CraigStarsTable
             }
         }
 
-        void OnMouseEntered(ICellControl<T> cell)
+        void OnMouseEntered(ICSCellControl<T> cell)
         {
         }
 
-        void OnMouseExited(ICellControl<T> cell)
+        void OnMouseExited(ICSCellControl<T> cell)
         {
         }
 
@@ -507,7 +566,7 @@ namespace CraigStarsTable
         /// </summary>
         /// <param name="cell"></param>
         /// <param name="event"></param>
-        void OnCellSelected(ICellControl<T> cell, InputEvent @event)
+        void OnCellSelected(ICSCellControl<T> cell, InputEvent @event)
         {
             var newSelectedRow = cell.Row.Index;
 
@@ -516,7 +575,7 @@ namespace CraigStarsTable
             Update();
         }
 
-        void OnCellActivated(ICellControl<T> cell, InputEvent @event)
+        void OnCellActivated(ICSCellControl<T> cell, InputEvent @event)
         {
             var activatedRowIndex = cell.Row.Index;
             RowActivatedEvent?.Invoke(activatedRowIndex, cell.Column.Index, cell.Cell, cell.Row.Metadata);

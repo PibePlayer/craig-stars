@@ -1,16 +1,10 @@
-[gd_scene load_steps=33 format=2]
+[gd_scene load_steps=23 format=2]
 
 [ext_resource path="res://src/Client/Scanner/Scanner.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/Client/Scanner/ScannerSelectedStats.tscn" type="PackedScene" id=2]
 [ext_resource path="res://src/Client/GameView.cs" type="Script" id=3]
-[ext_resource path="res://src/Client/CommandPane/FleetWaypointTaskTile.tscn" type="PackedScene" id=4]
-[ext_resource path="res://src/Client/CommandPane/PlanetStarbaseTile.tscn" type="PackedScene" id=5]
-[ext_resource path="res://src/Client/CommandPane/PlanetMineralsOnHandTile.tscn" type="PackedScene" id=6]
-[ext_resource path="res://src/Client/CommandPane/PlanetProductionTile.tscn" type="PackedScene" id=7]
 [ext_resource path="res://src/Client/MessagesPane/MessagesPane.tscn" type="PackedScene" id=8]
-[ext_resource path="res://src/Client/CommandPane/FleetWaypointsTile.tscn" type="PackedScene" id=10]
 [ext_resource path="res://src/Client/SummaryPane/SelectionSummaryPane.tscn" type="PackedScene" id=11]
-[ext_resource path="res://src/Client/CommandPane/FleetCargoTile.tscn" type="PackedScene" id=12]
 [ext_resource path="res://src/Client/Dialogs/ProductionQueueDialog.tscn" type="PackedScene" id=13]
 [ext_resource path="res://src/Client/Dialogs/CargoTransferDialog.tscn" type="PackedScene" id=14]
 [ext_resource path="res://src/Client/Dialogs/ResearchDialog.tscn" type="PackedScene" id=15]
@@ -19,10 +13,6 @@
 [ext_resource path="res://src/Client/Dialogs/ShipDesignerDialog.tscn" type="PackedScene" id=18]
 [ext_resource path="res://src/Client/Dialogs/TurnGenerationDialog.tscn" type="PackedScene" id=20]
 [ext_resource path="res://src/Client/Dialogs/ReportsDialog.tscn" type="PackedScene" id=21]
-[ext_resource path="res://src/Client/CommandPane/FleetsInOrbitTile.tscn" type="PackedScene" id=22]
-[ext_resource path="res://src/Client/CommandPane/FleetOrbitingTile.tscn" type="PackedScene" id=23]
-[ext_resource path="res://src/Client/CommandPane/OtherFleetsHereTile.tscn" type="PackedScene" id=24]
-[ext_resource path="res://src/Client/CommandPane/FleetCompositionTile.tscn" type="PackedScene" id=25]
 [ext_resource path="res://src/Client/Dialogs/MergeFleetsDialog.tscn" type="PackedScene" id=26]
 [ext_resource path="res://src/Client/Dialogs/RaceDesignerDialog.tscn" type="PackedScene" id=27]
 [ext_resource path="res://src/Client/Dialogs/BattleViewerDialog.tscn" type="PackedScene" id=28]
@@ -128,31 +118,37 @@ rect_min_size = Vector2( 250, 0 )
 [node name="MapObjectSummaryTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 33 )]
 margin_right = 250.0
 margin_bottom = 166.0
-ControlsScene = "res://src/Client/CommandPane/MapObjectSummary.tscn"
+ControlsScene = "res://src/Client/CommandPane/MapObjectSummaryTile.tscn"
 Title = "Name"
 
-[node name="FleetCompositionTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 25 )]
+[node name="FleetCompositionTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 33 )]
 visible = false
 margin_top = 170.0
 margin_right = 250.0
 margin_bottom = 372.0
+ControlsScene = "res://src/Client/CommandPane/FleetCompositionTile.tscn"
+Title = "Fleet Composition"
 
-[node name="FleetCargoTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 12 )]
+[node name="FleetCargoTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 33 )]
 visible = false
-margin_left = 254.0
-margin_right = 504.0
-margin_bottom = 148.0
-
-[node name="PlanetMineralsOnHandTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 6 )]
 margin_top = 170.0
 margin_right = 250.0
-margin_bottom = 310.0
+margin_bottom = 372.0
+ControlsScene = "res://src/Client/CommandPane/FleetCargoTile.tscn"
+Title = "Fuel & Cargo"
+
+[node name="PlanetMineralsOnHandTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 33 )]
+margin_top = 170.0
+margin_right = 250.0
+margin_bottom = 302.0
+ControlsScene = "res://src/Client/CommandPane/PlanetMineralsOnHandTile.tscn"
+Title = "Minerals On Hand"
 
 [node name="PlanetStatusTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 33 )]
-margin_top = 314.0
+margin_top = 306.0
 margin_right = 250.0
-margin_bottom = 490.0
-ControlsScene = "res://src/Client/CommandPane/PlanetStatus.tscn"
+margin_bottom = 482.0
+ControlsScene = "res://src/Client/CommandPane/PlanetStatusTile.tscn"
 Title = "Status"
 
 [node name="RightCommandPange" type="VBoxContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer"]
@@ -161,46 +157,62 @@ margin_right = 504.0
 margin_bottom = 528.0
 rect_min_size = Vector2( 250, 0 )
 
-[node name="PlanetProductionTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 7 )]
+[node name="PlanetProductionTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 33 )]
 margin_right = 250.0
 margin_bottom = 160.0
+ControlsScene = "res://src/Client/CommandPane/PlanetProductionTile.tscn"
+Title = "Production"
 
-[node name="FleetOrbitingTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 23 )]
-visible = false
-margin_left = -254.0
-margin_top = 204.0
-margin_right = -4.0
-margin_bottom = 279.0
-
-[node name="OtherFleetsHereTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 24 )]
-visible = false
+[node name="PlanetStarbaseTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 33 )]
 margin_top = 164.0
 margin_right = 250.0
-margin_bottom = 246.0
+margin_bottom = 356.0
+ControlsScene = "res://src/Client/CommandPane/PlanetStarbaseTile.tscn"
+Title = "Starbase"
 
-[node name="FleetsInOrbitTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 22 )]
-margin_top = 164.0
-margin_right = 250.0
-margin_bottom = 282.0
-
-[node name="PlanetStarbaseTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 5 )]
-margin_top = 286.0
-margin_right = 250.0
-margin_bottom = 478.0
-
-[node name="FleetWaypointsTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 10 )]
+[node name="FleetOrbitingTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 33 )]
 visible = false
 margin_left = -254.0
-margin_top = 204.0
+margin_top = 170.0
 margin_right = -4.0
-margin_bottom = 464.0
+margin_bottom = 372.0
+ControlsScene = "res://src/Client/CommandPane/FleetOrbitingTile.tscn"
+Title = "In Deep Space"
 
-[node name="FleetWaypointTaskTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 4 )]
+[node name="OtherFleetsHereTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 33 )]
 visible = false
 margin_left = -254.0
-margin_top = 204.0
+margin_top = 170.0
 margin_right = -4.0
-margin_bottom = 269.0
+margin_bottom = 372.0
+ControlsScene = "res://src/Client/CommandPane/OtherFleetsHereTile.tscn"
+Title = "Other Fleets Here"
+
+[node name="FleetsInOrbitTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 33 )]
+visible = false
+margin_left = -254.0
+margin_top = 170.0
+margin_right = -4.0
+margin_bottom = 372.0
+ControlsScene = "res://src/Client/CommandPane/FleetsInOrbitTile.tscn"
+Title = "Fleets In Orbit"
+
+[node name="FleetWaypoints" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 33 )]
+visible = false
+margin_left = -254.0
+margin_top = 170.0
+margin_right = -4.0
+margin_bottom = 372.0
+ControlsScene = "res://src/Client/CommandPane/FleetWaypointsTile.tscn"
+Title = "Fleet Waypoints"
+
+[node name="FleetWaypointTaskTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 33 )]
+visible = false
+margin_top = 360.0
+margin_right = 250.0
+margin_bottom = 418.0
+ControlsScene = "res://src/Client/CommandPane/FleetWaypointTaskTile.tscn"
+Title = "Waypoint Task"
 
 [node name="MessagesPane" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer" instance=ExtResource( 8 )]
 margin_top = 532.0

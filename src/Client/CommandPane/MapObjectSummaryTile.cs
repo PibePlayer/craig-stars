@@ -4,12 +4,12 @@ using System.Collections.Generic;
 
 using CraigStars.Singletons;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
-    public class MapObjectSummary : Control, ITileContent
+    public class MapObjectSummaryTile : Control, ITileContent
     {
-        public event UpdateTitleAction UpdateTitle;
-        public event UpdateVisibilityAction UpdateVisibility;
+        public event UpdateTitleAction UpdateTitleEvent;
+        public event UpdateVisibilityAction UpdateVisibilityEvent;
 
         public MapObjectSprite CommandedMapObject
         {
@@ -72,7 +72,7 @@ namespace CraigStars
         {
             if (CommandedMapObject != null)
             {
-                UpdateTitle?.Invoke(mapObject.ObjectName);
+                UpdateTitleEvent?.Invoke(mapObject.ObjectName);
                 if (CommandedMapObject is PlanetSprite planetSprite)
                 {
                     textureRect.Texture = TextureLoader.Instance.FindTexture(planetSprite.Planet);
@@ -84,7 +84,7 @@ namespace CraigStars
             }
             else
             {
-                UpdateTitle?.Invoke("Unknown");
+                UpdateTitleEvent?.Invoke("Unknown");
             }
         }
     }

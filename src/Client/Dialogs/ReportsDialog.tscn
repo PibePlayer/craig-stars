@@ -2,8 +2,8 @@
 
 [ext_resource path="res://src/Client/Dialogs/ReportsDialog.cs" type="Script" id=1]
 [ext_resource path="res://src/Client/Controls/ReportTable.tscn" type="PackedScene" id=2]
-[ext_resource path="res://src/Client/Reports/FleetsTable.cs" type="Script" id=3]
-[ext_resource path="res://src/Client/Reports/PlanetsTable.cs" type="Script" id=4]
+[ext_resource path="res://src/Client/Reports/FleetsReportTable.cs" type="Script" id=3]
+[ext_resource path="res://src/Client/Reports/PlanetsReportTable.cs" type="Script" id=4]
 
 [node name="ReportsDialog" type="WindowDialog"]
 margin_right = 1075.0

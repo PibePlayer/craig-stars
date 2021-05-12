@@ -13,7 +13,7 @@ namespace CraigStars
     {
 
 
-        event UpdateTitleAction UpdateTitle;
-        event UpdateVisibilityAction UpdateVisibility;
+        event UpdateTitleAction UpdateTitleEvent;
+        event UpdateVisibilityAction UpdateVisibilityEvent;
     }
 }

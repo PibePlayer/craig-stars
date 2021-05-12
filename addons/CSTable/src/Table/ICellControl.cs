@@ -3,18 +3,18 @@ using System;
 
 namespace CraigStarsTable
 {
-    public interface ICellControl<T> where T : class
+    public interface ICSCellControl<T> where T : class
     {
-        event Action<ICellControl<T>> MouseEnteredEvent;
-        event Action<ICellControl<T>> MouseExitedEvent;
-        event Action<ICellControl<T>, InputEvent> CellSelectedEvent;
-        event Action<ICellControl<T>, InputEvent> CellActivatedEvent;
+        event Action<ICSCellControl<T>> MouseEnteredEvent;
+        event Action<ICSCellControl<T>> MouseExitedEvent;
+        event Action<ICSCellControl<T>, InputEvent> CellSelectedEvent;
+        event Action<ICSCellControl<T>, InputEvent> CellActivatedEvent;
         Row<T> Row { get; set; }
         Cell Cell { get; set; }
         Column Column { get; set; }
     }
 
-    public interface ICellControl : ICellControl<object>
+    public interface ICellControl : ICSCellControl<object>
     {
     }
 

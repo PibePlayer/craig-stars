@@ -1,78 +1,33 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://src/Client/CommandPane/FleetWaypointTaskTile.cs" type="Script" id=1]
-[ext_resource path="res://src/Client/TileTheme.tres" type="Theme" id=2]
 [ext_resource path="res://assets/gui/icons/Close.svg" type="Texture" id=3]
 [ext_resource path="res://src/Client/Dialogs/TransportPlanDetail.tscn" type="PackedScene" id=4]
 [ext_resource path="res://src/Client/CommandPane/RemoteMiningWaypointTaskContainer.tscn" type="PackedScene" id=5]
 
-[node name="FleetWaypointTaskTile" type="MarginContainer"]
-margin_right = 216.0
-margin_bottom = 106.0
-rect_min_size = Vector2( 200, 65 )
-theme = ExtResource( 2 )
-custom_constants/margin_right = 10
-custom_constants/margin_top = 10
-custom_constants/margin_left = 10
-custom_constants/margin_bottom = 10
+[node name="FleetWaypointTaskTile" type="VBoxContainer"]
+margin_top = 18.0
+margin_right = 196.0
+margin_bottom = 38.0
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Panel" type="Panel" parent="."]
-margin_left = 10.0
-margin_top = 10.0
-margin_right = 206.0
-margin_bottom = 96.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
-margin_left = 10.0
-margin_top = 10.0
-margin_right = 206.0
-margin_bottom = 96.0
-rect_pivot_offset = Vector2( -1375, 44 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Title" type="HBoxContainer" parent="VBoxContainer"]
-margin_right = 196.0
-margin_bottom = 14.0
-
-[node name="Name" type="Label" parent="VBoxContainer/Title"]
-margin_right = 196.0
-margin_bottom = 14.0
-size_flags_horizontal = 3
-text = "Waypoint Task"
-align = 1
-
-[node name="Button" type="Button" parent="VBoxContainer/Title"]
-visible = false
-margin_left = 161.0
-margin_right = 180.0
-margin_bottom = 20.0
-text = "^"
-
-[node name="WaypointTask" type="OptionButton" parent="VBoxContainer"]
-margin_top = 18.0
-margin_right = 196.0
-margin_bottom = 38.0
-
-[node name="TransportContainer" type="VBoxContainer" parent="VBoxContainer"]
-visible = false
-margin_top = 42.0
-margin_right = 196.0
-margin_bottom = 86.0
-
-[node name="TransportSummaryContainer" type="HBoxContainer" parent="VBoxContainer/TransportContainer"]
+[node name="WaypointTask" type="OptionButton" parent="."]
 margin_right = 196.0
 margin_bottom = 20.0
 
-[node name="Fuel" type="Label" parent="VBoxContainer/TransportContainer/TransportSummaryContainer"]
+[node name="TransportContainer" type="VBoxContainer" parent="."]
+visible = false
+margin_right = 196.0
+margin_bottom = 44.0
+
+[node name="TransportSummaryContainer" type="HBoxContainer" parent="TransportContainer"]
+margin_right = 196.0
+margin_bottom = 20.0
+
+[node name="Fuel" type="Label" parent="TransportContainer/TransportSummaryContainer"]
 margin_right = 16.0
 margin_bottom = 20.0
 rect_min_size = Vector2( 16, 20 )
@@ -87,7 +42,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="FuelTask" type="TextureRect" parent="VBoxContainer/TransportContainer/TransportSummaryContainer"]
+[node name="FuelTask" type="TextureRect" parent="TransportContainer/TransportSummaryContainer"]
 margin_left = 20.0
 margin_right = 36.0
 margin_bottom = 20.0
@@ -95,7 +50,7 @@ rect_min_size = Vector2( 16, 20 )
 texture = ExtResource( 3 )
 stretch_mode = 4
 
-[node name="Ironium" type="Label" parent="VBoxContainer/TransportContainer/TransportSummaryContainer"]
+[node name="Ironium" type="Label" parent="TransportContainer/TransportSummaryContainer"]
 margin_left = 40.0
 margin_right = 56.0
 margin_bottom = 20.0
@@ -108,7 +63,7 @@ text = "I:"
 align = 1
 valign = 1
 
-[node name="IroniumTask" type="TextureRect" parent="VBoxContainer/TransportContainer/TransportSummaryContainer"]
+[node name="IroniumTask" type="TextureRect" parent="TransportContainer/TransportSummaryContainer"]
 margin_left = 60.0
 margin_right = 76.0
 margin_bottom = 20.0
@@ -116,7 +71,7 @@ rect_min_size = Vector2( 16, 20 )
 texture = ExtResource( 3 )
 stretch_mode = 4
 
-[node name="Boranium" type="Label" parent="VBoxContainer/TransportContainer/TransportSummaryContainer"]
+[node name="Boranium" type="Label" parent="TransportContainer/TransportSummaryContainer"]
 margin_left = 80.0
 margin_right = 96.0
 margin_bottom = 20.0
@@ -129,7 +84,7 @@ text = "B:"
 align = 1
 valign = 1
 
-[node name="BoraniumTask" type="TextureRect" parent="VBoxContainer/TransportContainer/TransportSummaryContainer"]
+[node name="BoraniumTask" type="TextureRect" parent="TransportContainer/TransportSummaryContainer"]
 margin_left = 100.0
 margin_right = 116.0
 margin_bottom = 20.0
@@ -137,7 +92,7 @@ rect_min_size = Vector2( 16, 20 )
 texture = ExtResource( 3 )
 stretch_mode = 4
 
-[node name="Germanium" type="Label" parent="VBoxContainer/TransportContainer/TransportSummaryContainer"]
+[node name="Germanium" type="Label" parent="TransportContainer/TransportSummaryContainer"]
 margin_left = 120.0
 margin_right = 136.0
 margin_bottom = 20.0
@@ -150,7 +105,7 @@ text = "G:"
 align = 1
 valign = 1
 
-[node name="GermaniumTask" type="TextureRect" parent="VBoxContainer/TransportContainer/TransportSummaryContainer"]
+[node name="GermaniumTask" type="TextureRect" parent="TransportContainer/TransportSummaryContainer"]
 margin_left = 140.0
 margin_right = 156.0
 margin_bottom = 20.0
@@ -158,7 +113,7 @@ rect_min_size = Vector2( 16, 20 )
 texture = ExtResource( 3 )
 stretch_mode = 4
 
-[node name="Colonists" type="Label" parent="VBoxContainer/TransportContainer/TransportSummaryContainer"]
+[node name="Colonists" type="Label" parent="TransportContainer/TransportSummaryContainer"]
 margin_left = 160.0
 margin_right = 176.0
 margin_bottom = 20.0
@@ -170,7 +125,7 @@ text = "C:"
 align = 1
 valign = 1
 
-[node name="ColonistsTask" type="TextureRect" parent="VBoxContainer/TransportContainer/TransportSummaryContainer"]
+[node name="ColonistsTask" type="TextureRect" parent="TransportContainer/TransportSummaryContainer"]
 margin_left = 180.0
 margin_right = 196.0
 margin_bottom = 20.0
@@ -178,35 +133,33 @@ rect_min_size = Vector2( 16, 20 )
 texture = ExtResource( 3 )
 stretch_mode = 4
 
-[node name="TransportButtonsContainer" type="HBoxContainer" parent="VBoxContainer/TransportContainer"]
+[node name="TransportButtonsContainer" type="HBoxContainer" parent="TransportContainer"]
 margin_top = 24.0
 margin_right = 196.0
 margin_bottom = 44.0
 alignment = 2
 
-[node name="ApplyPlanMenuButton" type="MenuButton" parent="VBoxContainer/TransportContainer/TransportButtonsContainer"]
+[node name="ApplyPlanMenuButton" type="MenuButton" parent="TransportContainer/TransportButtonsContainer"]
 margin_left = 77.0
 margin_right = 156.0
 margin_bottom = 20.0
+focus_mode = 2
 text = "Apply Plan"
 items = [ "Default", null, 0, false, false, 0, 0, null, "", false ]
 
-[node name="EditButton" type="Button" parent="VBoxContainer/TransportContainer/TransportButtonsContainer"]
+[node name="EditButton" type="Button" parent="TransportContainer/TransportButtonsContainer"]
 margin_left = 160.0
 margin_right = 196.0
 margin_bottom = 20.0
 text = "Edit"
 
-[node name="RemoteMiningWaypointTaskContainer" parent="VBoxContainer" instance=ExtResource( 5 )]
+[node name="RemoteMiningWaypointTaskContainer" parent="." instance=ExtResource( 5 )]
 visible = false
-margin_top = 42.0
-margin_bottom = 74.0
 
 [node name="TransportPlanEditPopupPanel" type="PopupPanel" parent="."]
-margin_left = 10.0
-margin_top = 10.0
-margin_right = 368.0
-margin_bottom = 206.0
+margin_top = -18.0
+margin_right = 358.0
+margin_bottom = 178.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="TransportPlanEditPopupPanel"]
 margin_left = 4.0
@@ -218,7 +171,6 @@ __meta__ = {
 }
 
 [node name="TransportPlanDetail" parent="TransportPlanEditPopupPanel/VBoxContainer" instance=ExtResource( 4 )]
-margin_top = 0.0
 margin_right = 271.0
 margin_bottom = 164.0
 

@@ -3,7 +3,7 @@ using System.Linq;
 using CraigStars.Singletons;
 using Godot;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class FleetsInOrbitTile : PlanetTile
     {
@@ -19,8 +19,8 @@ namespace CraigStars
         {
             base._Ready();
 
-            fleetsInOrbitOptionButton = GetNode<OptionButton>("VBoxContainer/FleetsInOrbitOptionButton");
-            gotoButton = GetNode<Button>("VBoxContainer/HBoxContainer/GotoButton");
+            fleetsInOrbitOptionButton = GetNode<OptionButton>("FleetsInOrbitOptionButton");
+            gotoButton = GetNode<Button>("HBoxContainer/GotoButton");
 
             fuelBar = (CargoBar)FindNode("FuelBar");
             cargoBar = (CargoBar)FindNode("CargoBar");

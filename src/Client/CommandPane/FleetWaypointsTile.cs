@@ -2,7 +2,7 @@ using Godot;
 using System;
 using CraigStars.Singletons;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class FleetWaypointsTile : FleetWaypointTile
     {
@@ -38,7 +38,7 @@ namespace CraigStars
             estimatedFuelUsage = FindNode("EstimatedFuelUsage") as Label;
             travelTimeLabel = FindNode("TravelTimeLabel") as Label;
             estimatedFuelUsageLabel = FindNode("EstimatedFuelUsageLabel") as Label;
-            repeatOrdersCheckBox = GetNode<CheckBox>("VBoxContainer/RepeatOrdersCheckBox");
+            repeatOrdersCheckBox = GetNode<CheckBox>("RepeatOrdersCheckBox");
 
             selectedWaypointGrid.Visible = false;
             base._Ready();

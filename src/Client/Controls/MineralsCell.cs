@@ -5,7 +5,7 @@ using System;
 namespace CraigStars
 {
     [Tool]
-    public class MineralsCell : CellControl
+    public class MineralsCell : CSCellControl
     {
         protected Label ironium;
         protected Label boranium;

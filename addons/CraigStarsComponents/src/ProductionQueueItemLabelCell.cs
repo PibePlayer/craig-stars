@@ -5,7 +5,7 @@ using System;
 namespace CraigStars
 {
     [Tool]
-    public class ProductionQueueItemLabelCell : LabelCell<ProductionQueueItem>
+    public class ProductionQueueItemLabelCell : CSLabelCell<ProductionQueueItem>
     {
     }
 }

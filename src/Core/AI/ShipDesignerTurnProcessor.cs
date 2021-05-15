@@ -15,7 +15,7 @@ namespace CraigStars
 
         ShipDesignGenerator shipDesignGenerator = new ShipDesignGenerator();
 
-        public ShipDesignerTurnProcessor(PublicGameInfo gameInfo) : base(gameInfo) { }
+        public ShipDesignerTurnProcessor() : base("Ship Designer") { }
 
         /// <summary>
         /// a new turn! build some ships

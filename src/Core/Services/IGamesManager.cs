@@ -38,7 +38,7 @@ namespace CraigStars
         /// <param name="gameName"></param>
         /// <param name="year"></param>
         /// <returns></returns>
-        Game LoadGame(ITechStore techStore, string name, int year = -1);
+        Game LoadGame(ITechStore techStore, ITurnProcessorManager turnProcessorManager, string name, int year = -1);
 
         /// <summary>
         /// Delete a game from disk

@@ -112,7 +112,7 @@ namespace CraigStars
             player2.Race.Name = "Rabbitoid";
             player2.Race.PluralName = "Rabbitoids";
 
-            ShipDesignerTurnProcessor designerTurnProcessor = new ShipDesignerTurnProcessor(new PublicGameInfo());
+            ShipDesignerTurnProcessor designerTurnProcessor = new ShipDesignerTurnProcessor();
             designerTurnProcessor.Process(player1);
 
             player1.Fleets.Add(new Fleet()
@@ -124,7 +124,7 @@ namespace CraigStars
                     }).ToList(),
             });
 
-            designerTurnProcessor = new ShipDesignerTurnProcessor(new PublicGameInfo());
+            designerTurnProcessor = new ShipDesignerTurnProcessor();
             designerTurnProcessor.Process(player2);
 
             player2.Fleets.Add(new Fleet()
@@ -164,7 +164,7 @@ namespace CraigStars
             player2.Race.Name = "Rabbitoid";
             player2.Race.PluralName = "Rabbitoids";
 
-            ShipDesignerTurnProcessor designerTurnProcessor = new ShipDesignerTurnProcessor(new PublicGameInfo());
+            ShipDesignerTurnProcessor designerTurnProcessor = new ShipDesignerTurnProcessor();
             designerTurnProcessor.Process(player1);
 
             player1.Fleets.Add(new Fleet()
@@ -176,7 +176,7 @@ namespace CraigStars
                     }).ToList(),
             });
 
-            designerTurnProcessor = new ShipDesignerTurnProcessor(new PublicGameInfo());
+            designerTurnProcessor = new ShipDesignerTurnProcessor();
             designerTurnProcessor.Process(player2);
 
             player2.Fleets.Add(new Fleet()

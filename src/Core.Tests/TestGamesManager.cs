@@ -31,7 +31,7 @@ namespace CraigStars.Tests
             return new List<int>();
         }
 
-        public Game LoadGame(ITechStore techStore, string name, int year = -1)
+        public Game LoadGame(ITechStore techStore, ITurnProcessorManager turnProcessorManager, string name, int year = -1)
         {
             throw new System.NotImplementedException();
         }

@@ -13,7 +13,7 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(BomberTurnProcessor));
 
-        public BomberTurnProcessor(PublicGameInfo gameInfo) : base(gameInfo) { }
+        public BomberTurnProcessor() : base("Bomber") { }
 
         /// <summary>
         /// a new turn! build some ships

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using CraigStars.Utils;
 using Godot;
 using log4net;
@@ -186,6 +187,9 @@ namespace CraigStars.Singletons
                     TechStore = TechStore.Instance,
                     DefaultHullSet = num % 2
                 };
+
+                // TODO: don't enable this by default in regular games
+                player.Settings.TurnProcessors.AddRange(TurnProcessorManager.Instance.TurnProcessors.Select(p => p.Name));
 
                 if (player.AIControlled)
                 {

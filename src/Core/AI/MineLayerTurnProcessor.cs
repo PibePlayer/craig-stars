@@ -13,7 +13,7 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(MineLayerTurnProcessor));
 
-        public MineLayerTurnProcessor(PublicGameInfo gameInfo) : base(gameInfo) { }
+        public MineLayerTurnProcessor() : base("Mine Layer") { }
 
         /// <summary>
         /// Make sure our mine layers lay mines

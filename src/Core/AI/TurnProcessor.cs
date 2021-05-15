@@ -9,10 +9,13 @@ namespace CraigStars
     /// </summary>
     public abstract class TurnProcessor
     {
-        public PublicGameInfo GameInfo { get; set; }
-        public TurnProcessor(PublicGameInfo gameInfo)
+        public string Name { get; private set; }
+
+        public TurnProcessor() { }
+
+        public TurnProcessor(string name)
         {
-            GameInfo = gameInfo;
+            Name = name;
         }
 
         protected Planet ClosestPlanet(Fleet fleet, List<Planet> unknownPlanets)

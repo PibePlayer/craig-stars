@@ -13,7 +13,7 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(ScoutTurnProcessor));
 
-        public ScoutTurnProcessor(PublicGameInfo gameInfo) : base(gameInfo) { }
+        public ScoutTurnProcessor() : base("Scouter") { }
 
         /// <summary>
         /// a new turn! build some ships
@@ -25,7 +25,7 @@ namespace CraigStars
             // TODO: pick the best one
             ShipDesign scoutShip = player.GetLatestDesign(ShipDesignPurpose.Scout);
 
-            log.Debug($"{GameInfo.Year}: {player} Found best scout design: {scoutShip.Name} v{scoutShip.Version}");
+            log.Debug($"{player.Game.Year}: {player} Found best scout design: {scoutShip.Name} v{scoutShip.Version}");
 
             // find all the planets we don't know about yet
             List<Planet> unknownPlanets = player.AllPlanets.Where(planet => !planet.Explored).ToList();
@@ -66,7 +66,7 @@ namespace CraigStars
                 }
             }
 
-            BuildFleets(buildablePlanets, unknownPlanets.Count, scoutShip);
+            BuildFleets(player, buildablePlanets, unknownPlanets.Count, scoutShip);
 
         }
 
@@ -76,7 +76,7 @@ namespace CraigStars
         /// <param name="buildablePlanets"></param>
         /// <param name="numShipsNeeded"></param>
         /// <param name="scoutShip"></param>
-        void BuildFleets(List<Planet> buildablePlanets, int numShipsNeeded, ShipDesign scoutShip)
+        void BuildFleets(Player player, List<Planet> buildablePlanets, int numShipsNeeded, ShipDesign scoutShip)
         {
             if (scoutShip != null)
             {
@@ -93,7 +93,7 @@ namespace CraigStars
                         {
                             isBuilding = true;
                             queuedToBeBuilt++;
-                            log.Debug($"{GameInfo.Year}: {planet.Player} planet {planet.Name} is already building a scout ship");
+                            log.Debug($"{player.Game.Year}: {planet.Player} planet {planet.Name} is already building a scout ship");
                         }
                     }
 
@@ -111,7 +111,7 @@ namespace CraigStars
                     if (queuedToBeBuilt < numShipsNeeded)
                     {
                         planet.ProductionQueue?.Items.Add(new ProductionQueueItem(QueueItemType.ShipToken, 1, scoutShip));
-                        log.Debug($"{GameInfo.Year}: {planet.Player} Added scout ship to planet queue: {planet.Name}");
+                        log.Debug($"{player.Game.Year}: {planet.Player} Added scout ship to planet queue: {planet.Name}");
                         queuedToBeBuilt++;
                     }
                 }

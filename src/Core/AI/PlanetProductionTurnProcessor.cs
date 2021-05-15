@@ -18,7 +18,7 @@ namespace CraigStars
         // max of its growth rate (over 1/3rd crowded)
         private const float PopulationDensityRequired = .33f;
 
-        public PlanetProductionTurnProcessor(PublicGameInfo gameInfo) : base(gameInfo) { }
+        public PlanetProductionTurnProcessor() : base("Planet Production Manager") { }
 
         /// <summary>
         /// a new turn! build some ships

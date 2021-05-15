@@ -35,6 +35,11 @@ namespace CraigStars
         /// </summary>
         [JsonIgnore] public IGamesManager GamesManager { get; set; }
 
+        /// <summary>
+        /// The TurnProcessorManager used for AI
+        /// </summary>
+        [JsonIgnore] public ITurnProcessorManager TurnProcessorManager { get; set; }
+
         #region PublicGameInfo
 
         /// <summary>
@@ -155,7 +160,7 @@ namespace CraigStars
             MapObjectsByLocation = mapObjects.ToLookup(mo => mo.Position).ToDictionary(lookup => lookup.Key, lookup => lookup.ToList());
         }
 
-        public void Init(List<Player> players, Rules rules, ITechStore techStore, IGamesManager gamesManager)
+        public void Init(List<Player> players, Rules rules, ITechStore techStore, IGamesManager gamesManager, ITurnProcessorManager turnProcessorManager)
         {
             Players.Clear();
             Players.AddRange(players);
@@ -164,9 +169,10 @@ namespace CraigStars
             // make sure each player knows about the game
             Players.ForEach(player => player.Game = GameInfo);
 
+            Rules = rules;
             TechStore = techStore;
             GamesManager = gamesManager;
-            Rules = rules;
+            TurnProcessorManager = turnProcessorManager;
         }
 
         /// <summary>
@@ -273,7 +279,7 @@ namespace CraigStars
                 {
                     if (!p.AIControlled)
                     {
-                        RunTurnProcessors(p);
+                        p.RunTurnProcessors(TurnProcessorManager);
                         SubmitTurn(p);
                     }
                 });
@@ -316,23 +322,6 @@ namespace CraigStars
                 p.SetupMapObjectMappings();
                 p.UpdateMessageTargets();
             });
-        }
-
-
-        /// <summary>
-        /// Run through all the turn processors for each player
-        /// </summary>
-        public void RunTurnProcessors(Player player)
-        {
-            List<TurnProcessor> processors = new List<TurnProcessor>() {
-                new ShipDesignerTurnProcessor(GameInfo),
-                new ScoutTurnProcessor(GameInfo),
-                new ColonyTurnProcessor(GameInfo),
-                new BomberTurnProcessor(GameInfo),
-                new MineLayerTurnProcessor(GameInfo),
-                new PlanetProductionTurnProcessor(GameInfo)
-            };
-            processors.ForEach(processor => processor.Process(player));
         }
 
         internal void SaveGame()
@@ -405,7 +394,10 @@ namespace CraigStars
                     {
                         try
                         {
-                            RunTurnProcessors(player);
+                            foreach (var processor in TurnProcessorManager.TurnProcessors)
+                            {
+                                processor.Process(player);
+                            }
                             SubmitTurn(player);
                         }
                         catch (Exception e)

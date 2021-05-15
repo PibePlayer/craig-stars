@@ -89,7 +89,7 @@ namespace CraigStars
             {
                 if (Settings.Instance.ShouldContinueGame)
                 {
-                    Game = GamesManager.Instance.LoadGame(TechStore.Instance, Settings.Instance.ContinueGame, Settings.Instance.ContinueYear);
+                    Game = GamesManager.Instance.LoadGame(TechStore.Instance, TurnProcessorManager.Instance, Settings.Instance.ContinueGame, Settings.Instance.ContinueYear);
                     Game.Multithreaded = Settings.Multithreaded;
                     Game.SaveToDisk = Settings.SaveToDisk;
                     PlayersManager.Instance.InitPlayersFromGame(Game.Players);
@@ -112,7 +112,7 @@ namespace CraigStars
                     {
                         GamesManager.Instance.DeleteGame(Game.Name);
                     }
-                    Game.Init(PlayersManager.Instance.Players.Cast<Player>().ToList(), RulesManager.Rules, TechStore.Instance, GamesManager.Instance);
+                    Game.Init(PlayersManager.Instance.Players.Cast<Player>().ToList(), RulesManager.Rules, TechStore.Instance, GamesManager.Instance, TurnProcessorManager.Instance);
                     Game.GenerateUniverse();
                 }
 
@@ -226,17 +226,16 @@ namespace CraigStars
         void OnPostStartGame(PublicGameInfo gameInfo)
         {
             OS.SetWindowTitle($"{projectName} - {gameInfo.Name}: Year {gameInfo.Year}");
-            Game.RunTurnProcessors(PlayersManager.Me);
+            PlayersManager.Me.RunTurnProcessors(TurnProcessorManager.Instance);
             // add the universe to the viewport
             scanner.InitMapObjects();
         }
 
         void OnTurnPassed(PublicGameInfo gameInfo)
         {
-            Game.RunTurnProcessors(PlayersManager.Me);
+            PlayersManager.Me.RunTurnProcessors(TurnProcessorManager.Instance);
             OS.SetWindowTitle($"{projectName} - {gameInfo.Name}: Year {gameInfo.Year}");
         }
-
 
         void OnTechBrowserDialogRequested()
         {

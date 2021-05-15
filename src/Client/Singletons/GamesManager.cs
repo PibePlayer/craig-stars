@@ -193,9 +193,9 @@ namespace CraigStars.Singletons
             }
         }
 
-        public Game LoadGame(ITechStore techStore, string name, int year = -1)
+        public Game LoadGame(ITechStore techStore, ITurnProcessorManager turnProcessorManager, string name, int year = -1)
         {
-            var game = new Game() { TechStore = techStore, GamesManager = this, Name = name };
+            var game = new Game() { TechStore = techStore, TurnProcessorManager = turnProcessorManager, GamesManager = this, Name = name };
 
             using (var saveGame = new File())
             {

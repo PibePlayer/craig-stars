@@ -18,7 +18,7 @@ namespace CraigStars
         // max of its growth rate (over 1/4 crowded)
         private const float PopulationDensityRequired = .25f;
 
-        public ColonyTurnProcessor(PublicGameInfo gameInfo) : base(gameInfo) { }
+        public ColonyTurnProcessor() : base("Colonizer") { }
 
         /// <summary>
         /// a new turn! build some ships

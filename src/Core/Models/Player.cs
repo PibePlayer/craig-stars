@@ -117,6 +117,7 @@ namespace CraigStars
         #region Universe Data
 
         public PlayerUISettings UISettings { get; set; } = new PlayerUISettings();
+        public PlayerSettings Settings { get; set; } = new PlayerSettings();
 
         [JsonIgnore] public Dictionary<Vector2, List<MapObject>> MapObjectsByLocation = new Dictionary<Vector2, List<MapObject>>();
 
@@ -311,6 +312,22 @@ namespace CraigStars
         }
 
         #endregion
+
+        /// <summary>
+        /// Run all configured TurnProcessors for this player
+        /// </summary>
+        /// <param name="turnProcessorManager"></param>
+        public void RunTurnProcessors(ITurnProcessorManager turnProcessorManager)
+        {
+            Settings.TurnProcessors.ForEach(processorName =>
+            {
+                var processor = turnProcessorManager.GetTurnProcessor(processorName);
+                if (processor != null)
+                {
+                    processor.Process(this);
+                }
+            });
+        }
 
         /// <summary>
         /// Return true if this other player is our enemy

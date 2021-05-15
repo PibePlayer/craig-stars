@@ -32,13 +32,29 @@ public class TileContainer : Control
 
     Label titleLabel;
     Control controls;
+    TextureRect disclosureButton;
+    Control titleContainer;
 
     public override void _Ready()
     {
-        titleLabel = GetNode<Label>("VBoxContainer/CenterContainer/TitleLabel");
+        titleContainer = GetNode<Container>("VBoxContainer/TitleContainer");
+        titleLabel = GetNode<Label>("VBoxContainer/TitleContainer/TitleLabel");
+        disclosureButton = GetNode<TextureRect>("VBoxContainer/TitleContainer/DisclosureButton");
         controls = GetNode<Control>("VBoxContainer/Controls");
+
+        titleContainer.Connect("gui_input", this, nameof(OnTitleContainerGuiInput));
+
         UpdateControlsScene();
         UpdateTitle();
+    }
+
+    void OnTitleContainerGuiInput(InputEvent @event)
+    {
+        if (@event.IsActionPressed("ui_select"))
+        {
+            controls.Visible = !controls.Visible;
+            disclosureButton.FlipV = !controls.Visible;
+        }
     }
 
     void UpdateControlsScene()

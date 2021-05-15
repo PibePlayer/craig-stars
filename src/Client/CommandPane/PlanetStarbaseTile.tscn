@@ -1,7 +1,6 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=2 format=2]
 
 [ext_resource path="res://src/Client/CommandPane/PlanetStarbaseTile.cs" type="Script" id=1]
-[ext_resource path="res://src/Client/ShipDesigner/HullSummary.tscn" type="PackedScene" id=3]
 
 [node name="PlanetStarbaseTile" type="VBoxContainer"]
 margin_top = 18.0
@@ -144,17 +143,3 @@ margin_top = 36.0
 margin_right = 151.0
 margin_bottom = 56.0
 text = "Set Destination"
-
-[node name="HullSummaryPopup" type="PopupPanel" parent="."]
-margin_top = -18.0
-margin_right = 528.0
-margin_bottom = 660.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="HullSummary" parent="HullSummaryPopup" instance=ExtResource( 3 )]
-margin_left = 4.0
-margin_top = 4.0
-margin_right = -4.0
-margin_bottom = -4.0

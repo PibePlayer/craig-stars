@@ -19,9 +19,6 @@ namespace CraigStars.Client
         Label destinationLabel;
         Button setDestinationButton;
 
-        PopupPanel hullSummaryPopup;
-        HullSummary hullSummary;
-
         public override void _Ready()
         {
             base._Ready();
@@ -36,9 +33,6 @@ namespace CraigStars.Client
             destination = FindNode("Destination") as Label;
             destinationLabel = FindNode("DestinationLabel") as Label;
             setDestinationButton = FindNode("SetDestinationButton") as Button;
-
-            hullSummaryPopup = GetNode<PopupPanel>("HullSummaryPopup");
-            hullSummary = GetNode<HullSummary>("HullSummaryPopup/HullSummary");
 
             setDestinationButton.Connect("pressed", this, nameof(OnSetDestinationButtonPressed));
 
@@ -72,9 +66,9 @@ namespace CraigStars.Client
             {
                 GetTree().SetInputAsHandled();
 
-                hullSummary.Hull = CommandedPlanet.Planet.Starbase.Design.Hull;
-                hullSummary.ShipDesign = CommandedPlanet.Planet.Starbase.Design;
-                hullSummaryPopup.PopupCentered();
+                HullSummaryPopup.Instance.Hull = CommandedPlanet.Planet.Starbase.Design.Hull;
+                HullSummaryPopup.Instance.ShipDesign = CommandedPlanet.Planet.Starbase.Design;
+                HullSummaryPopup.Instance.PopupCentered();
             }
         }
 

@@ -6,8 +6,9 @@
 [node name="CanvasLayer" type="CanvasLayer"]
 
 [node name="TechSummaryPopup" type="PopupPanel" parent="."]
-margin_right = 508.0
-margin_bottom = 658.0
+visible = true
+margin_right = 488.0
+margin_bottom = 388.0
 script = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -16,5 +17,5 @@ __meta__ = {
 [node name="TechSummary" parent="TechSummaryPopup" instance=ExtResource( 1 )]
 margin_left = 4.0
 margin_top = 4.0
-margin_right = 504.0
-margin_bottom = 654.0
+margin_right = 484.0
+margin_bottom = 384.0

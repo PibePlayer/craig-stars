@@ -148,13 +148,13 @@ namespace CraigStars
             {
                 return GUIColors.ProductionQueueItemOneYearColor;
             }
-            else if (yearsToBuild > 1)
-            {
-                return GUIColors.ProductionQueueMoreThanOneYearColor;
-            }
             else if (yearsToBuild >= 100)
             {
                 return GUIColors.ProductionQueueNeverBuildColor;
+            }
+            else if (yearsToBuild > 1)
+            {
+                return GUIColors.ProductionQueueMoreThanOneYearColor;
             }
 
             return Colors.White;

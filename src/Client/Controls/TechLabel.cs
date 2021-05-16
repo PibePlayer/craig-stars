@@ -26,7 +26,8 @@ namespace CraigStars.Client
                 GetTree().SetInputAsHandled();
 
                 TechSummaryPopup.Instance.Tech = Tech;
-                TechSummaryPopup.Instance.PopupCentered();
+                TechSummaryPopup.Instance.RectPosition = GetGlobalMousePosition() - new Vector2(0, TechSummaryPopup.Instance.RectSize.y);
+                TechSummaryPopup.Instance.Show();
             }
             else if (@event.IsActionReleased("viewport_select"))
             {

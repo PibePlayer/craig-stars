@@ -68,6 +68,19 @@ namespace CraigStars.Utils
             }
         }
 
+        public static string GetLabelForNextResearchField(NextResearchField value)
+        {
+            switch (value)
+            {
+                case NextResearchField.LowestField:
+                    return "<Lowest field>";
+                case NextResearchField.SameField:
+                    return "<Same field>";
+                default:
+                    return value.ToString();
+            }
+        }
+
         public static object GetLabelForWormholeStability(WormholeStability value)
         {
             switch (value)
@@ -171,7 +184,35 @@ namespace CraigStars.Utils
                 default:
                     return value.ToString();
             }
+        }
 
+        public static string GetLabelForPRT(PRT prt)
+        {
+            switch (prt)
+            {
+                case PRT.HE:
+                    return "Hyper Expansion";
+                case PRT.SS:
+                    return "Super Stealth";
+                case PRT.WM:
+                    return "Warmonger";
+                case PRT.CA:
+                    return "Claim Adjuster";
+                case PRT.IS:
+                    return "Inner Strength";
+                case PRT.SD:
+                    return "Space Demolition";
+                case PRT.PP:
+                    return "Packet Physics";
+                case PRT.IT:
+                    return "Interstellar Traveler";
+                case PRT.AR:
+                    return "Alternate Reality";
+                case PRT.JoaT:
+                    return "Jack of All Trades";
+                default:
+                    return prt.ToString();
+            }
         }
 
         public static string GetLabelForLRT(LRT lrt)

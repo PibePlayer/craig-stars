@@ -1,0 +1,30 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://src/Client/Controls/FutureTechs.cs" type="Script" id=1]
+[ext_resource path="res://src/Client/GUIColors.tres" type="Resource" id=2]
+
+[node name="FutureTechs" type="MarginContainer"]
+margin_right = 300.0
+margin_bottom = 112.0
+size_flags_vertical = 3
+custom_constants/margin_right = 5
+custom_constants/margin_top = 5
+custom_constants/margin_left = 5
+custom_constants/margin_bottom = 5
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+GUIColors = ExtResource( 2 )
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 295.0
+margin_bottom = 107.0
+
+[node name="TechsContainer" type="VBoxContainer" parent="ScrollContainer"]
+margin_right = 290.0
+margin_bottom = 102.0
+size_flags_horizontal = 3
+size_flags_vertical = 3

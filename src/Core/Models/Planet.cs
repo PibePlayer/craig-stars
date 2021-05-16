@@ -288,15 +288,31 @@ namespace CraigStars
         {
             get
             {
-                if (Player != null && ContributesOnlyLeftoverToResearch)
+                if (Player != null)
                 {
-                    return (int)(ResourcesPerYear * (Player.ResearchAmount / 100.0));
+                    return GetResourcesPerYearResearch(Player.ResearchAmount);
                 }
                 else
                 {
-                    return ResourcesPerYear;
+                    return 0;
                 }
+            }
+        }
 
+        /// <summary>
+        /// Get the number of resources this planet produces per year for research for a given player's research amount.
+        /// </summary>
+        /// <param name="researchAmount"></param>
+        /// <returns></returns>
+        public int GetResourcesPerYearResearch(int researchAmount)
+        {
+            if (!ContributesOnlyLeftoverToResearch)
+            {
+                return (int)(ResourcesPerYear * (researchAmount / 100.0));
+            }
+            else
+            {
+                return 0;
             }
         }
 

@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using CraigStars.Singletons;
-using System;
-using log4net;
-using log4net.Core;
-using log4net.Appender;
+using CraigStars.Client;
 
 namespace CraigStars
 {

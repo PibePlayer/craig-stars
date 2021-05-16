@@ -1,12 +1,18 @@
 using CraigStars.Singletons;
+using CraigStars.Utils;
 using Godot;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
 
     public class ResearchDialog : GameViewDialog
     {
+        static CSLog log = LogProvider.GetLogger(typeof(ResearchDialog));
+
+        Researcher researcher = new Researcher();
 
         CheckBox energyCheckBox;
         CheckBox weaponsCheckBox;
@@ -25,6 +31,16 @@ namespace CraigStars
         OptionButton nextFieldToResearchMenuButton;
 
         SpinBox resourcesBudgetedAmount;
+
+        // descriptive labels
+        Label resourcesNeededToCompleteAmountLabel;
+        Label estimatedTimeToCompletionAmountLabel;
+        Label annualResourcesAmountLabel;
+        Label totalResourcesSpentAmountLabel;
+        Label nextYearBudgetAmountLabel;
+
+        // future techs
+        FutureTechs futureTechs;
 
         Button okButton;
 
@@ -45,28 +61,29 @@ namespace CraigStars
             electronicsLabel = FindNode("ElectronicsLabel") as Label;
             biotechnologyLabel = FindNode("BiotechnologyLabel") as Label;
 
+            futureTechs = GetNode<FutureTechs>("MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/VBoxContainerExpectedResearchBenefits/FutureTechs");
+
             nextFieldToResearchMenuButton = FindNode("NextFieldToResearchMenuButton") as OptionButton;
+            nextFieldToResearchMenuButton.PopulateOptionButton<NextResearchField>((nextField) => EnumUtils.GetLabelForNextResearchField(nextField));
 
             resourcesBudgetedAmount = FindNode("ResourcesBudgetedAmount") as SpinBox;
 
+            resourcesNeededToCompleteAmountLabel = FindNode("ResourcesNeededToCompleteAmountLabel") as Label;
+            estimatedTimeToCompletionAmountLabel = FindNode("EstimatedTimeToCompletionAmountLabel") as Label;
+            annualResourcesAmountLabel = FindNode("AnnualResourcesAmountLabel") as Label;
+            totalResourcesSpentAmountLabel = FindNode("TotalResourcesSpentAmountLabel") as Label;
+            nextYearBudgetAmountLabel = FindNode("NextYearBudgetAmountLabel") as Label;
+
             okButton = FindNode("OKButton") as Button;
 
-            foreach (NextResearchField nextResearchField in Enum.GetValues(typeof(NextResearchField)))
-            {
-                switch (nextResearchField)
-                {
-                    case NextResearchField.SameField:
-                        nextFieldToResearchMenuButton.AddItem("<Same field>");
-                        break;
-                    case NextResearchField.LowestField:
-                        nextFieldToResearchMenuButton.AddItem("<Lowest field>");
-                        break;
-                    default:
-                        nextFieldToResearchMenuButton.AddItem(nextResearchField.ToString());
-                        break;
-                }
-            }
+            resourcesBudgetedAmount.Connect("value_changed", this, nameof(OnResourcesBudgetedAmountValueChanged));
 
+            energyCheckBox.Connect("pressed", this, nameof(OnTechFieldSelected));
+            weaponsCheckBox.Connect("pressed", this, nameof(OnTechFieldSelected));
+            propulsionCheckBox.Connect("pressed", this, nameof(OnTechFieldSelected));
+            constructionCheckBox.Connect("pressed", this, nameof(OnTechFieldSelected));
+            electronicsCheckBox.Connect("pressed", this, nameof(OnTechFieldSelected));
+            biotechnologyCheckBox.Connect("pressed", this, nameof(OnTechFieldSelected));
 
             Connect("about_to_show", this, nameof(OnAboutToShow));
             Connect("popup_hide", this, nameof(OnPopupHide));
@@ -86,30 +103,7 @@ namespace CraigStars
 
         void OnOK()
         {
-            if (energyCheckBox.Pressed)
-            {
-                Me.Researching = TechField.Energy;
-            }
-            else if (weaponsCheckBox.Pressed)
-            {
-                Me.Researching = TechField.Weapons;
-            }
-            else if (propulsionCheckBox.Pressed)
-            {
-                Me.Researching = TechField.Propulsion;
-            }
-            else if (constructionCheckBox.Pressed)
-            {
-                Me.Researching = TechField.Construction;
-            }
-            else if (electronicsCheckBox.Pressed)
-            {
-                Me.Researching = TechField.Electronics;
-            }
-            else if (biotechnologyCheckBox.Pressed)
-            {
-                Me.Researching = TechField.Biotechnology;
-            }
+            Me.Researching = GetSelectedTechField();
 
             Me.ResearchAmount = (int)resourcesBudgetedAmount.Value;
             Me.NextResearchField = (NextResearchField)nextFieldToResearchMenuButton.Selected;
@@ -118,6 +112,54 @@ namespace CraigStars
             Signals.PublishPlayerDirtyEvent();
 
             Hide();
+        }
+
+        void OnTechFieldSelected()
+        {
+            // show new future techs for this field
+            futureTechs.UpdateIncomingTechs(GetSelectedTechField());
+        }
+
+        /// <summary>
+        /// Get the selected tech field from the UI
+        /// </summary>
+        /// <returns></returns>
+        TechField GetSelectedTechField()
+        {
+            if (energyCheckBox.Pressed)
+            {
+                return TechField.Energy;
+            }
+            else if (weaponsCheckBox.Pressed)
+            {
+                return TechField.Weapons;
+            }
+            else if (propulsionCheckBox.Pressed)
+            {
+                return TechField.Propulsion;
+            }
+            else if (constructionCheckBox.Pressed)
+            {
+                return TechField.Construction;
+            }
+            else if (electronicsCheckBox.Pressed)
+            {
+                return TechField.Electronics;
+            }
+            else if (biotechnologyCheckBox.Pressed)
+            {
+                return TechField.Biotechnology;
+            }
+            else
+            {
+                log.Error("Couldn't determine selected tech field from controls.");
+                return TechField.Energy;
+            }
+        }
+
+        void OnResourcesBudgetedAmountValueChanged(float value)
+        {
+            UpdateResearchEstimates();
         }
 
         void UpdateControls()
@@ -154,7 +196,47 @@ namespace CraigStars
 
             resourcesBudgetedAmount.Value = Me.ResearchAmount;
 
+            UpdateResearchEstimates();
+            futureTechs.UpdateIncomingTechs(GetSelectedTechField());
         }
+
+        /// <summary>
+        /// Update the fields that show budgeted resources for research, estimated time to completion, etc.
+        /// </summary>
+        void UpdateResearchEstimates()
+        {
+            if (Me.TechLevels[Me.Researching] >= RulesManager.Rules.MaxTechLevel)
+            {
+                resourcesNeededToCompleteAmountLabel.Text = "Max Level";
+                estimatedTimeToCompletionAmountLabel.Text = "Max Level";
+            }
+            else
+            {
+                // get the research amount from the spin control. We use that to estimate to give the player of an idea of
+                // the impact of their chnages
+                int researchAmount = (int)resourcesBudgetedAmount.Value;
+
+                // Determine how many resources we need to complete the currently selected research
+                var field = GetSelectedTechField();
+                int resourcesNeededToComplete = researcher.GetTotalCost(Me, field, Me.TechLevels[field]) - Me.TechLevelsSpent[field];
+                resourcesNeededToCompleteAmountLabel.Text = $"{resourcesNeededToComplete}";
+                var resourcesToSpend = Me.Planets.Sum(p => p.GetResourcesPerYearResearch(researchAmount));
+                var totalResources = Me.Planets.Sum(p => p.ResourcesPerYear);
+                if (resourcesToSpend <= 0)
+                {
+                    estimatedTimeToCompletionAmountLabel.Text = "Never";
+                }
+                else
+                {
+                    estimatedTimeToCompletionAmountLabel.Text = $"{(int)Math.Ceiling((double)resourcesNeededToComplete / resourcesToSpend)} years";
+                }
+
+                annualResourcesAmountLabel.Text = $"{totalResources}";
+                totalResourcesSpentAmountLabel.Text = $"{Me.ResearchSpentLastYear}";
+                nextYearBudgetAmountLabel.Text = $"{resourcesToSpend}";
+            }
+        }
+
     }
 
 }

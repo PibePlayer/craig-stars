@@ -59,6 +59,7 @@ NetworkClient="*res://src/Client/Singletons/NetworkClient.cs"
 Network="*res://src/Client/Singletons/Network.cs"
 SceneChanger="*res://src/Client/Singletons/SceneChanger.tscn"
 HullSummaryPopup="*res://src/Client/Singletons/HullSummaryPopup.tscn"
+TechSummaryPopup="*res://src/Client/Singletons/TechSummaryPopup.tscn"
 
 [debug]
 

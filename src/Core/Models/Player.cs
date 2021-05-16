@@ -64,6 +64,7 @@ namespace CraigStars
         /// </summary>
         /// <value></value>
         public int ResearchAmount { get; set; } = 15;
+        public int ResearchSpentLastYear { get; set; } = 0;
         public TechField Researching { get; set; } = TechField.Energy;
         public NextResearchField NextResearchField { get; set; } = NextResearchField.LowestField;
 

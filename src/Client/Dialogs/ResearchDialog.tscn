@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://src/Client/Dialogs/ResearchDialog.cs" type="Script" id=1]
+[ext_resource path="res://src/Client/Controls/FutureTechs.tscn" type="PackedScene" id=2]
 
 [sub_resource type="ButtonGroup" id=1]
 
@@ -208,34 +209,7 @@ margin_right = 300.0
 margin_bottom = 14.0
 text = "Expected Research Benefits"
 
-[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/VBoxContainerExpectedResearchBenefits"]
-margin_top = 18.0
-margin_right = 300.0
-margin_bottom = 130.0
-size_flags_vertical = 3
-custom_constants/margin_right = 5
-custom_constants/margin_top = 5
-custom_constants/margin_left = 5
-custom_constants/margin_bottom = 5
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/VBoxContainerExpectedResearchBenefits/MarginContainer"]
-margin_left = 5.0
-margin_top = 5.0
-margin_right = 295.0
-margin_bottom = 107.0
-
-[node name="TBDLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/VBoxContainerExpectedResearchBenefits/MarginContainer/VBoxContainer"]
-margin_top = 44.0
-margin_right = 290.0
-margin_bottom = 58.0
-size_flags_horizontal = 3
-size_flags_vertical = 6
-text = "TBD"
-align = 1
-valign = 1
+[node name="FutureTechs" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/VBoxContainerExpectedResearchBenefits" instance=ExtResource( 2 )]
 
 [node name="VBoxContainer2" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer"]
 margin_left = 304.0

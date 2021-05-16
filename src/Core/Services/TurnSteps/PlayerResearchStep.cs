@@ -11,6 +11,8 @@ namespace CraigStars
     /// </summary>
     public class PlayerResearchStep : TurnGenerationStep
     {
+        Researcher researcher = new Researcher();
+
         public PlayerResearchStep(Game game) : base(game, TurnGenerationState.Research) { }
 
         public override void Process()
@@ -27,6 +29,7 @@ namespace CraigStars
 
                 // research for this player
                 var player = playerPlanets.Key;
+                player.ResearchSpentLastYear = resourcesToSpend;
                 ResearchNextLevel(player, resourcesToSpend);
             }
 
@@ -86,25 +89,7 @@ namespace CraigStars
                 return;
             }
 
-            // figure out our total levels
-            var totalLevels = player.TechLevels.Sum();
-
-            // figure out the cost to advance to the next level
-            var baseCost = Game.Rules.TechBaseCost[level + 1];
-            var researchCost = player.Race.ResearchCost[player.Researching];
-            var costFactor = 1f;
-            switch (researchCost)
-            {
-                case ResearchCostLevel.Extra:
-                    costFactor = 1.75f;
-                    break;
-                case ResearchCostLevel.Less:
-                    costFactor = .5f;
-                    break;
-            }
-
-            // from starsfaq
-            int totalCost = (int)((baseCost + (totalLevels * 10)) * costFactor);
+            int totalCost = researcher.GetTotalCost(player, player.Researching, level);
 
             if (spentOnCurrentLevel >= totalCost)
             {

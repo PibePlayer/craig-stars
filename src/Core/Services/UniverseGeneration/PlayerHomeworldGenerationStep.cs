@@ -103,7 +103,7 @@ namespace CraigStars.UniverseGeneration
 
             // homeworlds have a scanner
             planet.Homeworld = true;
-            planet.ContributesOnlyLeftoverToResearch = true;
+            planet.ContributesOnlyLeftoverToResearch = false;
             planet.Scanner = true;
 
             // the homeworld gets a starbase
@@ -144,7 +144,7 @@ namespace CraigStars.UniverseGeneration
             // extra worlds start with mines and factories
             planet.Mines = rules.StartingMines;
             planet.Factories = rules.StartingFactories;
-            planet.ContributesOnlyLeftoverToResearch = true;
+            planet.ContributesOnlyLeftoverToResearch = false;
             planet.Scanner = true;
 
             // this homeworld gets a fort

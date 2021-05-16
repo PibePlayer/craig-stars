@@ -365,6 +365,13 @@ namespace CraigStars
             }
         }
 
+        /// <summary>
+        /// The maximum level achievable in any tech
+        /// Note, if this is increased, additional fields must be added to TechBaseCost
+        /// </summary>
+        /// <value></value>
+        [DefaultValue(26)]
+        public int MaxTechLevel { get; set; } = 26;
 
 
         // The base cost for each tech level

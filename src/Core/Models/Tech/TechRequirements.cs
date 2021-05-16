@@ -51,5 +51,23 @@ namespace CraigStars
             }
         }
 
+        /// <summary>
+        /// Get the difference between a requirement's levels and a player TechLevel
+        /// </summary>
+        /// <param name="requirements"></param>
+        /// <param name="level"></param>
+        /// <returns></returns>
+        public static TechLevel operator -(TechRequirements requirements, TechLevel level)
+        {
+            return new TechLevel(
+                requirements.Energy - level.Energy,
+                requirements.Weapons - level.Weapons,
+                requirements.Propulsion - level.Propulsion,
+                requirements.Construction - level.Construction,
+                requirements.Electronics - level.Electronics,
+                requirements.Biotechnology - level.Biotechnology
+            );
+        }
+
     }
 }

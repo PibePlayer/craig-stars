@@ -61,7 +61,7 @@ namespace CraigStars.Client
             electronicsLabel = FindNode("ElectronicsLabel") as Label;
             biotechnologyLabel = FindNode("BiotechnologyLabel") as Label;
 
-            futureTechs = GetNode<FutureTechs>("MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/VBoxContainerExpectedResearchBenefits/FutureTechs");
+            futureTechs = FindNode("FutureTechs") as FutureTechs;
 
             nextFieldToResearchMenuButton = FindNode("NextFieldToResearchMenuButton") as OptionButton;
             nextFieldToResearchMenuButton.PopulateOptionButton<NextResearchField>((nextField) => EnumUtils.GetLabelForNextResearchField(nextField));

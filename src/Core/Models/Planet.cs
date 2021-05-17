@@ -269,9 +269,9 @@ namespace CraigStars
         {
             get
             {
-                if (Player != null && ContributesOnlyLeftoverToResearch)
+                if (Player != null && !ContributesOnlyLeftoverToResearch)
                 {
-                    return (int)(ResourcesPerYear * (1 - Player.ResearchAmount / 100.0));
+                    return (int)(ResourcesPerYear * (1 - Player.ResearchAmount / 100.0) + .5f);
                 }
                 else
                 {

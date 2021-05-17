@@ -1,8 +1,13 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://src/Client/CommandPane/TileContainer.cs" type="Script" id=1]
 [ext_resource path="res://src/Client/TileTheme.tres" type="Theme" id=2]
 [ext_resource path="res://assets/gui/icons/Collapse.svg" type="Texture" id=3]
+[ext_resource path="res://assets/gui/OpenSans-SemiBold.ttf" type="DynamicFontData" id=4]
+
+[sub_resource type="DynamicFont" id=4]
+size = 14
+font_data = ExtResource( 4 )
 
 [node name="TileContainer" type="MarginContainer"]
 margin_right = 200.0
@@ -30,24 +35,24 @@ margin_bottom = 40.0
 
 [node name="TitleContainer" type="HBoxContainer" parent="VBoxContainer"]
 margin_right = 180.0
-margin_bottom = 16.0
+margin_bottom = 20.0
 
 [node name="TitleLabel" type="Label" parent="VBoxContainer/TitleContainer"]
-margin_top = 1.0
 margin_right = 160.0
-margin_bottom = 15.0
+margin_bottom = 20.0
 size_flags_horizontal = 3
+custom_fonts/font = SubResource( 4 )
 text = "test"
 align = 1
 
 [node name="DisclosureButton" type="TextureRect" parent="VBoxContainer/TitleContainer"]
 margin_left = 164.0
 margin_right = 180.0
-margin_bottom = 16.0
+margin_bottom = 20.0
 texture = ExtResource( 3 )
 
 [node name="Controls" type="VBoxContainer" parent="VBoxContainer"]
-margin_top = 20.0
+margin_top = 24.0
 margin_right = 180.0
 margin_bottom = 30.0
 size_flags_horizontal = 3

@@ -1,11 +1,30 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://src/Client/Dialogs/ResearchDialog.cs" type="Script" id=1]
 [ext_resource path="res://src/Client/Controls/FutureTechs.tscn" type="PackedScene" id=2]
+[ext_resource path="res://assets/gui/OpenSans-Bold.ttf" type="DynamicFontData" id=3]
+[ext_resource path="res://assets/gui/OpenSans-SemiBold.ttf" type="DynamicFontData" id=4]
+
+[sub_resource type="StyleBoxFlat" id=2]
+bg_color = Color( 0, 0, 0, 0 )
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color( 0.431373, 0.431373, 0.431373, 1 )
+
+[sub_resource type="DynamicFont" id=3]
+size = 14
+font_data = ExtResource( 3 )
 
 [sub_resource type="ButtonGroup" id=1]
 
+[sub_resource type="DynamicFont" id=4]
+size = 14
+font_data = ExtResource( 4 )
+
 [node name="ResearchDialog" type="WindowDialog"]
+visible = true
 margin_right = 695.0
 margin_bottom = 403.0
 window_title = "Research"
@@ -41,215 +60,292 @@ margin_bottom = 369.0
 size_flags_vertical = 3
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer"]
-margin_right = 300.0
+margin_right = 290.0
 margin_bottom = 369.0
 size_flags_horizontal = 3
 
 [node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
-margin_right = 300.0
-margin_bottom = 235.0
+margin_right = 290.0
+margin_bottom = 241.0
 size_flags_vertical = 3
+custom_constants/margin_right = 0
+custom_constants/margin_top = 0
+custom_constants/margin_left = 0
+custom_constants/margin_bottom = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BorderPanel" type="Panel" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer"]
+margin_right = 290.0
+margin_bottom = 241.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_styles/panel = SubResource( 2 )
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer"]
+margin_right = 290.0
+margin_bottom = 241.0
 custom_constants/margin_right = 5
 custom_constants/margin_top = 5
 custom_constants/margin_left = 5
 custom_constants/margin_bottom = 5
 
-[node name="VBoxContainerTechLevels" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer"]
+[node name="VBoxContainerTechLevels" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/MarginContainer"]
 margin_left = 5.0
 margin_top = 5.0
-margin_right = 295.0
-margin_bottom = 230.0
+margin_right = 285.0
+margin_bottom = 236.0
 size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/VBoxContainerTechLevels"]
-margin_right = 290.0
-margin_bottom = 14.0
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/MarginContainer/VBoxContainerTechLevels"]
+margin_right = 280.0
+margin_bottom = 20.0
+custom_fonts/font = SubResource( 3 )
 text = "Tech Levels"
 
-[node name="GridContainer" type="GridContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/VBoxContainerTechLevels"]
-margin_top = 18.0
-margin_right = 290.0
-margin_bottom = 225.0
+[node name="GridContainer" type="GridContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/MarginContainer/VBoxContainerTechLevels"]
+margin_top = 24.0
+margin_right = 280.0
+margin_bottom = 231.0
 columns = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="FieldHeaderLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/VBoxContainerTechLevels/GridContainer"]
+[node name="FieldHeaderLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/MarginContainer/VBoxContainerTechLevels/GridContainer"]
 margin_top = 8.0
-margin_right = 239.0
+margin_right = 229.0
 margin_bottom = 22.0
 size_flags_horizontal = 3
 text = "Field of Study"
 align = 1
 
-[node name="LevelHeaderLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/VBoxContainerTechLevels/GridContainer"]
-margin_left = 243.0
-margin_right = 290.0
+[node name="LevelHeaderLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/MarginContainer/VBoxContainerTechLevels/GridContainer"]
+margin_left = 233.0
+margin_right = 280.0
 margin_bottom = 31.0
 text = "Current
 Level"
 align = 1
 
-[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/VBoxContainerTechLevels/GridContainer"]
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/MarginContainer/VBoxContainerTechLevels/GridContainer"]
 margin_top = 35.0
-margin_right = 239.0
+margin_right = 229.0
 margin_bottom = 39.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="HSeparator2" type="HSeparator" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/VBoxContainerTechLevels/GridContainer"]
-margin_left = 243.0
+[node name="HSeparator2" type="HSeparator" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/MarginContainer/VBoxContainerTechLevels/GridContainer"]
+margin_left = 233.0
 margin_top = 35.0
-margin_right = 290.0
+margin_right = 280.0
 margin_bottom = 39.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="EnergyCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/VBoxContainerTechLevels/GridContainer"]
+[node name="EnergyCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/MarginContainer/VBoxContainerTechLevels/GridContainer"]
 margin_top = 43.0
-margin_right = 239.0
+margin_right = 229.0
 margin_bottom = 67.0
 group = SubResource( 1 )
 text = "Energy"
 
-[node name="EnergyLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/VBoxContainerTechLevels/GridContainer"]
-margin_left = 243.0
+[node name="EnergyLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/MarginContainer/VBoxContainerTechLevels/GridContainer"]
+margin_left = 233.0
 margin_top = 48.0
-margin_right = 290.0
+margin_right = 280.0
 margin_bottom = 62.0
 text = "3"
 align = 1
 
-[node name="WeaponsCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/VBoxContainerTechLevels/GridContainer"]
+[node name="WeaponsCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/MarginContainer/VBoxContainerTechLevels/GridContainer"]
 margin_top = 71.0
-margin_right = 239.0
+margin_right = 229.0
 margin_bottom = 95.0
 group = SubResource( 1 )
 text = "Weapons"
 
-[node name="WeaponsLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/VBoxContainerTechLevels/GridContainer"]
-margin_left = 243.0
+[node name="WeaponsLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/MarginContainer/VBoxContainerTechLevels/GridContainer"]
+margin_left = 233.0
 margin_top = 76.0
-margin_right = 290.0
+margin_right = 280.0
 margin_bottom = 90.0
 text = "3"
 align = 1
 
-[node name="PropulsionCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/VBoxContainerTechLevels/GridContainer"]
+[node name="PropulsionCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/MarginContainer/VBoxContainerTechLevels/GridContainer"]
 margin_top = 99.0
-margin_right = 239.0
+margin_right = 229.0
 margin_bottom = 123.0
 group = SubResource( 1 )
 text = "Propulsion"
 
-[node name="PropulsionLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/VBoxContainerTechLevels/GridContainer"]
-margin_left = 243.0
+[node name="PropulsionLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/MarginContainer/VBoxContainerTechLevels/GridContainer"]
+margin_left = 233.0
 margin_top = 104.0
-margin_right = 290.0
+margin_right = 280.0
 margin_bottom = 118.0
 text = "3"
 align = 1
 
-[node name="ConstructionCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/VBoxContainerTechLevels/GridContainer"]
+[node name="ConstructionCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/MarginContainer/VBoxContainerTechLevels/GridContainer"]
 margin_top = 127.0
-margin_right = 239.0
+margin_right = 229.0
 margin_bottom = 151.0
 group = SubResource( 1 )
 text = "Construction"
 
-[node name="ConstructionLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/VBoxContainerTechLevels/GridContainer"]
-margin_left = 243.0
+[node name="ConstructionLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/MarginContainer/VBoxContainerTechLevels/GridContainer"]
+margin_left = 233.0
 margin_top = 132.0
-margin_right = 290.0
+margin_right = 280.0
 margin_bottom = 146.0
 text = "3"
 align = 1
 
-[node name="ElectronicsCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/VBoxContainerTechLevels/GridContainer"]
+[node name="ElectronicsCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/MarginContainer/VBoxContainerTechLevels/GridContainer"]
 margin_top = 155.0
-margin_right = 239.0
+margin_right = 229.0
 margin_bottom = 179.0
 group = SubResource( 1 )
 text = "Electronics"
 
-[node name="ElectronicsLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/VBoxContainerTechLevels/GridContainer"]
-margin_left = 243.0
+[node name="ElectronicsLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/MarginContainer/VBoxContainerTechLevels/GridContainer"]
+margin_left = 233.0
 margin_top = 160.0
-margin_right = 290.0
+margin_right = 280.0
 margin_bottom = 174.0
 text = "3"
 align = 1
 
-[node name="BiotechnologyCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/VBoxContainerTechLevels/GridContainer"]
+[node name="BiotechnologyCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/MarginContainer/VBoxContainerTechLevels/GridContainer"]
 margin_top = 183.0
-margin_right = 239.0
+margin_right = 229.0
 margin_bottom = 207.0
 group = SubResource( 1 )
 text = "Biotechnology"
 
-[node name="BiotechnologyLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/VBoxContainerTechLevels/GridContainer"]
-margin_left = 243.0
+[node name="BiotechnologyLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer/MarginContainer/VBoxContainerTechLevels/GridContainer"]
+margin_left = 233.0
 margin_top = 188.0
-margin_right = 290.0
+margin_right = 280.0
 margin_bottom = 202.0
 text = "3"
 align = 1
 
-[node name="VBoxContainerExpectedResearchBenefits" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
-margin_top = 239.0
-margin_right = 300.0
+[node name="MarginContainer2" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+margin_top = 245.0
+margin_right = 290.0
 margin_bottom = 369.0
+size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/VBoxContainerExpectedResearchBenefits"]
-margin_right = 300.0
-margin_bottom = 14.0
+[node name="BorderPanel" type="Panel" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer2"]
+margin_right = 290.0
+margin_bottom = 124.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_styles/panel = SubResource( 2 )
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer2"]
+margin_right = 290.0
+margin_bottom = 124.0
+custom_constants/margin_right = 5
+custom_constants/margin_top = 5
+custom_constants/margin_left = 5
+custom_constants/margin_bottom = 5
+
+[node name="VBoxContainerExpectedResearchBenefits" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer2/MarginContainer"]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 285.0
+margin_bottom = 119.0
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer2/MarginContainer/VBoxContainerExpectedResearchBenefits"]
+margin_right = 280.0
+margin_bottom = 20.0
+custom_fonts/font = SubResource( 4 )
 text = "Expected Research Benefits"
 
-[node name="FutureTechs" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/VBoxContainerExpectedResearchBenefits" instance=ExtResource( 2 )]
+[node name="FutureTechs" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/MarginContainer2/MarginContainer/VBoxContainerExpectedResearchBenefits" instance=ExtResource( 2 )]
+margin_top = 24.0
+margin_right = 280.0
+margin_bottom = 114.0
 
 [node name="VBoxContainer2" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer"]
-margin_left = 304.0
+margin_left = 294.0
 margin_right = 675.0
 margin_bottom = 369.0
 size_flags_horizontal = 3
 
-[node name="VBoxContainerCurrentlyResearching" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2"]
-margin_right = 371.0
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2"]
+margin_right = 381.0
 margin_bottom = 182.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_constants/margin_right = 0
+custom_constants/margin_top = 0
+custom_constants/margin_left = 0
+custom_constants/margin_bottom = 0
+
+[node name="BorderPanel" type="Panel" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/MarginContainer"]
+margin_right = 381.0
+margin_bottom = 182.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_styles/panel = SubResource( 2 )
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/MarginContainer"]
+margin_right = 381.0
+margin_bottom = 182.0
+custom_constants/margin_right = 5
+custom_constants/margin_top = 5
+custom_constants/margin_left = 5
+custom_constants/margin_bottom = 5
+
+[node name="VBoxContainerCurrentlyResearching" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/MarginContainer/MarginContainer"]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 376.0
+margin_bottom = 177.0
 size_flags_vertical = 3
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/VBoxContainerCurrentlyResearching"]
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/MarginContainer/MarginContainer/VBoxContainerCurrentlyResearching"]
 margin_right = 371.0
-margin_bottom = 14.0
+margin_bottom = 20.0
+custom_fonts/font = SubResource( 4 )
 text = "Currently Researching"
 
-[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/VBoxContainerCurrentlyResearching"]
-margin_top = 18.0
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/MarginContainer/MarginContainer/VBoxContainerCurrentlyResearching"]
+margin_top = 24.0
 margin_right = 371.0
-margin_bottom = 182.0
+margin_bottom = 172.0
 size_flags_vertical = 3
 custom_constants/margin_right = 5
 custom_constants/margin_top = 5
 custom_constants/margin_left = 5
 custom_constants/margin_bottom = 5
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/VBoxContainerCurrentlyResearching/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/MarginContainer/MarginContainer/VBoxContainerCurrentlyResearching/MarginContainer"]
 margin_left = 5.0
 margin_top = 5.0
 margin_right = 366.0
-margin_bottom = 159.0
+margin_bottom = 143.0
 
-[node name="CurrentlyResearchingLevelLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/VBoxContainerCurrentlyResearching/MarginContainer/VBoxContainer"]
+[node name="CurrentlyResearchingLevelLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/MarginContainer/MarginContainer/VBoxContainerCurrentlyResearching/MarginContainer/VBoxContainer"]
 margin_right = 361.0
 margin_bottom = 14.0
 text = "Energy, Tech Level 4"
 align = 1
 
-[node name="GridContainer" type="GridContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/VBoxContainerCurrentlyResearching/MarginContainer/VBoxContainer"]
+[node name="GridContainer" type="GridContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/MarginContainer/MarginContainer/VBoxContainerCurrentlyResearching/MarginContainer/VBoxContainer"]
 margin_top = 18.0
 margin_right = 361.0
 margin_bottom = 74.0
@@ -258,14 +354,14 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="ResourcesNeededToCompleteLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/VBoxContainerCurrentlyResearching/MarginContainer/VBoxContainer/GridContainer"]
+[node name="ResourcesNeededToCompleteLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/MarginContainer/MarginContainer/VBoxContainerCurrentlyResearching/MarginContainer/VBoxContainer/GridContainer"]
 margin_right = 208.0
 margin_bottom = 14.0
 size_flags_horizontal = 3
 text = "Resources needed to complete: "
 align = 2
 
-[node name="ResourcesNeededToCompleteAmountLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/VBoxContainerCurrentlyResearching/MarginContainer/VBoxContainer/GridContainer"]
+[node name="ResourcesNeededToCompleteAmountLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/MarginContainer/MarginContainer/VBoxContainerCurrentlyResearching/MarginContainer/VBoxContainer/GridContainer"]
 margin_left = 212.0
 margin_right = 361.0
 margin_bottom = 14.0
@@ -273,7 +369,7 @@ size_flags_horizontal = 3
 text = "149"
 align = 2
 
-[node name="EstimatedTimeToCompletionLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/VBoxContainerCurrentlyResearching/MarginContainer/VBoxContainer/GridContainer"]
+[node name="EstimatedTimeToCompletionLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/MarginContainer/MarginContainer/VBoxContainerCurrentlyResearching/MarginContainer/VBoxContainer/GridContainer"]
 margin_top = 18.0
 margin_right = 208.0
 margin_bottom = 32.0
@@ -281,7 +377,7 @@ size_flags_horizontal = 3
 text = "Estimated time to completion:"
 align = 2
 
-[node name="EstimatedTimeToCompletionAmountLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/VBoxContainerCurrentlyResearching/MarginContainer/VBoxContainer/GridContainer"]
+[node name="EstimatedTimeToCompletionAmountLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/MarginContainer/MarginContainer/VBoxContainerCurrentlyResearching/MarginContainer/VBoxContainer/GridContainer"]
 margin_left = 212.0
 margin_top = 18.0
 margin_right = 361.0
@@ -290,7 +386,7 @@ size_flags_horizontal = 3
 text = "2 years"
 align = 2
 
-[node name="NextFieldToResearchLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/VBoxContainerCurrentlyResearching/MarginContainer/VBoxContainer/GridContainer"]
+[node name="NextFieldToResearchLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/MarginContainer/MarginContainer/VBoxContainerCurrentlyResearching/MarginContainer/VBoxContainer/GridContainer"]
 margin_top = 39.0
 margin_right = 208.0
 margin_bottom = 53.0
@@ -298,52 +394,76 @@ size_flags_horizontal = 3
 text = "Next Field to Research:"
 align = 2
 
-[node name="NextFieldToResearchMenuButton" type="OptionButton" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/VBoxContainerCurrentlyResearching/MarginContainer/VBoxContainer/GridContainer"]
+[node name="NextFieldToResearchMenuButton" type="OptionButton" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/MarginContainer/MarginContainer/VBoxContainerCurrentlyResearching/MarginContainer/VBoxContainer/GridContainer"]
 margin_left = 212.0
 margin_top = 36.0
 margin_right = 361.0
 margin_bottom = 56.0
 align = 1
 
-[node name="VBoxContainerResourceAlocation" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2"]
+[node name="MarginContainer2" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2"]
 margin_top = 186.0
-margin_right = 371.0
+margin_right = 381.0
 margin_bottom = 369.0
+size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/VBoxContainerResourceAlocation"]
+[node name="BorderPanel" type="Panel" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/MarginContainer2"]
+margin_right = 381.0
+margin_bottom = 183.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_styles/panel = SubResource( 2 )
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/MarginContainer2"]
+margin_right = 381.0
+margin_bottom = 183.0
+custom_constants/margin_right = 5
+custom_constants/margin_top = 5
+custom_constants/margin_left = 5
+custom_constants/margin_bottom = 5
+
+[node name="VBoxContainerResourceAlocation" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/MarginContainer2/MarginContainer"]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 376.0
+margin_bottom = 178.0
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/MarginContainer2/MarginContainer/VBoxContainerResourceAlocation"]
 margin_right = 371.0
-margin_bottom = 14.0
+margin_bottom = 20.0
+custom_fonts/font = SubResource( 4 )
 text = "Resource Allocation"
 
-[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/VBoxContainerResourceAlocation"]
-margin_top = 18.0
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/MarginContainer2/MarginContainer/VBoxContainerResourceAlocation"]
+margin_top = 24.0
 margin_right = 371.0
-margin_bottom = 183.0
+margin_bottom = 173.0
 size_flags_vertical = 3
 custom_constants/margin_right = 5
 custom_constants/margin_top = 5
 custom_constants/margin_left = 5
 custom_constants/margin_bottom = 5
 
-[node name="GridContainer" type="GridContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/VBoxContainerResourceAlocation/MarginContainer"]
+[node name="GridContainer" type="GridContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/MarginContainer2/MarginContainer/VBoxContainerResourceAlocation/MarginContainer"]
 margin_left = 5.0
 margin_top = 5.0
 margin_right = 366.0
-margin_bottom = 160.0
+margin_bottom = 144.0
 columns = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="AnnualResourcesLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/VBoxContainerResourceAlocation/MarginContainer/GridContainer"]
+[node name="AnnualResourcesLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/MarginContainer2/MarginContainer/VBoxContainerResourceAlocation/MarginContainer/GridContainer"]
 margin_right = 283.0
 margin_bottom = 14.0
 size_flags_horizontal = 3
 text = "Annual resources from all planets:"
 align = 2
 
-[node name="AnnualResourcesAmountLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/VBoxContainerResourceAlocation/MarginContainer/GridContainer"]
+[node name="AnnualResourcesAmountLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/MarginContainer2/MarginContainer/VBoxContainerResourceAlocation/MarginContainer/GridContainer"]
 margin_left = 287.0
 margin_right = 361.0
 margin_bottom = 14.0
@@ -351,7 +471,7 @@ size_flags_horizontal = 3
 text = "120"
 align = 2
 
-[node name="TotalResourcesSpentLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/VBoxContainerResourceAlocation/MarginContainer/GridContainer"]
+[node name="TotalResourcesSpentLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/MarginContainer2/MarginContainer/VBoxContainerResourceAlocation/MarginContainer/GridContainer"]
 margin_top = 18.0
 margin_right = 283.0
 margin_bottom = 32.0
@@ -359,7 +479,7 @@ size_flags_horizontal = 3
 text = "Total resources spent on research last year: "
 align = 2
 
-[node name="TotalResourcesSpentAmountLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/VBoxContainerResourceAlocation/MarginContainer/GridContainer"]
+[node name="TotalResourcesSpentAmountLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/MarginContainer2/MarginContainer/VBoxContainerResourceAlocation/MarginContainer/GridContainer"]
 margin_left = 287.0
 margin_top = 18.0
 margin_right = 361.0
@@ -368,7 +488,7 @@ size_flags_horizontal = 3
 text = "109"
 align = 2
 
-[node name="ResourcesBudgetedLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/VBoxContainerResourceAlocation/MarginContainer/GridContainer"]
+[node name="ResourcesBudgetedLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/MarginContainer2/MarginContainer/VBoxContainerResourceAlocation/MarginContainer/GridContainer"]
 margin_top = 41.0
 margin_right = 283.0
 margin_bottom = 55.0
@@ -376,7 +496,7 @@ size_flags_horizontal = 3
 text = "Resources budgeted for research:"
 align = 2
 
-[node name="ResourcesBudgetedAmount" type="SpinBox" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/VBoxContainerResourceAlocation/MarginContainer/GridContainer"]
+[node name="ResourcesBudgetedAmount" type="SpinBox" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/MarginContainer2/MarginContainer/VBoxContainerResourceAlocation/MarginContainer/GridContainer"]
 margin_left = 287.0
 margin_top = 36.0
 margin_right = 361.0
@@ -386,7 +506,7 @@ value = 15.0
 align = 2
 suffix = "%"
 
-[node name="NextYearBudgetLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/VBoxContainerResourceAlocation/MarginContainer/GridContainer"]
+[node name="NextYearBudgetLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/MarginContainer2/MarginContainer/VBoxContainerResourceAlocation/MarginContainer/GridContainer"]
 margin_top = 64.0
 margin_right = 283.0
 margin_bottom = 78.0
@@ -394,7 +514,7 @@ size_flags_horizontal = 3
 text = "Next year's projected research budget:"
 align = 2
 
-[node name="NextYearBudgetAmountLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/VBoxContainerResourceAlocation/MarginContainer/GridContainer"]
+[node name="NextYearBudgetAmountLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/MarginContainer2/MarginContainer/VBoxContainerResourceAlocation/MarginContainer/GridContainer"]
 margin_left = 287.0
 margin_top = 64.0
 margin_right = 361.0

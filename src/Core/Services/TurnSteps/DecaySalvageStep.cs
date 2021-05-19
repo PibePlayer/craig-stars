@@ -9,7 +9,7 @@ using static CraigStars.Utils.Utils;
 namespace CraigStars
 {
     /// <summary>
-    /// Lay mines
+    /// Salvage in deep space decays each turn
     /// </summary>
     public class DecaySalvageStep : TurnGenerationStep
     {

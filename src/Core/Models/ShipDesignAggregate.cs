@@ -28,7 +28,9 @@ namespace CraigStars
         public int MiningRate { get; set; }
 
         public int MineSweep { get; set; }
-        public float CloakPercent { get; set; }
+        public int CloakUnits { get; set; }
+        public int CloakPercent { get; set; }
+        public float ReduceCloaking { get; set; }
         public float TorpedoInaccuracyFactor { get; set; }
 
 

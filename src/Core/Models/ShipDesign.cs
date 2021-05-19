@@ -134,13 +134,14 @@ namespace CraigStars
             return filledRequiredSlots == requiredHullSlotByIndex.Count;
         }
 
-        public void ComputeAggregate(Player player, bool recompute = false)
+        public void ComputeAggregate(Player player = null, bool recompute = false)
         {
             if (Aggregate.Computed && !recompute)
             {
                 // don't recompute unless explicitly requested
                 return;
             }
+            player = player == null ? Player : player;
             var rules = player.Rules;
             Aggregate.Mass = Hull.Mass;
             Aggregate.Armor = Hull.Armor;
@@ -152,7 +153,8 @@ namespace CraigStars
             Aggregate.SpaceDock = 0;
             Aggregate.CargoCapacity += Hull.CargoCapacity;
             Aggregate.MineSweep = 0;
-            Aggregate.CloakPercent = 0f; // TODO: compute cloaking..
+            Aggregate.CloakUnits = Player.BuiltInCloaking;
+            Aggregate.ReduceCloaking = 0;
             Aggregate.Bomber = false;
             Aggregate.Bombs.Clear();
             Aggregate.HasWeapons = false;
@@ -163,6 +165,8 @@ namespace CraigStars
             Aggregate.NumEngines = 0;
             Aggregate.MineLayingRateByMineType = new Dictionary<MineFieldType, int>();
             Aggregate.MiningRate = 0;
+
+            var numTachyonDetectors = 0;
 
             var idealSpeed = 0;
 
@@ -243,6 +247,16 @@ namespace CraigStars
                         Aggregate.HasWeapons = true;
                         Aggregate.WeaponSlots.Add(slot);
                     }
+
+                    // cloaking
+                    if (slot.HullComponent.CloakUnits > 0)
+                    {
+                        Aggregate.CloakUnits += slot.HullComponent.CloakUnits;
+                    }
+                    if (slot.HullComponent.ReduceCloaking)
+                    {
+                        numTachyonDetectors++;
+                    }
                 }
                 // cargo and space doc that are built into the hull
                 // the space dock assumes that there is only one slot like that
@@ -253,6 +267,15 @@ namespace CraigStars
                 {
                     Aggregate.SpaceDock = hullSlot.Capacity;
                 }
+            }
+
+            // figure out the cloak as a percentage after we aggregated our cloak units
+            Aggregate.CloakPercent = CloakUtils.GetCloakPercentForCloakUnits(Aggregate.CloakUnits);
+
+            if (numTachyonDetectors > 0)
+            {
+                // 95% ^ (SQRT(#_of_detectors) = Reduction factor for other player's cloaking (Capped at 81% or 17TDs)
+                Aggregate.ReduceCloaking = (float)Math.Pow((100 - rules.TachyonCloakReduction) / 100f, Math.Sqrt(numTachyonDetectors));
             }
 
             if (Aggregate.NumEngines > 0)
@@ -266,6 +289,8 @@ namespace CraigStars
             {
                 Aggregate.Movement = 0;
             }
+
+
 
             // compute the scan ranges
             ComputeScanRanges();

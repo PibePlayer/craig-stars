@@ -13,7 +13,12 @@ namespace CraigStars
         public int Mass { get; set; }
         public int Armor { get; set; }
         public int Shield { get; set; }
-        public int Cloak { get; set; }
+        
+        /// <summary>
+        /// The number of "cloak units" per kT this cloak provides for cloaking
+        /// freighters
+        /// </summary>
+        public int CloakUnits { get; set; }
         public bool CloakUnarmedOnly { get; set; }
 
         /// <summary>
@@ -25,7 +30,7 @@ namespace CraigStars
         public int InitiativeBonus { get; set; }
         public int TorpedoJamming { get; set; }
         public int ReduceMovement { get; set; }
-        public int ReduceCloaking { get; set; }
+        public bool ReduceCloaking { get; set; }
         public int FuelBonus { get; set; }
         public int FuelRegenerationRate { get; set; }
         public bool ColonizationModule { get; set; }

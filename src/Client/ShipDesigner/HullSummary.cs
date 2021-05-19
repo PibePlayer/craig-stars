@@ -268,7 +268,7 @@ namespace CraigStars
                     armorAmountLabel.Text = $"{shipDesign.Aggregate.Armor}dp";
                     massLabel.Text = $"{shipDesign.Aggregate.Mass}kT";
                     shieldsAmountLabel.Text = $"{(shipDesign.Aggregate.Shield > 0 ? $"{shipDesign.Aggregate.Shield}dp" : "none")}";
-                    cloakJamAmountLabel.Text = $"0/0"; // TODO: support cloak
+                    cloakJamAmountLabel.Text = $"{shipDesign.Aggregate.CloakPercent}%/{0:.}%"; // TODO: jamming
                     initiativeMovesAmountLabel.Text = $"{shipDesign.Aggregate.Initiative}/{shipDesign.Aggregate.Movement}";
                     if (shipDesign.Aggregate.Scanner)
                     {

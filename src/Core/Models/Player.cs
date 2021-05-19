@@ -668,6 +668,96 @@ namespace CraigStars
             }
         }
 
+        #region Computed Properties
+
+        /// <summary>
+        /// Get the cost to construct a single or mixed mineral packet 
+        /// </summary>
+        public int PacketResourceCost
+        {
+            get
+            {
+                switch (Race.PRT)
+                {
+                    case PRT.PP:
+                        return Rules.PacketResourceCostPP;
+                    default:
+                        return Rules.PacketResourceCost;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get the premium this race pays for packets. PP races are perfectly efficient, but
+        /// other races use minerals building the packet.
+        /// </summary>
+        public float PacketCostFactor
+        {
+            get
+            {
+                switch (Race.PRT)
+                {
+                    case PRT.PP:
+                        return Rules.PacketMineralCostFactorPP;
+                    case PRT.IT:
+                        return Rules.PacketMineralCostFactorIT;
+                    default:
+                        return Rules.PacketMineralCostFactor;
+                }
+            }
+        }
+
+        /// <summary>
+        /// The number of minerals contained in each mixed mineral packet
+        /// </summary>
+        public int MineralsPerMixedMineralPacket
+        {
+            get
+            {
+                switch (Race.PRT)
+                {
+                    case PRT.PP:
+                        return Rules.MineralsPerMixedMineralPacketPP;
+                    default:
+                        return Rules.MineralsPerMixedMineralPacket;
+                }
+            }
+        }
+
+        /// <summary>
+        /// The number of minerals contained in each mixed mineral packet
+        /// </summary>
+        public int MineralsPerSingleMineralPacket
+        {
+            get
+            {
+                switch (Race.PRT)
+                {
+                    case PRT.PP:
+                        return Rules.MineralsPerSingleMineralPacketPP;
+                    default:
+                        return Rules.MineralsPerSingleMineralPacket;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Does this player cloak ships with cargo without reducing the cloak percentage?
+        /// </summary>
+        public bool FreeCargoCloaking { get => Race.PRT == PRT.SS; }
+
+        /// <summary>
+        /// The player's built in cloaking percentage
+        /// </summary>
+        public int BuiltInCloaking { get => Race.PRT == PRT.SS ? Rules.BuiltInSSCloakUnits : 0; }
+
+        /// <summary>
+        /// Do this player's minefields act like scanners?
+        /// </summary>
+        /// <value></value>
+        public bool MineFieldsAreScanners { get => Race.PRT == PRT.SD; }
+
+        #endregion
 
     }
 }

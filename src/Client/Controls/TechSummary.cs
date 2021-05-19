@@ -234,15 +234,15 @@ namespace CraigStars
                         AddDescription($"This bomb does not kill colonists or destroy installations. This bomb 'unterraforms' planets toward their original state up to {hullComponent.TerraformRate}% per variable per bombing run. Planetary defenses have no effect on this bomb.");
                     }
 
-                    if (hullComponent.Cloak > 0)
+                    if (hullComponent.CloakUnits > 0)
                     {
                         if (hullComponent.CloakUnarmedOnly)
                         {
-                            AddDescription($"Cloaks unarmed hulls, reducing the range at which scanners detect it by up to {hullComponent.Cloak}%.");
+                            AddDescription($"Cloaks unarmed hulls, reducing the range at which scanners detect it by up to {CloakUtils.GetCloakPercentForCloakUnits(hullComponent.CloakUnits)}%.");
                         }
                         else
                         {
-                            AddDescription($"Cloaks any ship, reducing the range at which scanners detect it by up to {hullComponent.Cloak}%.");
+                            AddDescription($"Cloaks any ship, reducing the range at which scanners detect it by up to {CloakUtils.GetCloakPercentForCloakUnits(hullComponent.CloakUnits)}%.");
                         }
                     }
 

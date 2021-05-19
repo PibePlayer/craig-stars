@@ -10,6 +10,8 @@ namespace CraigStars
         public HashSet<ShipDesignPurpose> Purposes = new HashSet<ShipDesignPurpose>();
         public int TotalShips { get; set; }
 
+        public int MassEmpty { get; set; }
+
         // starbase fields
         // TODO: generisize these
         public bool HasMassDriver { get => MassDriver != null && MassDriver.PacketSpeed > 0; }
@@ -17,5 +19,9 @@ namespace CraigStars
         public TechHullComponent MassDriver { get; set; }
         public TechHullComponent Stargate { get; set; }
 
+        /// <summary>
+        /// The amount of base cloaked cargo this fleet has (i.e. the mass of all uncloaked ships)
+        /// </summary>
+        public int BaseCloakedCargo { get; set; }
     }
 }

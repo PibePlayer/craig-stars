@@ -441,7 +441,7 @@ namespace CraigStars
         public static readonly TechHullComponent OrbitalAdjuster = new TechHullComponent("Orbital Adjuster", new Cost(25, 25, 25, 50), new TechRequirements(biotechnology: 6, prtRequired: PRT.CA), 0, TechCategory.MineRobot)
         {
             Mass = 80,
-            Cloak = 25,
+            CloakUnits = 50,
             TerraformRate = 1,
             HullSlotType = HullSlotType.Mining,
         };
@@ -635,7 +635,7 @@ namespace CraigStars
             HullSlotType = HullSlotType.Scanner,
             Mass = 6,
             ScanRange = 160,
-            Cloak = 2,
+            CloakUnits = 40,
             ScanRangePen = 45
         };
         public static readonly TechHullComponent FerretScanner = new TechHullComponent("Ferret Scanner", new Cost(2, 0, 8, 36), new TechRequirements(energy: 3, electronics: 7, biotechnology: 2, lrtsDenied: LRT.NAS), 80, TechCategory.Scanner)
@@ -753,7 +753,7 @@ namespace CraigStars
         {
             Mass = 50,
             Armor = 200,
-            Cloak = 25,
+            CloakUnits = 50,
             HullSlotType = HullSlotType.Armor
         };
         public static readonly TechHullComponent Neutronium = new TechHullComponent("Neutronium", new Cost(11, 2, 1, 30), new TechRequirements(construction: 12), 90, TechCategory.Armor)
@@ -784,28 +784,28 @@ namespace CraigStars
         {
             Mass = 1,
             CloakUnarmedOnly = true,
-            Cloak = 75,
+            CloakUnits = 300,
             HullSlotType = HullSlotType.Electrical,
         };
 
         public static readonly TechHullComponent StealthCloak = new TechHullComponent("Stealth Cloak", new Cost(2, 0, 2, 5), new TechRequirements(energy: 2, electronics: 5), 10, TechCategory.Electrical)
         {
             Mass = 2,
-            Cloak = 35,
+            CloakUnits = 70,
             HullSlotType = HullSlotType.Electrical,
         };
 
         public static readonly TechHullComponent SuperStealthCloak = new TechHullComponent("Super-Stealth Cloak", new Cost(8, 0, 8, 15), new TechRequirements(energy: 4, electronics: 10), 20, TechCategory.Electrical)
         {
             Mass = 3,
-            Cloak = 55,
+            CloakUnits = 140,
             HullSlotType = HullSlotType.Electrical,
         };
 
         public static readonly TechHullComponent UltraStealthCloak = new TechHullComponent("Ultra-Stealth Cloak", new Cost(10, 0, 10, 25), new TechRequirements(energy: 10, electronics: 12, prtRequired: PRT.SS), 30, TechCategory.Electrical)
         {
             Mass = 5,
-            Cloak = 85,
+            CloakUnits = 540,
             HullSlotType = HullSlotType.Electrical,
         };
 
@@ -887,7 +887,7 @@ namespace CraigStars
         public static readonly TechHullComponent TachyonDetector = new TechHullComponent("Tachyon Detector", new Cost(1, 5, 0, 70), new TechRequirements(energy: 8, electronics: 14, prtRequired: PRT.IS), 140, TechCategory.Electrical)
         {
             Mass = 1,
-            ReduceCloaking = 5,
+            ReduceCloaking = true,
             HullSlotType = HullSlotType.Electrical,
         };
 
@@ -1392,7 +1392,7 @@ namespace CraigStars
         {
             Mass = 2,
             Shield = 75,
-            Cloak = 35,
+            CloakUnits = 70,
             HullSlotType = HullSlotType.Shield,
         };
         public static readonly TechHullComponent BearNeutrinoBarrier = new TechHullComponent("Bear Neutrino Barrier", new Cost(4, 0, 4, 8), new TechRequirements(energy: 10), 60, TechCategory.Shield)

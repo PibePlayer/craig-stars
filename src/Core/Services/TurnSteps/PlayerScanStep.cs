@@ -24,11 +24,18 @@ namespace CraigStars
             public Vector2 Position { get; set; }
             public int Range { get; set; }
             public int RangePen { get; set; }
-            public Scanner(Vector2 position, int range = 0, int rangePen = 0)
+            /// <summary>
+            /// the amount this scanner reduces enemy cloaking, as a percent
+            /// i.e. if it reduces enemy cloaking by 81%, this would be .81
+            /// </summary>
+            /// <value></value>
+            public float CloakReduction { get; set; }
+            public Scanner(Vector2 position, int range = 0, int rangePen = 0, float cloadReduction = 0)
             {
                 Position = position;
                 Range = range;
                 RangePen = rangePen;
+                CloakReduction = cloadReduction;
             }
         }
 
@@ -97,6 +104,7 @@ namespace CraigStars
                 {
                     scanner.Range = Math.Max(scanner.Range, fleet.Aggregate.ScanRange);
                     scanner.RangePen = Math.Max(scanner.RangePen, fleet.Aggregate.ScanRangePen);
+                    scanner.CloakReduction = Math.Max(scanner.CloakReduction, fleet.Aggregate.ReduceCloaking);
                 }
                 // square these ranges, because we are using
                 // the faster DistanceSquaredTo method to compare distances
@@ -108,11 +116,11 @@ namespace CraigStars
             // find all our fleets that are out and about
             foreach (var fleet in Game.Fleets.Where(f => f.Player == player && f.Aggregate.Scanner && (f.Orbiting == null || f.Orbiting.Player != player)))
             {
-                scanners.Add(new Scanner(fleet.Position, fleet.Aggregate.ScanRange * fleet.Aggregate.ScanRange, fleet.Aggregate.ScanRangePen * fleet.Aggregate.ScanRangePen));
+                scanners.Add(new Scanner(fleet.Position, fleet.Aggregate.ScanRange * fleet.Aggregate.ScanRange, fleet.Aggregate.ScanRangePen * fleet.Aggregate.ScanRangePen, fleet.Aggregate.ReduceCloaking));
             }
 
             // Space demolition minefields act as scanners
-            if (player.Race.PRT == PRT.SD)
+            if (player.MineFieldsAreScanners)
             {
                 foreach (var mineField in Game.MineFields.Where(mf => mf.Player == player))
                 {
@@ -161,9 +169,10 @@ namespace CraigStars
                 bool scanned = false;
                 foreach (var scanner in scanners)
                 {
+                    var cloakFactor = 1 - (fleet.Aggregate.CloakPercent * scanner.CloakReduction / 100f);
                     var distance = scanner.Position.DistanceSquaredTo(fleet.Position);
                     // if we pen scanned this, update the report
-                    if (!scanned && scanner.RangePen >= distance)
+                    if (!scanned && scanner.RangePen * cloakFactor >= distance)
                     {
                         // update the fleet report with pen scanners
                         playerIntel.Discover(player, fleet, true);
@@ -171,7 +180,7 @@ namespace CraigStars
                     }
 
                     // if we aren't orbiting a planet, we can be seen with regular scanners
-                    if (fleet.Orbiting == null && scanner.Range >= distance)
+                    if (fleet.Orbiting == null && scanner.Range * cloakFactor >= distance)
                     {
                         playerIntel.Discover(player, fleet, false);
                         break;
@@ -200,14 +209,19 @@ namespace CraigStars
                 }
 
                 // minefields are cloaked if we haven't discovered them before
-                var cloakFactor = player.MineFieldsByGuid.ContainsKey(mineField.Guid) ? 1f : 1 - Game.Rules.MineFieldCloak;
+                var cloakFactor = player.MineFieldsByGuid.ContainsKey(mineField.Guid) ? 1f : 1 - (Game.Rules.MineFieldCloak / 100f);
 
                 foreach (var scanner in scanners)
                 {
+                    if (cloakFactor != 1)
+                    {
+                        // calculate cloak reduction for tachyon detectors if this minefield is cloaked
+                        cloakFactor = 1 - (1 - cloakFactor) * scanner.CloakReduction;
+                    }
                     var distance = scanner.Position.DistanceSquaredTo(mineField.Position);
 
                     // multiple the scanRange by the cloak factor, i.e. if we are 75% cloaked, our scanner range is effectively 25% of what it normally is
-                    if (scanner.RangePen * cloakFactor >= distance - (mineField.Radius * mineField.Radius))
+                    if (scanner.RangePen * (cloakFactor * scanner.CloakReduction) >= distance - (mineField.Radius * mineField.Radius))
                     {
                         // update the fleet report with pen scanners
                         playerIntel.Discover(player, mineField, true);
@@ -215,7 +229,7 @@ namespace CraigStars
                     }
 
                     // if we aren't orbiting a planet, we can be seen with regular scanners
-                    if (scanner.Range * cloakFactor >= distance - (mineField.Radius * mineField.Radius))
+                    if (scanner.Range * (cloakFactor - scanner.CloakReduction) >= distance - (mineField.Radius * mineField.Radius))
                     {
                         playerIntel.Discover(player, mineField, false);
                         break;
@@ -272,9 +286,15 @@ namespace CraigStars
             foreach (var wormhole in Game.Wormholes)
             {
                 // wormholes are cloaked if we haven't discovered them before
-                var cloakFactor = player.WormholesByGuid.ContainsKey(wormhole.Guid) ? 1f : 1 - Game.Rules.WormholeCloak;
+                var cloakFactor = player.WormholesByGuid.ContainsKey(wormhole.Guid) ? 1f : 1 - (Game.Rules.WormholeCloak / 100f);
                 foreach (var scanner in scanners)
                 {
+                    if (cloakFactor != 1)
+                    {
+                        // calculate cloak reduction for tachyon detectors if this minefield is cloaked
+                        cloakFactor = 1 - (1 - cloakFactor) * scanner.CloakReduction;
+                    }
+
                     // we only care about regular scanners for wormholes
                     if (scanner.Range * cloakFactor >= scanner.Position.DistanceSquaredTo(wormhole.Position))
                     {

@@ -434,6 +434,8 @@ namespace CraigStars
                 return;
             }
 
+            Aggregate.Purposes.Clear();
+            Aggregate.MassEmpty = 0;
             Aggregate.Mass = Cargo.Total;
             Aggregate.Shield = 0;
             Aggregate.CargoCapacity = 0;
@@ -446,7 +448,13 @@ namespace CraigStars
             Aggregate.Engine = null;
             Aggregate.MineSweep = 0;
             Aggregate.MiningRate = 0;
-            Aggregate.Purposes.Clear();
+
+            // Some races cloak cargo for free, otherwise
+            // cloaking cargo comes at a penalty
+            bool freeCargoCloaking = Player.FreeCargoCloaking;
+            Aggregate.CloakUnits = 0;
+            Aggregate.BaseCloakedCargo = 0;
+            Aggregate.ReduceCloaking = 0;
 
             Aggregate.Bomber = false;
             Aggregate.Bombs.Clear();
@@ -475,6 +483,7 @@ namespace CraigStars
 
                 // mass
                 Aggregate.Mass += token.Design.Aggregate.Mass * token.Quantity;
+                Aggregate.MassEmpty += token.Design.Aggregate.Mass * token.Quantity;
 
                 // armor
                 Aggregate.Armor += token.Design.Aggregate.Armor * token.Quantity;
@@ -493,7 +502,6 @@ namespace CraigStars
 
                 // remote mining
                 Aggregate.MiningRate += token.Design.Aggregate.MiningRate * token.Quantity;
-
 
                 // colonization
                 if (token.Design.Aggregate.Colonizer)
@@ -529,10 +537,42 @@ namespace CraigStars
                 // we process weapon slots per stack, so we don't need to aggregate all
                 // weapons in a fleet
                 Aggregate.HasWeapons = token.Design.Aggregate.HasWeapons ? true : Aggregate.HasWeapons;
+
+                if (token.Design.Aggregate.CloakUnits > 0)
+                {
+                    // calculate the cloak units for this token based on the design's cloak units (i.e. 70 cloak units / kT for a stealh cloak)
+                    Aggregate.CloakUnits += token.Design.Aggregate.CloakUnits;
+                }
+                else
+                {
+                    // if this ship doesn't have cloaking, it counts as cargo (except for races with free cargo cloaking)
+                    if (!freeCargoCloaking)
+                    {
+                        Aggregate.BaseCloakedCargo += token.Design.Aggregate.Mass * token.Quantity;
+                    }
+                }
+
+                // choose the best tachyon detector ship
+                Aggregate.ReduceCloaking = Math.Max(Aggregate.ReduceCloaking, token.Design.Aggregate.ReduceCloaking);
             });
+
+            // compute the cloaking based on the cloak units and cargo
+            ComputeCloaking();
 
             Aggregate.Computed = true;
         }
+
+        /// <summary>
+        /// Compute the ship's aggregate cloaking
+        /// </summary>
+        public void ComputeCloaking()
+        {
+            // figure out how much cargo we are cloaking
+            var cloakedCargo = Aggregate.BaseCloakedCargo + (Player.FreeCargoCloaking ? 0 : Cargo.Total);
+            int cloakUnitsWithCargo = (int)Math.Round(Aggregate.CloakUnits * (float)Aggregate.MassEmpty / (Aggregate.MassEmpty + cloakedCargo));
+            Aggregate.CloakPercent = CloakUtils.GetCloakPercentForCloakUnits(cloakUnitsWithCargo);
+        }
+
 
         /// <summary>
         /// Update aggregates on level advance

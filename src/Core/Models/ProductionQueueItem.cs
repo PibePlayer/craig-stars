@@ -215,47 +215,28 @@ namespace CraigStars
             }
             else if (Type == QueueItemType.IroniumMineralPacket)
             {
-                if (race.PRT == PRT.PP)
-                {
-                    return new Cost(ironium: rules.MineralsPerSingleMineralPacketPP, resources: rules.PacketResourceCostPP);
-                }
-                else
-                {
-                    return new Cost(ironium: rules.MineralsPerSingleMineralPacket, resources: rules.PacketResourceCost);
-                }
+                return new Cost(ironium: (int)(player.MineralsPerSingleMineralPacket * player.PacketCostFactor), resources: player.PacketResourceCost);
             }
             else if (Type == QueueItemType.BoraniumMineralPacket)
             {
-                if (race.PRT == PRT.PP)
-                {
-                    return new Cost(boranium: rules.MineralsPerSingleMineralPacketPP, resources: rules.PacketResourceCostPP);
-                }
-                else
-                {
-                    return new Cost(boranium: rules.MineralsPerSingleMineralPacket, resources: rules.PacketResourceCost);
-                }
+                return new Cost(boranium: (int)(player.MineralsPerSingleMineralPacket * player.PacketCostFactor), resources: player.PacketResourceCost);
             }
             else if (Type == QueueItemType.GermaniumMineralPacket)
             {
-                if (race.PRT == PRT.PP)
-                {
-                    return new Cost(germanium: rules.MineralsPerSingleMineralPacketPP, resources: rules.PacketResourceCostPP);
-                }
-                else
-                {
-                    return new Cost(germanium: rules.MineralsPerSingleMineralPacket, resources: rules.PacketResourceCost);
-                }
+                return new Cost(germanium: (int)(player.MineralsPerSingleMineralPacket * player.PacketCostFactor), resources: player.PacketResourceCost);
             }
             else if (Type == QueueItemType.MixedMineralPacket || Type == QueueItemType.AutoMineralPacket)
             {
-                if (race.PRT == PRT.PP)
-                {
-                    return new Cost(rules.MineralsPerMixedMineralPacketPP, rules.MineralsPerMixedMineralPacketPP, rules.MineralsPerMixedMineralPacketPP, resources: rules.PacketResourceCostPP);
-                }
-                else
-                {
-                    return new Cost(rules.MineralsPerMixedMineralPacket, rules.MineralsPerMixedMineralPacket, rules.MineralsPerMixedMineralPacket, resources: rules.PacketResourceCost);
-                }
+                float packetCostFactor = player.PacketCostFactor;
+                int mineralsPerMixedMineralPacket = player.MineralsPerMixedMineralPacket;
+                int packetResourceCost = player.PacketResourceCost;
+
+                return new Cost(
+                    (int)(mineralsPerMixedMineralPacket * packetCostFactor),
+                    (int)(mineralsPerMixedMineralPacket * packetCostFactor),
+                    (int)(mineralsPerMixedMineralPacket * packetCostFactor),
+                    player.PacketResourceCost
+                );
             }
             else if (Type == QueueItemType.ShipToken || Type == QueueItemType.Starbase)
             {

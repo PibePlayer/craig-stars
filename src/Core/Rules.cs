@@ -95,29 +95,44 @@ namespace CraigStars
         [DefaultValue(5)]
         public int PacketResourceCostPP { get; set; } = 5;
 
+        [DefaultValue(1.1f)]
+        public float PacketMineralCostFactor { get; set; } = 1.1f;
+        [DefaultValue(1f)]
+        public float PacketMineralCostFactorPP { get; set; } = 1f;
+        [DefaultValue(1.2f)]
+        public float PacketMineralCostFactorIT { get; set; } = 1.2f;
+
         /// <summary>
         /// The amount of minerals in a single ironium, boranium, or germanium packet
         /// </summary>
         /// <value></value>
-        [DefaultValue(110)]
-        public int MineralsPerSingleMineralPacket { get; set; } = 110;
+        [DefaultValue(100)]
+        public int MineralsPerSingleMineralPacket { get; set; } = 100;
+        [DefaultValue(70)]
+        public int MineralsPerSingleMineralPacketPP { get; set; } = 70;
+
 
         /// <summary>
         /// The amount of minerals in a mixed (all minerals at once) packet
         /// </summary>
         /// <value></value>
-        [DefaultValue(44)]
-        public int MineralsPerMixedMineralPacket { get; set; } = 44;
-
-        [DefaultValue(70)]
-        public int MineralsPerSingleMineralPacketPP { get; set; } = 70;
-
+        [DefaultValue(40)]
+        public int MineralsPerMixedMineralPacket { get; set; } = 40;
         [DefaultValue(25)]
         public int MineralsPerMixedMineralPacketPP { get; set; } = 25;
 
 
         [DefaultValue(20)]
         public int BuiltInScannerJoaTMultiplier = 20;
+
+        /// <summary>
+        /// SS races have 300 cloak units built in (or 75% cloaking)
+        /// </summary>
+        [DefaultValue(300)]
+        public int BuiltInSSCloakUnits = 300;
+
+        [DefaultValue(5)]
+        public int TachyonCloakReduction = 5;
 
         // Game rules
         [DefaultValue(1000000)]
@@ -174,8 +189,8 @@ namespace CraigStars
         /// <summary>
         /// MineFields are cloaked to 75% until spotted
         /// </summary>
-        [DefaultValue(.75f)]
-        public float MineFieldCloak = .75f;
+        [DefaultValue(75)]
+        public int MineFieldCloak = 75;
 
         /// <summary>
         /// Space Demolition fleets can travel 2 warp speeds faster through minefields
@@ -210,8 +225,8 @@ namespace CraigStars
         /// <summary>
         /// MineFields are cloaked to 75% until spotted
         /// </summary>
-        [DefaultValue(.75f)]
-        public float WormholeCloak = .75f;
+        [DefaultValue(75)]
+        public int WormholeCloak = 75;
 
         /// <summary>
         /// The minimum distance between a wormhole and any other object

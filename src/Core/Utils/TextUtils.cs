@@ -47,11 +47,11 @@ greater than other races.".Replace("\n", "");
                     return @"This gives you the Fuel Mizer and Galaxy Scoop engines and increases your starting 
 Propulsion tech by 1 level. All engines use 15% less fuel.".Replace("\n", "");
                 case LRT.TT:
-                    return lrt.ToString();
+                    return @"You begin the game with the ability to adjust each of a planet’s environment attributes by up to 3% in either direction. Throughout the game, additional terraforming technologies not available to other players will be achievable, up to 30% terraforming. Total Terraforming requires 30% fewer resources.";
                 case LRT.ARM:
-                    return lrt.ToString();
+                    return @"Gives you three additional mining hulls and two new robots. You will start the game with two Midget Miners.";
                 case LRT.ISB:
-                    return lrt.ToString();
+                    return @"Gives you two new starbase designs. The Space Dock hull allows you to build starbases which can in turn build small to medium ships. The Ultra-Station is much larger than a standard Starbase. Your starbases are automatically cloaked by 20%. Starbases will cost you 20% less to build.";
                 case LRT.GR:
                     return lrt.ToString();
                 case LRT.UR:

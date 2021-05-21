@@ -58,6 +58,7 @@ namespace CraigStars
                 itemReport.Population = (int)(item.Population * (1 - randomPopulationError));
                 itemReport.MineralConcentration = item.MineralConcentration;
                 itemReport.Hab = item.Hab;
+                itemReport.BaseHab = item.BaseHab;
                 itemReport.ReportAge = 0;
                 itemReport.Owner = item.Owner;
 
@@ -107,6 +108,7 @@ namespace CraigStars
             itemReport.Population = item.Population;
             itemReport.MineralConcentration = item.MineralConcentration;
             itemReport.Hab = item.Hab;
+            itemReport.BaseHab = item.BaseHab;
             itemReport.ReportAge = 0;
             itemReport.Owner = item.Owner;
             itemReport.MineYears = item.MineYears;
@@ -121,7 +123,6 @@ namespace CraigStars
             {
                 itemReport.ProductionQueue = new ProductionQueue();
             }
-            itemReport.ProductionQueue.Allocated = item.ProductionQueue.Allocated;
             itemReport.ProductionQueue.LeftoverResources = item.ProductionQueue.LeftoverResources;
             itemReport.ProductionQueue.Items.Clear();
             itemReport.ProductionQueue.Items.AddRange(item.ProductionQueue.Items.Select(queueItem => queueItem.Clone()).Select(queueItem =>

@@ -45,6 +45,8 @@ namespace CraigStars
             {
                 log.Warn("Resetting Players. This probably means you are executing the Game scene directly during development. If not, this is a problem.");
                 PlayersManager.Instance.SetupPlayers();
+                // don't save on debug games
+                Settings.SaveToDisk = false;
                 // PlayersManager.Me.Race.PRT = PRT.PP;
             }
 

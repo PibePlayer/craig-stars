@@ -14,11 +14,11 @@ namespace CraigStars
     public abstract class PlanetProductionQueueItems : ScrollContainer
     {
         public const int NoItemSelected = -1;
-        public delegate void RowAction(int rowIndex, int colIndex, Cell cell, ProductionQueueItem item);
-        public event RowAction RowSelectedEvent;
-        public event RowAction RowActivatedEvent;
-        protected void PublishRowSelectedEvent(int rowIndex, int colIndex, Cell cell, ProductionQueueItem item) => RowSelectedEvent?.Invoke(rowIndex, colIndex, cell, item);
-        protected void PublishRowActivatedEvent(int rowIndex, int colIndex, Cell cell, ProductionQueueItem item) => RowActivatedEvent?.Invoke(rowIndex, colIndex, cell, item);
+        public delegate void ItemAction(ProductionQueueItem item);
+        public event ItemAction ItemSelectedEvent;
+        public event ItemAction ItemActivatedEvent;
+        protected void PublishItemSelectedEvent(ProductionQueueItem item) => ItemSelectedEvent?.Invoke(item);
+        protected void PublishItemActivatedEvent(ProductionQueueItem item) => ItemActivatedEvent?.Invoke(item);
 
         [Export]
         public GUIColors GUIColors { get; set; } = new GUIColors();
@@ -85,7 +85,7 @@ namespace CraigStars
 
         protected virtual void OnActivateItem(int rowIndex, int colIndex, Cell cell, ProductionQueueItem metadata)
         {
-            RowActivatedEvent?.Invoke(rowIndex, colIndex, cell, metadata);
+            ItemActivatedEvent?.Invoke(metadata);
         }
 
         protected virtual void OnSelectItem(int rowIndex, int colIndex, Cell cell, ProductionQueueItem metadata)
@@ -93,7 +93,7 @@ namespace CraigStars
             SelectedItemIndex = rowIndex;
             if (metadata != null)
             {
-                RowSelectedEvent?.Invoke(rowIndex, colIndex, cell, metadata);
+                ItemSelectedEvent?.Invoke(metadata);
             }
         }
 
@@ -135,26 +135,29 @@ namespace CraigStars
         /// <summary>
         /// Get the color for this ProductionQueueItem based on how many years it takes to build
         /// </summary>
-        /// <param name="yearsToBuild"></param>
+        /// <param name="yearsToBuildAll"></param>
         /// <param name="skipped">true if this item will be skipped (i.e. an auto item that is already at max usable items)</param>
         /// <returns></returns>
-        public Color GetColor(int yearsToBuild, bool skipped)
+        public Color GetColor(int yearsToBuildOne, int yearsToBuildAll, bool skipped)
         {
             if (skipped)
             {
                 return GUIColors.ProductionQueueSkippedColor;
             }
-            if (yearsToBuild <= 1)
+            if (yearsToBuildAll <= 1)
             {
+                // if we can build them all in one year, color it gree
                 return GUIColors.ProductionQueueItemOneYearColor;
             }
-            else if (yearsToBuild >= 100)
+            else if (yearsToBuildOne <= 1)
             {
-                return GUIColors.ProductionQueueNeverBuildColor;
-            }
-            else if (yearsToBuild > 1)
-            {
+                // if we can build at least one in a year, color it blue
                 return GUIColors.ProductionQueueMoreThanOneYearColor;
+            }
+            else if (yearsToBuildOne >= 100)
+            {
+                // if it will take more than 100 years to build them all, color it red
+                return GUIColors.ProductionQueueNeverBuildColor;
             }
 
             return Colors.White;

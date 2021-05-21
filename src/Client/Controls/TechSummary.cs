@@ -160,6 +160,19 @@ namespace CraigStars
                     }
 
                 }
+                else if (Tech is TechTerraform terraform)
+                {
+                    massLabel.Visible = massAmountLabel.Visible = false;
+                    if (terraform.HabType == TerraformHabType.All)
+                    {
+                        AddDescription($"Allows you to modify any of a planet's three environment variables up to {terraform.Ability}% from its original value");
+                    }
+                    else
+                    {
+                        AddDescription($"Allows you to modify a planet's {terraform.HabType} by up to {terraform.Ability}% from its original value");
+                    }
+
+                }
                 else if (Tech is TechHullComponent hullComponent)
                 {
                     massLabel.Visible = massAmountLabel.Visible = true;

@@ -14,6 +14,7 @@ namespace CraigStars
         Mine,
         Defenses,
         MineralAlchemy,
+        TerraformEnvironment,
         AutoMines,
         AutoFactories,
         AutoDefenses,

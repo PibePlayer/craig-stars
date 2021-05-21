@@ -90,6 +90,9 @@ namespace CraigStars
         [DefaultValue(25)]
         public int MineralAlchemyLRTCost { get; set; } = 25;
 
+        public Cost TerraformCost { get; set; } = new Cost(0, 0, 0, 100);
+        public Cost TotalTerraformCost { get; set; } = new Cost(0, 0, 0, 70);
+
         [DefaultValue(10)]
         public int PacketResourceCost { get; set; } = 10;
         [DefaultValue(5)]

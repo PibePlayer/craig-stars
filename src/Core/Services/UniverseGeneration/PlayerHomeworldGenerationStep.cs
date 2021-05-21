@@ -88,6 +88,7 @@ namespace CraigStars.UniverseGeneration
                 race.HabCenter.temp,
                 race.HabCenter.rad
             );
+            planet.BaseHab = planet.Hab;
 
             planet.Population = rules.StartingPopulation;
 
@@ -133,6 +134,7 @@ namespace CraigStars.UniverseGeneration
                 race.HabCenter.temp + (race.HabWidth.temp - random.Next(race.HabWidth.temp - 1)) / 2,
                 race.HabCenter.rad + (race.HabWidth.rad - random.Next(race.HabWidth.rad - 1)) / 2
             );
+            planet.BaseHab = planet.Hab;
 
             planet.Population = rules.StartingPopulationExtraPlanet;
 

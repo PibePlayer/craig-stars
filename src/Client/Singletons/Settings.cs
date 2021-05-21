@@ -134,6 +134,10 @@ namespace CraigStars
                 }
                 return saveToDisk.Value;
             }
+            set
+            {
+                saveToDisk = value;
+            }
         }
         static bool? saveToDisk;
 

@@ -1257,6 +1257,129 @@ namespace CraigStars
         };
         #endregion
 
+        #region Terraforming
+
+        public static readonly TechTerraform TotalTerraform3 = new TechTerraform("Total Terraform ±3", new Cost(resources: 70), new TechRequirements(lrtsRequired: LRT.TT), 0, TechCategory.Terraforming)
+        {
+            Ability = 3,
+            HabType = TerraformHabType.All
+        };
+
+        public static readonly TechTerraform TotalTerraform5 = new TechTerraform("Total Terraform ±5", new Cost(resources: 70), new TechRequirements(biotechnology: 3, lrtsRequired: LRT.TT), 10, TechCategory.Terraforming)
+        {
+            Ability = 5,
+            HabType = TerraformHabType.All
+        };
+
+        public static readonly TechTerraform TotalTerraform7 = new TechTerraform("Total Terraform ±7", new Cost(resources: 70), new TechRequirements(biotechnology: 6, lrtsRequired: LRT.TT), 20, TechCategory.Terraforming)
+        {
+            Ability = 7,
+            HabType = TerraformHabType.All
+        };
+
+        public static readonly TechTerraform TotalTerraform10 = new TechTerraform("Total Terraform ±10", new Cost(resources: 70), new TechRequirements(biotechnology: 9, lrtsRequired: LRT.TT), 30, TechCategory.Terraforming)
+        {
+            Ability = 10,
+            HabType = TerraformHabType.All
+        };
+
+        public static readonly TechTerraform TotalTerraform15 = new TechTerraform("Total Terraform ±15", new Cost(resources: 70), new TechRequirements(biotechnology: 13, lrtsRequired: LRT.TT), 40, TechCategory.Terraforming)
+        {
+            Ability = 15,
+            HabType = TerraformHabType.All
+        };
+
+        public static readonly TechTerraform TotalTerraform20 = new TechTerraform("Total Terraform ±20", new Cost(resources: 70), new TechRequirements(biotechnology: 17, lrtsRequired: LRT.TT), 50, TechCategory.Terraforming)
+        {
+            Ability = 20,
+            HabType = TerraformHabType.All
+        };
+
+        public static readonly TechTerraform TotalTerraform25 = new TechTerraform("Total Terraform ±25", new Cost(resources: 70), new TechRequirements(biotechnology: 22, lrtsRequired: LRT.TT), 60, TechCategory.Terraforming)
+        {
+            Ability = 25,
+            HabType = TerraformHabType.All
+        };
+
+        public static readonly TechTerraform TotalTerraform30 = new TechTerraform("Total Terraform ±30", new Cost(resources: 70), new TechRequirements(biotechnology: 25, lrtsRequired: LRT.TT), 70, TechCategory.Terraforming)
+        {
+            Ability = 30,
+            HabType = TerraformHabType.All
+        };
+
+        public static readonly TechTerraform GravityTerraform3 = new TechTerraform("Gravity Terraform ±3", new Cost(resources: 100), new TechRequirements(propulsion: 1, biotechnology: 1), 80, TechCategory.Terraforming)
+        {
+            Ability = 3,
+            HabType = TerraformHabType.Gravity
+        };
+
+        public static readonly TechTerraform GravityTerraform7 = new TechTerraform("Gravity Terraform ±7", new Cost(resources: 100), new TechRequirements(propulsion: 5, biotechnology: 2), 90, TechCategory.Terraforming)
+        {
+            Ability = 7,
+            HabType = TerraformHabType.Gravity
+        };
+
+        public static readonly TechTerraform GravityTerraform11 = new TechTerraform("Gravity Terraform ±11", new Cost(resources: 100), new TechRequirements(propulsion: 10, biotechnology: 3), 100, TechCategory.Terraforming)
+        {
+            Ability = 11,
+            HabType = TerraformHabType.Gravity
+        };
+
+        public static readonly TechTerraform GravityTerraform15 = new TechTerraform("Gravity Terraform ±15", new Cost(resources: 100), new TechRequirements(propulsion: 16, biotechnology: 4), 110, TechCategory.Terraforming)
+        {
+            Ability = 15,
+            HabType = TerraformHabType.Gravity
+        };
+
+        public static readonly TechTerraform TempTerraform3 = new TechTerraform("Temp Terraform ±3", new Cost(resources: 100), new TechRequirements(energy: 1, biotechnology: 1), 120, TechCategory.Terraforming)
+        {
+            Ability = 3,
+            HabType = TerraformHabType.Temperature
+        };
+
+        public static readonly TechTerraform TempTerraform7 = new TechTerraform("Temp Terraform ±7", new Cost(resources: 100), new TechRequirements(energy: 5, biotechnology: 2), 130, TechCategory.Terraforming)
+        {
+            Ability = 7,
+            HabType = TerraformHabType.Temperature
+        };
+
+        public static readonly TechTerraform TempTerraform11 = new TechTerraform("Temp Terraform ±11", new Cost(resources: 100), new TechRequirements(energy: 10, biotechnology: 3), 140, TechCategory.Terraforming)
+        {
+            Ability = 11,
+            HabType = TerraformHabType.Temperature
+        };
+
+        public static readonly TechTerraform TempTerraform15 = new TechTerraform("Temp Terraform ±15", new Cost(resources: 100), new TechRequirements(energy: 16, biotechnology: 4), 150, TechCategory.Terraforming)
+        {
+            Ability = 15,
+            HabType = TerraformHabType.Temperature
+        };
+
+        public static readonly TechTerraform RadiationTerraform3 = new TechTerraform("Radiation Terraform ±3", new Cost(resources: 100), new TechRequirements(weapons: 1, biotechnology: 1), 160, TechCategory.Terraforming)
+        {
+            Ability = 3,
+            HabType = TerraformHabType.Radiation
+        };
+
+        public static readonly TechTerraform RadiationTerraform7 = new TechTerraform("Radiation Terraform ±7", new Cost(resources: 100), new TechRequirements(weapons: 5, biotechnology: 2), 170, TechCategory.Terraforming)
+        {
+            Ability = 7,
+            HabType = TerraformHabType.Radiation
+        };
+
+        public static readonly TechTerraform RadiationTerraform11 = new TechTerraform("Radiation Terraform ±11", new Cost(resources: 100), new TechRequirements(weapons: 10, biotechnology: 3), 180, TechCategory.Terraforming)
+        {
+            Ability = 11,
+            HabType = TerraformHabType.Radiation
+        };
+
+        public static readonly TechTerraform RadiationTerraform15 = new TechTerraform("Radiation Terraform ±15", new Cost(resources: 100), new TechRequirements(weapons: 16, biotechnology: 4), 190, TechCategory.Terraforming)
+        {
+            Ability = 15,
+            HabType = TerraformHabType.Radiation
+        };
+        #endregion
+
         #region Torpedos
         public static readonly TechHullComponent AlphaTorpedo = new TechHullComponent("Alpha Torpedo", new Cost(8, 3, 3, 4), new TechRequirements(), 0, TechCategory.Torpedo)
         {
@@ -2097,6 +2220,28 @@ namespace CraigStars
                 GorillaDelagator,
                 ElephantHideFortress,
                 CompletePhaseShield,
+
+                // Terraform
+                TotalTerraform3,
+                TotalTerraform5,
+                TotalTerraform7,
+                TotalTerraform10,
+                TotalTerraform15,
+                TotalTerraform20,
+                TotalTerraform25,
+                TotalTerraform30,
+                GravityTerraform3,
+                GravityTerraform7,
+                GravityTerraform11,
+                GravityTerraform15,
+                TempTerraform3,
+                TempTerraform7,
+                TempTerraform11,
+                TempTerraform15,
+                RadiationTerraform3,
+                RadiationTerraform7,
+                RadiationTerraform11,
+                RadiationTerraform15,
 
                 // Torpedos
                 AlphaTorpedo,

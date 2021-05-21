@@ -105,7 +105,7 @@ namespace CraigStars.UniverseGeneration
                 temp,
                 rad
             );
-
+            planet.BaseHab = planet.Hab;
         }
 
     }

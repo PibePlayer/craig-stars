@@ -19,6 +19,7 @@ namespace CraigStars
             base._Ready();
 
             table.Data.AddColumn("Item");
+            table.ResetTable();
         }
 
         /// <summary>
@@ -39,7 +40,7 @@ namespace CraigStars
             {
                 table.Data.ClearRows();
                 AddAvailableItems();
-                table.ResetTable();
+                table.ResetRows();
             }
         }
 
@@ -80,14 +81,21 @@ namespace CraigStars
             AddAvailableItem(new ProductionQueueItem(QueueItemType.Mine));
             AddAvailableItem(new ProductionQueueItem(QueueItemType.Defenses));
             AddAvailableItem(new ProductionQueueItem(QueueItemType.MineralAlchemy));
+
+            if (Planet.CanTerraform())
+            {
+                AddAvailableItem(new ProductionQueueItem(QueueItemType.TerraformEnvironment));
+            }
+
             AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoFactories));
             AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoMines));
             AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoDefenses));
             AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoMineralAlchemy));
+            AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoMaxTerraform));
+            AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoMinTerraform));
             if (Planet.HasMassDriver)
             {
                 AddAvailableItem(new ProductionQueueItem(QueueItemType.AutoMineralPacket));
-
             }
 
             void AddAvailableItem(ProductionQueueItem item)
@@ -115,7 +123,11 @@ namespace CraigStars
 
                 int numYearsToBuild = remainingCost == Cost.Zero ? 1 : (int)Math.Ceiling(Mathf.Clamp(remainingCost / yearlyAvailableCost, 1, int.MaxValue));
 
-                color = GetColor(numYearsToBuild, skipped);
+                // auto is always the normal color
+                if (!item.IsAuto)
+                {
+                    color = GetColor(numYearsToBuild, numYearsToBuild, skipped);
+                }
 
                 table.Data.AddRowAdvanced(metadata: item, color: color, italic: italic, item.FullName);
             }

@@ -16,6 +16,19 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(QueuedPlanetProductionQueueItems));
 
+        internal readonly struct CompletionEstimate
+        {
+            public readonly int yearsToBuildOne;
+            public readonly int yearsToBuildAll;
+            public readonly float percentComplete;
+            public CompletionEstimate(int yearsToBuildOne, int yearsToBuildAll, float percentComplete)
+            {
+                this.yearsToBuildOne = yearsToBuildOne;
+                this.yearsToBuildAll = yearsToBuildAll;
+                this.percentComplete = percentComplete;
+            }
+        }
+
         [Export]
         public bool ShowTopOfQueue { get; set; }
 
@@ -25,6 +38,7 @@ namespace CraigStars
 
             table.Data.AddColumn("Item");
             table.Data.AddColumn("Quantity", align: Label.AlignEnum.Right);
+            table.ResetTable();
         }
 
         /// <summary>
@@ -61,11 +75,13 @@ namespace CraigStars
 
                 AddQueudItems();
 
-                table.ResetTable();
-
                 table.SelectedRow = ShowTopOfQueue ? SelectedItemIndex + 1 : SelectedItemIndex;
+                table.ResetRows();
 
                 table.Update();
+
+                // let any subscribers update based on the newly selected item
+                PublishItemSelectedEvent(GetSelectedItem());
             }
         }
 
@@ -89,7 +105,7 @@ namespace CraigStars
             var italic = item.IsAuto;
             // TODO: figure out skipped items
             var skipped = false;
-            var color = GetColor(item.yearsToBuild, skipped);
+            var color = GetColor(item.yearsToBuildOne, item.yearsToBuildAll, skipped);
             table.Data.AddRowAdvanced(metadata: item, color: color, italic: italic, item.FullName, item.Quantity);
         }
 
@@ -106,7 +122,7 @@ namespace CraigStars
                 AddQueuedItem(item, index++);
             });
 
-            table.ResetTable();
+            table.ResetRows();
 
             // re-select our selected item or select the top
             if (SelectedItemIndex >= 0 && SelectedItemIndex < Items.Count)
@@ -123,29 +139,26 @@ namespace CraigStars
 
         void UpdateItemCompletionEstimates()
         {
-            var allocatedSoFar = Planet.ProductionQueue.Allocated;
-            Cost previousItemsCost = -allocatedSoFar;
-
             // go through each item and update it's YearsToComplete field
-            int index = 0;
-            Items = Items.Select(item =>
+            Cost previousItemsCost = new Cost();
+            foreach (var item in Items)
             {
+                previousItemsCost = previousItemsCost - item.Allocated;
                 // figure out how much this item costs
-                var cost = item.GetCostOfOne(RulesManager.Rules, Me) * item.Quantity;
+                var costOfOne = item.GetCostOfOne(RulesManager.Rules, Me);
                 if (item.Type == QueueItemType.Starbase && Planet.HasStarbase)
                 {
-                    cost = Planet.Starbase.GetUpgradeCost(item.Design);
+                    costOfOne = Planet.Starbase.GetUpgradeCost(item.Design);
                 }
 
-                var (yearsToBuild, percentComplete) = GetCompletionEstimate(cost, previousItemsCost, index++);
-                item.yearsToBuild = yearsToBuild;
-                item.percentComplete = percentComplete;
+                var estimate = GetCompletionEstimate(costOfOne, previousItemsCost, item);
+                item.yearsToBuildAll = estimate.yearsToBuildAll;
+                item.yearsToBuildOne = estimate.yearsToBuildOne;
+                item.percentComplete = estimate.percentComplete;
 
                 // increase our previousItemsCost for the next item
-                previousItemsCost += cost;
-
-                return item;
-            }).ToList();
+                previousItemsCost += costOfOne * item.Quantity;
+            }
         }
 
         void AddTopOfQueueItem()
@@ -160,27 +173,33 @@ namespace CraigStars
         /// Get the estimated number of years to complete this item, based on it's location in the queue
         /// and the costs of all items before it
         /// </summary>
-        /// <param name="cost">The cost of this item</param>
-        (int, float) GetCompletionEstimate(Cost cost, Cost previousItemsCost, int index)
+        /// <param name="costOfOne">The cost of this item</param>
+        CompletionEstimate GetCompletionEstimate(Cost costOfOne, Cost previousItemsCost, ProductionQueueItem item)
         {
-            // see how much has been allocated for the top item in the queue
-            var allocatedSoFar = Planet.ProductionQueue.Allocated;
-
             // Get the total cost of this item plus any previous items in the queue
             // and subtract what we have on hand (that will be applied this year)
-            Cost remainingCost = cost + previousItemsCost - availableCost;
+            Cost remainingCostOfOne = costOfOne + previousItemsCost - availableCost;
+            Cost costOfAll = (costOfOne * item.Quantity);
+            Cost remainingCostOfAll = costOfAll + previousItemsCost - availableCost;
 
             // If we have a bunch of leftover minerals because our planet is full, 0 those out
-            remainingCost = new Cost(
-                Math.Max(0, remainingCost.Ironium),
-                Math.Max(0, remainingCost.Boranium),
-                Math.Max(0, remainingCost.Germanium),
-                Math.Max(0, remainingCost.Resources)
+            remainingCostOfOne = new Cost(
+                Math.Max(0, remainingCostOfOne.Ironium),
+                Math.Max(0, remainingCostOfOne.Boranium),
+                Math.Max(0, remainingCostOfOne.Germanium),
+                Math.Max(0, remainingCostOfOne.Resources)
+            );
+            remainingCostOfAll = new Cost(
+                Math.Max(0, remainingCostOfAll.Ironium),
+                Math.Max(0, remainingCostOfAll.Boranium),
+                Math.Max(0, remainingCostOfAll.Germanium),
+                Math.Max(0, remainingCostOfAll.Resources)
             );
 
-            float percentComplete = index == 0 && allocatedSoFar != Cost.Zero ? Mathf.Clamp(allocatedSoFar / cost, 0, 1) : 0;
-            int yearsToBuild = remainingCost == Cost.Zero ? 1 : (int)Math.Ceiling(Mathf.Clamp(remainingCost / yearlyAvailableCost, 1, int.MaxValue));
-            return (yearsToBuild, percentComplete);
+            float percentComplete = item.Allocated != Cost.Zero ? Mathf.Clamp(item.Allocated / costOfAll, 0, 1) : 0;
+            int yearsToBuildAll = remainingCostOfAll == Cost.Zero ? 1 : (int)Math.Ceiling(Mathf.Clamp(remainingCostOfAll / yearlyAvailableCost, 1, int.MaxValue));
+            int yearsToBuildOne = remainingCostOfOne == Cost.Zero ? 1 : (int)Math.Ceiling(Mathf.Clamp(remainingCostOfOne / yearlyAvailableCost, 1, int.MaxValue));
+            return new CompletionEstimate(yearsToBuildOne, yearsToBuildAll, percentComplete);
         }
 
         /// <summary>
@@ -213,18 +232,19 @@ namespace CraigStars
                         {
                             // increase quantity
                             nextItem.Quantity += quantity;
+                            SelectedItemIndex = SelectedItemIndex + 1;
                         }
                         else
                         {
                             Items.Insert(SelectedItemIndex + 1, item);
-                            log.Debug($"Inserted new item to at {SelectedItemIndex + 1} - {item}");
+                            log.Debug($"Inserted new item at {SelectedItemIndex + 1} - {item}");
                             SelectedItemIndex = SelectedItemIndex + 1;
                         }
                     }
                     else
                     {
                         Items.Insert(SelectedItemIndex + 1, item);
-                        log.Debug($"Inserted new item to at {SelectedItemIndex + 1} - {item}");
+                        log.Debug($"Inserted new item at {SelectedItemIndex + 1} - {item}");
                         SelectedItemIndex = SelectedItemIndex + 1;
                     }
                 }
@@ -255,7 +275,7 @@ namespace CraigStars
                     }
                     else
                     {
-                        SelectedItemIndex = -1;
+                        SelectedItemIndex = SelectedItemIndex - 1;
                     }
                 }
                 UpdateItems();

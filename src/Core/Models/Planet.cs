@@ -17,6 +17,7 @@ namespace CraigStars
         #region Scannable Stats
 
         public Hab? Hab { get; set; }
+        public Hab? BaseHab { get; set; }
         public Mineral MineralConcentration { get; set; }
 
         [JsonIgnore]
@@ -393,6 +394,263 @@ namespace CraigStars
             return false;
         }
 
+        /// <summary>
+        /// Get the actual quantity we will build (as opposed to the amount requested by the player)
+        /// We can't build more mines than the planet supports
+        /// Auto build steps will also only build what is necessary
+        /// </summary>
+        /// <param name="planet"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public int GetQuantityToBuild(int requestedQuantity, QueueItemType type)
+        {
+            // if we are autobuilding, don't build more than our max
+            // i.e. if we have 95 mines, 100 max mines, and we are autobuilding 10 mines
+            // we should only actually autobuild 5 mines
+            switch (type)
+            {
+                case QueueItemType.AutoMines:
+                    requestedQuantity = Math.Min(requestedQuantity, MaxMines - Mines);
+                    break;
+                case QueueItemType.AutoFactories:
+                    requestedQuantity = Math.Min(requestedQuantity, MaxFactories - Factories);
+                    break;
+                case QueueItemType.AutoDefenses:
+                    requestedQuantity = Math.Min(requestedQuantity, MaxDefenses - Defenses);
+                    break;
+                case QueueItemType.Mine:
+                    requestedQuantity = Math.Min(requestedQuantity, MaxPossibleMines - Mines);
+                    break;
+                case QueueItemType.Factory:
+                    requestedQuantity = Math.Min(requestedQuantity, MaxPossibleFactories - Factories);
+                    break;
+                case QueueItemType.Defenses:
+                    requestedQuantity = Math.Min(requestedQuantity, MaxDefenses - Defenses);
+                    break;
+                case QueueItemType.TerraformEnvironment:
+                case QueueItemType.AutoMaxTerraform:
+                    requestedQuantity = Math.Min(requestedQuantity, GetTerraformAmount().Sum);
+                    break;
+                case QueueItemType.AutoMinTerraform:
+                    requestedQuantity = Math.Min(requestedQuantity, GetMinTerraformAmount().Sum);
+                    break;
+            }
+            return requestedQuantity;
+        }
+
+        #region Terraforming
+
+        public bool CanTerraform(Player player = null)
+        {
+            return GetTerraformAmount(player).Sum > 0;
+        }
+
+        /// <summary>
+        /// Get the total amount we can terraform this planet
+        /// </summary>
+        /// <param name="planet">The planet to check for tarraformability</param>
+        /// <param name="player">The player to check terraformability for. If not set this function uses the planet owner</param>
+        /// <returns></returns>
+        public Hab GetTerraformAmount(Player player = null)
+        {
+            player = player == null ? Player : player;
+            Hab terraformAmount = new Hab();
+            if (player == null)
+            {
+                // can't terraform, return an empty Hab
+                return terraformAmount;
+            }
+
+            var bestTotalTerraform = player.GetBestTerraform(TerraformHabType.All);
+            var totalTerraformAbility = bestTotalTerraform == null ? 0 : bestTotalTerraform.Ability;
+
+            foreach (HabType habType in Enum.GetValues(typeof(HabType)))
+            {
+                // get the two ways we can terraform
+                var bestHabTerraform = player.GetBestTerraform((TerraformHabType)habType);
+
+                // find out which terraform tech has the greater terraform ability
+                var ability = 0;
+                if (bestHabTerraform != null)
+                {
+                    ability = Mathf.Max(bestHabTerraform.Ability, totalTerraformAbility);
+                }
+
+                if (ability == 0)
+                {
+                    continue;
+                }
+
+                // The distance from the starting hab of this planet
+                int fromIdealBaseDistance = Math.Abs(player.Race.HabCenter[habType] - BaseHab.Value[habType]);
+
+                // the distance from the current hab of this planet
+                int fromIdeal = player.Race.HabCenter[habType] - Hab.Value[habType];
+                int fromIdealDistance = Math.Abs(fromIdeal);
+
+                // if we have any left to terraform
+                if (fromIdealDistance > 0)
+                {
+                    // we can either terrform up to our full ability, or however much
+                    // we have left to terraform on this
+                    var alreadyTerraformed = (fromIdealBaseDistance - fromIdealDistance);
+                    terraformAmount = terraformAmount.WithType(habType, Math.Min(ability - alreadyTerraformed, fromIdealDistance));
+                }
+            }
+
+            return terraformAmount;
+        }
+
+        /// <summary>
+        /// Get the minimum amount we need to terraform this planet to make it habitable (if we can terraform it at all)
+        /// </summary>
+        /// <param name="planet">The planet to check for tarraformability</param>
+        /// <param name="player">The player to check terraformability for. If not set this function uses the planet owner</param>
+        /// <returns></returns>
+        public Hab GetMinTerraformAmount(Player player = null)
+        {
+            player = player == null ? Player : player;
+            Hab terraformAmount = new Hab();
+            if (player == null || Hab == null)
+            {
+                // can't terraform, return an empty Hab
+                return terraformAmount;
+            }
+
+            var bestTotalTerraform = player.GetBestTerraform(TerraformHabType.All);
+            var totalTerraformAbility = bestTotalTerraform == null ? 0 : bestTotalTerraform.Ability;
+
+            foreach (HabType habType in Enum.GetValues(typeof(HabType)))
+            {
+                // get the two ways we can terraform
+                var bestHabTerraform = player.GetBestTerraform((TerraformHabType)habType);
+
+                // find out which terraform tech has the greater terraform ability
+                var ability = totalTerraformAbility;
+                if (bestHabTerraform != null)
+                {
+                    ability = Mathf.Max(ability, bestHabTerraform.Ability);
+                }
+
+                if (ability == 0)
+                {
+                    continue;
+                }
+
+                // The distance from the starting hab of this planet
+                int fromIdealBaseDistance = Math.Abs(player.Race.HabCenter[habType] - BaseHab.Value[habType]);
+                // the distance from the current hab of this planet
+                int fromIdeal = player.Race.HabCenter[habType] - Hab.Value[habType];
+                int fromIdealDistance = Math.Abs(fromIdeal);
+
+                // the distance from the current hab of this planet to our minimum hab threshold
+                // If this is positive, it means we need to terraform a certain percent to get it in range
+                int fromHabitableDistance = 0;
+                int planetHabValue = Hab.Value[habType];
+                int playerHabIdeal = player.Race.HabCenter[habType];
+                if (planetHabValue > playerHabIdeal)
+                {
+                    // this planet is higher that we want, check the upper bound distance
+                    // if the player's high temp is 85, and this planet is 83, we are already in range
+                    // and don't need to min-terraform. If the planet is 87, we need to drop it 2 to be in range.
+                    fromHabitableDistance = planetHabValue - player.Race.HabHigh[habType];
+                }
+                else
+                {
+                    // this planet is lower than we want, check the lower bound distance
+                    // if the player's low temp is 15, and this planet is 17, we are already in range
+                    // and don't need to min-terraform. If the planet is 13, we need to increase it 2 to be in range.
+                    fromHabitableDistance = player.Race.HabLow[habType] - planetHabValue;
+                }
+
+                // if we are already in range, set this to 0 because we don't want to terraform anymore
+                if (fromHabitableDistance < 0)
+                {
+                    fromHabitableDistance = 0;
+                }
+
+                // if we have any left to terraform
+                if (fromHabitableDistance > 0)
+                {
+                    // we can either terrform up to our full ability, or however much
+                    // we have left to terraform on this
+                    var alreadyTerraformed = (fromIdealBaseDistance - fromIdealDistance);
+                    var terraformAmountPossible = Math.Min(ability - alreadyTerraformed, fromIdealDistance);
+
+                    // if we are in range for this hab type, we won't terraform at all, otherwise return the max possible terraforming
+                    // left.
+                    terraformAmount = terraformAmount.WithType(habType, Math.Min(fromHabitableDistance, terraformAmountPossible));
+                }
+            }
+
+            return terraformAmount;
+        }
+
+        /// <summary>
+        /// Get the best hab to terraform (the one with the most distance away from ideal that we can still terraform)
+        /// </summary>
+        /// <param name="planet"></param>
+        /// <returns></returns>
+        public HabType? GetBestTerraform()
+        {
+            var player = Player;
+            if (player == null)
+            {
+                return null;
+            }
+            // if we can terraform any, return true
+            var largestDistance = 0;
+            HabType? bestHabType = null;
+
+            var bestTotalTerraform = player.GetBestTerraform(TerraformHabType.All);
+            var totalTerraformAbility = bestTotalTerraform == null ? 0 : bestTotalTerraform.Ability;
+
+            foreach (HabType habType in Enum.GetValues(typeof(HabType)))
+            {
+                // get the two ways we can terraform
+                var bestHabTerraform = player.GetBestTerraform((TerraformHabType)habType);
+
+                // find out which terraform tech has the greater terraform ability
+                var ability = totalTerraformAbility;
+                if (bestHabTerraform != null)
+                {
+                    ability = Mathf.Max(ability, bestHabTerraform.Ability);
+                }
+
+                if (ability == 0)
+                {
+                    continue;
+                }
+
+                // The distance from the starting hab of this planet
+                int fromIdealBaseDistance = Math.Abs(player.Race.HabCenter[habType] - BaseHab.Value[habType]);
+
+                // the distance from the current hab of this planet
+                int fromIdeal = player.Race.HabCenter[habType] - Hab.Value[habType];
+                int fromIdealDistance = Math.Abs(fromIdeal);
+
+                int terraformAmount = 0;
+                // if we have any left to terraform
+                if (fromIdealDistance > 0)
+                {
+                    // we can either terrform up to our full ability, or however much
+                    // we have left to terraform on this
+                    var alreadyTerraformed = (fromIdealBaseDistance - fromIdealDistance);
+                    terraformAmount = Math.Min(ability - alreadyTerraformed, fromIdealDistance);
+                }
+
+                // we want to get the largest distance that we can terraform
+                if (fromIdealDistance > largestDistance && terraformAmount > 0)
+                {
+                    largestDistance = fromIdealDistance;
+                    bestHabType = habType;
+                }
+            }
+
+            return bestHabType;
+        }
+
+        #endregion
 
         /// <summary>
         /// Attempt to transfer cargo to/from this planet

@@ -286,6 +286,33 @@ namespace CraigStarsTable
         }
 
         /// <summary>
+        /// Clear out all the rows (but leave the header)
+        /// </summary>
+        public void ClearRows()
+        {
+            // clear out old rows
+            foreach (Node child in gridContainer.GetChildren())
+            {
+                if (child is ColumnHeader)
+                {
+                    continue;
+                }
+
+                if (child is ICSCellControl<T> cell)
+                {
+                    cell.MouseEnteredEvent -= OnMouseEntered;
+                    cell.MouseExitedEvent -= OnMouseExited;
+                    cell.CellSelectedEvent -= OnCellSelected;
+                    cell.CellActivatedEvent -= OnCellActivated;
+                }
+
+                child.QueueFree();
+            }
+
+            cellControls = new Control[0, 0];
+        }
+
+        /// <summary>
         /// Clear the table and redraw it with new/updated data
         /// </summary>
         public void ResetTable()
@@ -303,6 +330,38 @@ namespace CraigStarsTable
                     AddRows();
                     SelectedRow = 0;
                     Update();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Clear the table and redraw it with new/updated data
+        /// </summary>
+        public void ResetRows()
+        {
+            if (gridContainer != null && Data != null)
+            {
+
+                ClearRows();
+
+                if (Data.VisibleColumns.Count() > 0)
+                {
+                    AddRows();
+                    // if we are selecting a row that is 
+                    if (SelectedRow > cellControls.GetLength(0))
+                    {
+                        SelectedRow = NoRowSelected;
+                    }
+
+                    Update();
+
+                    if (SelectedRow != NoRowSelected)
+                    {
+                        if (cellControls[SelectedRow, 0] is ICSCellControl<T> cell)
+                        {
+                            RowSelectedEvent?.Invoke(SelectedRow, 0, cell.Cell, cell.Row.Metadata);
+                        }
+                    }
                 }
             }
         }

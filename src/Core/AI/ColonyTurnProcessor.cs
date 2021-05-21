@@ -29,7 +29,7 @@ namespace CraigStars
             // TODO: pick the best one
             ShipDesign colonyShip = player.GetLatestDesign(ShipDesignPurpose.Colonizer);
 
-            var colonizablePlanets = player.AllPlanets.Where(planet => planet.Explored && planet.Uninhabited && player.Race.GetPlanetHabitability(planet.Hab.Value) > 0).ToList();
+            var colonizablePlanets = player.AllPlanets.Where(planet => planet.Explored && planet.Uninhabited && player.Race.GetPlanetHabitability(planet.BaseHab.Value) > 0).ToList();
             var buildablePlanets = player.Planets.Where(planet => planet.CanBuild(player, colonyShip.Aggregate.Mass)).ToList();
             var colonizerFleets = player.Fleets.Where(fleet => fleet.Aggregate.Purposes.Contains(ShipDesignPurpose.Colonizer));
 

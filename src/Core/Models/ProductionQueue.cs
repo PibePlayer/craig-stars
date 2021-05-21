@@ -7,7 +7,6 @@ namespace CraigStars
 {
     public class ProductionQueue
     {
-        public Cost Allocated { get; set; } = new Cost();
         /// <summary>
         /// This is the amount of resources leftover after building
         /// These are used for research
@@ -21,10 +20,16 @@ namespace CraigStars
         /// Ensure this production queue has something in it
         /// </summary>
         /// <param name="item"></param>
-        public void EnsureHasItem(ProductionQueueItem item, int index)
+        public void EnsureHasItem(ProductionQueueItem item, int index = -1)
         {
-            // remove this item if it already exists
-            Items.Remove(item);
+            foreach (var existingItem in Items)
+            {
+                if (item.Type == existingItem.Type && item.Quantity == existingItem.Quantity)
+                {
+                    // don't add it if it exists somewhere else in the queue
+                    return;
+                }
+            }
 
             // insert this item into the proper place if it doesn't already exist
             if (index < Items.Count && item != Items[index])
@@ -37,6 +42,7 @@ namespace CraigStars
             {
                 Items.Add(item);
             }
+
         }
     }
 }

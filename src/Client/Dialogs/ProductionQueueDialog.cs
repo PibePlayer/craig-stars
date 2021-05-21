@@ -73,19 +73,19 @@ namespace CraigStars
             Connect("about_to_show", this, nameof(OnAboutToShow));
             Connect("popup_hide", this, nameof(OnPopupHide));
 
-            availableItems.RowSelectedEvent += OnSelectAvailableItem;
-            availableItems.RowActivatedEvent += OnAddItem;
+            availableItems.ItemSelectedEvent += OnSelectAvailableItem;
+            availableItems.ItemActivatedEvent += OnAddItem;
 
-            queuedItems.RowSelectedEvent += OnSelectQueuedItem;
+            queuedItems.ItemSelectedEvent += OnSelectQueuedItem;
 
             Signals.MapObjectCommandedEvent += OnMapObjectCommanded;
         }
 
         public override void _ExitTree()
         {
-            availableItems.RowSelectedEvent -= OnSelectAvailableItem;
-            availableItems.RowActivatedEvent -= OnAddItem;
-            queuedItems.RowSelectedEvent -= OnSelectQueuedItem;
+            availableItems.ItemSelectedEvent -= OnSelectAvailableItem;
+            availableItems.ItemActivatedEvent -= OnAddItem;
+            queuedItems.ItemSelectedEvent -= OnSelectQueuedItem;
             Signals.MapObjectCommandedEvent -= OnMapObjectCommanded;
         }
 
@@ -142,7 +142,7 @@ namespace CraigStars
                 costOfQueuedLabel.Text = $"Cost of {item.ShortName} x {item.Quantity}";
 
                 completionEstimateLabel.Visible = true;
-                completionEstimateLabel.Text = $"{(int)(item.percentComplete * 100)}% Done. Completion {item.yearsToBuild} year{(item.yearsToBuild > 1 ? "s" : "")}";
+                completionEstimateLabel.Text = $"{(int)(item.percentComplete * 100)}% Done. Completion {item.yearsToBuildAll} year{(item.yearsToBuildAll > 1 ? "s" : "")}";
             }
             else
             {
@@ -206,12 +206,12 @@ namespace CraigStars
         }
 
 
-        void OnSelectQueuedItem(int rowIndex, int colIndex, Cell cell, ProductionQueueItem item)
+        void OnSelectQueuedItem(ProductionQueueItem item)
         {
             UpdateCompletionEstimate(item);
         }
 
-        void OnSelectAvailableItem(int rowIndex, int colIndex, Cell cell, ProductionQueueItem item)
+        void OnSelectAvailableItem(ProductionQueueItem item)
         {
             var cost = item.GetCostOfOne(RulesManager.Rules, Me);
             if (item.Type == QueueItemType.Starbase && Planet.HasStarbase)
@@ -221,7 +221,7 @@ namespace CraigStars
             availableItemCostGrid.Cost = cost;
         }
 
-        void OnAddItem(int rowIndex, int colIndex, Cell cell, ProductionQueueItem item)
+        void OnAddItem(ProductionQueueItem item)
         {
             if (item != null)
             {

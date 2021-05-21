@@ -23,6 +23,11 @@ namespace CraigStars
         /// <param name="h"></param>
         public static implicit operator int[](Hab h) => new int[] { h.grav, h.temp, h.rad };
 
+        public override string ToString()
+        {
+            return $"hab g:{grav}, t:{temp}, r:{rad}";
+        }
+
         public int this[int index]
         {
             get
@@ -57,6 +62,35 @@ namespace CraigStars
                         throw new IndexOutOfRangeException($"Index {index} out of range for {this.GetType().ToString()}");
                 }
             }
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Hab hab)
+            {
+                return Equals(hab);
+            }
+            return false;
+        }
+
+        public bool Equals(Hab other)
+        {
+            return grav == other.grav && temp == other.temp && rad == other.rad;
+        }
+
+        public static bool operator ==(Hab a, Hab b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(Hab a, Hab b)
+        {
+            return !a.Equals(b);
+        }
+
+        public override int GetHashCode()
+        {
+            return grav.GetHashCode() ^ temp.GetHashCode() ^ rad.GetHashCode();
         }
 
         /// <summary>
@@ -100,6 +134,12 @@ namespace CraigStars
                     throw new IndexOutOfRangeException($"Type {type} out of range for {this.GetType().ToString()}");
             }
         }
+
+        /// <summary>
+        /// Sum of all values. Used for terraforming
+        /// </summary>
+        /// <returns></returns>
+        public int Sum { get => grav + temp + rad; }
 
     }
 }

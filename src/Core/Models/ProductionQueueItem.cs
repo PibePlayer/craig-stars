@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace CraigStars
@@ -8,14 +9,19 @@ namespace CraigStars
     /// </summary>
     public class ProductionQueueItem
     {
-        public QueueItemType Type { get; set; }
-        public int Quantity { get; set; }
 
         /// <summary>
-        /// The name of the fleet to place this item into
+        /// The type of production queue item to build
         /// </summary>
         /// <value></value>
-        public string FleetName { get; set; }
+        public QueueItemType Type { get; set; }
+
+        /// <summary>
+        /// The quantity requested to build
+        /// For autobuild items this is the "Up to " Quantity
+        /// </summary>
+        /// <value></value>
+        public int Quantity { get; set; }
 
         /// <summary>
         /// If this is a ship building item, this is the design to build
@@ -24,24 +30,40 @@ namespace CraigStars
         [JsonProperty(IsReference = true)]
         public ShipDesign Design { get; set; }
 
+        /// <summary>
+        /// The name of the fleet to place this item into
+        /// </summary>
+        /// <value></value>
+        public string FleetName { get; set; }
+
+        /// <summary>
+        /// The amount allocated to this item
+        /// </summary>
+        /// <returns></returns>
+        public Cost Allocated { get; set; } = new Cost();
+
         [JsonIgnore]
-        public int yearsToBuild { get; set; } = -1;
+        public int yearsToBuildOne { get; set; } = -1;
+
+        [JsonIgnore]
+        public int yearsToBuildAll { get; set; } = -1;
 
         [JsonIgnore]
         public float percentComplete { get; set; } = 0;
 
         [JsonConstructor]
-        public ProductionQueueItem(QueueItemType type, int quantity = 0, ShipDesign design = null, string fleetName = null)
+        public ProductionQueueItem(QueueItemType type, int quantity = 0, ShipDesign design = null, string fleetName = null, Cost allocated = new Cost())
         {
             Type = type;
             Quantity = quantity;
             Design = design;
             FleetName = fleetName;
+            Allocated = allocated;
         }
 
         public ProductionQueueItem Clone()
         {
-            return new ProductionQueueItem(Type, Quantity, Design, FleetName);
+            return new ProductionQueueItem(Type, Quantity, Design, FleetName, Allocated);
         }
 
         public override string ToString()
@@ -73,7 +95,7 @@ namespace CraigStars
             // Return true if the fields match.
             // Note that the base class is not invoked because it is
             // System.Object, which defines Equals as reference equality.
-            return (Type == p.Type) && (Quantity == p.Quantity) && (Design == p.Design) && (FleetName == p.FleetName);
+            return (Type == p.Type) && (Quantity == p.Quantity) && (Design == p.Design) && (FleetName == p.FleetName) && (Allocated == p.Allocated);
         }
 
         public override int GetHashCode() => (Type, Quantity, Design, FleetName).GetHashCode();
@@ -106,6 +128,8 @@ namespace CraigStars
                     case QueueItemType.Starbase:
                     case QueueItemType.ShipToken:
                         return Design.Name;
+                    case QueueItemType.TerraformEnvironment:
+                        return "Terraform Environment";
                     case QueueItemType.AutoMines:
                         return "Mine (Auto)";
                     case QueueItemType.AutoFactories:
@@ -114,6 +138,10 @@ namespace CraigStars
                         return "Defenses (Auto)";
                     case QueueItemType.AutoMineralAlchemy:
                         return "Alchemy (Auto)";
+                    case QueueItemType.AutoMaxTerraform:
+                        return "Max Terraform (Auto)";
+                    case QueueItemType.AutoMinTerraform:
+                        return "Min Terraform (Auto)";
                     default:
                         return Type.ToString();
                 }
@@ -137,6 +165,10 @@ namespace CraigStars
                         return "Factory (Auto Build)";
                     case QueueItemType.AutoDefenses:
                         return "Defense (Auto Build)";
+                    case QueueItemType.AutoMinTerraform:
+                        return "Minimum Terraform";
+                    case QueueItemType.AutoMaxTerraform:
+                        return "Maximum Terraform";
                     default:
                         return Type.ToString();
                 }
@@ -157,7 +189,6 @@ namespace CraigStars
                 Type == QueueItemType.AutoMineralPacket;
         }
 
-
         /// <summary>
         /// True if this is a mineral packet
         /// </summary>
@@ -171,6 +202,18 @@ namespace CraigStars
                 Type == QueueItemType.AutoMineralAlchemy ||
                 Type == QueueItemType.AutoMineralPacket ||
                 Type == QueueItemType.AutoMines ||
+                Type == QueueItemType.AutoMinTerraform;
+        }
+
+        /// <summary>
+        /// True if this is a mineral packet
+        /// </summary>
+        /// <value></value>
+        public bool IsTerraform
+        {
+            get =>
+                Type == QueueItemType.TerraformEnvironment ||
+                Type == QueueItemType.AutoMaxTerraform ||
                 Type == QueueItemType.AutoMinTerraform;
         }
 
@@ -212,6 +255,10 @@ namespace CraigStars
             else if (Type == QueueItemType.Defenses || Type == QueueItemType.AutoDefenses)
             {
                 return rules.DefenseCost;
+            }
+            else if (Type == QueueItemType.TerraformEnvironment || Type == QueueItemType.AutoMaxTerraform || Type == QueueItemType.AutoMinTerraform)
+            {
+                return player.TerraformCost;
             }
             else if (Type == QueueItemType.IroniumMineralPacket)
             {

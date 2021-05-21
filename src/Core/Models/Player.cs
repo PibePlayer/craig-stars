@@ -453,61 +453,69 @@ namespace CraigStars
         /// <summary>
         /// Get the best planetary scanner this player has access to
         /// </summary>
-        /// <param name="techStore"></param>
         /// <returns></returns>
         public TechPlanetaryScanner GetBestPlanetaryScanner()
         {
-            return GetBestTech<TechPlanetaryScanner>(TechStore, TechCategory.PlanetaryScanner);
+            return GetBestTech<TechPlanetaryScanner>(TechCategory.PlanetaryScanner);
         }
 
         /// <summary>
         /// Get the best beam weapon this player has access to
         /// </summary>
-        /// <param name="techStore"></param>
         /// <returns></returns>
         public TechDefense GetBestDefense()
         {
-            return GetBestTech<TechDefense>(TechStore, TechCategory.PlanetaryDefense);
+            return GetBestTech<TechDefense>(TechCategory.PlanetaryDefense);
+        }
+
+        /// <summary>
+        /// Get the best terraform tech this player has for a terraform type
+        /// </summary>
+        /// <returns></returns>
+        public TechTerraform GetBestTerraform(TerraformHabType habType)
+        {
+            var techs = TechStore.GetTechsByCategory(TechCategory.Terraforming).Where(t => t is TechTerraform tf && tf.HabType == habType).ToList();
+
+            techs.Sort((t1, t2) => t2.Ranking.CompareTo(t1.Ranking));
+            var tech = techs.Find(t => HasTech(t));
+
+            return tech as TechTerraform;
         }
 
         /// <summary>
         /// Get the best engine this player has access to
         /// </summary>
-        /// <param name="techStore"></param>
         /// <returns></returns>
         public TechEngine GetBestEngine()
         {
-            return GetBestTech<TechEngine>(TechStore, TechCategory.Engine);
+            return GetBestTech<TechEngine>(TechCategory.Engine);
         }
 
         /// <summary>
         /// Get the best shield this player has access to
         /// </summary>
-        /// <param name="techStore"></param>
         /// <returns></returns>
         public TechHullComponent GetBestScanner()
         {
-            return GetBestTech<TechHullComponent>(TechStore, TechCategory.Scanner);
+            return GetBestTech<TechHullComponent>(TechCategory.Scanner);
         }
 
         /// <summary>
         /// Get the best shield this player has access to
         /// </summary>
-        /// <param name="techStore"></param>
         /// <returns></returns>
         public TechHullComponent GetBestShield()
         {
-            return GetBestTech<TechHullComponent>(TechStore, TechCategory.Shield);
+            return GetBestTech<TechHullComponent>(TechCategory.Shield);
         }
 
         /// <summary>
         /// Get the best armor this player has access to
         /// </summary>
-        /// <param name="techStore"></param>
         /// <returns></returns>
         public TechHullComponent GetBestArmor()
         {
-            return GetBestTech<TechHullComponent>(TechStore, TechCategory.Armor);
+            return GetBestTech<TechHullComponent>(TechCategory.Armor);
         }
 
         /// <summary>
@@ -517,7 +525,7 @@ namespace CraigStars
         /// <returns></returns>
         public TechHullComponent GetBestBeamWeapon()
         {
-            return GetBestTech<TechHullComponent>(TechStore, TechCategory.BeamWeapon);
+            return GetBestTech<TechHullComponent>(TechCategory.BeamWeapon);
         }
 
         /// <summary>
@@ -527,17 +535,16 @@ namespace CraigStars
         /// <returns></returns>
         public TechHullComponent GetBestTorpedo()
         {
-            return GetBestTech<TechHullComponent>(TechStore, TechCategory.Torpedo);
+            return GetBestTech<TechHullComponent>(TechCategory.Torpedo);
         }
 
         /// <summary>
         /// Get the best bomb this player has access to
         /// </summary>
-        /// <param name="techStore"></param>
         /// <returns></returns>
         public TechHullComponent GetBestBomb()
         {
-            return GetBestTech<TechHullComponent>(TechStore, TechCategory.Bomb);
+            return GetBestTech<TechHullComponent>(TechCategory.Bomb);
         }
 
         /// <summary>
@@ -547,13 +554,12 @@ namespace CraigStars
         /// <returns></returns>
         public TechHullComponent GetBestMineRobot()
         {
-            return GetBestTech<TechHullComponent>(TechStore, TechCategory.MineRobot);
+            return GetBestTech<TechHullComponent>(TechCategory.MineRobot);
         }
 
         /// <summary>
         /// Get the best mine layer this player has access to
         /// </summary>
-        /// <param name="techStore"></param>
         /// <returns></returns>
         public TechHullComponent GetBestMineLayer()
         {
@@ -568,7 +574,6 @@ namespace CraigStars
         /// <summary>
         /// Get the best mine layer this player has access to
         /// </summary>
-        /// <param name="techStore"></param>
         /// <returns></returns>
         public TechHullComponent GetBestSpeedTrapLayer()
         {
@@ -583,7 +588,6 @@ namespace CraigStars
         /// <summary>
         /// Get the best mine layer this player has access to
         /// </summary>
-        /// <param name="techStore"></param>
         /// <returns></returns>
         public TechHullComponent GetBestStargate()
         {
@@ -598,7 +602,6 @@ namespace CraigStars
         /// <summary>
         /// Get the best mine layer this player has access to
         /// </summary>
-        /// <param name="techStore"></param>
         /// <returns></returns>
         public TechHullComponent GetBestMassDriver()
         {
@@ -614,12 +617,11 @@ namespace CraigStars
         /// Get the best tech by category
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="techStore"></param>
         /// <param name="category"></param>
         /// <returns></returns>
-        public T GetBestTech<T>(ITechStore techStore, TechCategory category) where T : Tech
+        public T GetBestTech<T>(TechCategory category) where T : Tech
         {
-            var techs = techStore.GetTechsByCategory(category);
+            var techs = TechStore.GetTechsByCategory(category);
             var tech = techs.OrderBy(t => t.Ranking).FirstOrDefault(t => HasTech(t));
             return tech as T;
         }
@@ -669,6 +671,8 @@ namespace CraigStars
         }
 
         #region Computed Properties
+
+        public Cost TerraformCost { get => Race.HasLRT(LRT.TT) ? Rules.TotalTerraformCost : Rules.TerraformCost; }
 
         /// <summary>
         /// Get the cost to construct a single or mixed mineral packet 

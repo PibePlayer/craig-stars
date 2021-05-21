@@ -47,7 +47,6 @@ namespace CraigStars
         {
             string text = $"You have built {numMines} mine(s) on {planet.Name}.";
             player.Messages.Add(new Message(MessageType.BuiltMine, text, planet));
-
         }
 
         public static void Factory(Player player, Planet planet, int numFactories)
@@ -62,6 +61,28 @@ namespace CraigStars
             string text = $"You have built {numDefenses} defense(s) on {planet.Name}.";
             player.Messages.Add(new Message(MessageType.BuiltDefense, text, planet));
 
+        }
+
+        public static void Terraform(Player player, Planet planet, HabType habType, int change)
+        {
+            string changeText = change > 0 ? "increased" : "decreased";
+            string newValueText = "";
+            var newValue = planet.Hab.Value[habType];
+            switch (habType)
+            {
+                case HabType.Gravity:
+                    newValueText = TextUtils.GetGravString(newValue);
+                    break;
+                case HabType.Temperature:
+                    newValueText = TextUtils.GetTempString(newValue);
+                    break;
+                case HabType.Radiation:
+                    newValueText = TextUtils.GetRadString(newValue);
+                    break;
+            }
+
+            string text = $"Your terraforming efforts on {planet.Name} have {changeText} the {habType} to {newValueText}";
+            player.Messages.Add(new Message(MessageType.BuiltMine, text, planet));
         }
 
         public static void MineralPacket(Player player, Planet planet, MineralPacket packet)
@@ -145,7 +166,14 @@ namespace CraigStars
             string text;
             if (numBuilt == 1)
             {
-                text = $"Your starbase at {fleet.Orbiting.Name} has built a new {design.Name}.";
+                if (design.Hull.Starbase)
+                {
+                    text = $"You have built a new {design.Name} on {fleet.Orbiting.Name}.";
+                }
+                else
+                {
+                    text = $"Your starbase at {fleet.Orbiting.Name} has built a new {design.Name}.";
+                }
             }
             else
             {
@@ -318,7 +346,7 @@ namespace CraigStars
 
         public static void PlanetDiscovered(Player player, Planet planet)
         {
-            long habValue = player.Race.GetPlanetHabitability(planet.Hab.Value);
+            long habValue = player.Race.GetPlanetHabitability(planet.BaseHab.Value);
             string text;
             if (planet.Owner != null && planet.Owner != player)
             {

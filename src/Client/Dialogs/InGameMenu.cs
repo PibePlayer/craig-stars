@@ -10,7 +10,6 @@ namespace CraigStars
         Button saveTurnButton;
         Button exitGameButton;
         Button exitToMainMenuButton;
-        CSConfirmDialog confirmDialog;
 
         public override void _Ready()
         {
@@ -19,7 +18,6 @@ namespace CraigStars
             saveTurnButton = GetNode<Button>("MarginContainer/CenterContainer/VBoxContainer/SaveTurnButton");
             exitGameButton = GetNode<Button>("MarginContainer/CenterContainer/VBoxContainer/ExitGameButton");
             exitToMainMenuButton = GetNode<Button>("MarginContainer/CenterContainer/VBoxContainer/ExitToMainMenuButton");
-            confirmDialog = GetNode<CSConfirmDialog>("ConfirmDialog");
 
             saveTurnButton.Connect("pressed", this, nameof(OnSaveTurnButtonPressed));
             exitGameButton.Connect("pressed", this, nameof(OnExitGameButtonPressed));
@@ -78,7 +76,7 @@ namespace CraigStars
         {
             if (Me.Dirty)
             {
-                confirmDialog.Show("You have unsaved changes to your turn, are you sure you want to exit?",
+                CSConfirmDialog.Show("You have unsaved changes to your turn, are you sure you want to exit?",
                 () => GetTree().Quit());
             }
             else
@@ -91,7 +89,7 @@ namespace CraigStars
         {
             if (Me.Dirty)
             {
-                confirmDialog.Show("You have unsaved changes to your turn, are you sure you want to exit?",
+                CSConfirmDialog.Show("You have unsaved changes to your turn, are you sure you want to exit?",
                 () => loader.LoadScene("res://src/Client/MainMenu.tscn"));
             }
             else

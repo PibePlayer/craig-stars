@@ -260,7 +260,6 @@ margin_bottom = 401.204
 [node name="CargoTransferDialog" parent="CanvasLayer" instance=ExtResource( 14 )]
 
 [node name="ShipDesignerDialog" parent="CanvasLayer" instance=ExtResource( 18 )]
-visible = false
 
 [node name="TurnGenerationDialog" parent="CanvasLayer" instance=ExtResource( 20 )]
 visible = false

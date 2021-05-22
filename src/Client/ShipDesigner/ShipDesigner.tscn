@@ -22,6 +22,7 @@ margin_bottom = 648.0
 size_flags_vertical = 3
 TechsToDisplay = 1
 OnlyAvailable = true
+ShowOnlyAvailableOption = false
 DragAndDroppable = true
 
 [node name="HullComponentCostLabel" type="Label" parent="HullComponents"]

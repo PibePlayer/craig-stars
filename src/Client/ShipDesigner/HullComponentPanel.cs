@@ -167,9 +167,8 @@ namespace CraigStars
             {
                 GetTree().SetInputAsHandled();
 
-                TechSummaryPopup.Instance.Tech = ShipDesignSlot.HullComponent;
-                TechSummaryPopup.Instance.RectPosition = GetGlobalMousePosition() - new Vector2(0, TechSummaryPopup.Instance.RectSize.y);
-                TechSummaryPopup.Instance.Show();
+                TechSummaryPopup.Tech = ShipDesignSlot.HullComponent;
+                TechSummaryPopup.ShowAtMouse();
             }
             else if (@event.IsActionReleased("hullcomponent_alternate_select"))
             {

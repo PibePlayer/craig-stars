@@ -27,6 +27,12 @@ namespace CraigStars
 
         public override void _UnhandledInput(InputEvent @event)
         {
+            if (DialogManager.DialogRefCount > 0)
+            {
+                // don't move the map around if we have a dialog open
+                return;
+            }
+
             if (@event.IsActionPressed("zoom_in"))
             {
                 UpdateZoom(-ZoomConstant, GetLocalMousePosition());

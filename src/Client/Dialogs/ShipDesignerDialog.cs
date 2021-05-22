@@ -10,8 +10,8 @@ namespace CraigStars
 
         Button okButton;
 
-        CSConfirmDialog confirmationDialog;
 
+        Container shipDesignerContainer;
         TabContainer tabContainer;
 
         DesignTree shipDesignTree;
@@ -30,15 +30,17 @@ namespace CraigStars
         TechTree hullsTechTree;
         HullSummary hullHullSummary;
 
+        Container shipDesignTabsContainer;
         ShipDesigner shipDesigner;
-        Label noDesignLabel;
+        Button doneButton;
 
         public override void _Ready()
         {
             base._Ready();
             okButton = FindNode("OKButton") as Button;
+
+            shipDesignTabsContainer = FindNode("ShipDesignTabsContainer") as Container;
             tabContainer = FindNode("TabContainer") as TabContainer;
-            confirmationDialog = FindNode("ConfirmationDialog") as CSConfirmDialog;
 
             // ships tab
             shipDesignTree = FindNode("ShipDesignTree") as DesignTree;
@@ -59,9 +61,10 @@ namespace CraigStars
             hullHullSummary = FindNode("HullHullSummary") as HullSummary;
             createShipDesignButton = FindNode("CreateShipDesignButton") as Button;
 
-            // ship designer tab
+            // ship designer control
             shipDesigner = FindNode("ShipDesigner") as ShipDesigner;
-            noDesignLabel = FindNode("NoDesignLabel") as Label;
+            shipDesignerContainer = FindNode("ShipDesignerContainer") as Container;
+            doneButton = FindNode("DoneButton") as Button;
 
             shipDesignTree.DesignSelectedEvent += OnShipDesignSelectedEvent;
             starbaseDesignTree.DesignSelectedEvent += OnStarbaseDesignSelectedEvent;
@@ -80,12 +83,41 @@ namespace CraigStars
             deleteStarbaseDesignButton.Connect("pressed", this, nameof(OnDeleteStarbaseDesignButtonPressed));
             createShipDesignButton.Connect("pressed", this, nameof(OnCreateShipDesignButtonPressed));
             editDesignButton.Disabled = editStarbaseDesignButton.Disabled = true; // we can only edit designs that are not in use
+
+            doneButton.Connect("pressed", this, nameof(OnDoneButtonPressed));
+
         }
 
         public override void _ExitTree()
         {
             shipDesignTree.DesignSelectedEvent -= OnShipDesignSelectedEvent;
             starbaseDesignTree.DesignSelectedEvent -= OnStarbaseDesignSelectedEvent;
+        }
+
+        public override void _Input(InputEvent @event)
+        {
+            if (Visible && @event.IsActionPressed("ui_cancel"))
+            {
+                if (shipDesignerContainer.Visible)
+                {
+                    if (shipDesigner.IsDirty)
+                    {
+                        CSConfirmDialog.Show("You have made changes to this design. Are you sure you want to close the designer?",
+                        () =>
+                        {
+                            shipDesignerContainer.Visible = false;
+                            shipDesignTabsContainer.Visible = true;
+                        });
+                    }
+                    else
+                    {
+                        shipDesignerContainer.Visible = false;
+                        shipDesignTabsContainer.Visible = true;
+                    }
+                    // cancel the popup
+                    GetTree().SetInputAsHandled();
+                }
+            }
         }
 
         void OnShipDesignSelectedEvent(ShipDesign design)
@@ -107,17 +139,16 @@ namespace CraigStars
             if (tech is TechHull hull)
             {
                 hullHullSummary.Hull = hull;
+                createShipDesignButton.Disabled = !Me.HasTech(tech);
             }
         }
 
 
         /// <summary>
-        /// Hide show
+        /// Our designer dialog is about to show
         /// </summary>
         void OnAboutToShow()
         {
-            var design = new ShipDesign { Hull = Techs.Scout, Player = Me };
-            shipDesigner.Hull = Techs.Scout;
         }
 
         /// <summary>
@@ -125,6 +156,7 @@ namespace CraigStars
         /// </summary>
         void OnPopupHide()
         {
+
         }
 
         /// <summary>
@@ -137,23 +169,22 @@ namespace CraigStars
 
         void OnCopyDesignButtonPressed()
         {
-            noDesignLabel.Visible = false;
             shipDesigner.EditingExisting = false;
             shipDesigner.Hull = shipHullSummary.Hull;
             shipDesigner.SourceShipDesign = shipHullSummary.ShipDesign;
-            shipDesigner.Visible = true;
 
-            tabContainer.CurrentTab = 3;
+            shipDesignerContainer.Visible = true;
+            shipDesignTabsContainer.Visible = false;
         }
 
         void OnEditDesignButtonPressed()
         {
-            noDesignLabel.Visible = false;
             shipDesigner.EditingExisting = true;
             shipDesigner.Hull = shipHullSummary.Hull;
             shipDesigner.SourceShipDesign = shipHullSummary.ShipDesign;
-            shipDesigner.Visible = true;
-            tabContainer.CurrentTab = 3;
+
+            shipDesignerContainer.Visible = true;
+            shipDesignTabsContainer.Visible = false;
         }
 
         void OnDeleteDesignButtonPressed()
@@ -169,7 +200,7 @@ namespace CraigStars
                     message = $"{shipHullSummary.ShipDesign.Name} is in use. All fleet tokens with this design will be immediately deleted. Are you sure you want to delete the design {shipHullSummary.ShipDesign.Name}?";
                 }
                 // TODO: handle deleting designs with existing fleets.
-                confirmationDialog.Show(
+                CSConfirmDialog.Show(
                     message,
                     () =>
                     {
@@ -183,22 +214,22 @@ namespace CraigStars
 
         void OnCopyStarbaseDesignButtonPressed()
         {
-            noDesignLabel.Visible = false;
             shipDesigner.EditingExisting = false;
             shipDesigner.Hull = starbaseHullSummary.Hull;
             shipDesigner.SourceShipDesign = starbaseHullSummary.ShipDesign;
-            shipDesigner.Visible = true;
-            tabContainer.CurrentTab = 3;
+
+            shipDesignerContainer.Visible = true;
+            shipDesignTabsContainer.Visible = false;
         }
 
         void OnEditStarbaseDesignButtonPressed()
         {
-            noDesignLabel.Visible = false;
             shipDesigner.EditingExisting = true;
             shipDesigner.Hull = starbaseHullSummary.Hull;
             shipDesigner.SourceShipDesign = starbaseHullSummary.ShipDesign;
-            shipDesigner.Visible = true;
-            tabContainer.CurrentTab = 3;
+
+            shipDesignerContainer.Visible = true;
+            shipDesignTabsContainer.Visible = false;
         }
 
         void OnDeleteStarbaseDesignButtonPressed()
@@ -208,13 +239,30 @@ namespace CraigStars
 
         void OnCreateShipDesignButtonPressed()
         {
-            noDesignLabel.Visible = false;
             shipDesigner.EditingExisting = false;
             shipDesigner.Hull = hullHullSummary.Hull;
             shipDesigner.SourceShipDesign = new ShipDesign() { Player = Me, Hull = shipDesigner.Hull };
-            shipDesigner.Visible = true;
 
-            tabContainer.CurrentTab = 3;
+            shipDesignerContainer.Visible = true;
+            shipDesignTabsContainer.Visible = false;
+        }
+
+        void OnDoneButtonPressed()
+        {
+            if (shipDesigner.IsDirty)
+            {
+                CSConfirmDialog.Show("You have made changes to this design. Are you sure you want to close the designer?",
+                () =>
+                {
+                    shipDesignerContainer.Visible = false;
+                    shipDesignTabsContainer.Visible = true;
+                });
+            }
+            else
+            {
+                shipDesignerContainer.Visible = false;
+                shipDesignTabsContainer.Visible = true;
+            }
         }
 
     }

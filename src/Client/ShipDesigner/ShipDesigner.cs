@@ -58,6 +58,15 @@ namespace CraigStars
             hullComponentsTechTree.TechSelectedEvent -= OnHullComponentSelectedEvent;
         }
 
+        public override void _Input(InputEvent @event)
+        {
+            if (Visible && @event.IsActionPressed("ui_save") && !saveDesignButton.Disabled)
+            {
+                // save the game if save is clicked
+                OnSaveDesignButtonPressed();
+            }
+        }
+
         void OnSlotPressed(HullComponentPanel hullComponentPanel, TechHullComponent hullComponent)
         {
             if (hullComponent != null)
@@ -84,12 +93,12 @@ namespace CraigStars
             design.ComputeAggregate(PlayersManager.Me);
 
             designerHullSummary.ShipDesign = design;
-
+            designNameLineEdit.Text = SourceShipDesign.Name != null ? SourceShipDesign.Name : "";
         }
 
         void OnVisible()
         {
-            if (Visible)
+            if (Visible && SourceShipDesign != null)
             {
                 ResetDesignerShipDesignFromSource();
                 designerHullSummary.Hull = Hull;

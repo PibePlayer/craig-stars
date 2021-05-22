@@ -118,6 +118,7 @@ namespace CraigStars
             prevIconButton = FindNode("PrevIconButton") as Button;
             nextIconButton = FindNode("NextIconButton") as Button;
 
+            icon.Connect("gui_input", this, nameof(OnIconGuiInput));
             prevIconButton.Connect("pressed", this, nameof(OnPrevIconButtonPressed));
             nextIconButton.Connect("pressed", this, nameof(OnNextIconButtonPressed));
 
@@ -174,6 +175,22 @@ namespace CraigStars
             ShipDesign.ComputeAggregate(PlayersManager.Me, true);
             UpdateControls();
             SlotUpdatedEvent?.Invoke(slot);
+        }
+
+        void OnIconGuiInput(InputEvent @event)
+        {
+            if (Hull != null && @event.IsActionPressed("hullcomponent_alternate_select"))
+            {
+                GetTree().SetInputAsHandled();
+
+                TechSummaryPopup.Tech = Hull;
+                TechSummaryPopup.ShowAtMouse();
+            }
+            else if (@event.IsActionReleased("hullcomponent_alternate_select"))
+            {
+                TechSummaryPopup.Instance.Hide();
+            }
+
         }
 
         /// <summary>

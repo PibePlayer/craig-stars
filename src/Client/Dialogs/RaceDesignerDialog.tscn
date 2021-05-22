@@ -1,10 +1,9 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://src/Client/Dialogs/RaceDesignerDialog.cs" type="Script" id=1]
 [ext_resource path="res://assets/gui/DroidSans.ttf" type="DynamicFontData" id=2]
 [ext_resource path="res://src/Client/RaceDesigner/HabEditor.tscn" type="PackedScene" id=3]
 [ext_resource path="res://src/Client/RaceDesigner/ResearchCostEditor.tscn" type="PackedScene" id=4]
-[ext_resource path="res://src/Client/Dialogs/CSConfirmDialog.cs" type="Script" id=6]
 
 [sub_resource type="DynamicFont" id=1]
 font_data = ExtResource( 2 )
@@ -821,9 +820,3 @@ margin_right = 710.0
 margin_bottom = 20.0
 rect_min_size = Vector2( 80, 0 )
 text = "OK"
-
-[node name="ConfirmationDialog" type="ConfirmationDialog" parent="."]
-margin_right = 400.0
-margin_bottom = 140.0
-rect_min_size = Vector2( 400, 140 )
-script = ExtResource( 6 )

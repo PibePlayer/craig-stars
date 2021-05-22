@@ -26,6 +26,9 @@ namespace CraigStars
         public bool OnlyAvailable { get; set; } = false;
 
         [Export]
+        public bool ShowOnlyAvailableOption { get; set; } = true;
+
+        [Export]
         public bool DragAndDroppable { get; set; } = false;
 
         DraggableTree techTree;
@@ -37,6 +40,7 @@ namespace CraigStars
         List<Tech> techs = new List<Tech>();
         Dictionary<TechCategory, TreeItem> categoryTreeItemByCategory = new Dictionary<TechCategory, TreeItem>();
         Dictionary<Tech, TreeItem> techTreeItemByTech = new Dictionary<Tech, TreeItem>();
+        Tech selectedTech = null;
 
         public override void _Ready()
         {
@@ -46,10 +50,12 @@ namespace CraigStars
 
             techTree.DragAndDroppable = DragAndDroppable;
             techTree.Connect("item_selected", this, nameof(OnTechSelected));
+            techTree.Connect("gui_input", this, nameof(OnTechGUIInput));
             onlyAvailableCheckButton.Connect("toggled", this, nameof(OnOnlyAvailableCheckButtonToggled));
             searchLineEdit.Connect("text_changed", this, nameof(OnSearchLineEditTextChanged));
 
             onlyAvailableCheckButton.Pressed = OnlyAvailable;
+            onlyAvailableCheckButton.Visible = ShowOnlyAvailableOption;
             Connect("visibility_changed", this, nameof(OnVisible));
         }
 
@@ -164,6 +170,21 @@ namespace CraigStars
             SelectFirstTech();
         }
 
+        void OnTechGUIInput(InputEvent @event)
+        {
+            if (@event.IsActionPressed("hullcomponent_alternate_select") && selectedTech != null)
+            {
+                GetTree().SetInputAsHandled();
+
+                TechSummaryPopup.Tech = selectedTech;
+                TechSummaryPopup.ShowAtMouse();
+            }
+            else if (@event.IsActionReleased("hullcomponent_alternate_select"))
+            {
+                TechSummaryPopup.Instance.Hide();
+            }
+        }
+
         /// <summary>
         /// Change the active tech
         /// </summary>
@@ -176,6 +197,7 @@ namespace CraigStars
                 if (draggableTech != null)
                 {
                     var tech = techs[draggableTech.Value.index];
+                    selectedTech = tech;
                     TechSelectedEvent?.Invoke(tech);
                 }
                 else

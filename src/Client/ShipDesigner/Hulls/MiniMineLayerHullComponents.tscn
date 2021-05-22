@@ -33,8 +33,8 @@ margin_left = 56.0
 margin_top = -48.0
 margin_right = 136.0
 margin_bottom = 32.0
-Quantity = 2
 Index = 2
+Quantity = 2
 Type = 4096
 
 [node name="HullComponent3" parent="Container" instance=ExtResource( 1 )]
@@ -42,8 +42,8 @@ margin_left = 56.0
 margin_top = 33.0
 margin_right = 136.0
 margin_bottom = 113.0
-Quantity = 2
 Index = 3
+Quantity = 2
 Type = 4096
 
 [node name="HullComponent4" parent="Container" instance=ExtResource( 1 )]
@@ -51,6 +51,6 @@ margin_left = 136.0
 margin_top = -8.0
 margin_right = 216.0
 margin_bottom = 72.0
-Quantity = 2
 Index = 4
+Quantity = 2
 Type = 38

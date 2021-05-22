@@ -1,9 +1,0 @@
-[gd_scene load_steps=2 format=2]
-
-[ext_resource path="res://src/Client/Dialogs/CSConfirmDialog.cs" type="Script" id=1]
-
-[node name="ConfirmDialog" type="ConfirmationDialog"]
-margin_right = 400.0
-margin_bottom = 140.0
-rect_min_size = Vector2( 400, 140 )
-script = ExtResource( 1 )

@@ -68,6 +68,7 @@ margin_bottom = 120.0
 margin_right = 96.0
 margin_bottom = 96.0
 rect_min_size = Vector2( 96, 96 )
+mouse_filter = 0
 texture = ExtResource( 1 )
 stretch_mode = 4
 
@@ -75,6 +76,7 @@ stretch_mode = 4
 show_behind_parent = true
 anchor_right = 1.0
 anchor_bottom = 1.0
+mouse_filter = 2
 custom_styles/panel = SubResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false

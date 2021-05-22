@@ -251,7 +251,7 @@ namespace CraigStars
                     // cloaking
                     if (slot.HullComponent.CloakUnits > 0)
                     {
-                        Aggregate.CloakUnits += slot.HullComponent.CloakUnits;
+                        Aggregate.CloakUnits += slot.HullComponent.CloakUnits * slot.Quantity;
                     }
                     if (slot.HullComponent.ReduceCloaking)
                     {

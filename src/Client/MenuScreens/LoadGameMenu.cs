@@ -16,8 +16,6 @@ namespace CraigStars
 
         ItemList gameItemList;
 
-        CSConfirmDialog confirmationDialog;
-
         string selectedGame = null;
 
         public override void _Ready()
@@ -26,7 +24,6 @@ namespace CraigStars
             loadButton = GetNode<Button>("VBoxContainer/CenterContainer/Panel/HBoxContainer/MenuButtons/HBoxContainer/LoadButton");
             deleteButton = (Button)FindNode("DeleteButton");
             gameItemList = (ItemList)FindNode("GameItemList");
-            confirmationDialog = GetNode<CSConfirmDialog>("ConfirmationDialog");
             backButton = GetNode<Button>("VBoxContainer/CenterContainer/Panel/HBoxContainer/MenuButtons/BackButton");
 
             backButton.Connect("pressed", this, nameof(OnBackPressed));
@@ -84,7 +81,7 @@ namespace CraigStars
             if (selected.Length == 1)
             {
                 var gameFile = gameItemList.GetItemText(selected[0]);
-                confirmationDialog.Show($"Are you sure you want to delete the game {gameFile}?",
+                CSConfirmDialog.Show($"Are you sure you want to delete the game {gameFile}?",
                 () =>
                 {
                     GamesManager.Instance.DeleteGame(gameFile);

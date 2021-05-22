@@ -10,7 +10,6 @@ namespace CraigStars.Client
     public class PlanetProductionTile : PlanetTile
     {
         QueuedPlanetProductionQueueItems productionQueue;
-        CSConfirmDialog confirmDialog;
         Button changeButton;
         Button clearButton;
         Button routeButton;
@@ -25,7 +24,6 @@ namespace CraigStars.Client
             routeButton = (Button)FindNode("RouteButton");
             routeTo = (Label)FindNode("RouteTo");
             productionQueue = GetNode<QueuedPlanetProductionQueueItems>("MarginContainer/ProductionQueue");
-            confirmDialog = GetNode<CSConfirmDialog>("ConfirmDialog");
 
             changeButton.Connect("pressed", this, nameof(OnChangeButtonPressed));
             clearButton.Connect("pressed", this, nameof(OnClearButtonPressed));
@@ -58,7 +56,7 @@ namespace CraigStars.Client
         {
             if (CommandedPlanet != null)
             {
-                confirmDialog.Show($"Are you sure you want to clear the production queue at {CommandedPlanet.Planet.Name}?",
+                CSConfirmDialog.Show($"Are you sure you want to clear the production queue at {CommandedPlanet.Planet.Name}?",
                 () =>
                 {
                     CommandedPlanet.Planet.ProductionQueue.Items.Clear();

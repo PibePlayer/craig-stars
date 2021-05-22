@@ -33,7 +33,6 @@ namespace CraigStars
 
         TabContainer tabContainer;
         Button okButton;
-        CSConfirmDialog confirmationDialog;
 
         Label advantagePoints;
 
@@ -165,7 +164,6 @@ namespace CraigStars
             techsStartHighCheckBox = (CheckBox)FindNode("TechsStartHighCheckBox");
 
             okButton = (Button)FindNode("OKButton");
-            confirmationDialog = GetNode<CSConfirmDialog>("ConfirmationDialog");
 
             raceName.Connect("text_changed", this, nameof(OnRaceNameTextChanged));
 
@@ -373,7 +371,7 @@ namespace CraigStars
                 UpdateRace(Race);
                 if (RacesManager.FileExists(filename.Text))
                 {
-                    confirmationDialog.Show(
+                    CSConfirmDialog.Show(
                         $"A race with the file named: {filename.Text} already exists. Do you want to overwrite it?",
                         () =>
                         {

@@ -9,11 +9,26 @@ namespace CraigStars
     public class CSConfirmDialog : ConfirmationDialog
     {
 
-        Action onOk;
-        Action onCancel;
+        private static CSConfirmDialog instance;
+        public static CSConfirmDialog Instance
+        {
+            get
+            {
+                return instance;
+            }
+        }
+
+        CSConfirmDialog()
+        {
+            instance = this;
+        }
+
+        static Action onOk;
+        static Action onCancel;
 
         public override void _Ready()
         {
+            instance = this;
             PopupExclusive = true;
             Connect("confirmed", this, nameof(OnConfirmed));
             GetCancel().Connect("pressed", this, nameof(OnCancelled));
@@ -21,13 +36,13 @@ namespace CraigStars
         }
 
 
-        public void Show(string text, Action okAction, Action cancelAction = null)
+        public static void Show(string text, Action okAction, Action cancelAction = null)
         {
             onOk = okAction;
             onCancel = cancelAction;
 
-            DialogText = text;
-            PopupCentered();
+            instance.DialogText = text;
+            instance.PopupCentered();
         }
 
         void OnConfirmed()

@@ -16,7 +16,6 @@ namespace CraigStars
         ItemList raceItemList;
 
         RaceDesignerDialog raceDesignerDialog;
-        CSConfirmDialog confirmationDialog;
 
         public override void _Ready()
         {
@@ -25,7 +24,6 @@ namespace CraigStars
             deleteButton = (Button)FindNode("DeleteButton");
             raceItemList = (ItemList)FindNode("RaceItemList");
             raceDesignerDialog = GetNode<RaceDesignerDialog>("RaceDesignerDialog");
-            confirmationDialog = GetNode<CSConfirmDialog>("ConfirmationDialog");
 
             ((Button)FindNode("BackButton")).Connect("pressed", this, nameof(OnBackPressed));
 
@@ -89,7 +87,7 @@ namespace CraigStars
             if (selected.Length == 1)
             {
                 var raceFile = raceItemList.GetItemText(selected[0]);
-                confirmationDialog.Show($"Are you sure you want to delete the race {raceFile}?",
+                CSConfirmDialog.Show($"Are you sure you want to delete the race {raceFile}?",
                 () =>
                 {
                     RacesManager.DeleteRace(raceFile);

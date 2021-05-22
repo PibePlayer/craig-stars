@@ -68,5 +68,23 @@ namespace CraigStars.Singletons
                 Hide();
             }
         }
+
+        #region static methods to show dialog
+
+        /// <summary>
+        /// Show this summary at the mouse position, but don't let it go above the screen
+        /// </summary>
+        public static void ShowAtMouse()
+        {
+            // don't let this y go above the screen
+            // if our tech summary is 300 px tall and the mouse is at 200y, move the y down 100 px
+            var mousePos = Instance.GetGlobalMousePosition();
+            var yPos = mousePos.y - Instance.RectSize.y;
+            Instance.RectPosition = new Vector2(mousePos.x, Mathf.Clamp(yPos, 0, Instance.GetViewportRect().Size.y - Instance.RectSize.y));
+            Instance.Show();
+        }
+
+        #endregion
+
     }
 }

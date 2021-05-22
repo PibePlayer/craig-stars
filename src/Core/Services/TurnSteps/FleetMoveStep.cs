@@ -12,7 +12,7 @@ namespace CraigStars
     public class FleetMoveStep : TurnGenerationStep
     {
         MineFieldDamager mineFieldDamager = new MineFieldDamager();
-        ShipDesignDiscoverer shipDesignDiscoverer = new ShipDesignDiscoverer();
+        ShipDesignDiscoverer designDiscoverer = new ShipDesignDiscoverer();
         public FleetMoveStep(Game game) : base(game, TurnGenerationState.MoveFleets) { }
 
         public override void Process()
@@ -418,10 +418,10 @@ namespace CraigStars
                                 mineFieldDamager.ReduceMineFieldOnImpact(mineField);
                                 if (mineField.Player.Race.PRT == PRT.SD)
                                 {
-                                    // discover any fleets that 
+                                    // SD races discover the exact fleet makeup
                                     foreach (var token in fleet.Tokens)
                                     {
-                                        shipDesignDiscoverer.Discover(mineField.Player, token.Design, true);
+                                        designDiscoverer.Discover(mineField.Player, token.Design, true);
                                     }
                                 }
                                 return actualDistanceTravelled;

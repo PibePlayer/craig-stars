@@ -67,7 +67,7 @@ namespace CraigStars
             HullSummaryPopup.Instance.Hull = row.Token.Design.Hull;
             HullSummaryPopup.Instance.ShipDesign = row.Token.Design;
             HullSummaryPopup.Instance.Token = row.Token;
-            HullSummaryPopup.Instance.PopupCentered();
+            HullSummaryPopup.ShowAtMouse();
         }
 
         void ClearTokens()

@@ -51,10 +51,10 @@ namespace CraigStars
         /// </summary>
         /// <param name="player"></param>
         /// <param name="design"></param>
-        /// <param name="penScanned">Pen Scanned designs show hull components</param>
-        public void Discover(Player player, ShipDesign design, bool penScanned = false)
+        /// <param name="inBattle">Pen Scanned designs show hull components</param>
+        public void Discover(Player player, ShipDesign design, bool inBattle = false)
         {
-            designDiscoverer.Discover(player, design, penScanned);
+            designDiscoverer.Discover(player, design, inBattle);
         }
 
         /// <summary>

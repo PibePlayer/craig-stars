@@ -68,7 +68,7 @@ namespace CraigStars.Client
 
                 HullSummaryPopup.Instance.Hull = CommandedPlanet.Planet.Starbase.Design.Hull;
                 HullSummaryPopup.Instance.ShipDesign = CommandedPlanet.Planet.Starbase.Design;
-                HullSummaryPopup.Instance.PopupCentered();
+                HullSummaryPopup.ShowAtMouse();
             }
         }
 

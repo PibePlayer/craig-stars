@@ -175,14 +175,14 @@ namespace CraigStars
                     if (!scanned && scanner.RangePen * cloakFactor >= distance)
                     {
                         // update the fleet report with pen scanners
-                        playerIntel.Discover(player, fleet, true);
+                        playerIntel.Discover(player, fleet, player.DiscoverDesignOnScan);
                         scanned = true;
                     }
 
                     // if we aren't orbiting a planet, we can be seen with regular scanners
                     if (fleet.Orbiting == null && scanner.Range * cloakFactor >= distance)
                     {
-                        playerIntel.Discover(player, fleet, false);
+                        playerIntel.Discover(player, fleet, player.DiscoverDesignOnScan);
                         break;
                     }
                 }

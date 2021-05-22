@@ -12,8 +12,6 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(MineFieldDiscoverer));
 
-        ShipDesignDiscoverer designDiscoverer = new ShipDesignDiscoverer();
-
         protected override List<MineField> GetOwnedItemReports(Player player) => player.MineFields;
         protected override List<MineField> GetForeignItemReports(Player player) => player.ForeignMineFields;
         protected override Dictionary<Guid, MineField> GetItemsByGuid(Player player) => player.MineFieldsByGuid;

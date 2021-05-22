@@ -93,13 +93,19 @@ namespace CraigStars
 
         void OnIconGUIInput(InputEvent @event)
         {
-            if (Tech != null && Tech is TechHull hull && @event.IsActionPressed("viewport_select"))
+            if (Tech != null && Tech is TechHull hull && @event.IsActionPressed("hullcomponent_alternate_select"))
             {
                 GetTree().SetInputAsHandled();
 
                 HullSummaryPopup.Instance.Hull = hull;
-                HullSummaryPopup.Instance.PopupCentered();
+                HullSummaryPopup.Instance.ShipDesign = null;
+                HullSummaryPopup.ShowAtMouse();
             }
+            else if (@event.IsActionReleased("hullcomponent_alternate_select"))
+            {
+                HullSummaryPopup.Instance.Hide();
+            }
+
         }
 
         /// <summary>

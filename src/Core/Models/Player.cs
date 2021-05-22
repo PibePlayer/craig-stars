@@ -672,6 +672,12 @@ namespace CraigStars
 
         #region Computed Properties
 
+        /// <summary>
+        /// Does this race discover a ShipDesign's components on scan?
+        /// </summary>
+        /// <value></value>
+        public bool DiscoverDesignOnScan { get => Race.PRT == PRT.WM; }
+
         public Cost TerraformCost { get => Race.HasLRT(LRT.TT) ? Rules.TotalTerraformCost : Rules.TerraformCost; }
 
         /// <summary>

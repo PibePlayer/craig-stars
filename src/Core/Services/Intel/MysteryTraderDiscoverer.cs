@@ -12,8 +12,6 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(MysteryTraderDiscoverer));
 
-        ShipDesignDiscoverer designDiscoverer = new ShipDesignDiscoverer();
-
         protected override List<MysteryTrader> GetOwnedItemReports(Player player) => player.MysteryTraderIntel.Owned;
         protected override List<MysteryTrader> GetForeignItemReports(Player player) => player.MysteryTraders;
         protected override Dictionary<Guid, MysteryTrader> GetItemsByGuid(Player player) => player.MysteryTradersByGuid;

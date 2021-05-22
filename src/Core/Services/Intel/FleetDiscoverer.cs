@@ -49,7 +49,7 @@ namespace CraigStars
             {
                 if (!player.DesignsByGuid.TryGetValue(token.Design.Guid, out var existingDesign) || (existingDesign.Slots.Count == 0 && penScanned))
                 {
-                    designDiscoverer.Discover(player, token.Design, penScanned);
+                    designDiscoverer.Discover(player, token.Design);
                 }
                 itemReport.Tokens.Add(new ShipToken(player.DesignsByGuid[token.Design.Guid], token.Quantity, token.Damage, token.QuantityDamaged));
             }

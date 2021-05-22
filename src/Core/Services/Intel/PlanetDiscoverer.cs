@@ -80,7 +80,7 @@ namespace CraigStars
                     {
                         if (!player.DesignsByGuid.ContainsKey(token.Design.Guid))
                         {
-                            designDiscoverer.Discover(player, token.Design, penScanned);
+                            designDiscoverer.Discover(player, token.Design);
                         }
                         itemReport.Starbase.Tokens.Add(new ShipToken(player.DesignsByGuid[token.Design.Guid], token.Quantity));
                     }
@@ -146,7 +146,7 @@ namespace CraigStars
             {
                 if (!player.DesignsByGuid.ContainsKey(item.Starbase.Design.Guid))
                 {
-                    designDiscoverer.Discover(player, item.Starbase.Design, true);
+                    designDiscoverer.Discover(player, item.Starbase.Design);
                 }
 
                 itemReport.Starbase = new Starbase()

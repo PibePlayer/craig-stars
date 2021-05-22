@@ -12,8 +12,6 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(WormholeDiscoverer));
 
-        ShipDesignDiscoverer designDiscoverer = new ShipDesignDiscoverer();
-
         protected override List<Wormhole> GetOwnedItemReports(Player player) => player.WormholeIntel.Owned;
         protected override List<Wormhole> GetForeignItemReports(Player player) => player.Wormholes;
         protected override Dictionary<Guid, Wormhole> GetItemsByGuid(Player player) => player.WormholesByGuid;

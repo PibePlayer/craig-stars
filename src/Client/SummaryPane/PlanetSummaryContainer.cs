@@ -23,6 +23,7 @@ namespace CraigStars
         PlanetSprite planet;
 
         Label valueLabel;
+        Label valueTerraformedLabel;
         Label populationLabel;
         Label reportAgeLabel;
         Label ownerLabel;
@@ -38,6 +39,7 @@ namespace CraigStars
         public override void _Ready()
         {
             valueLabel = (Label)FindNode("Value");
+            valueTerraformedLabel = (Label)FindNode("ValueTerraformed");
             reportAgeLabel = (Label)FindNode("ReportAge");
             populationLabel = (Label)FindNode("Population");
             ownerLabel = (Label)FindNode("Owner");
@@ -92,15 +94,34 @@ namespace CraigStars
                 if (planet.Explored && planet.Hab is Hab hab)
                 {
                     int habValue = race.GetPlanetHabitability(hab);
+                    int terraformHabValue = habValue;
+                    Hab terraformedHab = planet.Hab.Value + planet.GetTerraformAmount(Me);
+                    if (terraformedHab != hab)
+                    {
+                        terraformHabValue = race.GetPlanetHabitability(terraformedHab);
+                    }
+
                     valueLabel.Text = $"{habValue}%";
-                    // TODO: Add terraforming
-                    if (habValue > 0)
+                    if (habValue >= 0)
                     {
                         valueLabel.Modulate = GUIColors.HabitablePlanetTextColor;
                     }
                     else
                     {
                         valueLabel.Modulate = GUIColors.UninhabitablePlanetTextColor;
+                    }
+                    if (terraformHabValue != habValue)
+                    {
+                        valueTerraformedLabel.Visible = true;
+                        valueTerraformedLabel.Text = $"({terraformHabValue}%)";
+                        if (terraformHabValue >= 0)
+                        {
+                            valueTerraformedLabel.Modulate = GUIColors.HabitablePlanetTextColor;
+                        }
+                        else
+                        {
+                            valueTerraformedLabel.Modulate = GUIColors.UninhabitablePlanetTextColor;
+                        }
                     }
 
                     if (planet.ReportAge == 0)
@@ -145,6 +166,10 @@ namespace CraigStars
                     gravHabBar.HabValue = hab.grav;
                     tempHabBar.HabValue = hab.temp;
                     radHabBar.HabValue = hab.rad;
+
+                    gravHabBar.TerraformHabValue = terraformedHab.grav;
+                    tempHabBar.TerraformHabValue = terraformedHab.temp;
+                    radHabBar.TerraformHabValue = terraformedHab.rad;
 
                     ironiumMineralBar.Concentration = planet.MineralConcentration.Ironium;
                     boraniumMineralBar.Concentration = planet.MineralConcentration.Boranium;

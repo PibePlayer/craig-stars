@@ -82,7 +82,7 @@ namespace CraigStars
             }
 
             string text = $"Your terraforming efforts on {planet.Name} have {changeText} the {habType} to {newValueText}";
-            player.Messages.Add(new Message(MessageType.BuiltMine, text, planet));
+            player.Messages.Add(new Message(MessageType.BuiltTerraform, text, planet));
         }
 
         public static void MineralPacket(Player player, Planet planet, MineralPacket packet)
@@ -354,6 +354,14 @@ namespace CraigStars
             }
             else
             {
+                Hab terraformedHab = planet.Hab.Value + planet.GetTerraformAmount(player);
+                long terraformHabValue = habValue;
+
+                if (planet.BaseHab.Value != terraformedHab)
+                {
+                    terraformHabValue = player.Race.GetPlanetHabitability(terraformedHab);
+                }
+
                 double growth = (habValue / 100.0) * player.Race.GrowthRate;
                 if (habValue > 0)
                 {
@@ -361,7 +369,15 @@ namespace CraigStars
                 }
                 else
                 {
-                    text = $"You have found a new planet which unfortunately is not habitable by you.  {growth:0.##}% of your colonists will die per year if you colonize {planet.Name}";
+                    if (terraformHabValue > 0)
+                    {
+                        double terraformGrowth = (terraformHabValue / 100.0) * player.Race.GrowthRate;
+                        text = $"You have found a new planet which you have the ability to make habitable. With terraforming, your colonists will grow by up to {terraformGrowth:0.##}% per year if you colonize {planet.Name}.";
+                    }
+                    else
+                    {
+                        text = $"You have found a new planet which unfortunately is not habitable by you.  {growth:0.##}% of your colonists will die per year if you colonize {planet.Name}";
+                    }
                 }
             }
 

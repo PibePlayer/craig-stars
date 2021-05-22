@@ -429,10 +429,10 @@ namespace CraigStars
                     break;
                 case QueueItemType.TerraformEnvironment:
                 case QueueItemType.AutoMaxTerraform:
-                    requestedQuantity = Math.Min(requestedQuantity, GetTerraformAmount().Sum);
+                    requestedQuantity = Math.Min(requestedQuantity, GetTerraformAmount().AbsSum);
                     break;
                 case QueueItemType.AutoMinTerraform:
-                    requestedQuantity = Math.Min(requestedQuantity, GetMinTerraformAmount().Sum);
+                    requestedQuantity = Math.Min(requestedQuantity, GetMinTerraformAmount().AbsSum);
                     break;
             }
             return requestedQuantity;
@@ -442,7 +442,7 @@ namespace CraigStars
 
         public bool CanTerraform(Player player = null)
         {
-            return GetTerraformAmount(player).Sum > 0;
+            return GetTerraformAmount(player).AbsSum > 0;
         }
 
         /// <summary>
@@ -482,19 +482,26 @@ namespace CraigStars
                 }
 
                 // The distance from the starting hab of this planet
-                int fromIdealBaseDistance = Math.Abs(player.Race.HabCenter[habType] - BaseHab.Value[habType]);
+                int fromIdealBase = player.Race.HabCenter[habType] - BaseHab.Value[habType];
 
                 // the distance from the current hab of this planet
                 int fromIdeal = player.Race.HabCenter[habType] - Hab.Value[habType];
-                int fromIdealDistance = Math.Abs(fromIdeal);
 
                 // if we have any left to terraform
-                if (fromIdealDistance > 0)
+                if (fromIdeal > 0)
                 {
+                    // i.e. our ideal is 50 and the planet hab is 47
+
                     // we can either terrform up to our full ability, or however much
                     // we have left to terraform on this
-                    var alreadyTerraformed = (fromIdealBaseDistance - fromIdealDistance);
-                    terraformAmount = terraformAmount.WithType(habType, Math.Min(ability - alreadyTerraformed, fromIdealDistance));
+                    var alreadyTerraformed = (fromIdealBase - fromIdeal);
+                    terraformAmount = terraformAmount.WithType(habType, Math.Min(ability - alreadyTerraformed, fromIdeal));
+                }
+                else if (fromIdeal < 0)
+                {
+                    // i.e. our ideal is 50 and the planet hab is 53
+                    var alreadyTerraformed = (fromIdeal - fromIdealBase);
+                    terraformAmount = terraformAmount.WithType(habType, Math.Max(-(ability - alreadyTerraformed), fromIdeal));
                 }
             }
 

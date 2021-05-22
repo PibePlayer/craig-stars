@@ -166,7 +166,7 @@ namespace CraigStars.Tests
             // test the other direction
             planet.BaseHab = new Hab(55, 50, 50);
             planet.Hab = new Hab(55, 50, 50);
-            Assert.AreEqual(new Hab(grav: 3), planet.GetTerraformAmount());
+            Assert.AreEqual(new Hab(grav: -3), planet.GetTerraformAmount());
 
             // this is off by 10, but we've already terraformed 3, so we can't terraform anymore
             planet.BaseHab = new Hab(37, 50, 50);

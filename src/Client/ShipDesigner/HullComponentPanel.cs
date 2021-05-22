@@ -163,6 +163,19 @@ namespace CraigStars
                 PressedEvent?.Invoke(this, ShipDesignSlot?.HullComponent);
                 GetTree().SetInputAsHandled();
             }
+            else if (ShipDesignSlot != null && ShipDesignSlot.HullComponent != null && @event.IsActionPressed("hullcomponent_alternate_select"))
+            {
+                GetTree().SetInputAsHandled();
+
+                TechSummaryPopup.Instance.Tech = ShipDesignSlot.HullComponent;
+                TechSummaryPopup.Instance.RectPosition = GetGlobalMousePosition() - new Vector2(0, TechSummaryPopup.Instance.RectSize.y);
+                TechSummaryPopup.Instance.Show();
+            }
+            else if (@event.IsActionReleased("hullcomponent_alternate_select"))
+            {
+                TechSummaryPopup.Instance.Hide();
+            }
+
         }
 
         public void RemoveHullComponent()

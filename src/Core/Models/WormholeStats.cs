@@ -21,6 +21,7 @@ namespace CraigStars
 
         public readonly int jiggleDistance;
 
+        [JsonConstructor]
         public WormholeStats(int maxYearsToDegrade, float chanceToDegrade, int jiggleDistance = 10)
         {
             this.yearsToDegrade = maxYearsToDegrade;

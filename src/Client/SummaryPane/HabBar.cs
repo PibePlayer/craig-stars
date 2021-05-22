@@ -59,6 +59,18 @@ namespace CraigStars
         int habValue = 50;
 
         [Export]
+        public int TerraformHabValue
+        {
+            get => terraformHabValue;
+            set
+            {
+                terraformHabValue = value;
+                UpdateControls();
+            }
+        }
+        int terraformHabValue = 50;
+
+        [Export]
         public bool ShowSeparator
         {
             get => showSeparator;
@@ -125,6 +137,13 @@ namespace CraigStars
 
             this.DrawDiamondOutline(valuePosition, valueSize, valueColor);
             this.DrawCross(valuePosition, valueSize, valueColor);
+
+            if (TerraformHabValue != HabValue)
+            {
+                // draw terraform line
+                Vector2 terraformValuePosition = new Vector2(hab.RectPosition.x + (TerraformHabValue / 100f * hab.RectSize.x), hab.RectPosition.y + hab.RectSize.y / 2);
+                DrawLine(valuePosition, terraformValuePosition, valueColor);
+            }
         }
 
         void UpdateControls()

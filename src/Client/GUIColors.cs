@@ -23,10 +23,10 @@ namespace CraigStars
         public Color RadValueColor { get; set; } = new Color("00FF00");
 
         [Export]
-        public Color HabitablePlanetTextColor { get; set; } = new Color("008100");
+        public Color HabitablePlanetTextColor { get; set; } = new Color("00FF00");
 
         [Export]
-        public Color UninhabitablePlanetTextColor { get; set; } = new Color("8B0000");
+        public Color UninhabitablePlanetTextColor { get; set; } = new Color("FF0000");
 
         # region Mineral Colors
 

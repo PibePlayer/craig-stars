@@ -92,6 +92,7 @@ namespace CraigStars
 
         void OnStartPressed()
         {
+            Settings.Instance.ShouldContinueGame = false;
             RulesManager.Rules.Size = (Size)sizeOptionButton.Selected;
             RulesManager.Rules.Density = (Density)densityOptionButton.Selected;
             var gameName = nameLineEdit.Text;

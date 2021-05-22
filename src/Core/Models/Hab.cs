@@ -135,11 +135,29 @@ namespace CraigStars
             }
         }
 
+        public static Hab operator +(Hab a, Hab b)
+        {
+            return new Hab(
+                a.grav + b.grav,
+                a.temp + b.temp,
+                a.rad + b.rad
+            );
+        }
+
+        public static Hab operator -(Hab a, Hab b)
+        {
+            return new Hab(
+                a.grav - b.grav,
+                a.temp - b.temp,
+                a.rad - b.rad
+            );
+        }
+
         /// <summary>
-        /// Sum of all values. Used for terraforming
+        /// Sum of all absolute values. Used for terraforming
         /// </summary>
         /// <returns></returns>
-        public int Sum { get => grav + temp + rad; }
+        public int AbsSum { get => Math.Abs(grav) + Math.Abs(temp) + Math.Abs(rad); }
 
     }
 }

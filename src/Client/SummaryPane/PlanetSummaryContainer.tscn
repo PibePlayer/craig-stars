@@ -34,6 +34,16 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="ValueTerraformed" type="Label" parent="ValueContainer"]
+visible = false
+margin_left = 87.0
+margin_right = 123.0
+margin_bottom = 14.0
+text = "100%"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="PopulationLabel" type="Label" parent="ValueContainer"]
 margin_left = 87.0
 margin_right = 332.0
@@ -97,7 +107,7 @@ margin_bottom = 124.0
 margin_right = 80.0
 margin_bottom = 14.0
 rect_min_size = Vector2( 80, 0 )
-custom_colors/font_color = Color( 0.0352941, 0, 1, 1 )
+custom_colors/font_color = Color( 0.0352941, 0.376471, 1, 1 )
 text = "Ironium"
 align = 2
 

@@ -166,7 +166,7 @@ namespace CraigStars
             instance = this;
         }
 
-        public override void _Ready()
+        public override void _EnterTree()
         {
             var err = config.Load("user://settings.cfg");
             if (err == Error.Ok)

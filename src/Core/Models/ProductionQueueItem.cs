@@ -190,7 +190,7 @@ namespace CraigStars
         }
 
         /// <summary>
-        /// True if this is a mineral packet
+        /// True if this is an auto build
         /// </summary>
         /// <value></value>
         public bool IsAuto
@@ -218,13 +218,25 @@ namespace CraigStars
         }
 
         /// <summary>
+        /// True if this is a mineral alchemy item
+        /// </summary>
+        /// <value></value>
+        public bool IsMineralAlchemy
+        {
+            get =>
+                Type == QueueItemType.MineralAlchemy ||
+                Type == QueueItemType.AutoMineralAlchemy;
+        }
+
+        /// <summary>
         /// Get the cost of a single item in this ProductionQueueItem
         /// </summary>
         /// <param name="rules"></param>
         /// <param name="race"></param>
         /// <returns></returns>
-        public Cost GetCostOfOne(Rules rules, Player player)
+        public Cost GetCostOfOne(Player player)
         {
+            var rules = player.Rules;
             var race = player.Race;
             int resources = 0;
             int germanium = 0;

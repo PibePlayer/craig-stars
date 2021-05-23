@@ -20,7 +20,7 @@ namespace CraigStars.Tests
             // game.RunTurnProcessors();
 
             // make sure our planet grew pop
-            Assert.IsTrue(game.Planets[0].Population > 100000);
+            Assert.IsTrue(game.Planets[0].Population > 25000);
         }
 
     }

@@ -93,10 +93,10 @@ namespace CraigStars
         public static float operator /(Cost a, Cost b)
         {
             // if either component is 0, we will have at least one
-            float newIronium = a.Ironium == 0 || b.Ironium == 0 ? float.MaxValue : (float)a.Ironium / b.Ironium;
-            float newBoranium = a.Boranium == 0 || b.Boranium == 0 ? float.MaxValue : (float)a.Boranium / b.Boranium;
-            float newGermanium = a.Germanium == 0 || b.Germanium == 0 ? float.MaxValue : (float)a.Germanium / b.Germanium;
-            float newResources = a.Resources == 0 || b.Resources == 0 ? float.MaxValue : (float)a.Resources / b.Resources;
+            float newIronium = b.Ironium == 0 ? float.MaxValue : (float)a.Ironium / b.Ironium;
+            float newBoranium = b.Boranium == 0 ? float.MaxValue : (float)a.Boranium / b.Boranium;
+            float newGermanium = b.Germanium == 0 ? float.MaxValue : (float)a.Germanium / b.Germanium;
+            float newResources = b.Resources == 0 ? float.MaxValue : (float)a.Resources / b.Resources;
 
             // get the minimum number of times b goes into a
             return Math.Min(newResources,

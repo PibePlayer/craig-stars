@@ -11,7 +11,7 @@ namespace CraigStars
         MovePackets,
         MoveFleets,
         DecaySalvage,
-        DecayPackets,
+        DecayMineralPackets,
         WormholeJiggle,
         DetonateMines,
         Mining,

@@ -189,7 +189,7 @@ namespace CraigStars.Singletons
                 };
 
                 // TODO: don't enable this by default in regular games
-                player.Settings.TurnProcessors.AddRange(TurnProcessorManager.Instance.TurnProcessors.Select(p => p.Name));
+                // player.Settings.TurnProcessors.AddRange(TurnProcessorManager.Instance.TurnProcessors.Select(p => p.Name));
 
                 if (player.AIControlled)
                 {

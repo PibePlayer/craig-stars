@@ -355,7 +355,7 @@ namespace CraigStarsTable
 
                     Update();
 
-                    if (SelectedRow != NoRowSelected)
+                    if (SelectedRow != NoRowSelected && cellControls.GetLength(0) > SelectedRow)
                     {
                         if (cellControls[SelectedRow, 0] is ICSCellControl<T> cell)
                         {

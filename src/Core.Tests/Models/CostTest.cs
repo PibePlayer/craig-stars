@@ -22,6 +22,11 @@ namespace CraigStars.Tests
             Cost available = new Cost(100, 200, 300, 4);
             cost = new Cost(0, 0, 0, 8);
             Assert.AreEqual(.5f, available / cost);
+
+            // one factory, no resources
+            cost = new Cost(0, 0, 4, 10);
+            available = new Cost(10, 10, 10, 0);
+            Assert.AreEqual(0, available / cost);
         }
 
     }

@@ -107,7 +107,7 @@ namespace CraigStars
                 // TODO: figure out skipping builds
                 bool skipped = false;
 
-                var cost = item.GetCostOfOne(RulesManager.Rules, Me);
+                var cost = item.GetCostOfOne(Me);
 
                 // Get the total cost of this item plus any previous items in the queue
                 // and subtract what we have on hand (that will be applied this year)

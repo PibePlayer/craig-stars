@@ -45,7 +45,7 @@ namespace CraigStars.Tests
                 Cargo = new Cargo(),
                 MineYears = new Mineral(),
                 ProductionQueue = new ProductionQueue(),
-                Population = 100000,
+                Population = 25000,
                 Hab = new Hab(50, 50, 50),
                 MineralConcentration = new Mineral(100, 100, 100),
                 Scanner = true

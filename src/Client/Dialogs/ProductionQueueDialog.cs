@@ -133,7 +133,7 @@ namespace CraigStars
                 queuedItemCostGrid.Visible = true;
 
                 // figure out how much this queue item costs
-                var cost = item.GetCostOfOne(RulesManager.Rules, Me) * item.Quantity;
+                var cost = item.GetCostOfOne(Me) * item.Quantity;
                 if (item.Type == QueueItemType.Starbase && Planet.HasStarbase)
                 {
                     cost = Planet.Starbase.GetUpgradeCost(item.Design);
@@ -213,7 +213,7 @@ namespace CraigStars
 
         void OnSelectAvailableItem(ProductionQueueItem item)
         {
-            var cost = item.GetCostOfOne(RulesManager.Rules, Me);
+            var cost = item.GetCostOfOne(Me);
             if (item.Type == QueueItemType.Starbase && Planet.HasStarbase)
             {
                 cost = Planet.Starbase.GetUpgradeCost(item.Design);

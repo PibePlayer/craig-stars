@@ -20,6 +20,7 @@ namespace CraigStars
         /// Ensure this production queue has something in it
         /// </summary>
         /// <param name="item"></param>
+        /// <param name="index">Set the index to insert this item, or -1 to append it to the end</param>
         public void EnsureHasItem(ProductionQueueItem item, int index = -1)
         {
             foreach (var existingItem in Items)
@@ -38,11 +39,12 @@ namespace CraigStars
             }
 
             // if we want this item after our current items, insert it after
-            if (index >= Items.Count)
+            if (index == -1 || index >= Items.Count)
             {
                 Items.Add(item);
             }
 
         }
+
     }
 }

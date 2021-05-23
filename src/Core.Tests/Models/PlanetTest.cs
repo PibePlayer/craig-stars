@@ -102,6 +102,40 @@ namespace CraigStars.Tests
         }
 
         [Test]
+        public void TestResourcesPerYear()
+        {
+            var planet = new Planet()
+            {
+                Player = new Player(),
+                Factories = 10,
+                Population = 25000
+            };
+
+            Assert.AreEqual(35, planet.ResourcesPerYear);
+        }
+
+
+        [Test]
+        public void TestResourcesPerYearAvailable()
+        {
+            var planet = new Planet()
+            {
+                Player = new Player(),
+                Factories = 10,
+                Population = 25000,
+                ContributesOnlyLeftoverToResearch = false
+            };
+            planet.Player.ResearchAmount = 15;
+
+            Assert.AreEqual(30, planet.ResourcesPerYearAvailable);
+            Assert.AreEqual(5, planet.ResourcesPerYearResearch);
+
+            planet.ContributesOnlyLeftoverToResearch = true;
+            Assert.AreEqual(35, planet.ResourcesPerYearAvailable);
+            Assert.AreEqual(0, planet.ResourcesPerYearResearch);
+        }
+
+        [Test]
         public void TestGetQuantityToBuild()
         {
             Player player = new Player()
@@ -215,7 +249,7 @@ namespace CraigStars.Tests
             planet.Hab = new Hab(55, 50, 50);
             Assert.AreEqual(new Hab(), planet.GetMinTerraformAmount());
 
-            
+
             // this is 2 points out of range, return 2
             planet.BaseHab = new Hab(13, 50, 50);
             planet.Hab = new Hab(13, 50, 50);
@@ -274,7 +308,7 @@ namespace CraigStars.Tests
             planet.Hab = new Hab(55, 55, 50);
             Assert.AreEqual(null, planet.GetBestTerraform());
 
-        }        
+        }
     }
 
 }

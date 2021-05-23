@@ -155,7 +155,7 @@ namespace CraigStars
             if (numBuilt > 0 && numBuilt < quantityDesired)
             {
                 // we finished some of these items, but not all
-                item.Allocated = AllocateToQueue(costPer, allocated);
+                item.Allocated = AllocatePartialBuild(costPer, allocated);
                 allocated -= item.Allocated;
                 return new ProcessItemResult(completed: false, allocated);
             }
@@ -167,7 +167,7 @@ namespace CraigStars
             else
             {
                 // allocate as many minerals/resources as we can to the this item
-                item.Allocated = AllocateToQueue(costPer, allocated);
+                item.Allocated = AllocatePartialBuild(costPer, allocated);
                 allocated -= item.Allocated;
                 return new ProcessItemResult(completed: false, allocated);
             }
@@ -332,25 +332,25 @@ namespace CraigStars
         /// apply 10 percent to each cost amount
         /// </summary>
         /// <param name="queue"></param>
-        /// <param name="costPer"></param>
+        /// <param name="costPerItem"></param>
         /// <param name="allocated"></param>
         /// <returns></returns>
-        Cost AllocateToQueue(Cost costPer, Cost allocated)
+        internal Cost AllocatePartialBuild(Cost costPerItem, Cost allocated)
         {
-            double ironiumPerc = (costPer.Ironium > 0 ? (double)(allocated.Ironium) / costPer.Ironium : 100.0);
-            double boraniumPerc = (costPer.Boranium > 0 ? (double)(allocated.Boranium) / costPer.Boranium : 100.0);
-            double germaniumPerc = (costPer.Germanium > 0 ? (double)(allocated.Germanium) / costPer.Germanium : 100.0);
-            double resourcesPerc = (costPer.Resources > 0 ? (double)(allocated.Resources) / costPer.Resources : 100.0);
+            double ironiumPerc = (costPerItem.Ironium > 0 ? (double)(allocated.Ironium) / costPerItem.Ironium : 100.0);
+            double boraniumPerc = (costPerItem.Boranium > 0 ? (double)(allocated.Boranium) / costPerItem.Boranium : 100.0);
+            double germaniumPerc = (costPerItem.Germanium > 0 ? (double)(allocated.Germanium) / costPerItem.Germanium : 100.0);
+            double resourcesPerc = (costPerItem.Resources > 0 ? (double)(allocated.Resources) / costPerItem.Resources : 100.0);
 
             // figure out the lowest percentage
             double minPerc = Math.Min(ironiumPerc, Math.Min(boraniumPerc, Math.Min(germaniumPerc, resourcesPerc)));
 
             // allocate the lowest percentage of each cost
             var newAllocated = new Cost(
-                (int)(costPer.Ironium * minPerc),
-                (int)(costPer.Boranium * minPerc),
-                (int)(costPer.Germanium * minPerc),
-                (int)(costPer.Resources * minPerc)
+                (int)(costPerItem.Ironium * minPerc),
+                (int)(costPerItem.Boranium * minPerc),
+                (int)(costPerItem.Germanium * minPerc),
+                (int)(costPerItem.Resources * minPerc)
             );
 
             // return the amount we allocate to the top queued item

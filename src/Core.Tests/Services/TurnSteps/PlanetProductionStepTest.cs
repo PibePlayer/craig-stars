@@ -186,7 +186,11 @@ namespace CraigStars.Tests
         [Test]
         public void TestBuildSingleComplete()
         {
+            // make a starter homeworld that only contributes leftovers to research
             var planet = game.Planets[0];
+            planet.Factories = 10;
+            planet.Mines = 10;
+            planet.ContributesOnlyLeftoverToResearch = true;
 
             // should build one factory
             // and have 4kt less germanium
@@ -195,10 +199,11 @@ namespace CraigStars.Tests
             };
             planet.Cargo = new Cargo(germanium: 4, colonists: planet.Cargo.Colonists);
 
-            step.Build(planet);
-            Assert.AreEqual(1, planet.Factories);
+            var leftoverResources = step.Build(planet);
+            Assert.AreEqual(11, planet.Factories);
             Assert.AreEqual(0, planet.ProductionQueue.Items.Count);
             Assert.AreEqual(new Cargo(colonists: planet.Cargo.Colonists), planet.Cargo);
+            Assert.AreEqual(25, leftoverResources); // 25 resources leftover for research
         }
 
         [Test]
@@ -253,6 +258,21 @@ namespace CraigStars.Tests
             Assert.AreEqual(1, planet.ProductionQueue.Items[1].Quantity);
             Assert.AreEqual(new Cost(germanium: 3, resources: 7), planet.ProductionQueue.Items[0].Allocated);
             Assert.AreEqual(new Cargo(colonists: planet.Cargo.Colonists), planet.Cargo);
+        }
+
+        [Test]
+        public void TestAllocateToQueue()
+        {
+            var planet = game.Planets[0];
+
+            // we only have half the ironium we need, but we have 
+            // an abundance of everything else. It should allocate 50% of
+            // each item.
+            var costPerItem = new Cost(10, 20, 30, 40);
+            var allocated = new Cost(5, 100, 100, 100);
+            var result = step.AllocatePartialBuild(costPerItem, allocated);
+            Assert.AreEqual(new Cost(5, 10, 15, 20), result);
+
         }
     }
 }

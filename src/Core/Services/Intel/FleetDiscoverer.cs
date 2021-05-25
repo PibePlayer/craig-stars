@@ -24,6 +24,7 @@ namespace CraigStars
             Guid = item.Guid,
             Id = item.Id,
             Name = item.Name,
+            BaseName = item.BaseName,
             RaceName = item.Player.Race.Name,
             RacePluralName = item.Player.Race.PluralName,
             Owner = item.Owner,
@@ -59,6 +60,7 @@ namespace CraigStars
         {
             itemReport.Player = player;
             itemReport.RepeatOrders = item.RepeatOrders;
+            itemReport.IdleTurns = item.IdleTurns;
             itemReport.Waypoints.Clear();
             // copy waypoints
             item.Waypoints.ForEach(wp =>

@@ -60,10 +60,11 @@ namespace CraigStars
 
         public override void _Input(InputEvent @event)
         {
-            if (Visible && @event.IsActionPressed("ui_save") && !saveDesignButton.Disabled)
+            if (@event.IsActionPressed("ui_save") && !saveDesignButton.Disabled && IsVisibleInTree())
             {
                 // save the game if save is clicked
                 OnSaveDesignButtonPressed();
+                GetTree().SetInputAsHandled();
             }
         }
 

@@ -122,9 +122,6 @@ namespace CraigStars
         {
             GameInfo.Players.AddRange(Players.Cast<PublicPlayerInfo>());
 
-            // compute aggregates on load
-            ComputeAggregates();
-
             // Update the Game dictionaries used for lookups, like PlanetsByGuid, FleetsByGuid, etc.
             UpdateDictionaries();
 
@@ -317,6 +314,7 @@ namespace CraigStars
         {
             Players.ForEach(p =>
             {
+                p.Game.Year = Year;
                 p.PlanetaryScanner = p.GetBestPlanetaryScanner();
                 p.ComputeAggregates();
                 p.SetupMapObjectMappings();

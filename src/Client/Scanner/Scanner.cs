@@ -408,6 +408,7 @@ namespace CraigStars
             waypointAreas.Clear();
             selectedWaypoint = null;
             CommandedFleet?.Fleet?.Waypoints.Each((wp, index) => AddWaypointArea(CommandedFleet.Fleet, wp));
+            CommandedFleet?.UpdateSprite();
         }
 
         #region Waypoints
@@ -915,8 +916,9 @@ namespace CraigStars
             {
                 log.Debug($"User created new fleet {fleet.Name} - {fleet.Guid}");
                 var fleetSprite = fleetScene.Instance() as FleetSprite;
-                fleetSprite.Fleet = fleet;
+                fleetSprite.MapObject = fleet;
                 fleetSprite.Position = fleet.Position;
+                MapObjectsByGuid[fleet.Guid] = fleetSprite;
                 if (fleet.Orbiting != null && MapObjectsByGuid.TryGetValue(fleet.Orbiting.Guid, out var mapObjectSprite) && mapObjectSprite is PlanetSprite planetSprite)
                 {
                     planetSprite.OrbitingFleets.Add(fleetSprite);
@@ -937,17 +939,16 @@ namespace CraigStars
 
             Fleets.AddRange(newFleetSprites);
 
-
-            Fleets.ForEach(f =>
+            Fleets.ForEach(fleetSprite =>
             {
-                f.OtherFleets.Clear();
-                if (f.Fleet.OtherFleets?.Count > 0)
+                fleetSprite.OtherFleets.Clear();
+                if (fleetSprite.Fleet.OtherFleets?.Count > 0)
                 {
-                    foreach (var fleet in f.Fleet.OtherFleets)
+                    foreach (var fleet in fleetSprite.Fleet.OtherFleets)
                     {
-                        if (MapObjectsByGuid.TryGetValue(fleet.Guid, out var mapObjectSprite) && mapObjectSprite is FleetSprite fleetSprite)
+                        if (MapObjectsByGuid.TryGetValue(fleet.Guid, out var mapObjectSprite) && mapObjectSprite is FleetSprite f)
                         {
-                            f.OtherFleets.Add(fleetSprite);
+                            fleetSprite.OtherFleets.Add(f);
                         }
                         else
                         {
@@ -970,6 +971,9 @@ namespace CraigStars
             Fleets.Remove(fleet);
             // make sure other fleets don't know about us anymore
             fleet.OtherFleets.ForEach(otherFleet => otherFleet.OtherFleets.Remove(fleet));
+            MapObjectsByGuid.Remove(fleet.Fleet.Guid);
+            Me.MapObjectsByLocation[fleet.Fleet.Position].Remove(fleet.Fleet);
+            mapObjectsByLocation[fleet.Fleet.Position].Remove(fleet);
 
             // make sure any planets we are orbiting don't know about us anymore
             if (fleet.Orbiting != null)

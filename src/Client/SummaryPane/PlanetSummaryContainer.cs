@@ -123,6 +123,10 @@ namespace CraigStars
                             valueTerraformedLabel.Modulate = GUIColors.UninhabitablePlanetTextColor;
                         }
                     }
+                    else
+                    {
+                        valueTerraformedLabel.Visible = false;
+                    }
 
                     if (planet.ReportAge == 0)
                     {

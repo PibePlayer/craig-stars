@@ -68,6 +68,7 @@ namespace CraigStars.Client
 
         protected override void UpdateControls()
         {
+            productionQueue.ShowTopOfQueue = CommandedPlanet?.Planet?.ProductionQueue?.Items.Count == 0;
             productionQueue.Planet = CommandedPlanet?.Planet;
             base.UpdateControls();
         }

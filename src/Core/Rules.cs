@@ -27,10 +27,10 @@ namespace CraigStars
         [DefaultValue(2400)]
         public int StartingYear { get; set; } = 2400;
 
-        [DefaultValue(150)]
+        [DefaultValue(180)]
         public int MaxExtraWorldDistance { get; set; } = 180;
 
-        [DefaultValue(150)]
+        [DefaultValue(130)]
         public int MinExtraWorldDistance { get; set; } = 130;
 
         // Mineral rules that we don't currently modify

@@ -60,7 +60,7 @@ namespace CraigStars
         public Color WaypointLineColor { get; set; } = new Color("0900FF");
 
         [Export]
-        public Color CommandedWaypointLineColor { get; set; } = new Color("0900FF").Lightened(.2f);
+        public Color CommandedWaypointLineColor { get; set; } = new Color("0900FF").Lightened(.5f);
 
         [Export]
         public Color HabitableColor { get; set; } = new Color("00FF00");

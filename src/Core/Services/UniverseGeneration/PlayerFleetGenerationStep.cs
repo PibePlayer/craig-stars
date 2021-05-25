@@ -25,7 +25,7 @@ namespace CraigStars.UniverseGeneration
         internal List<Fleet> GenerateFleets(Player player, Planet homeworld)
         {
             var fleets = new List<Fleet>();
-            var id = 0;
+            var id = 1;
             foreach (var design in player.Designs.Where(d => !d.Hull.Starbase))
             {
                 fleets.Add(CreateFleet(design, player, id++, homeworld));
@@ -53,7 +53,8 @@ namespace CraigStars.UniverseGeneration
             {
                 Id = id
             };
-            fleet.Name = $"{playerDesign.Name} #{fleet.Id}";
+            fleet.BaseName = $"{playerDesign.Name}";
+            fleet.Name = $"{fleet.BaseName} #{fleet.Id}";
             fleet.BattlePlan = player.BattlePlans[0];
             player.Stats.NumFleetsBuilt++;
             fleet.Tokens.Add(

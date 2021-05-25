@@ -141,7 +141,42 @@ namespace CraigStars.Tests
             fleet.ComputeAggregate(recompute: true);
             Assert.AreEqual(75, fleet.Aggregate.CloakPercent);
 
-        }        
+        }
+
+        [Test]
+        public void TestSplit()
+        {
+            var player = new Player();
+            var design = ShipDesigns.LongRangeScount.Clone();
+            design.Player = player;
+
+            var fleet = new Fleet()
+            {
+                Id = 1,
+                BaseName = "Long Range Scout",
+                Name = "Long Range Scout #1",
+                Player = player,
+                Tokens = new List<ShipToken>() {
+                  new ShipToken(design, 3)
+                }
+            };
+            player.Fleets.Add(fleet);
+
+            var splitFleetOrder = new SplitAllFleetOrder();
+            var splitFleets = fleet.Split(splitFleetOrder);
+
+            // we should get two more fleets with incremented ids
+            Assert.AreEqual(2, splitFleets.Count);
+            Assert.AreEqual("Long Range Scout #2", splitFleets[0].Name);
+            Assert.AreEqual("Long Range Scout #3", splitFleets[1].Name);
+            Assert.AreEqual(2, splitFleets[0].Id);
+            Assert.AreEqual(3, splitFleets[1].Id);
+
+            Assert.AreEqual(1, splitFleets[0].Tokens.Count);
+            Assert.AreEqual(1, splitFleets[1].Tokens.Count);
+            Assert.AreEqual(design, splitFleets[0].Tokens[0].Design);
+            Assert.AreEqual(design, splitFleets[1].Tokens[0].Design);
+        }
     }
 
 }

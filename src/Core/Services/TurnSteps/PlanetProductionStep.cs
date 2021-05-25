@@ -139,7 +139,10 @@ namespace CraigStars
             }
             else
             {
-                BuildItem(planet, item, numBuilt);
+                if (numBuilt > 0)
+                {
+                    BuildItem(planet, item, numBuilt);
+                }
             }
 
             // remove this cost from our allocated amount
@@ -269,12 +272,13 @@ namespace CraigStars
             planet.Player.Stats.NumFleetsBuilt++;
             planet.Player.Stats.NumTokensBuilt += numBuilt;
             var id = planet.Player.Stats.NumFleetsBuilt;
-            string name = item.FleetName != null ? item.FleetName : $"{item.Design.Name} #{id}";
+            string name = item.FleetName != null ? item.FleetName : item.Design.Name;
             var existingFleet = planet.OrbitingFleets.Where(f => f.Name == name);
 
             Fleet fleet = new Fleet()
             {
-                Name = name,
+                BaseName = name,
+                Name = $"{name} #{id}",
                 Player = planet.Player,
                 Orbiting = planet,
                 Position = planet.Position,

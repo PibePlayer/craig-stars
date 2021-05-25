@@ -16,18 +16,7 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(QueuedPlanetProductionQueueItems));
 
-        internal readonly struct CompletionEstimate
-        {
-            public readonly int yearsToBuildOne;
-            public readonly int yearsToBuildAll;
-            public readonly float percentComplete;
-            public CompletionEstimate(int yearsToBuildOne, int yearsToBuildAll, float percentComplete)
-            {
-                this.yearsToBuildOne = yearsToBuildOne;
-                this.yearsToBuildAll = yearsToBuildAll;
-                this.percentComplete = percentComplete;
-            }
-        }
+        ProductionQueueEstimator estimator = new ProductionQueueEstimator();
 
         [Export]
         public bool ShowTopOfQueue { get; set; }
@@ -139,26 +128,7 @@ namespace CraigStars
 
         void UpdateItemCompletionEstimates()
         {
-            // go through each item and update it's YearsToComplete field
-            Cost previousItemsCost = new Cost();
-            foreach (var item in Items)
-            {
-                previousItemsCost = previousItemsCost - item.Allocated;
-                // figure out how much this item costs
-                var costOfOne = item.GetCostOfOne(Me);
-                if (item.Type == QueueItemType.Starbase && Planet.HasStarbase)
-                {
-                    costOfOne = Planet.Starbase.GetUpgradeCost(item.Design);
-                }
-
-                var estimate = GetCompletionEstimate(costOfOne, previousItemsCost, item);
-                item.yearsToBuildAll = estimate.yearsToBuildAll;
-                item.yearsToBuildOne = estimate.yearsToBuildOne;
-                item.percentComplete = estimate.percentComplete;
-
-                // increase our previousItemsCost for the next item
-                previousItemsCost += costOfOne * item.Quantity;
-            }
+            estimator.CalculateCompletionEstimates(Planet, Items, ContributesOnlyLeftoverToResearch);
         }
 
         void AddTopOfQueueItem()
@@ -167,39 +137,6 @@ namespace CraigStars
             {
                 table.Data.AddRow(Planet.ProductionQueue.Items.Count == 0 ? "-- Queue is Empty --" : "-- Top of the Queue --", "");
             }
-        }
-
-        /// <summary>
-        /// Get the estimated number of years to complete this item, based on it's location in the queue
-        /// and the costs of all items before it
-        /// </summary>
-        /// <param name="costOfOne">The cost of this item</param>
-        CompletionEstimate GetCompletionEstimate(Cost costOfOne, Cost previousItemsCost, ProductionQueueItem item)
-        {
-            // Get the total cost of this item plus any previous items in the queue
-            // and subtract what we have on hand (that will be applied this year)
-            Cost remainingCostOfOne = costOfOne + previousItemsCost - availableCost;
-            Cost costOfAll = (costOfOne * item.Quantity);
-            Cost remainingCostOfAll = costOfAll + previousItemsCost - availableCost;
-
-            // If we have a bunch of leftover minerals because our planet is full, 0 those out
-            remainingCostOfOne = new Cost(
-                Math.Max(0, remainingCostOfOne.Ironium),
-                Math.Max(0, remainingCostOfOne.Boranium),
-                Math.Max(0, remainingCostOfOne.Germanium),
-                Math.Max(0, remainingCostOfOne.Resources)
-            );
-            remainingCostOfAll = new Cost(
-                Math.Max(0, remainingCostOfAll.Ironium),
-                Math.Max(0, remainingCostOfAll.Boranium),
-                Math.Max(0, remainingCostOfAll.Germanium),
-                Math.Max(0, remainingCostOfAll.Resources)
-            );
-
-            float percentComplete = item.Allocated != Cost.Zero ? Mathf.Clamp(item.Allocated / costOfAll, 0, 1) : 0;
-            int yearsToBuildAll = remainingCostOfAll == Cost.Zero ? 1 : (int)Math.Ceiling(Mathf.Clamp(remainingCostOfAll / yearlyAvailableCost, 1, int.MaxValue));
-            int yearsToBuildOne = remainingCostOfOne == Cost.Zero ? 1 : (int)Math.Ceiling(Mathf.Clamp(remainingCostOfOne / yearlyAvailableCost, 1, int.MaxValue));
-            return new CompletionEstimate(yearsToBuildOne, yearsToBuildAll, percentComplete);
         }
 
         /// <summary>
@@ -236,9 +173,8 @@ namespace CraigStars
                         }
                         else
                         {
-                            Items.Insert(SelectedItemIndex + 1, item);
+                            Items.Insert(SelectedItemIndex, item);
                             log.Debug($"Inserted new item at {SelectedItemIndex + 1} - {item}");
-                            SelectedItemIndex = SelectedItemIndex + 1;
                         }
                     }
                     else

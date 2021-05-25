@@ -19,6 +19,13 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(Fleet));
 
+        /// <summary>
+        /// Fleets are named "Long Range Scout #9"
+        /// This is the base name without the id number
+        /// </summary>
+        /// <value></value>
+        public string BaseName { get; set; }
+
         #region Stats
 
         public Cargo Cargo { get; set; } = new Cargo();
@@ -46,6 +53,7 @@ namespace CraigStars
         public List<ShipToken> Tokens { get; set; } = new List<ShipToken>();
         public Vector2 Heading { get; set; }
         public int WarpSpeed { get; set; }
+        public int IdleTurns { get; set; }
 
         [JsonIgnore]
         public int Mass { get => Aggregate.Mass; set => Aggregate.Mass = value; }
@@ -154,6 +162,11 @@ namespace CraigStars
 
             var count = 0;
             ShipToken remainingToken = null;
+            // each new fleet will be assigned the next id
+            // available for the player. This is the id
+            // we start searching for. This will be updated 
+            // for each new fleet that is checked
+            var startingId = Player.GetNextFleetId();
             foreach (var token in Tokens)
             {
                 for (int i = 0; i < token.Quantity; i++)
@@ -165,11 +178,13 @@ namespace CraigStars
                     }
                     else
                     {
+                        var id = startingId++;
                         var newFleet = new Fleet()
                         {
-                            Id = Player.GetNextFleetId(),
+                            Id = id,
                             Player = Player,
-                            Name = $"{token.Design.Name} #{Player.Stats.NumFleetsBuilt}",
+                            BaseName = BaseName,
+                            Name = $"{BaseName} #{id}",
                             Orbiting = Orbiting,
                             Position = Position,
                             Tokens = new List<ShipToken>() { new ShipToken() {
@@ -237,7 +252,7 @@ namespace CraigStars
                 Cargo = Cargo * cargoPercent;
             }
             Fuel = (int)(Aggregate.FuelCapacity * fuelPercent);
-            Name = $"{remainingToken.Design.Name} #{Id}";
+            Name = $"{BaseName} #{Id}";
             OtherFleets.AddRange(newFleets);
 
             return newFleets;

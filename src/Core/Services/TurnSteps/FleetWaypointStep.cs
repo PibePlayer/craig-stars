@@ -578,7 +578,13 @@ namespace CraigStars
                 if (wp.Task != WaypointTask.LayMineField &&
                     wp.Task != WaypointTask.RemoteMining &&
                     wp.Task != WaypointTask.Patrol)
-                    Message.FleetCompletedAssignedOrders(fleet.Player, fleet);
+                {
+                    if (fleet.IdleTurns == 0)
+                    {
+                        Message.FleetCompletedAssignedOrders(fleet.Player, fleet);
+                    }
+                    fleet.IdleTurns++;
+                }
             }
         }
 

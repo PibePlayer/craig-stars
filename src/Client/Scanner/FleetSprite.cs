@@ -237,12 +237,26 @@ namespace CraigStars
             }
 
             // turn them all off
-
             stateSprites.ForEach(s => s.Visible = false);
+
+            // update the waypoints line 
+            if (State == ScannerState.Commanded)
+            {
+                waypointsLine.DefaultColor = GUIColors.CommandedWaypointLineColor;
+                waypointsLine.ZAsRelative = false;
+                waypointsLine.ZIndex = 10;
+            }
+            else
+            {
+                waypointsLine.DefaultColor = GUIColors.WaypointLineColor;
+                waypointsLine.ZAsRelative = true;
+                waypointsLine.ZIndex = 0;
+            }
 
             // if we are orbiting a planet, don't show any sprites
             if (Orbiting != null)
             {
+                Update();
                 return;
             }
 
@@ -281,16 +295,6 @@ namespace CraigStars
                 default:
                     shipSprite.Modulate = Colors.Gray;
                     break;
-            }
-
-            // update the waypoints line 
-            if (State == ScannerState.Commanded)
-            {
-                waypointsLine.DefaultColor = GUIColors.CommandedWaypointLineColor;
-            }
-            else
-            {
-                waypointsLine.DefaultColor = GUIColors.WaypointLineColor;
             }
 
             Update();

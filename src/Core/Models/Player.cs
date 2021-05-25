@@ -391,17 +391,7 @@ namespace CraigStars
         /// <returns></returns>
         public int GetNextFleetId()
         {
-            int i = 1;
-            foreach (var fleet in Fleets.OrderBy(f => f.Id))
-            {
-                if (fleet.Id != i)
-                {
-                    // find the first available id, starting at 1 and counting up
-                    break;
-                }
-                i++;
-            }
-            return i;
+            return Fleets.Select(f => f.Id).Max() + 1;
         }
 
         /// <summary>

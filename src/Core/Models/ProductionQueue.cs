@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Godot;
 using Newtonsoft.Json;
 
 namespace CraigStars
 {
     public class ProductionQueue
     {
+
         /// <summary>
         /// This is the amount of resources leftover after building
         /// These are used for research
@@ -43,8 +45,9 @@ namespace CraigStars
             {
                 Items.Add(item);
             }
-
         }
+
+
 
     }
 }

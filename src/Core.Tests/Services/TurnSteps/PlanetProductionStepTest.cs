@@ -261,6 +261,47 @@ namespace CraigStars.Tests
         }
 
         [Test]
+        public void TestBuildAuto2()
+        {
+            // make the planet a standard homeworld with 35 available resources
+            var player = game.Players[0];
+            var planet = game.Planets[0];
+            var initialFleetCount = game.Fleets.Count;
+            planet.Factories = 10;
+            planet.Mines = 10;
+            planet.ContributesOnlyLeftoverToResearch = true;
+            var design = ShipDesigns.LongRangeScount.Clone();
+            design.Player = player;
+            design.ComputeAggregate();
+            player.Designs.Add(design);
+
+
+            // setup an auto queue that tries to build 20 factories, then 20 mines, then 5 ships
+            // we should not build any factories, then build 5 mines, then no longer have enough resources to build
+            // anything else.
+            planet.ProductionQueue.Items = new List<ProductionQueueItem>() {
+                new ProductionQueueItem(QueueItemType.AutoFactories, 20),
+                new ProductionQueueItem(QueueItemType.AutoMines, 20),
+                new ProductionQueueItem(QueueItemType.ShipToken, 5, design),
+            };
+            planet.Cargo = new Cargo(germanium: 3, colonists: planet.Cargo.Colonists);
+            step.Build(planet);
+
+            // should use all germanium and allocate it to factory (and 7 resources, which is 3/4 of the 10 required)
+            // 5 mines should be built, no fleets should be built
+            Assert.AreEqual(10, planet.Factories);
+            Assert.AreEqual(15, planet.Mines);
+            Assert.AreEqual(3, planet.ProductionQueue.Items.Count);
+            Assert.AreEqual(QueueItemType.AutoFactories, planet.ProductionQueue.Items[0].Type);
+            Assert.AreEqual(20, planet.ProductionQueue.Items[0].Quantity);
+            Assert.AreEqual(QueueItemType.AutoMines, planet.ProductionQueue.Items[1].Type);
+            Assert.AreEqual(20, planet.ProductionQueue.Items[1].Quantity);
+            Assert.AreEqual(new Cost(germanium: 3, resources: 7), planet.ProductionQueue.Items[0].Allocated);
+            Assert.AreEqual(new Cargo(colonists: planet.Cargo.Colonists), planet.Cargo);
+            Assert.AreEqual(initialFleetCount, game.Fleets.Count); // we shouldn't have any additional fleets
+        }
+
+        [Test]
         public void TestAllocateToQueue()
         {
             var planet = game.Planets[0];
@@ -272,7 +313,6 @@ namespace CraigStars.Tests
             var allocated = new Cost(5, 100, 100, 100);
             var result = step.AllocatePartialBuild(costPerItem, allocated);
             Assert.AreEqual(new Cost(5, 10, 15, 20), result);
-
         }
     }
 }

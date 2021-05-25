@@ -180,8 +180,17 @@ namespace CraigStars.Client
                     }
                     else
                     {
+                        var fuelCost = CommandedFleet.Fleet.GetFuelCost(to.WarpFactor, waypointDistance);
                         travelTime.Text = $"{Math.Ceiling(from.GetTimeToWaypoint(to))} years";
-                        estimatedFuelUsage.Text = $"{CommandedFleet.Fleet.GetFuelCost(to.WarpFactor, waypointDistance)}mg";
+                        estimatedFuelUsage.Text = $"{fuelCost}mg";
+                        if (fuelCost > CommandedFleet.Fleet.Fuel)
+                        {
+                            estimatedFuelUsage.Modulate = Colors.Red;
+                        }
+                        else
+                        {
+                            estimatedFuelUsage.Modulate = Colors.White;
+                        }
                     }
                 }
                 else

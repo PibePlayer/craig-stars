@@ -66,6 +66,7 @@ namespace CraigStars.Client
             {
                 Me.FleetsByGuid[newFleet.Guid] = newFleet;
                 Me.Fleets.Add(newFleet);
+                Me.MapObjectsByLocation[newFleet.Position].Add(newFleet);
             });
 
             Signals.PublishFleetsCreatedEvent(fleets);

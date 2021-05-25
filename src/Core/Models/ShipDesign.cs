@@ -290,8 +290,6 @@ namespace CraigStars
                 Aggregate.Movement = 0;
             }
 
-
-
             // compute the scan ranges
             ComputeScanRanges();
 

@@ -20,6 +20,7 @@ namespace CraigStars
         public AIDifficulty AIDifficulty { get; set; } = AIDifficulty.Normal;
         public Boolean SubmittedTurn { get; set; }
         public Color Color { get; set; } = Colors.Black;
+        public PlayerScore PublicScore { get; set; } = new();
 
         /// <summary>
         /// Update our data from another player info (probably from a network call)

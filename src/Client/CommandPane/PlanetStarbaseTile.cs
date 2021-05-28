@@ -104,7 +104,7 @@ namespace CraigStars.Client
                         destination.Visible = true;
                         destinationLabel.Visible = true;
                         setDestinationButton.Visible = true;
-                        massDriver.Text = $"Warp {starbase.Aggregate.MassDriver.PacketSpeed}";
+                        massDriver.Text = $"Warp {starbase.Aggregate.SafePacketSpeed}";
                         if (CommandedPlanet.Planet.PacketTarget != null)
                         {
                             destination.Text = CommandedPlanet.Planet.PacketTarget.Name;

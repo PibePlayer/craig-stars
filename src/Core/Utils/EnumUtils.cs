@@ -5,19 +5,15 @@ namespace CraigStars.Utils
 {
     public static class EnumUtils
     {
-        public static string GetLabelForMineFieldType(MineFieldType type)
+        public static string GetLabelForMineFieldType(MineFieldType type) => type switch
         {
-            switch (type)
-            {
-                case MineFieldType.SpeedBump:
-                    return "Speed Bump";
-                default:
-                    return type.ToString();
-            }
-        }
+            MineFieldType.SpeedBump => "Speed Bump",
+            _ => type.ToString()
+        };
 
         public static ShipDesignPurpose GetPurposeForTechHullType(TechHullType type)
         {
+
             switch (type)
             {
                 case TechHullType.Scout:
@@ -51,22 +47,14 @@ namespace CraigStars.Utils
             return value.ToString();
         }
 
-        public static string GetLabelForBattleTargetType(BattleTargetType value)
+        public static string GetLabelForBattleTargetType(BattleTargetType value) => value switch
         {
-            switch (value)
-            {
-                case BattleTargetType.ArmedShips:
-                    return "Armed Ships";
-                case BattleTargetType.BombersFreighters:
-                    return "Bombers Freighters";
-                case BattleTargetType.UnarmedShips:
-                    return "Unarmed Ships";
-                case BattleTargetType.FuelTransports:
-                    return "Fuel Transports";
-                default:
-                    return value.ToString();
-            }
-        }
+            BattleTargetType.ArmedShips => "Armed Ships",
+            BattleTargetType.BombersFreighters => "Bombers Freighters",
+            BattleTargetType.UnarmedShips => "Unarmed Ships",
+            BattleTargetType.FuelTransports => "Fuel Transports",
+            _ => value.ToString(),
+        };
 
         public static string GetLabelForNextResearchField(NextResearchField value)
         {

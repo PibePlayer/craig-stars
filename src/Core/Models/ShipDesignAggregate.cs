@@ -40,6 +40,7 @@ namespace CraigStars
         /// <value></value>
         public int Initiative { get; set; }
         public int Movement { get; set; }
+        public int PowerRating { get; set; }
 
         /// <summary>
         /// Does this design have any bombs

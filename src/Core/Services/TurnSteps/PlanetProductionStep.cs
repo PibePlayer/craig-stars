@@ -251,6 +251,7 @@ namespace CraigStars
             {
                 Player = planet.Player,
                 Position = planet.Position,
+                SafeWarpSpeed = planet.Starbase.Aggregate.SafePacketSpeed,
                 WarpFactor = planet.PacketSpeed,
                 Target = planet.PacketTarget,
                 Cargo = cargo * numBuilt

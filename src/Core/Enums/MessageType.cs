@@ -39,6 +39,9 @@ namespace CraigStars
         MineFieldHit                    = 1ul << 29,
         FleetDumpedCargo                = 1ul << 30,
         FleetStargateDamaged            = 1ul << 31,
+        MineralPacketCaught             = 1ul << 32,
+        MineralPacketDamage             = 1ul << 33,
+        MineralPacketLanded             = 1ul << 32,
         
     }
 }

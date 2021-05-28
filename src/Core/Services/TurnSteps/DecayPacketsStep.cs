@@ -11,11 +11,11 @@ namespace CraigStars
     /// <summary>
     /// Packets decay if sent too fast
     /// </summary>
-    public class DecayPacketStep : TurnGenerationStep
+    public class DecayPacketsStep : TurnGenerationStep
     {
-        static CSLog log = LogProvider.GetLogger(typeof(DecayPacketStep));
+        static CSLog log = LogProvider.GetLogger(typeof(DecayPacketsStep));
 
-        public DecayPacketStep(Game game) : base(game, TurnGenerationState.DecayMineralPackets) { }
+        public DecayPacketsStep(Game game) : base(game, TurnGenerationState.DecayMineralPackets) { }
 
         public override void Process()
         {
@@ -32,9 +32,9 @@ namespace CraigStars
         /// <param name="packet"></param>
         internal void Decay(MineralPacket packet)
         {
-            // TODO decay packet
+            var decayRate = 1f - packet.Player.GetPacketDecayRate(packet) * (packet.DistanceTravelled / (packet.WarpFactor * packet.WarpFactor));
+            packet.Cargo *= decayRate;
         }
-
 
     }
 }

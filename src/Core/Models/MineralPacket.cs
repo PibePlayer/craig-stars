@@ -12,7 +12,9 @@ namespace CraigStars
         [JsonProperty(IsReference = true)]
         public Planet Target { get; set; }
         public Cargo Cargo { get; set; }
+        public int SafeWarpSpeed { get; set; }
         public int WarpFactor { get; set; }
+        public float DistanceTravelled { get; set; }
         public Vector2 Heading { get; set; }
 
         [JsonIgnore]

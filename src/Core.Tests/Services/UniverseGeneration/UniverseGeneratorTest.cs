@@ -13,14 +13,13 @@ namespace CraigStars.Tests
         [Test]
         public void TestGenerate()
         {
-            var game = new Game() { SaveToDisk = false };
+            var game = new Game() { SaveToDisk = false, StartMode = GameStartMode.Normal };
             game.Init(new List<Player>() { new Player() { AIControlled = true } }, new Rules(0), StaticTechStore.Instance, new TestGamesManager(), new TestTurnProcessorManager());
-            game.Rules.StartMode = GameStartMode.Normal;
 
             var ug = new UniverseGenerator(game);
             ug.Generate();
 
-            Assert.AreEqual(game.Rules.NumPlanets, game.Planets.Count);
+            Assert.AreEqual(game.Rules.GetNumPlanets(game.Size, game.Density), game.Planets.Count);
             Assert.Greater(game.Fleets.Count, 0);
             var player = game.Players[0];
             Assert.NotNull(game.Players[0].Homeworld);

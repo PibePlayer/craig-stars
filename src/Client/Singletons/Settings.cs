@@ -144,6 +144,8 @@ namespace CraigStars
         public GameMode GameMode { get; set; } = GameMode.SinglePlayer;
         public bool ShouldContinueGame { get; set; }
         public string GameName { get; set; } = "A Barefoot Jaywalk";
+        public Size NewGameSize { get; set; } = Size.Small;
+        public Density NewGameDensity { get; set; } = Density.Normal;
 
         #endregion
 

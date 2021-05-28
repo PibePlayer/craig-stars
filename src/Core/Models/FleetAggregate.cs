@@ -12,11 +12,20 @@ namespace CraigStars
 
         public int MassEmpty { get; set; }
 
-        // starbase fields
-        // TODO: generisize these
-        public bool HasMassDriver { get => MassDriver != null && MassDriver.PacketSpeed > 0; }
+        /// <summary>
+        /// The base packet speed a packet can be flung. If there are two MassDriver7's on a starbase, the 
+        /// base speed is 7 and the safe speed is 8
+        /// </summary>
+        public int BasePacketSpeed { get; set; }
+
+        /// <summary>
+        /// The safe warp speed a packet can be flung, or 0 if no mass driver
+        /// </summary>
+        public int SafePacketSpeed { get; set; }
+
+        public bool HasMassDriver { get => BasePacketSpeed > 0; }
+
         public bool HasStargate { get => Stargate != null && Stargate.SafeHullMass != TechHullComponent.NoGate; }
-        public TechHullComponent MassDriver { get; set; }
         public TechHullComponent Stargate { get; set; }
 
         /// <summary>

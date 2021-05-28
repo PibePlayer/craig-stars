@@ -16,7 +16,7 @@ namespace CraigStars.UniverseGeneration
 
         public override void Process()
         {
-            switch (Game.Rules.StartMode)
+            switch (Game.GameInfo.StartMode)
             {
                 case GameStartMode.MidGame:
                 case GameStartMode.LateGame:

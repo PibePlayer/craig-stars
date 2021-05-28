@@ -13,9 +13,8 @@ namespace CraigStars.Tests
         [Test]
         public void TestFillStarbaseSlots()
         {
-            var game = new Game() { SaveToDisk = false };
+            var game = new Game() { SaveToDisk = false, StartMode = GameStartMode.Normal };
             game.Init(new List<Player>() { new Player() { AIControlled = true } }, new Rules(0), StaticTechStore.Instance, new TestGamesManager(), new TestTurnProcessorManager());
-            game.Rules.StartMode = GameStartMode.Normal;
 
             PlayerShipDesignsGenerationStep step = new PlayerShipDesignsGenerationStep(game);
 

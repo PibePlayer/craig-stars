@@ -17,7 +17,7 @@ namespace CraigStars
         /// <summary>
         /// /// The player needs to know information about the game
         /// </summary>
-        public PublicGameInfo Game { get; set; } = new PublicGameInfo();
+        public PublicGameInfo Game { get; set; } = new();
 
         /// <summary>
         /// true if this player has made changes and needs to save
@@ -41,9 +41,11 @@ namespace CraigStars
         [JsonIgnore]
         public ITechStore TechStore { get; set; } = StaticTechStore.Instance;
 
-        public Race Race { get; set; } = new Race();
+        public Race Race { get; set; } = new();
         public int DefaultHullSet { get; set; } = 0;
-        public PlayerStats Stats { get; set; } = new PlayerStats();
+        public PlayerStats Stats { get; set; } = new();
+        public PlayerScore Score { get; set; } = new();
+        public List<PlayerScore> ScoreHistory { get; set; } = new();
 
         #region Research
 
@@ -612,7 +614,7 @@ namespace CraigStars
         public T GetBestTech<T>(TechCategory category) where T : Tech
         {
             var techs = TechStore.GetTechsByCategory(category);
-            var tech = techs.OrderBy(t => t.Ranking).FirstOrDefault(t => HasTech(t));
+            var tech = techs.OrderByDescending(t => t.Ranking).FirstOrDefault(t => HasTech(t));
             return tech as T;
         }
 
@@ -669,6 +671,44 @@ namespace CraigStars
         public bool DiscoverDesignOnScan { get => Race.PRT == PRT.WM; }
 
         public Cost TerraformCost { get => Race.HasLRT(LRT.TT) ? Rules.TotalTerraformCost : Rules.TerraformCost; }
+
+        /// <summary>
+        /// PP races can fling packets 1 warp faster without decaying.
+        /// </summary>
+        public float GetPacketDecayRate(MineralPacket packet)
+        {
+            int overSafeWarp = packet.WarpFactor - packet.SafeWarpSpeed;
+
+            if (Race.PRT == PRT.IT)
+            {
+                // IT is always count as being at least 1 over the safe warp
+                overSafeWarp++;
+            }
+
+            // we only care about packets thrown up to 3 warp over the limit 
+            overSafeWarp = Mathf.Clamp(packet.WarpFactor - packet.SafeWarpSpeed, 0, 3);
+
+            var packetDecayRate = 0f;
+            if (overSafeWarp > 0)
+            {
+                packetDecayRate = Rules.PacketDecayRate[overSafeWarp];
+            }
+
+            if (Race.PRT == PRT.PP)
+            {
+                // PP have half the decay rate
+                packetDecayRate *= .5f;
+            }
+
+            return packetDecayRate;
+        }
+
+        /// <summary>
+        /// The effectiveness of this player at receiving packets
+        /// Races with the Interstellar trait are only 1/2 as effective at catching packets. To calculate the damage taken, divide receiverSpeed by two.
+        /// </summary>
+        /// <value></value>
+        public float PacketReceiverFactor { get => Race.PRT == PRT.IT ? .5f : 1f; }
 
         /// <summary>
         /// Get the cost to construct a single or mixed mineral packet 

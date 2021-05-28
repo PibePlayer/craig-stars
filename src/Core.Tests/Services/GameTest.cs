@@ -78,8 +78,8 @@ namespace CraigStars.Tests
             game.Init(new List<Player>() { new Player() }, rules, StaticTechStore.Instance, new TestGamesManager(), new TestTurnProcessorManager());
             game.GenerateUniverse();
 
-            Assert.AreEqual(rules.NumPlanets, game.Planets.Count);
-            Assert.AreEqual(rules.NumPlanets, game.Players[0].AllPlanets.ToList().Count);
+            Assert.AreEqual(rules.GetNumPlanets(game.Size, game.Density), game.Planets.Count);
+            Assert.AreEqual(rules.GetNumPlanets(game.Size, game.Density), game.Players[0].AllPlanets.ToList().Count);
             Assert.AreEqual(game.Fleets.Count, game.Players[0].Fleets.Count);
         }
 
@@ -111,14 +111,15 @@ namespace CraigStars.Tests
         public async Task TestGenerateManyTurns()
         {
             // create a new game with universe
-            var game = new Game() { SaveToDisk = false };
-            var player = new Player();
-            var aiPlayer = new Player() { AIControlled = true };
-            var rules = new Rules(0)
+            var game = new Game()
             {
+                SaveToDisk = false,
                 Size = Size.Huge,
                 Density = Density.Packed
             };
+            var player = new Player();
+            var aiPlayer = new Player() { AIControlled = true };
+            var rules = new Rules(0);
             game.Init(new List<Player>() { player, aiPlayer }, rules, StaticTechStore.Instance, new TestGamesManager(), new TestTurnProcessorManager());
             game.GenerateUniverse();
 

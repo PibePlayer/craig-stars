@@ -122,7 +122,7 @@ namespace CraigStars
 
                         foreach (var playerWaypoint in playerFleet.Waypoints.Skip(1))
                         {
-                            if (playerWaypoint.Target == playerFleet.Waypoints[index - 1].Target)
+                            if (playerWaypoint.Target != null && playerWaypoint.Target == playerFleet.Waypoints[index - 1].Target)
                             {
                                 // don't let the client submit multiple waypoints to the same location in a row
                                 continue;
@@ -142,7 +142,7 @@ namespace CraigStars
                             }
                             else
                             {
-                                fleet.Waypoints.Add(playerWaypoint);
+                                fleet.Waypoints.Add(playerWaypoint.Clone());
                             }
 
                             // make sure the original target maps to a game object

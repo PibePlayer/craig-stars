@@ -77,12 +77,13 @@ namespace CraigStars
         /// Create a clone of this ship design
         /// </summary>
         /// <returns></returns>
-        public ShipDesign Clone()
+        public ShipDesign Clone(Player player = null)
         {
             var design = Copy();
             design.Owner = Owner;
             design.Name = Name;
             design.Guid = Guid;
+            design.Player = player != null ? player : Player;
             return design;
         }
 
@@ -160,6 +161,7 @@ namespace CraigStars
             Aggregate.HasWeapons = false;
             Aggregate.WeaponSlots.Clear();
             Aggregate.Initiative = Hull.Initiative;
+            Aggregate.PowerRating = 0;
             Aggregate.Movement = 0;
             Aggregate.TorpedoInaccuracyFactor = 1;
             Aggregate.NumEngines = 0;
@@ -245,6 +247,7 @@ namespace CraigStars
                     if (slot.HullComponent.Power > 0)
                     {
                         Aggregate.HasWeapons = true;
+                        Aggregate.PowerRating += slot.HullComponent.Power * slot.Quantity;
                         Aggregate.WeaponSlots.Add(slot);
                     }
 

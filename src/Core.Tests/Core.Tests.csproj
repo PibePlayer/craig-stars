@@ -4,6 +4,7 @@
         <RootNamespace>CraigStars.Tests</RootNamespace>
         <IsTestProject>true</IsTestProject>
         <GenerateProgramFile>false</GenerateProgramFile>
+        <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>

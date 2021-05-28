@@ -22,10 +22,10 @@ namespace CraigStars.UniverseGeneration
         public List<Wormhole> GenerateWormholes(Rules rules, List<Planet> planets)
         {
             var wormholes = new List<Wormhole>();
-            int numPairs = rules.WormholePairsForSize[rules.Size];
+            int numPairs = rules.WormholePairsForSize[Game.Size];
 
             int width, height;
-            width = height = rules.Area;
+            width = height = rules.GetArea(Game.Size);
 
             // create a set of locations with planets
             var planetPositions = planets.Select(planet => planet.Position).ToHashSet();
@@ -53,7 +53,7 @@ namespace CraigStars.UniverseGeneration
         public Wormhole GenerateWormhole(Rules rules, HashSet<Vector2> planetPositions, HashSet<Vector2> wormholePositions)
         {
             int width, height;
-            width = height = rules.Area;
+            width = height = rules.GetArea(Game.Size);
 
             var random = rules.Random;
 

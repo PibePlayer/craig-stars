@@ -88,8 +88,53 @@ namespace CraigStars
         public static void MineralPacket(Player player, Planet planet, MineralPacket packet)
         {
             string text = $"{planet.Name} has produced a mineral packet which has a destination of {packet.Target.Name}";
-            player.Messages.Add(new Message(MessageType.BuiltDefense, text, planet));
+            player.Messages.Add(new Message(MessageType.BuiltMineralPacket, text, planet));
 
+        }
+
+        public static void MineralPacketArrived(Player player, Planet planet, MineralPacket packet)
+        {
+            string text = $"Your mineral packet containing {packet.Cargo.Total}kT of minerals has landed at {planet.Name}.";
+            player.Messages.Add(new Message(MessageType.MineralPacketLanded, text, planet));
+        }
+
+        public static void MineralPacketCaught(Player player, Planet planet, MineralPacket packet)
+        {
+            string text = $"Your mass accelerator at {planet.Name} has successfully captured a packet containing {packet.Cargo.Total}kT of minerals.";
+            player.Messages.Add(new Message(MessageType.MineralPacketCaught, text, planet));
+        }
+
+        public static void MineralPacketDamage(Player player, Planet planet, MineralPacket packet, int colonistsKilled, int defensesDestroyed)
+        {
+            string text = "";
+            if (planet.HasStarbase && planet.Starbase.Aggregate.HasMassDriver)
+            {
+                if (defensesDestroyed == 0)
+                {
+                    text = $"Your mass accelerator at {planet.Name} was partially successful in capturing a {packet.Cargo.Total}kT mineral packet. Unable to completely slow the packet, {colonistsKilled} of your colonists were killed in the collision.";
+                }
+                else
+                {
+                    text = $"Your mass accelerator at {planet.Name} was partially successful in capturing a {packet.Cargo.Total}kT mineral packet. Unfortunately, {colonistsKilled} of your colonists and {defensesDestroyed} of your defenses were destroyed in the collision.";
+                }
+            }
+            else
+            {
+                if (planet.Population == 0)
+                {
+                    text = $"{planet.Name} was annihilated by a mineral packet.  All of your colonists were killed.";
+                }
+                else if (defensesDestroyed == 0)
+                {
+                    text = $"{planet.Name} was bombarded with a {packet.Cargo.Total}kT mineral packet. {colonistsKilled} of your colonists were killed by the collision.";
+                }
+                else
+                {
+                    text = $"{planet.Name} was bombarded with a {packet.Cargo.Total}kT mineral packet. {colonistsKilled} of your colonists and {defensesDestroyed} of your defenses were destroyed by the collision.";
+                }
+
+            }
+            player.Messages.Add(new Message(MessageType.MineralPacketDamage, text, planet));
         }
 
         public static void BuildMineralPacketNoMassDriver(Player player, Planet planet)

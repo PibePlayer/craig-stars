@@ -41,16 +41,24 @@ namespace CraigStars
             base.ComputeAggregate(recompute);
 
             Aggregate.Stargate = null;
-            Aggregate.MassDriver = null;
+            Aggregate.BasePacketSpeed = 0;
+            Aggregate.SafePacketSpeed = 0;
+            int numAdditionalMassDrivers = 0;
 
             foreach (var slot in Design.Slots)
             {
                 if (slot.HullComponent != null)
                 {
                     // find the first massdriver and stargate
-                    if (Aggregate.MassDriver == null && slot.HullComponent.PacketSpeed > 0)
+                    if (slot.HullComponent.PacketSpeed > 0)
                     {
-                        Aggregate.MassDriver = slot.HullComponent;
+                        // if we already have a massdriver at this speed, add an additional mass driver to up
+                        // our speed
+                        if (Aggregate.BasePacketSpeed == slot.HullComponent.PacketSpeed)
+                        {
+                            numAdditionalMassDrivers++;
+                        }
+                        Aggregate.BasePacketSpeed = Math.Max(Aggregate.BasePacketSpeed, slot.HullComponent.PacketSpeed);
                     }
                     if (Aggregate.Stargate == null && slot.HullComponent.SafeHullMass > 0)
                     {
@@ -58,6 +66,8 @@ namespace CraigStars
                     }
                 }
             }
+
+            Aggregate.SafePacketSpeed = Aggregate.BasePacketSpeed + numAdditionalMassDrivers;
         }
 
         /// <summary>

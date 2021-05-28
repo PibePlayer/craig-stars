@@ -26,6 +26,7 @@ namespace CraigStars
         MineSweeping,
         Repair,
         Scan,
+        CalculatingScore,
         UpdatingPlayers,
         RunningTurnProcessors,
         Saving,

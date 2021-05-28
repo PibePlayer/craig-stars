@@ -5,6 +5,7 @@
         <GodotUseNETFrameworkRefAssemblies>true</GodotUseNETFrameworkRefAssemblies>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
         <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+        <LangVersion>latest</LangVersion>
     </PropertyGroup>
     <ItemGroup>
         <None Include="**/*.tscn" />

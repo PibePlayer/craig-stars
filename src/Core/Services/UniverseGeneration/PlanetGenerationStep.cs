@@ -23,9 +23,9 @@ namespace CraigStars.UniverseGeneration
         {
             var planets = new List<Planet>();
             int width, height;
-            width = height = rules.Area;
+            width = height = rules.GetArea(Game.Size);
 
-            var numPlanets = rules.NumPlanets;
+            var numPlanets = rules.GetNumPlanets(Game.Size, Game.Density);
             var ng = new NameGenerator();
             var names = ng.RandomNames;
 

@@ -67,7 +67,7 @@ namespace CraigStars
                 new PacketMoveStep(game, 0),
                 new FleetMoveStep(game),
                 new DecaySalvageStep(game),
-                new DecayPacketStep(game),
+                new DecayPacketsStep(game),
                 new WormholeJiggleStep(game),
                 new DetonateMinesStep(game),
                 new PlanetMineStep(game),
@@ -82,6 +82,7 @@ namespace CraigStars
                 new FleetLayMinesStep(game),
                 new FleetSweepMinesStep(game),
                 new PlayerScanStep(game),
+                new CalculateScoreStep(game),
             };
         }
 

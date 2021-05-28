@@ -36,6 +36,7 @@ namespace CraigStars
             joinHostEdit.Text = Settings.Instance.ClientHost;
             joinPortEdit.Text = Settings.Instance.ClientPort.ToString();
 
+
             if (Settings.Instance.ContinueGame != null)
             {
                 continueGameButton.Visible = continueGameInfo.Visible = true;

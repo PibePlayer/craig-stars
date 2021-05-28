@@ -7,13 +7,6 @@ namespace CraigStars
 {
     public class Rules
     {
-        [DefaultValue(0)]
-        public int QuickStartTurns { get; set; } = 0;
-
-        public Size Size { get; set; } = Size.Small;
-        public Density Density { get; set; } = Density.Normal;
-        public GameStartMode StartMode { get; set; } = GameStartMode.Normal;
-
         [DefaultValue(15)]
         public int PlanetMinDistance { get; } = 15;
 
@@ -104,6 +97,15 @@ namespace CraigStars
         public float PacketMineralCostFactorPP { get; set; } = 1f;
         [DefaultValue(1.2f)]
         public float PacketMineralCostFactorIT { get; set; } = 1.2f;
+
+        /// <summary>
+        /// The decay rate for packets for the amount over the safe warp speed
+        /// </summary>
+        public Dictionary<int, float> PacketDecayRate { get; set; } = new Dictionary<int, float>() {
+            { 1, .1f },
+            { 2, .25f },
+            { 3, .5f },
+        };
 
         /// <summary>
         /// The amount of minerals in a single ironium, boranium, or germanium packet
@@ -301,87 +303,65 @@ namespace CraigStars
         /// Get the Area of the universe
         /// </summary>
         /// <value></value>
-        public int Area
+        public int GetArea(Size size) => size switch
         {
-            get
-            {
-                switch (Size)
-                {
-                    case Size.Tiny:
-                        return 400;
-                    case Size.Small:
-                        return 800;
-                    case Size.Medium:
-                        return 1200;
-                    case Size.Large:
-                        return 1600;
-                    case Size.Huge:
-                        return 2000;
-                    default:
-                        throw new System.ArgumentException("Unknown Size: " + Size);
-                }
-            }
-        }
+            Size.Tiny => 400,
+            Size.Small => 800,
+            Size.Medium => 1200,
+            Size.Large => 1600,
+            Size.Huge => 2000,
+            _ => throw new System.ArgumentException("Unknown Size=>  " + size),
+        };
 
         /// <summary>
         /// Get the number of planets based on the size and density
         /// </summary>
         /// <value></value>
-        public int NumPlanets
+        public int GetNumPlanets(Size size, Density density) => size switch
         {
-            get
+            Size.Huge => density switch
             {
-                switch (Size)
-                {
-                    case Size.Huge:
-                        switch (Density)
-                        {
-                            case (Density.Sparse): return 600;
-                            case (Density.Normal): return 800;
-                            case (Density.Dense): return 940;
-                            case (Density.Packed): return 945;
-                        }
-                        break;
-                    case Size.Large:
-                        switch (Density)
-                        {
-                            case (Density.Sparse): return 384;
-                            case (Density.Normal): return 512;
-                            case (Density.Dense): return 640;
-                            case (Density.Packed): return 910;
-                        }
-                        break;
-                    case Size.Medium:
-                        switch (Density)
-                        {
-                            case (Density.Sparse): return 216;
-                            case (Density.Normal): return 288;
-                            case (Density.Dense): return 360;
-                            case (Density.Packed): return 540;
-                        }
-                        break;
-                    case Size.Small:
-                        switch (Density)
-                        {
-                            case (Density.Sparse): return 96;
-                            case (Density.Normal): return 128;
-                            case (Density.Dense): return 160;
-                            case (Density.Packed): return 240;
-                        }
-                        break;
-                    case Size.Tiny:
-                        switch (Density)
-                        {
-                            case (Density.Sparse): return 24;
-                            case (Density.Normal): return 32;
-                            case (Density.Dense): return 40;
-                            case (Density.Packed): return 60;
-                        }
-                        break;
-                }
-                throw new System.ArgumentException($"Unknown Size {Size} or Density {Density}");
-            }
-        }
+                Density.Sparse => 600,
+                Density.Normal => 800,
+                Density.Dense => 940,
+                Density.Packed => 945,
+                _ => throw new System.ArgumentException($"Unknown Size {size} or Density {density}")
+            },
+            Size.Large => density switch
+            {
+                Density.Sparse => 384,
+                Density.Normal => 512,
+                Density.Dense => 640,
+                Density.Packed => 910,
+                _ => throw new System.ArgumentException($"Unknown Size {size} or Density {density}")
+            },
+            Size.Medium => density switch
+            {
+                Density.Sparse => 216,
+                Density.Normal => 288,
+                Density.Dense => 360,
+                Density.Packed => 540,
+                _ => throw new System.ArgumentException($"Unknown Size {size} or Density {density}")
+            },
+            Size.Small => density switch
+            {
+                Density.Sparse => 96,
+                Density.Normal => 128,
+                Density.Dense => 160,
+                Density.Packed => 240,
+                _ => throw new System.ArgumentException($"Unknown Size {size} or Density {density}")
+            },
+            Size.Tiny => density switch
+            {
+
+                Density.Sparse => 24,
+                Density.Normal => 32,
+                Density.Dense => 40,
+                Density.Packed => 60,
+                _ => throw new System.ArgumentException($"Unknown Size {size} or Density {density}")
+            },
+            _ => throw new System.ArgumentException($"Unknown Size {size} or Density {density}")
+        };
 
         /// <summary>
         /// The maximum level achievable in any tech

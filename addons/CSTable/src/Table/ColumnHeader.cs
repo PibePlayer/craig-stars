@@ -50,7 +50,7 @@ namespace CraigStarsTable
 
         void OnSortButtonGuiInput(InputEvent @event)
         {
-            if (@event.IsActionPressed("ui_select"))
+            if (Column != null && Column.Sortable && @event.IsActionPressed("ui_select"))
             {
                 SortEvent?.Invoke(this);
             }
@@ -76,18 +76,27 @@ namespace CraigStarsTable
 
         protected virtual void UpdateSort()
         {
+
             if (sortButton != null)
             {
-                if (SortDirection == SortDirection.None)
+                if (Column != null && Column.Sortable)
                 {
-                    sortButton.Visible = false;
+                    if (SortDirection == SortDirection.None)
+                    {
+                        sortButton.Visible = false;
+                    }
+                    else
+                    {
+                        sortButton.Visible = true;
+                        sortButton.FlipV = (sortDirection == SortDirection.Descending);
+                    }
                 }
                 else
                 {
-                    sortButton.Visible = true;
-                    sortButton.FlipV = (sortDirection == SortDirection.Descending);
+                    sortButton.Visible = false;
                 }
             }
+
         }
     }
 }

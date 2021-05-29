@@ -141,11 +141,17 @@ namespace CraigStars
         }
         static bool? saveToDisk;
 
-        public GameMode GameMode { get; set; } = GameMode.SinglePlayer;
+        /// <summary>
+        /// The settings to use for new or loaded games
+        /// </summary>
+        /// <value></value>
+        public PublicGameInfo GameSettings { get; set; } = new();
+
+        /// <summary>
+        /// Set to true if we are continuing a game (configured in GameSettings by name)
+        /// </summary>
+        /// <value></value>
         public bool ShouldContinueGame { get; set; }
-        public string GameName { get; set; } = "A Barefoot Jaywalk";
-        public Size NewGameSize { get; set; } = Size.Small;
-        public Density NewGameDensity { get; set; } = Density.Normal;
 
         #endregion
 

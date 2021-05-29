@@ -7,7 +7,6 @@
 [ext_resource path="res://src/Client/ShipDesigner/ShipDesigner.tscn" type="PackedScene" id=5]
 
 [node name="ShipDesignerDialog" type="WindowDialog"]
-visible = true
 margin_right = 1075.0
 margin_bottom = 767.0
 window_title = "Ship Designer"

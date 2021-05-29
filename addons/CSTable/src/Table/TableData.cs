@@ -121,6 +121,10 @@ namespace CraigStarsTable
                 {
                     cells.Add(new Cell(i));
                 }
+                else if (cell is bool b)
+                {
+                    cells.Add(new Cell(b.ToString(), metadata: b));
+                }
                 else if (cell is Cell cellObj)
                 {
                     cells.Add(cellObj);

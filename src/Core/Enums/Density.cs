@@ -5,6 +5,9 @@ namespace CraigStars
     /// </summary>
     public enum Density
     {
-        Sparse, Normal, Dense, Packed
+        Sparse,
+        Normal,
+        Dense,
+        Packed
     }
 }

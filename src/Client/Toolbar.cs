@@ -24,6 +24,7 @@ namespace CraigStars
             ProductionPlans,
             Race,
             TechBrowser,
+            Score,
         }
 
         public override void _Ready()
@@ -44,6 +45,7 @@ namespace CraigStars
             plansMenu.AddItem("Production Plans", (int)MenuItem.ProductionPlans);
             infoMenu.AddItem("View Race", (int)MenuItem.Race);
             infoMenu.AddItem("Technology Browser", (int)MenuItem.TechBrowser);
+            infoMenu.AddItem("Score", (int)MenuItem.Score);
 
             normalViewToolButton.Connect("pressed", this, nameof(OnNormalViewToolButtonPressed));
             percentViewToolButton.Connect("pressed", this, nameof(OnPercentViewToolButtonPressed));
@@ -89,6 +91,9 @@ namespace CraigStars
                     break;
                 case MenuItem.TechBrowser:
                     Signals.PublishTechBrowserDialogRequestedEvent();
+                    break;
+                case MenuItem.Score:
+                    Signals.PublishScoreDialogRequestedEvent();
                     break;
             }
         }
@@ -161,6 +166,10 @@ namespace CraigStars
             if (@event.IsActionPressed("ship_designer"))
             {
                 Signals.PublishShipDesignerDialogRequestedEvent();
+            }
+            if (@event.IsActionPressed("score"))
+            {
+                Signals.PublishScoreDialogRequestedEvent();
             }
         }
 

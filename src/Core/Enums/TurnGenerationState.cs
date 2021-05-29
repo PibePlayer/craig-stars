@@ -28,6 +28,7 @@ namespace CraigStars
         Scan,
         CalculatingScore,
         UpdatingPlayers,
+        VictoryCheck,
         RunningTurnProcessors,
         Saving,
         Finished,

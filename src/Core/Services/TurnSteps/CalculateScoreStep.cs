@@ -8,6 +8,9 @@ namespace CraigStars
 {
     /// <summary>
     /// Calculate the score for this year for each player
+    ///  
+    /// Note: this depends on each player having updated player reports
+    /// 
     /// Here's how empires score:
     /// Planets:  From 1 to 6 points, scoring 1 point for each 100,000 colonists
     /// Starbases: 3 points each (doesn't include Orbital Forts)
@@ -35,8 +38,14 @@ namespace CraigStars
 
                 // add the score to the history
                 player.ScoreHistory.Add(player.Score);
-            });
 
+                // update public player scores
+                // once a victor is declared, we always show public player scores
+                if (Game.GameInfo.ScoresVisible)
+                {
+                    player.PublicScore = player.Score;
+                }
+            });
         }
 
         internal PlayerScore CalculateScore(Player player)

@@ -1,8 +1,9 @@
-[gd_scene load_steps=23 format=2]
+[gd_scene load_steps=24 format=2]
 
 [ext_resource path="res://src/Client/Scanner/Scanner.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/Client/Scanner/ScannerSelectedStats.tscn" type="PackedScene" id=2]
 [ext_resource path="res://src/Client/GameView.cs" type="Script" id=3]
+[ext_resource path="res://src/Client/Dialogs/ScoreDialog.tscn" type="PackedScene" id=4]
 [ext_resource path="res://src/Client/MessagesPane/MessagesPane.tscn" type="PackedScene" id=8]
 [ext_resource path="res://src/Client/SummaryPane/SelectionSummaryPane.tscn" type="PackedScene" id=11]
 [ext_resource path="res://src/Client/Dialogs/ProductionQueueDialog.tscn" type="PackedScene" id=13]
@@ -262,7 +263,6 @@ margin_bottom = 401.204
 [node name="ShipDesignerDialog" parent="CanvasLayer" instance=ExtResource( 18 )]
 
 [node name="TurnGenerationDialog" parent="CanvasLayer" instance=ExtResource( 20 )]
-visible = false
 
 [node name="ReportsDialog" parent="CanvasLayer" instance=ExtResource( 21 )]
 
@@ -278,5 +278,8 @@ Editable = false
 [node name="TransportPlansDialog" parent="CanvasLayer" instance=ExtResource( 31 )]
 
 [node name="BattlePlansDialog" parent="CanvasLayer" instance=ExtResource( 30 )]
+
+[node name="ScoreDialog" parent="CanvasLayer" instance=ExtResource( 4 )]
+visible = false
 
 [node name="OtherObjectsPopupMenu" parent="CanvasLayer" instance=ExtResource( 32 )]

@@ -7,9 +7,6 @@ namespace CraigStars
 {
     public class Rules
     {
-        [DefaultValue(15)]
-        public int PlanetMinDistance { get; } = 15;
-
         /// <summary>
         /// Allow setting of the random seed used
         /// </summary>
@@ -19,6 +16,16 @@ namespace CraigStars
 
         [DefaultValue(2400)]
         public int StartingYear { get; set; } = 2400;
+
+        /// <summary>
+        /// If PublicPlayerScores is true, this is how many years to wait before you discover other player's scores.
+        /// </summary>
+        /// <value></value>
+        [DefaultValue(20)]
+        public int ShowPublicScoresAfterYears { get; set; } = 1;
+
+        [DefaultValue(15)]
+        public int PlanetMinDistance { get; } = 15;
 
         [DefaultValue(180)]
         public int MaxExtraWorldDistance { get; set; } = 180;

@@ -21,6 +21,8 @@ namespace CraigStars
         public Boolean SubmittedTurn { get; set; }
         public Color Color { get; set; } = Colors.Black;
         public PlayerScore PublicScore { get; set; } = new();
+        public bool Victor { get; set; }
+        public HashSet<VictoryConditionType> AchievedVictoryConditions { get; set; } = new HashSet<VictoryConditionType>();
 
         /// <summary>
         /// Update our data from another player info (probably from a network call)

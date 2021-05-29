@@ -35,6 +35,7 @@ namespace CraigStars
         ShipDesignerDialog shipDesignerDialog;
         MergeFleetsDialog mergeFleetsDialog;
         BattleViewerDialog battleViewerDialog;
+        ScoreDialog scoreDialog;
 
         /// <summary>
         /// When this node enters the tree, setup any server/player stuff
@@ -48,7 +49,7 @@ namespace CraigStars
                 if (Settings.Instance.ContinueGame != null && GamesManager.Instance.GameExists(Settings.Instance.ContinueGame))
                 {
                     Settings.Instance.ShouldContinueGame = true;
-                } 
+                }
                 // don't save on debug games
                 // Settings.SaveToDisk = false;
                 // PlayersManager.Me.Race.PRT = PRT.PP;
@@ -70,6 +71,7 @@ namespace CraigStars
             shipDesignerDialog = GetNode<ShipDesignerDialog>("CanvasLayer/ShipDesignerDialog");
             mergeFleetsDialog = GetNode<MergeFleetsDialog>("CanvasLayer/MergeFleetsDialog");
             battleViewerDialog = GetNode<BattleViewerDialog>("CanvasLayer/BattleViewerDialog");
+            scoreDialog = GetNode<ScoreDialog>("CanvasLayer/ScoreDialog");
             projectName = ProjectSettings.GetSetting("application/config/name").ToString();
 
             Signals.PostStartGameEvent += OnPostStartGame;
@@ -81,6 +83,7 @@ namespace CraigStars
             Signals.TransportPlansDialogRequestedEvent += OnTransportPlansDialogRequested;
             Signals.ReportsDialogRequestedEvent += OnReportsDialogRequested;
             Signals.ShipDesignerDialogRequestedEvent += OnShipDesignerDialogRequested;
+            Signals.ScoreDialogRequestedEvent += OnScoreDialogRequested;
             Signals.TechBrowserDialogRequestedEvent += OnTechBrowserDialogRequested;
             Signals.RaceDesignerDialogRequestedEvent += OnRaceDesignerDialogRequested;
             Signals.MergeFleetsDialogRequestedEvent += OnMergeFleetsDialogRequested;
@@ -107,7 +110,7 @@ namespace CraigStars
 
                     Game = new Game()
                     {
-                        Name = Settings.Instance.GameName,
+                        Name = Settings.Instance.GameSettings.Name,
                         Multithreaded = Settings.Multithreaded,
                         SaveToDisk = Settings.SaveToDisk
                     };
@@ -154,6 +157,7 @@ namespace CraigStars
             Signals.TransportPlansDialogRequestedEvent -= OnTransportPlansDialogRequested;
             Signals.ReportsDialogRequestedEvent -= OnReportsDialogRequested;
             Signals.ShipDesignerDialogRequestedEvent -= OnShipDesignerDialogRequested;
+            Signals.ScoreDialogRequestedEvent -= OnScoreDialogRequested;
             Signals.TechBrowserDialogRequestedEvent -= OnTechBrowserDialogRequested;
             Signals.RaceDesignerDialogRequestedEvent -= OnRaceDesignerDialogRequested;
             Signals.MergeFleetsDialogRequestedEvent -= OnMergeFleetsDialogRequested;
@@ -259,6 +263,11 @@ namespace CraigStars
         void OnShipDesignerDialogRequested()
         {
             shipDesignerDialog.PopupCentered();
+        }
+
+        void OnScoreDialogRequested()
+        {
+            scoreDialog.PopupCentered();
         }
 
         void OnResearchDialogRequested()

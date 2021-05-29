@@ -244,6 +244,7 @@ namespace CraigStars.Singletons
             PlayersByNetworkId.Clear();
             Messages.Clear();
             Players.AddRange(players);
+            NumPlayers = Players.Count;
         }
 
         #region Event Listeners

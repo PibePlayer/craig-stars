@@ -83,6 +83,7 @@ namespace CraigStars
                 new FleetSweepMinesStep(game),
                 new PlayerScanStep(game),
                 new CalculateScoreStep(game),
+                new CheckVictoryStep(game),
             };
         }
 

@@ -651,6 +651,11 @@ namespace CraigStars
                 }
                 else
                 {
+                    if (mapObjectsByLocation == null)
+                    {
+                        log.Error("mapObjectsByLocation is null, can't click");
+                        return;
+                    }
                     // we have clicked on a map object
                     var mapObjectsAtLocation = mapObjectsByLocation[mapObject.MapObject.Position];
                     log.Debug($"{mapObjectsAtLocation.Count} MapObjects at {mapObject.MapObject.Position} with {mapObject}");

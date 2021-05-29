@@ -49,13 +49,15 @@ namespace CraigStars
         [JsonIgnore] public PublicGameInfo GameInfo { get; set; } = new PublicGameInfo();
         public string Name { get => GameInfo.Name; set => GameInfo.Name = value; }
         public Rules Rules { get => GameInfo.Rules; private set => GameInfo.Rules = value; }
-        public VictoryConditions VictoryConditions { get => GameInfo.VictoryConditions; private set => GameInfo.VictoryConditions = value; }
+        public VictoryConditions VictoryConditions { get => GameInfo.VictoryConditions; set => GameInfo.VictoryConditions = value; }
+        public bool VictorDeclared { get => GameInfo.VictorDeclared; set => GameInfo.VictorDeclared = value; }
         public int Year { get => GameInfo.Year; set => GameInfo.Year = value; }
         public GameMode Mode { get => GameInfo.Mode; set => GameInfo.Mode = value; }
         public GameLifecycle Lifecycle { get => GameInfo.Lifecycle; set => GameInfo.Lifecycle = value; }
         public GameStartMode StartMode { get => GameInfo.StartMode; set => GameInfo.StartMode = value; }
         public Size Size { get => GameInfo.Size; set => GameInfo.Size = value; }
         public Density Density { get => GameInfo.Density; set => GameInfo.Density = value; }
+        [JsonIgnore] public int YearsPassed { get => GameInfo.YearsPassed; }
 
         #endregion
 

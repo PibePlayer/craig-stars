@@ -661,5 +661,22 @@ namespace CraigStars
             }
             player.Messages.Add(new Message(MessageType.MinesSwept, text, target));
         }
+
+        public static void Victory(Player player, Player victor)
+        {
+            string text = "";
+            if (player == victor)
+            {
+                text = $"You have been declared the winner of this game. You may continue to play though, if you wish to really rub everyone's nose in your grand victory.";
+            }
+            else
+            {
+                text = $"The forces of {player.RacePluralName} have been declared the winner of this game. You are advised to accept their supremacy, though you may continue the fight.";
+            }
+            // victory messages are always the first message of the year
+            player.Messages.Insert(0, new Message(MessageType.Victor, text));
+        }
+
+
     }
 }

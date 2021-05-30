@@ -86,7 +86,7 @@ namespace CraigStars
         /// This method makes sure the player client doesnt' try and move the fleet around by updating waypoint 0's position
         /// </summary>
         /// <param name="player"></param>
-        void UpdateFleetActions(Player player)
+        internal void UpdateFleetActions(Player player)
         {
             foreach (var playerFleet in player.Fleets)
             {
@@ -125,13 +125,14 @@ namespace CraigStars
                             if (playerWaypoint.Target != null && playerWaypoint.Target == playerFleet.Waypoints[index - 1].Target)
                             {
                                 // don't let the client submit multiple waypoints to the same location in a row
+                                log.Error($"{Game.Year}: Player fleet {playerFleet.Name} tried to create two waypoints (wp{index - 1} and wp{index}) in a row targetting {playerWaypoint.Target}.");
                                 continue;
                             }
                             if (playerWaypoint.Target is MapObject mapObject)
                             {
                                 if (Game.MapObjectsByGuid.TryGetValue(mapObject.Guid, out var gameMapObject))
                                 {
-                                    log.Debug($"{Game.Year}: Adding player defined waypoint for {fleet.Name} to {playerWaypoint.TargetName} -> {playerWaypoint.Task}");
+                                    log.Debug($"{Game.Year}: Adding player defined waypoint for {fleet.Name} to {playerWaypoint.TargetName} -> Task: {playerWaypoint.Task}");
                                     // add the server side version of this planet as a waypoint
                                     fleet.Waypoints.Add(Waypoint.TargetWaypoint(gameMapObject, playerWaypoint.WarpFactor, playerWaypoint.Task, playerWaypoint.TransportTasks));
                                 }
@@ -158,7 +159,7 @@ namespace CraigStars
                                 }
                             }
                             fleet.Waypoints[fleet.Waypoints.Count - 1].OriginalPosition = playerWaypoint.OriginalPosition;
-
+                            index++;
                         };
                     }
                 }

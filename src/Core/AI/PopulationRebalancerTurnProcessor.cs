@@ -9,18 +9,16 @@ namespace CraigStars
     /// <summary>
     /// Build and deploy scout ships
     /// </summary>
-    public class ColonyTurnProcessor : TurnProcessor
+    public class PopulationRebalancerTurnProcessor : TurnProcessor
     {
-        static CSLog log = LogProvider.GetLogger(typeof(ColonyTurnProcessor));
+        static CSLog log = LogProvider.GetLogger(typeof(PopulationRebalancerTurnProcessor));
 
         // the required population density required of a planet in order to suck people off of it
         // setting this to .25 because we don't want to suck people off a planet until it's reached the
         // max of its growth rate (over 1/4 crowded)
         private const float PopulationDensityRequired = .25f;
 
-        ShipDesignerTurnProcessor shipDesignerTurnProcessor = new ShipDesignerTurnProcessor();
-
-        public ColonyTurnProcessor() : base("Colonizer") { }
+        public PopulationRebalancerTurnProcessor() : base("Population Rebalancer") { }
 
         /// <summary>
         /// a new turn! build some ships
@@ -28,36 +26,36 @@ namespace CraigStars
         public override void Process(Player player)
         {
             // find the first colony ship design
-            ShipDesign colonyShip = shipDesignerTurnProcessor.DesignColonizer(player);
+            ShipDesign design = player.GetLatestDesign(ShipDesignPurpose.Freighter);
 
-            var colonizablePlanets = player.AllPlanets
-            .Where(planet => planet.Explored && planet.Uninhabited && player.Race.GetPlanetHabitability(planet.BaseHab.Value) > 0)
-            .OrderByDescending(planet => player.Race.GetPlanetHabitability(planet.BaseHab.Value))
+            var lowPopPlanets = player.Planets
+            .Where(planet => planet.PopulationDensity < PopulationDensityRequired)
+            .OrderBy(planet => planet.Population)
             .ToList();
             var buildablePlanets = player.Planets
-                .Where(planet => planet.CanBuild(player, colonyShip.Aggregate.Mass) && planet.PopulationDensity >= PopulationDensityRequired)
+                .Where(planet => planet.CanBuild(player, design.Aggregate.Mass) && planet.PopulationDensity >= PopulationDensityRequired)
                 .ToList();
-            var colonizerFleets = player.Fleets.Where(fleet => fleet.Aggregate.Purposes.Contains(ShipDesignPurpose.Colonizer));
+            var fleets = player.Fleets.Where(fleet => fleet.Aggregate.Purposes.Contains(ShipDesignPurpose.Freighter));
 
-            foreach (var fleet in colonizerFleets)
+            foreach (var fleet in fleets)
             {
                 if (fleet.Waypoints.Count > 1 && fleet.Waypoints[1].Target is Planet planet)
                 {
                     // don't send a colony ship to this planet
-                    colonizablePlanets.Remove(planet);
+                    lowPopPlanets.Remove(planet);
                 }
             }
 
             // go through each unassigned colonizer fleet and find it a new planet to colonize
-            foreach (var fleet in colonizerFleets.Where(
+            foreach (var fleet in fleets.Where(
                 f => f.Waypoints.Count == 1 &&
                 f.Orbiting?.Player == player &&
                 f.Orbiting.GetPopulationDensity(f.Orbiting.Population - f.AvailableCapacity) >= PopulationDensityRequired)
             )
             {
-                var planetToColonize = ClosestPlanet(fleet, colonizablePlanets);
-                if (planetToColonize != null)
+                if (lowPopPlanets.Count > 0)
                 {
+                    Planet lowPopPlanet = lowPopPlanets[0];
                     var sourcePlanet = fleet.Orbiting;
                     Cargo colonists = new Cargo(colonists: fleet.AvailableCapacity);
 
@@ -65,21 +63,29 @@ namespace CraigStars
                     {
                         CargoTransferUtils.CreateCargoTransferOrder(fleet.Player, colonists, fleet, sourcePlanet);
 
-                        fleet.Waypoints.Add(Waypoint.TargetWaypoint(planetToColonize, fleet.GetDefaultWarpFactor(), WaypointTask.Colonize));
-                        fleet.Waypoints[1].WarpFactor = fleet.GetBestWarpFactor(fleet.Waypoints[0], fleet.Waypoints[1]);
+                        // drop off colonists
+                        var wp1 = Waypoint.TargetWaypoint(
+                            lowPopPlanet,
+                            fleet.GetDefaultWarpFactor(),
+                            WaypointTask.Transport,
+                            new WaypointTransportTasks(colonists: new WaypointTransportTask(WaypointTaskTransportAction.UnloadAll)));
+                        fleet.Waypoints.Add(wp1);
+
+                        // return home
+                        fleet.Waypoints.Add(Waypoint.TargetWaypoint(fleet.Orbiting, fleet.GetDefaultWarpFactor()));
 
                         // remove this planet from our list
-                        colonizablePlanets.Remove(planetToColonize);
+                        lowPopPlanets.Remove(lowPopPlanet);
+                        log.Info($"{player.Game.Year}: {player} {fleet.Name} assigned to transport {fleet.Cargo.Colonists * 100} colonists from {fleet.Orbiting.Name} to {lowPopPlanet.Name}");
                     }
                     else
                     {
-                        log.Error($"{player.Game.Year}: {player} Failed to transfer {fleet.AvailableCapacity}kT colonists from {sourcePlanet.Name} to {fleet.Name} for colonization.");
+                        log.Error($"{player.Game.Year}: {player} Failed to transfer {fleet.AvailableCapacity}kT colonists from {sourcePlanet.Name} to {fleet.Name} for pop transfer.");
                     }
-
                 }
             }
 
-            BuildFleets(buildablePlanets, colonizablePlanets.Count, colonyShip);
+            BuildFleets(buildablePlanets, lowPopPlanets.Count, design);
 
         }
 
@@ -88,12 +94,11 @@ namespace CraigStars
         /// </summary>
         /// <param name="buildablePlanets"></param>
         /// <param name="numShipsNeeded"></param>
-        /// <param name="colonyShip"></param>
-        void BuildFleets(List<Planet> buildablePlanets, int numShipsNeeded, ShipDesign colonyShip)
+        /// <param name="design"></param>
+        void BuildFleets(List<Planet> buildablePlanets, int numShipsNeeded, ShipDesign design)
         {
-            if (colonyShip != null)
+            if (design != null)
             {
-
                 int queuedToBeBuilt = 0;
 
                 List<Planet> planetsToBuildOn = new List<Planet>();
@@ -102,11 +107,11 @@ namespace CraigStars
                     bool isBuilding = false;
                     foreach (ProductionQueueItem item in planet.ProductionQueue?.Items)
                     {
-                        if (item.Design != null && item.Design.Aggregate.Colonizer)
+                        if (item.Design != null && item.Design.Purpose == ShipDesignPurpose.Freighter)
                         {
                             isBuilding = true;
                             queuedToBeBuilt++;
-                            log.Debug($"{planet.Player.Game.Year}: {planet.Name} is already building a colony ship");
+                            log.Debug($"{planet.Player.Game.Year}: {planet.Name} is already building a {item.Design.Purpose}");
                         }
                     }
 
@@ -123,8 +128,8 @@ namespace CraigStars
                     // one to the queue
                     if (queuedToBeBuilt < numShipsNeeded)
                     {
-                        planet.ProductionQueue.AddAfter(new ProductionQueueItem(QueueItemType.ShipToken, 1, colonyShip), QueueItemType.AutoFactories);
-                        log.Debug($"Added scout ship to planet queue: {planet.Name}");
+                        planet.ProductionQueue.AddAfter(new ProductionQueueItem(QueueItemType.ShipToken, 1, design), QueueItemType.AutoFactories);
+                        log.Debug($"{planet.Player.Game.Year}: {planet.Name} building {design.Name} for pop transfer");
                         queuedToBeBuilt++;
                     }
                 }

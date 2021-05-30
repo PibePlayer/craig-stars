@@ -58,7 +58,7 @@ namespace CraigStars.Utils
                     }
                     else
                     {
-                        return quantityModifier / 10;
+                        return Math.Max(1, quantityModifier / 10);
                     }
                 }
                 else if (key.Scancode == (uint)KeyList.Control || key.Scancode == (uint)KeyList.Meta)
@@ -69,7 +69,7 @@ namespace CraigStars.Utils
                     }
                     else
                     {
-                        return quantityModifier / 100;
+                        return Math.Max(1, quantityModifier / 100);
                     }
                 }
                 else

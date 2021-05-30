@@ -33,10 +33,14 @@ namespace CraigStars
             int numShields = 0;
             int numArmor = 0;
             int numScanners = 0;
+            int numFuelTanks = 0;
+            int numCargoPods = 0;
 
 
             var bestStargate = player.GetBestStargate();
             var bestMassDriver = player.GetBestMassDriver();
+            var bestFuelTank = player.GetBestFuelTank();
+            var bestCargoPod = player.GetBestCargoPod();
 
             // if we have no stargate available, that's the same as already assigning one
             bool stargate = !(bestStargate != null);
@@ -71,6 +75,7 @@ namespace CraigStars
                         {
                             case ShipDesignPurpose.Colonizer:
                                 slot.HullComponent = player.GetBestColonizationModule();
+                                slot.Quantity = 1; // we only need 1 colonization module
                                 break;
                             default:
                                 if (hullSlot.Type.HasFlag(HullSlotType.Scanner) && numScanners == 0)
@@ -78,9 +83,15 @@ namespace CraigStars
                                     slot.HullComponent = player.GetBestScanner();
                                     numScanners++;
                                 }
+                                else if (numFuelTanks == 0 || hull.CargoCapacity == 0)
+                                {
+                                    slot.HullComponent = bestFuelTank;
+                                    numFuelTanks++;
+                                }
                                 else
                                 {
-                                    slot.HullComponent = Techs.FuelTank;
+                                    slot.HullComponent = bestCargoPod;
+                                    numCargoPods++;
                                 }
                                 break;
 
@@ -96,7 +107,8 @@ namespace CraigStars
                         break;
                     case HullSlotType.ShieldArmor:
                         // balance armor and shields, but if equal, do armor
-                        if (numShields >= numArmor)
+                        // armor is heavy though, so don't use it on freighters.
+                        if (numShields >= numArmor && purpose != ShipDesignPurpose.Colonizer && purpose != ShipDesignPurpose.Freighter && purpose != ShipDesignPurpose.FuelFreighter)
                         {
                             slot.HullComponent = player.GetBestArmor();
                         }
@@ -159,10 +171,12 @@ namespace CraigStars
                                 slot.HullComponent = player.GetBestBeamWeapon();
                                 break;
                             case ShipDesignPurpose.Freighter:
-                                slot.HullComponent = Techs.CargoPod;
+                                slot.HullComponent = bestCargoPod;
+                                numCargoPods++;
                                 break;
                             case ShipDesignPurpose.FuelFreighter:
-                                slot.HullComponent = Techs.FuelTank;
+                                slot.HullComponent = bestFuelTank;
+                                numFuelTanks++;
                                 break;
                             case ShipDesignPurpose.FighterScout:
                                 slot.HullComponent = player.GetBestScanner();
@@ -171,7 +185,8 @@ namespace CraigStars
                                 slot.HullComponent = player.GetBestMineLayer();
                                 break;
                             default:
-                                slot.HullComponent = Techs.FuelTank;
+                                slot.HullComponent = bestFuelTank;
+                                numFuelTanks++;
                                 break;
                         }
                         break;

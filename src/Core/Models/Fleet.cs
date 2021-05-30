@@ -28,6 +28,7 @@ namespace CraigStars
 
         #region Stats
 
+        public int Age { get; set; }
         public Cargo Cargo { get; set; } = new Cargo();
         [JsonIgnore]
         public int AvailableCapacity { get => Aggregate.CargoCapacity - Cargo.Total; }
@@ -331,6 +332,26 @@ namespace CraigStars
             }
 
             return fuelCost;
+        }
+
+        /// <summary>
+        /// Get the best warp factor for a given waypoint
+        /// </summary>
+        /// <returns></returns>
+        public int GetBestWarpFactor(Waypoint wp0, Waypoint wp1)
+        {
+            // if our waypoint is 48 ly away, ideally we want warp 7 to make it in 1 year (7 *7 = 49)
+            var distance = wp0.Position.DistanceTo(wp1.Position);
+            var idealWarp = Mathf.Clamp((int)Math.Ceiling(Math.Sqrt(distance)), 1, 9);
+
+            var fuelUsage = GetFuelCost(idealWarp, distance);
+            while (fuelUsage > Fuel && idealWarp > 1)
+            {
+                idealWarp--;
+                fuelUsage = GetFuelCost(idealWarp, distance);
+            }
+
+            return idealWarp;
         }
 
         /// <summary>

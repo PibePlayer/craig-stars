@@ -46,6 +46,8 @@ namespace CraigStars
             }
         }
 
+        public int this[MineralType type] { get => this[(int)type]; }
+
         public static Mineral operator +(Mineral a, Mineral b)
         {
             return new Mineral(

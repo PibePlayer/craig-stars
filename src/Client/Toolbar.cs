@@ -6,6 +6,8 @@ namespace CraigStars
 {
     public class Toolbar : MarginContainer
     {
+        protected Player Me { get => PlayersManager.Me; }
+
         ToolButton normalViewToolButton;
         ToolButton percentViewToolButton;
 
@@ -56,6 +58,9 @@ namespace CraigStars
             commandsMenu.Connect("id_pressed", this, nameof(OnMenuItemIdPressed));
             plansMenu.Connect("id_pressed", this, nameof(OnMenuItemIdPressed));
             infoMenu.Connect("id_pressed", this, nameof(OnMenuItemIdPressed));
+
+            normalViewToolButton.Pressed = Me.UISettings.PlanetViewState == PlanetViewState.Normal;
+            percentViewToolButton.Pressed = Me.UISettings.PlanetViewState == PlanetViewState.Percent;
 
             Signals.TurnGeneratingEvent += OnTurnGenerating;
             Signals.UnsubmitTurnRequestedEvent += OnUnsubmitTurnButtonPressed;

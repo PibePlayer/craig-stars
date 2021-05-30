@@ -72,25 +72,6 @@ namespace CraigStars
 
         #endregion
 
-        #region Turn Actions
-        /// <summary>
-        /// Each player has a list of battle plans. Each fleet has a battle plan assigned
-        /// Each player automatically has the Default battle plan
-        /// </summary>
-        public List<BattlePlan> BattlePlans { get; set; } = new List<BattlePlan>();
-        public List<TransportPlan> TransportPlans { get; set; } = new List<TransportPlan>();
-
-        public List<FleetComposition> FleetCompositions { get; set; } = new List<FleetComposition>();
-
-        public List<CargoTransferOrder> CargoTransferOrders { get; set; } = new List<CargoTransferOrder>();
-        public List<MergeFleetOrder> MergeFleetOrders { get; set; } = new List<MergeFleetOrder>();
-        public List<SplitAllFleetOrder> SplitFleetOrders { get; set; } = new List<SplitAllFleetOrder>();
-
-        [JsonProperty(ItemIsReference = true)]
-        public List<FleetOrder> FleetOrders { get; set; } = new List<FleetOrder>();
-
-        #endregion
-
         #region Intel
 
         public Intel<ShipDesign> DesignIntel { get; set; } = new Intel<ShipDesign>();
@@ -182,6 +163,25 @@ namespace CraigStars
 
         [JsonProperty(IsReference = true)]
         public Planet Homeworld { get; set; }
+
+        #region Turn Actions
+
+        /// <summary>
+        /// Each player has a list of battle plans. Each fleet has a battle plan assigned
+        /// Each player automatically has the Default battle plan
+        /// </summary>
+        public List<BattlePlan> BattlePlans { get; set; } = new List<BattlePlan>();
+        public List<TransportPlan> TransportPlans { get; set; } = new List<TransportPlan>();
+        public List<FleetComposition> FleetCompositions { get; set; } = new List<FleetComposition>();
+        public List<CargoTransferOrder> CargoTransferOrders { get; set; } = new List<CargoTransferOrder>();
+        public List<MergeFleetOrder> MergeFleetOrders { get; set; } = new List<MergeFleetOrder>();
+        public List<SplitAllFleetOrder> SplitFleetOrders { get; set; } = new List<SplitAllFleetOrder>();
+
+        [JsonProperty(ItemIsReference = true)]
+        public List<FleetOrder> FleetOrders { get; set; } = new List<FleetOrder>();
+
+        #endregion
+
 
         #endregion
 
@@ -550,17 +550,42 @@ namespace CraigStars
         }
 
         /// <summary>
+        /// Get the best fuel tank this player has access to
+        /// </summary>
+        /// <returns></returns>
+        public TechHullComponent GetBestFuelTank()
+        {
+            var techs = TechStore.GetTechsByCategory(TechCategory.Mechanical)
+                .Where(t => t is TechHullComponent hc && HasTech(hc) && hc.FuelBonus > 0)
+                .OrderByDescending(t => t is TechHullComponent hc ? hc.FuelBonus : 0);
+
+            return techs.FirstOrDefault() as TechHullComponent;
+        }
+
+        /// <summary>
+        /// Get the best cargo pod this player has access to
+        /// </summary>
+        /// <returns></returns>
+        public TechHullComponent GetBestCargoPod()
+        {
+            var techs = TechStore.GetTechsByCategory(TechCategory.Mechanical)
+                .Where(t => t is TechHullComponent hc && HasTech(hc) && hc.CargoBonus > 0)
+                .OrderByDescending(t => t is TechHullComponent hc ? hc.FuelBonus : 0);
+
+            return techs.FirstOrDefault() as TechHullComponent;
+        }
+
+        /// <summary>
         /// Get the best mine layer this player has access to
         /// </summary>
         /// <returns></returns>
         public TechHullComponent GetBestMineLayer()
         {
-            var techs = TechStore.GetTechsByCategory(TechCategory.MineLayer).Where(t => t is TechHullComponent hc && hc.MineFieldType != MineFieldType.SpeedBump).ToList();
+            var techs = TechStore.GetTechsByCategory(TechCategory.MineLayer)
+                .Where(t => t is TechHullComponent hc && HasTech(hc) && hc.MineFieldType != MineFieldType.SpeedBump)
+                .OrderByDescending(t => t.Ranking);
 
-            techs.Sort((t1, t2) => t2.Ranking.CompareTo(t1.Ranking));
-            var tech = techs.Find(t => HasTech(t));
-
-            return tech as TechHullComponent;
+            return techs.FirstOrDefault() as TechHullComponent;
         }
 
         /// <summary>
@@ -569,12 +594,12 @@ namespace CraigStars
         /// <returns></returns>
         public TechHullComponent GetBestSpeedTrapLayer()
         {
-            var techs = TechStore.GetTechsByCategory(TechCategory.MineLayer).Where(t => t is TechHullComponent hc && hc.MineFieldType == MineFieldType.SpeedBump).ToList();
+            var techs = TechStore.GetTechsByCategory(TechCategory.MineLayer)
+                .Where(t => t is TechHullComponent hc && HasTech(hc) && hc.MineFieldType == MineFieldType.SpeedBump)
+                .OrderByDescending(t => t.Ranking);
 
-            techs.Sort((t1, t2) => t2.Ranking.CompareTo(t1.Ranking));
-            var tech = techs.Find(t => HasTech(t));
 
-            return tech as TechHullComponent;
+            return techs.FirstOrDefault() as TechHullComponent;
         }
 
         /// <summary>
@@ -583,12 +608,11 @@ namespace CraigStars
         /// <returns></returns>
         public TechHullComponent GetBestStargate()
         {
-            var techs = TechStore.GetTechsByCategory(TechCategory.Orbital).Where(t => t is TechHullComponent hc && hc.SafeRange > 0).ToList();
+            var techs = TechStore.GetTechsByCategory(TechCategory.Orbital)
+                .Where(t => t is TechHullComponent hc && HasTech(hc) && hc.SafeRange > 0)
+                .OrderByDescending(t => t.Ranking);
 
-            techs.Sort((t1, t2) => t2.Ranking.CompareTo(t1.Ranking));
-            var tech = techs.Find(t => HasTech(t));
-
-            return tech as TechHullComponent;
+            return techs.FirstOrDefault() as TechHullComponent;
         }
 
         /// <summary>
@@ -597,12 +621,12 @@ namespace CraigStars
         /// <returns></returns>
         public TechHullComponent GetBestMassDriver()
         {
-            var techs = TechStore.GetTechsByCategory(TechCategory.Orbital).Where(t => t is TechHullComponent hc && hc.PacketSpeed > 0).ToList();
 
-            techs.Sort((t1, t2) => t2.Ranking.CompareTo(t1.Ranking));
-            var tech = techs.Find(t => HasTech(t));
+            var techs = TechStore.GetTechsByCategory(TechCategory.Orbital)
+                .Where(t => t is TechHullComponent hc && HasTech(hc) && hc.PacketSpeed > 0)
+                .OrderByDescending(t => t.Ranking);
 
-            return tech as TechHullComponent;
+            return techs.FirstOrDefault() as TechHullComponent;
         }
 
         /// <summary>
@@ -611,12 +635,11 @@ namespace CraigStars
         /// <returns></returns>
         public TechHullComponent GetBestColonizationModule()
         {
-            var techs = TechStore.GetTechsByCategory(TechCategory.Mechanical).Where(t => t is TechHullComponent hc && hc.ColonizationModule).ToList();
+            var techs = TechStore.GetTechsByCategory(TechCategory.Mechanical)
+                .Where(t => t is TechHullComponent hc && HasTech(hc) && hc.ColonizationModule)
+                .OrderByDescending(t => t.Ranking);
 
-            techs.Sort((t1, t2) => t2.Ranking.CompareTo(t1.Ranking));
-            var tech = techs.Find(t => HasTech(t));
-
-            return tech as TechHullComponent;
+            return techs.FirstOrDefault() as TechHullComponent;
         }
 
         /// <summary>
@@ -628,7 +651,9 @@ namespace CraigStars
         public T GetBestTech<T>(TechCategory category) where T : Tech
         {
             var techs = TechStore.GetTechsByCategory(category);
-            var tech = techs.OrderByDescending(t => t.Ranking).FirstOrDefault(t => HasTech(t));
+            var tech = techs
+                .Where(t => HasTech(t))
+                .OrderByDescending(t => t.Ranking).FirstOrDefault();
             return tech as T;
         }
 

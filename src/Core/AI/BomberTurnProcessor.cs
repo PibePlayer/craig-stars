@@ -56,6 +56,7 @@ namespace CraigStars
                 if (planetToBomb != null && fleet.Waypoints[0].Target != planetToBomb)
                 {
                     fleet.Waypoints.Add(Waypoint.TargetWaypoint(planetToBomb, fleet.GetDefaultWarpFactor()));
+                    fleet.Waypoints[1].WarpFactor = fleet.GetBestWarpFactor(fleet.Waypoints[0], fleet.Waypoints[1]);
 
                     // remove this planet from our list
                     bombablePlanets.Remove(planetToBomb);

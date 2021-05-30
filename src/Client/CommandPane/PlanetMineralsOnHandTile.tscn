@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://src/Client/CommandPane/PlanetMineralsOnHandTile.cs" type="Script" id=1]
+[ext_resource path="res://src/Client/Tooltips/MineralTooltip.tscn" type="PackedScene" id=2]
 
 [node name="PlanetMineralsOnHandTile" type="VBoxContainer"]
 margin_top = 18.0
@@ -12,93 +13,107 @@ __meta__ = {
 }
 
 [node name="MineralsGrid" type="GridContainer" parent="."]
-margin_right = 180.0
+margin_right = 212.0
 margin_bottom = 50.0
 size_flags_horizontal = 3
 columns = 2
 
 [node name="IroniumLabel" type="Label" parent="MineralsGrid"]
-margin_right = 154.0
+margin_right = 186.0
 margin_bottom = 14.0
 size_flags_horizontal = 3
 custom_colors/font_color = Color( 0.0352941, 0.376471, 1, 1 )
 text = "Ironium"
 
 [node name="Ironium" type="Label" parent="MineralsGrid"]
-margin_left = 158.0
-margin_right = 180.0
+margin_left = 190.0
+margin_right = 212.0
 margin_bottom = 14.0
+mouse_filter = 0
+mouse_default_cursor_shape = 16
 text = "0kT"
 align = 2
 
 [node name="BoraniumLabel" type="Label" parent="MineralsGrid"]
 margin_top = 18.0
-margin_right = 154.0
+margin_right = 186.0
 margin_bottom = 32.0
 size_flags_horizontal = 3
 custom_colors/font_color = Color( 0.0313726, 0.505882, 0.0392157, 1 )
 text = "Boranium"
 
 [node name="Boranium" type="Label" parent="MineralsGrid"]
-margin_left = 158.0
+margin_left = 190.0
 margin_top = 18.0
-margin_right = 180.0
+margin_right = 212.0
 margin_bottom = 32.0
+mouse_filter = 0
+mouse_default_cursor_shape = 16
 text = "0kT"
 align = 2
 
 [node name="GermaniumLabel" type="Label" parent="MineralsGrid"]
 margin_top = 36.0
-margin_right = 154.0
+margin_right = 186.0
 margin_bottom = 50.0
 size_flags_horizontal = 3
 custom_colors/font_color = Color( 0.996078, 1, 0, 1 )
 text = "Germanium"
 
 [node name="Germanium" type="Label" parent="MineralsGrid"]
-margin_left = 158.0
+margin_left = 190.0
 margin_top = 36.0
-margin_right = 180.0
+margin_right = 212.0
 margin_bottom = 50.0
+mouse_filter = 0
+mouse_default_cursor_shape = 16
 text = "0kT"
 align = 2
 
 [node name="HSeparator" type="HSeparator" parent="."]
 margin_top = 54.0
-margin_right = 180.0
+margin_right = 212.0
 margin_bottom = 58.0
 
 [node name="MinesAndFactoriesGrid" type="GridContainer" parent="."]
 margin_top = 62.0
-margin_right = 180.0
+margin_right = 212.0
 margin_bottom = 94.0
 size_flags_horizontal = 3
 columns = 2
 
 [node name="MinesLabel" type="Label" parent="MinesAndFactoriesGrid"]
-margin_right = 116.0
+margin_right = 148.0
 margin_bottom = 14.0
 size_flags_horizontal = 3
 text = "Mines"
 
 [node name="Mines" type="Label" parent="MinesAndFactoriesGrid"]
-margin_left = 120.0
-margin_right = 180.0
+margin_left = 152.0
+margin_right = 212.0
 margin_bottom = 14.0
 text = "10 of 203"
 align = 2
 
 [node name="FactoriesLabel" type="Label" parent="MinesAndFactoriesGrid"]
 margin_top = 18.0
-margin_right = 116.0
+margin_right = 148.0
 margin_bottom = 32.0
 size_flags_horizontal = 3
 text = "Factories"
 
 [node name="Factories" type="Label" parent="MinesAndFactoriesGrid"]
-margin_left = 120.0
+margin_left = 152.0
 margin_top = 18.0
-margin_right = 180.0
+margin_right = 212.0
 margin_bottom = 32.0
 text = "10 of 203"
 align = 2
+
+[node name="MineralTooltip" parent="." instance=ExtResource( 2 )]
+visible = false
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 98.0
+margin_right = 212.0
+margin_bottom = 183.0

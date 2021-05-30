@@ -100,7 +100,7 @@ namespace CraigStars
                 var log = LogManager.GetLogger(typeof(LogProvider));
                 /// configure the logger we will use
                 const string logLayoutPattern =
-                    "[%date %timestamp][%level][%class.%method] %message %newline" +
+                    "[%date %timestamp][%-5level][%logger] %message %newline" +
                     "%exception %newline";
 
                 var logger = (Logger)log.Logger;

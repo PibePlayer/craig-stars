@@ -123,6 +123,7 @@ namespace CraigStars
             }
 
             Fleet.Waypoints.Insert(index + 1, waypoint);
+            waypoint.WarpFactor = Fleet.GetBestWarpFactor(Fleet.Waypoints[index], waypoint);
 
             UpdateWaypointsLine();
 
@@ -156,6 +157,7 @@ namespace CraigStars
 
 
             Fleet.Waypoints.Insert(index + 1, waypoint);
+            waypoint.WarpFactor = Fleet.GetBestWarpFactor(Fleet.Waypoints[index], waypoint);
 
             UpdateWaypointsLine();
 

@@ -157,7 +157,7 @@ namespace CraigStars
         /// Sum of all absolute values. Used for terraforming
         /// </summary>
         /// <returns></returns>
-        public int AbsSum { get => Math.Abs(grav) + Math.Abs(temp) + Math.Abs(rad); }
+        [JsonIgnore] public int AbsSum { get => Math.Abs(grav) + Math.Abs(temp) + Math.Abs(rad); }
 
     }
 }

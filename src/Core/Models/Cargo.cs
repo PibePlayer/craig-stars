@@ -60,6 +60,7 @@ namespace CraigStars
         }
 
         public int this[CargoType type] { get => this[(int)type]; }
+        public int this[MineralType type] { get => this[(int)type]; }
 
         public static Cargo OfAmount(CargoType type, int amount)
         {

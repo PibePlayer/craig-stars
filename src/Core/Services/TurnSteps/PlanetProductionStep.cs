@@ -68,7 +68,6 @@ namespace CraigStars
                     {
                         // we completed this normal item. Remove it from the queue
                         queue.Items.RemoveAt(index);
-                        index--;
                         continue;
                     }
                 }

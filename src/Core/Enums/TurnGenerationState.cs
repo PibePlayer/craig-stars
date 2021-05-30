@@ -6,6 +6,7 @@ namespace CraigStars
     public enum TurnGenerationState
     {
         WaitingForPlayers,
+        FleetAge,
         Scrapping,
         Waypoint,
         MovePackets,

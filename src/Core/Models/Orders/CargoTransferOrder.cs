@@ -2,6 +2,7 @@ using Newtonsoft.Json;
 
 namespace CraigStars
 {
+    [JsonObject(IsReference = true)]
     public class CargoTransferOrder : FleetOrder
     {
         [JsonProperty(IsReference = true)]

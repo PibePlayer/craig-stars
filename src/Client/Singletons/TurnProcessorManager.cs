@@ -29,11 +29,12 @@ namespace CraigStars.Singletons
 
             // Register default turn processors
             RegisterTurnProcessor<ShipDesignerTurnProcessor>();
+            RegisterTurnProcessor<PlanetProductionTurnProcessor>();
             RegisterTurnProcessor<ScoutTurnProcessor>();
             RegisterTurnProcessor<ColonyTurnProcessor>();
             RegisterTurnProcessor<BomberTurnProcessor>();
             RegisterTurnProcessor<MineLayerTurnProcessor>();
-            RegisterTurnProcessor<PlanetProductionTurnProcessor>();
+            RegisterTurnProcessor<PopulationRebalancerTurnProcessor>();
         }
 
         /// <summary>

@@ -373,7 +373,7 @@ namespace CraigStars
                         {
                             Planet = planet,
                             Fleet = fleet,
-                            ColonistsToDrop = transferAmount
+                            ColonistsToDrop = transferAmount * 100
                         });
                         // remove colonists from our cargo
                         fleet.Cargo = fleet.Cargo - Cargo.OfAmount(cargoType, transferAmount);
@@ -571,7 +571,7 @@ namespace CraigStars
         /// <param name="fleet"></param>
         void NotifyIdleFleet(Fleet fleet)
         {
-            if (fleet.Waypoints.Count == 1)
+            if (fleet.Age != 0 && fleet.Waypoints.Count == 1)
             {
                 // some orders are continuous, otherwise this fleet is done
                 var wp = fleet.Waypoints[0];

@@ -124,7 +124,7 @@ namespace CraigStars
         }
 
         [OnDeserialized]
-        internal void OnDeserialized(StreamingContext context)
+        internal async void OnDeserialized(StreamingContext context)
         {
             GameInfo.Players.AddRange(Players.Cast<PublicPlayerInfo>());
 
@@ -132,7 +132,7 @@ namespace CraigStars
             UpdateDictionaries();
 
             // make sure AIs submit their turns
-            SubmitAITurns();
+            await SubmitAITurns();
         }
 
         public void ComputeAggregates()
@@ -274,7 +274,7 @@ namespace CraigStars
             GameInfo.Lifecycle = GameLifecycle.WaitingForPlayers;
 
             // After we have notified players 
-            SubmitAITurns();
+            await SubmitAITurns();
 
             if (Year < Rules.StartingYear + GameInfo.QuickStartTurns)
             {
@@ -387,7 +387,7 @@ namespace CraigStars
         /// Submit any AI turns
         /// This submits all turns in separate threads and returns a Task for them all to complete
         /// </summary>
-        void SubmitAITurns()
+        async Task SubmitAITurns()
         {
             var tasks = new List<Task>();
             // submit AI turns
@@ -407,7 +407,7 @@ namespace CraigStars
                         }
                         catch (Exception e)
                         {
-                            log.Error($"Failed to submit AI turn ${player}", e);
+                            log.Error($"Failed to submit AI turn {player}", e);
                         }
                     };
                     if (Multithreaded)
@@ -428,6 +428,7 @@ namespace CraigStars
             {
                 aiSubmittingTask = Task.CompletedTask;
             }
+            await aiSubmittingTask;
         }
 
         #region Event Handlers

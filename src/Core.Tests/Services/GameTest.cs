@@ -38,26 +38,29 @@ namespace CraigStars.Tests
             player.SetupMapObjectMappings();
             game.Players.Add(player);
 
-            game.Planets.Add(new Planet()
+            var planet = new Planet()
             {
                 Player = player,
-
+                Name = "Planet 1",
                 Cargo = new Cargo(),
                 MineYears = new Mineral(),
                 ProductionQueue = new ProductionQueue(),
                 Population = 25000,
+                BaseHab = new Hab(50, 50, 50),
                 Hab = new Hab(50, 50, 50),
                 MineralConcentration = new Mineral(100, 100, 100),
                 Scanner = true
-            });
+            };
+            game.Planets.Add(planet);
 
             var design = ShipDesigns.LongRangeScount.Clone();
             design.Player = player;
             game.Designs.Add(design);
 
-            game.Fleets.Add(new Fleet()
+            var fleet = new Fleet()
             {
                 Player = player,
+                Name = "Fleet 1",
                 Tokens = new List<ShipToken>(new ShipToken[] {
                     new ShipToken()
                     {
@@ -65,8 +68,16 @@ namespace CraigStars.Tests
                         Quantity = 1
                     }
                 }),
-                BattlePlan = player.BattlePlans[0]
-            });
+                BattlePlan = player.BattlePlans[0],
+                Orbiting = planet,
+                Waypoints = new List<Waypoint>() {
+                    Waypoint.TargetWaypoint(planet)
+                }
+            };
+            game.Fleets.Add(fleet);
+            planet.OrbitingFleets.Add(fleet);
+
+            game.UpdateDictionaries();
             return game;
         }
 
@@ -115,8 +126,9 @@ namespace CraigStars.Tests
             {
                 SaveToDisk = false,
                 Size = Size.Huge,
-                Density = Density.Packed
+                Density = Density.Packed,
             };
+            game.GameInfo.QuickStartTurns = 0;
             var player = new Player();
             var aiPlayer = new Player() { AIControlled = true };
             var rules = new Rules(0);

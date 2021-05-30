@@ -60,6 +60,7 @@ namespace CraigStars
                 {
                     // add this planet as a waypoint
                     fleet.Waypoints.Add(Waypoint.TargetWaypoint(planetToScout, fleet.GetDefaultWarpFactor(), WaypointTask.None));
+                    fleet.Waypoints[1].WarpFactor = fleet.GetBestWarpFactor(fleet.Waypoints[0], fleet.Waypoints[1]);
 
                     // remove this planet from our list
                     unknownPlanets.Remove(planetToScout);

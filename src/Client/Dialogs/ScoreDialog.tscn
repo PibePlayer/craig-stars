@@ -4,7 +4,6 @@
 [ext_resource path="res://src/Client/Dialogs/ScoreDialog.cs" type="Script" id=2]
 
 [node name="ScoreDialog" type="WindowDialog"]
-visible = true
 margin_right = 805.0
 margin_bottom = 648.0
 window_title = "Score"

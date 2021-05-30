@@ -138,19 +138,23 @@ namespace CraigStars
         /// Get the population density of this planet, as a float, i.e. 100k out of 1 million max is .1f density
         /// </summary>
         /// <returns></returns>
-        public float PopulationDensity
+        public float PopulationDensity { get => GetPopulationDensity(Population); }
+
+        /// <summary>
+        /// Get the population density for a population amount
+        /// </summary>
+        /// <param name="population"></param>
+        /// <returns></returns>
+        public float GetPopulationDensity(int population)
         {
-            get
+            if (Player != null)
             {
-                if (Player != null)
-                {
-                    var rules = Player.Rules;
-                    return Population > 0 ? (float)Population / GetMaxPopulation(Player.Race, rules) : 0;
-                }
-                else
-                {
-                    return 0;
-                }
+                var rules = Player.Rules;
+                return population > 0 ? (float)population / GetMaxPopulation(Player.Race, rules) : 0;
+            }
+            else
+            {
+                return 0;
             }
         }
 

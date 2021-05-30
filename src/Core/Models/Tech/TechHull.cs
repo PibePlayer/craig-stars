@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace CraigStars
 {
@@ -19,7 +20,7 @@ namespace CraigStars
         /// <summary>
         /// Starbases have +1 range
         /// </summary>
-        public int RangeBonus { get; set;  }
+        public int RangeBonus { get; set; }
         public bool Starbase { get; set; }
         [DefaultValue(UnlimitedSpaceDock)]
         public int SpaceDock { get; set; } = UnlimitedSpaceDock;
@@ -32,6 +33,16 @@ namespace CraigStars
 
         public TechHull(string name, Cost cost, TechRequirements techRequirements, int ranking, TechCategory category) : base(name, cost, techRequirements, ranking, category)
         {
+        }
+
+        /// <summary>
+        /// Return true if this hull can use a certain component
+        /// </summary>
+        /// <param name="component"></param>
+        /// <returns></returns>
+        public bool CanUse(TechHullComponent component)
+        {
+            return Slots.Find(slot => slot.Type.HasFlag(component.HullSlotType)) != null;
         }
 
     }

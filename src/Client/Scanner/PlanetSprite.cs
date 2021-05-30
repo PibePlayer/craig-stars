@@ -152,7 +152,7 @@ namespace CraigStars
                         else if (hab < 0)
                         {
                             // don't go smaller than 25%
-                            var radius = Mathf.Clamp(10 * (hab / 45.0f), 2.5f, 10);
+                            var radius = Mathf.Clamp(10 * (-hab / 45.0f), 2.5f, 10);
                             DrawCircle(Vector2.Zero, radius, GUIColors.UninhabitableOutlineColor);
                             DrawCircle(Vector2.Zero, radius - 1, GUIColors.UninhabitableColor);
                         }

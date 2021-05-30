@@ -58,12 +58,10 @@ namespace CraigStars
 
                             log.Debug($"{player} has upgraded {existingDesignForHull.Name} v{existingDesignForHull.Version} to {updatedDesign.Name} v{updatedDesign.Version} with new components.");
                         }
-
                     }
                 }
                 else
                 {
-
                     // we don't have a design for this hull yet, create a new one!
                     var newDesign = shipDesignGenerator.DesignShip(hull, hull.Name, player, player.DefaultHullSet, EnumUtils.GetPurposeForTechHullType(hull.Type));
                     log.Debug($"{player} has created new design {newDesign.Name} v{newDesign.Version}.");
@@ -75,6 +73,56 @@ namespace CraigStars
             newDesigns.ForEach(design => { player.DesignsByGuid[design.Guid] = design; design.ComputeAggregate(player); });
             deletedDesigns.ForEach(design => player.DeletedDesigns.Add(design));
 
+        }
+
+        /// <summary>
+        /// Design a colonizer
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        internal ShipDesign DesignColonizer(Player player, string name = null)
+        {
+            var colonizer = player.GetBestColonizationModule();
+            var hull = player.TechStore.Hulls
+                .Where(hull => player.HasTech(hull) && hull.CanUse(colonizer))
+                .OrderByDescending(hull => hull.CargoCapacity)
+                .First();
+            var latestVersionDesignByHull = player.Designs
+                .Where(design => design.Hull == hull)
+                .OrderByDescending(design => design.Version)
+                .FirstOrDefault();
+
+            if (name == null)
+            {
+                name = $"{hull.Name} Colonizer";
+            }
+
+            var design = shipDesignGenerator.DesignShip(hull, name, player, player.DefaultHullSet, ShipDesignPurpose.Colonizer);
+
+            if (latestVersionDesignByHull != null)
+            {
+                if (AreEquivalent(latestVersionDesignByHull, design))
+                {
+                    design = latestVersionDesignByHull;
+                }
+                else
+                {
+                    design.Version = latestVersionDesignByHull.Version + 1;
+                    log.Debug($"{player} has updated design {design.Name} v{design.Version}.");
+                    player.Designs.Add(design);
+                }
+            }
+            else
+            {
+                log.Debug($"{player} has created a new design {design.Name} v{design.Version}.");
+                player.Designs.Add(design);
+            }
+
+            player.DesignsByGuid[design.Guid] = design;
+            design.ComputeAggregate(player);
+
+            return design;
         }
 
         /// <summary>

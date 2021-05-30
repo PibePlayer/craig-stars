@@ -110,7 +110,9 @@ namespace CraigStars
                     // one to the queue
                     if (queuedToBeBuilt < numShipsNeeded)
                     {
-                        planet.ProductionQueue?.Items.Add(new ProductionQueueItem(QueueItemType.ShipToken, 1, scoutShip));
+                        // put this at the top of the queue
+                        // above any auto items
+                        planet.ProductionQueue?.Items.Insert(0, new ProductionQueueItem(QueueItemType.ShipToken, 1, scoutShip));
                         log.Debug($"{player.Game.Year}: {planet.Player} Added scout ship to planet queue: {planet.Name}");
                         queuedToBeBuilt++;
                     }

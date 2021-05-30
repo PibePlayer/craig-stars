@@ -11,6 +11,8 @@ namespace CraigStars
     /// </summary>
     public class PlanetProductionStep : TurnGenerationStep
     {
+        static CSLog log = LogProvider.GetLogger(typeof(PlanetProductionStep));
+
         public PlanetProductionStep(Game game) : base(game, TurnGenerationState.Production) { }
 
         /// <summary>
@@ -190,6 +192,7 @@ namespace CraigStars
         {
             if (item.Type == QueueItemType.Mine || item.Type == QueueItemType.AutoMines)
             {
+                log.Debug($"{Game.Year}: {planet.Player} built {numBuilt} mines on {planet.Name}");
                 planet.Mines += numBuilt;
                 // this should never need to clamp because we adjust quantity in Build(), but just in case
                 planet.Mines = Mathf.Clamp(planet.Mines, 0, planet.MaxPossibleMines);
@@ -197,12 +200,14 @@ namespace CraigStars
             }
             else if (item.Type == QueueItemType.Factory || item.Type == QueueItemType.AutoFactories)
             {
+                log.Debug($"{Game.Year}: {planet.Player} built {numBuilt} factories on {planet.Name}");
                 planet.Factories += numBuilt;
                 planet.Factories = Mathf.Clamp(planet.Factories, 0, planet.MaxPossibleFactories);
                 Message.Factory(planet.Player, planet, numBuilt);
             }
             else if (item.Type == QueueItemType.Defenses || item.Type == QueueItemType.AutoDefenses)
             {
+                log.Debug($"{Game.Year}: {planet.Player} built {numBuilt} defenses on {planet.Name}");
                 planet.Defenses += numBuilt;
                 planet.Defenses = Mathf.Clamp(planet.Defenses, 0, planet.MaxDefenses);
                 Message.Defense(planet.Player, planet, numBuilt);

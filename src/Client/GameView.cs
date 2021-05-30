@@ -118,8 +118,11 @@ namespace CraigStars
                     {
                         GamesManager.Instance.DeleteGame(Game.Name);
                     }
+                    PlayersManager.Instance.NumPlayers = PlayersManager.Instance.Players.Count;
                     Game.Init(PlayersManager.Instance.Players.Cast<Player>().ToList(), RulesManager.Rules, TechStore.Instance, GamesManager.Instance, TurnProcessorManager.Instance);
                     Game.GenerateUniverse();
+
+                    PlayersManager.Me.Settings.TurnProcessors.AddRange(TurnProcessorManager.Instance.TurnProcessors.Select(p => p.Name));
                 }
 
                 GameInfo = Game.GameInfo;

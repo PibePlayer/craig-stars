@@ -18,6 +18,8 @@ namespace CraigStars
         // max of its growth rate (over 1/4 crowded)
         private const float PopulationDensityRequired = .25f;
 
+        ShipDesignerTurnProcessor shipDesignerTurnProcessor = new ShipDesignerTurnProcessor();
+
         public ColonyTurnProcessor() : base("Colonizer") { }
 
         /// <summary>
@@ -26,11 +28,15 @@ namespace CraigStars
         public override void Process(Player player)
         {
             // find the first colony ship design
-            // TODO: pick the best one
-            ShipDesign colonyShip = player.GetLatestDesign(ShipDesignPurpose.Colonizer);
+            ShipDesign colonyShip = shipDesignerTurnProcessor.DesignColonizer(player);
 
-            var colonizablePlanets = player.AllPlanets.Where(planet => planet.Explored && planet.Uninhabited && player.Race.GetPlanetHabitability(planet.BaseHab.Value) > 0).ToList();
-            var buildablePlanets = player.Planets.Where(planet => planet.CanBuild(player, colonyShip.Aggregate.Mass)).ToList();
+            var colonizablePlanets = player.AllPlanets
+            .Where(planet => planet.Explored && planet.Uninhabited && player.Race.GetPlanetHabitability(planet.BaseHab.Value) > 0)
+            .OrderByDescending(planet => player.Race.GetPlanetHabitability(planet.BaseHab.Value))
+            .ToList();
+            var buildablePlanets = player.Planets
+                .Where(planet => planet.CanBuild(player, colonyShip.Aggregate.Mass))
+                .ToList();
             var colonizerFleets = player.Fleets.Where(fleet => fleet.Aggregate.Purposes.Contains(ShipDesignPurpose.Colonizer));
 
             foreach (var fleet in colonizerFleets)
@@ -43,19 +49,31 @@ namespace CraigStars
             }
 
             // go through each unassigned colonizer fleet and find it a new planet to colonize
-            foreach (var fleet in colonizerFleets.Where(f => f.Waypoints.Count == 1 && f.Orbiting?.Player == player && f.Orbiting.PopulationDensity >= PopulationDensityRequired))
+            foreach (var fleet in colonizerFleets.Where(
+                f => f.Waypoints.Count == 1 &&
+                f.Orbiting?.Player == player &&
+                f.Orbiting.GetPopulationDensity(f.Orbiting.Population - f.AvailableCapacity) >= PopulationDensityRequired)
+            )
             {
-
-                Planet planetToColonize = ClosestPlanet(fleet, colonizablePlanets);
-                if (planetToColonize != null)
+                if (colonizablePlanets.Count > 0)
                 {
-                    // add this planet as a waypoint
-                    var wp0 = fleet.Waypoints[0];
-                    wp0.Task = WaypointTask.Transport;
-                    var transportTasks = new WaypointTransportTasks(colonists: new WaypointTransportTask(WaypointTaskTransportAction.LoadAll));
-                    wp0.TransportTasks = transportTasks;
+                    Planet planetToColonize = colonizablePlanets[0];
+                    var sourcePlanet = fleet.Orbiting;
+                    Cargo colonists = new Cargo(colonists: fleet.AvailableCapacity);
+                    sourcePlanet.AttemptTransfer(-colonists);
+                    fleet.AttemptTransfer(colonists);
 
-                    // TODO: setup waypoint transfer tasks
+                    // make an immediate CargoTransferOrder
+                    var order = new CargoTransferOrder()
+                    {
+                        Source = fleet,
+                        Dest = sourcePlanet,
+                        Transfer = colonists,
+                    };
+
+                    player.CargoTransferOrders.Add(order);
+                    player.FleetOrders.Add(order);
+
                     fleet.Waypoints.Add(Waypoint.TargetWaypoint(planetToColonize, fleet.GetDefaultWarpFactor(), WaypointTask.Colonize));
 
                     // remove this planet from our list
@@ -107,7 +125,8 @@ namespace CraigStars
                     // one to the queue
                     if (queuedToBeBuilt < numShipsNeeded)
                     {
-                        planet.ProductionQueue?.Items.Add(new ProductionQueueItem(QueueItemType.ShipToken, 1, colonyShip));
+                        // put this at the top of the queue, above auto build items
+                        planet.ProductionQueue?.Items.Insert(0, new ProductionQueueItem(QueueItemType.ShipToken, 1, colonyShip));
                         log.Debug($"Added scout ship to planet queue: {planet.Name}");
                         queuedToBeBuilt++;
                     }

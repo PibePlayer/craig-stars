@@ -302,6 +302,53 @@ namespace CraigStars.Tests
         }
 
         [Test]
+        public void TestBuildAuto3()
+        {
+            // make this a larger planet so we can build everything
+            var player = game.Players[0];
+            var planet = game.Planets[0];
+            var initialFleetCount = game.Fleets.Count;
+            planet.Population = 1000000; // 1 MILLION people
+            planet.Factories = 500;
+            planet.Mines = 0;
+            planet.ContributesOnlyLeftoverToResearch = true;
+
+            // we are going to auto build some stuff and add a couple ship builds at the end
+            var design1 = ShipDesigns.LongRangeScount.Clone();
+            var design2 = ShipDesigns.SantaMaria.Clone();
+            design1.Player = player;
+            design1.ComputeAggregate();
+            design2.Player = player;
+            design2.ComputeAggregate();
+            player.Designs.Add(design1);
+            player.Designs.Add(design2);
+
+            // add some auto steps and a couple ships. They should all complete
+            planet.ProductionQueue.Items = new List<ProductionQueueItem>() {
+                new ProductionQueueItem(QueueItemType.AutoMaxTerraform, 1),
+                new ProductionQueueItem(QueueItemType.AutoFactories, 1),
+                new ProductionQueueItem(QueueItemType.AutoMines, 1),
+                new ProductionQueueItem(QueueItemType.ShipToken, 1, design1),
+                new ProductionQueueItem(QueueItemType.ShipToken, 1, design2),
+            };
+            planet.Cargo = new Cargo(1000, 1000, 1000, colonists: planet.Cargo.Colonists);
+            step.Build(planet);
+
+            // 1 mine, 1 factory, and 2 ships should be built
+            // no terraforming because we are maxed
+            Assert.AreEqual(501, planet.Factories);
+            Assert.AreEqual(1, planet.Mines);
+            Assert.AreEqual(3, planet.ProductionQueue.Items.Count);
+            Assert.AreEqual(QueueItemType.AutoMaxTerraform, planet.ProductionQueue.Items[0].Type);
+            Assert.AreEqual(1, planet.ProductionQueue.Items[0].Quantity);
+            Assert.AreEqual(QueueItemType.AutoFactories, planet.ProductionQueue.Items[1].Type);
+            Assert.AreEqual(1, planet.ProductionQueue.Items[1].Quantity);
+            Assert.AreEqual(QueueItemType.AutoMines, planet.ProductionQueue.Items[2].Type);
+            Assert.AreEqual(1, planet.ProductionQueue.Items[2].Quantity);
+            Assert.AreEqual(initialFleetCount + 2, game.Fleets.Count); // we should have built our two fleets
+        }
+
+        [Test]
         public void TestAllocateToQueue()
         {
             var planet = game.Planets[0];

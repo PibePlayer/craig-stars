@@ -49,6 +49,8 @@ namespace CraigStars
         {
             var stats = Game.Rules.WormholeStatsByStability[wormhole.Stability];
 
+            // don't infinite jiggle
+            int jiggleCount = 0;
             do
             {
                 var originalPosition = wormhole.Position;
@@ -57,7 +59,8 @@ namespace CraigStars
                     wormhole.Position.y + Game.Rules.Random.Next(-stats.jiggleDistance / 2, stats.jiggleDistance / 2)
                 );
                 log.Debug($"{Game.Year} Wormhole {TextUtils.GetPositionString(originalPosition)} jiggled to {wormhole.Position}");
-            } while (Game.MapObjectsByLocation.ContainsKey(wormhole.Position));
+                jiggleCount++;
+            } while (Game.MapObjectsByLocation.ContainsKey(wormhole.Position) && jiggleCount < 100);
 
         }
 

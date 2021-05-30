@@ -606,6 +606,20 @@ namespace CraigStars
         }
 
         /// <summary>
+        /// Get the best mine layer this player has access to
+        /// </summary>
+        /// <returns></returns>
+        public TechHullComponent GetBestColonizationModule()
+        {
+            var techs = TechStore.GetTechsByCategory(TechCategory.Mechanical).Where(t => t is TechHullComponent hc && hc.ColonizationModule).ToList();
+
+            techs.Sort((t1, t2) => t2.Ranking.CompareTo(t1.Ranking));
+            var tech = techs.Find(t => HasTech(t));
+
+            return tech as TechHullComponent;
+        }
+
+        /// <summary>
         /// Get the best tech by category
         /// </summary>
         /// <typeparam name="T"></typeparam>

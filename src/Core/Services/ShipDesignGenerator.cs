@@ -32,6 +32,7 @@ namespace CraigStars
 
             int numShields = 0;
             int numArmor = 0;
+            int numScanners = 0;
 
 
             var bestStargate = player.GetBestStargate();
@@ -61,8 +62,29 @@ namespace CraigStars
                         slot.HullComponent = Techs.BattleComputer;
                         break;
                     case HullSlotType.Scanner:
-                    case HullSlotType.ScannerElectricalMechanical:
                         slot.HullComponent = player.GetBestScanner();
+                        numScanners++;
+                        break;
+                    case HullSlotType.Mechanical:
+                    case HullSlotType.ScannerElectricalMechanical:
+                        switch (purpose)
+                        {
+                            case ShipDesignPurpose.Colonizer:
+                                slot.HullComponent = player.GetBestColonizationModule();
+                                break;
+                            default:
+                                if (hullSlot.Type.HasFlag(HullSlotType.Scanner) && numScanners == 0)
+                                {
+                                    slot.HullComponent = player.GetBestScanner();
+                                    numScanners++;
+                                }
+                                else
+                                {
+                                    slot.HullComponent = Techs.FuelTank;
+                                }
+                                break;
+
+                        }
                         break;
                     case HullSlotType.Shield:
                         slot.HullComponent = player.GetBestShield();
@@ -153,19 +175,6 @@ namespace CraigStars
                                 break;
                         }
                         break;
-                    case HullSlotType.Mechanical:
-                        switch (purpose)
-                        {
-                            case ShipDesignPurpose.Colonizer:
-                                slot.HullComponent = Techs.ColonizationModule;
-                                break;
-                            default:
-                                slot.HullComponent = Techs.FuelTank;
-                                break;
-
-                        }
-                        break;
-
                 }
                 design.Slots.Add(slot);
             });

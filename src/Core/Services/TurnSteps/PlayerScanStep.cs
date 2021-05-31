@@ -161,6 +161,7 @@ namespace CraigStars
             }
 
             log.Debug($"{Game.Year}: {player} Scanning {Game.Fleets.Count} fleets.");
+            List<Fleet> fleetsToDiscover = new List<Fleet>();
             foreach (var fleet in Game.Fleets)
             {
                 // we own this fleet, update the report
@@ -180,18 +181,22 @@ namespace CraigStars
                     if (scanner.RangePen * cloakFactor >= distance)
                     {
                         // update the fleet report with pen scanners
-                        playerIntel.Discover(player, fleet, player.DiscoverDesignOnScan);
+                        fleetsToDiscover.Add(fleet);
                         break;
                     }
 
                     // if we aren't orbiting a planet, we can be seen with regular scanners
                     if (fleet.Orbiting == null && scanner.Range * cloakFactor >= distance)
                     {
-                        playerIntel.Discover(player, fleet, player.DiscoverDesignOnScan);
+                        fleetsToDiscover.Add(fleet);
                         break;
                     }
                 }
             }
+
+            log.Debug($"{Game.Year}: {player} Discovering {fleetsToDiscover.Count} fleets.");
+            fleetsToDiscover.ForEach(fleet => playerIntel.Discover(player, fleet, player.DiscoverDesignOnScan));
+
 
             log.Debug($"{Game.Year}: {player} Scanning {Game.MineFields.Count} minefields.");
             foreach (var mineField in player.AllMineFields)

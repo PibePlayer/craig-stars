@@ -31,6 +31,7 @@ namespace CraigStars
         /// </summary>
         public void Execute(TurnGenerationContext context, List<Planet> ownedPlanets)
         {
+            stopwatch.Reset();
             stopwatch.Start();
             log.Debug($"{Game.Year}: Beginning {this.GetType().ToString()}");
             Context = context;

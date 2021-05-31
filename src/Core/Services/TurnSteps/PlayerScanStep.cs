@@ -59,26 +59,27 @@ namespace CraigStars
             foreach (var player in Game.Players)
             {
                 // TODO: this is crashing when generating a bunch of turns...
-                // scanTasks.Add(Task.Factory.StartNew(() =>
-                // {
-                try
+                scanTasks.Add(Task.Factory.StartNew(() =>
                 {
-                    Scan(player);
-                }
-                catch (Exception e)
-                {
-                    log.Error($"Encountered error during PlayerScanStep for {player}.", e);
-                }
-                // }));
+                    try
+                    {
+                        Scan(player);
+                    }
+                    catch (Exception e)
+                    {
+                        log.Error($"Encountered error during PlayerScanStep for {player}.", e);
+                    }
+                }));
             }
 
-            // Task.WaitAll(scanTasks.ToArray());
+            Task.WaitAll(scanTasks.ToArray());
         }
 
         internal void Scan(Player player)
         {
             // clear out old fleets
             // we rebuild this list each turn
+            log.Debug($"{Game.Year}: {player} Clearing Transient Reports");
             playerIntel.ClearTransientReports(player);
 
             foreach (var planet in player.AllPlanets)
@@ -96,6 +97,7 @@ namespace CraigStars
             var scanners = new List<Scanner>();
             var planetaryScanner = player.GetBestPlanetaryScanner();
 
+            log.Debug($"{Game.Year}: {player} Building List of Planet Scanners");
             foreach (var planet in Game.Planets.Where(p => p.Player == player && p.Scanner))
             {
                 // find the best scanner at this location, whether fleet or planet
@@ -114,6 +116,7 @@ namespace CraigStars
             }
 
             // find all our fleets that are out and about
+            log.Debug($"{Game.Year}: {player} Building List of Fleet Scanners");
             foreach (var fleet in Game.Fleets.Where(f => f.Player == player && f.Aggregate.Scanner && (f.Orbiting == null || f.Orbiting.Player != player)))
             {
                 scanners.Add(new Scanner(fleet.Position, fleet.Aggregate.ScanRange * fleet.Aggregate.ScanRange, fleet.Aggregate.ScanRangePen * fleet.Aggregate.ScanRangePen, fleet.Aggregate.ReduceCloaking));
@@ -129,6 +132,7 @@ namespace CraigStars
             }
 
             // discover our own designs
+            log.Debug($"{Game.Year}: {player} Discovering player designs (from {Game.Designs.Count} total designs");
             foreach (var design in Game.Designs.Where(d => d.Player == player))
             {
                 playerIntel.Discover(player, design, true);
@@ -136,6 +140,7 @@ namespace CraigStars
 
             // go through each planet and update its report if
             // we scanned it
+            log.Debug($"{Game.Year}: {player} Scanning {Game.Planets.Count} planets.");
             foreach (var planet in Game.Planets)
             {
                 // we own this planet, update the report
@@ -155,6 +160,7 @@ namespace CraigStars
                 }
             }
 
+            log.Debug($"{Game.Year}: {player} Scanning {Game.Fleets.Count} fleets.");
             foreach (var fleet in Game.Fleets)
             {
                 // we own this fleet, update the report
@@ -166,17 +172,16 @@ namespace CraigStars
 
                 // only scan this once. If we pen scan it, we break out of the loop
                 // and go to the next fleet
-                bool scanned = false;
                 foreach (var scanner in scanners)
                 {
                     var cloakFactor = 1 - (fleet.Aggregate.CloakPercent * scanner.CloakReduction / 100f);
                     var distance = scanner.Position.DistanceSquaredTo(fleet.Position);
                     // if we pen scanned this, update the report
-                    if (!scanned && scanner.RangePen * cloakFactor >= distance)
+                    if (scanner.RangePen * cloakFactor >= distance)
                     {
                         // update the fleet report with pen scanners
                         playerIntel.Discover(player, fleet, player.DiscoverDesignOnScan);
-                        scanned = true;
+                        break;
                     }
 
                     // if we aren't orbiting a planet, we can be seen with regular scanners
@@ -188,6 +193,7 @@ namespace CraigStars
                 }
             }
 
+            log.Debug($"{Game.Year}: {player} Scanning {Game.MineFields.Count} minefields.");
             foreach (var mineField in player.AllMineFields)
             {
                 if (mineField.ReportAge != MapObject.Unexplored)

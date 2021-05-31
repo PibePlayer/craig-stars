@@ -29,6 +29,8 @@ namespace CraigStars
             Score,
         }
 
+        bool turnGenerating;
+
         public override void _Ready()
         {
             commandsMenu = GetNode<MenuButton>("Panel/HBoxContainerRight/CommandsMenuButton").GetPopup();
@@ -103,18 +105,20 @@ namespace CraigStars
             }
         }
 
-        void EnableSubmitButton()
-        {
-            submitTurnButton.Disabled = false;
-        }
-
         void OnTurnPassed(PublicGameInfo gameInfo)
         {
-            CallDeferred(nameof(EnableSubmitButton));
+            CallDeferred(nameof(DeferredTurnPassed));
+        }
+
+        void DeferredTurnPassed()
+        {
+            turnGenerating = false;
+            submitTurnButton.Disabled = false;
         }
 
         void OnTurnGenerating()
         {
+            turnGenerating = true;
             submitTurnButton.Disabled = true;
         }
 
@@ -122,7 +126,7 @@ namespace CraigStars
         {
             if (player == PlayersManager.Me)
             {
-                CallDeferred(nameof(EnableSubmitButton));
+                CallDeferred(nameof(DeferredTurnPassed));
             }
         }
 
@@ -150,6 +154,10 @@ namespace CraigStars
 
         public override void _Input(InputEvent @event)
         {
+            if (turnGenerating)
+            {
+                return;
+            }
             if (!submitTurnButton.Disabled && @event.IsActionPressed("submit_turn"))
             {
                 // submit our turn

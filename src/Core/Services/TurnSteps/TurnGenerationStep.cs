@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using log4net;
@@ -39,7 +40,8 @@ namespace CraigStars
             PostProcess();
 
             stopwatch.Stop();
-            log.Debug($"{Game.Year}: Completed {this.GetType().ToString()} ({stopwatch.ElapsedMilliseconds}ms)");
+            
+            log.Debug($"{Game.Year}: Completed {this.GetType().ToString()} ({TimeSpan.FromMilliseconds(stopwatch.ElapsedMilliseconds):c}ms)");
             // log.Debug($"{Game.Year}: Completed {this.GetType().ToString()})");
         }
 

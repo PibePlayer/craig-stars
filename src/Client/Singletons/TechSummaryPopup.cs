@@ -42,7 +42,7 @@ namespace CraigStars.Singletons
 
         public override void _Input(InputEvent @event)
         {
-            if (@event.IsActionPressed("ui_select") || @event.IsActionPressed("ui_cancel"))
+            if ((@event.IsActionPressed("ui_select") || @event.IsActionPressed("ui_cancel")) && IsVisibleInTree())
             {
                 Hide();
             }

@@ -73,6 +73,8 @@ namespace CraigStars
         bool pickingPacketDestination = false;
         WaypointArea activeWaypointArea;
 
+        bool turnGenerating;
+
         public override void _Ready()
         {
             waypointAreaScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/WaypointArea.tscn");
@@ -92,6 +94,7 @@ namespace CraigStars
 
             // wire up events
             Signals.TurnPassedEvent += OnTurnPassed;
+            Signals.TurnGeneratingEvent += OnTurnGenerating;
             Signals.MapObjectCommandedEvent += OnMapObjectCommanded;
             Signals.GotoMapObjectEvent += OnGotoMapObject;
             Signals.GotoMapObjectSpriteEvent += OnGotoMapObjectSprite;
@@ -112,6 +115,7 @@ namespace CraigStars
         public override void _ExitTree()
         {
             Signals.TurnPassedEvent -= OnTurnPassed;
+            Signals.TurnGeneratingEvent -= OnTurnGenerating;
             Signals.MapObjectCommandedEvent -= OnMapObjectCommanded;
             Signals.GotoMapObjectEvent -= OnGotoMapObject;
             Signals.GotoMapObjectSpriteEvent -= OnGotoMapObjectSprite;
@@ -141,6 +145,7 @@ namespace CraigStars
         /// <param name="delta"></param>
         public override void _Process(float delta)
         {
+            if (turnGenerating) { return; }
             // if we are currently moving a waypoint, and the viewport_select action is held down, and we have an active waypoint, drag it around
             if (movingWaypoint && Input.IsActionPressed("viewport_select") && activeWaypointArea != null && IsInstanceValid(activeWaypointArea))
             {
@@ -184,6 +189,10 @@ namespace CraigStars
             }
         }
 
+        void OnTurnGenerating()
+        {
+            turnGenerating = true;
+        }
 
         void OnTurnPassed(PublicGameInfo gameInfo)
         {
@@ -1004,6 +1013,8 @@ namespace CraigStars
             RefreshTransientViewportObjects();
             UpdateScanners();
             FocusHomeworld();
+
+            turnGenerating = false;
         }
 
         #region New Turn functions

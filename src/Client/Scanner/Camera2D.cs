@@ -94,6 +94,10 @@ namespace CraigStars
         /// <param name="delta"></param>
         public override void _Process(float delta)
         {
+            if (DialogManager.DialogRefCount > 0)
+            {
+                return;
+            }
             var scrollAmount = ScrollConstant * Zoom.x;
 
             if (Input.IsActionPressed("up"))

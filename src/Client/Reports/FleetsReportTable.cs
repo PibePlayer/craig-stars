@@ -49,7 +49,7 @@ namespace CraigStars
 
             var owner = "--";
             var ownerColor = Colors.Gray;
-            var location = $"Space: ({item.Position.x:.##}, {item.Position.y:.##})"; ;
+            var location = item.Waypoints[0].TargetName;
             var destination = "--";
             var etaText = "--";
             var eta = double.MaxValue;
@@ -75,7 +75,6 @@ namespace CraigStars
             if (item.Waypoints?.Count > 1)
             {
                 var wp0 = item.Waypoints[0];
-                location = wp0.TargetName;
                 var nextWaypoint = item.Waypoints[1];
                 destination = nextWaypoint.TargetName;
                 eta = Math.Ceiling(wp0.GetTimeToWaypoint(nextWaypoint));

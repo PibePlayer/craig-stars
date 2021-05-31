@@ -199,8 +199,7 @@ namespace CraigStars
             commandedMapObjectIndex = 0;
             selectedMapObjectIndex = 0;
 
-            CallDeferred(nameof(RefreshTransientViewportObjects));
-            CallDeferred(nameof(ResetScannerToHome));
+            CallDeferred(nameof(DeferredUniverseUpdated));
         }
 
         void OnMapObjectCommanded(MapObjectSprite mapObject)
@@ -487,7 +486,10 @@ namespace CraigStars
 
         #endregion
 
-        public void InitMapObjects()
+        /// <summary>
+        /// Initialize the scanner with new universe data. This is called after the game world has been generated
+        /// </summary>
+        public void Init()
         {
             // remove old planets, in case we switched players
             Planets.ForEach(oldPlanet =>
@@ -512,9 +514,8 @@ namespace CraigStars
             Planets.ForEach(p => p.Connect("mouse_entered", this, nameof(OnMouseEntered), new Godot.Collections.Array() { p }));
             Planets.ForEach(p => p.Connect("mouse_exited", this, nameof(OnMouseExited), new Godot.Collections.Array() { p }));
 
-            RefreshTransientViewportObjects();
-
-            CallDeferred(nameof(ResetScannerToHome));
+            // add all the other things, reset the scanner, etc.
+            CallDeferred(nameof(DeferredUniverseUpdated));
         }
 
         /// <summary>
@@ -994,10 +995,15 @@ namespace CraigStars
             fleet.QueueFree();
         }
 
-        public void ResetScannerToHome()
+        /// <summary>
+        /// After the universe has been updated, this method is designed to be 
+        /// called with a CallDeferred() to reset all the map objects, scanners, etc.
+        /// </summary>
+        void DeferredUniverseUpdated()
         {
-            FocusHomeworld();
+            RefreshTransientViewportObjects();
             UpdateScanners();
+            FocusHomeworld();
         }
 
         #region New Turn functions

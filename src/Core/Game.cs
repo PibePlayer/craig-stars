@@ -200,7 +200,7 @@ namespace CraigStars
             SaveGame();
 
             // this can happen in the background
-            SubmitAITurns();
+            var _ = SubmitAITurns();
         }
 
         public void SubmitTurn(Player player)

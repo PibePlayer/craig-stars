@@ -112,7 +112,8 @@ namespace CraigStars
                     {
                         Name = Settings.Instance.GameSettings.Name,
                         Multithreaded = Settings.Multithreaded,
-                        SaveToDisk = Settings.SaveToDisk
+                        SaveToDisk = Settings.SaveToDisk,
+                        GameInfo = Settings.Instance.GameSettings
                     };
                     if (GamesManager.Instance.GameExists(Game.Name))
                     {
@@ -238,7 +239,7 @@ namespace CraigStars
             OS.SetWindowTitle($"{projectName} - {gameInfo.Name}: Year {gameInfo.Year}");
             PlayersManager.Me.RunTurnProcessors(TurnProcessorManager.Instance);
             // add the universe to the viewport
-            scanner.InitMapObjects();
+            scanner.Init();
         }
 
         void OnTurnPassed(PublicGameInfo gameInfo)

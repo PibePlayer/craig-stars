@@ -22,7 +22,7 @@ namespace CraigStars.Tests
         [Test]
         public void TestCompleteMoveCaught()
         {
-            var game = GameTest.GetSingleUnitGame();
+            var game = TestUtils.GetSingleUnitGame();
             PacketMoveStep step = new PacketMoveStep(game, 1);
             var player1 = game.Players[0];
 
@@ -77,7 +77,7 @@ namespace CraigStars.Tests
         [Test]
         public void TestCompleteMoveOverspeed()
         {
-            var game = GameTest.GetSingleUnitGame();
+            var game = TestUtils.GetSingleUnitGame();
             PacketMoveStep step = new PacketMoveStep(game, 1);
             var player1 = game.Players[0];
             player1.TechLevels = new TechLevel(energy: 5);
@@ -133,7 +133,7 @@ namespace CraigStars.Tests
         [Test]
         public void TestCompleteMoveKillPlanet()
         {
-            var game = GameTest.GetSingleUnitGame();
+            var game = TestUtils.GetSingleUnitGame();
             PacketMoveStep step = new PacketMoveStep(game, 1);
             var player = game.Players[0];
 

@@ -16,7 +16,7 @@ namespace CraigStars.Tests
         [Test]
         public void TestUpdateFleetActions()
         {
-            var game = GameTest.GetSingleUnitGame();
+            var game = TestUtils.GetSingleUnitGame();
             var player = game.Players[0];
 
             // make a second planet we can make a waypoint to

@@ -21,7 +21,7 @@ namespace CraigStars.Tests
         [Test]
         public void DecayTest()
         {
-            var game = GameTest.GetSingleUnitGame();
+            var game = TestUtils.GetSingleUnitGame();
             var player1 = game.Players[0];
             var packet = new MineralPacket()
             {

@@ -18,68 +18,7 @@ namespace CraigStars.Tests
     {
         static CSLog log = LogProvider.GetLogger(typeof(GameTest));
 
-        /// <summary>
-        /// Test helper method to return a simple game
-        /// </summary>
-        /// <returns>A game with one planet, one player, one fleet</returns>
-        internal static Game GetSingleUnitGame()
-        {
-            var game = new Game()
-            {
-                SaveToDisk = false,
-                TechStore = StaticTechStore.Instance
-            };
-            var player = new Player()
-            {
-                BattlePlans = new List<BattlePlan>() {
-                    new BattlePlan("Default")
-                }
-            };
-            player.SetupMapObjectMappings();
-            game.Players.Add(player);
 
-            var planet = new Planet()
-            {
-                Player = player,
-                Name = "Planet 1",
-                Cargo = new Cargo(),
-                MineYears = new Mineral(),
-                ProductionQueue = new ProductionQueue(),
-                Population = 25000,
-                BaseHab = new Hab(50, 50, 50),
-                Hab = new Hab(50, 50, 50),
-                MineralConcentration = new Mineral(100, 100, 100),
-                Scanner = true
-            };
-            game.Planets.Add(planet);
-
-            var design = ShipDesigns.LongRangeScount.Clone();
-            design.Player = player;
-            game.Designs.Add(design);
-
-            var fleet = new Fleet()
-            {
-                Player = player,
-                Name = "Fleet 1",
-                Tokens = new List<ShipToken>(new ShipToken[] {
-                    new ShipToken()
-                    {
-                        Design = design,
-                        Quantity = 1
-                    }
-                }),
-                BattlePlan = player.BattlePlans[0],
-                Orbiting = planet,
-                Waypoints = new List<Waypoint>() {
-                    Waypoint.TargetWaypoint(planet)
-                }
-            };
-            game.Fleets.Add(fleet);
-            planet.OrbitingFleets.Add(fleet);
-
-            game.UpdateDictionaries();
-            return game;
-        }
 
         [Test]
         public void TestGenerateUniverse()

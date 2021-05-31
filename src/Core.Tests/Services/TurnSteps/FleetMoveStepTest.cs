@@ -21,7 +21,7 @@ namespace CraigStars.Tests
         [Test]
         public void TestCheckForMineFieldHitSpeed()
         {
-            var game = GameTest.GetSingleUnitGame();
+            var game = TestUtils.GetSingleUnitGame();
             var player1 = game.Players[0];
 
             var player2 = new Player()
@@ -89,7 +89,7 @@ namespace CraigStars.Tests
         [Test]
         public void TestCheckForMineFieldMiss()
         {
-            var game = GameTest.GetSingleUnitGame();
+            var game = TestUtils.GetSingleUnitGame();
             var player1 = game.Players[0];
 
             var player2 = new Player()

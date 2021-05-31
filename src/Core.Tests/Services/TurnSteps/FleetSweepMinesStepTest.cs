@@ -21,7 +21,7 @@ namespace CraigStars.Tests
         [Test]
         public void ProcessTest()
         {
-            var game = GameTest.GetSingleUnitGame();
+            var game = TestUtils.GetSingleUnitGame();
             var fleet = game.Fleets[0];
 
             // add an enemy minefield at 0, 0

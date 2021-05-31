@@ -14,7 +14,7 @@ namespace CraigStars.Tests
         [Test]
         public void TestGenerateTurn()
         {
-            var game = GameTest.GetSingleUnitGame();
+            var game = TestUtils.GetSingleUnitGame();
             var tg = new TurnGenerator(game);
             tg.GenerateTurn();
             // game.RunTurnProcessors();

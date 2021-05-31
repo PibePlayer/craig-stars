@@ -21,7 +21,7 @@ namespace CraigStars.Tests
         [Test]
         public void DetonateTest()
         {
-            var game = GameTest.GetSingleUnitGame();
+            var game = TestUtils.GetSingleUnitGame();
             var player1 = game.Players[0];
             var mineField = new MineField()
             {
@@ -49,7 +49,7 @@ namespace CraigStars.Tests
         [Test]
         public void DetonateSafeFleetTest()
         {
-            var game = GameTest.GetSingleUnitGame();
+            var game = TestUtils.GetSingleUnitGame();
             game.Fleets[0].Position = new Vector2(100, 100); // out of the blast radius
             var player1 = game.Players[0];
             var mineField = new MineField()

@@ -24,7 +24,7 @@ namespace CraigStars.Tests
         [SetUp]
         public void SetUp()
         {
-            game = GameTest.GetSingleUnitGame();
+            game = TestUtils.GetSingleUnitGame();
             step = new PlanetProductionStep(game);
         }
 

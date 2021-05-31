@@ -339,10 +339,10 @@ namespace CraigStars
                 if (Multithreaded)
                 {
                     // now that we have our json, we can save the game to dis in a separate task
-                    _ = Task.Run(() =>
+                    Task.Run(() =>
                     {
                         GamesManager.SaveGame(gameJson, Multithreaded);
-                    });
+                    }).Wait();
                 }
                 else
                 {

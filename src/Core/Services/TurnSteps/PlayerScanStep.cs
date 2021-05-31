@@ -58,9 +58,10 @@ namespace CraigStars
             var scanTasks = new List<Task>();
             foreach (var player in Game.Players)
             {
-                // TODO: this is crashing when generating a bunch of turns...
-                scanTasks.Add(Task.Factory.StartNew(() =>
-                {
+                // TODO: this is eventually slowing way down
+                // I think I might be hitting some threadpool starvation issues
+                // scanTasks.Add(Task.Factory.StartNew(() =>
+                // {
                     try
                     {
                         Scan(player);
@@ -69,10 +70,10 @@ namespace CraigStars
                     {
                         log.Error($"Encountered error during PlayerScanStep for {player}.", e);
                     }
-                }));
+                // }));
             }
 
-            Task.WaitAll(scanTasks.ToArray());
+            // Task.WaitAll(scanTasks.ToArray());
         }
 
         internal void Scan(Player player)
@@ -132,7 +133,7 @@ namespace CraigStars
             }
 
             // discover our own designs
-            log.Debug($"{Game.Year}: {player} Discovering player designs (from {Game.Designs.Count} total designs");
+            log.Debug($"{Game.Year}: {player} Discovering player designs (from {Game.Designs.Count} total designs)");
             foreach (var design in Game.Designs.Where(d => d.Player == player))
             {
                 playerIntel.Discover(player, design, true);
@@ -160,43 +161,7 @@ namespace CraigStars
                 }
             }
 
-            log.Debug($"{Game.Year}: {player} Scanning {Game.Fleets.Count} fleets.");
-            List<Fleet> fleetsToDiscover = new List<Fleet>();
-            foreach (var fleet in Game.Fleets)
-            {
-                // we own this fleet, update the report
-                if (fleet.Player == player)
-                {
-                    playerIntel.Discover(player, fleet, true);
-                    continue;
-                }
-
-                // only scan this once. If we pen scan it, we break out of the loop
-                // and go to the next fleet
-                foreach (var scanner in scanners)
-                {
-                    var cloakFactor = 1 - (fleet.Aggregate.CloakPercent * scanner.CloakReduction / 100f);
-                    var distance = scanner.Position.DistanceSquaredTo(fleet.Position);
-                    // if we pen scanned this, update the report
-                    if (scanner.RangePen * cloakFactor >= distance)
-                    {
-                        // update the fleet report with pen scanners
-                        fleetsToDiscover.Add(fleet);
-                        break;
-                    }
-
-                    // if we aren't orbiting a planet, we can be seen with regular scanners
-                    if (fleet.Orbiting == null && scanner.Range * cloakFactor >= distance)
-                    {
-                        fleetsToDiscover.Add(fleet);
-                        break;
-                    }
-                }
-            }
-
-            log.Debug($"{Game.Year}: {player} Discovering {fleetsToDiscover.Count} fleets.");
-            fleetsToDiscover.ForEach(fleet => playerIntel.Discover(player, fleet, player.DiscoverDesignOnScan));
-
+            ScanFleets(player, scanners);
 
             log.Debug($"{Game.Year}: {player} Scanning {Game.MineFields.Count} minefields.");
             foreach (var mineField in player.AllMineFields)
@@ -329,6 +294,51 @@ namespace CraigStars
                 }
             }
 
+        }
+
+        /// <summary>
+        /// Scan all fleets in the game and discover them
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="scanners"></param>
+        internal void ScanFleets(Player player, List<Scanner> scanners)
+        {
+            log.Debug($"{Game.Year}: {player} {scanners.Count} scanners scanning {Game.Fleets.Count} fleets.");
+            List<Fleet> fleetsToDiscover = new List<Fleet>();
+            foreach (var fleet in Game.Fleets)
+            {
+                // we own this fleet, update the report
+                if (fleet.Player == player)
+                {
+                    playerIntel.Discover(player, fleet, true);
+                    continue;
+                }
+
+                // only scan this once. If we pen scan it, we break out of the loop
+                // and go to the next fleet
+                foreach (var scanner in scanners)
+                {
+                    var cloakFactor = 1 - (fleet.Aggregate.CloakPercent * scanner.CloakReduction / 100f);
+                    var distance = scanner.Position.DistanceSquaredTo(fleet.Position);
+                    // if we pen scanned this, update the report
+                    if (scanner.RangePen * cloakFactor >= distance)
+                    {
+                        // update the fleet report with pen scanners
+                        fleetsToDiscover.Add(fleet);
+                        break;
+                    }
+
+                    // if we aren't orbiting a planet, we can be seen with regular scanners
+                    if (fleet.Orbiting == null && scanner.Range * cloakFactor >= distance)
+                    {
+                        fleetsToDiscover.Add(fleet);
+                        break;
+                    }
+                }
+
+            }
+            log.Debug($"{Game.Year}: {player} Discovering {fleetsToDiscover.Count} foreign fleets.");
+            fleetsToDiscover.ForEach(fleet => playerIntel.Discover(player, fleet, player.DiscoverDesignOnScan));
         }
 
     }

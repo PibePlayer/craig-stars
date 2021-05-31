@@ -119,6 +119,14 @@ namespace CraigStars
             }
         }
 
+        public static void Flush()
+        {
+            if (UseLog4Net)
+            {
+                LogManager.Flush(3000);
+            }
+        }
+
         public static CSLog GetLogger(Type type)
         {
             if (UseLog4Net)

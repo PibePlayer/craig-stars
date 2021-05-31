@@ -280,6 +280,5 @@ Editable = false
 [node name="BattlePlansDialog" parent="CanvasLayer" instance=ExtResource( 30 )]
 
 [node name="ScoreDialog" parent="CanvasLayer" instance=ExtResource( 4 )]
-visible = false
 
 [node name="OtherObjectsPopupMenu" parent="CanvasLayer" instance=ExtResource( 32 )]

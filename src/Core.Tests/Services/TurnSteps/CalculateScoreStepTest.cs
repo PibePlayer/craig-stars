@@ -18,12 +18,12 @@ namespace CraigStars.Tests
     {
 
         [Test]
-        public void TestCalculateScoreNone()
+        public void TestCalculateScoreSinglePlanet()
         {
-            var game = GameTest.GetSingleUnitGame();
+            var game = TestUtils.GetSingleUnitGame();
             var player = game.Players[0];
 
-            // empty player, no score
+            // single planet and fleet, 3 points
             var step = new CalculateScoreStep(game);
             var score = step.CalculateScore(player);
 
@@ -33,7 +33,7 @@ namespace CraigStars.Tests
         [Test]
         public void TestCalculateScoreSimple()
         {
-            var game = GameTest.GetSingleUnitGame();
+            var game = TestUtils.GetSingleUnitGame();
             var player = game.Players[0];
             var starbaseDesign = ShipDesigns.Starbase.Clone(player);
 

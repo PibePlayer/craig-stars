@@ -23,7 +23,7 @@ namespace CraigStars.Tests
         [Test]
         public void TestTakeMineFieldDamage()
         {
-            var game = GameTest.GetSingleUnitGame();
+            var game = TestUtils.GetSingleUnitGame();
             var player1 = game.Players[0];
 
             var player2 = new Player()
@@ -89,7 +89,7 @@ namespace CraigStars.Tests
         [Test]
         public void TestHitMineFieldMinDamage()
         {
-            var game = GameTest.GetSingleUnitGame();
+            var game = TestUtils.GetSingleUnitGame();
             var player1 = game.Players[0];
 
             var player2 = new Player()
@@ -136,7 +136,7 @@ namespace CraigStars.Tests
         [Test]
         public void TestHitMineFieldMinDamageDiverseFleet()
         {
-            var game = GameTest.GetSingleUnitGame();
+            var game = TestUtils.GetSingleUnitGame();
             var player1 = game.Players[0];
 
             var player2 = new Player()

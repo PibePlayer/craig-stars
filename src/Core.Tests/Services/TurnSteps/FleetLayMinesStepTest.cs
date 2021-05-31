@@ -21,7 +21,7 @@ namespace CraigStars.Tests
         [Test]
         public void LayMineFieldTest()
         {
-            var game = GameTest.GetSingleUnitGame();
+            var game = TestUtils.GetSingleUnitGame();
             var fleet = game.Fleets[0];
 
             // make the fleet have a simple scout design with a mine dispenser 50

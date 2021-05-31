@@ -20,21 +20,23 @@ namespace CraigStars.Tests
         [Test]
         public void TestCheckOwnPlanets()
         {
-            var game = GameTest.GetSingleUnitGame();
+            PlayerIntel playerIntel = new();
+            var game = TestUtils.GetSingleUnitGame();
             var player = game.Players[0];
-            player.Planets.Add(game.Planets[0]);
 
             // we must own >= 51% of the planets
             game.VictoryConditions.OwnPlanets = 51;
 
             // this player owns all planets
+            // Discover this planet so our score calculation is aware of it
+            playerIntel.Discover(player, game.Planets[0]);
             var step = new CheckVictoryStep(game);
             step.CheckOwnPlanets(player);
 
             Assert.IsTrue(player.AchievedVictoryConditions.Contains(VictoryConditionType.OwnPlanets));
 
             // add a planet, now our player only owns half the planets
-            game.Planets.Add(new Planet());
+            game.Planets.Add(new Planet() { Name = "Planet 2" });
             player.AchievedVictoryConditions.Clear();
             step.CheckOwnPlanets(player);
             Assert.IsFalse(player.AchievedVictoryConditions.Contains(VictoryConditionType.OwnPlanets));
@@ -43,7 +45,7 @@ namespace CraigStars.Tests
         [Test]
         public void TestCheckExceedSecondPlaceScore()
         {
-            var game = GameTest.GetSingleUnitGame();
+            var game = TestUtils.GetSingleUnitGame();
             var player1 = game.Players[0];
             var player2 = new Player();
             game.Players.Add(player2);

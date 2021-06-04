@@ -1,3 +1,4 @@
+using CraigStars.Singletons;
 using Godot;
 using System;
 
@@ -9,6 +10,8 @@ namespace CraigStars
     /// </summary>
     public class ScannerCoverage : Node2D
     {
+        protected Player Me { get => PlayersManager.Me; }
+
         public int ScanRange
         {
             get => scanRange;
@@ -29,37 +32,43 @@ namespace CraigStars
         [Export]
         public GUIColors GUIColors { get; set; } = new GUIColors();
 
-        CollisionShape2D range;
-
         public override void _Ready()
         {
-            range = FindNode("Range") as CollisionShape2D;
+            base._Ready();
+
+            Signals.ScannerScaleUpdatedEvent += OnScannerScaleUpdated;
+        }
+
+        public override void _ExitTree()
+        {
+            base._ExitTree();
+            Signals.ScannerScaleUpdatedEvent -= OnScannerScaleUpdated;
         }
 
         public override void _Draw()
         {
+            int scaledRange = (int)(ScanRange * Me.UISettings.ScannerPercent / 100f);
             if (Pen)
             {
-                if (ScanRange > 0)
+                if (scaledRange > 0)
                 {
-                    DrawCircle(Vector2.Zero, ScanRange, GUIColors.ScannerPenColor);
-                    if (range.Shape is CircleShape2D shape)
-                    {
-                        shape.Radius = ScanRange;
-                    }
+                    DrawCircle(Vector2.Zero, scaledRange, GUIColors.ScannerPenColor);
                 }
             }
             else
             {
-                if (ScanRange > 0)
+                if (scaledRange > 0)
                 {
-                    DrawCircle(Vector2.Zero, ScanRange, GUIColors.ScannerColor);
-                    if (range.Shape is CircleShape2D shape)
-                    {
-                        shape.Radius = ScanRange;
-                    }
+                    DrawCircle(Vector2.Zero, scaledRange, GUIColors.ScannerColor);
                 }
+            }
+        }
 
+        void OnScannerScaleUpdated()
+        {
+            if (IsInstanceValid(this))
+            {
+                Update();
             }
         }
     }

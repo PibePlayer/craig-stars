@@ -410,24 +410,24 @@ namespace CraigStars
                             log.Error($"Failed to submit AI turn {player}", e);
                         }
                     };
-                    if (Multithreaded)
-                    {
-                        tasks.Add(Task.Run(submitAITurn));
-                    }
-                    else
-                    {
-                        submitAITurn();
-                    }
+                    // if (Multithreaded)
+                    // {
+                    //     tasks.Add(Task.Run(submitAITurn));
+                    // }
+                    // else
+                    // {
+                    submitAITurn();
+                    // }
                 }
             }
-            if (Multithreaded)
-            {
-                aiSubmittingTask = Task.Run(() => Task.WaitAll(tasks.ToArray()));
-            }
-            else
-            {
+            // if (Multithreaded)
+            // {
+            //     aiSubmittingTask = Task.Run(() => Task.WaitAll(tasks.ToArray()));
+            // }
+            // else
+            // {
                 aiSubmittingTask = Task.CompletedTask;
-            }
+            // }
             await aiSubmittingTask;
         }
 

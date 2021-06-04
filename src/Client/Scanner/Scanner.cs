@@ -179,6 +179,7 @@ namespace CraigStars
         void OnPlanetViewStateUpdated()
         {
             Planets.ForEach(p => p.UpdateSprite());
+            penScannersNode.Visible = normalScannersNode.Visible = Me.UISettings.ShowScanners;
         }
 
         void OnTurnSubmitted(PublicPlayerInfo player)

@@ -10,6 +10,10 @@ namespace CraigStars
 
         ToolButton normalViewToolButton;
         ToolButton percentViewToolButton;
+        ToolButton populationViewToolButton;
+        ToolButton planetNamesToolButton;
+        ToolButton scannerToolButton;
+        SpinBox scannerSpinBox;
 
         PopupMenu commandsMenu;
         PopupMenu plansMenu;
@@ -38,6 +42,10 @@ namespace CraigStars
             infoMenu = GetNode<MenuButton>("Panel/HBoxContainerRight/InfoMenuButton").GetPopup();
             normalViewToolButton = (ToolButton)FindNode("NormalViewToolButton");
             percentViewToolButton = (ToolButton)FindNode("PercentViewToolButton");
+            populationViewToolButton = GetNode<ToolButton>("Panel/HBoxContainerLeft/PopulationViewToolButton");
+            planetNamesToolButton = GetNode<ToolButton>("Panel/HBoxContainerLeft/PlanetNamesToolButton");
+            scannerToolButton = GetNode<ToolButton>("Panel/HBoxContainerLeft/ScannerToolButton");
+            scannerSpinBox = GetNode<SpinBox>("Panel/HBoxContainerLeft/ScannerSpinBox");
 
             reportsButton = (Button)FindNode("ReportsButton");
             submitTurnButton = (Button)FindNode("SubmitTurnButton");
@@ -53,6 +61,10 @@ namespace CraigStars
 
             normalViewToolButton.Connect("pressed", this, nameof(OnNormalViewToolButtonPressed));
             percentViewToolButton.Connect("pressed", this, nameof(OnPercentViewToolButtonPressed));
+            populationViewToolButton.Connect("pressed", this, nameof(OnPopulationViewToolButtonPressed));
+            planetNamesToolButton.Connect("pressed", this, nameof(OnPlanetNamesToolButtonPressed));
+            scannerToolButton.Connect("pressed", this, nameof(OnScannerToolButtonPressed));
+            scannerSpinBox.Connect("value_changed", this, nameof(OnScannerSpinBoxValueChanged));
 
             reportsButton.Connect("pressed", this, nameof(OnReportsButtonPressed));
             submitTurnButton.Connect("pressed", this, nameof(OnSubmitTurnButtonPressed));
@@ -61,18 +73,27 @@ namespace CraigStars
             plansMenu.Connect("id_pressed", this, nameof(OnMenuItemIdPressed));
             infoMenu.Connect("id_pressed", this, nameof(OnMenuItemIdPressed));
 
-            normalViewToolButton.Pressed = Me.UISettings.PlanetViewState == PlanetViewState.Normal;
-            percentViewToolButton.Pressed = Me.UISettings.PlanetViewState == PlanetViewState.Percent;
-
             Signals.TurnGeneratingEvent += OnTurnGenerating;
             Signals.UnsubmitTurnRequestedEvent += OnUnsubmitTurnButtonPressed;
             Signals.TurnPassedEvent += OnTurnPassed;
+            Signals.PostStartGameEvent += OnPostStartGame;
         }
 
         public override void _ExitTree()
         {
             Signals.TurnGeneratingEvent -= OnTurnGenerating;
             Signals.TurnPassedEvent -= OnTurnPassed;
+            Signals.PostStartGameEvent += OnPostStartGame;
+        }
+
+        void OnPostStartGame(PublicGameInfo gameInfo)
+        {
+            normalViewToolButton.Pressed = Me.UISettings.PlanetViewState == PlanetViewState.Normal;
+            percentViewToolButton.Pressed = Me.UISettings.PlanetViewState == PlanetViewState.Percent;
+            populationViewToolButton.Pressed = Me.UISettings.PlanetViewState == PlanetViewState.Population;
+            planetNamesToolButton.Pressed = Me.UISettings.ShowPlanetNames;
+            scannerToolButton.Pressed = Me.UISettings.ShowScanners;
+            scannerSpinBox.Value = Me.UISettings.ScannerPercent;
         }
 
         void OnMenuItemIdPressed(int id)
@@ -132,14 +153,50 @@ namespace CraigStars
 
         void OnNormalViewToolButtonPressed()
         {
-            PlayersManager.Me.UISettings.PlanetViewState = PlanetViewState.Normal;
+            Me.UISettings.PlanetViewState = PlanetViewState.Normal;
+            Me.Dirty = true;
+            Signals.PublishPlayerDirtyEvent();
             Signals.PublishPlanetViewStateUpdatedEvent();
         }
 
         void OnPercentViewToolButtonPressed()
         {
-            PlayersManager.Me.UISettings.PlanetViewState = PlanetViewState.Percent;
+            Me.UISettings.PlanetViewState = PlanetViewState.Percent;
+            Me.Dirty = true;
+            Signals.PublishPlayerDirtyEvent();
             Signals.PublishPlanetViewStateUpdatedEvent();
+        }
+
+        void OnPopulationViewToolButtonPressed()
+        {
+            Me.UISettings.PlanetViewState = PlanetViewState.Population;
+            Me.Dirty = true;
+            Signals.PublishPlayerDirtyEvent();
+            Signals.PublishPlanetViewStateUpdatedEvent();
+        }
+
+        void OnPlanetNamesToolButtonPressed()
+        {
+            Me.UISettings.ShowPlanetNames = planetNamesToolButton.Pressed;
+            Me.Dirty = true;
+            Signals.PublishPlayerDirtyEvent();
+            Signals.PublishPlanetViewStateUpdatedEvent();
+        }
+
+        void OnScannerToolButtonPressed()
+        {
+            Me.UISettings.ShowScanners = scannerToolButton.Pressed;
+            Me.Dirty = true;
+            Signals.PublishPlayerDirtyEvent();
+            Signals.PublishPlanetViewStateUpdatedEvent();
+        }
+
+        void OnScannerSpinBoxValueChanged(float value)
+        {
+            Me.UISettings.ScannerPercent = (int)scannerSpinBox.Value;
+            Me.Dirty = true;
+            Signals.PublishPlayerDirtyEvent();
+            Signals.PublishScannerScaleUpdatedEvent();
         }
 
         void OnReportsButtonPressed()

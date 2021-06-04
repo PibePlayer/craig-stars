@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 
 using CraigStars.Singletons;
+using System;
 
 namespace CraigStars
 {
     public class PlanetSprite : MapObjectSprite
     {
+        const int MaxPlanetValueRadius = 10;
+        const int MaxPopulationRadius = 20;
+
         [Export]
         public GUIColors GUIColors { get; set; } = new GUIColors();
 
@@ -29,6 +33,10 @@ namespace CraigStars
             set
             {
                 MapObject = value;
+                if (value != null && nameLabel != null)
+                {
+                    nameLabel.Text = Planet.Name;
+                }
             }
         }
 
@@ -49,6 +57,7 @@ namespace CraigStars
         Sprite orbiting;
         Sprite orbitingCommanded;
         Line2D packetTargetLine;
+        Label nameLabel;
 
         List<Sprite> stateSprites = new List<Sprite>();
 
@@ -63,6 +72,7 @@ namespace CraigStars
             orbiting = GetNode<Sprite>("Sprite/Orbiting");
             orbitingCommanded = GetNode<Sprite>("Sprite/OrbitingActive");
             packetTargetLine = GetNode<Line2D>("DestinationLine");
+            nameLabel = GetNode<Label>("NameLabel");
 
             // create a list of these sprites
             stateSprites.Add(known);
@@ -145,14 +155,14 @@ namespace CraigStars
                         if (hab > 0)
                         {
                             // don't go smaller than 25%
-                            var radius = Mathf.Clamp(10 * (hab / 100.0f), 2.5f, 10);
-                            DrawCircle(Vector2.Zero, (float)(10 * (hab / 100.0)), GUIColors.HabitableOutlineColor);
-                            DrawCircle(Vector2.Zero, (float)(8 * (hab / 100.0)), GUIColors.HabitableColor);
+                            var radius = Mathf.Clamp(MaxPlanetValueRadius * (hab / 100.0f), 2.5f, 10);
+                            DrawCircle(Vector2.Zero, (float)(radius), GUIColors.HabitableOutlineColor);
+                            DrawCircle(Vector2.Zero, (float)((radius - 2) * (hab / 100.0)), GUIColors.HabitableColor);
                         }
                         else if (hab < 0)
                         {
                             // don't go smaller than 25%
-                            var radius = Mathf.Clamp(10 * (-hab / 45.0f), 2.5f, 10);
+                            var radius = Mathf.Clamp(MaxPlanetValueRadius * (-hab / 45.0f), 2.5f, 10);
                             DrawCircle(Vector2.Zero, radius, GUIColors.UninhabitableOutlineColor);
                             DrawCircle(Vector2.Zero, radius - 1, GUIColors.UninhabitableColor);
                         }
@@ -163,8 +173,21 @@ namespace CraigStars
                             var color = Planet.OwnedBy(Me) ? Colors.Blue : Colors.Red;
                             DrawRect(new Rect2(0, -20, 9, 8), color, true);
                             DrawRect(new Rect2(0, -20, 9, 8), Colors.Black, false, 2);
-                            DrawLine(Vector2.Zero, new Vector2(0, -12), color, 2);
+                            DrawLine(Vector2.Zero, new Vector2(0, -(MaxPlanetValueRadius + 2)), color, 2);
                         }
+                    }
+                    break;
+                case PlanetViewState.Population:
+                    if (Planet.Owner != null && Planet.Population > 0)
+                    {
+                        var radius = Math.Max(2, Planet.Population / 1_350_000f * MaxPopulationRadius);
+                        var color = OwnedByMe ? GUIColors.HabitableColor : Planet.Owner.Color;
+                        DrawCircle(Vector2.Zero, radius, color);
+                    }
+                    else
+                    {
+                        known.Visible = Planet.Explored;
+                        unknown.Visible = !Planet.Explored;
                     }
                     break;
             }
@@ -176,6 +199,9 @@ namespace CraigStars
             {
                 return;
             }
+
+            nameLabel.Text = Planet.Name;
+            nameLabel.Visible = Me.UISettings.ShowPlanetNames;
 
             ownerAllyState = Planet.ReportAge == MapObject.Unexplored ? ScannerOwnerAlly.Unknown : ScannerOwnerAlly.Known;
             hasActivePeer = HasActivePeer();

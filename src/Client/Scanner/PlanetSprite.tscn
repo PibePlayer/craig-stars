@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://src/Client/Scanner/PlanetSprite.cs" type="Script" id=1]
 [ext_resource path="res://assets/scanner/planet-orbiting-selected.png" type="Texture" id=2]
@@ -8,9 +8,14 @@
 [ext_resource path="res://assets/scanner/planet-commanded.png" type="Texture" id=6]
 [ext_resource path="res://assets/scanner/planet-known.png" type="Texture" id=7]
 [ext_resource path="res://src/Client/GUIColors.tres" type="Resource" id=8]
+[ext_resource path="res://assets/gui/OpenSans-Regular-12.ttf" type="DynamicFontData" id=9]
 
 [sub_resource type="CircleShape2D" id=1]
 radius = 32.0
+
+[sub_resource type="DynamicFont" id=2]
+size = 12
+font_data = ExtResource( 9 )
 
 [node name="Planet" type="Area2D"]
 script = ExtResource( 1 )
@@ -48,3 +53,20 @@ texture = ExtResource( 2 )
 [node name="DestinationLine" type="Line2D" parent="."]
 width = 2.0
 default_color = Color( 0.0313726, 0.505882, 0.0392157, 1 )
+
+[node name="NameLabel" type="Label" parent="."]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -50.0
+margin_top = 11.0
+margin_right = 50.0
+margin_bottom = 28.0
+rect_min_size = Vector2( 100, 0 )
+custom_fonts/font = SubResource( 2 )
+text = "Name"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}

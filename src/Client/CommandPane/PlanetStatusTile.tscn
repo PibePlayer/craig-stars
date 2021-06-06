@@ -1,6 +1,8 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://src/Client/CommandPane/PlanetStatusTile.cs" type="Script" id=1]
+[ext_resource path="res://src/Client/Tooltips/PopulationTooltip.tscn" type="PackedScene" id=2]
+[ext_resource path="res://src/Client/Tooltips/ResourcesTooltip.tscn" type="PackedScene" id=3]
 
 [node name="PlanetStatusTile" type="VBoxContainer"]
 margin_right = 1440.0
@@ -29,6 +31,8 @@ text = "Population"
 margin_left = 1372.0
 margin_right = 1440.0
 margin_bottom = 14.0
+mouse_filter = 0
+mouse_default_cursor_shape = 16
 text = "203,100"
 align = 2
 
@@ -44,6 +48,8 @@ margin_left = 1372.0
 margin_top = 18.0
 margin_right = 1440.0
 margin_bottom = 32.0
+mouse_filter = 0
+mouse_default_cursor_shape = 16
 text = "181 of 213"
 align = 2
 
@@ -141,3 +147,18 @@ margin_right = 1440.0
 margin_bottom = 50.0
 text = "18.29%"
 align = 2
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = 35
+
+[node name="PopulationTooltip" parent="CanvasLayer" instance=ExtResource( 2 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 312.0
+margin_bottom = 155.0
+
+[node name="ResourcesTooltip" parent="CanvasLayer" instance=ExtResource( 3 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 312.0
+margin_bottom = 155.0

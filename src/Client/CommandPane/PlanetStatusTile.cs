@@ -13,6 +13,9 @@ namespace CraigStars.Client
         Label defenseType;
         Label defenseCoverage;
 
+        PopulationTooltip populationTooltip;
+        ResourcesTooltip resourcesTooltip;
+
         public override void _Ready()
         {
             base._Ready();
@@ -23,6 +26,23 @@ namespace CraigStars.Client
             defenses = FindNode("Defenses") as Label;
             defenseType = FindNode("DefenseType") as Label;
             defenseCoverage = FindNode("DefenseCoverage") as Label;
+            populationTooltip = GetNode<PopulationTooltip>("CanvasLayer/PopulationTooltip");
+            population.Connect("gui_input", this, nameof(OnTooltipGuiInput), new Godot.Collections.Array() { populationTooltip });
+            resourcesTooltip = GetNode<ResourcesTooltip>("CanvasLayer/ResourcesTooltip");
+            resources.Connect("gui_input", this, nameof(OnTooltipGuiInput), new Godot.Collections.Array() { resourcesTooltip });
+
+        }
+
+        void OnTooltipGuiInput(InputEvent @event, CSTooltip tooltip)
+        {
+            if (@event.IsActionPressed("ui_select"))
+            {
+                tooltip.ShowAtMouse(CommandedPlanet?.Planet);
+            }
+            else if (@event.IsActionReleased("ui_select"))
+            {
+                tooltip.Hide();
+            }
         }
 
         protected override void UpdateControls()

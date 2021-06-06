@@ -14,6 +14,8 @@ namespace CraigStars.Client
         Label factories;
 
         MineralTooltip mineralTooltip;
+        MinesTooltip minesTooltip;
+        FactoriesTooltip factoriesTooltip;
 
         public override void _Ready()
         {
@@ -24,11 +26,15 @@ namespace CraigStars.Client
             mines = FindNode("Mines") as Label;
             factories = FindNode("Factories") as Label;
 
-            mineralTooltip = GetNode<MineralTooltip>("MineralTooltip");
+            mineralTooltip = GetNode<MineralTooltip>("CanvasLayer/MineralTooltip");
+            minesTooltip = GetNode<MinesTooltip>("CanvasLayer/MinesTooltip");
+            factoriesTooltip = GetNode<FactoriesTooltip>("CanvasLayer/FactoriesTooltip");
 
             ironium.Connect("gui_input", this, nameof(OnMineralGuiInput), new Godot.Collections.Array() { MineralType.Ironium });
             boranium.Connect("gui_input", this, nameof(OnMineralGuiInput), new Godot.Collections.Array() { MineralType.Boranium });
             germanium.Connect("gui_input", this, nameof(OnMineralGuiInput), new Godot.Collections.Array() { MineralType.Germanium });
+            mines.Connect("gui_input", this, nameof(OnTooltipGuiInput), new Godot.Collections.Array() { minesTooltip });
+            factories.Connect("gui_input", this, nameof(OnTooltipGuiInput), new Godot.Collections.Array() { factoriesTooltip });
 
             base._Ready();
         }
@@ -49,17 +55,25 @@ namespace CraigStars.Client
 
         void OnMineralGuiInput(InputEvent @event, MineralType type)
         {
-            if (@event.IsActionPressed("viewport_alternate_select"))
+            if (@event.IsActionPressed("ui_select"))
             {
-                mineralTooltip.Type = type;
-                mineralTooltip.Planet = CommandedPlanet?.Planet;
-                mineralTooltip.SetGlobalPosition(GetGlobalMousePosition());
-                mineralTooltip.OnAboutToShow();
-                mineralTooltip.Show();
+                mineralTooltip.ShowAtMouse(CommandedPlanet?.Planet, type);
             }
-            else if (@event.IsActionReleased("viewport_alternate_select"))
+            else if (@event.IsActionReleased("ui_select"))
             {
                 mineralTooltip.Hide();
+            }
+        }
+
+        void OnTooltipGuiInput(InputEvent @event, CSTooltip tooltip)
+        {
+            if (@event.IsActionPressed("ui_select"))
+            {
+                tooltip.ShowAtMouse(CommandedPlanet?.Planet);
+            }
+            else if (@event.IsActionReleased("ui_select"))
+            {
+                tooltip.Hide();
             }
         }
 

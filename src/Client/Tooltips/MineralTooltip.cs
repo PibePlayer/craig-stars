@@ -3,10 +3,9 @@ using System;
 
 namespace CraigStars
 {
-    public class MineralTooltip : PopupPanel
+    public class MineralTooltip : CSTooltip
     {
         public MineralType Type { get; set; } = MineralType.Ironium;
-        public Planet Planet { get; set; }
 
         Label typeLabel;
         Label onSurfaceValueLabel;
@@ -19,11 +18,16 @@ namespace CraigStars
             onSurfaceValueLabel = GetNode<Label>("MarginContainer/VBoxContainer/GridContainer/OnSurfaceValueLabel");
             mineralConcentrationValueLabel = GetNode<Label>("MarginContainer/VBoxContainer/GridContainer/MineralConcentrationValueLabel");
             miningRateValueLabel = GetNode<Label>("MarginContainer/VBoxContainer/GridContainer/MiningRateValueLabel");
-
-            Connect("about_to_show", this, nameof(OnAboutToShow));
         }
 
-        public void OnAboutToShow()
+        public void ShowAtMouse(Planet planet, MineralType type)
+        {
+            Type = type;
+            ShowAtMouse(planet);
+        }
+
+
+        protected override void UpdateControls()
         {
             typeLabel.Text = Type.ToString();
             if (Planet != null)

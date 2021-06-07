@@ -9,6 +9,47 @@ namespace CraigStars.Tests
         Rules rules = new Rules(0);
 
         [Test]
+        public void TestGrowthAmount()
+        {
+            var planet = new Planet();
+            planet.InitEmptyPlanet();
+            planet.Hab = new Hab(50, 50, 50);
+            var player = new Player();
+            player.Race.GrowthRate = 10;
+            planet.Player = player;
+            planet.Population = 100_000;
+
+            // less than 25% cap, grows at full 10% growth rate
+            Assert.AreEqual(10_000, planet.GrowthAmount);
+
+            // at 50% cap, it slows down in growth
+            planet.Population = 600_000;
+            Assert.AreEqual(26700, planet.GrowthAmount);
+
+            // we are basicallly at capacity, we only grow a tiny amount
+            planet.Population = 1_180_000;
+            Assert.AreEqual(100, planet.GrowthAmount);
+
+            // no more growth past a certain capacity
+            planet.Population = 1_190_000;
+            Assert.AreEqual(0, planet.GrowthAmount);
+
+            // hostile planets kill off colonists
+            planet.Hab = new Hab(10, 15, 15);
+            planet.Population = 2_500;
+            Assert.AreEqual(-100, planet.GrowthAmount);
+
+            // super hostile planet with 100k people
+            // should be -45% habitable, so should kill off -4.5% of the pop
+            planet.Hab = new Hab(0, 0, 0);
+            planet.Population = 100_000;
+            Assert.AreEqual(-4500, planet.GrowthAmount);
+
+            // TODO: terraforming planets don't die off or grow if planet is negative
+
+        }
+
+        [Test]
         public void TestGetMaxMines()
         {
             var planet = new Planet();

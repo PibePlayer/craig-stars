@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Godot;
 using log4net;
 using System.ComponentModel;
+using static CraigStars.Utils.Utils;
 
 namespace CraigStars
 {
@@ -178,16 +179,27 @@ namespace CraigStars
                 var rules = Player?.Rules;
                 if (race != null && rules != null && Hab is Hab hab)
                 {
-                    double capacity = (double)(Population / GetMaxPopulation(race, rules));
-                    int popGrowth = (int)((double)(Population) * (race.GrowthRate / 100.0) * ((double)(race.GetPlanetHabitability(hab)) / 100.0));
-
-                    if (capacity > .25)
+                    double capacity = ((double)Population / GetMaxPopulation(race, rules));
+                    var habValue = race.GetPlanetHabitability(hab);
+                    if (habValue > 0)
                     {
-                        double crowdingFactor = 16.0 / 9.0 * (1.0 - capacity) * (1.0 - capacity);
-                        popGrowth = (int)((double)(popGrowth) * crowdingFactor);
-                    }
+                        int popGrowth = (int)(Population * (race.GrowthRate / 100.0) * (habValue / 100.0));
 
-                    return popGrowth;
+                        if (capacity > .25)
+                        {
+                            double crowdingFactor = 16.0 / 9.0 * (1.0 - capacity) * (1.0 - capacity);
+                            popGrowth = (int)((double)(popGrowth) * crowdingFactor);
+                        }
+
+                        // round to the nearest 100 colonists
+                        return RoundToNearest(popGrowth);
+                    }
+                    else
+                    {
+                        // kill off (habValue / 10)% colonists every year. I.e. a habValue of -4% kills off .4%
+                        int deathAmount = (int)(Population * (habValue / 1000.0));
+                        return RoundToNearest(Mathf.Clamp(deathAmount, deathAmount, -100));
+                    }
 
                 }
                 return 0;

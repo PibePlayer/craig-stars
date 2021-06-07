@@ -76,10 +76,10 @@ namespace CraigStars
         public Color UninhabitableOutlineColor { get; set; } = new Color("810000");
 
         [Export]
-        public Color TerraformableColor { get; set; } = new Color("00FF00");
+        public Color TerraformableColor { get; set; } = new Color("FEFF00");
 
         [Export]
-        public Color TerraformableOutlineColor { get; set; } = new Color("008100");
+        public Color TerraformableOutlineColor { get; set; } = new Color("7E8000");
 
         [Export]
         public Color OwnedColor { get; set; } = new Color("00FF00");

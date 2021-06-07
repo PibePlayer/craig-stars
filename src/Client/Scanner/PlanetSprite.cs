@@ -152,20 +152,44 @@ namespace CraigStars
                     if (Planet.Explored)
                     {
                         var hab = Me.Race.GetPlanetHabitability(Planet.Hab.Value);
-                        if (hab > 0)
+                        var circleColor = GUIColors.HabitableColor;
+                        var outlineColor = GUIColors.HabitableOutlineColor;
+
+                        // don't go smaller than 25% of a circle
+                        var radius = Mathf.Clamp(MaxPlanetValueRadius * (hab / 100.0f), 2.5f, 10);
+                        if (hab < 0)
                         {
-                            // don't go smaller than 25%
-                            var radius = Mathf.Clamp(MaxPlanetValueRadius * (hab / 100.0f), 2.5f, 10);
-                            DrawCircle(Vector2.Zero, (float)(radius), GUIColors.HabitableOutlineColor);
-                            DrawCircle(Vector2.Zero, (float)((radius - 2) * (hab / 100.0)), GUIColors.HabitableColor);
+                            // this is a red planet, draw it differently
+                            int terraformHabValue = hab;
+                            Hab terraformedHab = Planet.Hab.Value + Planet.GetTerraformAmount(Me);
+                            if (terraformedHab != Planet.Hab)
+                            {
+                                // this is a bad planet but we can terraform it
+                                terraformHabValue = Me.Race.GetPlanetHabitability(terraformedHab);
+                                if (terraformHabValue > 0)
+                                {
+                                    radius = Mathf.Clamp(MaxPlanetValueRadius * (terraformHabValue / 100.0f), 2.5f, 10);
+                                    circleColor = GUIColors.TerraformableColor;
+                                    outlineColor = GUIColors.TerraformableOutlineColor;
+                                }
+                                else
+                                {
+                                    radius = Mathf.Clamp(MaxPlanetValueRadius * (-hab / 45.0f), 2.5f, 10);
+                                    circleColor = GUIColors.UninhabitableColor;
+                                    outlineColor = GUIColors.UninhabitableOutlineColor;
+                                }
+                            }
+                            else
+                            {
+                                radius = Mathf.Clamp(MaxPlanetValueRadius * (-hab / 45.0f), 2.5f, 10);
+                                circleColor = GUIColors.UninhabitableColor;
+                                outlineColor = GUIColors.UninhabitableOutlineColor;
+                            }
                         }
-                        else if (hab < 0)
-                        {
-                            // don't go smaller than 25%
-                            var radius = Mathf.Clamp(MaxPlanetValueRadius * (-hab / 45.0f), 2.5f, 10);
-                            DrawCircle(Vector2.Zero, radius, GUIColors.UninhabitableOutlineColor);
-                            DrawCircle(Vector2.Zero, radius - 1, GUIColors.UninhabitableColor);
-                        }
+
+                        // draw our hab circle
+                        DrawCircle(Vector2.Zero, (float)(radius), outlineColor);
+                        DrawCircle(Vector2.Zero, (float)(radius * .9f), circleColor);
 
                         if (Planet.Owner != null)
                         {

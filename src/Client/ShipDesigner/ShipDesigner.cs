@@ -7,6 +7,7 @@ namespace CraigStars
 {
     public class ShipDesigner : HBoxContainer
     {
+        public event Action CancelledEvent;
         protected Player Me { get => PlayersManager.Me; }
 
         /// <summary>
@@ -90,11 +91,14 @@ namespace CraigStars
         /// </summary>
         void ResetDesignerShipDesignFromSource()
         {
-            var design = SourceShipDesign.Copy();
-            design.ComputeAggregate(PlayersManager.Me);
+            if (SourceShipDesign != null)
+            {
+                var design = SourceShipDesign.Copy();
+                design.ComputeAggregate(PlayersManager.Me);
 
-            designerHullSummary.ShipDesign = design;
-            designNameLineEdit.Text = SourceShipDesign.Name != null ? SourceShipDesign.Name : "";
+                designerHullSummary.ShipDesign = design;
+                designNameLineEdit.Text = SourceShipDesign.Name != null ? SourceShipDesign.Name : "";
+            }
         }
 
         void OnVisible()
@@ -104,6 +108,16 @@ namespace CraigStars
                 ResetDesignerShipDesignFromSource();
                 designerHullSummary.Hull = Hull;
                 saveDesignButton.Text = "Save Design";
+                IsDirty = false;
+                UpdateControls();
+            }
+            else
+            {
+                // reset the designer ship design
+                // from a clone
+                ResetDesignerShipDesignFromSource();
+
+                designNameLineEdit.Text = designerHullSummary.ShipDesign.Name;
                 IsDirty = false;
                 UpdateControls();
             }
@@ -156,13 +170,7 @@ namespace CraigStars
 
         void OnCancelDesignButtonPressed()
         {
-            // reset the designer ship design
-            // from a clone
-            ResetDesignerShipDesignFromSource();
-
-            designNameLineEdit.Text = designerHullSummary.ShipDesign.Name;
-            IsDirty = false;
-            UpdateControls();
+            CancelledEvent?.Invoke();
         }
 
         void UpdateControls()

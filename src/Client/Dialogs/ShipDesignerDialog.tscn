@@ -7,6 +7,7 @@
 [ext_resource path="res://src/Client/ShipDesigner/ShipDesigner.tscn" type="PackedScene" id=5]
 
 [node name="ShipDesignerDialog" type="WindowDialog"]
+visible = true
 margin_right = 1075.0
 margin_bottom = 767.0
 window_title = "Ship Designer"
@@ -27,31 +28,14 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="ShipDesignerContainer" type="VBoxContainer" parent="MarginContainer"]
+[node name="ShipDesigner" parent="MarginContainer" instance=ExtResource( 5 )]
 visible = false
 margin_left = 10.0
 margin_top = 5.0
 margin_right = 1065.0
 margin_bottom = 762.0
-
-[node name="ShipDesigner" parent="MarginContainer/ShipDesignerContainer" instance=ExtResource( 5 )]
-margin_right = 1055.0
-margin_bottom = 733.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-
-[node name="HBoxContainerButtons" type="HBoxContainer" parent="MarginContainer/ShipDesignerContainer"]
-margin_top = 737.0
-margin_right = 1055.0
-margin_bottom = 757.0
-alignment = 2
-
-[node name="DoneButton" type="Button" parent="MarginContainer/ShipDesignerContainer/HBoxContainerButtons"]
-margin_left = 975.0
-margin_right = 1055.0
-margin_bottom = 20.0
-rect_min_size = Vector2( 80, 0 )
-text = "Done"
 
 [node name="ShipDesignTabsContainer" type="VBoxContainer" parent="MarginContainer"]
 margin_left = 10.0

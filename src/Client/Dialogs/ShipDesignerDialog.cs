@@ -11,7 +11,6 @@ namespace CraigStars
         Button okButton;
 
 
-        Container shipDesignerContainer;
         TabContainer tabContainer;
 
         DesignTree shipDesignTree;
@@ -32,7 +31,6 @@ namespace CraigStars
 
         Container shipDesignTabsContainer;
         ShipDesigner shipDesigner;
-        Button doneButton;
 
         public override void _Ready()
         {
@@ -63,8 +61,7 @@ namespace CraigStars
 
             // ship designer control
             shipDesigner = FindNode("ShipDesigner") as ShipDesigner;
-            shipDesignerContainer = FindNode("ShipDesignerContainer") as Container;
-            doneButton = FindNode("DoneButton") as Button;
+            shipDesigner.CancelledEvent += OnShipDesignerCancelled;
 
             shipDesignTree.DesignSelectedEvent += OnShipDesignSelectedEvent;
             starbaseDesignTree.DesignSelectedEvent += OnStarbaseDesignSelectedEvent;
@@ -84,12 +81,11 @@ namespace CraigStars
             createShipDesignButton.Connect("pressed", this, nameof(OnCreateShipDesignButtonPressed));
             editDesignButton.Disabled = editStarbaseDesignButton.Disabled = true; // we can only edit designs that are not in use
 
-            doneButton.Connect("pressed", this, nameof(OnDoneButtonPressed));
-
         }
 
         public override void _ExitTree()
         {
+            shipDesigner.CancelledEvent -= OnShipDesignerCancelled;
             shipDesignTree.DesignSelectedEvent -= OnShipDesignSelectedEvent;
             starbaseDesignTree.DesignSelectedEvent -= OnStarbaseDesignSelectedEvent;
         }
@@ -98,20 +94,20 @@ namespace CraigStars
         {
             if (@event.IsActionPressed("ui_cancel") && IsVisibleInTree())
             {
-                if (shipDesignerContainer.Visible)
+                if (shipDesigner.Visible)
                 {
                     if (shipDesigner.IsDirty)
                     {
                         CSConfirmDialog.Show("You have made changes to this design. Are you sure you want to close the designer?",
                         () =>
                         {
-                            shipDesignerContainer.Visible = false;
+                            shipDesigner.Visible = false;
                             shipDesignTabsContainer.Visible = true;
                         });
                     }
                     else
                     {
-                        shipDesignerContainer.Visible = false;
+                        shipDesigner.Visible = false;
                         shipDesignTabsContainer.Visible = true;
                     }
                     // cancel the popup
@@ -173,7 +169,7 @@ namespace CraigStars
             shipDesigner.Hull = shipHullSummary.Hull;
             shipDesigner.SourceShipDesign = shipHullSummary.ShipDesign;
 
-            shipDesignerContainer.Visible = true;
+            shipDesigner.Visible = true;
             shipDesignTabsContainer.Visible = false;
         }
 
@@ -183,7 +179,7 @@ namespace CraigStars
             shipDesigner.Hull = shipHullSummary.Hull;
             shipDesigner.SourceShipDesign = shipHullSummary.ShipDesign;
 
-            shipDesignerContainer.Visible = true;
+            shipDesigner.Visible = true;
             shipDesignTabsContainer.Visible = false;
         }
 
@@ -218,7 +214,7 @@ namespace CraigStars
             shipDesigner.Hull = starbaseHullSummary.Hull;
             shipDesigner.SourceShipDesign = starbaseHullSummary.ShipDesign;
 
-            shipDesignerContainer.Visible = true;
+            shipDesigner.Visible = true;
             shipDesignTabsContainer.Visible = false;
         }
 
@@ -228,7 +224,7 @@ namespace CraigStars
             shipDesigner.Hull = starbaseHullSummary.Hull;
             shipDesigner.SourceShipDesign = starbaseHullSummary.ShipDesign;
 
-            shipDesignerContainer.Visible = true;
+            shipDesigner.Visible = true;
             shipDesignTabsContainer.Visible = false;
         }
 
@@ -243,24 +239,24 @@ namespace CraigStars
             shipDesigner.Hull = hullHullSummary.Hull;
             shipDesigner.SourceShipDesign = new ShipDesign() { Player = Me, Hull = shipDesigner.Hull };
 
-            shipDesignerContainer.Visible = true;
+            shipDesigner.Visible = true;
             shipDesignTabsContainer.Visible = false;
         }
 
-        void OnDoneButtonPressed()
+        void OnShipDesignerCancelled()
         {
             if (shipDesigner.IsDirty)
             {
                 CSConfirmDialog.Show("You have made changes to this design. Are you sure you want to close the designer?",
                 () =>
                 {
-                    shipDesignerContainer.Visible = false;
+                    shipDesigner.Visible = false;
                     shipDesignTabsContainer.Visible = true;
                 });
             }
             else
             {
-                shipDesignerContainer.Visible = false;
+                shipDesigner.Visible = false;
                 shipDesignTabsContainer.Visible = true;
             }
         }

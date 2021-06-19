@@ -34,11 +34,10 @@ namespace CraigStars.UniverseGeneration
             int defenseBonus = 90;
             var ownedPlanets = game.OwnedPlanets.ToList();
 
-            PlayerResearchStep playerResearchStep = new PlayerResearchStep(game);
-            playerResearchStep.PreProcess(ownedPlanets);
+            Researcher playerResearcher = new();
             game.Players.ForEach(player =>
             {
-                playerResearchStep.ResearchNextLevel(player, techBonus);
+                playerResearcher.ResearchNextLevel(player, techBonus);
             });
 
             PlanetGrowStep planetGrowStep = new PlanetGrowStep(game);

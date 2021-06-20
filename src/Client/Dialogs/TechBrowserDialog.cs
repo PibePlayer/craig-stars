@@ -12,21 +12,14 @@ namespace CraigStars
         Tech SelectedTech;
         TechTree techTree;
         TechSummary techSummary;
-        Button okButton;
 
         public override void _Ready()
         {
             base._Ready();
-            okButton = GetNode<Button>("MarginContainer/VBoxContainer/HBoxContainerButtons/OKButton");
             techTree = GetNode<TechTree>("MarginContainer/VBoxContainer/HBoxContainerContent/TechTree");
             techSummary = GetNode<TechSummary>("MarginContainer/VBoxContainer/HBoxContainerContent/TechSummary");
 
-            okButton.Connect("pressed", this, nameof(OnOk));
-
             techTree.TechSelectedEvent += OnTechSelected;
-
-            // PlayersManager.Instance.SetupPlayers();
-            // Show();
         }
 
         public override void _ExitTree()
@@ -41,14 +34,6 @@ namespace CraigStars
             {
                 techTree.FocusSearch();
             }
-        }
-
-        /// <summary>
-        /// Just hide the dialog on ok
-        /// </summary>
-        void OnOk()
-        {
-            Hide();
         }
 
         /// <summary>

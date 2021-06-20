@@ -5,7 +5,7 @@ using System;
 
 namespace CraigStars
 {
-    public class CargoTransferDialog : GameViewDialog
+    public class CargoTransferDialog : CSDialog
     {
         static CSLog log = LogProvider.GetLogger(typeof(CargoTransferDialog));
 
@@ -30,8 +30,6 @@ namespace CraigStars
         Button germaniumDestButton;
         Button colonistsDestButton;
         Button fuelDestButton;
-
-        Button okButton;
 
         int quantityModifier = 1;
 
@@ -61,8 +59,6 @@ namespace CraigStars
             fuelDestButton = FindNode("FuelDestButton") as Button;
 
 
-            okButton = FindNode("OKButton") as Button;
-
             if (Source == null)
             {
                 log.Warn("No source specified, probably testing the UI");
@@ -83,7 +79,6 @@ namespace CraigStars
 
             Connect("about_to_show", this, nameof(OnAboutToShow));
             Connect("popup_hide", this, nameof(OnPopupHide));
-            okButton.Connect("pressed", this, nameof(OnOK));
         }
 
         /// <summary>
@@ -168,8 +163,9 @@ namespace CraigStars
             destCargoTransfer.CargoTransferRequestedEvent -= OnDestCargoTransferRequested;
         }
 
-        void OnOK()
+        protected override void OnOk()
         {
+            base._Ready();
             if (netCargoDiff != Cargo.Empty || netFuelDiff != 0)
             {
                 var me = PlayersManager.Me;
@@ -220,7 +216,6 @@ namespace CraigStars
                 netCargoDiff = new Cargo();
                 netFuelDiff = 0;
             }
-            Hide();
         }
 
         void OnSourceCargoTransferRequested(Cargo newCargo, int fuel)

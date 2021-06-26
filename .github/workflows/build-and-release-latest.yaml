@@ -37,9 +37,6 @@ jobs:
     # ======================================================
     # pull deps and build 
     # ======================================================
-    # download the nuget dependencies
-    - name: Restore
-      run: dotnet restore
     # copy the godot DLLs where they are expected
     - name: Setup Godot dlls
       run: |
@@ -53,18 +50,6 @@ jobs:
     # run dotnet unit tests
     - name: Test
       run: dotnet test
-
-    # setup godot templates
-    - name: Setup Godot Template
-      run: |
-        mkdir -v -p ~/.local/share/godot/templates
-        mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable.mono ~/.local/share/godot/templates/${GODOT_VERSION}.stable.mono
-
-    - name: Build Solutions
-      run: |
-        godot -v --path ./project.godot --build-solutions --quit
-      timeout-minutes: 1
-      continue-on-error: true
 
   release:
     name: Create Release
@@ -153,27 +138,17 @@ jobs:
         with:
           dotnet-version: 5.0.x
 
-      # ======================================================
-      # pull deps and build 
-      # ======================================================
-      # download the nuget dependencies
-      - name: dotnet Restore
-        run: dotnet restore
       # copy the godot DLLs where they are expected
       - name: Setup Godot dlls for dotnet Build
         run: |
           mkdir -p .mono/assemblies/Debug
-          mkdir -p src/Core/.mono/assemblies/Debug
-          mkdir -p src/Core.Tests/.mono/assemblies/Debug
           cp /usr/local/bin/GodotSharp/Api/Release/* .mono/assemblies/Debug
-          cp /usr/local/bin/GodotSharp/Api/Release/* src/Core/.mono/assemblies/Debug
-          cp /usr/local/bin/GodotSharp/Api/Release/* src/Core.Tests/.mono/assemblies/Debug
 
       # build the solution
       - name: dotnet Build
         run: dotnet build
 
-      - name: Build
+      - name: Build Export
         id: build
         env:
           EXPORT_PLATFORM: ${{ matrix.platform }}

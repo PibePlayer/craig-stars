@@ -87,7 +87,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          release_name: 'latest'
+          release_name: 'Release latest'
           supress_errors: true
         continue-on-error: true
       - name: Create/Update Latest Release

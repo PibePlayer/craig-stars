@@ -8,9 +8,21 @@ A clone of the 4X game Stars!
 
 # Development
 
-This clone is done using the [Godot](https://godotengine.org) game engine. To launch this project, install Godot Mono 3.3 or greater (and [the required .net sdks](https://docs.godotengine.org/en/stable/getting_started/scripting/c_sharp/c_sharp_basics.html?highlight=mono#setting-up-c-for-godot)), open project.godot in the editor and click the Play button.
+This clone is done using the [Godot](https://godotengine.org) game engine. To launch this project, install Godot Mono 3.3 or greater (and [the required .net sdks](https://docs.godotengine.org/en/latest/tutorials/scripting/c_sharp/c_sharp_basics.html#setting-up-c-for-godot)), open project.godot in the editor and click the Play button.
 
-To run unit Core.Tests, install [.NET Core 3.1](https://dotnet.microsoft.com/download).
+To run unit Core.Tests, install [.NET Core 5](https://dotnet.microsoft.com/download).
+
+## VS Code Extensions:
+
+-   [C#](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csharp)
+-   [Mono Debug](https://marketplace.visualstudio.com/items?itemName=ms-vscode.mono-debug)
+-   [C# Tools for Godot](https://marketplace.visualstudio.com/items?itemName=neikeq.godot-csharp-vscode)
+-   [godot-tools](https://marketplace.visualstudio.com/items?itemName=geequlim.godot-tools)
+-   [Test Explorer UI](https://marketplace.visualstudio.com/items?itemName=hbenl.vscode-test-explorer)
+-   [.Net Core Test Explorer](https://marketplace.visualstudio.com/items?itemName=derivitec-ltd.vscode-dotnet-adapter)
+-   [Prettier - Code formatter](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+-   [C# Xml Documentation Comments](https://marketplace.visualstudio.com/items?itemName=k--kato.docomment)
+-   C# FixFormat Fixed
 
 _... More to come on setting up a dev environment_
 

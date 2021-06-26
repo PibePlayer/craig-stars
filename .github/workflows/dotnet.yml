@@ -6,20 +6,52 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  GODOT_VERSION: 3.3.1
+  EXPORT_NAME: test-project
+
 jobs:
   build:
 
     runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:3.2.3
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        lfs: true
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.x
+
     - name: Restore dependencies
       run: dotnet restore
+
+    - name: Setup Godot
+      run: |
+        mkdir -v -p ~/.local/share/godot/templates
+        mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
+    - name: Linux Build
+      run: |
+        mkdir -v -p build/linux
+        cd $EXPORT_NAME
+        godot -v --build-solutions
+
+
     - name: Build
       run: dotnet build --no-restore
+    # - name: Test
+    #   run: dotnet test --no-build --verbosity normal
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      uses: zyborg/dotnet-tests-report@v1
+      with:
+        project_path: src/Core.Tests
+        report_name: tests_core
+        report_title: CraigStars Tests
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        gist_name: craig-stars-tests-report_nunit.md
+        gist_badge_label: 'NUnit Tests: %Counters_passed%/%Counters_total%'
+        gist_token: ${{ secrets.GIST_TOKEN }}

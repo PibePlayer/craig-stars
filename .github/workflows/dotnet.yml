@@ -35,7 +35,7 @@ jobs:
     - name: Linux Build
       run: |
         mkdir -v -p build/linux
-        godot -v --build-solutions
+        godot -v --build-solutions --quit
 
     - name: Build
       run: dotnet build --no-restore

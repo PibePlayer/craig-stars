@@ -47,16 +47,16 @@ config/icon="res://icon.png"
 
 [autoload]
 
-RulesManager="*res://src/Client/Singletons/RulesManager.cs"
-RacesManager="*res://src/Client/Singletons/RacesManager.cs"
-GamesManager="*res://src/Client/Singletons/GamesManager.cs"
-TechStore="*res://src/Client/Singletons/TechStore.cs"
-PlayersManager="*res://src/Client/Singletons/PlayersManager.cs"
-Rpc="*res://src/Client/Singletons/RPC.cs"
-TextureLoader="*res://src/Client/Singletons/TextureLoader.cs"
-Settings="*res://src/Client/Singletons/Settings.cs"
-NetworkClient="*res://src/Client/Singletons/NetworkClient.cs"
-Network="*res://src/Client/Singletons/Network.cs"
+RulesManager="*res://src/Client/Singletons/RulesManager.tscn"
+RacesManager="*res://src/Client/Singletons/RacesManager.tscn"
+GamesManager="*res://src/Client/Singletons/GamesManager.tscn"
+TechStore="*res://src/Client/Singletons/TechStore.tscn"
+PlayersManager="*res://src/Client/Singletons/PlayersManager.tscn"
+Rpc="*res://src/Client/Singletons/RPC.tscn"
+TextureLoader="*res://src/Client/Singletons/TextureLoader.tscn"
+Settings="*res://src/Client/Singletons/Settings.tscn"
+NetworkClient="*res://src/Client/Singletons/NetworkClient.tscn"
+Network="*res://src/Client/Singletons/Network.tscn"
 SceneChanger="*res://src/Client/Singletons/SceneChanger.tscn"
 HullSummaryPopup="*res://src/Client/Singletons/HullSummaryPopup.tscn"
 TechSummaryPopup="*res://src/Client/Singletons/TechSummaryPopup.tscn"
@@ -73,7 +73,7 @@ window/size/height=900
 
 [editor_plugins]
 
-enabled=PoolStringArray( "res://addons/CSTable/plugin.cfg", "res://addons/CraigStarsComponents/plugin.cfg", "res://addons/WAT/plugin.cfg" )
+enabled=PoolStringArray(  )
 
 [input]
 

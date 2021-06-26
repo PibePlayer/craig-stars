@@ -8,17 +8,26 @@
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
     <ItemGroup>
+        <None Remove="addons\CSTable\**" />
+        <None Remove="addons\WAT\**" />
+        <None Remove="src\Core.Tests\**" />
         <None Include="**/*.tscn" />
-        <None Remove="Core.Tests\**" />
     </ItemGroup>
     <ItemGroup>
+        <Compile Remove="addons\CSTable\**" />
+        <Compile Remove="addons\WAT\**" />
         <Compile Remove="src\Core.Tests\**" />
-        <Compile Remove="Core.Tests\**" />
     </ItemGroup>
     <ItemGroup>
+        <EmbeddedResource Remove="addons\CSTable\**" />
+        <EmbeddedResource Remove="addons\WAT\**" />
         <EmbeddedResource Remove="src\Core.Tests\**" />
-        <EmbeddedResource Remove="Core.Tests\**" />
     </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="addons\CSTable\CSTable.csproj" />
+        <ProjectReference Include="addons\WAT\WAT.csproj" />
+    </ItemGroup>
+
     <ItemGroup>
         <PackageReference Include="log4net" Version="2.0.12"></PackageReference>
         <PackageReference Include="Newtonsoft.Json" Version="12.0.3"></PackageReference>

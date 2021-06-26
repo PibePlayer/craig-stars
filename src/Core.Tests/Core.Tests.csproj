@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>netcoreapp5</TargetFramework>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
         <RootNamespace>CraigStars.Tests</RootNamespace>
         <IsTestProject>true</IsTestProject>
         <GenerateProgramFile>false</GenerateProgramFile>
@@ -9,12 +9,16 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\craig-stars.csproj" />
-      </ItemGroup>
-    
-      <ItemGroup>
-        <Reference Include="GodotSharp"><HintPath>..\..\.mono\assemblies\Debug\GodotSharp.dll</HintPath></Reference>
-        <Reference Include="GodotSharpEditor"><HintPath>..\..\.mono\assemblies\Debug\GodotSharpEditor.dll</HintPath></Reference>    
-      </ItemGroup>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Reference Include="GodotSharp">
+            <HintPath>..\..\.mono\assemblies\Debug\GodotSharp.dll</HintPath>
+        </Reference>
+        <Reference Include="GodotSharpEditor">
+            <HintPath>..\..\.mono\assemblies\Debug\GodotSharpEditor.dll</HintPath>
+        </Reference>
+    </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
         <PackageReference Include="NUnit" Version="3.11.0" />

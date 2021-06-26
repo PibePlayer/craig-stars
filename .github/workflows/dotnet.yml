@@ -25,7 +25,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.x
+        dotnet-version: 3.1.x
 
     - name: Setup Godot
       run: |
@@ -38,7 +38,7 @@ jobs:
     - name: Build Solutions
       run: |
         godot --path ./project.godot -v --build-solutions --quit
-      timeout-minutes: 1
+      timeout-minutes: .5
       continue-on-error: true
 
     - name: Build

@@ -85,7 +85,12 @@ jobs:
       # - name: Get version name
       #   id: get_version
       #   uses: battila7/get-version-action@v2
-      - name: Create/Update Lates Release
+      - name: Delete latest release
+        uses: liudonghua123/delete-release-action@v1
+        with:
+          release_name: 'latest'
+        continue-on-error: true
+      - name: Create/Update Latest Release
         id: create_release
         uses: ncipollo/release-action@v1.8.6
         with:

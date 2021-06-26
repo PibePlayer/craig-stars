@@ -35,6 +35,8 @@ jobs:
     - name: Build Solutions
       run: |
         godot --path ./project.godot -v --build-solutions --quit
+      timeout-minutes: 1
+      continue-on-error: true
 
     - name: Build
       run: dotnet build

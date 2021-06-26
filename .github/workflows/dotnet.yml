@@ -7,15 +7,15 @@ on:
     branches: [ main ]
 
 env:
-  GODOT_VERSION: 3.3.1
-  EXPORT_NAME: test-project
+  GODOT_VERSION: 3.3.2
+  EXPORT_NAME: craig-stars
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
     container:
-      image: barichello/godot-ci:3.2.3
+      image: barichello/godot-ci:mono-3.3.2
 
     steps:
     - uses: actions/checkout@v2
@@ -53,3 +53,27 @@ jobs:
         gist_name: craig-stars-tests-report_nunit.md
         gist_badge_label: 'NUnit Tests: %Counters_passed%/%Counters_total%'
         gist_token: ${{ secrets.GIST_TOKEN }}
+  export-web:
+    name: Web Export
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:mono-3.3.2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+      - name: Setup
+        run: |
+          mkdir -v -p ~/.local/share/godot/templates
+          mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
+      - name: Web Build
+        run: |
+          mkdir -v -p build/web
+          cd $EXPORT_NAME
+          godot -v --export "HTML5" ../build/web/index.html
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: web
+          path: build/web

@@ -10,7 +10,7 @@ env:
   GODOT_VERSION: 3.3.2
   GODOT_VERSION_MODIFIER: "stable.mono"
   EXPORT_NAME: craig-stars
-  GAME_SUBDIRECTORY: .
+  GAME_SUBDIRECTORY: project.godot
   CUSTOM_ICON: "false"
 
 jobs:
@@ -156,6 +156,7 @@ jobs:
           buildPath="${GITHUB_WORKSPACE}/build/${EXPORT_PLATFORM}"
           filePath="${buildPath}/${EXPORT_FILENAME}"
           mkdir -v -p "${buildPath}"
+          godot --path "./$GAME_SUBDIRECTORY" -v --build-solutions --quit
           godot -v --path "./$GAME_SUBDIRECTORY" --export "${EXPORT_PLATFORM}" "${filePath}"
           echo "::set-output name=build_directory::${buildPath}"
           echo "::set-output name=build_file::${filePath}"

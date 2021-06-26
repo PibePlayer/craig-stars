@@ -16,7 +16,6 @@ env:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     container:
       image: barichello/godot-ci:mono-3.3.2
@@ -75,6 +74,7 @@ jobs:
   release:
     name: Create Release
     runs-on: ubuntu-latest
+    needs: build
     outputs:
       release_upload_url: ${{ steps.create_release.outputs.upload_url }}
       version: ${{ VERSION }}

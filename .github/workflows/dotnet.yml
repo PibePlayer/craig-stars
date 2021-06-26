@@ -32,13 +32,12 @@ jobs:
         mkdir -v -p ~/.local/share/godot/templates
         mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable.mono ~/.local/share/godot/templates/${GODOT_VERSION}.stable.mono
 
-    - name: Linux Build
+    - name: Build Solutions
       run: |
-        mkdir -v -p build/linux
-        godot -v --build-solutions --quit
+        godot --path ./project.godot -v --build-solutions --quit
 
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build
 
     - name: Test
       uses: zyborg/dotnet-tests-report@v1

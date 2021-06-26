@@ -49,6 +49,7 @@ namespace CraigStars
             foreach (Node node in playersContainer.GetChildren())
             {
                 playersContainer.RemoveChild(node);
+                node.QueueFree();
             }
 
             PlayersManager.Instance.Reset();

@@ -73,7 +73,7 @@ window/size/height=900
 
 [editor_plugins]
 
-enabled=PoolStringArray(  )
+enabled=PoolStringArray( "res://addons/CSTable/plugin.cfg", "res://addons/CraigStarsComponents/plugin.cfg", "res://addons/WAT/plugin.cfg" )
 
 [input]
 

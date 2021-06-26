@@ -15,8 +15,8 @@
         "type": "coreclr",
         "request": "launch",
         "preLaunchTask": "build",
-        "program": "${workspaceFolder}/src/Core.Tests/bin/Debug/netcoreapp3.1/Core.Tests.dll",
-        //"args": ["--test=CraigStars.Tests.BattleEngineTest.TestRunBattle3"],
+        "program": "${workspaceFolder}/src/Core.Tests/bin/Debug/netcoreapp5/Core.Tests.dll",
+        "args": ["--test=CraigStars.Tests.PlayerSerializerTest.TestSerialize"],
         "cwd": "${workspaceFolder}/src/Core.Tests",
         "stopAtEntry": false,
         "console": "internalConsole"

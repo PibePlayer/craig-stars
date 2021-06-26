@@ -76,7 +76,7 @@ jobs:
         id: create_release
         uses: ncipollo/release-action@v1.8.6
         with:
-          name: Release latest
+          name: latest
           tag: latest
           body: ""
           prerelease: true

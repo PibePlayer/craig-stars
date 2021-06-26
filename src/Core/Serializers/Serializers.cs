@@ -206,6 +206,7 @@ namespace CraigStars
             {
                 log.Error($"Failed to PopulatePlayer from json: \n{json}", e);
                 log.Info($"TraceWriter: \n{traceWriter.ToString()}");
+                throw e;
             }
         }
 

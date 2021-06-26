@@ -66,7 +66,7 @@ namespace CraigStars.Tests
             };
 
             player.Planets.Add(planet1);
-            player.Planets.Add(planet2);
+            player.ForeignPlanets.Add(planet2);
 
             // add some fleets
             var fleet1 = new Fleet()
@@ -87,7 +87,7 @@ namespace CraigStars.Tests
                 Owner = otherPlayer,
             };
             player.Fleets.Add(fleet1);
-            player.Fleets.Add(fleet2);
+            player.ForeignFleets.Add(fleet2);
 
             // messages require looking up objects by guid
             player.SetupMapObjectMappings();
@@ -97,7 +97,6 @@ namespace CraigStars.Tests
 
             var settings = Serializers.CreatePlayerSettings(new List<PublicPlayerInfo>() { player, otherPlayer }, StaticTechStore.Instance);
             var json = Serializers.Serialize(player, settings);
-            log.Info($"\n{json}");
 
             // populate this player object
             var loadedPlayer = new Player()
@@ -115,7 +114,7 @@ namespace CraigStars.Tests
             // make sure our players were re-constituted as fleet owners
             Assert.AreEqual(loadedPlayer, loadedPlayer.Fleets[0].Player);
             Assert.AreEqual(player.Fleets[0].Tokens.Count, loadedPlayer.Fleets[0].Tokens.Count);
-            Assert.AreEqual(otherPlayer, loadedPlayer.Fleets[1].Owner);
+            Assert.AreEqual(otherPlayer, loadedPlayer.ForeignFleets[0].Owner);
 
             // make sure our planet we loaded is also the one our first fleet is orbiting
             Assert.AreEqual(loadedPlayer.Planets[0], loadedPlayer.Fleets[0].Orbiting);

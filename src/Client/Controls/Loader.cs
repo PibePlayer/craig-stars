@@ -9,14 +9,11 @@ namespace CraigStars
         static CSLog log = LogProvider.GetLogger(typeof(Loader));
         ResourceInteractiveLoader loader;
         TextureProgress progress;
-        Tween tween;
 
         public override void _Ready()
         {
             Visible = false;
             progress = GetNode<TextureProgress>("TextureProgress");
-            tween = new Tween();
-
         }
 
         public void LoadScene(string filePath)

@@ -89,6 +89,7 @@ namespace CraigStars
             foreach (Node child in tokenContainer.GetChildren())
             {
                 tokenContainer.RemoveChild(child);
+                child.QueueFree();
             }
             SelectedToken = null;
             SelectedTokenIndex = -1;

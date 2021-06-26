@@ -92,7 +92,6 @@ jobs:
           name: Release latest
           tag: "latest"
           body: ""
-          draft: true
           prerelease: true
           allowUpdates: true
           token: ${{ secrets.GITHUB_TOKEN }}

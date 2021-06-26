@@ -4,6 +4,8 @@
 
 A clone of the 4X game Stars!
 
+[![Build and Release Latest](https://github.com/sirgwain/craig-stars/actions/workflows/build-and-release-latest.yaml/badge.svg)](https://github.com/sirgwain/craig-stars/actions/workflows/build-and-release-latest.yaml)
+
 # Development
 
 This clone is done using the [Godot](https://godotengine.org) game engine. To launch this project, install Godot Mono 3.3 or greater (and [the required .net sdks](https://docs.godotengine.org/en/stable/getting_started/scripting/c_sharp/c_sharp_basics.html?highlight=mono#setting-up-c-for-godot)), open project.godot in the editor and click the Play button.

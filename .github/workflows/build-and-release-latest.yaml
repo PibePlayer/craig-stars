@@ -87,15 +87,14 @@ jobs:
       #   uses: battila7/get-version-action@v2
       - name: Create/Update Lates Release
         id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ncipollo/release-action@v1.8.6
         with:
-          release_name: Release ${VERSION}
+          name: Release ${VERSION}
           body: ""
           draft: true
           prerelease: true
           allowUpdates: true
+          token: ${{ secrets.GITHUB_TOKEN }}
 
   export:
     name: Export

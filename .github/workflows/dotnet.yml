@@ -27,13 +27,11 @@ jobs:
       with:
         dotnet-version: 5.0.x
 
-    - name: Restore dependencies
-      run: dotnet restore
-
     - name: Setup Godot
       run: |
         mkdir -v -p ~/.local/share/godot/templates
         mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
+
     - name: Linux Build
       run: |
         mkdir -v -p build/linux

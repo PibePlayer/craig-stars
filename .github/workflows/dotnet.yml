@@ -42,15 +42,7 @@ jobs:
       run: dotnet build
 
     - name: Test
-      uses: zyborg/dotnet-tests-report@v1
-      with:
-        project_path: src/Core.Tests
-        report_name: tests_core
-        report_title: CraigStars Tests
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        gist_name: craig-stars-tests-report_nunit.md
-        gist_badge_label: 'NUnit Tests: %Counters_passed%/%Counters_total%'
-        gist_token: ${{ secrets.GIST_TOKEN }}
+      run: dotnet test
   # export-web:
   #   name: Web Export
   #   runs-on: ubuntu-latest

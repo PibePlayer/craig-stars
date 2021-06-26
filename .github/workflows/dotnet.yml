@@ -35,14 +35,11 @@ jobs:
     - name: Linux Build
       run: |
         mkdir -v -p build/linux
-        cd $EXPORT_NAME
         godot -v --build-solutions
-
 
     - name: Build
       run: dotnet build --no-restore
-    # - name: Test
-    #   run: dotnet test --no-build --verbosity normal
+
     - name: Test
       uses: zyborg/dotnet-tests-report@v1
       with:

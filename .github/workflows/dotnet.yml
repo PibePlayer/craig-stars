@@ -32,6 +32,9 @@ jobs:
         mkdir -v -p ~/.local/share/godot/templates
         mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable.mono ~/.local/share/godot/templates/${GODOT_VERSION}.stable.mono
 
+    - name: Restore
+      run: dotnet restore
+
     - name: Build Solutions
       run: |
         godot --path ./project.godot -v --build-solutions --quit

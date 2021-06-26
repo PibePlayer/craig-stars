@@ -38,7 +38,7 @@ jobs:
     - name: Build Solutions
       run: |
         godot --path ./project.godot -v --build-solutions --quit
-      timeout-minutes: .5
+      timeout-minutes: 1
       continue-on-error: true
 
     - name: Build

@@ -9,6 +9,7 @@ on:
 env:
   VERSION: 0.0.1
   GODOT_VERSION: 3.3.2
+  GODOT_VERSION_MODIFIER: "stable.mono"
   EXPORT_NAME: craig-stars
   GAME_SUBDIRECTORY: .
   CUSTOM_ICON: "false"

@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 env:
-  VERSION: 0.0.1
+  VERSION: latest
   GODOT_VERSION: 3.3.2
   GODOT_VERSION_MODIFIER: "stable.mono"
   EXPORT_NAME: craig-stars
@@ -77,7 +77,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       release_upload_url: ${{ steps.create_release.outputs.upload_url }}
-      version: ${VERSION}
+      version: ${{ VERSION }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -90,7 +90,7 @@ jobs:
         id: create_release
         uses: ncipollo/release-action@v1.8.6
         with:
-          name: Release ${VERSION}
+          name: Release ${{ VERSION }}
           tag: "latest"
           body: ""
           draft: true

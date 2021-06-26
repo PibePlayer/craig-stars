@@ -8,14 +8,21 @@
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
     <ItemGroup>
+        <None Remove="src\Core\**" />
         <None Remove="src\Core.Tests\**" />
         <None Include="**/*.tscn" />
     </ItemGroup>
     <ItemGroup>
+        <Compile Remove="src\Core\**" />
         <Compile Remove="src\Core.Tests\**" />
     </ItemGroup>
     <ItemGroup>
+        <EmbeddedResource Remove="src\Core\**" />
         <EmbeddedResource Remove="src\Core.Tests\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="src\Core\Core.csproj" />
     </ItemGroup>
 
     <ItemGroup>

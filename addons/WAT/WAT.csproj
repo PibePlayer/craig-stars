@@ -1,9 +1,0 @@
-<Project Sdk="Godot.NET.Sdk/3.3.0">
-    <PropertyGroup>
-        <TargetFramework>net472</TargetFramework>
-        <RootNamespace>WAT</RootNamespace>
-        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-        <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
-        <LangVersion>latest</LangVersion>
-    </PropertyGroup>
-</Project>

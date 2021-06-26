@@ -24,11 +24,6 @@ jobs:
       with:
         lfs: true
 
-    - name: Setup .NET 3.1
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.x
-
     - name: Setup .NET 5
       uses: actions/setup-dotnet@v1
       with:
@@ -57,26 +52,32 @@ jobs:
     needs: build
     outputs:
       release_upload_url: ${{ steps.create_release.outputs.upload_url }}
-      version: latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
           lfs: true
+      - name: Delete latest release assets
+        uses: mknejp/delete-release-assets@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: latest # This may also be of the form 'refs/tags/staging'
+          assets: "*.*"
+        continue-on-error: true
       - name: Delete latest release
         uses: liudonghua123/delete-release-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           release_name: 'Release latest'
-          supress_errors: true
+          suppress_errors: true
         continue-on-error: true
-      - name: Create/Update Latest Release
+      - name: Create latest Release
         id: create_release
         uses: ncipollo/release-action@v1.8.6
         with:
           name: Release latest
-          tag: "latest"
+          tag: latest
           body: ""
           prerelease: true
           allowUpdates: true

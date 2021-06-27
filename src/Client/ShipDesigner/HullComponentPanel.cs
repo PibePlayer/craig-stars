@@ -13,6 +13,7 @@ namespace CraigStars
 
         public event Action<HullComponentPanel, TechHullComponent> AddHullComponentEvent;
         public event Action<HullComponentPanel, TechHullComponent> RemoveHullComponentEvent;
+        public event Action<HullComponentPanel, TechHullComponent> DroppedEvent;
         public event Action<HullComponentPanel, TechHullComponent> PressedEvent;
 
         /// <summary>
@@ -189,6 +190,50 @@ namespace CraigStars
         }
 
         /// <summary>
+        /// Override GetDragData to allow the selected TreeItem to be drag and dropped
+        /// </summary>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        public override object GetDragData(Vector2 position)
+        {
+            if (!Editable || ShipDesignSlot == null)
+            {
+                // can't drag
+                return null;
+            }
+            // We create a new Control with a TextureRect in it. The Control is just a container
+            // so we can position the TextureRect to be centered on the mouse.
+            var control = new Control();
+            var preview = new TextureRect()
+            {
+                // use whatever icon is set on the selected tree item
+                Texture = hullComponentIcon.Texture,
+                StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered,
+            };
+            // offset the preview texture to be centered
+            preview.RectPosition = new Vector2(-preview.Texture.GetWidth() / 2, -preview.Texture.GetHeight() / 2);
+            control.AddChild(preview);
+
+            // show our user the icon of the tree item they are dragging
+            SetDragPreview(control);
+
+            control.Connect("tree_exiting", this, nameof(OnThisComponentDropped));
+
+            // allow this ship design slot to be dragged
+            log.Debug($"Dragging {Index}: {ShipDesignSlot.HullComponent.Name}");
+            return Serializers.Serialize<TechHullComponent>(ShipDesignSlot.HullComponent);
+        }
+
+        /// <summary>
+        /// This is called when this hull component is dropped after being drug somewhere
+        /// </summary>
+        void OnThisComponentDropped()
+        {
+            log.Debug($"Dropped {Index}: {ShipDesignSlot.HullComponent.Name}");
+            RemoveHullComponent();
+        }
+
+        /// <summary>
         /// This is called when a draggable item is drug over this HullComponentPanel.
         /// </summary>
         /// <param name="position"></param>
@@ -206,7 +251,7 @@ namespace CraigStars
                     if ((int)(draggableTech.Value.hullSlotType & Type) > 0)
                     {
                         // Yay! we allow this tech to be dropped!
-                        log.Debug($"Trying to drop Draggable item {draggableTech.Value.name}");
+                        // log.Debug($"Trying to drop Draggable item {draggableTech.Value.name}");
                         return true;
                     }
                     else
@@ -221,7 +266,7 @@ namespace CraigStars
                 }
             }
             // bummer, can't drop this data here
-            log.Debug($"Can't drop data {data}");
+            // log.Debug($"Can't drop data {data}");
             return false;
         }
 

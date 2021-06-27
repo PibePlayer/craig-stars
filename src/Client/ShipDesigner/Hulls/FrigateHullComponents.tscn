@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://src/Client/ShipDesigner/Hulls/HullComponents.cs" type="Script" id=1]
+[ext_resource path="res://src/Client/ShipDesigner/HullComponents.cs" type="Script" id=1]
 [ext_resource path="res://src/Client/ShipDesigner/HullComponentPanel.tscn" type="PackedScene" id=2]
 
 [node name="FrigateHullComponents" type="Control"]

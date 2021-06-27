@@ -27,20 +27,13 @@ namespace CraigStars
             var design = MapObject.Fleet.GetPrimaryToken().Design;
             HullSummaryPopup.Instance.Hull = design.Hull;
             HullSummaryPopup.Instance.ShipDesign = design;
-
-            // position the summary view on the corner
-            var position = icon.RectGlobalPosition;
-            position.x += icon.RectSize.x + 2;
-            position.y -= HullSummaryPopup.Instance.RectSize.y + 2;
-            HullSummaryPopup.Instance.SetGlobalPosition(position);
-            HullSummaryPopup.Instance.Show();
+            HullSummaryPopup.ShowAtMouse();
         }
 
         void OnIconMouseExited()
         {
             HullSummaryPopup.Instance.Hide();
         }
-
 
         protected override void UpdateControls()
         {

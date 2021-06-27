@@ -83,6 +83,7 @@ namespace CraigStars
             // revalidate
             IsDirty = true;
             saveDesignButton.Text = "Save Design";
+            cancelDesignButton.Text = "Cancel";
             UpdateControls();
         }
 
@@ -97,6 +98,7 @@ namespace CraigStars
                 design.ComputeAggregate(PlayersManager.Me);
 
                 designerHullSummary.ShipDesign = design;
+                designerHullSummary.UpdateControls();
                 designNameLineEdit.Text = SourceShipDesign.Name != null ? SourceShipDesign.Name : "";
             }
         }
@@ -107,7 +109,9 @@ namespace CraigStars
             {
                 ResetDesignerShipDesignFromSource();
                 designerHullSummary.Hull = Hull;
+                designerHullSummary.UpdateControls();
                 saveDesignButton.Text = "Save Design";
+                cancelDesignButton.Text = "Cancel";
                 IsDirty = false;
                 UpdateControls();
             }
@@ -136,6 +140,7 @@ namespace CraigStars
         {
             IsDirty = true;
             saveDesignButton.Text = "Save Design";
+            cancelDesignButton.Text = "Cancel";
             UpdateControls();
         }
 
@@ -157,6 +162,7 @@ namespace CraigStars
                 PlayersManager.Me.Designs.Add(designerHullSummary.ShipDesign);
             }
             saveDesignButton.Text = "Saved";
+            cancelDesignButton.Text = "Close";
             EditingExisting = true;
             IsDirty = false;
 

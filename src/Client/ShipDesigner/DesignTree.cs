@@ -50,7 +50,7 @@ namespace CraigStars
         /// </summary>
         void OnVisible()
         {
-            if (Visible)
+            if (IsVisibleInTree())
             {
                 UpdateTreeItems();
                 SelectFirstItem();

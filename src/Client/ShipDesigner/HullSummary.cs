@@ -7,7 +7,7 @@ namespace CraigStars
 {
     public class HullSummary : Control
     {
-        // TODO: if we ever get more than 99 hull sets, make this smarter.
+        // TODO: if we ever get more than 99 Hull sets, make this smarter.
         public static int MaxHullSets = 99;
         public event Action<ShipDesignSlot> SlotUpdatedEvent;
         public event Action<HullComponentPanel, TechHullComponent> SlotPressedEvent;
@@ -18,38 +18,9 @@ namespace CraigStars
         [Export]
         public bool Editable { get; set; }
 
-        public TechHull Hull
-        {
-            get => hull;
-            set
-            {
-                hull = value;
-                UpdateControls();
-            }
-        }
-        TechHull hull;
-
-        public ShipDesign ShipDesign
-        {
-            get => shipDesign;
-            set
-            {
-                shipDesign = value;
-                UpdateControls();
-            }
-        }
-        ShipDesign shipDesign;
-
-        public ShipToken Token
-        {
-            get => token;
-            set
-            {
-                token = value;
-                UpdateControls();
-            }
-        }
-        ShipToken token;
+        public TechHull Hull { get; set; }
+        public ShipDesign ShipDesign { get; set; }
+        public ShipToken Token { get; set; }
 
         Label nameLabel;
         Label costTitleLabel;
@@ -77,18 +48,18 @@ namespace CraigStars
         Button nextIconButton;
         TextureRect icon;
 
-        // used to set the hull components drawings
-        Control hullComponentsContainer;
+        // used to set the Hull components drawings
+        Control HullComponentsContainer;
         CostGrid costGrid;
 
-        Control hullContainer;
+        Control HullContainer;
         Control noHullContainer;
 
 
 
         public override void _Ready()
         {
-            hullContainer = FindNode("HullContainer") as Control;
+            HullContainer = FindNode("HullContainer") as Control;
             noHullContainer = FindNode("NoHullContainer") as Control;
             nameLabel = FindNode("NameLabel") as Label;
             costTitleLabel = FindNode("CostTitleLabel") as Label;
@@ -110,7 +81,7 @@ namespace CraigStars
             damageAmountLabel = FindNode("DamageAmountLabel") as Label;
             massLabel = FindNode("MassLabel") as Label;
             icon = FindNode("Icon") as TextureRect;
-            hullComponentsContainer = FindNode("HullComponentsContainer") as Control;
+            HullComponentsContainer = FindNode("HullComponentsContainer") as Control;
             costGrid = FindNode("CostGrid") as CostGrid;
 
             // icon controls
@@ -127,43 +98,44 @@ namespace CraigStars
 
         public void ResetHullComponents()
         {
-            if (hullComponentsContainer != null)
+            if (HullComponentsContainer != null)
             {
-                foreach (Node child in hullComponentsContainer.GetChildren())
+                foreach (Node child in HullComponentsContainer.GetChildren())
                 {
-                    if (child is HullComponents hullComponents)
+                    if (child is HullComponents HullComponents)
                     {
-                        hullComponents.SlotUpdatedEvent -= OnSlotUpdated;
-                        hullComponents.SlotPressedEvent -= OnSlotPressed;
+                        HullComponents.SlotUpdatedEvent -= OnSlotUpdated;
+                        HullComponents.SlotPressedEvent -= OnSlotPressed;
                     }
-                    hullComponentsContainer.RemoveChild(child);
+                    HullComponentsContainer.RemoveChild(child);
                     child.QueueFree();
                 }
             }
-            var hullNameWithoutSpaces = Hull.Name.Replace(" ", "").Replace("-", "");
-            var scenePath = $"res://src/Client/ShipDesigner/Hulls/{hullNameWithoutSpaces}HullComponents.tscn";
-            var hullComponentsScene = ResourceLoader.Load<PackedScene>(scenePath);
-            if (hullComponentsScene != null)
+            var HullNameWithoutSpaces = Hull.Name.Replace(" ", "").Replace("-", "");
+            var scenePath = $"res://src/Client/ShipDesigner/Hulls/{HullNameWithoutSpaces}HullComponents.tscn";
+            var HullComponentsScene = ResourceLoader.Load<PackedScene>(scenePath);
+            if (HullComponentsScene != null)
             {
-                var hullComponents = hullComponentsScene.Instance() as HullComponents;
+                var HullComponents = HullComponentsScene.Instance() as HullComponents;
 
-                hullComponents.Hull = Hull;
-                hullComponents.ShipDesign = ShipDesign;
-                hullComponents.Editable = Editable;
-                hullComponents.SlotUpdatedEvent += OnSlotUpdated;
-                hullComponents.SlotPressedEvent += OnSlotPressed;
-                hullComponentsContainer.AddChild(hullComponents);
+                HullComponents.Editable = Editable;
+                HullComponents.Hull = Hull;
+                HullComponents.ShipDesign = ShipDesign;
+                HullComponents.SlotUpdatedEvent += OnSlotUpdated;
+                HullComponents.SlotPressedEvent += OnSlotPressed;
+                HullComponents.UpdateControls();
+                HullComponentsContainer.AddChild(HullComponents);
             }
         }
 
         /// <summary>
         /// Propogate slot pressed events up to any listeners (so we can update costs or labels)
         /// </summary>
-        /// <param name="hullComponentPanel"></param>
-        /// <param name="hullComponent"></param>
-        void OnSlotPressed(HullComponentPanel hullComponentPanel, TechHullComponent hullComponent)
+        /// <param name="HullComponentPanel"></param>
+        /// <param name="HullComponent"></param>
+        void OnSlotPressed(HullComponentPanel HullComponentPanel, TechHullComponent HullComponent)
         {
-            SlotPressedEvent?.Invoke(hullComponentPanel, hullComponent);
+            SlotPressedEvent?.Invoke(HullComponentPanel, HullComponent);
         }
 
         /// <summary>
@@ -173,20 +145,19 @@ namespace CraigStars
         void OnSlotUpdated(ShipDesignSlot slot)
         {
             ShipDesign.ComputeAggregate(PlayersManager.Me, true);
-            UpdateControls();
             SlotUpdatedEvent?.Invoke(slot);
         }
 
         void OnIconGuiInput(InputEvent @event)
         {
-            if (Hull != null && @event.IsActionPressed("hullcomponent_alternate_select"))
+            if (Hull != null && @event.IsActionPressed("Hullcomponent_alternate_select"))
             {
                 GetTree().SetInputAsHandled();
 
                 TechSummaryPopup.Tech = Hull;
                 TechSummaryPopup.ShowAtMouse();
             }
-            else if (@event.IsActionReleased("hullcomponent_alternate_select"))
+            else if (@event.IsActionReleased("Hullcomponent_alternate_select"))
             {
                 TechSummaryPopup.Instance.Hide();
             }
@@ -194,20 +165,20 @@ namespace CraigStars
         }
 
         /// <summary>
-        /// Cycle backwards through hull set images, returning the latest hull set if we go before 0
+        /// Cycle backwards through Hull set images, returning the latest Hull set if we go before 0
         /// </summary>
         void OnPrevIconButtonPressed()
         {
             if (ShipDesign != null)
             {
-                int hullSetIndex = ShipDesign.HullSetNumber;
+                int HullSetIndex = ShipDesign.HullSetNumber;
                 if (ShipDesign.HullSetNumber > 0)
                 {
                     ShipDesign.HullSetNumber--;
                 }
                 else
                 {
-                    // find the last hullset
+                    // find the last Hullset
                     for (int i = 0; i < 99; i++)
                     {
                         var texture = TextureLoader.Instance.FindTexture(Hull, i);
@@ -223,13 +194,13 @@ namespace CraigStars
         }
 
         /// <summary>
-        /// Cycle through hull set images, resetting to 0 if we pass the last available hull set image
+        /// Cycle through Hull set images, resetting to 0 if we pass the last available Hull set image
         /// </summary>
         void OnNextIconButtonPressed()
         {
             if (ShipDesign != null)
             {
-                int hullSetIndex = ShipDesign.HullSetNumber;
+                int HullSetIndex = ShipDesign.HullSetNumber;
                 var texture = TextureLoader.Instance.FindTexture(Hull, ShipDesign.HullSetNumber + 1);
                 if (texture != null)
                 {
@@ -243,54 +214,54 @@ namespace CraigStars
             }
         }
 
-        void UpdateControls()
+        internal void UpdateControls()
         {
             iconButtonContainer.Visible = ShowIconSelector;
             // make sure we have controls to update
             if (nameLabel != null && Hull != null)
             {
-                hullContainer.Visible = true;
+                HullContainer.Visible = true;
                 noHullContainer.Visible = false;
 
                 ResetHullComponents();
 
-                if (token?.Damage > 0)
+                if (Token?.Damage > 0)
                 {
                     damageLabel.Visible = damageAmountLabel.Visible = true;
-                    var damagePercent = ((float)Token.Damage * Token.QuantityDamaged) / (token.Design.Armor * Token.Quantity);
-                    damageAmountLabel.Text = $"{token.QuantityDamaged}@{damagePercent * 100:#}%";
+                    var damagePercent = ((float)Token.Damage * Token.QuantityDamaged) / (Token.Design.Armor * Token.Quantity);
+                    damageAmountLabel.Text = $"{Token.QuantityDamaged}@{damagePercent * 100:#}%";
                 }
                 else
                 {
                     damageLabel.Visible = damageAmountLabel.Visible = false;
                 }
 
-                if (shipDesign != null)
+                if (ShipDesign != null)
                 {
-                    nameLabel.Text = shipDesign.Name;
-                    icon.Texture = TextureLoader.Instance.FindTexture(shipDesign);
+                    nameLabel.Text = ShipDesign.Name;
+                    icon.Texture = TextureLoader.Instance.FindTexture(ShipDesign);
 
-                    shipDesign.ComputeAggregate(PlayersManager.Me);
-                    costTitleLabel.Text = shipDesign.Name.Empty() ? "Cost of design" : $"Cost of one {shipDesign.Name}";
-                    costGrid.Cost = shipDesign.Aggregate.Cost;
+                    ShipDesign.ComputeAggregate(PlayersManager.Me);
+                    costTitleLabel.Text = ShipDesign.Name.Empty() ? "Cost of design" : $"Cost of one {ShipDesign.Name}";
+                    costGrid.Cost = ShipDesign.Aggregate.Cost;
                     if (Hull.Starbase)
                     {
                         maxFuelLabel.Visible = maxFuelAmountLabel.Visible = false;
                     }
                     else
                     {
-                        maxFuelAmountLabel.Text = $"{shipDesign.Aggregate.FuelCapacity}mg";
+                        maxFuelAmountLabel.Text = $"{ShipDesign.Aggregate.FuelCapacity}mg";
                         maxFuelLabel.Visible = maxFuelAmountLabel.Visible = true;
                     }
-                    armorAmountLabel.Text = $"{shipDesign.Aggregate.Armor}dp";
-                    massLabel.Text = $"{shipDesign.Aggregate.Mass}kT";
-                    shieldsAmountLabel.Text = $"{(shipDesign.Aggregate.Shield > 0 ? $"{shipDesign.Aggregate.Shield}dp" : "none")}";
-                    cloakJamAmountLabel.Text = $"{shipDesign.Aggregate.CloakPercent}%/{0:.}%"; // TODO: jamming
-                    initiativeMovesAmountLabel.Text = $"{shipDesign.Aggregate.Initiative}/{shipDesign.Aggregate.Movement}";
-                    if (shipDesign.Aggregate.Scanner)
+                    armorAmountLabel.Text = $"{ShipDesign.Aggregate.Armor}dp";
+                    massLabel.Text = $"{ShipDesign.Aggregate.Mass}kT";
+                    shieldsAmountLabel.Text = $"{(ShipDesign.Aggregate.Shield > 0 ? $"{ShipDesign.Aggregate.Shield}dp" : "none")}";
+                    cloakJamAmountLabel.Text = $"{ShipDesign.Aggregate.CloakPercent}%/{0:.}%"; // TODO: jamming
+                    initiativeMovesAmountLabel.Text = $"{ShipDesign.Aggregate.Initiative}/{ShipDesign.Aggregate.Movement}";
+                    if (ShipDesign.Aggregate.Scanner)
                     {
                         scannerRangeLabel.Visible = scannerRangeAmountLabel.Visible = true;
-                        scannerRangeAmountLabel.Text = $"{(shipDesign.Aggregate.ScanRange >= 0 ? shipDesign.Aggregate.ScanRange.ToString() : "")}/{(shipDesign.Aggregate.ScanRangePen >= 0 ? shipDesign.Aggregate.ScanRangePen.ToString() : "")}";
+                        scannerRangeAmountLabel.Text = $"{(ShipDesign.Aggregate.ScanRange >= 0 ? ShipDesign.Aggregate.ScanRange.ToString() : "")}/{(ShipDesign.Aggregate.ScanRangePen >= 0 ? ShipDesign.Aggregate.ScanRangePen.ToString() : "")}";
                     }
                     else
                     {
@@ -306,17 +277,17 @@ namespace CraigStars
                     initiativeMovesLabel.Visible = true;
                     initiativeMovesAmountLabel.Visible = true;
                     purposeValueLabel.Visible = true;
-                    purposeValueLabel.Text = $"{shipDesign.Purpose}";
+                    purposeValueLabel.Text = $"{ShipDesign.Purpose}";
                 }
-                else if (hull != null)
+                else if (Hull != null)
                 {
-                    icon.Texture = TextureLoader.Instance.FindTexture(hull);
-                    nameLabel.Text = hull.Name;
-                    costTitleLabel.Text = $"Cost of one {hull.Name}";
-                    costGrid.Cost = hull.Cost;
-                    maxFuelAmountLabel.Text = $"{hull.FuelCapacity}mg";
-                    armorAmountLabel.Text = $"{hull.Armor}dp";
-                    massLabel.Text = $"{hull.Mass}kT";
+                    icon.Texture = TextureLoader.Instance.FindTexture(Hull);
+                    nameLabel.Text = Hull.Name;
+                    costTitleLabel.Text = $"Cost of one {Hull.Name}";
+                    costGrid.Cost = Hull.Cost;
+                    maxFuelAmountLabel.Text = $"{Hull.FuelCapacity}mg";
+                    armorAmountLabel.Text = $"{Hull.Armor}dp";
+                    massLabel.Text = $"{Hull.Mass}kT";
 
                     shieldsLabel.Visible = false;
                     shieldsAmountLabel.Visible = false;
@@ -333,8 +304,8 @@ namespace CraigStars
             }
             else
             {
-                hull = null;
-                hullContainer.Visible = false;
+                Hull = null;
+                HullContainer.Visible = false;
                 noHullContainer.Visible = true;
             }
         }

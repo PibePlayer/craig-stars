@@ -63,8 +63,6 @@ namespace CraigStars
         Dictionary<Guid, BattleGridToken> GridTokensByGuid { get; set; } = new Dictionary<Guid, BattleGridToken>();
 
         Button designDetailsButton;
-        PopupPanel hullSummaryPopup;
-        HullSummary hullSummary;
 
         public override void _Ready()
         {
@@ -100,9 +98,6 @@ namespace CraigStars
             selectionDamage = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/SelectedDetailContainer/VBoxContainer/GridContainer/SelectionDamage");
             selectionShields = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/SelectedDetailContainer/VBoxContainer/GridContainer/SelectionShields");
             designDetailsButton = GetNode<Button>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/SelectedDetailContainer/VBoxContainer/DesignDetailsButton");
-
-            hullSummaryPopup = GetNode<PopupPanel>("HullSummaryPopup");
-            hullSummary = GetNode<HullSummary>("HullSummaryPopup/HullSummary");
 
             nextActionButton = GetNode<Button>("MarginContainer/VBoxContainer/HBoxContainerButtons/NextActionButton");
             resetBoardButton = GetNode<Button>("MarginContainer/VBoxContainer/HBoxContainerButtons/ResetBoardButton");
@@ -430,22 +425,17 @@ namespace CraigStars
             if (selectedGridToken != null)
             {
                 var design = selectedGridToken.Token.Token.Design;
-                hullSummary.Hull = design.Hull;
-                hullSummary.ShipDesign = design;
 
-                // position the summary view on the corner
-                var size = RectSize;
-                var position = RectGlobalPosition;
-                position.x += size.x / 2 - hullSummary.RectSize.x / 2;
-                position.y += size.y / 2 - hullSummary.RectSize.y / 2;
-                hullSummaryPopup.SetGlobalPosition(position);
-                hullSummaryPopup.Show();
+                HullSummaryPopup.Instance.Hull = design.Hull;
+                HullSummaryPopup.Instance.ShipDesign = design;
+                HullSummaryPopup.Instance.Token = selectedGridToken.Token.Token;
+                HullSummaryPopup.ShowAtMouse();
             }
         }
 
         void OnDesignDetailsButtonUp()
         {
-            hullSummaryPopup.Hide();
+            HullSummaryPopup.Instance.Hide();
         }
 
         /// <summary>

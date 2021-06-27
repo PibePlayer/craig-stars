@@ -81,6 +81,7 @@ namespace CraigStars.Singletons
             var mousePos = Instance.GetGlobalMousePosition();
             var yPos = mousePos.y - Instance.RectSize.y;
             Instance.RectPosition = new Vector2(mousePos.x, Mathf.Clamp(yPos, 0, Instance.GetViewportRect().Size.y - Instance.RectSize.y));
+            Instance.hullSummary.UpdateControls();
             Instance.Show();
         }
 

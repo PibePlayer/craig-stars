@@ -15,33 +15,8 @@ namespace CraigStars
         public event Action<ShipDesignSlot> SlotUpdatedEvent;
         public event Action<HullComponentPanel, TechHullComponent> SlotPressedEvent;
 
-        public TechHull Hull
-        {
-            get => hull;
-            set
-            {
-                hull = value;
-                if (hull != null)
-                {
-                    UpdateControls();
-                }
-            }
-        }
-        TechHull hull;
-
-        public ShipDesign ShipDesign
-        {
-            get => shipDesign;
-            set
-            {
-                shipDesign = value;
-                if (shipDesign != null)
-                {
-                    UpdateControls();
-                }
-            }
-        }
-        ShipDesign shipDesign;
+        public TechHull Hull { get; set; }
+        public ShipDesign ShipDesign { get; set; }
 
         [Export]
         public bool Editable
@@ -58,15 +33,6 @@ namespace CraigStars
 
         List<HullComponentPanel> hullComponentPanels;
         int quantityModifier = 1;
-
-        public override void _Ready()
-        {
-            UpdateControls();
-        }
-
-        public override void _ExitTree()
-        {
-        }
 
         /// <summary>
         /// Set the quantity modifier for the dialog
@@ -137,7 +103,6 @@ namespace CraigStars
                 }
                 hullComponentPanel.ShipDesignSlot = slot;
                 SlotUpdatedEvent?.Invoke(slot);
-                UpdateControls();
             }
         }
 
@@ -150,12 +115,11 @@ namespace CraigStars
                 {
                     ShipDesign.Slots.Remove(slot);
                     SlotUpdatedEvent?.Invoke(slot);
-                    UpdateControls();
                 }
             }
         }
 
-        void UpdateControls()
+        internal void UpdateControls()
         {
             // make sure we clear out any events
             UnsubscribeHullComponentEvents();
@@ -165,6 +129,7 @@ namespace CraigStars
                 // get an array of hull component panels excluding some types
                 hullComponentPanels = this.GetAllNodesOfType<HullComponentPanel>()
                 .Where(hcp => hcp.Type != HullSlotType.Cargo && hcp.Type != HullSlotType.SpaceDock)
+                .Select(hcp => { hcp.Editable = Editable; return hcp; })
                 .ToList();
 
                 // subscribe to events for these new hull  components

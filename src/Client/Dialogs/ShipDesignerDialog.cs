@@ -67,8 +67,6 @@ namespace CraigStars
             starbaseDesignTree.DesignSelectedEvent += OnStarbaseDesignSelectedEvent;
             hullsTechTree.TechSelectedEvent += OnHullSelectedEvent;
 
-            Connect("about_to_show", this, nameof(OnAboutToShow));
-            Connect("popup_hide", this, nameof(OnPopupHide));
             okButton.Connect("pressed", this, nameof(OnOk));
 
             // wire up events for the various create/edit/delete buttons
@@ -120,6 +118,7 @@ namespace CraigStars
         {
             shipHullSummary.ShipDesign = design;
             shipHullSummary.Hull = design.Hull;
+            shipHullSummary.UpdateControls();
             editDesignButton.Disabled = design.InUse;
         }
 
@@ -127,6 +126,7 @@ namespace CraigStars
         {
             starbaseHullSummary.ShipDesign = design;
             starbaseHullSummary.Hull = design.Hull;
+            starbaseHullSummary.UpdateControls();
             editStarbaseDesignButton.Disabled = design.InUse;
         }
 
@@ -135,24 +135,9 @@ namespace CraigStars
             if (tech is TechHull hull)
             {
                 hullHullSummary.Hull = hull;
+                hullHullSummary.UpdateControls();
                 createShipDesignButton.Disabled = !Me.HasTech(tech);
             }
-        }
-
-
-        /// <summary>
-        /// Our designer dialog is about to show
-        /// </summary>
-        void OnAboutToShow()
-        {
-        }
-
-        /// <summary>
-        /// Called when the popup hides
-        /// </summary>
-        void OnPopupHide()
-        {
-
         }
 
         /// <summary>
@@ -183,31 +168,6 @@ namespace CraigStars
             shipDesignTabsContainer.Visible = false;
         }
 
-        void OnDeleteDesignButtonPressed()
-        {
-            var designIndex = Me.Designs.FindIndex(d => d == shipHullSummary.ShipDesign);
-            if (designIndex != -1)
-            {
-                var design = Me.Designs[designIndex];
-
-                var message = $"Are you sure you want to delete the design {shipHullSummary.ShipDesign.Name}?";
-                if (design.InUse)
-                {
-                    message = $"{shipHullSummary.ShipDesign.Name} is in use. All fleet tokens with this design will be immediately deleted. Are you sure you want to delete the design {shipHullSummary.ShipDesign.Name}?";
-                }
-                // TODO: handle deleting designs with existing fleets.
-                CSConfirmDialog.Show(
-                    message,
-                    () =>
-                    {
-                        Me.DeleteDesign(design);
-                        shipDesignTree.UpdateTreeItems();
-                    }
-                );
-            }
-        }
-
-
         void OnCopyStarbaseDesignButtonPressed()
         {
             shipDesigner.EditingExisting = false;
@@ -228,9 +188,38 @@ namespace CraigStars
             shipDesignTabsContainer.Visible = false;
         }
 
+        void OnDeleteShipDesignButtonPressed()
+        {
+            OnDeleteDesignButtonPressed(shipHullSummary.ShipDesign, () => shipDesignTree.UpdateTreeItems());
+        }
+
         void OnDeleteStarbaseDesignButtonPressed()
         {
+            OnDeleteDesignButtonPressed(starbaseHullSummary.ShipDesign, () => starbaseDesignTree.UpdateTreeItems());
+        }
 
+        void OnDeleteDesignButtonPressed(ShipDesign designToDelete, Action deletedCallback)
+        {
+            var designIndex = Me.Designs.FindIndex(d => d == designToDelete);
+            if (designIndex != -1)
+            {
+                var design = Me.Designs[designIndex];
+
+                var message = $"Are you sure you want to delete the design {design.Name}?";
+                if (design.InUse)
+                {
+                    message = $"{design.Name} is in use. All fleet tokens with this design will be immediately deleted. Are you sure you want to delete the design {design.Name}?";
+                }
+                // TODO: handle deleting designs with existing fleets.
+                CSConfirmDialog.Show(
+                    message,
+                    () =>
+                    {
+                        Me.DeleteDesign(design);
+                        deletedCallback();
+                    }
+                );
+            }
         }
 
         void OnCreateShipDesignButtonPressed()

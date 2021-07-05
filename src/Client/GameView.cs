@@ -12,12 +12,10 @@ namespace CraigStars
         static CSLog log = LogProvider.GetLogger(typeof(GameView));
 
         /// <summary>
-        /// The game node creates a server in single player or host mode
+        /// Information about the game
         /// </summary>
-        Game Game { get; set; }
-        PublicGameInfo GameInfo { get; set; }
+        public PublicGameInfo GameInfo { get; set; }
 
-        string projectName;
 
         /// <summary>
         /// This is the main view into the universe
@@ -72,10 +70,7 @@ namespace CraigStars
             mergeFleetsDialog = GetNode<MergeFleetsDialog>("CanvasLayer/MergeFleetsDialog");
             battleViewerDialog = GetNode<BattleViewerDialog>("CanvasLayer/BattleViewerDialog");
             scoreDialog = GetNode<ScoreDialog>("CanvasLayer/ScoreDialog");
-            projectName = ProjectSettings.GetSetting("application/config/name").ToString();
 
-            Signals.PostStartGameEvent += OnPostStartGame;
-            Signals.TurnPassedEvent += OnTurnPassed;
             Signals.ChangeProductionQueuePressedEvent += OnChangeProductionQueue;
             Signals.CargoTransferRequestedEvent += OnCargoTransferRequested;
             Signals.ResearchDialogRequestedEvent += OnResearchDialogRequested;
@@ -89,71 +84,13 @@ namespace CraigStars
             Signals.MergeFleetsDialogRequestedEvent += OnMergeFleetsDialogRequested;
             Signals.BattleViewerDialogRequestedEvent += OnBattleViewerDialogRequested;
 
-            // if we are the server (or a single player game)
-            // init the server and send a notice to all players that it's time to start
-            if (this.IsServerOrSinglePlayer())
-            {
-                if (Settings.Instance.ShouldContinueGame)
-                {
-                    Game = GamesManager.Instance.LoadGame(TechStore.Instance, TurnProcessorManager.Instance, Settings.Instance.ContinueGame, Settings.Instance.ContinueYear);
-                    Game.Multithreaded = Settings.Multithreaded;
-                    Game.SaveToDisk = Settings.SaveToDisk;
-                    PlayersManager.Instance.InitPlayersFromGame(Game.Players);
-
-                    if (GamesManager.Instance.HasPlayerSave(PlayersManager.Me))
-                    {
-                        GamesManager.Instance.LoadPlayerSave(PlayersManager.Me);
-                    }
-                }
-                else
-                {
-
-                    Game = new Game()
-                    {
-                        Name = Settings.Instance.GameSettings.Name,
-                        Multithreaded = Settings.Multithreaded,
-                        SaveToDisk = Settings.SaveToDisk,
-                        GameInfo = Settings.Instance.GameSettings
-                    };
-                    if (GamesManager.Instance.GameExists(Game.Name))
-                    {
-                        GamesManager.Instance.DeleteGame(Game.Name);
-                    }
-                    PlayersManager.Instance.NumPlayers = PlayersManager.Instance.Players.Count;
-                    Game.Init(PlayersManager.Instance.Players.Cast<Player>().ToList(), RulesManager.Rules, TechStore.Instance, GamesManager.Instance, TurnProcessorManager.Instance);
-                    Game.GenerateUniverse();
-
-                    PlayersManager.Me.Settings.TurnProcessors.AddRange(TurnProcessorManager.Instance.TurnProcessors.Select(p => p.Name));
-                }
-
-                GameInfo = Game.GameInfo;
-                Signals.PublishPostStartGameEvent(GameInfo);
-                if (this.IsServer())
-                {
-                    // send players their data
-                    RPC.Instance.SendPlayerDataUpdated(Game);
-                    // tell everyone to start the game
-                    RPC.Instance.SendPostStartGame(GameInfo);
-                }
-
-                Game.TurnGeneratorAdvancedEvent += OnTurnGeneratorAdvanced;
-                Signals.SubmitTurnRequestedEvent += OnSubmitTurnRequested;
-                Signals.UnsubmitTurnRequestedEvent += OnUnsubmitTurnRequested;
-                Signals.PlayTurnRequestedEvent += OnPlayTurnRequested;
-            }
-            else
-            {
-                // if we aren't the server, we come here with our player data already loaded
-                // TODO: we need public game data
-                OnPostStartGame(PlayersManager.Me.Game);
-            }
-
+            PlayersManager.Me.RunTurnProcessors(TurnProcessorManager.Instance);
+            // add the universe to the viewport
+            scanner.Init();
         }
 
         public override void _ExitTree()
         {
-            Signals.PostStartGameEvent -= OnPostStartGame;
-            Signals.TurnPassedEvent -= OnTurnPassed;
             Signals.ChangeProductionQueuePressedEvent -= OnChangeProductionQueue;
             Signals.CargoTransferRequestedEvent -= OnCargoTransferRequested;
             Signals.ResearchDialogRequestedEvent -= OnResearchDialogRequested;
@@ -167,85 +104,6 @@ namespace CraigStars
             Signals.MergeFleetsDialogRequestedEvent -= OnMergeFleetsDialogRequested;
             Signals.BattleViewerDialogRequestedEvent -= OnBattleViewerDialogRequested;
 
-
-            if (this.IsServerOrSinglePlayer())
-            {
-                Game.TurnGeneratorAdvancedEvent -= OnTurnGeneratorAdvanced;
-                Signals.SubmitTurnRequestedEvent -= OnSubmitTurnRequested;
-                Signals.UnsubmitTurnRequestedEvent -= OnUnsubmitTurnRequested;
-                Signals.PlayTurnRequestedEvent -= OnPlayTurnRequested;
-            }
-        }
-
-        void OnTurnGeneratorAdvanced(TurnGenerationState state)
-        {
-            Signals.PublishTurnGeneratorAdvancedEvent(state);
-        }
-
-        /// <summary>
-        /// The player has submitted a new turn.
-        /// Copy any data from this to the main game
-        /// </summary>
-        /// <param name="player"></param>
-        void OnSubmitTurnRequested(Player player)
-        {
-            Game.SubmitTurn(player);
-            Signals.PublishTurnSubmittedEvent(player);
-            if (Game.AllPlayersSubmitted())
-            {
-                // once everyone is submitted, generate a new turn
-                Signals.PublishTurnGeneratingEvent();
-                CallDeferred(nameof(GenerateNewTurn));
-            }
-        }
-
-        async void GenerateNewTurn()
-        {
-            await Game.GenerateTurn();
-
-            if (this.IsServer())
-            {
-                // send players their data
-                RPC.Instance.SendPlayerDataUpdated(Game);
-                RPC.Instance.SendTurnPassed(Game.GameInfo);
-            }
-
-            log.Debug($"{Game.Year} Publishing client side turn passed event.");
-            Signals.PublishTurnPassedEvent(Game.GameInfo);
-            log.Debug($"{Game.Year} Done publishing client side turn passed event.");
-        }
-
-        void OnUnsubmitTurnRequested(Player player)
-        {
-            Game.UnsubmitTurn(player);
-        }
-
-        /// <summary>
-        /// Join as the next player and reset the UI
-        /// </summary>
-        /// <param name="playerNum"></param>
-        void OnPlayTurnRequested(int playerNum)
-        {
-            PlayersManager.Instance.ActivePlayer = playerNum;
-            Signals.PublishPostStartGameEvent(GameInfo);
-        }
-
-        /// <summary>
-        /// When the game is ready to go, init the scanner
-        /// </summary>
-        /// <param name="year"></param>
-        void OnPostStartGame(PublicGameInfo gameInfo)
-        {
-            OS.SetWindowTitle($"{projectName} - {gameInfo.Name}: Year {gameInfo.Year}");
-            PlayersManager.Me.RunTurnProcessors(TurnProcessorManager.Instance);
-            // add the universe to the viewport
-            scanner.Init();
-        }
-
-        void OnTurnPassed(PublicGameInfo gameInfo)
-        {
-            PlayersManager.Me.RunTurnProcessors(TurnProcessorManager.Instance);
-            OS.SetWindowTitle($"{projectName} - {gameInfo.Name}: Year {gameInfo.Year}");
         }
 
         void OnTechBrowserDialogRequested()

@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=2]
+[gd_scene load_steps=23 format=2]
 
 [ext_resource path="res://src/Client/Scanner/Scanner.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/Client/Scanner/ScannerSelectedStats.tscn" type="PackedScene" id=2]
@@ -12,7 +12,6 @@
 [ext_resource path="res://src/Client/Toolbar.tscn" type="PackedScene" id=16]
 [ext_resource path="res://src/Client/Dialogs/TechBrowserDialog.tscn" type="PackedScene" id=17]
 [ext_resource path="res://src/Client/Dialogs/ShipDesignerDialog.tscn" type="PackedScene" id=18]
-[ext_resource path="res://src/Client/Dialogs/TurnGenerationDialog.tscn" type="PackedScene" id=20]
 [ext_resource path="res://src/Client/Dialogs/ReportsDialog.tscn" type="PackedScene" id=21]
 [ext_resource path="res://src/Client/Dialogs/MergeFleetsDialog.tscn" type="PackedScene" id=26]
 [ext_resource path="res://src/Client/Dialogs/RaceDesignerDialog.tscn" type="PackedScene" id=27]
@@ -237,7 +236,6 @@ size_flags_horizontal = 3
 [node name="Toolbar" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/VBoxContainer" instance=ExtResource( 16 )]
 anchor_right = 0.0
 margin_right = 926.0
-margin_bottom = 40.0
 
 [node name="Center" type="MarginContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/VBoxContainer"]
 margin_top = 44.0
@@ -261,8 +259,6 @@ margin_bottom = 401.204
 [node name="CargoTransferDialog" parent="CanvasLayer" instance=ExtResource( 14 )]
 
 [node name="ShipDesignerDialog" parent="CanvasLayer" instance=ExtResource( 18 )]
-
-[node name="TurnGenerationDialog" parent="CanvasLayer" instance=ExtResource( 20 )]
 
 [node name="ReportsDialog" parent="CanvasLayer" instance=ExtResource( 21 )]
 

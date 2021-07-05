@@ -73,20 +73,15 @@ namespace CraigStars
             plansMenu.Connect("id_pressed", this, nameof(OnMenuItemIdPressed));
             infoMenu.Connect("id_pressed", this, nameof(OnMenuItemIdPressed));
 
-            Signals.TurnGeneratingEvent += OnTurnGenerating;
-            Signals.UnsubmitTurnRequestedEvent += OnUnsubmitTurnButtonPressed;
-            Signals.TurnPassedEvent += OnTurnPassed;
-            Signals.PostStartGameEvent += OnPostStartGame;
+            Signals.GameViewResetEvent += OnGameViewReset;
         }
 
         public override void _ExitTree()
         {
-            Signals.TurnGeneratingEvent -= OnTurnGenerating;
-            Signals.TurnPassedEvent -= OnTurnPassed;
-            Signals.PostStartGameEvent += OnPostStartGame;
+            Signals.GameViewResetEvent += OnGameViewReset;
         }
 
-        void OnPostStartGame(PublicGameInfo gameInfo)
+        void OnGameViewReset(PublicGameInfo gameInfo)
         {
             normalViewToolButton.Pressed = Me.UISettings.PlanetViewState == PlanetViewState.Normal;
             percentViewToolButton.Pressed = Me.UISettings.PlanetViewState == PlanetViewState.Percent;
@@ -123,31 +118,6 @@ namespace CraigStars
                 case MenuItem.Score:
                     Signals.PublishScoreDialogRequestedEvent();
                     break;
-            }
-        }
-
-        void OnTurnPassed(PublicGameInfo gameInfo)
-        {
-            CallDeferred(nameof(DeferredTurnPassed));
-        }
-
-        void DeferredTurnPassed()
-        {
-            turnGenerating = false;
-            submitTurnButton.Disabled = false;
-        }
-
-        void OnTurnGenerating()
-        {
-            turnGenerating = true;
-            submitTurnButton.Disabled = true;
-        }
-
-        void OnUnsubmitTurnButtonPressed(Player player)
-        {
-            if (player == PlayersManager.Me)
-            {
-                CallDeferred(nameof(DeferredTurnPassed));
             }
         }
 

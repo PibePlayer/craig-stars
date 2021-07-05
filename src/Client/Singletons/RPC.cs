@@ -262,7 +262,8 @@ namespace CraigStars.Singletons
             PublicGameInfo gameInfo = Serializers.DeserializeObject<PublicGameInfo>(gameInfoJson);
             log.Info($"Client: PostStartGameEvent for UI: {gameInfo.Name}");
 
-            Signals.PublishPostStartGameEvent(gameInfo);
+            // notify any clients that we have a new game
+            Signals.PublishGameStartedEvent(gameInfo);
         }
 
         #region Game Events

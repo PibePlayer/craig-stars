@@ -144,11 +144,6 @@ namespace CraigStars.Singletons
             Signals.PlayerMessageEvent += OnPlayerMessage;
         }
 
-        void OnTurnSubmitted(PublicPlayerInfo player)
-        {
-            GetPlayer(player.Num).SubmittedTurn = true;
-        }
-
         public override void _ExitTree()
         {
             Signals.TurnSubmittedEvent += OnTurnSubmitted;
@@ -166,6 +161,15 @@ namespace CraigStars.Singletons
             Messages.Clear();
             RulesManager.Rules.Random.Shuffle(raceNames);
             RulesManager.Rules.Random.Shuffle(playerNames);
+        }
+
+        /// <summary>
+        /// Reset the current player to whatever the default is. I.e. if this is a hotseat game, the current player
+        /// will be player 1.
+        /// /// </summary>
+        public static void ResetCurrentPlayer()
+        {
+            Instance.ActivePlayer = 0;
         }
 
         /// <summary>
@@ -248,6 +252,15 @@ namespace CraigStars.Singletons
         }
 
         #region Event Listeners
+
+        /// <summary>
+        /// A player has submitted their turn, either through the UI or from a network event
+        /// </summary>
+        /// <param name="player"></param>
+        void OnTurnSubmitted(PublicPlayerInfo player)
+        {
+            GetPlayer(player.Num).SubmittedTurn = true;
+        }
 
         /// <summary>
         /// A player has joined, find them a match in our players list and notify any

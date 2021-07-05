@@ -61,6 +61,7 @@ namespace CraigStars
                 playersContainer.AddChild(playerChooser);
             });
 
+
             fastHotseatCheckButton.Pressed = Settings.Instance.FastHotseat;
             fastHotseatCheckButton.Connect("toggled", this, nameof(OnFastHotseatToggled));
             addPlayerButton.Connect("pressed", this, nameof(OnAddPlayerButtonPressed));
@@ -91,6 +92,7 @@ namespace CraigStars
         void OnStartPressed()
         {
             Settings.Instance.ShouldContinueGame = false;
+            Settings.ResetGameSettings();
             Settings.Instance.GameSettings.Size = (Size)sizeOptionButton.Selected;
             Settings.Instance.GameSettings.Density = (Density)densityOptionButton.Selected;
             var gameName = nameLineEdit.Text;
@@ -101,13 +103,13 @@ namespace CraigStars
                 CSConfirmDialog.Show($"A game named {gameName} already exists. Are you sure you want to overwrite it?", () =>
                 {
                     GamesManager.Instance.DeleteGame(gameName);
-                    loader.LoadScene("res://src/Client/GameView.tscn");
+                    GetTree().ChangeScene("res://src/Client/ClientView.tscn");
                     backButton.Disabled = startButton.Disabled = true;
                 });
             }
             else
             {
-                loader.LoadScene("res://src/Client/GameView.tscn");
+                GetTree().ChangeScene("res://src/Client/ClientView.tscn");
                 backButton.Disabled = startButton.Disabled = true;
             }
 

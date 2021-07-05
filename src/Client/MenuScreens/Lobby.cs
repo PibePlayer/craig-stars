@@ -25,8 +25,7 @@ namespace CraigStars
             startGameButton = (Button)FindNode("StartGameButton");
             playerReadyContainers = FindNode("PlayerReadyContainers") as Control;
 
-            Signals.PreStartGameEvent += OnPreStartGame;
-            Signals.PostStartGameEvent += OnPostStartGame;
+            Signals.GameStartedEvent += OnGameStarted;
             Signals.PlayerMessageEvent += OnPlayerMessage;
             Signals.PlayerUpdatedEvent += OnPlayerUpdated;
 
@@ -58,8 +57,7 @@ namespace CraigStars
 
         public override void _ExitTree()
         {
-            Signals.PreStartGameEvent -= OnPreStartGame;
-            Signals.PostStartGameEvent -= OnPostStartGame;
+            Signals.GameStartedEvent -= OnGameStarted;
             Signals.PlayerMessageEvent -= OnPlayerMessage;
             Signals.PlayerUpdatedEvent -= OnPlayerUpdated;
         }
@@ -95,19 +93,22 @@ namespace CraigStars
             chatMessage.Text = "";
         }
 
-        void OnPreStartGame(List<PublicPlayerInfo> players)
-        {
-            // Tell the server we are ready
-            // RPC.Instance.SendReadyToStart();
-        }
-
         /// <summary>
-        /// Clients receive this event so they know to switch to the Game scene
+        /// If we are joining a server, it will send an RPC message that sends this signal to us
         /// </summary>
-        /// <param name="year"></param>
-        void OnPostStartGame(PublicGameInfo gameInfo)
+        /// <param name="gameInfo"></param>
+        void OnGameStarted(PublicGameInfo gameInfo)
         {
-            GetTree().ChangeScene("res://src/Client/GameView.tscn");
+            var clientViewScene = GD.Load<PackedScene>("res://src/Client/ClientView.tscn");
+            var clientView = clientViewScene.Instance<ClientView>();
+            gameInfo.Players = PlayersManager.Instance.Players;
+            clientView.GameInfo = gameInfo;
+
+            // swap out our scene
+            var parent = GetParent();
+            parent.RemoveChild(this);
+            parent.AddChild(clientView);
+            QueueFree();
         }
 
         void OnPlayerMessage(PlayerMessage message)
@@ -147,7 +148,7 @@ namespace CraigStars
         void OnStartGameButtonPressed()
         {
             log.Info("Server: All players ready, starting the game!");
-            GetTree().ChangeScene("res://src/Client/GameView.tscn");
+            GetTree().ChangeScene("res://src/Client/ClientView.tscn");
         }
 
         #endregion

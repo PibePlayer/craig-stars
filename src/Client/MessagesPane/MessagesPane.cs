@@ -43,7 +43,7 @@ namespace CraigStars
             filterMessagesCheckbox.Connect("toggled", this, nameof(OnFilterMessagesCheckboxToggled));
 
             Signals.TurnPassedEvent += OnTurnPassed;
-            Signals.PostStartGameEvent += OnPostStartGame;
+            Signals.GameViewResetEvent += OnGameViewResetEvent;
             Signals.PlayerDirtyChangedEvent += OnPlayerDirty;
             Signals.MapObjectSelectedEvent += OnMapObjectSelected;
             Signals.PlayerDirtyChangedEvent += OnPlayerDirtyChanged;
@@ -54,7 +54,7 @@ namespace CraigStars
         public override void _ExitTree()
         {
             Signals.TurnPassedEvent -= OnTurnPassed;
-            Signals.PostStartGameEvent -= OnPostStartGame;
+            Signals.GameViewResetEvent -= OnGameViewResetEvent;
             Signals.PlayerDirtyChangedEvent -= OnPlayerDirty;
             Signals.MapObjectSelectedEvent -= OnMapObjectSelected;
             Signals.PlayerDirtyChangedEvent -= OnPlayerDirtyChanged;
@@ -127,7 +127,7 @@ namespace CraigStars
             UpdateControls();
         }
 
-        void OnPostStartGame(PublicGameInfo gameInfo)
+        void OnGameViewResetEvent(PublicGameInfo gameInfo)
         {
             this.gameInfo = gameInfo;
             OnTurnPassed(gameInfo);

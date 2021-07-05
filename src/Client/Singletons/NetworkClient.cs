@@ -9,6 +9,8 @@ namespace CraigStars
     /// </summary>
     public class NetworkClient : Node
     {
+        static CSLog log = LogProvider.GetLogger(typeof(NetworkClient));
+
         /// <summary>
         /// NetworkClient is a singleton
         /// </summary>
@@ -36,9 +38,7 @@ namespace CraigStars
         /// </summary>
         public void OnConnectedToServer()
         {
-            GD.Print("NetworkClient: connected to server");
-            // subscribe to any server events we want to listen for
-            Signals.SubmitTurnRequestedEvent += OnSubmitTurnRequested;
+            log.Info("NetworkClient: connected to server");
         }
 
         /// <summary>
@@ -47,7 +47,6 @@ namespace CraigStars
         public void OnServerDisconnected()
         {
             Signals.PublishServerDisconnectedEvent();
-            Signals.SubmitTurnRequestedEvent -= OnSubmitTurnRequested;
         }
 
         /// <summary>
@@ -55,7 +54,7 @@ namespace CraigStars
         /// </summary>
         public void OnConnectionFailed()
         {
-            GD.Print("NetworkClient: connecting to server failed");
+            log.Info("NetworkClient: connecting to server failed");
         }
 
         /// <summary>
@@ -75,12 +74,12 @@ namespace CraigStars
 
             if (error != Error.Ok)
             {
-                GD.PrintErr($"Failed to connect to server: {address}:{port} Error: {error.ToString()}");
+                log.Error($"Failed to connect to server: {address}:{port} Error: {error.ToString()}");
                 return;
             }
             GetTree().NetworkPeer = peer;
 
-            GD.Print($"Joined game at {address}:{port}");
+            log.Info($"Joined game at {address}:{port}");
         }
 
         /// <summary>
@@ -96,20 +95,20 @@ namespace CraigStars
             var peer = GetTree().NetworkPeer as NetworkedMultiplayerENet;
             if (peer != null && peer.GetConnectionStatus() == NetworkedMultiplayerPeer.ConnectionStatus.Connected)
             {
-                GD.Print("Closing connection");
+                log.Info("Closing connection");
                 peer.CloseConnection();
             }
             GetTree().NetworkPeer = null;
         }
 
-        void OnSubmitTurnRequested(Player player)
+        /// <summary>
+        /// Submit a turn to the server
+        /// </summary>
+        /// <param name="player"></param>
+        public static void SubmitTurnToServer(Player player)
         {
-            if (!this.IsServerOrSinglePlayer())
-            {
-                // tell the server we submitted our turn
-                RPC.Instance.SendSubmitTurn(player);
-            }
+            // tell the server we submitted our turn
+            RPC.Instance.SendSubmitTurn(player);
         }
-
     }
 }

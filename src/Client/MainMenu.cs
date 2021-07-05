@@ -114,7 +114,7 @@ namespace CraigStars
             // like a new game, but we continue
             Settings.Instance.ShouldContinueGame = true;
             Settings.Instance.ContinueYear = (int)continueGameYearSpinBox.Value;
-            GetTree().ChangeScene("res://src/Client/GameView.tscn");
+            GetTree().ChangeScene("res://src/Client/ClientView.tscn");
         }
 
         void OnSettingsButtonPressed()
@@ -129,8 +129,11 @@ namespace CraigStars
 
         void OnHostGameButtonPressed()
         {
-            Hide();
-            hostWindow.PopupCentered();
+            // skip the host view and just go to lobby
+            // we'll move the port to settings
+            OnHostWindowHostButtonPressed();
+            // Hide();
+            // hostWindow.PopupCentered();
         }
 
         void OnJoinGameButtonPressed()

@@ -17,21 +17,30 @@ namespace CraigStars.Singletons
     {
         static CSLog log = LogProvider.GetLogger(typeof(Signals));
 
-        public delegate void YearUpdate(PublicGameInfo gameInfo);
+        #region Game Start/View Reset Events
+
         public delegate void GameStart(PublicGameInfo gameInfo);
+        public static event GameStart GameStartedEvent;
+        public static event GameStart GameViewResetEvent;
+        public static void PublishGameViewResetEvent(PublicGameInfo gameInfo) => GameViewResetEvent?.Invoke(gameInfo);
+        public static void PublishGameStartedEvent(PublicGameInfo gameInfo) => GameStartedEvent?.Invoke(gameInfo);
+
+        #endregion
+
+        #region Turn Generation events
+
+        public delegate void YearUpdate(PublicGameInfo gameInfo);
         public static event YearUpdate TurnPassedEvent;
         public static event Action TurnGeneratingEvent;
         public static event Action<TurnGenerationState> TurnGeneratorAdvancedEvent;
-
-        /// <summary>
-        /// Triggered when any player has submitted their turn to the server
-        /// </summary>
         public static event Action<PublicPlayerInfo> TurnSubmittedEvent;
 
         public static void PublishTurnPassedEvent(PublicGameInfo gameInfo) => TurnPassedEvent?.Invoke(gameInfo);
         public static void PublishTurnGeneratorAdvancedEvent(TurnGenerationState state) => TurnGeneratorAdvancedEvent?.Invoke(state);
         public static void PublishTurnGeneratingEvent() => TurnGeneratingEvent?.Invoke();
         public static void PublishTurnSubmittedEvent(PublicPlayerInfo player) => TurnSubmittedEvent?.Invoke(player);
+
+        #endregion
 
         #region Viewport Events
 
@@ -90,12 +99,6 @@ namespace CraigStars.Singletons
 
         public static event Action ServerDisconnectedEvent;
 
-        public delegate void PreStartGame(List<PublicPlayerInfo> players);
-        public static event PreStartGame PreStartGameEvent;
-
-        public static event GameStart PostStartGameEvent;
-        public static void PublishPostStartGameEvent(PublicGameInfo gameInfo) => PostStartGameEvent?.Invoke(gameInfo);
-
 
         #endregion
 
@@ -119,7 +122,6 @@ namespace CraigStars.Singletons
 
         #region Event Publishers
 
-        public static void PublishPreStartGameEvent(List<PublicPlayerInfo> players) => PreStartGameEvent?.Invoke(players);
 
         /// <summary>
         /// Publish a player updated event for any listeners

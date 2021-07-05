@@ -167,6 +167,7 @@ namespace CraigStars
         {
             Players.Clear();
             Players.AddRange(players);
+            GameInfo.Players.Clear();
             GameInfo.Players.AddRange(Players.Cast<PublicPlayerInfo>());
 
             // make sure each player knows about the game
@@ -426,7 +427,7 @@ namespace CraigStars
             // }
             // else
             // {
-                aiSubmittingTask = Task.CompletedTask;
+            aiSubmittingTask = Task.CompletedTask;
             // }
             await aiSubmittingTask;
         }

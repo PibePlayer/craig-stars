@@ -68,9 +68,8 @@ namespace CraigStars
                     Settings.Instance.ContinueYear = gameYear;
                     Settings.Instance.ShouldContinueGame = true;
 
-                    loader.LoadScene("res://src/Client/GameView.tscn");
                     loadButton.Disabled = backButton.Disabled = true;
-
+                    GetTree().ChangeScene("res://src/Client/ClientView.tscn");
                 }
             }
         }

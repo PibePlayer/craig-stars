@@ -25,6 +25,7 @@ namespace CraigStars
 
             Connect("about_to_show", this, nameof(OnAboutToShow));
             Connect("popup_hide", this, nameof(OnPopupHide));
+            DialogManager.DialogRefCount = 0;
 
             Signals.PlayerDirtyChangedEvent += OnPlayerDirtyChanged;
         }

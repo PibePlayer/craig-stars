@@ -5,88 +5,50 @@ using System.Linq;
 
 namespace CraigStars
 {
-    public class TurnGenerationDialog : GameViewDialog
+    public class TurnGenerationStatus : MarginContainer
     {
-        PublicGameInfo GameInfo { get; set; }
+        Player Me { get => PlayersManager.Me; }
+        public PublicGameInfo GameInfo { get; set; }
 
         Label yearLabel;
         Container playerStatusContainer;
         Button cancelButton;
-        Label label;
-        ProgressBar progressBar;
 
         // Called when the node enters the scene tree for the first time.
         public override void _Ready()
         {
             base._Ready();
-            yearLabel = GetNode<Label>("MarginContainer/VBoxContainer/YearLabel");
+            yearLabel = GetNode<Label>("VBoxContainer/YearLabel");
             playerStatusContainer = (Container)FindNode("PlayerStatusContainer");
             cancelButton = (Button)FindNode("CancelButton");
-            label = (Label)FindNode("Label");
-            progressBar = (ProgressBar)FindNode("ProgressBar");
 
-            Connect("about_to_show", this, nameof(OnAboutToShow));
-            Connect("popup_hide", this, nameof(OnPopupHide));
             cancelButton.Connect("pressed", this, nameof(OnCancel));
 
             Signals.TurnSubmittedEvent += OnTurnSubmitted;
-            Signals.PostStartGameEvent += OnGameStart;
             Signals.TurnGeneratingEvent += OnTurnGenerating;
             Signals.TurnGeneratorAdvancedEvent += OnTurnGeneratorAdvanced;
-            Signals.TurnPassedEvent += OnTurnPassed;
-        }
-
-        void OnTurnSubmitted(PublicPlayerInfo submittingPlayer)
-        {
-            UpdatePlayerStatuses();
-
-            if (submittingPlayer == PlayersManager.Me)
-            {
-                // if we are on fast hot seat mode, switch to the next available player
-                if (Settings.Instance.FastHotseat)
-                {
-                    var nextUnsubmittedPlayer = PlayersManager.Instance.Players.Find(player => !player.AIControlled && !player.SubmittedTurn);
-                    if (nextUnsubmittedPlayer != null)
-                    {
-                        OnPlayTurnButtonPressed(nextUnsubmittedPlayer.Num);
-                    }
-                    else
-                    {
-                        PopupCentered();
-                    }
-                }
-                else
-                {
-                    // this was us, show the dialog
-                    PopupCentered();
-                }
-            }
-        }
-
-        void OnGameStart(PublicGameInfo gameInfo)
-        {
-            GameInfo = gameInfo;
         }
 
         public override void _ExitTree()
         {
             Signals.TurnSubmittedEvent -= OnTurnSubmitted;
-            Signals.PostStartGameEvent -= OnGameStart;
-            Signals.TurnGeneratorAdvancedEvent -= OnTurnGeneratorAdvanced;
             Signals.TurnGeneratingEvent -= OnTurnGenerating;
-            Signals.TurnPassedEvent -= OnTurnPassed;
+            Signals.TurnGeneratorAdvancedEvent -= OnTurnGeneratorAdvanced;
+        }
+
+        void OnTurnSubmitted(PublicPlayerInfo submittingPlayer)
+        {
+            UpdatePlayerStatuses();
         }
 
         void OnTurnGenerating()
         {
             UpdatePlayerStatuses();
-            PopupCentered();
         }
 
         void OnPlayTurnButtonPressed(int playerNum)
         {
             Signals.PublishPlayTurnRequestedEvent(playerNum);
-            Hide();
         }
 
         void OnUnsubmitButtonPressed(int playerNum)
@@ -94,44 +56,12 @@ namespace CraigStars
             if (playerNum == Me.Num)
             {
                 Signals.PublishUnsubmitTurnRequestedEvent(Me);
-                Hide();
             }
         }
 
         void OnTurnGeneratorAdvanced(TurnGenerationState state)
         {
             yearLabel.Text = $"Year {GameInfo.Year}";
-            string labelText;
-            switch (state)
-            {
-                case TurnGenerationState.WaitingForPlayers:
-                    labelText = "Waiting for Players";
-                    break;
-                default:
-                    labelText = state.ToString();
-                    break;
-            }
-
-            label.Text = labelText;
-            progressBar.Value = 100 * ((int)state / (float)(Enum.GetValues(typeof(TurnGenerationState)).Length));
-        }
-
-        void OnTurnPassed(PublicGameInfo gameInfo)
-        {
-            Hide();
-        }
-
-        void OnAboutToShow()
-        {
-            label.Text = "Submitted turn";
-            progressBar.Value = 0;
-
-            GetTree().Paused = true;
-        }
-
-        void OnPopupHide()
-        {
-            GetTree().Paused = false;
         }
 
         void OnCancel()
@@ -154,7 +84,7 @@ namespace CraigStars
             {
                 playerStatusContainer.AddChild(new Label()
                 {
-                    Text = $"{player.Num} - {player.RacePluralName}",
+                    Text = $"{player.Num} - {player.RacePluralName} ({player.Name})",
                     Modulate = player.Color,
                     SizeFlagsHorizontal = (int)SizeFlags.ExpandFill
                 });

@@ -146,6 +146,7 @@ namespace CraigStars
         /// </summary>
         /// <value></value>
         public PublicGameInfo GameSettings { get; set; } = new();
+        public static void ResetGameSettings() => Instance.GameSettings = new();
 
         /// <summary>
         /// Set to true if we are continuing a game (configured in GameSettings by name)
@@ -194,13 +195,13 @@ namespace CraigStars
                 Save();
             }
 
-            Signals.PostStartGameEvent += OnPostStartGame;
+            Signals.GameStartedEvent += OnGameStarted;
             Signals.TurnPassedEvent += OnTurnPassed;
         }
 
         public override void _ExitTree()
         {
-            Signals.PostStartGameEvent -= OnPostStartGame;
+            Signals.GameStartedEvent -= OnGameStarted;
             Signals.TurnPassedEvent -= OnTurnPassed;
         }
 
@@ -212,7 +213,7 @@ namespace CraigStars
             }
         }
 
-        private void OnPostStartGame(PublicGameInfo gameInfo)
+        private void OnGameStarted(PublicGameInfo gameInfo)
         {
             if (SaveToDisk)
             {

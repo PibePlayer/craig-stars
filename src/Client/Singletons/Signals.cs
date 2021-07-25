@@ -22,23 +22,33 @@ namespace CraigStars.Singletons
         public delegate void GameStart(PublicGameInfo gameInfo);
         public static event GameStart GameStartedEvent;
         public static event GameStart GameViewResetEvent;
-        public static void PublishGameViewResetEvent(PublicGameInfo gameInfo) => GameViewResetEvent?.Invoke(gameInfo);
         public static void PublishGameStartedEvent(PublicGameInfo gameInfo) => GameStartedEvent?.Invoke(gameInfo);
+        public static void PublishGameViewResetEvent(PublicGameInfo gameInfo) => GameViewResetEvent?.Invoke(gameInfo);
 
         #endregion
 
         #region Turn Generation events
 
         public delegate void YearUpdate(PublicGameInfo gameInfo);
+        public static event Action<Player> SubmitTurnRequestedEvent;
+        public static event Action<PublicPlayerInfo> TurnSubmittedEvent;
+        public static event Action<Player> UnsubmitTurnRequestedEvent;
+        public static event Action<PublicPlayerInfo> TurnUnsubmittedEvent;
+        public static event Action<int> PlayTurnRequestedEvent;
+
         public static event YearUpdate TurnPassedEvent;
         public static event Action TurnGeneratingEvent;
         public static event Action<TurnGenerationState> TurnGeneratorAdvancedEvent;
-        public static event Action<PublicPlayerInfo> TurnSubmittedEvent;
+
+        public static void PublishSubmitTurnRequestedEvent(Player player) => SubmitTurnRequestedEvent?.Invoke(player);
+        public static void PublishTurnSubmittedEvent(PublicPlayerInfo player) => TurnSubmittedEvent?.Invoke(player);
+        public static void PublishUnsubmitTurnRequestedEvent(Player player) => UnsubmitTurnRequestedEvent?.Invoke(player);
+        public static void PublishTurnUnsubmittedEvent(PublicPlayerInfo player) => TurnUnsubmittedEvent?.Invoke(player);
+        public static void PublishPlayTurnRequestedEvent(int playerNum) => PlayTurnRequestedEvent?.Invoke(playerNum);
 
         public static void PublishTurnPassedEvent(PublicGameInfo gameInfo) => TurnPassedEvent?.Invoke(gameInfo);
         public static void PublishTurnGeneratorAdvancedEvent(TurnGenerationState state) => TurnGeneratorAdvancedEvent?.Invoke(state);
         public static void PublishTurnGeneratingEvent() => TurnGeneratingEvent?.Invoke();
-        public static void PublishTurnSubmittedEvent(PublicPlayerInfo player) => TurnSubmittedEvent?.Invoke(player);
 
         #endregion
 
@@ -60,9 +70,6 @@ namespace CraigStars.Singletons
         #region UI Events
 
         public static event Action PlayerDirtyChangedEvent;
-        public static event Action<Player> SubmitTurnRequestedEvent;
-        public static event Action<Player> UnsubmitTurnRequestedEvent;
-        public static event Action<int> PlayTurnRequestedEvent;
         public static event Action<PlanetSprite> ChangeProductionQueuePressedEvent;
         public static event Action PacketDestinationToggleEvent;
         public static event Action<Planet, Planet> PacketDestinationChangedEvent;
@@ -98,49 +105,23 @@ namespace CraigStars.Singletons
         #region Network Events
 
         public static event Action ServerDisconnectedEvent;
-
-
-        #endregion
-
-        #region Player Connection Events
-
-        public delegate void PlayerUpdated(PublicPlayerInfo player);
-        public static event PlayerUpdated PlayerUpdatedEvent;
-
-        public delegate void PlayerJoined(int networkId);
-        public static event PlayerJoined PlayerJoinedEvent;
-
-        public delegate void PlayerLeft(int networkId);
-        public static event PlayerLeft PlayerLeftEvent;
-
-        public delegate void PlayerReadyToStart(int networkId, bool ready);
-        public static event PlayerReadyToStart PlayerReadyToStartEvent;
-
-        public static event Action<PlayerMessage> PlayerMessageEvent;
+        public static event Action<PublicPlayerInfo> PlayerUpdatedEvent;
 
         #endregion
-
-        #region Event Publishers
-
 
         /// <summary>
         /// Publish a player updated event for any listeners
         /// </summary>
         /// <param name="player"></param>
         /// <param name="notifyPeers">True if we should notify peers of this player data</param>
-        public static void PublishPlayerUpdatedEvent(PublicPlayerInfo player, bool notifyPeers = false)
+        public static void PublishPlayerUpdatedEvent(PublicPlayerInfo player, bool notifyPeers = false, SceneTree sceneTree = null)
         {
             PlayerUpdatedEvent?.Invoke(player);
-            if (notifyPeers)
+            if (notifyPeers && sceneTree != null)
             {
-                RPC.Instance.SendPlayerUpdated(player);
+                RPC.Instance(sceneTree).SendPlayerUpdated(player);
             }
         }
-
-        public static void PublishPlayerJoinedEvent(int networkId) => PlayerJoinedEvent?.Invoke(networkId);
-        public static void PublishPlayerLeftEvent(int networkId) => PlayerLeftEvent?.Invoke(networkId);
-        public static void PublishPlayerReadyToStart(int networkId, bool ready) => PlayerReadyToStartEvent?.Invoke(networkId, ready);
-        public static void PublishPlayerMessageEvent(PlayerMessage message) => PlayerMessageEvent?.Invoke(message);
         public static void PublishServerDisconnectedEvent() => ServerDisconnectedEvent?.Invoke();
 
 
@@ -183,9 +164,6 @@ namespace CraigStars.Singletons
 
         #region Dialog And Hotkey Publishers
 
-        public static void PublishSubmitTurnRequestedEvent(Player player) => SubmitTurnRequestedEvent?.Invoke(player);
-        public static void PublishUnsubmitTurnRequestedEvent(Player player) => UnsubmitTurnRequestedEvent?.Invoke(player);
-        public static void PublishPlayTurnRequestedEvent(int playerNum) => PlayTurnRequestedEvent?.Invoke(playerNum);
         public static void PublishChangeProductionQueuePressedEvent(PlanetSprite planet) => ChangeProductionQueuePressedEvent?.Invoke(planet);
         public static void PublishPacketDestinationToggleEvent() => PacketDestinationToggleEvent?.Invoke();
         public static void PublishResearchDialogRequestedEvent() => ResearchDialogRequestedEvent?.Invoke();
@@ -207,6 +185,5 @@ namespace CraigStars.Singletons
 
         #endregion
 
-        #endregion
     }
 }

@@ -15,6 +15,7 @@ namespace CraigStars
         public string Name { get; set; }
         public virtual string RaceName { get; set; }
         public virtual string RacePluralName { get; set; }
+        public Boolean Host { get; set; } = false;
         public Boolean Ready { get; set; } = false;
         public Boolean AIControlled { get; set; }
         public AIDifficulty AIDifficulty { get; set; } = AIDifficulty.Normal;
@@ -35,6 +36,7 @@ namespace CraigStars
             RaceName = playerInfo.RaceName;
             RacePluralName = playerInfo.RacePluralName;
             Name = playerInfo.Name;
+            Host = playerInfo.Host;
             Ready = playerInfo.Ready;
             AIControlled = playerInfo.AIControlled;
             SubmittedTurn = playerInfo.SubmittedTurn;

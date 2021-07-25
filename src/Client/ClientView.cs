@@ -1,7 +1,8 @@
-using CraigStars.Singletons;
 using Godot;
 using System;
 using System.Linq;
+using CraigStars.Singletons;
+using CraigStars.Utils;
 
 namespace CraigStars
 {
@@ -39,48 +40,15 @@ namespace CraigStars
             SetProcess(false);
 
             Signals.SubmitTurnRequestedEvent += OnSubmitTurnRequested;
+            Signals.TurnSubmittedEvent += OnTurnSubmitted;
+            Signals.PlayTurnRequestedEvent += OnPlayTurnRequested;
             Signals.TurnPassedEvent += OnTurnPassed;
-
-            // if we are the server (or a single player game)
-            // init the server and send a notice to all players that it's time to start
-            if (this.IsServerOrSinglePlayer())
-            {
-                Signals.UnsubmitTurnRequestedEvent += OnUnsubmitTurnRequested;
-                Signals.PlayTurnRequestedEvent += OnPlayTurnRequested;
-
-                if (Settings.Instance.ShouldContinueGame)
-                {
-                    label.Text = "Loading save game";
-                    subLabel.Text = "";
-                    Game = LoadGame();
-                }
-                else
-                {
-                    label.Text = "Generating Universe";
-                    subLabel.Text = "";
-                    Game = CreateNewGame();
-                }
-                Game.TurnGeneratorAdvancedEvent += OnGameTurnGeneratorAdvanced;
-                GameInfo = Game.GameInfo;
-                if (this.IsServer())
-                {
-                    // send players their data
-                    RPC.Instance.SendPlayerDataUpdated(Game);
-                    // tell everyone to start the game
-                    RPC.Instance.SendPostStartGame(GameInfo);
-                }
-
-            }
-
-            // if we aren't the server, we come here with our player data already loaded
-            // if we are the server, the GameInfo is already set (and so is our player data)
 
             // set the game info for the turn generation status to our GameInfo (whether we are a client or the host)
             turnGenerationStatus.GameInfo = GameInfo;
             OS.SetWindowTitle($"{projectName} - {GameInfo.Name}: Year {GameInfo.Year}");
 
             CallDeferred(nameof(ReloadGameView));
-
         }
 
         public override void _ExitTree()
@@ -88,57 +56,56 @@ namespace CraigStars
             base._ExitTree();
 
             Signals.SubmitTurnRequestedEvent -= OnSubmitTurnRequested;
+            Signals.TurnSubmittedEvent -= OnTurnSubmitted;
+            Signals.PlayTurnRequestedEvent -= OnPlayTurnRequested;
             Signals.TurnPassedEvent -= OnTurnPassed;
 
-            if (this.IsServerOrSinglePlayer())
+            // TODO: figure out turn generator events with servers
+            // if (this.IsSinglePlayer())
+            // {
+            //     Game.TurnGeneratorAdvancedEvent -= OnGameTurnGeneratorAdvanced;
+            // }
+        }
+
+        void OnSubmitTurnRequested(Player player)
+        {
+            // we submitted our turn, switch to turn submitter view
+            if (player == PlayersManager.Me)
             {
-                Signals.UnsubmitTurnRequestedEvent -= OnUnsubmitTurnRequested;
-                Signals.PlayTurnRequestedEvent -= OnPlayTurnRequested;
-                Game.TurnGeneratorAdvancedEvent -= OnGameTurnGeneratorAdvanced;
+                if (this.IsMultiplayer())
+                {
+                    // submit our turn to the server
+                    NetworkClient.Instance.SubmitTurnToServer(player);
+                }
+
+                // we just submitted our turn, remove the game view and show this container
+                RemoveGameViewAndShow();
+                // this was us, show the dialog
+                turnGenerationStatus.Visible = true;
             }
         }
 
-        /// <summary>
-        /// Load a game from disk into the Game property
-        /// </summary>
-        Game LoadGame()
+        void OnTurnSubmitted(PublicPlayerInfo player)
         {
-            var game = GamesManager.Instance.LoadGame(TechStore.Instance, TurnProcessorManager.Instance, Settings.Instance.ContinueGame, Settings.Instance.ContinueYear);
-            game.Multithreaded = Settings.Multithreaded;
-            game.SaveToDisk = Settings.SaveToDisk;
-            PlayersManager.Instance.InitPlayersFromGame(game.Players);
-
-            if (GamesManager.Instance.HasPlayerSave(PlayersManager.Me))
+            if (player == PlayersManager.Me)
             {
-                GamesManager.Instance.LoadPlayerSave(PlayersManager.Me);
+                // we just submitted our turn, remove the game view and show this container
+                RemoveGameViewAndShow();
+                // this was us, show the dialog
+                turnGenerationStatus.Visible = true;
+
+                // TODO: figure out fast hotseat with singleplayer server
+                // if we are on fast hot seat mode, switch to the next available player
+                // if (Settings.Instance.FastHotseat)
+                // {
+                //     var nextUnsubmittedPlayer = Game.Players.Find(player => !player.AIControlled && !player.SubmittedTurn);
+                //     if (nextUnsubmittedPlayer != null)
+                //     {
+                //         Signals.PublishPlayTurnRequestedEvent(nextUnsubmittedPlayer.Num);
+                //     }
+                // }
             }
 
-            return game;
-        }
-
-        /// <summary>
-        /// Create a new game and generate the universe
-        /// </summary>
-        Game CreateNewGame()
-        {
-            var game = new Game()
-            {
-                Name = Settings.Instance.GameSettings.Name,
-                Multithreaded = Settings.Multithreaded,
-                SaveToDisk = Settings.SaveToDisk,
-                GameInfo = Settings.Instance.GameSettings
-            };
-            if (GamesManager.Instance.GameExists(game.Name))
-            {
-                GamesManager.Instance.DeleteGame(game.Name);
-            }
-            PlayersManager.Instance.NumPlayers = PlayersManager.Instance.Players.Count;
-            game.Init(PlayersManager.Instance.Players.Cast<Player>().ToList(), RulesManager.Rules, TechStore.Instance, GamesManager.Instance, TurnProcessorManager.Instance);
-            game.GenerateUniverse();
-
-            PlayersManager.Me.Settings.TurnProcessors.AddRange(TurnProcessorManager.Instance.TurnProcessors.Select(p => p.Name));
-
-            return game;
         }
 
         /// <summary>
@@ -204,10 +171,7 @@ namespace CraigStars
 
             AddChild(gameView);
 
-            if (this.IsServerOrSinglePlayer())
-            {
-                Signals.PublishGameViewResetEvent(GameInfo);
-            }
+            Signals.PublishGameViewResetEvent(GameInfo);
         }
 
         /// <summary>
@@ -235,60 +199,6 @@ namespace CraigStars
         }
 
         /// <summary>
-        /// The player has submitted a new turn.
-        /// Copy any data from this to the main game
-        /// </summary>
-        /// <param name="player"></param>
-        void OnSubmitTurnRequested(Player player)
-        {
-            if (this.IsServerOrSinglePlayer())
-            {
-                Game.SubmitTurn(player);
-                Signals.PublishTurnSubmittedEvent(player);
-
-                if (player == PlayersManager.Me)
-                {
-                    // we just submitted our turn, remove the game view and show this container
-                    RemoveGameViewAndShow();
-                    // this was us, show the dialog
-                    turnGenerationStatus.Visible = true;
-
-                    // if we are on fast hot seat mode, switch to the next available player
-                    if (Settings.Instance.FastHotseat)
-                    {
-                        var nextUnsubmittedPlayer = PlayersManager.Instance.Players.Find(player => !player.AIControlled && !player.SubmittedTurn);
-                        if (nextUnsubmittedPlayer != null)
-                        {
-                            Signals.PublishPlayTurnRequestedEvent(nextUnsubmittedPlayer.Num);
-                        }
-                    }
-                }
-
-                if (Game.AllPlayersSubmitted())
-                {
-                    // once everyone is submitted, generate a new turn
-                    Signals.PublishTurnGeneratingEvent();
-                    RemoveGameViewAndShow();
-                    PlayersManager.ResetCurrentPlayer();
-                    CallDeferred(nameof(GenerateNewTurn));
-                }
-            }
-            else
-            {
-                // we submitted our turn, switch to turn submitter view
-                if (player == PlayersManager.Me)
-                {
-                    // submit our turn to the server
-                    NetworkClient.SubmitTurnToServer(player);
-                    // we just submitted our turn, remove the game view and show this container
-                    RemoveGameViewAndShow();
-                    // this was us, show the dialog
-                    turnGenerationStatus.Visible = true;
-                }
-            }
-        }
-
-        /// <summary>
         /// Remove the GameView and free it, then show the progress
         /// container (and the TurnStatus)
         /// </summary>
@@ -304,31 +214,11 @@ namespace CraigStars
 
         }
 
-        /// <summary>
-        /// The user unsubmitted their turn
-        /// </summary>
-        /// <param name="player"></param>
-        void OnUnsubmitTurnRequested(Player player)
+        void OnTurnPassed(PublicGameInfo gameInfo)
         {
-            Game.UnsubmitTurn(player);
-        }
-
-        /// <summary>
-        /// Generate a new turn
-        /// </summary>
-        /// <returns></returns>
-        async void GenerateNewTurn()
-        {
-            await Game.GenerateTurn();
-
-            if (this.IsServer())
-            {
-                // send players their data
-                RPC.Instance.SendPlayerDataUpdated(Game);
-                RPC.Instance.SendTurnPassed(Game.GameInfo);
-            }
-
-            Signals.PublishTurnPassedEvent(Game.GameInfo);
+            PlayersManager.Me.RunTurnProcessors(TurnProcessorManager.Instance);
+            OS.SetWindowTitle($"{projectName} - {gameInfo.Name}: Year {gameInfo.Year}");
+            CallDeferred(nameof(ReloadGameView));
         }
 
         /// <summary>
@@ -337,18 +227,13 @@ namespace CraigStars
         /// <param name="playerNum"></param>
         void OnPlayTurnRequested(int playerNum)
         {
+            // TODO: figure out how to do hotseat
             PlayersManager.Instance.ActivePlayer = playerNum;
 
             RemoveGameViewAndShow();
             CallDeferred(nameof(ReloadGameView));
         }
 
-        void OnTurnPassed(PublicGameInfo gameInfo)
-        {
-            PlayersManager.Me.RunTurnProcessors(TurnProcessorManager.Instance);
-            OS.SetWindowTitle($"{projectName} - {gameInfo.Name}: Year {gameInfo.Year}");
-            CallDeferred(nameof(ReloadGameView));
-        }
 
     }
 }

@@ -6,6 +6,27 @@ namespace CraigStars.Utils
 {
     public static class NodeExtensions
     {
+        /// <summary>
+        /// Change to a new scene with an initialization callback for initializing an instanced node.
+        /// </summary>
+        /// <param name="node">The caller node</param>
+        /// <param name="nodePath">The path to the new scene</param>
+        /// <param name="initCallback">A callback function to be called after the node is instanced</param>
+        /// <typeparam name="T">The type of scene being instanced.</typeparam>
+        public static void ChangeSceneTo<T>(this Node node, NodePath nodePath, Action<T> initCallback = null) where T : Node
+        {
+            // create a host specific lobby scene
+            var tree = node.GetTree();
+            var root = tree.Root;
+            var sceneInstance = GD.Load<PackedScene>(nodePath).Instance<T>();
+            initCallback?.Invoke(sceneInstance);
+            root.RemoveChild(node);
+            node.QueueFree();
+
+            // go to the lobby
+            root.AddChild(sceneInstance);
+            tree.CurrentScene = sceneInstance;
+        }
 
         public static List<T> GetAllNodesOfType<T>(this Node node) where T : Node
         {

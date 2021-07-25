@@ -838,5 +838,59 @@ namespace CraigStars
 
         #endregion
 
+        #region Equals Overload
+
+        public override bool Equals(object obj) => this.Equals(obj as Player);
+
+        public bool Equals(Player p)
+        {
+            if (p is null)
+            {
+                return false;
+            }
+
+            // Optimization for a common success case.
+            if (System.Object.ReferenceEquals(this, p))
+            {
+                return true;
+            }
+
+            // If run-time types are not exactly the same, return false.
+            if (this.GetType() != p.GetType())
+            {
+                return false;
+            }
+
+            // Return true if the fields match.
+            // Note that the base class is not invoked because it is
+            // System.Object, which defines Equals as reference equality.
+            return (Num == p.Num);
+        }
+
+        public override int GetHashCode() => (Num).GetHashCode();
+
+        public static bool operator ==(Player lhs, Player rhs)
+        {
+            if (lhs is null)
+            {
+                if (rhs is null)
+                {
+                    return true;
+                }
+
+                // Only the left side is null.
+                return false;
+            }
+            // Equals handles case of null on right side.
+            return lhs.Equals(rhs);
+        }
+
+        public static bool operator !=(Player lhs, Player rhs) => !(lhs == rhs);
+
+        public static bool operator ==(PublicPlayerInfo lhs, Player rhs) => (Player)lhs == rhs;
+        public static bool operator !=(PublicPlayerInfo lhs, Player rhs) => !((Player)lhs == rhs);
+
+        #endregion
+
     }
 }

@@ -27,39 +27,37 @@ namespace CraigStars
         {
             colorRect = GetNode<ColorRect>("ColorRect");
             colorRect.Connect("gui_input", this, nameof(OnColorRectGuiInput));
+            SetProcess(false);
         }
 
         public override void _Process(float delta)
         {
-            if (dragging)
+            var mousePosition = GetLocalMousePosition();
+
+            // move the color rect, but make sure it is constrained in the 
+            // outer box. The x coord can be between 0 and as far to the 
+            // right as the bar can go. If the total width is 100, the bar is 80 wide
+            // then we can go between 0 and 20
+            var x = Mathf.Clamp(colorRect.RectPosition.x + mousePosition.x - positionOnDrag.x, 0, RectSize.x - colorRect.RectSize.x);
+
+
+            // reverse the calculations for our Low/High
+            // colorRect.RectPosition.x = Low / 100f * RectSize.x
+            // so Low = colorRect.RectPosition.x * 100f / RectSize.x;
+            // colorRect.RectSize.x = RectSize.x * (High - Low) / 100f
+            // High = (colorRect.RectSize.x * 100f) / RectSize.x + Low
+            // yay Algebra!
+            var width = High - Low;
+            var newLow = (int)(x * 100f / RectSize.x);
+            if (newLow != Low)
             {
-                var mousePosition = GetLocalMousePosition();
+                Low = newLow;
+                High = Low + width;
+                BarChangedEvent?.Invoke(Low, High);
 
-                // move the color rect, but make sure it is constrained in the 
-                // outer box. The x coord can be between 0 and as far to the 
-                // right as the bar can go. If the total width is 100, the bar is 80 wide
-                // then we can go between 0 and 20
-                var x = Mathf.Clamp(colorRect.RectPosition.x + mousePosition.x - positionOnDrag.x, 0, RectSize.x - colorRect.RectSize.x);
+                positionOnDrag = mousePosition;
 
-
-                // reverse the calculations for our Low/High
-                // colorRect.RectPosition.x = Low / 100f * RectSize.x
-                // so Low = colorRect.RectPosition.x * 100f / RectSize.x;
-                // colorRect.RectSize.x = RectSize.x * (High - Low) / 100f
-                // High = (colorRect.RectSize.x * 100f) / RectSize.x + Low
-                // yay Algebra!
-                var width = High - Low;
-                var newLow = (int)(x * 100f / RectSize.x);
-                if (newLow != Low)
-                {
-                    Low = newLow;
-                    High = Low + width;
-                    BarChangedEvent?.Invoke(Low, High);
-
-                    positionOnDrag = mousePosition;
-
-                    Update();
-                }
+                Update();
             }
         }
 
@@ -79,12 +77,12 @@ namespace CraigStars
                 {
                     positionOnDrag = GetLocalMousePosition();
                     colorRect.MouseDefaultCursorShape = CursorShape.Drag;
-                    dragging = true;
+                    SetProcess(true);
                 }
                 else
                 {
                     colorRect.MouseDefaultCursorShape = CursorShape.PointingHand;
-                    dragging = false;
+                    SetProcess(false);
                 }
             }
         }

@@ -75,7 +75,7 @@ namespace CraigStars
         /// Populate a player object from a save from disk
         /// </summary>
         /// <param name="player"></param>
-        void LoadPlayerSave(Player player);
+        void LoadPlayerSave(Player player, List<PublicPlayerInfo> players);
 
     }
 }

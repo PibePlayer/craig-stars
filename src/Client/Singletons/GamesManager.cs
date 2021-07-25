@@ -338,7 +338,7 @@ namespace CraigStars.Singletons
             return Exists(GetSavePlayerPath(player.Game.Name, player.Game.Year, player.Num));
         }
 
-        public void LoadPlayerSave(Player player)
+        public void LoadPlayerSave(Player player, List<PublicPlayerInfo> players)
         {
             var game = player.Game;
             using (var playerSave = new File())
@@ -346,8 +346,11 @@ namespace CraigStars.Singletons
                 playerSave.Open(GetSavePlayerPath(game.Name, game.Year, player.Num), File.ModeFlags.Read);
                 var json = playerSave.GetAsText();
 
-                Serializers.PopulatePlayer(json, player, Serializers.CreatePlayerSettings(PlayersManager.Instance.Players, TechStore.Instance));
+                Serializers.PopulatePlayer(json, player, Serializers.CreatePlayerSettings(players, TechStore.Instance));
             }
         }
+
+
+
     }
 }

@@ -1,4 +1,5 @@
 using CraigStars.Singletons;
+using CraigStars.Utils;
 using Godot;
 using log4net;
 using System;
@@ -13,10 +14,16 @@ namespace CraigStars
         [Export]
         public PackedScene PlayerReadyContainerScene { get; set; }
 
+        public bool HostMode { get; set; }
+
         TextEdit chat;
         LineEdit chatMessage;
         Button startGameButton;
         Control playerReadyContainers;
+
+        List<PublicPlayerInfo> joinedPlayers = new List<PublicPlayerInfo>();
+
+        public List<PlayerMessage> InitialMessages { get; } = new List<PlayerMessage>();
 
         public override void _Ready()
         {
@@ -25,8 +32,11 @@ namespace CraigStars
             startGameButton = (Button)FindNode("StartGameButton");
             playerReadyContainers = FindNode("PlayerReadyContainers") as Control;
 
+            RPC.Instance(GetTree()).PlayerMessageEvent += OnPlayerMessage;
+            RPC.Instance(GetTree()).PlayerJoinedEvent += OnPlayerJoined;
+            RPC.Instance(GetTree()).PlayersUpdatedEvent += OnPlayersUpdated;
+            RPC.Instance(GetTree()).PlayerLeftEvent += OnPlayerLeft;
             Signals.GameStartedEvent += OnGameStarted;
-            Signals.PlayerMessageEvent += OnPlayerMessage;
             Signals.PlayerUpdatedEvent += OnPlayerUpdated;
 
             chatMessage.Connect("text_entered", this, nameof(OnChatMessageTextEntered));
@@ -34,14 +44,8 @@ namespace CraigStars
             FindNode("ReadyButton").Connect("pressed", this, nameof(OnReadyButtonPressed));
             startGameButton.Connect("pressed", this, nameof(OnStartGameButtonPressed));
 
-            if (this.IsServer())
-            {
-                startGameButton.Visible = true;
-                CheckStartGameButton();
-            }
-
-            // Add any player messages when we come into the lobby
-            PlayersManager.Instance.Messages.ForEach(m => AddPlayerMessage(m));
+            // setup any initial messages we recieved from the server before joining
+            InitialMessages.ForEach(m => AddPlayerMessage(m));
 
             // clear out the PlayerReadyContainers and add one per player
             foreach (Node child in playerReadyContainers.GetChildren())
@@ -49,29 +53,41 @@ namespace CraigStars
                 playerReadyContainers.RemoveChild(child);
                 child.QueueFree();
             }
-            PlayersManager.Instance.Players.ForEach(p =>
+
+            if (HostMode)
             {
-                AddPlayerReadyContainer(p);
-            });
+                startGameButton.Visible = true;
+                CheckStartGameButton();
+            }
         }
 
         public override void _ExitTree()
         {
+            RPC.Instance(GetTree()).PlayerMessageEvent -= OnPlayerMessage;
+            RPC.Instance(GetTree()).PlayerJoinedEvent -= OnPlayerJoined;
+            RPC.Instance(GetTree()).PlayerLeftEvent -= OnPlayerLeft;
+            RPC.Instance(GetTree()).PlayersUpdatedEvent -= OnPlayersUpdated;
             Signals.GameStartedEvent -= OnGameStarted;
-            Signals.PlayerMessageEvent -= OnPlayerMessage;
             Signals.PlayerUpdatedEvent -= OnPlayerUpdated;
         }
 
         void CheckStartGameButton()
         {
-            startGameButton.Disabled = !Network.Instance.ReadyToStart;
+            startGameButton.Disabled = !(joinedPlayers.Find(p => !p.Ready) == null);
         }
 
         void AddPlayerMessage(PlayerMessage message)
         {
-            var player = PlayersManager.Instance.GetPlayer(message.playerNum);
-            var host = player.Num == 0 ? "Host - " : "";
-            chat.Text += $"\n{host}{player.Name}: {message.message}";
+            if (message.playerNum == PlayerMessage.ServerPlayerNum)
+            {
+                chat.Text += $"\nServer: {message.message}";
+            }
+            else
+            {
+                var player = joinedPlayers[message.playerNum];
+                var host = player.Num == 0 ? "Host - " : "";
+                chat.Text += $"\n{host}{player.Name}: {message.message}";
+            }
         }
 
         /// <summary>
@@ -82,6 +98,7 @@ namespace CraigStars
         {
             PlayerReadyContainer playerReadyContainer = PlayerReadyContainerScene.Instance() as PlayerReadyContainer;
             playerReadyContainer.PlayerNum = p.Num;
+            playerReadyContainer.Player = p;
             playerReadyContainers.AddChild(playerReadyContainer);
         }
 
@@ -89,7 +106,9 @@ namespace CraigStars
 
         void OnChatMessageTextEntered(string newText)
         {
-            RPC.Instance.SendMessage(newText);
+            var me = joinedPlayers.Find(player => player.NetworkId == GetTree().GetNetworkUniqueId());
+            
+            RPC.Instance(GetTree()).SendMessage(newText, me.Num);
             chatMessage.Text = "";
         }
 
@@ -99,16 +118,11 @@ namespace CraigStars
         /// <param name="gameInfo"></param>
         void OnGameStarted(PublicGameInfo gameInfo)
         {
-            var clientViewScene = GD.Load<PackedScene>("res://src/Client/ClientView.tscn");
-            var clientView = clientViewScene.Instance<ClientView>();
-            gameInfo.Players = PlayersManager.Instance.Players;
-            clientView.GameInfo = gameInfo;
-
-            // swap out our scene
-            var parent = GetParent();
-            parent.RemoveChild(this);
-            parent.AddChild(clientView);
-            QueueFree();
+            // Change to the ClientView using this new GameInfo
+            this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (instance) =>
+            {
+                instance.GameInfo = gameInfo;
+            });
         }
 
         void OnPlayerMessage(PlayerMessage message)
@@ -118,37 +132,77 @@ namespace CraigStars
 
         void OnPlayerUpdated(PublicPlayerInfo player)
         {
-            CheckStartGameButton();
+            var existingPlayer = joinedPlayers.Find(p => p.Num == player.Num);
+            existingPlayer.Update(player);
+
+            if (HostMode)
+            {
+                CheckStartGameButton();
+            }
+        }
+
+        void OnPlayersUpdated(List<PublicPlayerInfo> players)
+        {
+            foreach (Node child in playerReadyContainers.GetChildren())
+            {
+                playerReadyContainers.RemoveChild(child);
+                child.QueueFree();
+            }
+
+            joinedPlayers.Clear();
+            joinedPlayers.AddRange(players);
+            joinedPlayers.ForEach(player => AddPlayerReadyContainer(player));
+        }
+
+        void OnPlayerJoined(PublicPlayerInfo player)
+        {
+            joinedPlayers.Add(player);
+            AddPlayerReadyContainer(player);
+        }
+
+        void OnPlayerLeft(PublicPlayerInfo player)
+        {
+            joinedPlayers.Remove(player);
+
+            foreach (Node child in playerReadyContainers.GetChildren())
+            {
+                if (child is PlayerReadyContainer playerReadyContainer && playerReadyContainer.Player == player)
+                {
+                    playerReadyContainers.RemoveChild(child);
+                    child.QueueFree();
+                    break;
+                }
+            }
         }
 
         void OnBackButtonPressed()
         {
-            if (this.IsServer())
-            {
-                Network.Instance.CloseConnection();
-            }
-            else
-            {
-                NetworkClient.Instance.CloseConnection();
-            }
+            ServerManager.Instance.CloseConnection();
+            NetworkClient.Instance.CloseConnection();
 
             PlayersManager.Instance.Reset();
-            Network.Instance.Reset();
             GetTree().ChangeScene("res://src/Client/MainMenu.tscn");
         }
 
         void OnReadyButtonPressed()
         {
-            var me = PlayersManager.Me;
-            me.Ready = !me.Ready;
+            var me = joinedPlayers.Find(player => player.NetworkId == GetTree().GetNetworkUniqueId());
+            if (me != null)
+            {
+                me.Ready = !me.Ready;
 
-            Signals.PublishPlayerUpdatedEvent(me, notifyPeers: true);
+                Signals.PublishPlayerUpdatedEvent(me, notifyPeers: true, GetTree());
+            }
+            else
+            {
+                log.Error("Can't show ready status, no active player found for me in joined players list");
+            }
         }
 
         void OnStartGameButtonPressed()
         {
-            log.Info("Server: All players ready, starting the game!");
-            GetTree().ChangeScene("res://src/Client/ClientView.tscn");
+            log.Info("Host: All players ready, starting the game!");
+            RPC.Instance(GetTree()).SendGameStartRequested();
         }
 
         #endregion

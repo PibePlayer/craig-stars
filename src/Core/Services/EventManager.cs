@@ -11,28 +11,28 @@ namespace CraigStars.Singletons
     /// <summary>
     /// 
     /// </summary>
-    public static class EventManager
-    {
+public static class EventManager
+{
 
-        #region Server Events
+    #region Server Events
 
-        public static event Action<MapObject> MapObjectCreatedEvent;
-        public static event Action<MapObject> MapObjectDeletedEvent;
-        public static event Action<Planet> PlanetPopulationEmptiedEvent;
-        public static event Action<Player, TechField, int> PlayerResearchLevelIncreasedEvent;
-        public static event Action<Battle> BattleRunEvent;
+    public static event Action<MapObject> MapObjectCreatedEvent;
+    public static event Action<MapObject> MapObjectDeletedEvent;
+    public static event Action<Planet> PlanetPopulationEmptiedEvent;
+    public static event Action<Player, TechField, int> PlayerResearchLevelIncreasedEvent;
+    public static event Action<Battle> BattleRunEvent;
 
-        #endregion
+    #endregion
 
-        #region Event Publishers
+    #region Event Publishers
 
-        internal static void PublishMapObjectCreatedEvent(MapObject mapObject) => MapObjectCreatedEvent?.Invoke(mapObject);
-        internal static void PublishMapObjectDeletedEvent(MapObject mapObject) => MapObjectDeletedEvent?.Invoke(mapObject);
-        internal static void PublishPlanetPopulationEmptiedEvent(Planet planet) => PlanetPopulationEmptiedEvent?.Invoke(planet);
-        internal static void PublishPlayerResearchLevelIncreasedEvent(Player player, TechField field, int level) => PlayerResearchLevelIncreasedEvent?.Invoke(player, field, level);
-        internal static void PublishBattleRunEvent(Battle battle) => BattleRunEvent?.Invoke(battle);
+    internal static void PublishMapObjectCreatedEvent(MapObject mapObject) => MapObjectCreatedEvent?.Invoke(mapObject);
+    internal static void PublishMapObjectDeletedEvent(MapObject mapObject) => MapObjectDeletedEvent?.Invoke(mapObject);
+    internal static void PublishPlanetPopulationEmptiedEvent(Planet planet) => PlanetPopulationEmptiedEvent?.Invoke(planet);
+    internal static void PublishPlayerResearchLevelIncreasedEvent(Player player, TechField field, int level) => PlayerResearchLevelIncreasedEvent?.Invoke(player, field, level);
+    internal static void PublishBattleRunEvent(Battle battle) => BattleRunEvent?.Invoke(battle);
 
-        #endregion
+    #endregion
 
-    }
+}
 }

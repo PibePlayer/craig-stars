@@ -90,6 +90,9 @@ namespace CraigStars
             penScannersNode = GetNode<Node2D>("Scanners/Pen");
             camera2D = GetNode<Camera2D>("Camera2D");
 
+            // we only enable processing if a waypoint is being moved
+            SetProcess(false);
+
             // wire up events
             Signals.MapObjectCommandedEvent += OnMapObjectCommanded;
             Signals.GotoMapObjectEvent += OnGotoMapObject;
@@ -434,6 +437,8 @@ namespace CraigStars
             }
             else if (Input.IsActionJustReleased("viewport_select"))
             {
+                // don't process once a waypoint is no longer being moved
+                SetProcess(false);
                 movingWaypoint = false;
                 UpdateSelectedMapObjectIndicator();
             }
@@ -718,6 +723,7 @@ namespace CraigStars
                     Signals.PublishWaypointSelectedEvent(waypointArea.Waypoint);
                     activeWaypointArea = waypointArea;
                     movingWaypoint = true;
+                    SetProcess(true);
                 }
             }
             else

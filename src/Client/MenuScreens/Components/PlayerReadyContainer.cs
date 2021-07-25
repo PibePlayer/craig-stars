@@ -37,7 +37,7 @@ namespace CraigStars
                 if (readyLabel != null)
                 {
                     readyLabel.Text = ready ? "Ready" : "Not Ready";
-                    readyLabel.Modulate = ready ? PlayersManager.Instance.GetPlayer(PlayerNum).Color : Colors.White;
+                    readyLabel.Modulate = ready && Player != null ? Player.Color : Colors.White;
                     readyCheck.Modulate = readyLabel.Modulate;
                     readyCheck.Visible = ready;
                     notReadyCheck.Visible = !ready;
@@ -45,6 +45,8 @@ namespace CraigStars
             }
         }
         bool ready = true;
+
+        public PublicPlayerInfo Player { get; set; }
 
         TextureRect readyCheck;
         TextureRect notReadyCheck;
@@ -63,9 +65,9 @@ namespace CraigStars
             robotIcon = GetNode<TextureRect>("HBoxContainer/RobotIcon");
 
             UpdateName();
-            if (!Engine.EditorHint)
+            if (!Engine.EditorHint && Player != null)
             {
-                OnPlayerUpdated(PlayersManager.Instance.GetPlayer(PlayerNum));
+                OnPlayerUpdated(Player);
             }
             Signals.PlayerUpdatedEvent += OnPlayerUpdated;
         }
@@ -79,26 +81,26 @@ namespace CraigStars
         {
             if (nameLabel != null && readyLabel != null)
             {
-                var player = PlayersManager.Instance.GetPlayer(PlayerNum);
+                var player = Player;
                 if (player != null)
                 {
                     Ready = player.Ready;
                     robotIcon.Visible = player.AIControlled;
                     playerIcon.Visible = !player.AIControlled;
 
-                    var color = PlayersManager.Instance.GetPlayer(PlayerNum).Color;
+                    var color = Player.Color;
                     nameLabel.Modulate = color;
                     readyLabel.Modulate = color;
                     if (!Engine.EditorHint)
                     {
                         var me = PlayersManager.Me?.Num == PlayerNum ? " (me)" : "";
-                        nameLabel.Text = $"{PlayersManager.Instance.GetPlayer(PlayerNum).Name}{me}";
+                        nameLabel.Text = $"{Player.Name}{me}";
                     }
                     else
                     {
                         if (PlayerNum >= 0)
                         {
-                            nameLabel.Text = PlayersManager.Instance.GetPlayer(PlayerNum).Name;
+                            nameLabel.Text = Player.Name;
                         }
                     }
                 }

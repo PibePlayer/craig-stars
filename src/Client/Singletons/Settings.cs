@@ -145,14 +145,8 @@ namespace CraigStars
         /// The settings to use for new or loaded games
         /// </summary>
         /// <value></value>
-        public PublicGameInfo GameSettings { get; set; } = new();
+        public GameSettings<Player> GameSettings { get; set; } = new();
         public static void ResetGameSettings() => Instance.GameSettings = new();
-
-        /// <summary>
-        /// Set to true if we are continuing a game (configured in GameSettings by name)
-        /// </summary>
-        /// <value></value>
-        public bool ShouldContinueGame { get; set; }
 
         #endregion
 

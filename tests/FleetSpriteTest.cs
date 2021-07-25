@@ -7,7 +7,7 @@ namespace CraigStars.Tests
     {
         public override void Pre()
         {
-            PlayersManager.Instance.SetupPlayers();
+            PlayersManager.Instance.CreatePlayersForNewGame();
         }
 
         [Test]

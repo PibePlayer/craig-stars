@@ -549,13 +549,13 @@ namespace CraigStars
 
         BattleRecord GenerateTestBattle()
         {
-            PlayersManager.Instance.SetupPlayers();
-            var player1 = PlayersManager.Me;
+            var players = PlayersManager.Instance.CreatePlayersForNewGame();
+            var player1 = players[0];
             // level up our players so they will have designs
             player1.TechLevels = new TechLevel(10, 10, 10, 10, 10, 10);
 
             // create a second weaker player
-            var player2 = PlayersManager.Instance.Players[1] as Player;
+            Player player2 = players[1] as Player;
             player2.TechLevels = new TechLevel(6, 6, 6, 6, 6, 6);
 
             var battleEngine = new BattleEngine(RulesManager.Rules);

@@ -14,6 +14,13 @@ namespace CraigStars
         [JsonIgnore]
         public Random Random { get; set; } = new Random();
 
+        /// <summary>
+        /// The maximum number of players allowed in a game
+        /// </summary>
+        /// <value></value>
+        [DefaultValue(16)]
+        public int MaxPlayers { get; set; } = 16;
+
         [DefaultValue(2400)]
         public int StartingYear { get; set; } = 2400;
 

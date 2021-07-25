@@ -1,6 +1,7 @@
-using CraigStars.Singletons;
 using Godot;
 using System;
+using CraigStars.Singletons;
+using CraigStars.Utils;
 
 namespace CraigStars
 {
@@ -50,13 +51,13 @@ namespace CraigStars
                 continueGameButton.Connect("pressed", this, nameof(OnContinueGameButtonPressed));
             }
 
-            FindNode("ExitButton").Connect("pressed", this, nameof(OnExitButtonPressed));
-            FindNode("SettingsButton").Connect("pressed", this, nameof(OnSettingsButtonPressed));
-            FindNode("NewGameButton").Connect("pressed", this, nameof(OnNewGameButtonPressed));
-            FindNode("LoadGameButton").Connect("pressed", this, nameof(OnLoadGameButtonPressed));
+            ((CSButton)FindNode("ExitButton")).OnPressed((b) => GetTree().Quit());
+            ((CSButton)FindNode("SettingsButton")).OnPressed((b) => GetTree().ChangeScene("res://src/Client/MenuScreens/SettingsMenu.tscn"));
+            ((CSButton)FindNode("NewGameButton")).OnPressed((b) => GetTree().ChangeScene("res://src/Client/MenuScreens/NewGameMenu.tscn"));
+            ((CSButton)FindNode("LoadGameButton")).OnPressed((b) => GetTree().ChangeScene("res://src/Client/MenuScreens/LoadGameMenu.tscn"));
+            ((CSButton)FindNode("CustomRacesButton")).OnPressed((b) => GetTree().ChangeScene("res://src/Client/MenuScreens/CustomRacesMenu.tscn"));
             FindNode("HostGameButton").Connect("pressed", this, nameof(OnHostGameButtonPressed));
             FindNode("JoinGameButton").Connect("pressed", this, nameof(OnJoinGameButtonPressed));
-            FindNode("CustomRacesButton").Connect("pressed", this, nameof(OnCustomRacesButtonPressed));
 
             joinWindow.Connect("popup_hide", this, nameof(OnJoinWindoPopupHide));
             joinWindow.FindNode("CancelButton").Connect("pressed", this, nameof(OnJoinWindowCancelButtonPressed));
@@ -94,37 +95,14 @@ namespace CraigStars
             NetworkClient.Instance.JoinGame(host, port);
         }
 
-        void OnExitButtonPressed()
-        {
-            GetTree().Quit();
-        }
-
-        void OnNewGameButtonPressed()
-        {
-            GetTree().ChangeScene("res://src/Client/MenuScreens/NewGameMenu.tscn");
-        }
-
-        void OnLoadGameButtonPressed()
-        {
-            GetTree().ChangeScene("res://src/Client/MenuScreens/LoadGameMenu.tscn");
-        }
-
         void OnContinueGameButtonPressed()
         {
-            // like a new game, but we continue
-            Settings.Instance.ShouldContinueGame = true;
-            Settings.Instance.ContinueYear = (int)continueGameYearSpinBox.Value;
-            GetTree().ChangeScene("res://src/Client/ClientView.tscn");
-        }
+            var gameInfo = ServerManager.Instance.ContinueGame(Settings.Instance.ContinueGame, (int)continueGameYearSpinBox.Value);
 
-        void OnSettingsButtonPressed()
-        {
-            GetTree().ChangeScene("res://src/Client/MenuScreens/SettingsMenu.tscn");
-        }
-
-        void OnCustomRacesButtonPressed()
-        {
-            GetTree().ChangeScene("res://src/Client/MenuScreens/CustomRacesMenu.tscn");
+            this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (client) =>
+            {
+                client.GameInfo = gameInfo;
+            });
         }
 
         void OnHostGameButtonPressed()
@@ -155,11 +133,25 @@ namespace CraigStars
         void OnHostWindowHostButtonPressed()
         {
             PlayersManager.Instance.Reset();
-            PlayersManager.Instance.SetupPlayers();
+            PlayersManager.Instance.CreatePlayersForNewGame();
             Settings.Instance.ServerPort = int.Parse(hostPortEdit.Text);
-            Network.Instance.HostGame(Settings.Instance.ServerPort);
-            Network.Instance.BeginGame();
-            GetTree().ChangeScene("res://src/Client/MenuScreens/Lobby.tscn");
+            ServerManager.Instance.HostGame(Settings.Instance.ServerPort);
+
+            // join the server we just created
+            CallDeferred(nameof(HostJoinNewlyHostedGame));
+
+            this.ChangeSceneTo<Lobby>("res://src/Client/MenuScreens/Lobby.tscn", (instance) =>
+            {
+                instance.HostMode = true;
+            });
+        }
+
+        /// <summary>
+        /// Join our own newly hosted game
+        /// </summary>
+        void HostJoinNewlyHostedGame()
+        {
+            NetworkClient.Instance.JoinGame("localhost", Settings.Instance.ServerPort);
         }
 
         public void OnServerDisconnected()

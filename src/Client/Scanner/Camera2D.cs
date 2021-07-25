@@ -17,7 +17,7 @@ namespace CraigStars
         public float MaxZoom { get; set; } = .05f;
 
         [Export]
-        public float ScrollConstant { get; set; } = 1.5f;
+        public float ScrollConstant { get; set; } = 3f;
 
         // our current zoom level, used for updating zoom
         float currentZoomLevel = 1;

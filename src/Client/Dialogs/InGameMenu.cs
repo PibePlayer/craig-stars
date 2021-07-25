@@ -91,10 +91,15 @@ namespace CraigStars
             if (Me.Dirty)
             {
                 CSConfirmDialog.Show("You have unsaved changes to your turn, are you sure you want to exit?",
-                () => loader.LoadScene("res://src/Client/MainMenu.tscn"));
+                () =>
+                {
+                    ServerManager.Instance.ExitGame();
+                    loader.LoadScene("res://src/Client/MainMenu.tscn");
+                });
             }
             else
             {
+                ServerManager.Instance.ExitGame();
                 loader.LoadScene("res://src/Client/MainMenu.tscn");
             }
         }

@@ -36,7 +36,7 @@ namespace CraigStars.Tests
             throw new System.NotImplementedException();
         }
 
-        public void LoadPlayerSave(Player player)
+        public void LoadPlayerSave(Player player, List<PublicPlayerInfo> players)
         {
             throw new System.NotImplementedException();
         }

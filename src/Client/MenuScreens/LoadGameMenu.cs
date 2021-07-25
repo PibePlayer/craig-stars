@@ -2,6 +2,7 @@ using Godot;
 using System;
 using CraigStars.Singletons;
 using log4net;
+using CraigStars.Utils;
 
 namespace CraigStars
 {
@@ -66,9 +67,13 @@ namespace CraigStars
                     var gameYear = gameYears[gameYears.Count - 1];
                     Settings.Instance.ContinueGame = gameFile;
                     Settings.Instance.ContinueYear = gameYear;
-                    Settings.Instance.ShouldContinueGame = true;
 
                     loadButton.Disabled = backButton.Disabled = true;
+                    var gameInfo = ServerManager.Instance.ContinueGame(gameFile, gameYear);
+
+                    this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (client) => {
+                        client.GameInfo = gameInfo;
+                    });
                     GetTree().ChangeScene("res://src/Client/ClientView.tscn");
                 }
             }

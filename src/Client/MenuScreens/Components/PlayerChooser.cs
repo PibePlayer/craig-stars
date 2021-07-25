@@ -8,6 +8,11 @@ namespace CraigStars
 {
     public class PlayerChooser : VBoxContainer
     {
+        /// <summary>
+        /// If the player is removed, this event is triggered
+        /// </summary>
+        public Action<PlayerChooser, Player> PlayerRemovedEvent;
+
         public Player Player
         {
             get => player;
@@ -152,9 +157,7 @@ namespace CraigStars
 
         void OnRemovePlayerButtonPressed()
         {
-            PlayersManager.Instance.Players.Remove(Player);
-            GetParent().RemoveChild(this);
-            QueueFree();
+            PlayerRemovedEvent?.Invoke(this, Player);
         }
 
         void UpdateRaceFiles(string selected = null)
@@ -176,7 +179,7 @@ namespace CraigStars
             }
         }
 
-        void UpdateControls()
+        internal void UpdateControls()
         {
             if (Player != null && playerNumLabel != null)
             {

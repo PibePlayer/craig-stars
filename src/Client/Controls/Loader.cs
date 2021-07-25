@@ -14,18 +14,21 @@ namespace CraigStars
         {
             Visible = false;
             progress = GetNode<TextureProgress>("TextureProgress");
+            SetProcess(false);
         }
 
         public void LoadScene(string filePath)
         {
             Visible = true;
             loader = ResourceLoader.LoadInteractive(filePath);
+            SetProcess(true);
         }
 
         public override void _Process(float delta)
         {
             if (loader == null)
             {
+                SetProcess(false);
                 return;
             }
 

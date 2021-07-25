@@ -38,7 +38,7 @@ namespace CraigStars
         /// </summary>
         public void OnConnectedToServer()
         {
-            log.Info("NetworkClient: connected to server");
+            log.Info("Connected to server");
         }
 
         /// <summary>
@@ -46,6 +46,7 @@ namespace CraigStars
         /// </summary>
         public void OnServerDisconnected()
         {
+            log.Info("Server disconnected");
             Signals.PublishServerDisconnectedEvent();
         }
 
@@ -54,7 +55,7 @@ namespace CraigStars
         /// </summary>
         public void OnConnectionFailed()
         {
-            log.Info("NetworkClient: connecting to server failed");
+            log.Info("Connecting to server failed");
         }
 
         /// <summary>
@@ -79,7 +80,7 @@ namespace CraigStars
             }
             GetTree().NetworkPeer = peer;
 
-            log.Info($"Joined game at {address}:{port}");
+            log.Info($"Joined game (as {GetTree().GetNetworkUniqueId()}) at {address}:{port}");
         }
 
         /// <summary>
@@ -105,10 +106,10 @@ namespace CraigStars
         /// Submit a turn to the server
         /// </summary>
         /// <param name="player"></param>
-        public static void SubmitTurnToServer(Player player)
+        public void SubmitTurnToServer(Player player)
         {
             // tell the server we submitted our turn
-            RPC.Instance.SendSubmitTurn(player);
+            RPC.Instance(GetTree()).SendSubmitTurn(player);
         }
     }
 }

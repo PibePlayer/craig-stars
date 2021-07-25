@@ -10,9 +10,18 @@ using Newtonsoft.Json;
 namespace CraigStars
 {
     /// <summary>
+    /// By default, public game info has PublicPlayerInfo objects, but when setting
+    /// up a new game, we use the full Player
+    /// </summary>
+    public class PublicGameInfo : GameSettings<PublicPlayerInfo>
+    {
+
+    }
+
+    /// <summary>
     /// This represents publicly available game information
     /// </summary>
-    public class PublicGameInfo
+    public class GameSettings<T> where T : PublicPlayerInfo
     {
         static CSLog log = LogProvider.GetLogger(typeof(PublicGameInfo));
 
@@ -41,7 +50,34 @@ namespace CraigStars
         #endregion
 
         [JsonProperty(ItemConverterType = typeof(PublicPlayerInfoConverter))]
-        public List<PublicPlayerInfo> Players { get; set; } = new List<PublicPlayerInfo>();
+        public List<T> Players { get; set; } = new List<T>();
+
+        /// <summary>
+        /// Convert a generic GameSettings (with full Player object, probably) to a PublicGameInfo with PublicPlayerInfo list
+        /// </summary>
+        /// <param name="settings"></param>
+        public static implicit operator PublicGameInfo(GameSettings<T> settings)
+        {
+            return new PublicGameInfo()
+            {
+                Name = settings.Name,
+                QuickStartTurns = settings.QuickStartTurns,
+                Size = settings.Size,
+                Density = settings.Density,
+                PlayerPositions = settings.PlayerPositions,
+                RandomEvents = settings.RandomEvents,
+                ComputerPlayersFormAlliances = settings.ComputerPlayersFormAlliances,
+                PublicPlayerScores = settings.PublicPlayerScores,
+                StartMode = settings.StartMode,
+                Year = settings.Year,
+                Mode = settings.Mode,
+                Lifecycle = settings.Lifecycle,
+                Rules = settings.Rules,
+                VictoryConditions = settings.VictoryConditions,
+                VictorDeclared = settings.VictorDeclared,
+                Players = settings.Players.Cast<PublicPlayerInfo>().ToList()
+            };
+        }
 
     }
 }

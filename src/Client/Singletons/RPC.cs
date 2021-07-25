@@ -11,62 +11,54 @@ namespace CraigStars.Singletons
     {
         static CSLog log = LogProvider.GetLogger(typeof(RPC));
 
-        private string LogPrefix { get => this.IsServer() ? "Server:" : "Client:"; }
+        string LogPrefix { get => this.IsServer() ? "Server:" : "Client:"; }
 
-        /// <summary>
-        /// RPC is a singleton
-        /// </summary>
-        private static RPC instance;
-        public static RPC Instance
-        {
-            get
-            {
-                return instance;
-            }
-        }
+        #region RPC events
 
-        RPC()
-        {
-            instance = this;
-        }
+        // The RPC class recieves network messages and publishes events to it's local instance
+        // This way, a server can listen for events only on the RPC instance in its scene tree
 
-        public override void _Ready()
-        {
-            // when a player is updated, notify other players
-            Signals.PlayerJoinedEvent += OnPlayerJoined;
-        }
-
-        public override void _ExitTree()
-        {
-            Signals.PlayerJoinedEvent -= OnPlayerJoined;
-        }
-
-        private void OnPlayerJoined(int networkId)
-        {
-            if (this.IsServer() && networkId != 1)
-            {
-                // tell the new player about our players
-                SendPlayersUpdated(PlayersManager.Instance.Players, networkId);
-            }
-        }
-
-        #region Connection RPC Calls
+        public event Action<PlayerMessage> PlayerMessageEvent;
+        public event Action GameStartRequestedEvent;
+        public event Action<Player> SubmitTurnRequestedEvent;
+        public event Action<List<PublicPlayerInfo>> PlayersUpdatedEvent;
+        public event Action<PublicPlayerInfo> PlayerJoinedEvent;
+        public event Action<PublicPlayerInfo> PlayerLeftEvent;
 
         #endregion
 
+        /// <summary>
+        /// The server side RPC needs an active list of players for deserializing player
+        /// json for turn submittals
+        /// </summary>
+        List<Player> players;
+
+        /// <summary>
+        /// We have a uniqe RPC instance per scene tree
+        /// </summary>
+        public static RPC Instance(SceneTree sceneTree)
+        {
+            return sceneTree.Root.GetNode<RPC>("/root/RPC");
+        }
+
+        public void SetPlayers(List<Player> players)
+        {
+            this.players = players;
+        }
+
         #region Player RPC Calls
 
-        public void SendMessage(string message)
+        public void SendMessage(string message, int playerNum = PlayerMessage.ServerPlayerNum)
         {
-            var playerMessage = new PlayerMessage(PlayersManager.Me.Num, message);
+            var playerMessage = new PlayerMessage(playerNum, message);
             log.Debug($"{LogPrefix} Sending Message {playerMessage}");
             Rpc(nameof(Message), Serializers.Serialize(playerMessage));
         }
 
-        public void SendAllMessages(int networkId)
+        public void SendAllMessages(int networkId, List<PlayerMessage> messages)
         {
             log.Debug($"{LogPrefix} Sending All Messages to {networkId}");
-            PlayersManager.Instance.Messages.ForEach(m => RpcId(networkId, nameof(Message), Serializers.Serialize(m)));
+            messages.ForEach(m => RpcId(networkId, nameof(Message), Serializers.Serialize(m)));
         }
 
         [RemoteSync]
@@ -77,8 +69,61 @@ namespace CraigStars.Singletons
             {
                 log.Debug($"{LogPrefix} Received PlayerMessage {message} from {GetTree().GetRpcSenderId()}");
 
+                // we received a new message, notify listeners
+                // Hosts actually receive this message twice, once as a client and once as a server
+                // TODO: We probably need some way to tell if we are a headless server vs an host server. If this is a headless server we want to publish this message
+                if (!this.IsServer())
+                {
+                    PlayerMessageEvent?.Invoke(message.Value);
+                }
+            }
+            else
+            {
+                log.Error($"{LogPrefix} Failed to parse json: {json}");
+            }
+        }
+
+        public void SendPlayerJoined(PublicPlayerInfo player)
+        {
+            // send our peers an update of a player
+            log.Debug($"{LogPrefix} Notifying clients about player join: {player}");
+            Rpc(nameof(PlayerJoined), Serializers.Serialize(player));
+        }
+
+        [Remote]
+        public void PlayerJoined(string json)
+        {
+            var player = Serializers.DeserializeObject<PublicPlayerInfo>(json);
+            if (player != null)
+            {
+                log.Debug($"{LogPrefix} Received PlayerJoined event for Player {player.Num} - {player.Name} (NetworkId: {player.NetworkId}");
+
                 // notify listeners that we have updated Player
-                Signals.PublishPlayerMessageEvent(message.Value);
+                PlayerJoinedEvent?.Invoke(player);
+            }
+            else
+            {
+                log.Error($"{LogPrefix} Failed to parse json: {json}");
+            }
+        }
+
+        public void SendPlayerLeft(PublicPlayerInfo player)
+        {
+            // send our peers an update of a player
+            log.Debug($"{LogPrefix} Notifying clients about player left: {player}");
+            Rpc(nameof(PlayerLeft), Serializers.Serialize(player));
+        }
+
+        [Remote]
+        public void PlayerLeft(string json)
+        {
+            var player = Serializers.DeserializeObject<PublicPlayerInfo>(json);
+            if (player != null)
+            {
+                log.Debug($"{LogPrefix} Received PlayerLeft event for Player {player.Num} - {player.Name} (NetworkId: {player.NetworkId}");
+
+                // notify listeners that we have updated Player
+                PlayerLeftEvent?.Invoke(player);
             }
             else
             {
@@ -123,13 +168,13 @@ namespace CraigStars.Singletons
                 var playersArray = new Godot.Collections.Array(players.Select(p => Serializers.Serialize(p)).ToArray());
                 if (networkId == 0)
                 {
-                    // log.Debug($"{LogPrefix} Sending all players to all clients");
+                    log.Debug($"{LogPrefix} Sending all players to all clients");
                     // we are a server, tell the clients we have a player update
                     Rpc(nameof(PlayersUpdated), playersArray);
                 }
                 else
                 {
-                    log.Debug($"{LogPrefix} Sending players to {networkId}");
+                    log.Debug($"{LogPrefix} Sending player infos to network player: {networkId}");
                     // we are a server, tell the clients we have a player update
                     RpcId(networkId, nameof(PlayersUpdated), playersArray);
                 }
@@ -147,25 +192,59 @@ namespace CraigStars.Singletons
         [Remote]
         public void PlayersUpdated(Godot.Collections.Array jsons)
         {
-            var players = new PublicPlayerInfo[jsons.Count];
+            var players = new List<PublicPlayerInfo>(jsons.Count);
             foreach (string json in jsons)
             {
                 var player = Serializers.DeserializeObject<PublicPlayerInfo>(json);
                 if (player != null)
                 {
                     log.Debug($"{LogPrefix} Received PlayerUpdated event for Player {player.Num} - {player.Name} (NetworkId: {player.NetworkId}");
-
-                    // notify listeners that we have updated Player
-                    Signals.PublishPlayerUpdatedEvent(player);
+                    players.Add(player);
                 }
                 else
                 {
                     log.Error($"{LogPrefix} Failed to parse json: {json}");
                 }
             }
+
+            // notify listeners that we have updated Player
+            PlayersUpdatedEvent?.Invoke(players);
         }
 
         #endregion
+
+        /// <summary>
+        /// This is called by the server to send each player their player information
+        /// </summary>
+        /// <param name="player"></param>
+        public void SendGameStartRequested()
+        {
+            log.Info($"{LogPrefix}: Sending GameStartRequested to server");
+            RpcId(1, nameof(GameStartRequested));
+        }
+
+        [Remote]
+        public void GameStartRequested()
+        {
+            if (this.IsServer())
+            {
+                var callerNetworkId = GetTree().GetRpcSenderId();
+                var player = players.Find(player => player.NetworkId == callerNetworkId);
+                if (player == null || player.Host == false)
+                {
+                    log.Error($"{LogPrefix}: Received GameStartRequested from {callerNetworkId}, player doesn't exist or isn't host.");
+                }
+                else
+                {
+                    log.Info($"{LogPrefix}: Received GameStartRequested from {player}");
+                    GameStartRequestedEvent?.Invoke();
+                }
+            }
+            else
+            {
+                log.Error("A client received a GameStartRequested RPC call");
+            }
+        }
 
         /// <summary>
         /// This is called by the server to send each player their player information
@@ -180,29 +259,22 @@ namespace CraigStars.Singletons
                 {
                     log.Info($"Server: Sending {player} updated player data");
                     var json = Serializers.Serialize(player, settings);
-                    RpcId(player.NetworkId, nameof(PlayerDataUpdated), json);
+                    RpcId(player.NetworkId, nameof(PlayerDataUpdated), player.Num, json);
                 }
             }
 
         }
 
         [Remote]
-        public void PlayerDataUpdated(string playerJson)
+        public void PlayerDataUpdated(int playerNum, string playerJson)
         {
             log.Info("Client: Server sent player data, updated Me");
-            PlayersManager.Me.Fleets.Clear();
-            PlayersManager.Me.ForeignFleets.Clear();
-            PlayersManager.Me.Planets.Clear();
-            PlayersManager.Me.ForeignPlanets.Clear();
-            PlayersManager.Me.Designs.Clear();
-            PlayersManager.Me.ForeignDesigns.Clear();
-            PlayersManager.Me.Messages.Clear();
-            PlayersManager.Me.DeletedDesigns.Clear();
-            PlayersManager.Me.CargoTransferOrders.Clear();
+            var player = new Player() { Num = playerNum };
 
-            Serializers.PopulatePlayer(playerJson, PlayersManager.Me, Serializers.CreatePlayerSettings(PlayersManager.Instance.Players, TechStore.Instance));
-            PlayersManager.Me.SetupMapObjectMappings();
-            PlayersManager.Me.ComputeAggregates();
+            Serializers.PopulatePlayer(playerJson, player, Serializers.CreatePlayerSettings(new List<PublicPlayerInfo>() { player }, TechStore.Instance));
+            player.SetupMapObjectMappings();
+            player.ComputeAggregates();
+            PlayersManager.Me = player;
             log.Info("Client: Done recieving updated player data");
         }
 
@@ -212,7 +284,7 @@ namespace CraigStars.Singletons
         /// <param name="player">The player (probably PlayersManager.Me) submitting the turn</param>
         public void SendSubmitTurn(Player player)
         {
-            var settings = Serializers.CreatePlayerSettings(PlayersManager.Instance.Players, player.TechStore);
+            var settings = Serializers.CreatePlayerSettings(player.Game.Players, player.TechStore);
             log.Info($"Client: Submitting turn to server");
             var json = Serializers.Serialize(player, settings);
             RpcId(1, nameof(SubmitTurn), json);
@@ -222,14 +294,14 @@ namespace CraigStars.Singletons
         public void SubmitTurn(string playerJson)
         {
             var networkId = GetTree().GetRpcSenderId();
-            var player = PlayersManager.Instance.GetNetworkPlayer(networkId) as Player;
+            var player = players.Find(player => player.NetworkId == networkId);
             if (player != null)
             {
                 log.Info($"Server: {player} submitted turn");
-                Serializers.PopulatePlayer(playerJson, player, Serializers.CreatePlayerSettings(PlayersManager.Instance.Players, TechStore.Instance));
+                Serializers.PopulatePlayer(playerJson, player, Serializers.CreatePlayerSettings(players.Cast<PublicPlayerInfo>().ToList(), TechStore.Instance));
                 player.SetupMapObjectMappings();
                 player.ComputeAggregates();
-                Signals.PublishSubmitTurnRequestedEvent(player);
+                SubmitTurnRequestedEvent?.Invoke(player);
             }
             else
             {

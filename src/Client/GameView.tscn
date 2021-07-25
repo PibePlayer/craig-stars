@@ -118,38 +118,38 @@ rect_min_size = Vector2( 250, 0 )
 [node name="MapObjectSummaryTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 33 )]
 margin_right = 250.0
 margin_bottom = 172.0
-ControlsScene = "res://src/Client/CommandPane/MapObjectSummaryTile.tscn"
 Title = "Name"
+ControlsScene = "res://src/Client/CommandPane/MapObjectSummaryTile.tscn"
 
 [node name="FleetCompositionTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 33 )]
 visible = false
 margin_top = 170.0
 margin_right = 250.0
 margin_bottom = 372.0
-ControlsScene = "res://src/Client/CommandPane/FleetCompositionTile.tscn"
 Title = "Fleet Composition"
+ControlsScene = "res://src/Client/CommandPane/FleetCompositionTile.tscn"
 
 [node name="FleetCargoTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 33 )]
 visible = false
 margin_top = 170.0
 margin_right = 250.0
 margin_bottom = 372.0
-ControlsScene = "res://src/Client/CommandPane/FleetCargoTile.tscn"
 Title = "Fuel & Cargo"
+ControlsScene = "res://src/Client/CommandPane/FleetCargoTile.tscn"
 
 [node name="PlanetMineralsOnHandTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 33 )]
 margin_top = 176.0
 margin_right = 250.0
 margin_bottom = 314.0
-ControlsScene = "res://src/Client/CommandPane/PlanetMineralsOnHandTile.tscn"
 Title = "Minerals On Hand"
+ControlsScene = "res://src/Client/CommandPane/PlanetMineralsOnHandTile.tscn"
 
 [node name="PlanetStatusTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 33 )]
 margin_top = 318.0
 margin_right = 250.0
 margin_bottom = 500.0
-ControlsScene = "res://src/Client/CommandPane/PlanetStatusTile.tscn"
 Title = "Status"
+ControlsScene = "res://src/Client/CommandPane/PlanetStatusTile.tscn"
 
 [node name="RightCommandPange" type="VBoxContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer"]
 margin_left = 254.0
@@ -160,15 +160,15 @@ rect_min_size = Vector2( 250, 0 )
 [node name="PlanetProductionTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 33 )]
 margin_right = 250.0
 margin_bottom = 166.0
-ControlsScene = "res://src/Client/CommandPane/PlanetProductionTile.tscn"
 Title = "Production"
+ControlsScene = "res://src/Client/CommandPane/PlanetProductionTile.tscn"
 
 [node name="PlanetStarbaseTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 33 )]
 margin_top = 170.0
 margin_right = 250.0
 margin_bottom = 368.0
-ControlsScene = "res://src/Client/CommandPane/PlanetStarbaseTile.tscn"
 Title = "Starbase"
+ControlsScene = "res://src/Client/CommandPane/PlanetStarbaseTile.tscn"
 
 [node name="FleetOrbitingTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 33 )]
 visible = false
@@ -176,8 +176,8 @@ margin_left = -254.0
 margin_top = 170.0
 margin_right = -4.0
 margin_bottom = 372.0
-ControlsScene = "res://src/Client/CommandPane/FleetOrbitingTile.tscn"
 Title = "In Deep Space"
+ControlsScene = "res://src/Client/CommandPane/FleetOrbitingTile.tscn"
 
 [node name="OtherFleetsHereTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 33 )]
 visible = false
@@ -185,8 +185,8 @@ margin_left = -254.0
 margin_top = 170.0
 margin_right = -4.0
 margin_bottom = 372.0
-ControlsScene = "res://src/Client/CommandPane/OtherFleetsHereTile.tscn"
 Title = "Other Fleets Here"
+ControlsScene = "res://src/Client/CommandPane/OtherFleetsHereTile.tscn"
 
 [node name="FleetsInOrbitTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 33 )]
 visible = false
@@ -194,8 +194,8 @@ margin_left = -254.0
 margin_top = 170.0
 margin_right = -4.0
 margin_bottom = 372.0
-ControlsScene = "res://src/Client/CommandPane/FleetsInOrbitTile.tscn"
 Title = "Fleets In Orbit"
+ControlsScene = "res://src/Client/CommandPane/FleetsInOrbitTile.tscn"
 
 [node name="FleetWaypoints" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 33 )]
 visible = false
@@ -203,16 +203,16 @@ margin_left = -254.0
 margin_top = 170.0
 margin_right = -4.0
 margin_bottom = 372.0
-ControlsScene = "res://src/Client/CommandPane/FleetWaypointsTile.tscn"
 Title = "Fleet Waypoints"
+ControlsScene = "res://src/Client/CommandPane/FleetWaypointsTile.tscn"
 
 [node name="FleetWaypointTaskTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 33 )]
 visible = false
 margin_top = 360.0
 margin_right = 250.0
 margin_bottom = 418.0
-ControlsScene = "res://src/Client/CommandPane/FleetWaypointTaskTile.tscn"
 Title = "Waypoint Task"
+ControlsScene = "res://src/Client/CommandPane/FleetWaypointTaskTile.tscn"
 
 [node name="MessagesPane" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer" instance=ExtResource( 8 )]
 margin_top = 532.0

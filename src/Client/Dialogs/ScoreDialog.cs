@@ -55,12 +55,12 @@ namespace CraigStars
 
             // add the empty column for score type
             scoreTable.Data.AddColumn("", false, align: Label.AlignEnum.Right);
-            PlayersManager.Instance.Players.ForEach(player =>
+            GameInfo.Players.ForEach(player =>
             {
                 scoreTable.Data.AddColumn(player.RacePluralName, false, align: Label.AlignEnum.Right);
             });
 
-            int numPlayers = PlayersManager.Instance.NumPlayers;
+            int numPlayers = GameInfo.Players.Count;
 
             object[] planets = new object[numPlayers + 1];
             object[] starbases = new object[numPlayers + 1];
@@ -82,9 +82,9 @@ namespace CraigStars
             score[0] = "Score";
             rank[0] = "Rank";
 
-            for (int i = 0; i < PlayersManager.Instance.Players.Count; i++)
+            for (int i = 0; i < GameInfo.Players.Count; i++)
             {
-                var player = PlayersManager.Instance.Players[i];
+                var player = GameInfo.Players[i];
                 var index = i + 1;
 
                 if (player == Me || Me.Game.ScoresVisible)
@@ -133,12 +133,12 @@ namespace CraigStars
 
             // add the empty column for victory condition description
             victoryTable.Data.AddColumn("", false, align: Label.AlignEnum.Right);
-            PlayersManager.Instance.Players.ForEach(player =>
+            GameInfo.Players.ForEach(player =>
             {
                 victoryTable.Data.AddColumn(player.RacePluralName, false, align: Label.AlignEnum.Right);
             });
 
-            int numPlayers = PlayersManager.Instance.NumPlayers;
+            int numPlayers = GameInfo.Players.Count;
 
             object[] OwnPlanets = new object[numPlayers + 1];
             object[] AttainTechLevels = new object[numPlayers + 1];
@@ -157,9 +157,9 @@ namespace CraigStars
             OwnCapitalShips[0] = $"Owns {victoryConditions.OwnCapitalShips} capital ships.";
             HighestScore[0] = $"Has the highest score after {victoryConditions.HighestScoreAfterYears} years.";
 
-            for (int i = 0; i < PlayersManager.Instance.Players.Count; i++)
+            for (int i = 0; i < GameInfo.Players.Count; i++)
             {
-                var player = PlayersManager.Instance.Players[i];
+                var player = GameInfo.Players[i];
                 var index = i + 1;
 
                 OwnPlanets[index] = player.AchievedVictoryConditions.Contains(VictoryConditionType.OwnPlanets);

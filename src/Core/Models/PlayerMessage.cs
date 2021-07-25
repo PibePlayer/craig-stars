@@ -5,6 +5,7 @@ namespace CraigStars
 {
     public readonly struct PlayerMessage
     {
+        public const int ServerPlayerNum = -1;
         public readonly int playerNum;
         public readonly string message;
 

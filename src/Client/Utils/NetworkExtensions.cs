@@ -2,20 +2,20 @@ using Godot;
 
 namespace CraigStars.Utils
 {
-/// <summary>
-/// Provides network extensions to nodes
-/// </summary>
-public static class NetworkExtensions
-{
     /// <summary>
-    /// Returns true if this scene tree is hosting a game and the server
+    /// Provides network extensions to nodes
     /// </summary>
-    /// <param name="node"></param>
-    /// <returns></returns>
-    public static bool IsServer(this Node node)
+    public static class NetworkExtensions
     {
-        return node.GetTree().HasNetworkPeer() && node.GetTree().IsNetworkServer();
-    }
+        /// <summary>
+        /// Returns true if this scene tree is hosting a game and the server
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        public static bool IsServer(this Node node)
+        {
+            return node.GetTree().HasNetworkPeer() && node.GetTree().IsNetworkServer();
+        }
 
         /// <summary>
         /// Returns true if this scene tree is a client connected to a multiplayer game

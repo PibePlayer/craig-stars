@@ -93,6 +93,7 @@ namespace CraigStars.Tests
             var player1 = new Player()
             {
                 Name = "Player 1",
+                Num = 0,
                 BattlePlans = new List<BattlePlan>() {
                     new BattlePlan("Default")
                 }
@@ -100,6 +101,7 @@ namespace CraigStars.Tests
             var player2 = new Player()
             {
                 Name = "Player 2",
+                Num = 1,
                 BattlePlans = new List<BattlePlan>() {
                     new BattlePlan("Default")
                 }

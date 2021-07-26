@@ -66,6 +66,7 @@ namespace CraigStars
             hostWindow.FindNode("HostButton").Connect("pressed", this, nameof(OnHostWindowHostButtonPressed));
 
             Signals.PlayerUpdatedEvent += OnPlayerUpdated;
+            Signals.GameStartedEvent += OnGameStarted;
             GetTree().Connect("server_disconnected", this, nameof(OnServerDisconnected));
             GetTree().Connect("connection_failed", this, nameof(OnConnectionFailed));
         }
@@ -73,6 +74,7 @@ namespace CraigStars
         public override void _ExitTree()
         {
             Signals.PlayerUpdatedEvent -= OnPlayerUpdated;
+            Signals.GameStartedEvent -= OnGameStarted;
         }
 
         void OnJoinWindowCancelButtonPressed()
@@ -97,12 +99,7 @@ namespace CraigStars
 
         void OnContinueGameButtonPressed()
         {
-            var gameInfo = ServerManager.Instance.ContinueGame(Settings.Instance.ContinueGame, (int)continueGameYearSpinBox.Value);
-
-            this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (client) =>
-            {
-                client.GameInfo = gameInfo;
-            });
+            ServerManager.Instance.ContinueGame(Settings.Instance.ContinueGame, (int)continueGameYearSpinBox.Value);
         }
 
         void OnHostGameButtonPressed()
@@ -170,6 +167,19 @@ namespace CraigStars
             {
                 GetTree().ChangeScene("res://src/Client/MenuScreens/Lobby.tscn");
             }
+        }
+
+        /// <summary>
+        /// The server will notify us when the game is ready
+        /// </summary>
+        /// <param name="gameInfo"></param>
+        void OnGameStarted(PublicGameInfo gameInfo, Player player)
+        {
+            this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (client) =>
+            {
+                PlayersManager.Me = player;
+                client.GameInfo = gameInfo;
+            });
         }
     }
 }

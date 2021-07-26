@@ -28,7 +28,7 @@ namespace CraigStars.Client
             UpdateTitleEvent?.Invoke(title);
         }
 
-        protected virtual void OnTurnPassed(PublicGameInfo gameInfo)
+        protected virtual void OnTurnPassed(PublicGameInfo gameInfo, Player player)
         {
             CommandedPlanet = null;
             UpdateControls();

@@ -199,19 +199,19 @@ namespace CraigStars
             Signals.TurnPassedEvent -= OnTurnPassed;
         }
 
-        private void OnTurnPassed(PublicGameInfo gameInfo)
-        {
-            if (SaveToDisk)
-            {
-                ContinueYear = gameInfo.Year;
-            }
-        }
-
-        private void OnGameStarted(PublicGameInfo gameInfo)
+        void OnGameStarted(PublicGameInfo gameInfo, Player player)
         {
             if (SaveToDisk)
             {
                 ContinueGame = gameInfo.Name;
+                ContinueYear = gameInfo.Year;
+            }
+        }
+
+        void OnTurnPassed(PublicGameInfo gameInfo, Player player)
+        {
+            if (SaveToDisk)
+            {
                 ContinueYear = gameInfo.Year;
             }
         }

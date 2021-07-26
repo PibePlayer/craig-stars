@@ -21,6 +21,7 @@ namespace CraigStars
 
         public override void _Ready()
         {
+            base._Ready();
             loader = GetNode<Loader>("VBoxContainer/CenterContainer/Panel/HBoxContainer/MenuButtons/HBoxContainer/Loader");
             loadButton = GetNode<Button>("VBoxContainer/CenterContainer/Panel/HBoxContainer/MenuButtons/HBoxContainer/LoadButton");
             deleteButton = (Button)FindNode("DeleteButton");
@@ -34,6 +35,14 @@ namespace CraigStars
             gameItemList.Connect("item_activated", this, nameof(OnGameListItemActivated));
 
             UpdateItemList();
+
+            Signals.GameStartedEvent += OnGameStarted;
+        }
+
+        public override void _ExitTree()
+        {
+            base._ExitTree();
+            Signals.GameStartedEvent -= OnGameStarted;
         }
 
         void OnGameSaved(Game game, string filename)
@@ -69,14 +78,22 @@ namespace CraigStars
                     Settings.Instance.ContinueYear = gameYear;
 
                     loadButton.Disabled = backButton.Disabled = true;
-                    var gameInfo = ServerManager.Instance.ContinueGame(gameFile, gameYear);
-
-                    this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (client) => {
-                        client.GameInfo = gameInfo;
-                    });
-                    GetTree().ChangeScene("res://src/Client/ClientView.tscn");
+                    ServerManager.Instance.ContinueGame(gameFile, gameYear);
                 }
             }
+        }
+
+        /// <summary>
+        /// The server will notify us when the game is ready
+        /// </summary>
+        /// <param name="gameInfo"></param>
+        void OnGameStarted(PublicGameInfo gameInfo, Player player)
+        {
+            this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (client) =>
+            {
+                PlayersManager.Me = player;
+                client.GameInfo = gameInfo;
+            });
         }
 
         void OnDeleteButtonPressed()

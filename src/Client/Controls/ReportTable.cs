@@ -48,7 +48,7 @@ namespace CraigStars
             table.RowSelectedEvent -= OnRowSelected;
         }
 
-        void OnTurnPassed(PublicGameInfo gameInfo)
+        void OnTurnPassed(PublicGameInfo gameInfo, Player player)
         {
             table.Data.Clear();
             table.ClearTable();

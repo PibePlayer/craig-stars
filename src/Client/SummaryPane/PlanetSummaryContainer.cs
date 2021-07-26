@@ -93,7 +93,7 @@ namespace CraigStars
             Planet = mapObject as PlanetSprite;
         }
 
-        void OnTurnPassed(PublicGameInfo gameInfo)
+        void OnTurnPassed(PublicGameInfo gameInfo, Player player)
         {
             UpdateControls();
         }

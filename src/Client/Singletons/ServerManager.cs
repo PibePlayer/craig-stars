@@ -1,9 +1,11 @@
+using CraigStars.Server;
 using CraigStars.Singletons;
 using Godot;
 using System;
 using System.Collections.Generic;
+using CSServer = CraigStars.Server.Server;
 
-namespace CraigStars
+namespace CraigStars.Singletons
 {
     /// <summary>
     /// A singleton node for creating new Server scene trees when multiplayer games are hosted
@@ -33,8 +35,7 @@ namespace CraigStars
         /// Servers have their own sceneTree
         /// </summary>
         private SceneTree serverTree;
-        private NetworkServer server;
-        private SinglePlayerServer singlePlayerServer;
+        private CSServer server;
 
         public override void _Ready()
         {
@@ -54,20 +55,20 @@ namespace CraigStars
 
         #region Single Player
 
+        GameSettings<Player> localGameSettings;
+
         /// <summary>
         /// Create a new single player server and generate a new game
         /// </summary>
         /// <param name="settings"></param>
         /// <returns></returns>
-        public PublicGameInfo NewGame(GameSettings<Player> settings)
+        public void NewGame(GameSettings<Player> settings)
         {
-            singlePlayerServer = GD.Load<PackedScene>("res://src/Client/Singletons/SinglePlayerServer.tscn").Instance<SinglePlayerServer>();
-            var game = singlePlayerServer.CreateNewGame(settings);
-            AddChild(singlePlayerServer);
+            localGameSettings = settings;
+            server = GD.Load<PackedScene>("res://src/Client/Server/LocalServer.tscn").Instance<LocalServer>();
+            AddChild(server);
 
-            PlayersManager.Me = game.Players[0];
-
-            return game.GameInfo;
+            CallDeferred(nameof(PublishLocalGameStartRequest));
         }
 
         /// <summary>
@@ -75,30 +76,37 @@ namespace CraigStars
         /// </summary>
         /// <param name="settings"></param>
         /// <returns></returns>
-        public PublicGameInfo ContinueGame(String gameName, int year, int playerIndex = 0)
+        public void ContinueGame(String gameName, int year)
         {
-            singlePlayerServer = GD.Load<PackedScene>("res://src/Client/Singletons/SinglePlayerServer.tscn").Instance<SinglePlayerServer>();
-            var game = singlePlayerServer.LoadGame(gameName, year);
-            AddChild(singlePlayerServer);
-
-            // check for a player specific save to load
-            PlayersManager.Me = game.Players[playerIndex];
-
-            if (GamesManager.Instance.HasPlayerSave(PlayersManager.Me))
+            // setup our GameSettings to be a continue game
+            localGameSettings = new GameSettings<Player>()
             {
-                GamesManager.Instance.LoadPlayerSave(PlayersManager.Me, game.GameInfo.Players);
-            }
+                ContinueGame = true,
+                Name = gameName,
+                Year = year,
+            };
 
-            return game.GameInfo;
+            server = GD.Load<PackedScene>("res://src/Client/Server/LocalServer.tscn").Instance<LocalServer>();
+            AddChild(server);
+
+            CallDeferred(nameof(PublishLocalGameStartRequest));
         }
 
         public void ExitGame()
         {
-            if (singlePlayerServer != null)
+            if (server != null)
             {
-                RemoveChild(singlePlayerServer);
-                singlePlayerServer.QueueFree();
+                RemoveChild(server);
+                server.QueueFree();
             }
+        }
+
+        /// <summary>
+        /// For local games, we publish a GameStartRequestedEvent
+        /// </summary>
+        void PublishLocalGameStartRequest()
+        {
+            Signals.PublishGameStartRequestedEvent(localGameSettings);
         }
 
         #endregion
@@ -121,10 +129,10 @@ namespace CraigStars
             serverTree.Root.RenderTargetUpdateMode = Viewport.UpdateMode.Disabled;
 
             // add singletons (multipletons)
-            var rpc = GD.Load<PackedScene>("res://src/Client/Singletons/RPC.tscn").Instance<RPC>();
+            var rpc = GD.Load<PackedScene>("res://src/Client/Server/RPC.tscn").Instance<RPC>();
             rpc.Name = "RPC";
             serverTree.Root.AddChild(rpc);
-            server = GD.Load<PackedScene>("res://src/Client/NetworkServer.tscn").Instance<NetworkServer>();
+            server = GD.Load<PackedScene>("res://src/Client/Server/NetworkServer.tscn").Instance<NetworkServer>();
             serverTree.Root.AddChild(server);
 
             var peer = new NetworkedMultiplayerENet();

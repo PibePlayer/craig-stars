@@ -6,7 +6,7 @@ using CraigStars.Singletons;
 using CraigStars.Utils;
 using System.Threading.Tasks;
 
-namespace CraigStars
+namespace CraigStars.Server
 {
     /// <summary>
     /// The NetworkServer node is created and added to a new SceneTree when a new multiplayer game is hosted.
@@ -33,14 +33,12 @@ namespace CraigStars
         public override void _Ready()
         {
             base._Ready();
-            rpc = RPC.Instance(GetTree());
 
             GetTree().Connect("network_peer_connected", this, nameof(OnPlayerConnected));
             GetTree().Connect("network_peer_disconnected", this, nameof(OnPlayerDisconnected));
 
+            rpc = RPC.Instance(GetTree());
             rpc.PlayerMessageEvent += OnPlayerMessage;
-            rpc.GameStartRequestedEvent += OnGameStartRequested;
-            rpc.SubmitTurnRequestedEvent += OnSubmitTurnRequested;
         }
 
         public override void _ExitTree()
@@ -50,59 +48,18 @@ namespace CraigStars
             GetTree().Disconnect("network_peer_disconnected", this, nameof(OnPlayerDisconnected));
 
             rpc.PlayerMessageEvent -= OnPlayerMessage;
-            rpc.GameStartRequestedEvent -= OnGameStartRequested;
-            rpc.SubmitTurnRequestedEvent -= OnSubmitTurnRequested;
+        }
+
+        protected override IClientEventPublisher CreateClientEventPublisher()
+        {
+            // network servers receive client events over RPC
+            return RPC.Instance(GetTree());
         }
 
 
         void OnPlayerMessage(PlayerMessage message)
         {
             Messages.Add(message);
-        }
-
-        protected void OnGameStartRequested()
-        {
-            // TODO: make our network server have settings
-            GameSettings<Player> settings = new GameSettings<Player>()
-            {
-                Name = "Network Game",
-                Size = Size.Small,
-                Density = Density.Normal,
-                Players = players,
-            };
-
-            CreateNewGame(settings);
-
-            // send players their data
-            rpc.SendPlayerDataUpdated(Game);
-            // tell everyone to start the game
-            rpc.SendPostStartGame(Game.GameInfo);
-        }
-
-
-        /// <summary>
-        /// The player has submitted a new turn.
-        /// Copy any data from this to the main game
-        /// </summary>
-        /// <param name="player"></param>
-        protected override void OnSubmitTurnRequested(Player player)
-        {
-            base.OnSubmitTurnRequested(player);
-
-            rpc.SendPlayerUpdated(player);
-        }
-
-        /// <summary>
-        /// Generate a new turn
-        /// </summary>
-        /// <returns></returns>
-        protected override async Task GenerateNewTurn()
-        {
-            await base.GenerateNewTurn();
-
-            // send players their data
-            rpc.SendPlayerDataUpdated(Game);
-            rpc.SendTurnPassed(Game.GameInfo);
         }
 
         #region Player Connect/Disconnect Events
@@ -154,6 +111,46 @@ namespace CraigStars
             rpc.SetPlayers(players);
             rpc.SendPlayerLeft(player);
             rpc.SendMessage($"{player} has left the game");
+        }
+
+        #endregion
+
+        #region Publishers
+        protected override void PublishPlayerUpdatedEvent(PublicPlayerInfo player)
+        {
+            rpc.SendPlayerUpdated(player);
+        }
+
+        protected override void PublishGameStartedEvent()
+        {
+            // tell everyone to start the game
+            rpc.SendPostStartGame(Game);
+        }
+
+        protected override void PublishTurnSubmittedEvent(PublicPlayerInfo player)
+        {
+            rpc.SendPlayerUpdated(player);
+        }
+
+        protected override void PublishTurnUnsubmittedEvent(PublicPlayerInfo player)
+        {
+
+        }
+
+        protected override void PublishTurnGeneratingEvent()
+        {
+
+        }
+
+        protected override void PublishTurnGeneratorAdvancedEvent(TurnGenerationState state)
+        {
+
+        }
+
+        protected override void PublishTurnPassedEvent()
+        {
+            // tell everyone we have a new turn and send along their player data
+            rpc.SendTurnPassed(Game);
         }
 
         #endregion

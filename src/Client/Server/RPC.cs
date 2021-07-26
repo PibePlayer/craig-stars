@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CraigStars.Server;
 using CraigStars.Utils;
 using Godot;
 using log4net;
 
 namespace CraigStars.Singletons
 {
-    public class RPC : Node
+    public class RPC : Node, IClientEventPublisher
     {
         static CSLog log = LogProvider.GetLogger(typeof(RPC));
 
@@ -17,10 +18,11 @@ namespace CraigStars.Singletons
 
         // The RPC class recieves network messages and publishes events to it's local instance
         // This way, a server can listen for events only on the RPC instance in its scene tree
+        public event Action<GameSettings<Player>> GameStartRequestedEvent;
+        public event Action<Player> SubmitTurnRequestedEvent;
+        public event Action<Player> UnsubmitTurnRequestedEvent;
 
         public event Action<PlayerMessage> PlayerMessageEvent;
-        public event Action GameStartRequestedEvent;
-        public event Action<Player> SubmitTurnRequestedEvent;
         public event Action<List<PublicPlayerInfo>> PlayersUpdatedEvent;
         public event Action<PublicPlayerInfo> PlayerJoinedEvent;
         public event Action<PublicPlayerInfo> PlayerLeftEvent;
@@ -217,17 +219,24 @@ namespace CraigStars.Singletons
         /// This is called by the server to send each player their player information
         /// </summary>
         /// <param name="player"></param>
-        public void SendGameStartRequested()
+        public void SendGameStartRequested(GameSettings<Player> settings)
         {
+
             log.Info($"{LogPrefix}: Sending GameStartRequested to server");
-            RpcId(1, nameof(GameStartRequested));
+            var settingsJson = Serializers.Serialize<GameSettings<Player>>(settings);
+            RpcId(1, nameof(GameStartRequested), settingsJson);
         }
 
         [Remote]
-        public void GameStartRequested()
+        public void GameStartRequested(string settingsJson)
         {
             if (this.IsServer())
             {
+                // deserialize the new game settings and set our list of network players to the Players property
+                GameSettings<Player> settings = Serializers.DeserializeObject<GameSettings<Player>>(settingsJson);
+                settings.Players = players;
+
+                // make sure the sending player is the host
                 var callerNetworkId = GetTree().GetRpcSenderId();
                 var player = players.Find(player => player.NetworkId == callerNetworkId);
                 if (player == null || player.Host == false)
@@ -237,7 +246,7 @@ namespace CraigStars.Singletons
                 else
                 {
                     log.Info($"{LogPrefix}: Received GameStartRequested from {player}");
-                    GameStartRequestedEvent?.Invoke();
+                    GameStartRequestedEvent?.Invoke(settings);
                 }
             }
             else
@@ -274,7 +283,6 @@ namespace CraigStars.Singletons
             Serializers.PopulatePlayer(playerJson, player, Serializers.CreatePlayerSettings(new List<PublicPlayerInfo>() { player }, TechStore.Instance));
             player.SetupMapObjectMappings();
             player.ComputeAggregates();
-            PlayersManager.Me = player;
             log.Info("Client: Done recieving updated player data");
         }
 
@@ -315,42 +323,67 @@ namespace CraigStars.Singletons
         /// </summary>
         /// <param name="year"></param>
         /// <param name="networkId"></param>
-        public void SendPostStartGame(PublicGameInfo gameInfo, int networkId = 0)
+        public void SendPostStartGame(Game game)
         {
-            string json = Serializers.Serialize(gameInfo);
-            if (networkId == 0)
+            string gameInfoJson = Serializers.Serialize(game.GameInfo);
+            var playerSerializationSettings = Serializers.CreatePlayerSettings(game.GameInfo.Players, game.TechStore);
+            foreach (var player in game.Players.Where(player => !player.AIControlled && player.NetworkId != 0))
             {
-                Rpc(nameof(PostStartGame), json);
-            }
-            else
-            {
-                RpcId(networkId, nameof(PostStartGame), json);
+                String playerJson = Serializers.Serialize(player, playerSerializationSettings);
+                log.Info($"{LogPrefix}: Sending PostStartGame to {player}");
+                RpcId(player.NetworkId, nameof(PostStartGame), gameInfoJson, playerJson, player.Num);
             }
         }
 
         [Remote]
-        public void PostStartGame(string gameInfoJson)
+        public void PostStartGame(string gameInfoJson, string playerJson, int playerNum)
         {
             PublicGameInfo gameInfo = Serializers.DeserializeObject<PublicGameInfo>(gameInfoJson);
-            log.Info($"Client: PostStartGameEvent for UI: {gameInfo.Name}");
+
+            // make sure our deserializer maps up our player correctly
+            var player = new Player() { Num = playerNum };
+            gameInfo.Players.RemoveAt(player.Num);
+            gameInfo.Players.Insert(player.Num, player);
+            var playerSerializationSettings = Serializers.CreatePlayerSettings(gameInfo.Players, TechStore.Instance);
+            Serializers.PopulatePlayer(playerJson, player, playerSerializationSettings);
+            // player.SetupMapObjectMappings();
+            // player.ComputeAggregates();
 
             // notify any clients that we have a new game
-            Signals.PublishGameStartedEvent(gameInfo);
+            Signals.PublishGameStartedEvent(gameInfo, player);
+            log.Info($"{LogPrefix}:{player} Received PostStartGame");
         }
 
         #region Game Events
 
-        public void SendTurnPassed(PublicGameInfo gameInfo)
+        public void SendTurnPassed(Game game)
         {
-            Rpc(nameof(TurnPassed), Serializers.Serialize(gameInfo));
+            string gameInfoJson = Serializers.Serialize(game.GameInfo);
+            var playerSerializationSettings = Serializers.CreatePlayerSettings(game.GameInfo.Players, game.TechStore);
+            foreach (var player in game.Players.Where(player => !player.AIControlled && player.NetworkId != 0))
+            {
+                String playerJson = Serializers.Serialize(player, playerSerializationSettings);
+                log.Info($"{LogPrefix}: Sending TurnPassed to {player}");
+                RpcId(player.NetworkId, nameof(TurnPassed), gameInfoJson, playerJson, player.Num);
+            }
         }
 
         [Remote]
-        public void TurnPassed(string gameInfoJson)
+        public void TurnPassed(string gameInfoJson, string playerJson, int playerNum)
         {
             PublicGameInfo gameInfo = Serializers.DeserializeObject<PublicGameInfo>(gameInfoJson);
-            Signals.PublishTurnPassedEvent(gameInfo);
-            log.Info("Client: PublishedTurnPassedEvent for UI");
+
+            // make sure our deserializer maps up our player correctly
+            var player = new Player() { Num = playerNum };
+            gameInfo.Players.RemoveAt(player.Num);
+            gameInfo.Players.Insert(player.Num, player);
+            var playerSerializationSettings = Serializers.CreatePlayerSettings(gameInfo.Players, TechStore.Instance);
+            Serializers.PopulatePlayer(playerJson, player, playerSerializationSettings);
+            // player.SetupMapObjectMappings();
+            // player.ComputeAggregates();
+
+            Signals.PublishTurnPassedEvent(gameInfo, player);
+            log.Info($"{LogPrefix}:{player} Received TurnPassed");
         }
 
         public void SendTurnSubmitted(PublicPlayerInfo player)

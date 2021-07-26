@@ -32,6 +32,7 @@ namespace CraigStars
 
         public override void _Ready()
         {
+            base._Ready();
             loader = GetNode<Loader>("VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/BottomHBoxContainer/Loader");
             startButton = GetNode<Button>("VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/StartButton");
             backButton = GetNode<Button>("VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/BackButton");
@@ -73,6 +74,14 @@ namespace CraigStars
             startButton.Connect("pressed", this, nameof(OnStartPressed));
 
             backButton.Disabled = startButton.Disabled = false;
+
+            Signals.GameStartedEvent += OnGameStarted;
+        }
+
+        public override void _ExitTree()
+        {
+            base._ExitTree();
+            Signals.GameStartedEvent -= OnGameStarted;
         }
 
         void OnFastHotseatToggled(bool toggled)
@@ -127,15 +136,9 @@ namespace CraigStars
             // start a new game and change to the client view
             Action startGame = () =>
             {
-                var gameInfo = ServerManager.Instance.NewGame(settings);
-
-                this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (client) =>
-                {
-                    client.GameInfo = gameInfo;
-                });
+                ServerManager.Instance.NewGame(settings);
 
                 backButton.Disabled = startButton.Disabled = true;
-
             };
 
             if (GamesManager.Instance.GameExists(settings.Name))
@@ -152,6 +155,19 @@ namespace CraigStars
                 startGame.Invoke();
             }
 
+        }
+
+        /// <summary>
+        /// The server will notify us when the game is ready
+        /// </summary>
+        /// <param name="gameInfo"></param>
+        void OnGameStarted(PublicGameInfo gameInfo, Player player)
+        {
+            this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (client) =>
+            {
+                PlayersManager.Me = player;
+                client.GameInfo = gameInfo;
+            });
         }
 
     }

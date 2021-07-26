@@ -36,6 +36,7 @@ namespace CraigStars
         public GameStartMode StartMode { get; set; } = GameStartMode.Normal;
 
         public int Year { get; set; } = 2400;
+        public bool ContinueGame { get; set; }
         public GameMode Mode { get; set; } = GameMode.SinglePlayer;
         public GameLifecycle Lifecycle { get; set; } = GameLifecycle.Setup;
         public Rules Rules { get; set; } = new Rules(0);

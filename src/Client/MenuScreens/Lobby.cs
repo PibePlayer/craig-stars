@@ -107,7 +107,7 @@ namespace CraigStars
         void OnChatMessageTextEntered(string newText)
         {
             var me = joinedPlayers.Find(player => player.NetworkId == GetTree().GetNetworkUniqueId());
-            
+
             RPC.Instance(GetTree()).SendMessage(newText, me.Num);
             chatMessage.Text = "";
         }
@@ -116,11 +116,12 @@ namespace CraigStars
         /// If we are joining a server, it will send an RPC message that sends this signal to us
         /// </summary>
         /// <param name="gameInfo"></param>
-        void OnGameStarted(PublicGameInfo gameInfo)
+        void OnGameStarted(PublicGameInfo gameInfo, Player player)
         {
             // Change to the ClientView using this new GameInfo
             this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (instance) =>
             {
+                PlayersManager.Me = player;
                 instance.GameInfo = gameInfo;
             });
         }
@@ -202,7 +203,18 @@ namespace CraigStars
         void OnStartGameButtonPressed()
         {
             log.Info("Host: All players ready, starting the game!");
-            RPC.Instance(GetTree()).SendGameStartRequested();
+
+            // TODO: start with settings from UI
+            GameSettings<Player> settings = new GameSettings<Player>()
+            {
+                Name = "Network Game",
+                Size = Size.Small,
+                Density = Density.Normal,
+            };
+
+            // Note: The server already knows about the game's players, so no need to pass
+            // those along here
+            RPC.Instance(GetTree()).SendGameStartRequested(settings);
         }
 
         #endregion

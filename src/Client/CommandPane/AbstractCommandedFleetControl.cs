@@ -45,7 +45,7 @@ public abstract class AbstractCommandedFleetControl : Control
         UpdateControls();
     }
 
-    protected virtual void OnTurnPassed(PublicGameInfo gameInfo)
+    protected virtual void OnTurnPassed(PublicGameInfo gameInfo, Player player)
     {
         CommandedFleet = null;
         UpdateControls();

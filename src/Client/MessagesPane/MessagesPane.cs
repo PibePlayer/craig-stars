@@ -128,10 +128,10 @@ namespace CraigStars
         void OnGameViewResetEvent(PublicGameInfo gameInfo)
         {
             this.gameInfo = gameInfo;
-            OnTurnPassed(gameInfo);
+            OnTurnPassed(gameInfo, PlayersManager.Me);
         }
 
-        void OnTurnPassed(PublicGameInfo gameInfo)
+        void OnTurnPassed(PublicGameInfo gameInfo, Player player)
         {
             this.gameInfo = gameInfo;
             messageNum = 0;

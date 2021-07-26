@@ -110,7 +110,7 @@ namespace CraigStars
             }
         }
 
-        void OnTurnPassed(PublicGameInfo gameInfo)
+        void OnTurnPassed(PublicGameInfo gameInfo, Player player)
         {
             UpdateControls();
         }

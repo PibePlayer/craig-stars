@@ -19,34 +19,34 @@ namespace CraigStars.Singletons
 
         #region Game Start/View Reset Events
 
-        public delegate void GameStart(PublicGameInfo gameInfo);
-        public static event GameStart GameStartedEvent;
-        public static event GameStart GameViewResetEvent;
-        public static void PublishGameStartedEvent(PublicGameInfo gameInfo) => GameStartedEvent?.Invoke(gameInfo);
+        public static event Action<PublicGameInfo, Player> GameStartedEvent;
+        public static event Action<PublicGameInfo> GameViewResetEvent;
+        public static void PublishGameStartedEvent(PublicGameInfo gameInfo, Player player) => GameStartedEvent?.Invoke(gameInfo, player);
         public static void PublishGameViewResetEvent(PublicGameInfo gameInfo) => GameViewResetEvent?.Invoke(gameInfo);
 
         #endregion
 
         #region Turn Generation events
 
-        public delegate void YearUpdate(PublicGameInfo gameInfo);
+        public static event Action<GameSettings<Player>> GameStartRequestedEvent;
         public static event Action<Player> SubmitTurnRequestedEvent;
         public static event Action<PublicPlayerInfo> TurnSubmittedEvent;
         public static event Action<Player> UnsubmitTurnRequestedEvent;
         public static event Action<PublicPlayerInfo> TurnUnsubmittedEvent;
         public static event Action<int> PlayTurnRequestedEvent;
 
-        public static event YearUpdate TurnPassedEvent;
+        public static event Action<PublicGameInfo, Player> TurnPassedEvent;
         public static event Action TurnGeneratingEvent;
         public static event Action<TurnGenerationState> TurnGeneratorAdvancedEvent;
 
+        public static void PublishGameStartRequestedEvent(GameSettings<Player> settings) => GameStartRequestedEvent?.Invoke(settings);
         public static void PublishSubmitTurnRequestedEvent(Player player) => SubmitTurnRequestedEvent?.Invoke(player);
         public static void PublishTurnSubmittedEvent(PublicPlayerInfo player) => TurnSubmittedEvent?.Invoke(player);
         public static void PublishUnsubmitTurnRequestedEvent(Player player) => UnsubmitTurnRequestedEvent?.Invoke(player);
         public static void PublishTurnUnsubmittedEvent(PublicPlayerInfo player) => TurnUnsubmittedEvent?.Invoke(player);
         public static void PublishPlayTurnRequestedEvent(int playerNum) => PlayTurnRequestedEvent?.Invoke(playerNum);
 
-        public static void PublishTurnPassedEvent(PublicGameInfo gameInfo) => TurnPassedEvent?.Invoke(gameInfo);
+        public static void PublishTurnPassedEvent(PublicGameInfo gameInfo, Player player) => TurnPassedEvent?.Invoke(gameInfo, player);
         public static void PublishTurnGeneratorAdvancedEvent(TurnGenerationState state) => TurnGeneratorAdvancedEvent?.Invoke(state);
         public static void PublishTurnGeneratingEvent() => TurnGeneratingEvent?.Invoke();
 

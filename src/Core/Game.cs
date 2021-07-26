@@ -211,12 +211,20 @@ namespace CraigStars
             SaveGame();
         }
 
-        public void UnsubmitTurn(Player player)
+        public void UnsubmitTurn(PublicPlayerInfo player)
         {
-            // TODO: what happens if we are in the middle of generating a turn?
-            // it should just be a no-op, but we should tell the player somehow
-            player.SubmittedTurn = false;
-            SaveGame();
+            var gamePlayer = Players.Find(p => p.Num == player.Num);
+            if (gamePlayer != null)
+            {
+                gamePlayer.SubmittedTurn = false;
+                // TODO: what happens if we are in the middle of generating a turn?
+                // it should just be a no-op, but we should tell the player somehow
+                SaveGame();
+            }
+            else
+            {
+                log.Error($"{player} not found in game.");
+            }
         }
 
         public Boolean AllPlayersSubmitted()

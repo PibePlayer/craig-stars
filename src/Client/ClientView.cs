@@ -18,7 +18,6 @@ namespace CraigStars
 
         Player Me { get => PlayersManager.Me; }
 
-        Game Game { get; set; }
         string projectName;
         Control container;
         ProgressBar progressBar;
@@ -39,6 +38,7 @@ namespace CraigStars
             projectName = ProjectSettings.GetSetting("application/config/name").ToString();
             SetProcess(false);
 
+            Signals.GameStartedEvent += OnGameStarted;
             Signals.SubmitTurnRequestedEvent += OnSubmitTurnRequested;
             Signals.TurnSubmittedEvent += OnTurnSubmitted;
             Signals.PlayTurnRequestedEvent += OnPlayTurnRequested;
@@ -55,6 +55,7 @@ namespace CraigStars
         {
             base._ExitTree();
 
+            Signals.GameStartedEvent -= OnGameStarted;
             Signals.SubmitTurnRequestedEvent -= OnSubmitTurnRequested;
             Signals.TurnSubmittedEvent -= OnTurnSubmitted;
             Signals.PlayTurnRequestedEvent -= OnPlayTurnRequested;
@@ -65,47 +66,6 @@ namespace CraigStars
             // {
             //     Game.TurnGeneratorAdvancedEvent -= OnGameTurnGeneratorAdvanced;
             // }
-        }
-
-        void OnSubmitTurnRequested(Player player)
-        {
-            // we submitted our turn, switch to turn submitter view
-            if (player == PlayersManager.Me)
-            {
-                if (this.IsMultiplayer())
-                {
-                    // submit our turn to the server
-                    NetworkClient.Instance.SubmitTurnToServer(player);
-                }
-
-                // we just submitted our turn, remove the game view and show this container
-                RemoveGameViewAndShow();
-                // this was us, show the dialog
-                turnGenerationStatus.Visible = true;
-            }
-        }
-
-        void OnTurnSubmitted(PublicPlayerInfo player)
-        {
-            if (player == PlayersManager.Me)
-            {
-                // we just submitted our turn, remove the game view and show this container
-                RemoveGameViewAndShow();
-                // this was us, show the dialog
-                turnGenerationStatus.Visible = true;
-
-                // TODO: figure out fast hotseat with singleplayer server
-                // if we are on fast hot seat mode, switch to the next available player
-                // if (Settings.Instance.FastHotseat)
-                // {
-                //     var nextUnsubmittedPlayer = Game.Players.Find(player => !player.AIControlled && !player.SubmittedTurn);
-                //     if (nextUnsubmittedPlayer != null)
-                //     {
-                //         Signals.PublishPlayTurnRequestedEvent(nextUnsubmittedPlayer.Num);
-                //     }
-                // }
-            }
-
         }
 
         /// <summary>
@@ -174,6 +134,70 @@ namespace CraigStars
             Signals.PublishGameViewResetEvent(GameInfo);
         }
 
+
+        /// <summary>
+        /// Remove the GameView and free it, then show the progress
+        /// container (and the TurnStatus)
+        /// </summary>
+        void RemoveGameViewAndShow()
+        {
+            container.Visible = true;
+            // remove the old game view and re-add it
+            if (gameView != null && IsInstanceValid(gameView))
+            {
+                RemoveChild(gameView);
+                gameView.QueueFree();
+            }
+
+        }
+
+        void OnGameStarted(PublicGameInfo gameInfo, Player player)
+        {
+            GameInfo = gameInfo;
+            PlayersManager.Me = player;
+        }
+
+        void OnSubmitTurnRequested(Player player)
+        {
+            // we submitted our turn, switch to turn submitter view
+            if (player == PlayersManager.Me)
+            {
+                if (this.IsMultiplayer())
+                {
+                    // submit our turn to the server
+                    NetworkClient.Instance.SubmitTurnToServer(player);
+                }
+
+                // we just submitted our turn, remove the game view and show this container
+                RemoveGameViewAndShow();
+                // this was us, show the dialog
+                turnGenerationStatus.Visible = true;
+            }
+        }
+
+        void OnTurnSubmitted(PublicPlayerInfo player)
+        {
+            if (player == PlayersManager.Me)
+            {
+                // we just submitted our turn, remove the game view and show this container
+                RemoveGameViewAndShow();
+                // this was us, show the dialog
+                turnGenerationStatus.Visible = true;
+
+                // TODO: figure out fast hotseat with singleplayer server
+                // if we are on fast hot seat mode, switch to the next available player
+                // if (Settings.Instance.FastHotseat)
+                // {
+                //     var nextUnsubmittedPlayer = Game.Players.Find(player => !player.AIControlled && !player.SubmittedTurn);
+                //     if (nextUnsubmittedPlayer != null)
+                //     {
+                //         Signals.PublishPlayTurnRequestedEvent(nextUnsubmittedPlayer.Num);
+                //     }
+                // }
+            }
+
+        }
+
         /// <summary>
         /// While a turn is being generated, this will update the progress bar
         /// </summary>
@@ -198,24 +222,9 @@ namespace CraigStars
             Signals.PublishTurnGeneratorAdvancedEvent(state);
         }
 
-        /// <summary>
-        /// Remove the GameView and free it, then show the progress
-        /// container (and the TurnStatus)
-        /// </summary>
-        void RemoveGameViewAndShow()
+        void OnTurnPassed(PublicGameInfo gameInfo, Player player)
         {
-            container.Visible = true;
-            // remove the old game view and re-add it
-            if (gameView != null && IsInstanceValid(gameView))
-            {
-                RemoveChild(gameView);
-                gameView.QueueFree();
-            }
-
-        }
-
-        void OnTurnPassed(PublicGameInfo gameInfo)
-        {
+            PlayersManager.Me = player;
             PlayersManager.Me.RunTurnProcessors(TurnProcessorManager.Instance);
             OS.SetWindowTitle($"{projectName} - {gameInfo.Name}: Year {gameInfo.Year}");
             CallDeferred(nameof(ReloadGameView));

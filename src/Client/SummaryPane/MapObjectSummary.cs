@@ -37,7 +37,7 @@ namespace CraigStars
             MapObject = mapObject as T;
         }
 
-        void OnTurnPassed(PublicGameInfo gameInfo)
+        void OnTurnPassed(PublicGameInfo gameInfo, Player player)
         {
             MapObject = null;
             UpdateControls();

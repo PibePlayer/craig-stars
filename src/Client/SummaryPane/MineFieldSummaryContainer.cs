@@ -44,7 +44,7 @@ namespace CraigStars
             UpdateControls();
         }
 
-        void OnTurnPassed(PublicGameInfo gameInfo)
+        void OnTurnPassed(PublicGameInfo gameInfo, Player player)
         {
             mineField = null;
             UpdateControls();

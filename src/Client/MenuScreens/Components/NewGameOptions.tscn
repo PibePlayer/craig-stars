@@ -1,0 +1,67 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://src/Client/MenuScreens/Components/NewGameOptions.cs" type="Script" id=1]
+
+[node name="NewGameOptions" type="GridContainer"]
+margin_right = 400.0
+margin_bottom = 72.0
+columns = 2
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="NameLabel" type="Label" parent="."]
+margin_top = 5.0
+margin_right = 97.0
+margin_bottom = 19.0
+rect_min_size = Vector2( 80, 0 )
+text = "Name:"
+align = 2
+
+[node name="NameLineEdit" type="LineEdit" parent="."]
+margin_left = 101.0
+margin_right = 400.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+text = "A Barefoot Jaywalk"
+
+[node name="SizeLabel" type="Label" parent="."]
+margin_top = 31.0
+margin_right = 97.0
+margin_bottom = 45.0
+rect_min_size = Vector2( 80, 0 )
+text = "Universe Size:"
+align = 2
+
+[node name="SizeOptionButton" type="OptionButton" parent="."]
+margin_left = 101.0
+margin_top = 28.0
+margin_right = 400.0
+margin_bottom = 48.0
+text = "Small"
+items = [ "Tiny", null, false, 0, null, "Small", null, false, 1, null, "Medium", null, false, 2, null, "Large", null, false, 3, null, "Huge", null, false, 4, null ]
+selected = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="DensityLabel" type="Label" parent="."]
+margin_top = 55.0
+margin_right = 97.0
+margin_bottom = 69.0
+rect_min_size = Vector2( 80, 0 )
+text = "Planet Density:"
+align = 2
+
+[node name="DensityOptionButton" type="OptionButton" parent="."]
+margin_left = 101.0
+margin_top = 52.0
+margin_right = 400.0
+margin_bottom = 72.0
+text = "Normal"
+items = [ "Sparse", null, false, 0, null, "Normal", null, false, 1, null, "Dense", null, false, 2, null, "Packed", null, false, 3, null ]
+selected = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}

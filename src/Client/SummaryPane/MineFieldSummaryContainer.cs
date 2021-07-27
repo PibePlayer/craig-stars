@@ -1,10 +1,8 @@
 using Godot;
 using System;
-using CraigStars.Singletons;
-using log4net;
 using CraigStars.Utils;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class MineFieldSummaryContainer : Container
     {
@@ -28,14 +26,14 @@ namespace CraigStars
             decayRateLabel = GetNode<Label>("HBoxContainer/GridContainer/DecayRateLabel");
             icon = GetNode<TextureRect>("HBoxContainer/Panel/Icon");
 
-            Signals.MapObjectSelectedEvent += OnMapObjectSelected;
-            Signals.TurnPassedEvent += OnTurnPassed;
+            EventManager.MapObjectSelectedEvent += OnMapObjectSelected;
+            EventManager.TurnPassedEvent += OnTurnPassed;
         }
 
         public override void _ExitTree()
         {
-            Signals.MapObjectSelectedEvent -= OnMapObjectSelected;
-            Signals.TurnPassedEvent -= OnTurnPassed;
+            EventManager.MapObjectSelectedEvent -= OnMapObjectSelected;
+            EventManager.TurnPassedEvent -= OnTurnPassed;
         }
 
         void OnMapObjectSelected(MapObjectSprite mapObject)

@@ -3,10 +3,9 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using CraigStars.Singletons;
-using log4net;
 using CraigStars.Utils;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class Scanner : Node2D
     {
@@ -94,38 +93,38 @@ namespace CraigStars
             SetProcess(false);
 
             // wire up events
-            Signals.MapObjectCommandedEvent += OnMapObjectCommanded;
-            Signals.GotoMapObjectEvent += OnGotoMapObject;
-            Signals.GotoMapObjectSpriteEvent += OnGotoMapObjectSprite;
-            Signals.ActiveNextMapObjectEvent += OnActiveNextMapObject;
-            Signals.ActivePrevMapObjectEvent += OnActivePrevMapObject;
-            Signals.CommandMapObjectEvent += OnCommandMapObject;
-            Signals.SelectMapObjectEvent += OnSelectMapObject;
-            Signals.FleetDeletedEvent += OnFleetDeleted;
-            Signals.FleetsCreatedEvent += OnFleetsCreated;
-            Signals.WaypointAddedEvent += OnWaypointAdded;
-            Signals.WaypointSelectedEvent += OnWaypointSelected;
-            Signals.WaypointDeletedEvent += OnWaypointDeleted;
-            Signals.PlanetViewStateUpdatedEvent += OnPlanetViewStateUpdated;
-            Signals.PacketDestinationToggleEvent += OnPacketDestinationToggle;
+            EventManager.MapObjectCommandedEvent += OnMapObjectCommanded;
+            EventManager.GotoMapObjectEvent += OnGotoMapObject;
+            EventManager.GotoMapObjectSpriteEvent += OnGotoMapObjectSprite;
+            EventManager.CommandNextMapObjectEvent += OnCommandNextMapObject;
+            EventManager.CommandPrevMapObjectEvent += OnCommandPrevMapObject;
+            EventManager.CommandMapObjectEvent += OnCommandMapObject;
+            EventManager.SelectMapObjectEvent += OnSelectMapObject;
+            EventManager.FleetDeletedEvent += OnFleetDeleted;
+            EventManager.FleetsCreatedEvent += OnFleetsCreated;
+            EventManager.WaypointAddedEvent += OnWaypointAdded;
+            EventManager.WaypointSelectedEvent += OnWaypointSelected;
+            EventManager.WaypointDeletedEvent += OnWaypointDeleted;
+            EventManager.PlanetViewStateUpdatedEvent += OnPlanetViewStateUpdated;
+            EventManager.PacketDestinationToggleEvent += OnPacketDestinationToggle;
         }
 
         public override void _ExitTree()
         {
-            Signals.MapObjectCommandedEvent -= OnMapObjectCommanded;
-            Signals.GotoMapObjectEvent -= OnGotoMapObject;
-            Signals.GotoMapObjectSpriteEvent -= OnGotoMapObjectSprite;
-            Signals.ActiveNextMapObjectEvent -= OnActiveNextMapObject;
-            Signals.ActivePrevMapObjectEvent -= OnActivePrevMapObject;
-            Signals.CommandMapObjectEvent -= OnCommandMapObject;
-            Signals.SelectMapObjectEvent -= OnSelectMapObject;
-            Signals.FleetDeletedEvent -= OnFleetDeleted;
-            Signals.FleetsCreatedEvent -= OnFleetsCreated;
-            Signals.WaypointAddedEvent -= OnWaypointAdded;
-            Signals.WaypointSelectedEvent -= OnWaypointSelected;
-            Signals.WaypointDeletedEvent -= OnWaypointDeleted;
-            Signals.PlanetViewStateUpdatedEvent -= OnPlanetViewStateUpdated;
-            Signals.PacketDestinationToggleEvent -= OnPacketDestinationToggle;
+            EventManager.MapObjectCommandedEvent -= OnMapObjectCommanded;
+            EventManager.GotoMapObjectEvent -= OnGotoMapObject;
+            EventManager.GotoMapObjectSpriteEvent -= OnGotoMapObjectSprite;
+            EventManager.CommandNextMapObjectEvent -= OnCommandNextMapObject;
+            EventManager.CommandPrevMapObjectEvent -= OnCommandPrevMapObject;
+            EventManager.CommandMapObjectEvent -= OnCommandMapObject;
+            EventManager.SelectMapObjectEvent -= OnSelectMapObject;
+            EventManager.FleetDeletedEvent -= OnFleetDeleted;
+            EventManager.FleetsCreatedEvent -= OnFleetsCreated;
+            EventManager.WaypointAddedEvent -= OnWaypointAdded;
+            EventManager.WaypointSelectedEvent -= OnWaypointSelected;
+            EventManager.WaypointDeletedEvent -= OnWaypointDeleted;
+            EventManager.PlanetViewStateUpdatedEvent -= OnPlanetViewStateUpdated;
+            EventManager.PacketDestinationToggleEvent -= OnPacketDestinationToggle;
         }
 
         #region Scanner MapObject Init
@@ -319,8 +318,8 @@ namespace CraigStars
                 selectedMapObject.Select();
                 commandedMapObject.Command();
                 UpdateSelectedMapObjectIndicator();
-                Signals.PublishMapObjectSelectedEvent(homeworld);
-                Signals.PublishMapObjectCommandedEvent(homeworld);
+                EventManager.PublishMapObjectSelectedEvent(homeworld);
+                EventManager.PublishMapObjectCommandedEvent(homeworld);
             }
         }
 
@@ -432,7 +431,7 @@ namespace CraigStars
                     activeWaypointArea.Waypoint.Target = closest.MapObject;
                 }
 
-                Signals.PublishWaypointMovedEvent(activeWaypointArea.Fleet, activeWaypointArea.Waypoint);
+                EventManager.PublishWaypointMovedEvent(activeWaypointArea.Fleet, activeWaypointArea.Waypoint);
 
             }
             else if (Input.IsActionJustReleased("viewport_select"))
@@ -500,7 +499,7 @@ namespace CraigStars
             }
         }
 
-        void OnActiveNextMapObject()
+        void OnCommandNextMapObject()
         {
             MapObjectSprite mapObjectToActivate = null;
             if (CommandedPlanet != null)
@@ -519,7 +518,7 @@ namespace CraigStars
             }
         }
 
-        void OnActivePrevMapObject()
+        void OnCommandPrevMapObject()
         {
             MapObjectSprite mapObjectToActivate = null;
             if (CommandedPlanet != null)
@@ -606,7 +605,7 @@ namespace CraigStars
                 }
             }
 
-            Signals.PublishMapObjectSelectedEvent(mapObject);
+            EventManager.PublishMapObjectSelectedEvent(mapObject);
             UpdateSelectedMapObjectIndicator();
         }
 
@@ -639,7 +638,7 @@ namespace CraigStars
 
             commandedMapObject.Command();
             commandedMapObject.UpdateSprite();
-            Signals.PublishMapObjectCommandedEvent(mapObject);
+            EventManager.PublishMapObjectCommandedEvent(mapObject);
 
             SelectMapObject(mapObject);
             UpdateSelectedMapObjectIndicator();
@@ -720,7 +719,7 @@ namespace CraigStars
                 if (@event.IsActionPressed("viewport_select"))
                 {
                     log.Debug($"Selecting waypoint {waypointArea.Position}");
-                    Signals.PublishWaypointSelectedEvent(waypointArea.Waypoint);
+                    EventManager.PublishWaypointSelectedEvent(waypointArea.Waypoint);
                     activeWaypointArea = waypointArea;
                     movingWaypoint = true;
                     SetProcess(true);
@@ -765,7 +764,7 @@ namespace CraigStars
                             log.Debug($"Adding waypoint in space for {commandedFleet.Name} to {GetLocalMousePosition()}");
                             commandedFleet?.AddWaypoint(GetLocalMousePosition(), selectedWaypoint);
                             Me.Dirty = true;
-                            Signals.PublishPlayerDirtyEvent();
+                            EventManager.PublishPlayerDirtyEvent();
                         }
                     }
                 }
@@ -774,7 +773,7 @@ namespace CraigStars
             {
                 commandedFleet.DeleteWaypoint(selectedWaypoint);
                 Me.Dirty = true;
-                Signals.PublishPlayerDirtyEvent();
+                EventManager.PublishPlayerDirtyEvent();
             }
         }
 
@@ -784,7 +783,7 @@ namespace CraigStars
             {
                 // log.Debug($"Highlighted map object {mapObject.ObjectName}");
                 mapObjectsUnderMouse.Add(mapObject);
-                Signals.PublishMapObjectHightlightedEvent(mapObject);
+                EventManager.PublishMapObjectHightlightedEvent(mapObject);
             }
             else
             {
@@ -798,7 +797,7 @@ namespace CraigStars
             {
                 // log.Debug($"Mouse Left map object {mapObject.ObjectName}");
                 mapObjectsUnderMouse.Remove(mapObject);
-                Signals.PublishMapObjectHightlightedEvent(mapObject);
+                EventManager.PublishMapObjectHightlightedEvent(mapObject);
             }
             else
             {
@@ -853,7 +852,7 @@ namespace CraigStars
                     {
                         CommandedPlanet.Planet.PacketTarget = planet.Planet;
                         CommandedPlanet.PacketTarget = planet;
-                        Signals.PublishPacketDestinationChangedEvent(CommandedPlanet.Planet, planet.Planet);
+                        EventManager.PublishPacketDestinationChangedEvent(CommandedPlanet.Planet, planet.Planet);
                         CommandedPlanet.UpdateSprite();
                     }
                 }
@@ -866,7 +865,7 @@ namespace CraigStars
                         log.Debug($"Adding waypoint for {commandedFleet.Name} to {closest.Name}");
                         commandedFleet.AddWaypoint(closest.MapObject, selectedWaypoint);
                         Me.Dirty = true;
-                        Signals.PublishPlayerDirtyEvent();
+                        EventManager.PublishPlayerDirtyEvent();
                     }
                 }
                 else
@@ -907,14 +906,14 @@ namespace CraigStars
 
                             var newCommandedMapObject = mapObjectsAtLocation[commandedMapObjectIndex];
                             log.Debug($"Commanding MapObject {newCommandedMapObject} (index {commandedMapObjectIndex})");
-                            Signals.PublishCommandMapObjectEvent(newCommandedMapObject.MapObject);
+                            EventManager.PublishCommandMapObjectEvent(newCommandedMapObject.MapObject);
                         }
                         else if (selectedMapObject == mapObject && selectedMapObject.OwnedByMe)
                         {
                             var newCommandedMapObject = selectedMapObject;
                             commandedMapObjectIndex = 0;
                             log.Debug($"Commanding MapObject {newCommandedMapObject} (index 0)");
-                            Signals.PublishCommandMapObjectEvent(newCommandedMapObject.MapObject);
+                            EventManager.PublishCommandMapObjectEvent(newCommandedMapObject.MapObject);
                         }
                         else if (selectedMapObject == mapObject && !selectedMapObject.OwnedByMe && mapObjectsAtLocation.Count > 1)
                         {
@@ -927,7 +926,7 @@ namespace CraigStars
                                     var newCommandedMapObject = otherMapObject;
                                     commandedMapObjectIndex = i;
                                     log.Debug($"Commanding MapObject {newCommandedMapObject} (index 0)");
-                                    Signals.PublishCommandMapObjectEvent(newCommandedMapObject.MapObject);
+                                    EventManager.PublishCommandMapObjectEvent(newCommandedMapObject.MapObject);
                                 }
                             }
                         }
@@ -937,7 +936,7 @@ namespace CraigStars
                         var newSelectedMapObject = mapObject;
                         selectedMapObjectIndex = 0;
                         log.Debug($"Selecting MapObject {newSelectedMapObject} (index 0)");
-                        Signals.PublishSelectMapObjectEvent(newSelectedMapObject.MapObject);
+                        EventManager.PublishSelectMapObjectEvent(newSelectedMapObject.MapObject);
                     }
                 }
 
@@ -955,7 +954,7 @@ namespace CraigStars
                 }
 
                 // let the popupmenu listener know we have a request to pick from objects at this location
-                Signals.PublishViewportAlternateSelect(mapObject);
+                EventManager.PublishViewportAlternateSelect(mapObject);
             }
         }
 

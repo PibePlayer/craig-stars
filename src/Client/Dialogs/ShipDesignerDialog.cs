@@ -1,9 +1,7 @@
-using CraigStars.Singletons;
 using Godot;
 using System;
-using System.Threading.Tasks;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class ShipDesignerDialog : GameViewDialog
     {

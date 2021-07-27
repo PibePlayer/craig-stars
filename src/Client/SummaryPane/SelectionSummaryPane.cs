@@ -4,7 +4,7 @@ using System;
 using CraigStars.Singletons;
 using System.Collections.Generic;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class SelectionSummaryPane : MarginContainer
     {
@@ -50,14 +50,14 @@ namespace CraigStars
 
             otherFleetsButton.Connect("pressed", this, nameof(OnOtherFleetsButtonPressed));
 
-            Signals.MapObjectSelectedEvent += OnMapObjectSelected;
-            Signals.TurnPassedEvent += OnTurnPassed;
+            EventManager.MapObjectSelectedEvent += OnMapObjectSelected;
+            EventManager.TurnPassedEvent += OnTurnPassed;
         }
 
         public override void _ExitTree()
         {
-            Signals.MapObjectSelectedEvent -= OnMapObjectSelected;
-            Signals.TurnPassedEvent -= OnTurnPassed;
+            EventManager.MapObjectSelectedEvent -= OnMapObjectSelected;
+            EventManager.TurnPassedEvent -= OnTurnPassed;
         }
 
         void OnOtherFleetsButtonPressed()
@@ -76,12 +76,12 @@ namespace CraigStars
                     if (mapObject.Player == Me)
                     {
                         // select the first orbiting fleet
-                        Signals.PublishCommandMapObjectEvent(mapObject);
+                        EventManager.PublishCommandMapObjectEvent(mapObject);
                     }
                     else
                     {
                         // select the first orbiting fleet
-                        Signals.PublishSelectMapObjectEvent(mapObject);
+                        EventManager.PublishSelectMapObjectEvent(mapObject);
                     }
                 }
                 else

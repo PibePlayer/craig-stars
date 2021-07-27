@@ -3,7 +3,7 @@ using Godot;
 using System;
 using System.Linq;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class ReportsDialog : GameViewDialog
     {

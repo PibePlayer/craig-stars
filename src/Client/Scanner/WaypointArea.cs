@@ -1,9 +1,7 @@
 using Godot;
 using System;
-using CraigStars.Singletons;
-using log4net;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class WaypointArea : Area2D
     {
@@ -28,7 +26,7 @@ namespace CraigStars
         public override void _Ready()
         {
             // hook up mouse events to our area
-            Signals.WaypointDeletedEvent += OnWaypointDeleted;
+            EventManager.WaypointDeletedEvent += OnWaypointDeleted;
         }
 
         void OnWaypointDeleted(Waypoint waypoint)
@@ -44,7 +42,7 @@ namespace CraigStars
 
         public void DisconnectAll()
         {
-            Signals.WaypointDeletedEvent -= OnWaypointDeleted;
+            EventManager.WaypointDeletedEvent -= OnWaypointDeleted;
         }
     }
 }

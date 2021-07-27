@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class BattleViewerDialog : GameViewDialog
     {
@@ -549,7 +549,7 @@ namespace CraigStars
 
         BattleRecord GenerateTestBattle()
         {
-            var players = PlayersManager.Instance.CreatePlayersForNewGame();
+            var players = PlayersManager.CreatePlayersForNewGame();
             var player1 = players[0];
             // level up our players so they will have designs
             player1.TechLevels = new TechLevel(10, 10, 10, 10, 10, 10);

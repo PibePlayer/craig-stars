@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
 
     public class FleetSprite : MapObjectSprite
@@ -59,7 +59,7 @@ namespace CraigStars
             waypointsLine = GetNode<Line2D>("Waypoints");
             UpdateWaypointsLine();
 
-            Signals.WaypointMovedEvent += OnWaypointMoved;
+            EventManager.WaypointMovedEvent += OnWaypointMoved;
 
         }
 
@@ -67,7 +67,7 @@ namespace CraigStars
         {
             base._ExitTree();
 
-            Signals.WaypointMovedEvent -= OnWaypointMoved;
+            EventManager.WaypointMovedEvent -= OnWaypointMoved;
         }
 
         public override void _Draw()
@@ -127,7 +127,7 @@ namespace CraigStars
 
             UpdateWaypointsLine();
 
-            Signals.PublishWaypointAddedEvent(Fleet, waypoint);
+            EventManager.PublishWaypointAddedEvent(Fleet, waypoint);
         }
 
         /// <summary>
@@ -161,7 +161,7 @@ namespace CraigStars
 
             UpdateWaypointsLine();
 
-            Signals.PublishWaypointAddedEvent(Fleet, waypoint);
+            EventManager.PublishWaypointAddedEvent(Fleet, waypoint);
         }
 
         public void DeleteWaypoint(Waypoint waypoint)
@@ -173,10 +173,10 @@ namespace CraigStars
             {
                 Fleet.Waypoints.RemoveAt(index);
                 UpdateWaypointsLine();
-                Signals.PublishWaypointDeletedEvent(waypoint);
+                EventManager.PublishWaypointDeletedEvent(waypoint);
 
                 // select the previous waypoint in the list
-                Signals.PublishWaypointSelectedEvent(Fleet.Waypoints[index - 1]);
+                EventManager.PublishWaypointSelectedEvent(Fleet.Waypoints[index - 1]);
             }
         }
 

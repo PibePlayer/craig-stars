@@ -4,7 +4,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
 
     public class TransportPlansDialog : GameViewDialog
@@ -104,7 +104,7 @@ namespace CraigStars
             }
 
             Me.Dirty = true;
-            Signals.PublishPlayerDirtyEvent();
+            EventManager.PublishPlayerDirtyEvent();
 
             Hide();
         }

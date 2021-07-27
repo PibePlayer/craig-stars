@@ -37,29 +37,29 @@ namespace CraigStars.Client
             prevButton.Connect("pressed", this, nameof(OnPrevButtonPressed));
             renameButton.Connect("pressed", this, nameof(OnRenameButtonPressed));
 
-            Signals.MapObjectCommandedEvent += OnMapObjectCommanded;
+            EventManager.MapObjectCommandedEvent += OnMapObjectCommanded;
         }
 
         public override void _ExitTree()
         {
-            Signals.MapObjectCommandedEvent -= OnMapObjectCommanded;
+            EventManager.MapObjectCommandedEvent -= OnMapObjectCommanded;
         }
 
         void OnNextButtonPressed()
         {
-            Signals.PublishActiveNextMapObjectEvent();
+            EventManager.PublishCommandNextMapObjectEvent();
         }
 
         void OnPrevButtonPressed()
         {
-            Signals.PublishActivePrevMapObjectEvent();
+            EventManager.PublishCommandPrevMapObjectEvent();
         }
 
         void OnRenameButtonPressed()
         {
             if (CommandedMapObject is FleetSprite fleetSprite)
             {
-                Signals.PublishRenameFleetRequestedEvent(fleetSprite);
+                EventManager.PublishRenameFleetDialogRequestedEvent(fleetSprite);
             }
         }
 

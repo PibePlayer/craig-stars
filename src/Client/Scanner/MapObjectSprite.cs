@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 using CraigStars.Singletons;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public abstract class MapObjectSprite : Area2D
     {
@@ -48,14 +48,14 @@ namespace CraigStars
         public override void _Ready()
         {
             // wire up signals
-            Signals.MapObjectCommandedEvent += OnMapObjectCommanded;
-            Signals.TurnPassedEvent += OnTurnPassed;
+            EventManager.MapObjectCommandedEvent += OnMapObjectCommanded;
+            EventManager.TurnPassedEvent += OnTurnPassed;
         }
 
         public override void _ExitTree()
         {
-            Signals.MapObjectCommandedEvent -= OnMapObjectCommanded;
-            Signals.TurnPassedEvent -= OnTurnPassed;
+            EventManager.MapObjectCommandedEvent -= OnMapObjectCommanded;
+            EventManager.TurnPassedEvent -= OnTurnPassed;
         }
 
         public override string ToString()

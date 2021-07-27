@@ -127,11 +127,19 @@ namespace CraigStars.Server
             rpc.SendPostStartGame(Game);
         }
 
+        /// <summary>
+        /// After a player has submitted a turn, notify all clients
+        /// </summary>
+        /// <param name="player"></param>
         protected override void PublishTurnSubmittedEvent(PublicPlayerInfo player)
         {
             rpc.SendPlayerUpdated(player);
         }
 
+        /// <summary>
+        /// If a player unsubmitted a turn, notify all clients
+        /// </summary>
+        /// <param name="player"></param>
         protected override void PublishTurnUnsubmittedEvent(PublicPlayerInfo player)
         {
 

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class MessagesPane : MarginContainer
     {
@@ -42,20 +42,20 @@ namespace CraigStars
             filterMessageTypeCheckbox.Connect("toggled", this, nameof(OnFilterMessageTypeCheckboxToggled));
             filterMessagesCheckbox.Connect("toggled", this, nameof(OnFilterMessagesCheckboxToggled));
 
-            Signals.TurnPassedEvent += OnTurnPassed;
-            Signals.GameViewResetEvent += OnGameViewResetEvent;
-            Signals.MapObjectSelectedEvent += OnMapObjectSelected;
-            Signals.PlayerDirtyChangedEvent += OnPlayerDirtyChanged;
+            EventManager.TurnPassedEvent += OnTurnPassed;
+            EventManager.GameViewResetEvent += OnGameViewResetEvent;
+            EventManager.MapObjectSelectedEvent += OnMapObjectSelected;
+            EventManager.PlayerDirtyChangedEvent += OnPlayerDirtyChanged;
 
             UpdateControls();
         }
 
         public override void _ExitTree()
         {
-            Signals.TurnPassedEvent -= OnTurnPassed;
-            Signals.GameViewResetEvent -= OnGameViewResetEvent;
-            Signals.MapObjectSelectedEvent -= OnMapObjectSelected;
-            Signals.PlayerDirtyChangedEvent -= OnPlayerDirtyChanged;
+            EventManager.TurnPassedEvent -= OnTurnPassed;
+            EventManager.GameViewResetEvent -= OnGameViewResetEvent;
+            EventManager.MapObjectSelectedEvent -= OnMapObjectSelected;
+            EventManager.PlayerDirtyChangedEvent -= OnPlayerDirtyChanged;
 
         }
 
@@ -84,11 +84,11 @@ namespace CraigStars
                     && activeMessage.BattleGuid.HasValue
                     && Me.BattlesByGuid.TryGetValue(activeMessage.BattleGuid.Value, out var battle))
                 {
-                    Signals.PublishBattleViewerDialogRequestedEvent(battle);
+                    EventManager.PublishBattleViewerDialogRequestedEvent(battle);
                 }
                 else
                 {
-                    Signals.PublishGotoMapObjectEvent(activeMessage.Target);
+                    EventManager.PublishGotoMapObjectEvent(activeMessage.Target);
                 }
             }
         }
@@ -114,7 +114,7 @@ namespace CraigStars
                 }
 
                 Me.Dirty = true;
-                Signals.PublishPlayerDirtyEvent();
+                EventManager.PublishPlayerDirtyEvent();
 
                 UpdateControls();
             }

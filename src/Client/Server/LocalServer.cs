@@ -1,11 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using CraigStars.Singletons;
-using CraigStars.Utils;
-using Godot;
-using log4net;
+using CraigStars.Client;
 
 namespace CraigStars.Server
 {
@@ -32,7 +27,8 @@ namespace CraigStars.Server
 
         protected override void PublishPlayerUpdatedEvent(PublicPlayerInfo player)
         {
-            Signals.PublishPlayerUpdatedEvent(player);
+            // do nothing, no need to notify players about other player updates
+            // in a LocalServer
         }
 
         protected override void PublishGameStartedEvent()
@@ -41,28 +37,28 @@ namespace CraigStars.Server
             // For hotseat games, the ClientView will store all players that can play
             foreach (var player in Game.Players.Where(player => !player.AIControlled))
             {
-                Signals.PublishGameStartedEvent(Game.GameInfo, player);
+                Client.EventManager.PublishGameStartedEvent(Game.GameInfo, player);
             }
         }
 
         protected override void PublishTurnSubmittedEvent(PublicPlayerInfo player)
         {
-            Signals.PublishPlayerUpdatedEvent(player);
+            Client.EventManager.PublishTurnSubmittedEvent(player);
         }
 
         protected override void PublishTurnUnsubmittedEvent(PublicPlayerInfo player)
         {
-            Signals.PublishTurnUnsubmittedEvent(player);
+            Client.EventManager.PublishTurnUnsubmittedEvent(player);
         }
 
         protected override void PublishTurnGeneratingEvent()
         {
-            Signals.PublishTurnGeneratingEvent();
+            Client.EventManager.PublishTurnGeneratingEvent();
         }
 
         protected override void PublishTurnGeneratorAdvancedEvent(TurnGenerationState state)
         {
-            Signals.PublishTurnGeneratorAdvancedEvent(state);
+            Client.EventManager.PublishTurnGeneratorAdvancedEvent(state);
         }
 
         protected override void PublishTurnPassedEvent()
@@ -70,7 +66,7 @@ namespace CraigStars.Server
             // notify each non AI player about the new turn
             foreach (var player in Game.Players.Where(player => !player.AIControlled))
             {
-                Signals.PublishTurnPassedEvent(Game.GameInfo, player);
+                Client.EventManager.PublishTurnPassedEvent(Game.GameInfo, player);
             }
         }
 

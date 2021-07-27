@@ -109,7 +109,7 @@ namespace CraigStars.Client
             Me.NextResearchField = (NextResearchField)nextFieldToResearchMenuButton.Selected;
 
             Me.Dirty = true;
-            Signals.PublishPlayerDirtyEvent();
+            EventManager.PublishPlayerDirtyEvent();
 
             Hide();
         }

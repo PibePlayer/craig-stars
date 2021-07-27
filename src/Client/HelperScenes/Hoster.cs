@@ -3,7 +3,7 @@ using CraigStars.Utils;
 using Godot;
 using System;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     /// <summary>
     /// Special Hoster node for quickly launching a hosted game
@@ -12,8 +12,8 @@ namespace CraigStars
     {
         public override void _Ready()
         {
-            PlayersManager.Instance.Reset();
-            PlayersManager.Instance.CreatePlayersForNewGame();
+            PlayersManager.Reset();
+            PlayersManager.CreatePlayersForNewGame();
             ServerManager.Instance.HostGame(Settings.Instance.ServerPort);
 
             // join our own game

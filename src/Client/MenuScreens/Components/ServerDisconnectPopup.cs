@@ -2,25 +2,23 @@ using CraigStars.Singletons;
 using Godot;
 using System;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class ServerDisconnectPopup : CenterContainer
     {
         public override void _Ready()
         {
-            Signals.ServerDisconnectedEvent += OnServerDisconnected;
+            NetworkClient.Instance.ServerDisconnectedEvent += OnServerDisconnected;
             GetNode<AcceptDialog>("ServerDisconnectedDialog").Connect("confirmed", this, nameof(OnServerDisconnectedDialogConfirmed));
         }
 
         public override void _ExitTree()
         {
-            Signals.ServerDisconnectedEvent -= OnServerDisconnected;
+            NetworkClient.Instance.ServerDisconnectedEvent -= OnServerDisconnected;
         }
 
         void OnServerDisconnected()
         {
-            PlayersManager.Instance.Reset();
-
             if (GetParent() != null)
             {
                 foreach (var child in GetParent().GetChildren())

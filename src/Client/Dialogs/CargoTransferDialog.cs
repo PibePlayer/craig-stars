@@ -3,7 +3,7 @@ using CraigStars.Utils;
 using Godot;
 using System;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class CargoTransferDialog : CSDialog
     {
@@ -211,7 +211,7 @@ namespace CraigStars
                 }
                 log.Info($"{me.Name} made immediate transfer from {source.Name} to {dest.Name} for {netCargoDiff} cargo and {netFuelDiff} fuel");
 
-                Signals.PublishCargoTransferredEvent(source, dest);
+                EventManager.PublishCargoTransferredEvent(source, dest);
                 // zero it out for next time
                 netCargoDiff = new Cargo();
                 netFuelDiff = 0;

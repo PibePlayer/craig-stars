@@ -38,13 +38,13 @@ namespace CraigStars.Client
 
             statsGrid.Connect("gui_input", this, nameof(OnStatsGridGUIInput));
 
-            Signals.PacketDestinationChangedEvent += OnPacketDestinationChanged;
+            EventManager.PacketDestinationChangedEvent += OnPacketDestinationChanged;
         }
 
         public override void _ExitTree()
         {
             base._ExitTree();
-            Signals.PacketDestinationChangedEvent -= OnPacketDestinationChanged;
+            EventManager.PacketDestinationChangedEvent -= OnPacketDestinationChanged;
         }
 
         void OnPacketDestinationChanged(Planet planet, Planet target)
@@ -57,7 +57,7 @@ namespace CraigStars.Client
 
         void OnSetDestinationButtonPressed()
         {
-            Signals.PublishPacketDestinationToggleEvent();
+            EventManager.PublishPacketDestinationToggleEvent();
         }
 
         void OnStatsGridGUIInput(InputEvent @event)

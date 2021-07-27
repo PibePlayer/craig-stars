@@ -2,9 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CraigStars.Singletons;
 using Godot;
-using log4net;
 
 namespace CraigStars
 {

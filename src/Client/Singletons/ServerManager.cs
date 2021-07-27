@@ -1,8 +1,7 @@
+using CraigStars.Client;
 using CraigStars.Server;
-using CraigStars.Singletons;
 using Godot;
 using System;
-using System.Collections.Generic;
 using CSServer = CraigStars.Server.Server;
 
 namespace CraigStars.Singletons
@@ -106,7 +105,7 @@ namespace CraigStars.Singletons
         /// </summary>
         void PublishLocalGameStartRequest()
         {
-            Signals.PublishGameStartRequestedEvent(localGameSettings);
+            Client.EventManager.PublishGameStartRequestedEvent(localGameSettings);
         }
 
         #endregion

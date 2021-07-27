@@ -2,7 +2,7 @@ using CraigStars.Singletons;
 using Godot;
 using System;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     /// <summary>
     /// A client to connect to servers
@@ -10,6 +10,9 @@ namespace CraigStars
     public class NetworkClient : Node
     {
         static CSLog log = LogProvider.GetLogger(typeof(NetworkClient));
+
+        public event Action ServerDisconnectedEvent;
+        public event Action<PublicPlayerInfo> PlayerUpdatedEvent;
 
         /// <summary>
         /// NetworkClient is a singleton
@@ -47,7 +50,7 @@ namespace CraigStars
         public void OnServerDisconnected()
         {
             log.Info("Server disconnected");
-            Signals.PublishServerDisconnectedEvent();
+            ServerDisconnectedEvent?.Invoke();
         }
 
         /// <summary>
@@ -103,6 +106,20 @@ namespace CraigStars
         }
 
         /// <summary>
+        /// Publish a player updated event for any listeners
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="notifyPeers">True if we should notify peers of this player data</param>
+        public void PublishPlayerUpdatedEvent(PublicPlayerInfo player, bool notifyPeers = false, SceneTree sceneTree = null)
+        {
+            PlayerUpdatedEvent?.Invoke(player);
+            if (notifyPeers && sceneTree != null)
+            {
+                RPC.Instance(sceneTree).SendPlayerUpdated(player);
+            }
+        }
+
+        /// <summary>
         /// Submit a turn to the server
         /// </summary>
         /// <param name="player"></param>
@@ -111,5 +128,6 @@ namespace CraigStars
             // tell the server we submitted our turn
             RPC.Instance(GetTree()).SendSubmitTurn(player);
         }
+
     }
 }

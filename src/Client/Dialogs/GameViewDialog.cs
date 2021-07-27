@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public abstract class GameViewDialog : WindowDialog
     {
@@ -17,13 +17,13 @@ namespace CraigStars
             base._Ready();
             Connect("visibility_changed", this, nameof(OnVisibilityChanged));
 
-            Signals.GameViewResetEvent += OnGameViewReset;
+            EventManager.GameViewResetEvent += OnGameViewReset;
         }
 
         public override void _ExitTree()
         {
             base._ExitTree();
-            Signals.GameViewResetEvent -= OnGameViewReset;
+            EventManager.GameViewResetEvent -= OnGameViewReset;
         }
 
         private void OnGameViewReset(PublicGameInfo gameInfo)

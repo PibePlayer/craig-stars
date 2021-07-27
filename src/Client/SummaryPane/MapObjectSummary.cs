@@ -3,7 +3,7 @@ using System;
 using CraigStars.Singletons;
 using CraigStars.Utils;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public abstract class MapObjectSummary<T> : Control where T : MapObjectSprite
     {
@@ -22,14 +22,14 @@ namespace CraigStars
 
         public override void _Ready()
         {
-            Signals.MapObjectSelectedEvent += OnMapObjectSelected;
-            Signals.TurnPassedEvent += OnTurnPassed;
+            EventManager.MapObjectSelectedEvent += OnMapObjectSelected;
+            EventManager.TurnPassedEvent += OnTurnPassed;
         }
 
         public override void _ExitTree()
         {
-            Signals.MapObjectSelectedEvent -= OnMapObjectSelected;
-            Signals.TurnPassedEvent -= OnTurnPassed;
+            EventManager.MapObjectSelectedEvent -= OnMapObjectSelected;
+            EventManager.TurnPassedEvent -= OnTurnPassed;
         }
 
         void OnMapObjectSelected(MapObjectSprite mapObject)

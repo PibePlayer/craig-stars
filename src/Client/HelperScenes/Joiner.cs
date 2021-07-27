@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using CraigStars.Singletons;
 using CraigStars.Utils;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     /// <summary>
     /// Special Hoster node for quickly launching a hosted game
@@ -24,7 +24,7 @@ namespace CraigStars
         public override void _ExitTree()
         {
             base._ExitTree();
-            Signals.PlayerUpdatedEvent -= OnPlayerJoined;
+            RPC.Instance(GetTree()).PlayerJoinedEvent -= OnPlayerJoined;
             RPC.Instance(GetTree()).PlayerMessageEvent -= OnPlayerMessage;
         }
 

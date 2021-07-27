@@ -3,9 +3,8 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
-
     public class FleetCompositionTileTokens : AbstractCommandedFleetControl
     {
         PackedScene rowScene;

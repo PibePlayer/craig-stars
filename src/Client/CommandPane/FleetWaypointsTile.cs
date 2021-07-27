@@ -46,14 +46,14 @@ namespace CraigStars.Client
             waypoints.Connect("item_selected", this, nameof(OnItemSelected));
             repeatOrdersCheckBox.Connect("toggled", this, nameof(OnRepeatOrdersCheckBoxToggled));
             warpFactor.WarpSpeedChangedEvent += OnWarpSpeedChanged;
-            Signals.WaypointMovedEvent += OnWaypointMoved;
+            EventManager.WaypointMovedEvent += OnWaypointMoved;
         }
 
         public override void _ExitTree()
         {
             base._ExitTree();
             warpFactor.WarpSpeedChangedEvent -= OnWarpSpeedChanged;
-            Signals.WaypointMovedEvent -= OnWaypointMoved;
+            EventManager.WaypointMovedEvent -= OnWaypointMoved;
         }
 
         void OnWarpSpeedChanged(int warpSpeed)
@@ -71,7 +71,7 @@ namespace CraigStars.Client
             if (CommandedFleet != null && index >= 0 && index < CommandedFleet.Fleet.Waypoints.Count)
             {
                 // Select this waypoint and let listeners know (like ourselves and the viewport)
-                Signals.PublishWaypointSelectedEvent(CommandedFleet.Fleet.Waypoints[index]);
+                EventManager.PublishWaypointSelectedEvent(CommandedFleet.Fleet.Waypoints[index]);
             }
         }
 

@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     /// <summary>
     /// This is a generic table class that supports adding columns and rows to a table
@@ -37,14 +37,14 @@ namespace CraigStars
             showOwnedButton.Connect("pressed", this, nameof(OnShowOwnedPressed));
             showAllButton.Connect("pressed", this, nameof(OnShowAllPressed));
 
-            Signals.TurnPassedEvent += OnTurnPassed;
+            EventManager.TurnPassedEvent += OnTurnPassed;
             table.RowSelectedEvent += OnRowSelected;
         }
 
         public override void _ExitTree()
         {
             base._ExitTree();
-            Signals.TurnPassedEvent -= OnTurnPassed;
+            EventManager.TurnPassedEvent -= OnTurnPassed;
             table.RowSelectedEvent -= OnRowSelected;
         }
 

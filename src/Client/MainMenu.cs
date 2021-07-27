@@ -3,7 +3,7 @@ using System;
 using CraigStars.Singletons;
 using CraigStars.Utils;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class MainMenu : MarginContainer
     {
@@ -65,16 +65,16 @@ namespace CraigStars
             hostWindow.Connect("popup_hide", this, nameof(OnHostWindowPopupHide));
             hostWindow.FindNode("HostButton").Connect("pressed", this, nameof(OnHostWindowHostButtonPressed));
 
-            Signals.PlayerUpdatedEvent += OnPlayerUpdated;
-            Signals.GameStartedEvent += OnGameStarted;
+            NetworkClient.Instance.PlayerUpdatedEvent += OnPlayerUpdated;
+            EventManager.GameStartedEvent += OnGameStarted;
             GetTree().Connect("server_disconnected", this, nameof(OnServerDisconnected));
             GetTree().Connect("connection_failed", this, nameof(OnConnectionFailed));
         }
 
         public override void _ExitTree()
         {
-            Signals.PlayerUpdatedEvent -= OnPlayerUpdated;
-            Signals.GameStartedEvent -= OnGameStarted;
+            NetworkClient.Instance.PlayerUpdatedEvent -= OnPlayerUpdated;
+            EventManager.GameStartedEvent -= OnGameStarted;
         }
 
         void OnJoinWindowCancelButtonPressed()
@@ -129,8 +129,8 @@ namespace CraigStars
 
         void OnHostWindowHostButtonPressed()
         {
-            PlayersManager.Instance.Reset();
-            PlayersManager.Instance.CreatePlayersForNewGame();
+            PlayersManager.Reset();
+            PlayersManager.CreatePlayersForNewGame();
             Settings.Instance.ServerPort = int.Parse(hostPortEdit.Text);
             ServerManager.Instance.HostGame(Settings.Instance.ServerPort);
 

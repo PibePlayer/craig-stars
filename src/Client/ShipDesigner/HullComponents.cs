@@ -2,11 +2,9 @@ using Godot;
 using System;
 using System.Linq;
 using System.Collections.Generic;
-
 using CraigStars.Utils;
-using CraigStars.Singletons;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
 
     public class HullComponents : Control

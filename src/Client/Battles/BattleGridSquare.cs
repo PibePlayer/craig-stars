@@ -1,10 +1,8 @@
 using Godot;
-using log4net;
 using System;
 using System.Collections.Generic;
-using CraigStars.Singletons;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     [Tool]
     public class BattleGridSquare : Panel

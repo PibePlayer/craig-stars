@@ -1,10 +1,7 @@
 using Godot;
 using System;
-using CraigStars.Singletons;
-using log4net;
-using CraigStars.Utils;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class SalvageSummaryContainer : MapObjectSummary<SalvageSprite>
     {

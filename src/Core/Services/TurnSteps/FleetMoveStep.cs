@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using CraigStars.Singletons;
 using static CraigStars.Utils.Utils;
 using Godot;
 

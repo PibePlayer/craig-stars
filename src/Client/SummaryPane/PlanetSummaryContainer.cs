@@ -2,7 +2,7 @@ using Godot;
 using System;
 using CraigStars.Singletons;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class PlanetSummaryContainer : VBoxContainer
     {
@@ -66,14 +66,14 @@ namespace CraigStars
             germaniumMineralBar.Connect("gui_input", this, nameof(OnMineralGuiInput), new Godot.Collections.Array() { MineralType.Germanium });
 
             Connect("visibility_changed", this, nameof(OnVisible));
-            Signals.MapObjectSelectedEvent += OnMapObjectSelected;
-            Signals.TurnPassedEvent += OnTurnPassed;
+            EventManager.MapObjectSelectedEvent += OnMapObjectSelected;
+            EventManager.TurnPassedEvent += OnTurnPassed;
         }
 
         public override void _ExitTree()
         {
-            Signals.MapObjectSelectedEvent -= OnMapObjectSelected;
-            Signals.TurnPassedEvent -= OnTurnPassed;
+            EventManager.MapObjectSelectedEvent -= OnMapObjectSelected;
+            EventManager.TurnPassedEvent -= OnTurnPassed;
         }
 
         void OnVisible()

@@ -3,7 +3,7 @@ using CraigStars.Singletons;
 using Godot;
 using System;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class Settings : Node
     {
@@ -189,14 +189,14 @@ namespace CraigStars
                 Save();
             }
 
-            Signals.GameStartedEvent += OnGameStarted;
-            Signals.TurnPassedEvent += OnTurnPassed;
+            EventManager.GameStartedEvent += OnGameStarted;
+            EventManager.TurnPassedEvent += OnTurnPassed;
         }
 
         public override void _ExitTree()
         {
-            Signals.GameStartedEvent -= OnGameStarted;
-            Signals.TurnPassedEvent -= OnTurnPassed;
+            EventManager.GameStartedEvent -= OnGameStarted;
+            EventManager.TurnPassedEvent -= OnTurnPassed;
         }
 
         void OnGameStarted(PublicGameInfo gameInfo, Player player)

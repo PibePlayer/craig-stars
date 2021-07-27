@@ -1,9 +1,8 @@
 using Godot;
 using System;
 using CraigStars.Singletons;
-using log4net;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class FleetSummaryContainer : MapObjectSummary<FleetSprite>
     {

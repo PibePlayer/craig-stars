@@ -17,7 +17,7 @@ namespace CraigStars.Client
             cargoGrid = FindNode("CargoGrid") as CargoGrid;
 
             cargoBar.ValueUpdatedEvent += OnCargoBarPressed;
-            Signals.CargoTransferredEvent += OnCargoTransferred;
+            EventManager.CargoTransferredEvent += OnCargoTransferred;
 
             base._Ready();
 
@@ -26,7 +26,7 @@ namespace CraigStars.Client
         public override void _ExitTree()
         {
             cargoBar.ValueUpdatedEvent -= OnCargoBarPressed;
-            Signals.CargoTransferredEvent -= OnCargoTransferred;
+            EventManager.CargoTransferredEvent -= OnCargoTransferred;
             base._ExitTree();
         }
 
@@ -35,7 +35,7 @@ namespace CraigStars.Client
             if (CommandedFleet?.Fleet != null && CommandedFleet.Fleet.Aggregate.CargoCapacity > 0 && CommandedFleet?.Fleet?.Orbiting != null)
             {
                 // trigger a cargo transfer event between this fleet and the planet it is orbiting
-                Signals.PublishCargoTransferRequestedEvent(CommandedFleet.Fleet, CommandedFleet.Fleet.Orbiting);
+                EventManager.PublishCargoTransferDialogRequestedEvent(CommandedFleet.Fleet, CommandedFleet.Fleet.Orbiting);
             }
         }
 

@@ -3,8 +3,9 @@ using System;
 using System.Linq;
 using CraigStars.Singletons;
 using CraigStars.Utils;
+using System.Collections.Generic;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class ClientView : Node
     {
@@ -17,6 +18,11 @@ namespace CraigStars
         public PublicGameInfo GameInfo { get; set; }
 
         Player Me { get => PlayersManager.Me; }
+
+        /// <summary>
+        /// For hotseat games, this is the list of players waiting to play their turns
+        /// </summary>
+        List<Player> localPlayers = new List<Player>();
 
         string projectName;
         Control container;
@@ -38,14 +44,16 @@ namespace CraigStars
             projectName = ProjectSettings.GetSetting("application/config/name").ToString();
             SetProcess(false);
 
-            Signals.GameStartedEvent += OnGameStarted;
-            Signals.SubmitTurnRequestedEvent += OnSubmitTurnRequested;
-            Signals.TurnSubmittedEvent += OnTurnSubmitted;
-            Signals.PlayTurnRequestedEvent += OnPlayTurnRequested;
-            Signals.TurnPassedEvent += OnTurnPassed;
+            EventManager.GameStartedEvent += OnGameStarted;
+            EventManager.SubmitTurnRequestedEvent += OnSubmitTurnRequested;
+            EventManager.PlayTurnRequestedEvent += OnPlayTurnRequested;
+            EventManager.TurnSubmittedEvent += OnTurnSubmitted;
+            EventManager.TurnGeneratorAdvancedEvent += OnTurnGeneratorAdvanced;
+            EventManager.TurnPassedEvent += OnTurnPassed;
 
             // set the game info for the turn generation status to our GameInfo (whether we are a client or the host)
             turnGenerationStatus.GameInfo = GameInfo;
+            turnGenerationStatus.UpdatePlayerStatuses();
             OS.SetWindowTitle($"{projectName} - {GameInfo.Name}: Year {GameInfo.Year}");
 
             CallDeferred(nameof(ReloadGameView));
@@ -55,18 +63,15 @@ namespace CraigStars
         {
             base._ExitTree();
 
-            Signals.GameStartedEvent -= OnGameStarted;
-            Signals.SubmitTurnRequestedEvent -= OnSubmitTurnRequested;
-            Signals.TurnSubmittedEvent -= OnTurnSubmitted;
-            Signals.PlayTurnRequestedEvent -= OnPlayTurnRequested;
-            Signals.TurnPassedEvent -= OnTurnPassed;
-
-            // TODO: figure out turn generator events with servers
-            // if (this.IsSinglePlayer())
-            // {
-            //     Game.TurnGeneratorAdvancedEvent -= OnGameTurnGeneratorAdvanced;
-            // }
+            EventManager.GameStartedEvent -= OnGameStarted;
+            EventManager.SubmitTurnRequestedEvent -= OnSubmitTurnRequested;
+            EventManager.TurnSubmittedEvent -= OnTurnSubmitted;
+            EventManager.PlayTurnRequestedEvent -= OnPlayTurnRequested;
+            EventManager.TurnPassedEvent -= OnTurnPassed;
+            EventManager.TurnGeneratorAdvancedEvent -= OnTurnGeneratorAdvanced;
         }
+
+        #region GameView Loading/Reloading
 
         /// <summary>
         /// Every time we create a new game, load a game, or generate a new turn we "reload" the game view as a new scene object
@@ -122,7 +127,7 @@ namespace CraigStars
         /// <param name="scene"></param>
         void SetNewGameView(PackedScene scene)
         {
-            OS.SetWindowTitle($"{projectName} - {GameInfo.Name}: Year {GameInfo.Year} - {Me.Name}");
+            OS.SetWindowTitle($"{projectName} - {GameInfo.Name}: Year {GameInfo.Year} - {Me?.Name}");
 
             gameView = scene.Instance<GameView>();
             gameView.GameInfo = GameInfo;
@@ -131,9 +136,8 @@ namespace CraigStars
 
             AddChild(gameView);
 
-            Signals.PublishGameViewResetEvent(GameInfo);
+            EventManager.PublishGameViewResetEvent(GameInfo);
         }
-
 
         /// <summary>
         /// Remove the GameView and free it, then show the progress
@@ -151,10 +155,18 @@ namespace CraigStars
 
         }
 
+        #endregion
+
+        #region Turn/Game Generation Events
+
         void OnGameStarted(PublicGameInfo gameInfo, Player player)
         {
-            GameInfo = gameInfo;
-            PlayersManager.Me = player;
+            localPlayers.Add(player);
+            if (PlayersManager.Me == null)
+            {
+                GameInfo = gameInfo;
+                PlayersManager.Me = player;
+            }
         }
 
         void OnSubmitTurnRequested(Player player)
@@ -168,8 +180,12 @@ namespace CraigStars
                     NetworkClient.Instance.SubmitTurnToServer(player);
                 }
 
+                // remove this player from the list of local players playing this game
+                localPlayers.Remove(player);
+
                 // we just submitted our turn, remove the game view and show this container
                 RemoveGameViewAndShow();
+
                 // this was us, show the dialog
                 turnGenerationStatus.Visible = true;
             }
@@ -183,17 +199,21 @@ namespace CraigStars
                 RemoveGameViewAndShow();
                 // this was us, show the dialog
                 turnGenerationStatus.Visible = true;
+                turnGenerationStatus.UpdatePlayerStatuses();
 
-                // TODO: figure out fast hotseat with singleplayer server
+                // clear out our current player
+                localPlayers.Remove(PlayersManager.Me);
+                PlayersManager.Me = null;
+
                 // if we are on fast hot seat mode, switch to the next available player
-                // if (Settings.Instance.FastHotseat)
-                // {
-                //     var nextUnsubmittedPlayer = Game.Players.Find(player => !player.AIControlled && !player.SubmittedTurn);
-                //     if (nextUnsubmittedPlayer != null)
-                //     {
-                //         Signals.PublishPlayTurnRequestedEvent(nextUnsubmittedPlayer.Num);
-                //     }
-                // }
+                if (Settings.Instance.FastHotseat && localPlayers.Count > 0)
+                {
+                    var nextUnsubmittedPlayer = localPlayers[0];
+                    if (nextUnsubmittedPlayer != null)
+                    {
+                        EventManager.PublishPlayTurnRequestedEvent(nextUnsubmittedPlayer.Num);
+                    }
+                }
             }
 
         }
@@ -202,7 +222,7 @@ namespace CraigStars
         /// While a turn is being generated, this will update the progress bar
         /// </summary>
         /// <param name="state"></param>
-        void OnGameTurnGeneratorAdvanced(TurnGenerationState state)
+        void OnTurnGeneratorAdvanced(TurnGenerationState state)
         {
             progressBar.Value = 100 * (((int)state + 1) / (float)(Enum.GetValues(typeof(TurnGenerationState)).Length));
 
@@ -219,15 +239,22 @@ namespace CraigStars
             }
 
             // let any client listeners know the game advanced the turn state
-            Signals.PublishTurnGeneratorAdvancedEvent(state);
+            EventManager.PublishTurnGeneratorAdvancedEvent(state);
         }
 
         void OnTurnPassed(PublicGameInfo gameInfo, Player player)
         {
-            PlayersManager.Me = player;
-            PlayersManager.Me.RunTurnProcessors(TurnProcessorManager.Instance);
-            OS.SetWindowTitle($"{projectName} - {gameInfo.Name}: Year {gameInfo.Year}");
-            CallDeferred(nameof(ReloadGameView));
+            // add this player to our list of localPlayers to play as
+            localPlayers.Add(player);
+
+            // if we don't already have a local player, play this player
+            if (PlayersManager.Me == null)
+            {
+                PlayersManager.Me = player;
+                PlayersManager.Me.RunTurnProcessors(TurnProcessorManager.Instance);
+                OS.SetWindowTitle($"{projectName} - {gameInfo.Name}: Year {gameInfo.Year}");
+                CallDeferred(nameof(ReloadGameView));
+            }
         }
 
         /// <summary>
@@ -236,13 +263,16 @@ namespace CraigStars
         /// <param name="playerNum"></param>
         void OnPlayTurnRequested(int playerNum)
         {
-            // TODO: figure out how to do hotseat
-            PlayersManager.Instance.ActivePlayer = playerNum;
-
-            RemoveGameViewAndShow();
-            CallDeferred(nameof(ReloadGameView));
+            var player = localPlayers.Find(player => player.Num == playerNum);
+            if (player != null)
+            {
+                PlayersManager.Me = player;
+                RemoveGameViewAndShow();
+                CallDeferred(nameof(ReloadGameView));
+            }
         }
 
+        #endregion
 
     }
 }

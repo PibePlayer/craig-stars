@@ -1,11 +1,10 @@
 using CraigStars.Singletons;
 using CraigStars.Utils;
 using Godot;
-using log4net;
 using System;
 using System.Collections.Generic;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     /// <summary>
     /// A popup menu to show other objects at a map location and allow the user to select them.
@@ -24,13 +23,13 @@ namespace CraigStars
 
             Connect("id_pressed", this, nameof(OnIdPressed));
 
-            Signals.ViewportAlternateSelectEvent += OnViewportAlternateSelect;
+            EventManager.ViewportAlternateSelectEvent += OnViewportAlternateSelect;
         }
 
         public override void _ExitTree()
         {
             base._ExitTree();
-            Signals.ViewportAlternateSelectEvent -= OnViewportAlternateSelect;
+            EventManager.ViewportAlternateSelectEvent -= OnViewportAlternateSelect;
         }
 
         /// <summary>
@@ -49,12 +48,12 @@ namespace CraigStars
                 if (selectedObject.Player == Me && (selectedObject is Planet || selectedObject is Fleet))
                 {
                     log.Debug($"Commanding {selectedObject}");
-                    Signals.PublishCommandMapObjectEvent(selectedObject);
+                    EventManager.PublishCommandMapObjectEvent(selectedObject);
                 }
                 else
                 {
                     log.Debug($"Selecting {selectedObject}");
-                    Signals.PublishSelectMapObjectEvent(selectedObject);
+                    EventManager.PublishSelectMapObjectEvent(selectedObject);
                 }
             }
         }

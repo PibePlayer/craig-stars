@@ -1,7 +1,6 @@
 using Godot;
-using log4net;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class Camera2D : Godot.Camera2D
     {

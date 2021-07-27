@@ -2,7 +2,7 @@ using Godot;
 using System;
 using CraigStars.Singletons;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class ScannerSelectedStats : MarginContainer
     {
@@ -25,16 +25,16 @@ namespace CraigStars
             distanceLabel = FindNode("DistanceLabel") as Label;
 
 
-            Signals.MapObjectHighlightedEvent += OnMapObjectHighlighted;
-            Signals.MapObjectSelectedEvent += OnMapObjectSelected;
-            Signals.MapObjectCommandedEvent += OnMapObjectCommanded;
+            EventManager.MapObjectHighlightedEvent += OnMapObjectHighlighted;
+            EventManager.MapObjectSelectedEvent += OnMapObjectSelected;
+            EventManager.MapObjectCommandedEvent += OnMapObjectCommanded;
         }
 
         public override void _ExitTree()
         {
-            Signals.MapObjectHighlightedEvent -= OnMapObjectHighlighted;
-            Signals.MapObjectSelectedEvent -= OnMapObjectSelected;
-            Signals.MapObjectCommandedEvent -= OnMapObjectCommanded;
+            EventManager.MapObjectHighlightedEvent -= OnMapObjectHighlighted;
+            EventManager.MapObjectSelectedEvent -= OnMapObjectSelected;
+            EventManager.MapObjectCommandedEvent -= OnMapObjectCommanded;
         }
 
         void OnMapObjectHighlighted(MapObjectSprite mapObject)

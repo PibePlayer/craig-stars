@@ -27,13 +27,13 @@ namespace CraigStars.Client
 
             changeButton.Connect("pressed", this, nameof(OnChangeButtonPressed));
             clearButton.Connect("pressed", this, nameof(OnClearButtonPressed));
-            Signals.ProductionQueueChangedEvent += OnProductionQueueChanged;
+            EventManager.ProductionQueueChangedEvent += OnProductionQueueChanged;
         }
 
         public override void _ExitTree()
         {
             base._ExitTree();
-            Signals.ProductionQueueChangedEvent -= OnProductionQueueChanged;
+            EventManager.ProductionQueueChangedEvent -= OnProductionQueueChanged;
         }
 
         void OnProductionQueueChanged(Planet planet)
@@ -48,7 +48,7 @@ namespace CraigStars.Client
         {
             if (CommandedPlanet != null)
             {
-                Signals.PublishChangeProductionQueuePressedEvent(CommandedPlanet);
+                EventManager.PublishProductionQueueDialogRequestedEvent(CommandedPlanet);
             }
         }
 

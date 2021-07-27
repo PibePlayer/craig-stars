@@ -5,7 +5,6 @@ using log4net;
 using Newtonsoft.Json;
 using System.Runtime.Serialization;
 using Godot;
-using CraigStars.Singletons;
 
 namespace CraigStars
 {

@@ -2,7 +2,7 @@ using CraigStars.Singletons;
 using Godot;
 using System;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class Toolbar : MarginContainer
     {
@@ -73,12 +73,12 @@ namespace CraigStars
             plansMenu.Connect("id_pressed", this, nameof(OnMenuItemIdPressed));
             infoMenu.Connect("id_pressed", this, nameof(OnMenuItemIdPressed));
 
-            Signals.GameViewResetEvent += OnGameViewReset;
+            EventManager.GameViewResetEvent += OnGameViewReset;
         }
 
         public override void _ExitTree()
         {
-            Signals.GameViewResetEvent += OnGameViewReset;
+            EventManager.GameViewResetEvent -= OnGameViewReset;
         }
 
         void OnGameViewReset(PublicGameInfo gameInfo)
@@ -96,27 +96,27 @@ namespace CraigStars
             switch ((MenuItem)id)
             {
                 case MenuItem.ShipDesigner:
-                    Signals.PublishShipDesignerDialogRequestedEvent();
+                    EventManager.PublishShipDesignerDialogRequestedEvent();
                     break;
                 case MenuItem.BattlePlans:
-                    Signals.PublishBattlePlansDialogRequestedEvent();
+                    EventManager.PublishBattlePlansDialogRequestedEvent();
                     break;
                 case MenuItem.Research:
-                    Signals.PublishResearchDialogRequestedEvent();
+                    EventManager.PublishResearchDialogRequestedEvent();
                     break;
                 case MenuItem.TransportPlans:
-                    Signals.PublishTransportPlansDialogRequestedEvent();
+                    EventManager.PublishTransportPlansDialogRequestedEvent();
                     break;
                 case MenuItem.ProductionPlans:
                     break;
                 case MenuItem.Race:
-                    Signals.PublishRaceDesignerDialogRequestedEvent();
+                    EventManager.PublishRaceDesignerDialogRequestedEvent();
                     break;
                 case MenuItem.TechBrowser:
-                    Signals.PublishTechBrowserDialogRequestedEvent();
+                    EventManager.PublishTechBrowserDialogRequestedEvent();
                     break;
                 case MenuItem.Score:
-                    Signals.PublishScoreDialogRequestedEvent();
+                    EventManager.PublishScoreDialogRequestedEvent();
                     break;
             }
         }
@@ -125,58 +125,58 @@ namespace CraigStars
         {
             Me.UISettings.PlanetViewState = PlanetViewState.Normal;
             Me.Dirty = true;
-            Signals.PublishPlayerDirtyEvent();
-            Signals.PublishPlanetViewStateUpdatedEvent();
+            EventManager.PublishPlayerDirtyEvent();
+            EventManager.PublishPlanetViewStateUpdatedEvent();
         }
 
         void OnPercentViewToolButtonPressed()
         {
             Me.UISettings.PlanetViewState = PlanetViewState.Percent;
             Me.Dirty = true;
-            Signals.PublishPlayerDirtyEvent();
-            Signals.PublishPlanetViewStateUpdatedEvent();
+            EventManager.PublishPlayerDirtyEvent();
+            EventManager.PublishPlanetViewStateUpdatedEvent();
         }
 
         void OnPopulationViewToolButtonPressed()
         {
             Me.UISettings.PlanetViewState = PlanetViewState.Population;
             Me.Dirty = true;
-            Signals.PublishPlayerDirtyEvent();
-            Signals.PublishPlanetViewStateUpdatedEvent();
+            EventManager.PublishPlayerDirtyEvent();
+            EventManager.PublishPlanetViewStateUpdatedEvent();
         }
 
         void OnPlanetNamesToolButtonPressed()
         {
             Me.UISettings.ShowPlanetNames = planetNamesToolButton.Pressed;
             Me.Dirty = true;
-            Signals.PublishPlayerDirtyEvent();
-            Signals.PublishPlanetViewStateUpdatedEvent();
+            EventManager.PublishPlayerDirtyEvent();
+            EventManager.PublishPlanetViewStateUpdatedEvent();
         }
 
         void OnScannerToolButtonPressed()
         {
             Me.UISettings.ShowScanners = scannerToolButton.Pressed;
             Me.Dirty = true;
-            Signals.PublishPlayerDirtyEvent();
-            Signals.PublishPlanetViewStateUpdatedEvent();
+            EventManager.PublishPlayerDirtyEvent();
+            EventManager.PublishPlanetViewStateUpdatedEvent();
         }
 
         void OnScannerSpinBoxValueChanged(float value)
         {
             Me.UISettings.ScannerPercent = (int)scannerSpinBox.Value;
             Me.Dirty = true;
-            Signals.PublishPlayerDirtyEvent();
-            Signals.PublishScannerScaleUpdatedEvent();
+            EventManager.PublishPlayerDirtyEvent();
+            EventManager.PublishScannerScaleUpdatedEvent();
         }
 
         void OnReportsButtonPressed()
         {
-            Signals.PublishReportsDialogRequestedEvent();
+            EventManager.PublishReportsDialogRequestedEvent();
         }
 
         void OnSubmitTurnButtonPressed()
         {
-            Signals.PublishSubmitTurnRequestedEvent(PlayersManager.Me);
+            EventManager.PublishSubmitTurnRequestedEvent(PlayersManager.Me);
         }
 
         public override void _Input(InputEvent @event)
@@ -189,27 +189,27 @@ namespace CraigStars
             {
                 // submit our turn
                 submitTurnButton.Disabled = true;
-                Signals.PublishSubmitTurnRequestedEvent(PlayersManager.Me);
+                EventManager.PublishSubmitTurnRequestedEvent(PlayersManager.Me);
             }
             if (@event.IsActionPressed("technology_browser"))
             {
-                Signals.PublishTechBrowserDialogRequestedEvent();
+                EventManager.PublishTechBrowserDialogRequestedEvent();
             }
             if (@event.IsActionPressed("research"))
             {
-                Signals.PublishResearchDialogRequestedEvent();
+                EventManager.PublishResearchDialogRequestedEvent();
             }
             if (@event.IsActionPressed("battle_plans"))
             {
-                Signals.PublishBattlePlansDialogRequestedEvent();
+                EventManager.PublishBattlePlansDialogRequestedEvent();
             }
             if (@event.IsActionPressed("ship_designer"))
             {
-                Signals.PublishShipDesignerDialogRequestedEvent();
+                EventManager.PublishShipDesignerDialogRequestedEvent();
             }
             if (@event.IsActionPressed("score"))
             {
-                Signals.PublishScoreDialogRequestedEvent();
+                EventManager.PublishScoreDialogRequestedEvent();
             }
         }
 

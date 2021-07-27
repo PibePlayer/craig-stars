@@ -1,0 +1,62 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://src/Client/MenuScreens/Components/NewGamePlayers.cs" type="Script" id=1]
+[ext_resource path="res://src/Client/MenuScreens/Components/PlayerChooser.tscn" type="PackedScene" id=2]
+
+[node name="NewGamePlayers" type="VBoxContainer"]
+margin_top = 76.0
+margin_right = 400.0
+margin_bottom = 398.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+margin_right = 400.0
+margin_bottom = 20.0
+
+[node name="PlayersLabel" type="Label" parent="HBoxContainer"]
+margin_top = 3.0
+margin_right = 304.0
+margin_bottom = 17.0
+size_flags_horizontal = 3
+text = "Players"
+
+[node name="AddPlayerButton" type="Button" parent="HBoxContainer"]
+margin_left = 308.0
+margin_right = 400.0
+margin_bottom = 20.0
+text = "Add Player +"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+margin_top = 24.0
+margin_right = 400.0
+margin_bottom = 322.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="ScrollContainer"]
+margin_right = 400.0
+margin_bottom = 298.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_constants/margin_right = 5
+custom_constants/margin_top = 15
+custom_constants/margin_left = 5
+custom_constants/margin_bottom = 15
+
+[node name="PlayersContainer" type="VBoxContainer" parent="ScrollContainer/MarginContainer"]
+margin_left = 5.0
+margin_top = 15.0
+margin_right = 395.0
+margin_bottom = 283.0
+custom_constants/separation = 10
+
+[node name="PlayerChooser" parent="ScrollContainer/MarginContainer/PlayersContainer" instance=ExtResource( 2 )]
+margin_left = 0.0
+margin_top = 0.0
+margin_right = 390.0
+margin_bottom = 96.0

@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
 
     /// <summary>

@@ -1,10 +1,9 @@
 using Godot;
 using System;
 using CraigStars.Singletons;
-using log4net;
 using CraigStars.Utils;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class LoadGameMenu : MarginContainer
     {
@@ -36,13 +35,13 @@ namespace CraigStars
 
             UpdateItemList();
 
-            Signals.GameStartedEvent += OnGameStarted;
+            EventManager.GameStartedEvent += OnGameStarted;
         }
 
         public override void _ExitTree()
         {
             base._ExitTree();
-            Signals.GameStartedEvent -= OnGameStarted;
+            EventManager.GameStartedEvent -= OnGameStarted;
         }
 
         void OnGameSaved(Game game, string filename)

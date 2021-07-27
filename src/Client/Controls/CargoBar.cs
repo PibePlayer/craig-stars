@@ -1,8 +1,7 @@
 using Godot;
-using log4net;
 using System;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class CargoBar : Control
     {

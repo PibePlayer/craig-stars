@@ -1,12 +1,11 @@
 using CraigStars.Singletons;
 using CraigStarsTable;
 using Godot;
-using log4net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class FleetsReportTable : ReportTable<Fleet>
     {
@@ -112,11 +111,11 @@ namespace CraigStars
         {
             if (item.OwnedBy(PlayersManager.Me))
             {
-                Signals.PublishCommandMapObjectEvent(item);
+                EventManager.PublishCommandMapObjectEvent(item);
             }
             else
             {
-                Signals.PublishSelectMapObjectEvent(item);
+                EventManager.PublishSelectMapObjectEvent(item);
             }
         }
     }

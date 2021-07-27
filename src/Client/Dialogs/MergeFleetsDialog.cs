@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class MergeFleetsDialog : GameViewDialog
     {
@@ -75,7 +75,7 @@ namespace CraigStars
                 // merge the fleet on the client
                 SourceFleet.Fleet.Merge(order);
                 fleetsToMerge.ForEach(f => { Me.MergedFleets.Add(f); Me.Fleets.Remove(f); });
-                fleetSpritesToMerge.ForEach(f => Signals.PublishFleetDeletedEvent(f));
+                fleetSpritesToMerge.ForEach(f => EventManager.PublishFleetDeletedEvent(f));
             }
 
             Hide();

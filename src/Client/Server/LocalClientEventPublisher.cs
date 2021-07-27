@@ -1,5 +1,5 @@
 using System;
-using CraigStars.Singletons;
+using CraigStars.Client;
 
 namespace CraigStars.Server
 {
@@ -16,14 +16,14 @@ namespace CraigStars.Server
 
         public LocalClientEventPublisher()
         {
-            Signals.GameStartRequestedEvent += OnGameStartRequested;
-            Signals.SubmitTurnRequestedEvent += OnSubmitTurnRequested;
-            Signals.UnsubmitTurnRequestedEvent += OnUnsubmitTurnRequested;
+            Client.EventManager.GameStartRequestedEvent += OnGameStartRequested;
+            Client.EventManager.SubmitTurnRequestedEvent += OnSubmitTurnRequested;
+            Client.EventManager.UnsubmitTurnRequestedEvent += OnUnsubmitTurnRequested;
         }
 
         ~LocalClientEventPublisher()
         {
-            Signals.SubmitTurnRequestedEvent -= OnSubmitTurnRequested;
+            Client.EventManager.SubmitTurnRequestedEvent -= OnSubmitTurnRequested;
         }
 
         void OnGameStartRequested(GameSettings<Player> settings)

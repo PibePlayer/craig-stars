@@ -5,7 +5,7 @@ using System.Linq;
 using CraigStars.Singletons;
 using System;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class PlanetSprite : MapObjectSprite
     {

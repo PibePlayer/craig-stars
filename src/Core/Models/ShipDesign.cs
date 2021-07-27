@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using CraigStars.Singletons;
-using CraigStars.Utils;
 using Godot;
-using log4net;
 using Newtonsoft.Json;
 
 namespace CraigStars

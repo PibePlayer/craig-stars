@@ -1,13 +1,7 @@
 using Godot;
-using log4net;
-using System;
-using System.Collections.Generic;
-
-using CraigStars.Singletons;
 using CraigStars.Utils;
-using CraigStarsTable;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class ProductionQueueDialog : GameViewDialog
     {
@@ -78,7 +72,7 @@ namespace CraigStars
 
             queuedItems.ItemSelectedEvent += OnSelectQueuedItem;
 
-            Signals.MapObjectCommandedEvent += OnMapObjectCommanded;
+            EventManager.MapObjectCommandedEvent += OnMapObjectCommanded;
         }
 
         public override void _ExitTree()
@@ -86,7 +80,7 @@ namespace CraigStars
             availableItems.ItemSelectedEvent -= OnSelectAvailableItem;
             availableItems.ItemActivatedEvent -= OnAddItem;
             queuedItems.ItemSelectedEvent -= OnSelectQueuedItem;
-            Signals.MapObjectCommandedEvent -= OnMapObjectCommanded;
+            EventManager.MapObjectCommandedEvent -= OnMapObjectCommanded;
         }
 
         /// <summary>
@@ -185,19 +179,19 @@ namespace CraigStars
             }
             Planet.ContributesOnlyLeftoverToResearch = contributesOnlyLeftoverToResearchCheckbox.Pressed;
 
-            Signals.PublishProductionQueueChangedEvent(Planet);
+            EventManager.PublishProductionQueueChangedEvent(Planet);
         }
 
         void OnNextButtonPressed()
         {
             Save();
-            Signals.PublishActiveNextMapObjectEvent();
+            EventManager.PublishCommandNextMapObjectEvent();
         }
 
         void OnPrevButtonPressed()
         {
             Save();
-            Signals.PublishActivePrevMapObjectEvent();
+            EventManager.PublishCommandPrevMapObjectEvent();
         }
 
         void OnContributesOnlyLeftoverToResearchCheckboxPressed()

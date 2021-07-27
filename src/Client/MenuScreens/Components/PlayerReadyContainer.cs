@@ -2,7 +2,7 @@ using CraigStars.Singletons;
 using Godot;
 using System;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     [Tool]
     public class PlayerReadyContainer : HBoxContainer
@@ -69,12 +69,12 @@ namespace CraigStars
             {
                 OnPlayerUpdated(Player);
             }
-            Signals.PlayerUpdatedEvent += OnPlayerUpdated;
+            NetworkClient.Instance.PlayerUpdatedEvent += OnPlayerUpdated;
         }
 
         public override void _ExitTree()
         {
-            Signals.PlayerUpdatedEvent -= OnPlayerUpdated;
+            NetworkClient.Instance.PlayerUpdatedEvent -= OnPlayerUpdated;
         }
 
         void UpdateName()

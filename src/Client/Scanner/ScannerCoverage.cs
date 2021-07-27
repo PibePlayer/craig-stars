@@ -2,7 +2,7 @@ using CraigStars.Singletons;
 using Godot;
 using System;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     /// <summary>
     /// This represents the coverage of a scanner, either penetrating or regular
@@ -36,13 +36,13 @@ namespace CraigStars
         {
             base._Ready();
 
-            Signals.ScannerScaleUpdatedEvent += OnScannerScaleUpdated;
+            EventManager.ScannerScaleUpdatedEvent += OnScannerScaleUpdated;
         }
 
         public override void _ExitTree()
         {
             base._ExitTree();
-            Signals.ScannerScaleUpdatedEvent -= OnScannerScaleUpdated;
+            EventManager.ScannerScaleUpdatedEvent -= OnScannerScaleUpdated;
         }
 
         public override void _Draw()

@@ -3,7 +3,7 @@ using Godot;
 using System;
 using System.Linq;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class ShipDesigner : HBoxContainer
     {
@@ -171,7 +171,7 @@ namespace CraigStars
             ResetDesignerShipDesignFromSource();
             UpdateControls();
             Me.Dirty = true;
-            Signals.PublishPlayerDirtyEvent();
+            EventManager.PublishPlayerDirtyEvent();
         }
 
         void OnCancelDesignButtonPressed()

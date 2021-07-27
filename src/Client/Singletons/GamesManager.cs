@@ -3,11 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using CraigStars.Utils;
 using Godot;
-using log4net;
-using log4net.Appender;
-using log4net.Core;
-using log4net.Layout;
-using log4net.Repository.Hierarchy;
 
 namespace CraigStars.Singletons
 {

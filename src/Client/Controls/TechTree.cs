@@ -4,9 +4,8 @@ using System.Linq;
 using System.Collections.Generic;
 using CraigStars.Utils;
 using CraigStars.Singletons;
-using log4net;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class TechTree : VBoxContainer
     {

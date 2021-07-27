@@ -2,9 +2,8 @@ using Godot;
 using System;
 using CraigStars.Singletons;
 using CraigStars.Utils;
-using log4net;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class PlayerChooser : VBoxContainer
     {
@@ -74,13 +73,13 @@ namespace CraigStars
             UpdateRaceFiles();
             UpdateControls();
 
-            Signals.RaceSavedEvent += OnRaceSaved;
+            EventManager.RaceSavedEvent += OnRaceSaved;
 
         }
 
         public override void _ExitTree()
         {
-            Signals.RaceSavedEvent -= OnRaceSaved;
+            EventManager.RaceSavedEvent -= OnRaceSaved;
         }
 
         public bool Validate()

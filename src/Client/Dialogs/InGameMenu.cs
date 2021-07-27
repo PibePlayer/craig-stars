@@ -2,7 +2,7 @@ using CraigStars.Singletons;
 using Godot;
 using System;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class InGameMenu : GameViewDialog
     {
@@ -27,14 +27,14 @@ namespace CraigStars
             Connect("popup_hide", this, nameof(OnPopupHide));
             DialogManager.DialogRefCount = 0;
 
-            Signals.PlayerDirtyChangedEvent += OnPlayerDirtyChanged;
+            EventManager.PlayerDirtyChangedEvent += OnPlayerDirtyChanged;
         }
 
         public override void _ExitTree()
         {
             base._ExitTree();
             DialogManager.DialogRefCount = 0;
-            Signals.PlayerDirtyChangedEvent -= OnPlayerDirtyChanged;
+            EventManager.PlayerDirtyChangedEvent -= OnPlayerDirtyChanged;
         }
 
         void OnPlayerDirtyChanged()
@@ -70,7 +70,7 @@ namespace CraigStars
         {
             GamesManager.Instance.SavePlayer(Me);
             Me.Dirty = false;
-            Signals.PublishPlayerDirtyEvent();
+            EventManager.PublishPlayerDirtyEvent();
         }
 
         void OnExitGameButtonPressed()

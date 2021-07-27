@@ -3,7 +3,7 @@ using Godot;
 using System;
 using System.Linq;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class TurnGenerationStatus : MarginContainer
     {
@@ -24,16 +24,16 @@ namespace CraigStars
 
             cancelButton.Connect("pressed", this, nameof(OnCancel));
 
-            Signals.TurnSubmittedEvent += OnTurnSubmitted;
-            Signals.TurnGeneratingEvent += OnTurnGenerating;
-            Signals.TurnGeneratorAdvancedEvent += OnTurnGeneratorAdvanced;
+            EventManager.TurnSubmittedEvent += OnTurnSubmitted;
+            EventManager.TurnGeneratingEvent += OnTurnGenerating;
+            EventManager.TurnGeneratorAdvancedEvent += OnTurnGeneratorAdvanced;
         }
 
         public override void _ExitTree()
         {
-            Signals.TurnSubmittedEvent -= OnTurnSubmitted;
-            Signals.TurnGeneratingEvent -= OnTurnGenerating;
-            Signals.TurnGeneratorAdvancedEvent -= OnTurnGeneratorAdvanced;
+            EventManager.TurnSubmittedEvent -= OnTurnSubmitted;
+            EventManager.TurnGeneratingEvent -= OnTurnGenerating;
+            EventManager.TurnGeneratorAdvancedEvent -= OnTurnGeneratorAdvanced;
         }
 
         void OnTurnSubmitted(PublicPlayerInfo submittingPlayer)
@@ -48,14 +48,14 @@ namespace CraigStars
 
         void OnPlayTurnButtonPressed(int playerNum)
         {
-            Signals.PublishPlayTurnRequestedEvent(playerNum);
+            EventManager.PublishPlayTurnRequestedEvent(playerNum);
         }
 
         void OnUnsubmitButtonPressed(int playerNum)
         {
             if (playerNum == Me.Num)
             {
-                Signals.PublishUnsubmitTurnRequestedEvent(Me);
+                EventManager.PublishUnsubmitTurnRequestedEvent(Me);
             }
         }
 
@@ -72,7 +72,7 @@ namespace CraigStars
         /// <summary>
         /// Update the player statuses in the dialog
         /// </summary>
-        void UpdatePlayerStatuses()
+        public void UpdatePlayerStatuses()
         {
             foreach (Node node in playerStatusContainer.GetChildren())
             {

@@ -29,7 +29,7 @@ namespace CraigStars.Client
         {
             if (CommandedFleet != null && CommandedFleet.Orbiting != null && CommandedFleet.Orbiting.OwnedByMe)
             {
-                Signals.PublishGotoMapObjectEvent(CommandedFleet.Orbiting);
+                EventManager.PublishGotoMapObjectEvent(CommandedFleet.Orbiting);
             }
         }
 
@@ -37,7 +37,7 @@ namespace CraigStars.Client
         {
             if (CommandedFleet != null)
             {
-                Signals.PublishCargoTransferRequestedEvent(CommandedFleet.Fleet, CommandedFleet.Fleet.Orbiting);
+                EventManager.PublishCargoTransferDialogRequestedEvent(CommandedFleet.Fleet, CommandedFleet.Fleet.Orbiting);
             }
         }
 

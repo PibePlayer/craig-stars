@@ -1,10 +1,8 @@
-using CraigStars.Singletons;
-using CraigStars.Utils;
 using Godot;
-using log4net;
 using System;
+using CraigStars.Singletons;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     [Tool]
     public class HullComponentPanel : Panel

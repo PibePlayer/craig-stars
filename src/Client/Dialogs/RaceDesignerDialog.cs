@@ -4,7 +4,7 @@ using Godot;
 using System;
 
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class RaceDesignerDialog : GameViewDialog
     {

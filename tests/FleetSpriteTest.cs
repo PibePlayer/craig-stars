@@ -1,13 +1,13 @@
 using CraigStars.Singletons;
 using Godot;
 
-namespace CraigStars.Tests
+namespace CraigStars.Client.Tests
 {
     public class FleetSpriteTest : WAT.Test
     {
         public override void Pre()
         {
-            PlayersManager.Instance.CreatePlayersForNewGame();
+            PlayersManager.Me = PlayersManager.CreateNewPlayer(0);
         }
 
         [Test]

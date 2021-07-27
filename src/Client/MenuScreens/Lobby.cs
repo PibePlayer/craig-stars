@@ -1,11 +1,9 @@
 using CraigStars.Singletons;
 using CraigStars.Utils;
 using Godot;
-using log4net;
-using System;
 using System.Collections.Generic;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class Lobby : MarginContainer
     {
@@ -36,8 +34,8 @@ namespace CraigStars
             RPC.Instance(GetTree()).PlayerJoinedEvent += OnPlayerJoined;
             RPC.Instance(GetTree()).PlayersUpdatedEvent += OnPlayersUpdated;
             RPC.Instance(GetTree()).PlayerLeftEvent += OnPlayerLeft;
-            Signals.GameStartedEvent += OnGameStarted;
-            Signals.PlayerUpdatedEvent += OnPlayerUpdated;
+            EventManager.GameStartedEvent += OnGameStarted;
+            NetworkClient.Instance.PlayerUpdatedEvent += OnPlayerUpdated;
 
             chatMessage.Connect("text_entered", this, nameof(OnChatMessageTextEntered));
             FindNode("BackButton").Connect("pressed", this, nameof(OnBackButtonPressed));
@@ -67,8 +65,8 @@ namespace CraigStars
             RPC.Instance(GetTree()).PlayerJoinedEvent -= OnPlayerJoined;
             RPC.Instance(GetTree()).PlayerLeftEvent -= OnPlayerLeft;
             RPC.Instance(GetTree()).PlayersUpdatedEvent -= OnPlayersUpdated;
-            Signals.GameStartedEvent -= OnGameStarted;
-            Signals.PlayerUpdatedEvent -= OnPlayerUpdated;
+            EventManager.GameStartedEvent -= OnGameStarted;
+            NetworkClient.Instance.PlayerUpdatedEvent -= OnPlayerUpdated;
         }
 
         void CheckStartGameButton()
@@ -181,7 +179,7 @@ namespace CraigStars
             ServerManager.Instance.CloseConnection();
             NetworkClient.Instance.CloseConnection();
 
-            PlayersManager.Instance.Reset();
+            PlayersManager.Reset();
             GetTree().ChangeScene("res://src/Client/MainMenu.tscn");
         }
 
@@ -192,7 +190,7 @@ namespace CraigStars
             {
                 me.Ready = !me.Ready;
 
-                Signals.PublishPlayerUpdatedEvent(me, notifyPeers: true, GetTree());
+                NetworkClient.Instance.PublishPlayerUpdatedEvent(me, notifyPeers: true, GetTree());
             }
             else
             {

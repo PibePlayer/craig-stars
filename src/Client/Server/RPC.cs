@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CraigStars.Client;
 using CraigStars.Server;
 using CraigStars.Utils;
 using Godot;
-using log4net;
 
 namespace CraigStars.Singletons
 {
@@ -149,7 +149,7 @@ namespace CraigStars.Singletons
                 log.Debug($"{LogPrefix} Received PlayerUpdated event for Player {player.Num} - {player.Name} (NetworkId: {player.NetworkId}");
 
                 // notify listeners that we have updated Player
-                Signals.PublishPlayerUpdatedEvent(player);
+                NetworkClient.Instance.PublishPlayerUpdatedEvent(player);
             }
             else
             {
@@ -350,12 +350,17 @@ namespace CraigStars.Singletons
             // player.ComputeAggregates();
 
             // notify any clients that we have a new game
-            Signals.PublishGameStartedEvent(gameInfo, player);
+            Client.EventManager.PublishGameStartedEvent(gameInfo, player);
             log.Info($"{LogPrefix}:{player} Received PostStartGame");
         }
 
         #region Game Events
 
+        /// <summary>
+        /// Send a message to each client that the turn has passed a new turn is available. This will also
+        /// update each player with their player data for the new turn.
+        /// </summary>
+        /// <param name="game">The game with players to notify</param>
         public void SendTurnPassed(Game game)
         {
             string gameInfoJson = Serializers.Serialize(game.GameInfo);
@@ -382,10 +387,14 @@ namespace CraigStars.Singletons
             // player.SetupMapObjectMappings();
             // player.ComputeAggregates();
 
-            Signals.PublishTurnPassedEvent(gameInfo, player);
+            Client.EventManager.PublishTurnPassedEvent(gameInfo, player);
             log.Info($"{LogPrefix}:{player} Received TurnPassed");
         }
 
+        /// <summary>
+        /// Send a message to all clients that a player has submitted their turn
+        /// </summary>
+        /// <param name="player"></param>
         public void SendTurnSubmitted(PublicPlayerInfo player)
         {
             // send our peers an update of a player
@@ -402,7 +411,7 @@ namespace CraigStars.Singletons
                 log.Debug($"{LogPrefix} Received TurnSubmitted event for Player {player.Num} - {player.Name} (NetworkId: {player.NetworkId}");
 
                 // notify listeners that we have updated Player
-                Signals.PublishTurnSubmittedEvent(player);
+                Client.EventManager.PublishTurnSubmittedEvent(player);
             }
             else
             {

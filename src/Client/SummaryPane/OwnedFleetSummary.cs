@@ -3,7 +3,7 @@ using System;
 using CraigStars.Singletons;
 using CraigStars.Utils;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class OwnedFleetSummary : MapObjectSummary<FleetSprite>
     {
@@ -46,7 +46,7 @@ namespace CraigStars
             if (MapObject?.Fleet != null && MapObject.Fleet.Aggregate.CargoCapacity > 0 && MapObject?.Fleet?.Orbiting != null)
             {
                 // trigger a cargo transfer event between this fleet and the planet it is orbiting
-                Signals.PublishCargoTransferRequestedEvent(MapObject.Fleet, MapObject.Fleet.Orbiting);
+                EventManager.PublishCargoTransferDialogRequestedEvent(MapObject.Fleet, MapObject.Fleet.Orbiting);
             }
         }
 

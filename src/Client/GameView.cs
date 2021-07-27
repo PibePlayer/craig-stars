@@ -51,18 +51,18 @@ namespace CraigStars
             battleViewerDialog = GetNode<BattleViewerDialog>("CanvasLayer/BattleViewerDialog");
             scoreDialog = GetNode<ScoreDialog>("CanvasLayer/ScoreDialog");
 
-            Signals.ChangeProductionQueuePressedEvent += OnChangeProductionQueue;
-            Signals.CargoTransferRequestedEvent += OnCargoTransferRequested;
-            Signals.ResearchDialogRequestedEvent += OnResearchDialogRequested;
-            Signals.BattlePlansDialogRequestedEvent += OnBattlePlansDialogRequested;
-            Signals.TransportPlansDialogRequestedEvent += OnTransportPlansDialogRequested;
-            Signals.ReportsDialogRequestedEvent += OnReportsDialogRequested;
-            Signals.ShipDesignerDialogRequestedEvent += OnShipDesignerDialogRequested;
-            Signals.ScoreDialogRequestedEvent += OnScoreDialogRequested;
-            Signals.TechBrowserDialogRequestedEvent += OnTechBrowserDialogRequested;
-            Signals.RaceDesignerDialogRequestedEvent += OnRaceDesignerDialogRequested;
-            Signals.MergeFleetsDialogRequestedEvent += OnMergeFleetsDialogRequested;
-            Signals.BattleViewerDialogRequestedEvent += OnBattleViewerDialogRequested;
+            Client.EventManager.ProductionQueueDialogRequestedEvent += OnProductionQueueDialogRequested;
+            Client.EventManager.CargoTransferDialogRequestedEvent += OnCargoTransferRequested;
+            Client.EventManager.ResearchDialogRequestedEvent += OnResearchDialogRequested;
+            Client.EventManager.BattlePlansDialogRequestedEvent += OnBattlePlansDialogRequested;
+            Client.EventManager.TransportPlansDialogRequestedEvent += OnTransportPlansDialogRequested;
+            Client.EventManager.ReportsDialogRequestedEvent += OnReportsDialogRequested;
+            Client.EventManager.ShipDesignerDialogRequestedEvent += OnShipDesignerDialogRequested;
+            Client.EventManager.ScoreDialogRequestedEvent += OnScoreDialogRequested;
+            Client.EventManager.TechBrowserDialogRequestedEvent += OnTechBrowserDialogRequested;
+            Client.EventManager.RaceDesignerDialogRequestedEvent += OnRaceDesignerDialogRequested;
+            Client.EventManager.MergeFleetsDialogRequestedEvent += OnMergeFleetsDialogRequested;
+            Client.EventManager.BattleViewerDialogRequestedEvent += OnBattleViewerDialogRequested;
 
             PlayersManager.Me.RunTurnProcessors(TurnProcessorManager.Instance);
             // add the universe to the viewport
@@ -71,18 +71,18 @@ namespace CraigStars
 
         public override void _ExitTree()
         {
-            Signals.ChangeProductionQueuePressedEvent -= OnChangeProductionQueue;
-            Signals.CargoTransferRequestedEvent -= OnCargoTransferRequested;
-            Signals.ResearchDialogRequestedEvent -= OnResearchDialogRequested;
-            Signals.BattlePlansDialogRequestedEvent -= OnBattlePlansDialogRequested;
-            Signals.TransportPlansDialogRequestedEvent -= OnTransportPlansDialogRequested;
-            Signals.ReportsDialogRequestedEvent -= OnReportsDialogRequested;
-            Signals.ShipDesignerDialogRequestedEvent -= OnShipDesignerDialogRequested;
-            Signals.ScoreDialogRequestedEvent -= OnScoreDialogRequested;
-            Signals.TechBrowserDialogRequestedEvent -= OnTechBrowserDialogRequested;
-            Signals.RaceDesignerDialogRequestedEvent -= OnRaceDesignerDialogRequested;
-            Signals.MergeFleetsDialogRequestedEvent -= OnMergeFleetsDialogRequested;
-            Signals.BattleViewerDialogRequestedEvent -= OnBattleViewerDialogRequested;
+            Client.EventManager.ProductionQueueDialogRequestedEvent -= OnProductionQueueDialogRequested;
+            Client.EventManager.CargoTransferDialogRequestedEvent -= OnCargoTransferRequested;
+            Client.EventManager.ResearchDialogRequestedEvent -= OnResearchDialogRequested;
+            Client.EventManager.BattlePlansDialogRequestedEvent -= OnBattlePlansDialogRequested;
+            Client.EventManager.TransportPlansDialogRequestedEvent -= OnTransportPlansDialogRequested;
+            Client.EventManager.ReportsDialogRequestedEvent -= OnReportsDialogRequested;
+            Client.EventManager.ShipDesignerDialogRequestedEvent -= OnShipDesignerDialogRequested;
+            Client.EventManager.ScoreDialogRequestedEvent -= OnScoreDialogRequested;
+            Client.EventManager.TechBrowserDialogRequestedEvent -= OnTechBrowserDialogRequested;
+            Client.EventManager.RaceDesignerDialogRequestedEvent -= OnRaceDesignerDialogRequested;
+            Client.EventManager.MergeFleetsDialogRequestedEvent -= OnMergeFleetsDialogRequested;
+            Client.EventManager.BattleViewerDialogRequestedEvent -= OnBattleViewerDialogRequested;
 
         }
 
@@ -134,7 +134,7 @@ namespace CraigStars
             cargoTransferDialog.PopupCentered();
         }
 
-        void OnChangeProductionQueue(PlanetSprite planetSprite)
+        void OnProductionQueueDialogRequested(PlanetSprite planetSprite)
         {
             productionQueueDialog.Planet = planetSprite.Planet;
             productionQueueDialog.PopupCentered();

@@ -3,7 +3,7 @@ using System;
 using CraigStars.Singletons;
 using CraigStars.Utils;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class ForeignFleetSummary : MapObjectSummary<FleetSprite>
     {

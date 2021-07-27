@@ -1,8 +1,6 @@
 using Godot;
-using log4net;
-using System.Threading.Tasks;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class Loader : Control
     {

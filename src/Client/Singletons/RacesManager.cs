@@ -1,10 +1,6 @@
 using System.Collections.Generic;
+using CraigStars.Client;
 using Godot;
-using log4net;
-using log4net.Appender;
-using log4net.Core;
-using log4net.Layout;
-using log4net.Repository.Hierarchy;
 
 namespace CraigStars.Singletons
 {
@@ -118,7 +114,7 @@ namespace CraigStars.Singletons
                 try
                 {
                     raceFile.StoreString(json);
-                    Signals.PublishRaceSavedEvent(race, filename);
+                    Client.EventManager.PublishRaceSavedEvent(race, filename);
                 }
                 finally
                 {

@@ -69,12 +69,12 @@ namespace CraigStars.Client
                 Me.MapObjectsByLocation[newFleet.Position].Add(newFleet);
             });
 
-            Signals.PublishFleetsCreatedEvent(fleets);
+            EventManager.PublishFleetsCreatedEvent(fleets);
         }
 
         void OnMergeButtonPressed()
         {
-            Signals.PublishMergeFleetsDialogRequestedEvent(CommandedFleet);
+            EventManager.PublishMergeFleetsDialogRequestedEvent(CommandedFleet);
         }
 
         protected override void OnNewCommandedFleet()

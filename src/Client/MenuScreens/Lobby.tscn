@@ -115,7 +115,6 @@ __meta__ = {
 margin_right = 430.0
 margin_bottom = 32.0
 rect_rotation = 0.0
-PlayerNum = 1
 
 [node name="LobbyButtons" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/PlayerReadyContainer"]
 margin_top = 506.0

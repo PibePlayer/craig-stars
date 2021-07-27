@@ -13,14 +13,14 @@ namespace CraigStars.Client
 
         public override void _Ready()
         {
-            Signals.MapObjectCommandedEvent += OnMapObjectCommanded;
-            Signals.TurnPassedEvent += OnTurnPassed;
+            EventManager.MapObjectCommandedEvent += OnMapObjectCommanded;
+            EventManager.TurnPassedEvent += OnTurnPassed;
         }
 
         public override void _ExitTree()
         {
-            Signals.MapObjectCommandedEvent -= OnMapObjectCommanded;
-            Signals.TurnPassedEvent -= OnTurnPassed;
+            EventManager.MapObjectCommandedEvent -= OnMapObjectCommanded;
+            EventManager.TurnPassedEvent -= OnTurnPassed;
         }
 
         protected void UpdateTitle(string title)

@@ -2,11 +2,10 @@ using System.Collections.Generic;
 using System.Linq;
 using CraigStars.Utils;
 using Godot;
-using log4net;
 
 namespace CraigStars.Singletons
 {
-    public class PlayersManager : Node
+    public static class PlayersManager
     {
         static CSLog log = LogProvider.GetLogger(typeof(PlayersManager));
 
@@ -14,21 +13,6 @@ namespace CraigStars.Singletons
         /// This is just a temporary property for development.
         /// </summary>
         public const int DefaultNumPlayers = 2;
-
-        /// <summary>
-        /// The currently active player
-        /// </summary>
-        /// <value></value>
-        public int ActivePlayer
-        {
-            get => activePlayer;
-            set
-            {
-                activePlayer = value;
-                Me = null;
-            }
-        }
-        int activePlayer = 0;
 
         public static Color[] PlayerColors { get; } = new Color[] {
             new Color("c33232"),
@@ -72,51 +56,15 @@ namespace CraigStars.Singletons
             "Tritizoid",
         };
 
+        /// <summary>
+        /// The currently active player for the client
+        /// </summary>
         public static Player Me { get; set; }
 
-        /// <summary>
-        /// PlayersManager is a singleton
-        /// </summary>
-        private static PlayersManager instance;
-        public static PlayersManager Instance
+        public static void Reset()
         {
-            get
-            {
-                return instance;
-            }
-        }
-
-        PlayersManager()
-        {
-            instance = this;
-        }
-
-        public void Reset()
-        {
-            Me = null;
             RulesManager.Rules.Random.Shuffle(raceNames);
             RulesManager.Rules.Random.Shuffle(playerNames);
-        }
-
-        /// <summary>
-        /// Reset the current player to whatever the default is. I.e. if this is a hotseat game, the current player
-        /// will be player 1.
-        /// /// </summary>
-        public static void ResetCurrentPlayer()
-        {
-            Instance.ActivePlayer = 0;
-            Me = null;
-        }
-
-        /// <summary>
-        /// Setup the initial players list with players based on color
-        /// </summary>
-        public List<Player> CreatePlayersForNewGame(int numPlayers = DefaultNumPlayers)
-        {
-            var players = new List<Player>();
-            players.AddRange(CreateNewPlayersList(numPlayers));
-            players.ForEach(player => Signals.PublishPlayerUpdatedEvent(player));
-            return players;
         }
 
         /// <summary>
@@ -124,7 +72,7 @@ namespace CraigStars.Singletons
         /// </summary>
         /// <param name="numPlayers"></param>
         /// <returns></returns>
-        public static List<Player> CreateNewPlayersList(int numPlayers)
+        public static List<Player> CreatePlayersForNewGame(int numPlayers = DefaultNumPlayers)
         {
             List<Player> players = new();
             for (var num = 0; num < numPlayers; num++)

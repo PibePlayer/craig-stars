@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class BattlePlansDialog : GameViewDialog
     {
@@ -136,7 +136,7 @@ namespace CraigStars
             }
 
             Me.Dirty = true;
-            Signals.PublishPlayerDirtyEvent();
+            EventManager.PublishPlayerDirtyEvent();
 
             Hide();
         }

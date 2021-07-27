@@ -71,11 +71,11 @@ namespace CraigStars.Server
         {
             if (settings.ContinueGame)
             {
-                LoadGame(settings.Name, settings.Year);
+                LoadGame(settings.Name, settings.Year, multithreaded: true, saveToDisk: true);
             }
             else
             {
-                CreateNewGame(settings);
+                CreateNewGame(settings, multithreaded: true, saveToDisk: true);
             }
             // notify each player of a game start event
             PublishGameStartedEvent();
@@ -128,13 +128,13 @@ namespace CraigStars.Server
         /// <summary>
         /// Create a new game and generate the universe
         /// </summary>
-        public Game CreateNewGame(GameSettings<Player> settings)
+        public Game CreateNewGame(GameSettings<Player> settings, bool multithreaded, bool saveToDisk)
         {
             Game = new Game()
             {
                 Name = settings.Name,
-                Multithreaded = Settings.Multithreaded,
-                SaveToDisk = Settings.SaveToDisk,
+                Multithreaded = multithreaded,
+                SaveToDisk = saveToDisk,
                 GameInfo = settings
             };
             if (GamesManager.Instance.GameExists(Game.Name))
@@ -154,11 +154,11 @@ namespace CraigStars.Server
         /// <summary>
         /// Load a game from disk into the Game property
         /// </summary>
-        public Game LoadGame(string gameName, int year)
+        public Game LoadGame(string gameName, int year, bool multithreaded, bool saveToDisk)
         {
             Game = GamesManager.Instance.LoadGame(TechStore.Instance, TurnProcessorManager.Instance, gameName, year);
-            Game.Multithreaded = Settings.Multithreaded;
-            Game.SaveToDisk = Settings.SaveToDisk;
+            Game.Multithreaded = multithreaded;
+            Game.SaveToDisk = saveToDisk;
 
             return Game;
         }

@@ -1,9 +1,8 @@
 using Godot;
 using System;
 using CraigStars.Singletons;
-using log4net;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class CustomRacesMenu : MarginContainer
     {
@@ -31,14 +30,14 @@ namespace CraigStars
             editButton.Connect("pressed", this, nameof(OnEditButtonPressed));
             deleteButton.Connect("pressed", this, nameof(OnDeleteButtonPressed));
 
-            Signals.RaceSavedEvent += OnRaceSaved;
+            EventManager.RaceSavedEvent += OnRaceSaved;
 
             UpdateItemList();
         }
 
         public override void _ExitTree()
         {
-            Signals.RaceSavedEvent -= OnRaceSaved;
+            EventManager.RaceSavedEvent -= OnRaceSaved;
         }
 
         void OnRaceSaved(Race race, string filename)

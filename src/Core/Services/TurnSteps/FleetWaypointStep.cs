@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using CraigStars.Singletons;
-using Godot;
-using log4net;
 
 namespace CraigStars
 {

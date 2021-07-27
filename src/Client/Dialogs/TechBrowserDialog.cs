@@ -5,7 +5,7 @@ using System.Linq;
 using CraigStars.Singletons;
 using CraigStars.Utils;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class TechBrowserDialog : GameViewDialog
     {

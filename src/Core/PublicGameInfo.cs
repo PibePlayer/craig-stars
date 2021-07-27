@@ -1,10 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
-using CraigStars.Singletons;
-using log4net;
 using Newtonsoft.Json;
 
 namespace CraigStars

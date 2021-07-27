@@ -1,10 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using CraigStars.Singletons;
-using Godot;
-using log4net;
-using static CraigStars.Utils.Utils;
 
 namespace CraigStars
 {

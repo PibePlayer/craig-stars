@@ -43,7 +43,7 @@ namespace CraigStars.Client
             if (SelectedFleet?.Fleet != null && SelectedFleet.Fleet.Aggregate.CargoCapacity > 0 && SelectedFleet?.Fleet?.Orbiting != null)
             {
                 // trigger a cargo transfer event between this fleet and the planet it is orbiting
-                Signals.PublishCargoTransferRequestedEvent(SelectedFleet.Fleet, SelectedFleet.Fleet.Orbiting);
+                EventManager.PublishCargoTransferDialogRequestedEvent(SelectedFleet.Fleet, SelectedFleet.Fleet.Orbiting);
             }
         }
 
@@ -60,7 +60,7 @@ namespace CraigStars.Client
         {
             if (SelectedFleet != null)
             {
-                Signals.PublishGotoMapObjectEvent(SelectedFleet);
+                EventManager.PublishGotoMapObjectEvent(SelectedFleet);
             }
         }
 

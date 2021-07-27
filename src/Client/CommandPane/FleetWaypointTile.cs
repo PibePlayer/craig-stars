@@ -15,19 +15,19 @@ namespace CraigStars.Client
         public override void _Ready()
         {
             base._Ready();
-            Signals.WaypointSelectedEvent += OnWaypointSelected;
-            Signals.WaypointAddedEvent += OnWaypointAdded;
-            Signals.WaypointDeletedEvent += OnWaypointDeleted;
-            Signals.WaypointMovedEvent += OnWaypointMoved;
+            EventManager.WaypointSelectedEvent += OnWaypointSelected;
+            EventManager.WaypointAddedEvent += OnWaypointAdded;
+            EventManager.WaypointDeletedEvent += OnWaypointDeleted;
+            EventManager.WaypointMovedEvent += OnWaypointMoved;
         }
 
         public override void _ExitTree()
         {
             base._ExitTree();
-            Signals.WaypointSelectedEvent -= OnWaypointSelected;
-            Signals.WaypointAddedEvent -= OnWaypointAdded;
-            Signals.WaypointDeletedEvent -= OnWaypointDeleted;
-            Signals.WaypointMovedEvent -= OnWaypointMoved;
+            EventManager.WaypointSelectedEvent -= OnWaypointSelected;
+            EventManager.WaypointAddedEvent -= OnWaypointAdded;
+            EventManager.WaypointDeletedEvent -= OnWaypointDeleted;
+            EventManager.WaypointMovedEvent -= OnWaypointMoved;
         }
 
         void OnWaypointSelected(Waypoint waypoint)

@@ -4,7 +4,7 @@ using CraigStars.Client;
 
 namespace CraigStars.Server
 {
-    public class LocalServer : Server
+    public class LocalServer : Server, IServer
     {
         static CSLog log = LogProvider.GetLogger(typeof(LocalServer));
 

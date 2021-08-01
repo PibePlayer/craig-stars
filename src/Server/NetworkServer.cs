@@ -12,7 +12,7 @@ namespace CraigStars.Server
     /// The NetworkServer node is created and added to a new SceneTree when a new multiplayer game is hosted.
     /// This node handles managing a server and handling player joined/left events.
     /// </summary>
-    public class NetworkServer : Server
+    public class NetworkServer : Server, IServer
     {
         static CSLog log = LogProvider.GetLogger(typeof(Server));
 

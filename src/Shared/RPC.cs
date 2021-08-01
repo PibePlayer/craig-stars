@@ -8,6 +8,10 @@ using Godot;
 
 namespace CraigStars.Singletons
 {
+    /// <summary>
+    /// The RPC node is at the root of the client and server SceneTrees. This is how a
+    /// client or server makes RPC calls back and forth to each other.
+    /// </summary>
     public class RPC : Node, IClientEventPublisher
     {
         static CSLog log = LogProvider.GetLogger(typeof(RPC));

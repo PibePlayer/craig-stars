@@ -12,7 +12,7 @@ namespace CraigStars.Server
     /// The Server class manages creating new games, loading save games, accepting turn submittals, and generating new turns.
     /// This class is implemented by a SinglePlayerServer and a NetworkServer. 
     /// </summary>
-    public abstract class Server : Node
+    public abstract class Server : Node, IServer
     {
         static CSLog log = LogProvider.GetLogger(typeof(Server));
 
@@ -38,9 +38,9 @@ namespace CraigStars.Server
         public override void _ExitTree()
         {
             base._ExitTree();
-            clientEventPublisher.GameStartRequestedEvent += OnGameStartRequested;
-            clientEventPublisher.SubmitTurnRequestedEvent += OnSubmitTurnRequested;
-            clientEventPublisher.UnsubmitTurnRequestedEvent += OnUnsubmitTurnRequested;
+            clientEventPublisher.GameStartRequestedEvent -= OnGameStartRequested;
+            clientEventPublisher.SubmitTurnRequestedEvent -= OnSubmitTurnRequested;
+            clientEventPublisher.UnsubmitTurnRequestedEvent -= OnUnsubmitTurnRequested;
         }
 
         /// <summary>

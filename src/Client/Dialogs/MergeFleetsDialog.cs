@@ -75,7 +75,7 @@ namespace CraigStars.Client
                 // merge the fleet on the client
                 SourceFleet.Fleet.Merge(order);
                 fleetsToMerge.ForEach(f => { Me.MergedFleets.Add(f); Me.Fleets.Remove(f); });
-                fleetSpritesToMerge.ForEach(f => EventManager.PublishFleetDeletedEvent(f));
+                fleetSpritesToMerge.ForEach(f => EventManager.PublishFleetDeletedEvent(f.Fleet));
             }
 
             Hide();

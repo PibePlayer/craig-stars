@@ -112,11 +112,11 @@ namespace CraigStars.Client
 
         #region Fleets
 
-        public static event Action<FleetSprite> FleetDeletedEvent;
+        public static event Action<Fleet> FleetDeletedEvent;
         public static event Action<Fleet, ICargoHolder> CargoTransferredEvent;
         public static event Action<List<Fleet>> FleetsCreatedEvent;
 
-        public static void PublishFleetDeletedEvent(FleetSprite fleet) => FleetDeletedEvent?.Invoke(fleet);
+        public static void PublishFleetDeletedEvent(Fleet fleet) => FleetDeletedEvent?.Invoke(fleet);
         public static void PublishCargoTransferredEvent(Fleet source, ICargoHolder dest) => CargoTransferredEvent?.Invoke(source, dest);
         public static void PublishFleetsCreatedEvent(List<Fleet> fleets) => FleetsCreatedEvent?.Invoke(fleets);
 

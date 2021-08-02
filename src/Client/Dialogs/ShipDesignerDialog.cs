@@ -1,5 +1,7 @@
 using Godot;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CraigStars.Client
 {
@@ -70,7 +72,7 @@ namespace CraigStars.Client
             // wire up events for the various create/edit/delete buttons
             copyDesignButton.Connect("pressed", this, nameof(OnCopyDesignButtonPressed));
             editDesignButton.Connect("pressed", this, nameof(OnEditDesignButtonPressed));
-            deleteDesignButton.Connect("pressed", this, nameof(OnDeleteDesignButtonPressed));
+            deleteDesignButton.Connect("pressed", this, nameof(OnDeleteShipDesignButtonPressed));
             copyStarbaseDesignButton.Connect("pressed", this, nameof(OnCopyStarbaseDesignButtonPressed));
             editStarbaseDesignButton.Connect("pressed", this, nameof(OnEditStarbaseDesignButtonPressed));
             deleteStarbaseDesignButton.Connect("pressed", this, nameof(OnDeleteStarbaseDesignButtonPressed));
@@ -188,12 +190,12 @@ namespace CraigStars.Client
 
         void OnDeleteShipDesignButtonPressed()
         {
-            OnDeleteDesignButtonPressed(shipHullSummary.ShipDesign, () => shipDesignTree.UpdateTreeItems());
+            OnDeleteDesignButtonPressed(shipHullSummary.ShipDesign, () => { shipDesignTree.UpdateTreeItems(); shipDesignTree.SelectFirstItem(); });
         }
 
         void OnDeleteStarbaseDesignButtonPressed()
         {
-            OnDeleteDesignButtonPressed(starbaseHullSummary.ShipDesign, () => starbaseDesignTree.UpdateTreeItems());
+            OnDeleteDesignButtonPressed(starbaseHullSummary.ShipDesign, () => { starbaseDesignTree.UpdateTreeItems(); starbaseDesignTree.SelectFirstItem(); });
         }
 
         void OnDeleteDesignButtonPressed(ShipDesign designToDelete, Action deletedCallback)
@@ -213,7 +215,18 @@ namespace CraigStars.Client
                     message,
                     () =>
                     {
+
                         Me.DeleteDesign(design);
+
+                        // delete any fleets with no tokens left
+                        var fleetsToDelete = new List<Fleet>();
+                        foreach (var fleet in Me.Fleets.Where(_ => _.Tokens.Count == 0))
+                        {
+                            fleetsToDelete.Add(fleet);
+                            EventManager.PublishFleetDeletedEvent(fleet);
+                        }
+                        fleetsToDelete.ForEach(fleetToDelete => Me.Fleets.Remove(fleetToDelete));
+
                         deletedCallback();
                     }
                 );

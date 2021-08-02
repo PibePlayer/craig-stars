@@ -54,7 +54,7 @@ namespace CraigStars.Client
             UpdateControls();
         }
 
-        protected virtual void OnFleetDeleted(FleetSprite fleet)
+        protected virtual void OnFleetDeleted(Fleet fleet)
         {
             UpdateControls();
         }

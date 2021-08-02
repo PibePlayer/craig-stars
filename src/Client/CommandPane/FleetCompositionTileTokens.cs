@@ -27,7 +27,7 @@ namespace CraigStars.Client
             base.OnFleetsCreated(fleets);
         }
 
-        protected override void OnFleetDeleted(FleetSprite fleet)
+        protected override void OnFleetDeleted(Fleet fleet)
         {
             ClearTokens();
             base.OnFleetDeleted(fleet);

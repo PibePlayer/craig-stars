@@ -149,14 +149,14 @@ namespace CraigStars.Client
 
         void OnIconGuiInput(InputEvent @event)
         {
-            if (Hull != null && @event.IsActionPressed("Hullcomponent_alternate_select"))
+            if (Hull != null && @event.IsActionPressed("hullcomponent_alternate_select"))
             {
                 GetTree().SetInputAsHandled();
 
                 TechSummaryPopup.Tech = Hull;
                 TechSummaryPopup.ShowAtMouse();
             }
-            else if (@event.IsActionReleased("Hullcomponent_alternate_select"))
+            else if (@event.IsActionReleased("hullcomponent_alternate_select"))
             {
                 TechSummaryPopup.Instance.Hide();
             }

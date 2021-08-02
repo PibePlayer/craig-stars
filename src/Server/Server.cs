@@ -160,6 +160,9 @@ namespace CraigStars.Server
             Game.Multithreaded = multithreaded;
             Game.SaveToDisk = saveToDisk;
 
+            // TODO: remove this turn process stuff later
+            Game.Players.ForEach(player => player.Settings.TurnProcessors.AddRange(TurnProcessorManager.Instance.TurnProcessors.Select(p => p.Name)));
+
             return Game;
         }
 

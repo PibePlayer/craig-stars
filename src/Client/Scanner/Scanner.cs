@@ -302,24 +302,53 @@ namespace CraigStars.Client
         }
 
         /// <summary>
+        /// Get the current player's homeworld, or the first inhabited planet if the homeworld isn't under the player's control anymore
+        /// </summary>
+        /// <returns></returns>
+        PlanetSprite GetHomeWorldOrDefault()
+        {
+            var homeworld = Planets.Where(p => p.Planet.Homeworld && p.Planet.Player == Me).FirstOrDefault();
+            if (homeworld == null)
+            {
+                homeworld = Planets.Where(p => p.Planet.Player == Me).FirstOrDefault();
+            }
+            return homeworld;
+        }
+
+        /// <summary>
         /// Focus on the current player's homeworld
         /// </summary>
         void FocusHomeworld()
         {
-            var homeworld = Planets.Where(p => p.Planet.Homeworld && p.Planet.Player == Me).FirstOrDefault();
+            var homeworld = GetHomeWorldOrDefault();
+            if (homeworld != null)
+            {
+                selectedWaypoint = null;
+                commandedMapObject?.Deselect();
+                commandedMapObject = homeworld;
+
+                commandedMapObject.Command();
+                EventManager.PublishMapObjectCommandedEvent(homeworld);
+
+                SelectHomeworld();
+            }
+        }
+
+        /// <summary>
+        /// Select the Homeworld
+        /// </summary>
+        void SelectHomeworld()
+        {
+            var homeworld = GetHomeWorldOrDefault();
             if (homeworld != null)
             {
                 selectedWaypoint = null;
                 selectedMapObject?.Deselect();
-                commandedMapObject?.Deselect();
                 selectedMapObject = homeworld;
-                commandedMapObject = homeworld;
 
                 selectedMapObject.Select();
-                commandedMapObject.Command();
                 UpdateSelectedMapObjectIndicator();
                 EventManager.PublishMapObjectSelectedEvent(homeworld);
-                EventManager.PublishMapObjectCommandedEvent(homeworld);
             }
         }
 
@@ -1052,15 +1081,16 @@ namespace CraigStars.Client
 
         }
 
-        void OnFleetDeleted(FleetSprite fleet)
+        void OnFleetDeleted(Fleet fleet)
         {
-            log.Debug($"User deleted fleet {fleet.Fleet.Name} - {fleet.Fleet.Guid}");
-            Fleets.Remove(fleet);
+            log.Debug($"User deleted fleet {fleet.Name} - {fleet.Guid}");
+            var fleetSprite = Fleets.Find(fleetSprite => fleetSprite.Fleet == fleet);
+            Fleets.Remove(fleetSprite);
             // make sure other fleets don't know about us anymore
             fleet.OtherFleets.ForEach(otherFleet => otherFleet.OtherFleets.Remove(fleet));
-            MapObjectsByGuid.Remove(fleet.Fleet.Guid);
-            Me.MapObjectsByLocation[fleet.Fleet.Position].Remove(fleet.Fleet);
-            mapObjectsByLocation[fleet.Fleet.Position].Remove(fleet);
+            MapObjectsByGuid.Remove(fleet.Guid);
+            Me.MapObjectsByLocation[fleet.Position].Remove(fleet);
+            mapObjectsByLocation[fleet.Position].Remove(fleetSprite);
 
             // make sure any planets we are orbiting don't know about us anymore
             if (fleet.Orbiting != null)
@@ -1068,12 +1098,22 @@ namespace CraigStars.Client
                 fleet.Orbiting.OrbitingFleets.Remove(fleet);
             }
 
+            // Goto the homeworld if the current fleet is commanded
+            if (fleetSprite == CommandedFleet)
+            {
+                FocusHomeworld();
+            }
+            if (fleetSprite == selectedMapObject)
+            {
+                SelectHomeworld();
+            }
+
             // remove the fleet from the scanner
-            RemoveChild(fleet);
-            fleet.Disconnect("input_event", this, nameof(OnInputEvent));
-            fleet.Disconnect("mouse_entered", this, nameof(OnMouseEntered));
-            fleet.Disconnect("mouse_exited", this, nameof(OnMouseExited));
-            fleet.QueueFree();
+            RemoveChild(fleetSprite);
+            fleetSprite.Disconnect("input_event", this, nameof(OnInputEvent));
+            fleetSprite.Disconnect("mouse_entered", this, nameof(OnMouseEntered));
+            fleetSprite.Disconnect("mouse_exited", this, nameof(OnMouseExited));
+            fleetSprite.QueueFree();
         }
 
     }

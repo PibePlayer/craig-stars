@@ -19,6 +19,13 @@ namespace CraigStars.Tests
             Assert.AreEqual(2500, RoundToNearest(2451.5f));
         }
 
+        [Test]
+        public void TestBlah()
+        {
+            Vector2 blah = new Vector2(1, 2);
+            
+        }
+
 
     }
 }

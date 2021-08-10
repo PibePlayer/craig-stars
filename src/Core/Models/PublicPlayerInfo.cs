@@ -1,9 +1,7 @@
 
 using Godot;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace CraigStars
 {
@@ -48,6 +46,55 @@ namespace CraigStars
             var networkDescription = AIControlled ? "AI Controlled" : $"NetworkId: {NetworkId}";
             return $"Player {Num} {Name} ({networkDescription})";
         }
+
+
+        public override bool Equals(object obj) => this.Equals(obj as PublicPlayerInfo);
+
+        public bool Equals(PublicPlayerInfo p)
+        {
+            if (p is null)
+            {
+                return false;
+            }
+
+            // Optimization for a common success case.
+            if (System.Object.ReferenceEquals(this, p))
+            {
+                return true;
+            }
+
+            // Return true if the fields match.
+            // Note that the base class is not invoked because it is
+            // System.Object, which defines Equals as reference equality.
+            return (Num == p.Num);
+        }
+
+        public override int GetHashCode() => Num.GetHashCode();
+
+        public static bool operator ==(PublicPlayerInfo lhs, PublicPlayerInfo rhs)
+        {
+            if (lhs is null)
+            {
+                if (rhs is null)
+                {
+                    return true;
+                }
+
+                // Only the left side is null.
+                return false;
+            }
+            // Equals handles case of null on right side.
+            return lhs.Equals(rhs);
+        }
+
+        public static bool operator !=(PublicPlayerInfo lhs, PublicPlayerInfo rhs) => !(lhs == rhs);
+
+        public static bool operator ==(Player lhs, PublicPlayerInfo rhs) => (PublicPlayerInfo)lhs == rhs;
+        public static bool operator !=(Player lhs, PublicPlayerInfo rhs) => !((PublicPlayerInfo)lhs == rhs);
+
+        public static bool operator ==(PublicPlayerInfo lhs, Player rhs) => lhs == (PublicPlayerInfo)rhs;
+        public static bool operator !=(PublicPlayerInfo lhs, Player rhs) => !(lhs == (PublicPlayerInfo)rhs);
+
 
     }
 }

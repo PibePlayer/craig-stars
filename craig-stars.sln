@@ -4,8 +4,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "craig-stars", "craig-stars.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Tests", "src\Core.Tests\Core.Tests.csproj", "{D58FC96B-B3DF-4AF9-AB58-553E2E635958}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C1F95E9B-CAD1-4EE9-9ED4-6042616170A0}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "src\Core\Core.csproj", "{A5C8D23E-E29B-49EB-AC35-1CDDF796C1FD}"
 EndProject
 Global
@@ -39,8 +37,5 @@ Global
 		{A5C8D23E-E29B-49EB-AC35-1CDDF796C1FD}.ExportRelease|Any CPU.Build.0 = Debug|Any CPU
 		{A5C8D23E-E29B-49EB-AC35-1CDDF796C1FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5C8D23E-E29B-49EB-AC35-1CDDF796C1FD}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{A5C8D23E-E29B-49EB-AC35-1CDDF796C1FD} = {C1F95E9B-CAD1-4EE9-9ED4-6042616170A0}
 	EndGlobalSection
 EndGlobal

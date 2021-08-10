@@ -133,7 +133,7 @@ namespace CraigStars.Server
         /// <param name="player"></param>
         protected override void PublishTurnSubmittedEvent(PublicPlayerInfo player)
         {
-            rpc.SendPlayerUpdated(player);
+            rpc.SendTurnSubmitted(player);
         }
 
         /// <summary>
@@ -142,17 +142,18 @@ namespace CraigStars.Server
         /// <param name="player"></param>
         protected override void PublishTurnUnsubmittedEvent(PublicPlayerInfo player)
         {
-
+            rpc.SendTurnUnsubmitted(player);
         }
 
         protected override void PublishTurnGeneratingEvent()
         {
+            rpc.SendTurnGenerating(Game.GameInfo);
 
         }
 
         protected override void PublishTurnGeneratorAdvancedEvent(TurnGenerationState state)
         {
-
+            rpc.SendTurnGeneratorAdvanced(Game.GameInfo, state);
         }
 
         protected override void PublishTurnPassedEvent()

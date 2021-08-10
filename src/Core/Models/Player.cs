@@ -855,12 +855,6 @@ namespace CraigStars
                 return true;
             }
 
-            // If run-time types are not exactly the same, return false.
-            if (this.GetType() != p.GetType())
-            {
-                return false;
-            }
-
             // Return true if the fields match.
             // Note that the base class is not invoked because it is
             // System.Object, which defines Equals as reference equality.
@@ -886,9 +880,6 @@ namespace CraigStars
         }
 
         public static bool operator !=(Player lhs, Player rhs) => !(lhs == rhs);
-
-        public static bool operator ==(PublicPlayerInfo lhs, Player rhs) => (Player)lhs == rhs;
-        public static bool operator !=(PublicPlayerInfo lhs, Player rhs) => !((Player)lhs == rhs);
 
         #endregion
 

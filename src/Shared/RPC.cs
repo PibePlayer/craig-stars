@@ -360,6 +360,51 @@ namespace CraigStars.Singletons
 
         #region Game Events
 
+        public void SendTurnSubmitted(PublicPlayerInfo player)
+        {
+            // send our peers an update of a player
+            log.Debug($"{LogPrefix} Sending TurnSubmitted for: {player}");
+            Rpc(nameof(TurnSubmitted), Serializers.Serialize(player));
+        }
+
+        [Remote]
+        public void TurnSubmitted(string json)
+        {
+            var player = Serializers.DeserializeObject<PublicPlayerInfo>(json);
+            if (player != null)
+            {
+                log.Debug($"{LogPrefix} Received TurnSubmitted event for Player {player.Num} - {player.Name} (NetworkId: {player.NetworkId}");
+                Client.EventManager.PublishTurnSubmittedEvent(player);
+            }
+            else
+            {
+                log.Error($"{LogPrefix} Failed to parse json: {json}");
+            }
+        }
+
+        public void SendTurnUnsubmitted(PublicPlayerInfo player)
+        {
+            // send our peers an update of a player
+            log.Debug($"{LogPrefix} Sending TurnUnsubmitted for: {player}");
+            Rpc(nameof(TurnUnsubmitted), Serializers.Serialize(player));
+        }
+
+        [Remote]
+        public void TurnUnsubmitted(string json)
+        {
+            var player = Serializers.DeserializeObject<PublicPlayerInfo>(json);
+            if (player != null)
+            {
+                log.Debug($"{LogPrefix} Received TurnUnsubmitted event for Player {player.Num} - {player.Name} (NetworkId: {player.NetworkId}");
+                Client.EventManager.PublishTurnUnsubmittedEvent(player);
+            }
+            else
+            {
+                log.Error($"{LogPrefix} Failed to parse json: {json}");
+            }
+        }
+
+
         /// <summary>
         /// Send a message to each client that the turn has passed a new turn is available. This will also
         /// update each player with their player data for the new turn.
@@ -395,33 +440,38 @@ namespace CraigStars.Singletons
             log.Info($"{LogPrefix}:{player} Received TurnPassed");
         }
 
-        /// <summary>
-        /// Send a message to all clients that a player has submitted their turn
-        /// </summary>
-        /// <param name="player"></param>
-        public void SendTurnSubmitted(PublicPlayerInfo player)
+        public void SendTurnGenerating(PublicGameInfo gameInfo)
         {
-            // send our peers an update of a player
-            log.Debug($"{LogPrefix} Notifying clients about player turn submit: {player}");
-            Rpc(nameof(TurnSubmitted), Serializers.Serialize(player));
+            string gameInfoJson = Serializers.Serialize(gameInfo);
+            log.Info($"{LogPrefix}: Sending TurnGenerating to players");
+            Rpc(nameof(TurnGenerating), gameInfoJson);
         }
 
         [Remote]
-        public void TurnSubmitted(string json)
+        public void TurnGenerating(string gameInfoJson)
         {
-            var player = Serializers.DeserializeObject<PublicPlayerInfo>(json);
-            if (player != null)
-            {
-                log.Debug($"{LogPrefix} Received TurnSubmitted event for Player {player.Num} - {player.Name} (NetworkId: {player.NetworkId}");
+            PublicGameInfo gameInfo = Serializers.DeserializeObject<PublicGameInfo>(gameInfoJson);
 
-                // notify listeners that we have updated Player
-                Client.EventManager.PublishTurnSubmittedEvent(player);
-            }
-            else
-            {
-                log.Error($"{LogPrefix} Failed to parse json: {json}");
-            }
+            Client.EventManager.PublishTurnGeneratingEvent();
+            log.Info($"{LogPrefix} Received TurnGenerating");
         }
+
+        public void SendTurnGeneratorAdvanced(PublicGameInfo gameInfo, TurnGenerationState state)
+        {
+            string gameInfoJson = Serializers.Serialize(gameInfo);
+            log.Info($"{LogPrefix}: Sending TurnGeneratorAdvanced to players");
+            Rpc(nameof(TurnGeneratorAdvanced), gameInfoJson, state);
+        }
+
+        [Remote]
+        public void TurnGeneratorAdvanced(string gameInfoJson, TurnGenerationState state)
+        {
+            PublicGameInfo gameInfo = Serializers.DeserializeObject<PublicGameInfo>(gameInfoJson);
+
+            Client.EventManager.PublishTurnGeneratorAdvancedEvent(state);
+            log.Info($"{LogPrefix} Received TurnGeneratorAdvanced");
+        }
+
         #endregion
     }
 }

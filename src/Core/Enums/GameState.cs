@@ -3,7 +3,7 @@ namespace CraigStars
     /// <summary>
     /// The lifecycle of this game
     /// </summary>
-    public enum GameLifecycle
+    public enum GameState
     {
         // The game is currently being setup
         Setup,

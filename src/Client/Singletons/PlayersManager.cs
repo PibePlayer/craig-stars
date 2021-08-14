@@ -60,6 +60,11 @@ namespace CraigStars.Singletons
         /// The currently active player for the client
         /// </summary>
         public static Player Me { get; set; }
+        
+        /// <summary>
+        /// The currently active game for the client
+        /// </summary>
+        public static PublicGameInfo GameInfo{ get; set; }
 
         public static void Reset()
         {

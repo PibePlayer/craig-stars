@@ -116,7 +116,7 @@ namespace CraigStars.Client
                     EventManager.PublishTechBrowserDialogRequestedEvent();
                     break;
                 case MenuItem.Score:
-                    EventManager.PublishScoreDialogRequestedEvent();
+                    EventManager.PublishPlayerStatusDialogRequestedEvent();
                     break;
             }
         }
@@ -209,7 +209,7 @@ namespace CraigStars.Client
             }
             if (@event.IsActionPressed("score"))
             {
-                EventManager.PublishScoreDialogRequestedEvent();
+                EventManager.PublishPlayerStatusDialogRequestedEvent();
             }
         }
 

@@ -1,4 +1,6 @@
-[gd_scene format=2]
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://addons/CraigStarsComponents/src/CSButton.cs" type="Script" id=1]
 
 [node name="CSDialog" type="WindowDialog"]
 margin_right = 801.0
@@ -46,3 +48,4 @@ margin_right = 784.0
 margin_bottom = 20.0
 rect_min_size = Vector2( 80, 0 )
 text = "OK"
+script = ExtResource( 1 )

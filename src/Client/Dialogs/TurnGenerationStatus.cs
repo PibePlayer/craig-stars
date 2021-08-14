@@ -8,11 +8,10 @@ namespace CraigStars.Client
     public class TurnGenerationStatus : MarginContainer
     {
         Player Me { get => PlayersManager.Me; }
-        public PublicGameInfo GameInfo { get; set; }
+        PublicGameInfo GameInfo { get => PlayersManager.GameInfo; }
 
         Label yearLabel;
         Container playerStatusContainer;
-        Button cancelButton;
 
         // Called when the node enters the scene tree for the first time.
         public override void _Ready()
@@ -20,9 +19,6 @@ namespace CraigStars.Client
             base._Ready();
             yearLabel = GetNode<Label>("VBoxContainer/YearLabel");
             playerStatusContainer = (Container)FindNode("PlayerStatusContainer");
-            cancelButton = (Button)FindNode("CancelButton");
-
-            cancelButton.Connect("pressed", this, nameof(OnCancel));
 
             EventManager.TurnSubmittedEvent += OnTurnSubmitted;
             EventManager.TurnGeneratingEvent += OnTurnGenerating;
@@ -64,11 +60,6 @@ namespace CraigStars.Client
             yearLabel.Text = $"Year {GameInfo.Year}";
         }
 
-        void OnCancel()
-        {
-            // TODO: unsubmit turn
-        }
-
         /// <summary>
         /// Update the player statuses in the dialog
         /// </summary>
@@ -95,18 +86,27 @@ namespace CraigStars.Client
                 }
                 else
                 {
-                    var button = new Button();
                     if (player == Me)
                     {
-                        button.Text = "Unsubmit";
-                        button.Connect("pressed", this, nameof(OnUnsubmitButtonPressed), new Godot.Collections.Array() { player.Num });
+                        if (player.SubmittedTurn && GameInfo.State != GameState.GeneratingTurn)
+                        {
+                            var button = new Button();
+                            button.Text = "Unsubmit";
+                            button.Connect("pressed", this, nameof(OnUnsubmitButtonPressed), new Godot.Collections.Array() { player.Num });
+                            playerStatusContainer.AddChild(button);
+                        }
+                        else
+                        {
+                            playerStatusContainer.AddChild(new Label() { Text = "Waiting to Submit" });
+                        }
                     }
                     else
                     {
+                        var button = new Button();
                         button.Text = "Play Turn";
                         button.Connect("pressed", this, nameof(OnPlayTurnButtonPressed), new Godot.Collections.Array() { player.Num });
+                        playerStatusContainer.AddChild(button);
                     }
-                    playerStatusContainer.AddChild(button);
                 }
             }
         }

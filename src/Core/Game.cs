@@ -50,7 +50,7 @@ namespace CraigStars
         public bool VictorDeclared { get => GameInfo.VictorDeclared; set => GameInfo.VictorDeclared = value; }
         public int Year { get => GameInfo.Year; set => GameInfo.Year = value; }
         public GameMode Mode { get => GameInfo.Mode; set => GameInfo.Mode = value; }
-        public GameLifecycle Lifecycle { get => GameInfo.Lifecycle; set => GameInfo.Lifecycle = value; }
+        public GameState Lifecycle { get => GameInfo.State; set => GameInfo.State = value; }
         public GameStartMode StartMode { get => GameInfo.StartMode; set => GameInfo.StartMode = value; }
         public Size Size { get => GameInfo.Size; set => GameInfo.Size = value; }
         public Density Density { get => GameInfo.Density; set => GameInfo.Density = value; }
@@ -244,7 +244,7 @@ namespace CraigStars
         public async Task GenerateTurn()
         {
             await aiSubmittingTask;
-            GameInfo.Lifecycle = GameLifecycle.GeneratingTurn;
+            GameInfo.State = GameState.GeneratingTurn;
             Action generateTurn = () =>
             {
                 log.Info($"{Year} Generating new turn");
@@ -277,7 +277,6 @@ namespace CraigStars
             {
                 generateTurn();
             }
-            GameInfo.Lifecycle = GameLifecycle.WaitingForPlayers;
 
             // After we have notified players 
             await SubmitAITurns();
@@ -315,8 +314,6 @@ namespace CraigStars
 
             // update our player information as if we'd just generated a new turn
             UpdatePlayers();
-
-            GameInfo.Lifecycle = GameLifecycle.WaitingForPlayers;
         }
 
         /// <summary>

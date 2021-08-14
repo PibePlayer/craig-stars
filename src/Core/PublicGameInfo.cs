@@ -34,7 +34,7 @@ namespace CraigStars
         public int Year { get; set; } = 2400;
         public bool ContinueGame { get; set; }
         public GameMode Mode { get; set; } = GameMode.SinglePlayer;
-        public GameLifecycle Lifecycle { get; set; } = GameLifecycle.Setup;
+        public GameState State { get; set; } = GameState.Setup;
         public Rules Rules { get; set; } = new Rules(0);
         public VictoryConditions VictoryConditions { get; set; } = new VictoryConditions();
         public bool VictorDeclared { get; set; }
@@ -68,7 +68,7 @@ namespace CraigStars
                 StartMode = settings.StartMode,
                 Year = settings.Year,
                 Mode = settings.Mode,
-                Lifecycle = settings.Lifecycle,
+                State = settings.State,
                 Rules = settings.Rules,
                 VictoryConditions = settings.VictoryConditions,
                 VictorDeclared = settings.VictorDeclared,

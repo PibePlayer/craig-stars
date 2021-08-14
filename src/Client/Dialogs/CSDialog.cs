@@ -5,15 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     /// <summary>
     /// Abstract Base class for dialog components. Handles dialog refcounts and automatic hiding
     /// when the Ok button is pressed.
     /// </summary>
-    public abstract class CSDialog : WindowDialog
+    public abstract class CSDialog : GameViewDialog
     {
-        protected Player Me { get => PlayersManager.Me; }
         Button okButton;
 
         public override void _Ready()
@@ -31,26 +30,6 @@ namespace CraigStars
         protected virtual void OnOk()
         {
             Hide();
-        }
-
-        /// <summary>
-        /// When the dialog becomes visible, update the controls for this player
-        /// </summary>
-        protected virtual void OnVisibilityChanged()
-        {
-            if (IsVisibleInTree())
-            {
-                DialogManager.DialogRefCount++;
-            }
-            else
-            {
-                CallDeferred(nameof(DecrementDialogRefCount));
-            }
-        }
-
-        void DecrementDialogRefCount()
-        {
-            DialogManager.DialogRefCount--;
         }
 
     }

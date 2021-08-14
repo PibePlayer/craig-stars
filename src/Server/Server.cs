@@ -78,6 +78,7 @@ namespace CraigStars.Server
                 CreateNewGame(settings, multithreaded: true, saveToDisk: true);
             }
             // notify each player of a game start event
+            Game.GameInfo.State = GameState.WaitingForPlayers;
             PublishGameStartedEvent();
         }
 
@@ -93,6 +94,7 @@ namespace CraigStars.Server
 
             if (Game.AllPlayersSubmitted())
             {
+                Game.GameInfo.State = GameState.GeneratingTurn;
                 PublishTurnGeneratingEvent();
                 // once everyone is submitted, generate a new turn
                 CallDeferred(nameof(GenerateNewTurnDeferred));
@@ -120,6 +122,7 @@ namespace CraigStars.Server
         public async void GenerateNewTurnDeferred()
         {
             await Game.GenerateTurn();
+            Game.GameInfo.State = GameState.WaitingForPlayers;
             PublishTurnPassedEvent();
         }
 

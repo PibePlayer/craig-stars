@@ -6,61 +6,43 @@ using System.Linq;
 
 namespace CraigStars.Client
 {
-    public class ScoreDialog : GameViewDialog
+    public class PlayerStatus : TabContainer
     {
-        Button okButton;
+        protected Player Me { get => PlayersManager.Me; }
+
+        TurnGenerationStatus turnGenerationStatus;
         CSTable scoreTable;
         CSTable victoryTable;
 
         public override void _Ready()
         {
-            base._Ready();
-            okButton = FindNode("OKButton") as Button;
-            scoreTable = GetNode<CSTable>("MarginContainer/VBoxContainer/TabContainer/Player Scores/ScoreTable");
-            victoryTable = GetNode<CSTable>("MarginContainer/VBoxContainer/TabContainer/Victory Conditions/VBoxContainer/VictoryTable");
+            turnGenerationStatus = GetNode<TurnGenerationStatus>("Status/TurnGenerationStatus");
+            scoreTable = GetNode<CSTable>("Scores/ScoreTable");
+            victoryTable = GetNode<CSTable>("Victory Conditions/VBoxContainer/VictoryTable");
 
-            Connect("about_to_show", this, nameof(OnAboutToShow));
-            Connect("popup_hide", this, nameof(OnPopupHide));
-            okButton.Connect("pressed", this, nameof(OnOk));
         }
 
-        /// <summary>
-        /// Our designer dialog is about to show
-        /// </summary>
-        void OnAboutToShow()
+        public void OnVisible(PublicGameInfo gameInfo)
         {
-            ResetScoreTable();
-            ResetVictoryTable();
+            // turnGenerationStatus.GameInfo = gameInfo;
+            turnGenerationStatus.UpdatePlayerStatuses();
+            ResetScoreTable(gameInfo);
+            ResetVictoryTable(gameInfo);
         }
 
-        /// <summary>
-        /// Called when the popup hides
-        /// </summary>
-        void OnPopupHide()
-        {
 
-        }
-
-        /// <summary>
-        /// Just hide the dialog on ok
-        /// </summary>
-        void OnOk()
-        {
-            Hide();
-        }
-
-        void ResetScoreTable()
+        void ResetScoreTable(PublicGameInfo gameInfo)
         {
             scoreTable.Data.Clear();
 
             // add the empty column for score type
             scoreTable.Data.AddColumn("", false, align: Label.AlignEnum.Right);
-            GameInfo.Players.ForEach(player =>
+            gameInfo.Players.ForEach(player =>
             {
                 scoreTable.Data.AddColumn(player.RacePluralName, false, align: Label.AlignEnum.Right);
             });
 
-            int numPlayers = GameInfo.Players.Count;
+            int numPlayers = gameInfo.Players.Count;
 
             object[] planets = new object[numPlayers + 1];
             object[] starbases = new object[numPlayers + 1];
@@ -82,9 +64,9 @@ namespace CraigStars.Client
             score[0] = "Score";
             rank[0] = "Rank";
 
-            for (int i = 0; i < GameInfo.Players.Count; i++)
+            for (int i = 0; i < gameInfo.Players.Count; i++)
             {
-                var player = GameInfo.Players[i];
+                var player = gameInfo.Players[i];
                 var index = i + 1;
 
                 if (player == Me || Me.Game.ScoresVisible)
@@ -127,18 +109,18 @@ namespace CraigStars.Client
             scoreTable.ResetTable();
         }
 
-        void ResetVictoryTable()
+        void ResetVictoryTable(PublicGameInfo gameInfo)
         {
             victoryTable.Data.Clear();
 
             // add the empty column for victory condition description
             victoryTable.Data.AddColumn("", false, align: Label.AlignEnum.Right);
-            GameInfo.Players.ForEach(player =>
+            gameInfo.Players.ForEach(player =>
             {
                 victoryTable.Data.AddColumn(player.RacePluralName, false, align: Label.AlignEnum.Right);
             });
 
-            int numPlayers = GameInfo.Players.Count;
+            int numPlayers = gameInfo.Players.Count;
 
             object[] OwnPlanets = new object[numPlayers + 1];
             object[] AttainTechLevels = new object[numPlayers + 1];
@@ -157,9 +139,9 @@ namespace CraigStars.Client
             OwnCapitalShips[0] = $"Owns {victoryConditions.OwnCapitalShips} capital ships.";
             HighestScore[0] = $"Has the highest score after {victoryConditions.HighestScoreAfterYears} years.";
 
-            for (int i = 0; i < GameInfo.Players.Count; i++)
+            for (int i = 0; i < gameInfo.Players.Count; i++)
             {
-                var player = GameInfo.Players[i];
+                var player = gameInfo.Players[i];
                 var index = i + 1;
 
                 OwnPlanets[index] = player.AchievedVictoryConditions.Contains(VictoryConditionType.OwnPlanets);

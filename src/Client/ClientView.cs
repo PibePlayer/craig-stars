@@ -52,7 +52,8 @@ namespace CraigStars.Client
             EventManager.TurnPassedEvent += OnTurnPassed;
 
             // set the game info for the turn generation status to our GameInfo (whether we are a client or the host)
-            turnGenerationStatus.GameInfo = GameInfo;
+            // turnGenerationStatus.GameInfo = GameInfo;
+            PlayersManager.GameInfo = GameInfo;
             turnGenerationStatus.UpdatePlayerStatuses();
             OS.SetWindowTitle($"{projectName} - {GameInfo.Name}: Year {GameInfo.Year}");
 
@@ -129,6 +130,7 @@ namespace CraigStars.Client
         {
             OS.SetWindowTitle($"{projectName} - {GameInfo.Name}: Year {GameInfo.Year} - {Me?.Name}");
 
+            PlayersManager.GameInfo = GameInfo;
             gameView = scene.Instance<GameView>();
             gameView.GameInfo = GameInfo;
             container.Visible = false;
@@ -166,6 +168,7 @@ namespace CraigStars.Client
             {
                 GameInfo = gameInfo;
                 PlayersManager.Me = player;
+                PlayersManager.GameInfo = gameInfo;
             }
         }
 
@@ -250,6 +253,7 @@ namespace CraigStars.Client
             // if we don't already have a local player, play this player
             if (PlayersManager.Me == null)
             {
+                PlayersManager.GameInfo = gameInfo;
                 PlayersManager.Me = player;
                 PlayersManager.Me.RunTurnProcessors(TurnProcessorManager.Instance);
                 OS.SetWindowTitle($"{projectName} - {gameInfo.Name}: Year {gameInfo.Year}");

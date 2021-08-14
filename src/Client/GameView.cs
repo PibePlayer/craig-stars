@@ -33,7 +33,7 @@ namespace CraigStars
         ShipDesignerDialog shipDesignerDialog;
         MergeFleetsDialog mergeFleetsDialog;
         BattleViewerDialog battleViewerDialog;
-        ScoreDialog scoreDialog;
+        PlayerStatusDialog playerStatusDialog;
 
         public override void _Ready()
         {
@@ -49,7 +49,7 @@ namespace CraigStars
             shipDesignerDialog = GetNode<ShipDesignerDialog>("CanvasLayer/ShipDesignerDialog");
             mergeFleetsDialog = GetNode<MergeFleetsDialog>("CanvasLayer/MergeFleetsDialog");
             battleViewerDialog = GetNode<BattleViewerDialog>("CanvasLayer/BattleViewerDialog");
-            scoreDialog = GetNode<ScoreDialog>("CanvasLayer/ScoreDialog");
+            playerStatusDialog = GetNode<PlayerStatusDialog>("CanvasLayer/PlayerStatusDialog");
 
             Client.EventManager.ProductionQueueDialogRequestedEvent += OnProductionQueueDialogRequested;
             Client.EventManager.CargoTransferDialogRequestedEvent += OnCargoTransferRequested;
@@ -58,7 +58,7 @@ namespace CraigStars
             Client.EventManager.TransportPlansDialogRequestedEvent += OnTransportPlansDialogRequested;
             Client.EventManager.ReportsDialogRequestedEvent += OnReportsDialogRequested;
             Client.EventManager.ShipDesignerDialogRequestedEvent += OnShipDesignerDialogRequested;
-            Client.EventManager.ScoreDialogRequestedEvent += OnScoreDialogRequested;
+            Client.EventManager.PlayerStatusDialogRequestedEvent += OnPlayerStatusDialogRequested;
             Client.EventManager.TechBrowserDialogRequestedEvent += OnTechBrowserDialogRequested;
             Client.EventManager.RaceDesignerDialogRequestedEvent += OnRaceDesignerDialogRequested;
             Client.EventManager.MergeFleetsDialogRequestedEvent += OnMergeFleetsDialogRequested;
@@ -78,7 +78,7 @@ namespace CraigStars
             Client.EventManager.TransportPlansDialogRequestedEvent -= OnTransportPlansDialogRequested;
             Client.EventManager.ReportsDialogRequestedEvent -= OnReportsDialogRequested;
             Client.EventManager.ShipDesignerDialogRequestedEvent -= OnShipDesignerDialogRequested;
-            Client.EventManager.ScoreDialogRequestedEvent -= OnScoreDialogRequested;
+            Client.EventManager.PlayerStatusDialogRequestedEvent -= OnPlayerStatusDialogRequested;
             Client.EventManager.TechBrowserDialogRequestedEvent -= OnTechBrowserDialogRequested;
             Client.EventManager.RaceDesignerDialogRequestedEvent -= OnRaceDesignerDialogRequested;
             Client.EventManager.MergeFleetsDialogRequestedEvent -= OnMergeFleetsDialogRequested;
@@ -107,9 +107,10 @@ namespace CraigStars
             shipDesignerDialog.PopupCentered();
         }
 
-        void OnScoreDialogRequested()
+        void OnPlayerStatusDialogRequested()
         {
-            scoreDialog.PopupCentered();
+            // scoreDialog.PopupCentered();
+            playerStatusDialog.PopupCentered();
         }
 
         void OnResearchDialogRequested()

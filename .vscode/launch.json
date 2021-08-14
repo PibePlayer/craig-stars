@@ -5,7 +5,7 @@
    "version": "0.2.0",
    "configurations": [
     {
-        "name": "Debug Main Scene",
+        "name": "Play Main Scene In Editor",
         "type": "godot-mono",
         "mode": "playInEditor",
         "request": "launch"

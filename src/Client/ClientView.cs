@@ -132,7 +132,6 @@ namespace CraigStars.Client
 
             PlayersManager.GameInfo = GameInfo;
             gameView = scene.Instance<GameView>();
-            gameView.GameInfo = GameInfo;
             container.Visible = false;
             turnGenerationStatus.Visible = false;
 

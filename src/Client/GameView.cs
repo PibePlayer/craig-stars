@@ -12,12 +12,6 @@ namespace CraigStars
         static CSLog log = LogProvider.GetLogger(typeof(GameView));
 
         /// <summary>
-        /// Information about the game
-        /// </summary>
-        public PublicGameInfo GameInfo { get; set; }
-
-
-        /// <summary>
         /// This is the main view into the universe
         /// </summary>
         Scanner scanner;

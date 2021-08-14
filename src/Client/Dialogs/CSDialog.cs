@@ -21,7 +21,6 @@ namespace CraigStars.Client
             okButton = GetNode<Button>("MarginContainer/VBoxContainer/HBoxContainerButtons/OKButton");
 
             okButton.Connect("pressed", this, nameof(OnOk));
-            Connect("visibility_changed", this, nameof(OnVisibilityChanged));
         }
 
         /// <summary>

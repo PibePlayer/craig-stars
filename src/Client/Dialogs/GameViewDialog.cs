@@ -10,25 +10,12 @@ namespace CraigStars.Client
     public abstract class GameViewDialog : WindowDialog
     {
         protected Player Me { get => PlayersManager.Me; }
-        protected PublicGameInfo GameInfo { get; set; }
+        protected PublicGameInfo GameInfo { get => PlayersManager.GameInfo; }
 
         public override void _Ready()
         {
             base._Ready();
             Connect("visibility_changed", this, nameof(OnVisibilityChanged));
-
-            EventManager.GameViewResetEvent += OnGameViewReset;
-        }
-
-        public override void _ExitTree()
-        {
-            base._ExitTree();
-            EventManager.GameViewResetEvent -= OnGameViewReset;
-        }
-
-        private void OnGameViewReset(PublicGameInfo gameInfo)
-        {
-            GameInfo = gameInfo;
         }
 
         /// <summary>

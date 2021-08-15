@@ -24,7 +24,7 @@ namespace CraigStars.Singletons
         // This way, a server can listen for events only on the RPC instance in its scene tree
         public event Action<GameSettings<Player>> GameStartRequestedEvent;
         public event Action<Player> SubmitTurnRequestedEvent;
-        public event Action<Player> UnsubmitTurnRequestedEvent;
+        public event Action<PublicPlayerInfo> UnsubmitTurnRequestedEvent;
 
         public event Action<PlayerMessage> PlayerMessageEvent;
         public event Action<List<PublicPlayerInfo>> PlayersUpdatedEvent;

@@ -10,7 +10,7 @@ namespace CraigStars.Server
     {
         event Action<GameSettings<Player>> GameStartRequestedEvent;
         event Action<Player> SubmitTurnRequestedEvent;
-        event Action<Player> UnsubmitTurnRequestedEvent;
+        event Action<PublicPlayerInfo> UnsubmitTurnRequestedEvent;
     }
 }
 

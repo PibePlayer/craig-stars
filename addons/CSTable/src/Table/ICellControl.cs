@@ -11,7 +11,7 @@ namespace CraigStarsTable
         event Action<ICSCellControl<T>, InputEvent> CellActivatedEvent;
         Row<T> Row { get; set; }
         Cell Cell { get; set; }
-        Column Column { get; set; }
+        Column<T> Column { get; set; }
     }
 
     public interface ICellControl : ICSCellControl<object>

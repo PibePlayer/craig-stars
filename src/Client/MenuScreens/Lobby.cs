@@ -117,10 +117,11 @@ namespace CraigStars.Client
         void OnGameStarted(PublicGameInfo gameInfo, Player player)
         {
             // Change to the ClientView using this new GameInfo
-            this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (instance) =>
+            this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (clientView) =>
             {
                 PlayersManager.Me = player;
-                instance.GameInfo = gameInfo;
+                clientView.GameInfo = gameInfo;
+                clientView.LocalPlayers = new List<Player>() { player };
             });
         }
 

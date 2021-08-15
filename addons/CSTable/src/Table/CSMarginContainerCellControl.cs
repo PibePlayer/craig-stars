@@ -19,7 +19,7 @@ namespace CraigStarsTable
         public event Action<ICSCellControl<T>, InputEvent> CellSelectedEvent;
         public event Action<ICSCellControl<T>, InputEvent> CellActivatedEvent;
 
-        public Column Column { get; set; }
+        public Column<T> Column { get; set; }
         public Cell Cell { get; set; }
         public Row<T> Row { get; set; }
 
@@ -54,6 +54,11 @@ namespace CraigStarsTable
         void OnMouseExited()
         {
             MouseEnteredEvent?.Invoke(this);
+        }
+
+        protected void PublishCellSelectedEvent()
+        {
+            CellSelectedEvent?.Invoke(this, null);
         }
 
         protected abstract void UpdateCell();

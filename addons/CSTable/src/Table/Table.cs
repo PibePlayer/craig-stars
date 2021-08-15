@@ -152,7 +152,7 @@ namespace CraigStarsTable
         /// <summary>
         /// Keep track of column headers to toggle sort direction icons
         /// </summary>
-        List<IColumnHeader> columnHeaders = new List<IColumnHeader>();
+        List<IColumnHeader<T>> columnHeaders = new List<IColumnHeader<T>>();
 
         public Table()
         {
@@ -265,7 +265,7 @@ namespace CraigStarsTable
             // clear out old rows
             foreach (Node child in gridContainer.GetChildren())
             {
-                if (child is ColumnHeader columnHeader)
+                if (child is ColumnHeader<T> columnHeader)
                 {
                     columnHeader.SortEvent -= OnSortEvent;
                 }
@@ -378,7 +378,7 @@ namespace CraigStarsTable
                 foreach (var col in Data.VisibleColumns)
                 {
                     var columnHeaderInstance = scene.Instance() as Control;
-                    if (columnHeaderInstance is IColumnHeader header)
+                    if (columnHeaderInstance is IColumnHeader<T> header)
                     {
                         header.Column = col;
                         if (Data.SortColumn == col.Index)
@@ -407,7 +407,7 @@ namespace CraigStarsTable
             // 
             // We prioritize scenes over scripts.
             var defaultScene = GD.Load<CSharpScript>(DefaultCellControlScript);
-            var sceneForColumn = Data.Columns.Select<Column, Resource>(col =>
+            var sceneForColumn = Data.Columns.Select<Column<T>, Resource>(col =>
             {
                 if (!String.IsNullOrEmpty(col.Scene) && !String.IsNullOrEmpty(col.Script))
                 {
@@ -454,29 +454,33 @@ namespace CraigStarsTable
                     var cell = row.Data[columnIndex];
 
                     // instantiate an instance of this cell
-                    ICSCellControl<T> node;
-                    var scene = sceneForColumn[columnIndex];
-                    if (scene is CSharpScript script)
-                    {
-                        var instance = script.New();
-                        node = instance as ICSCellControl<T>;
-                    }
-                    else if (scene is PackedScene packedScene)
-                    {
-                        node = packedScene.Instance() as ICSCellControl<T>;
-                    }
-                    else
-                    {
-                        throw new Exception($"Table Cell Scene/Script {scene} is not a CSharpScript or PackedScene and can't be instanced.");
-                    }
-
+                    ICSCellControl<T> node = col.CreateCell(col, cell, row);
                     if (node == null)
                     {
-                        throw new Exception($"Table Cell Scene/Script {scene} is not an ICellControl.");
+                        var scene = sceneForColumn[columnIndex];
+                        if (scene is CSharpScript script)
+                        {
+                            var instance = script.New();
+                            node = instance as ICSCellControl<T>;
+                        }
+                        else if (scene is PackedScene packedScene)
+                        {
+                            node = packedScene.Instance() as ICSCellControl<T>;
+                        }
+                        else
+                        {
+                            throw new Exception($"Table Cell Scene/Script {scene} is not a CSharpScript or PackedScene and can't be instanced.");
+                        }
+
+                        if (node == null)
+                        {
+                            throw new Exception($"Table Cell Scene/Script {scene} is not an ICellControl.");
+                        }
+                        node.Column = col;
+                        node.Cell = cell;
+                        node.Row = row;
                     }
-                    node.Column = col;
-                    node.Cell = cell;
-                    node.Row = row;
+
 
                     node.MouseEnteredEvent += OnMouseEntered;
                     node.MouseExitedEvent += OnMouseExited;
@@ -599,7 +603,7 @@ namespace CraigStarsTable
         /// (the sort will trigger a sort event which we will capture to update the table)
         /// </summary>
         /// <param name="columnHeader"></param>
-        void OnSortEvent(ColumnHeader columnHeader)
+        void OnSortEvent(ColumnHeader<T> columnHeader)
         {
             var sortDirection = columnHeader.SortDirection;
             // reset all to none so we only have one column sort header active at a time

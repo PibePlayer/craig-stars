@@ -12,7 +12,7 @@ namespace CraigStars.Server
     {
         public event Action<GameSettings<Player>> GameStartRequestedEvent;
         public event Action<Player> SubmitTurnRequestedEvent;
-        public event Action<Player> UnsubmitTurnRequestedEvent;
+        public event Action<PublicPlayerInfo> UnsubmitTurnRequestedEvent;
 
         public LocalClientEventPublisher()
         {
@@ -36,7 +36,7 @@ namespace CraigStars.Server
             SubmitTurnRequestedEvent?.Invoke(player);
         }
 
-        void OnUnsubmitTurnRequested(Player player)
+        void OnUnsubmitTurnRequested(PublicPlayerInfo player)
         {
             UnsubmitTurnRequestedEvent?.Invoke(player);
         }

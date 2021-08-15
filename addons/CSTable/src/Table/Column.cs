@@ -3,10 +3,25 @@ using Godot;
 
 namespace CraigStarsTable
 {
+    public class Column : Column<object>
+    {
+        public Column(
+            string name,
+            int index = 0,
+            bool sortable = true,
+            bool hidden = false,
+            Label.AlignEnum align = Label.AlignEnum.Left,
+            string scene = null,
+            string script = null) : base(name, index, sortable, hidden, align, scene, script)
+        {
+
+        }
+    }
+
     /// <summary>
     /// Represents a column for a table
     /// </summary>
-    public class Column
+    public class Column<T> where T : class
     {
         public string Name { get; set; }
         public bool Sortable { get; set; }
@@ -27,12 +42,23 @@ namespace CraigStarsTable
         /// If neither is present, it will use the default script (LabelCell.cs)
         /// </summary>
         /// <value></value>
-        public string Scene { get; set; }        
+        public string Scene { get; set; }
 
         /// <summary>
         /// If set, use this scene to render cells instead of the table default
         /// </summary>
         public string CellScene { get; set; }
+
+        public Func<Column<T>, Cell, Row<T>, ICSCellControl<T>> OnCreateCellControl { get; set; }
+
+        public ICSCellControl<T> CreateCell(Column<T> col, Cell cell, Row<T> row)
+        {
+            return OnCreateCellControl?.Invoke(col, cell, row);
+        }
+
+        public Column()
+        {
+        }
 
         public Column(
             string name,
@@ -40,7 +66,8 @@ namespace CraigStarsTable
             bool sortable = true,
             bool hidden = false,
             Label.AlignEnum align = Label.AlignEnum.Left,
-            string scene = null)
+            string scene = null,
+            string script = null)
         {
             if (name != null)
             {
@@ -55,6 +82,7 @@ namespace CraigStarsTable
             Sortable = sortable;
             Align = align;
             Scene = scene;
+            Script = script;
         }
     }
 }

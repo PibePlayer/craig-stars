@@ -30,7 +30,7 @@ namespace CraigStars.Client
             ProductionPlans,
             Race,
             TechBrowser,
-            Score,
+            Players,
         }
 
         bool turnGenerating;
@@ -57,7 +57,7 @@ namespace CraigStars.Client
             plansMenu.AddItem("Production Plans", (int)MenuItem.ProductionPlans);
             infoMenu.AddItem("View Race", (int)MenuItem.Race);
             infoMenu.AddItem("Technology Browser", (int)MenuItem.TechBrowser);
-            infoMenu.AddItem("Score", (int)MenuItem.Score);
+            infoMenu.AddItem("Players", (int)MenuItem.Players);
 
             normalViewToolButton.Connect("pressed", this, nameof(OnNormalViewToolButtonPressed));
             percentViewToolButton.Connect("pressed", this, nameof(OnPercentViewToolButtonPressed));
@@ -115,7 +115,7 @@ namespace CraigStars.Client
                 case MenuItem.TechBrowser:
                     EventManager.PublishTechBrowserDialogRequestedEvent();
                     break;
-                case MenuItem.Score:
+                case MenuItem.Players:
                     EventManager.PublishPlayerStatusDialogRequestedEvent();
                     break;
             }
@@ -207,7 +207,7 @@ namespace CraigStars.Client
             {
                 EventManager.PublishShipDesignerDialogRequestedEvent();
             }
-            if (@event.IsActionPressed("score"))
+            if (@event.IsActionPressed("player_status"))
             {
                 EventManager.PublishPlayerStatusDialogRequestedEvent();
             }

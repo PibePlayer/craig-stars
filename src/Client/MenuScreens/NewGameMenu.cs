@@ -92,10 +92,11 @@ namespace CraigStars.Client
         /// <param name="gameInfo"></param>
         void OnGameStarted(PublicGameInfo gameInfo, Player player)
         {
-            this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (client) =>
+            this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (clientView) =>
             {
                 PlayersManager.Me = player;
-                client.GameInfo = gameInfo;
+                clientView.GameInfo = gameInfo;
+                clientView.LocalPlayers = new List<Player>() { player };
             });
         }
 

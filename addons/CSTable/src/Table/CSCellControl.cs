@@ -15,7 +15,7 @@ namespace CraigStarsTable
         public event Action<ICSCellControl<T>, InputEvent> CellSelectedEvent;
         public event Action<ICSCellControl<T>, InputEvent> CellActivatedEvent;
 
-        public Column Column { get; set; }
+        public Column<T> Column { get; set; }
         public Cell Cell { get; set; }
         public Row<T> Row { get; set; }
 

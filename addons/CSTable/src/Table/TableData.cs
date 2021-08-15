@@ -30,7 +30,7 @@ namespace CraigStarsTable
         /// </summary>
         public event FilterAction FilterEvent;
 
-        public List<Column> Columns { get; set; } = new List<Column>();
+        public List<Column<T>> Columns { get; set; } = new List<Column<T>>();
         public List<Row<T>> SourceRows { get; set; } = new List<Row<T>>();
         public int SortColumn { get; set; }
         public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
@@ -55,21 +55,21 @@ namespace CraigStarsTable
             SourceRows.Clear();
         }
 
-        public void AddColumn(Column column)
+        public void AddColumn(Column<T> column)
         {
-            Columns.Add(new Column(column.Name, Columns.Count, column.Sortable, column.Hidden));
+            Columns.Add(column);
         }
 
         public void AddColumn(string name, bool sortable = true, bool hidden = false, Label.AlignEnum align = Label.AlignEnum.Left)
         {
-            Columns.Add(new Column(name, Columns.Count, sortable, hidden, align));
+            Columns.Add(new Column<T>(name, Columns.Count, sortable, hidden, align));
         }
 
-        public void AddColumns(IEnumerable<Column> columns)
+        public void AddColumns(IEnumerable<Column<T>> columns)
         {
             foreach (var column in columns)
             {
-                Columns.Add(new Column(column.Name, Columns.Count, column.Sortable, column.Hidden));
+                Columns.Add(column);
             }
         }
 
@@ -83,16 +83,16 @@ namespace CraigStarsTable
             {
                 if (column is string name)
                 {
-                    Columns.Add(new Column(name, Columns.Count));
+                    Columns.Add(new Column<T>(name, Columns.Count));
                 }
-                else if (column is Column col)
+                else if (column is Column<T> col)
                 {
                     col.Index = Columns.Count;
                     Columns.Add(col);
                 }
                 else
                 {
-                    Columns.Add(new Column(column.ToString(), Columns.Count));
+                    Columns.Add(new Column<T>(column.ToString(), Columns.Count));
                 }
             }
         }
@@ -156,7 +156,7 @@ namespace CraigStarsTable
             FilterEvent?.Invoke(filterText);
         }
 
-        public void Sort(Column column, SortDirection sortDirection)
+        public void Sort(Column<T> column, SortDirection sortDirection)
         {
             SortColumn = column.Index;
             SortDirection = sortDirection;
@@ -164,7 +164,7 @@ namespace CraigStarsTable
             SortEvent?.Invoke(SortColumn, SortDirection);
         }
 
-        public IEnumerable<Column> VisibleColumns { get => Columns.Where(col => !col.Hidden); }
+        public IEnumerable<Column<T>> VisibleColumns { get => Columns.Where(col => !col.Hidden); }
 
         /// <summary>
         /// Get an enumerable of our rows sorted and filtered

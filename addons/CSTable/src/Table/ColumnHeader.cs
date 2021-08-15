@@ -4,15 +4,20 @@ using System;
 
 namespace CraigStarsTable
 {
+    [Tool]
+    public class ColumnHeader : ColumnHeader<object>
+    {
+
+    }
+
     /// <summary>
     /// The default column header for a table
     /// </summary>
-    [Tool]
-    public class ColumnHeader : Control, IColumnHeader
+    public class ColumnHeader<T> : Control, IColumnHeader<T> where T : class
     {
-        public event Action<ColumnHeader> SortEvent;
+        public event Action<ColumnHeader<T>> SortEvent;
 
-        public Column Column
+        public Column<T> Column
         {
             get => column;
             set
@@ -21,7 +26,7 @@ namespace CraigStarsTable
                 UpdateLabel();
             }
         }
-        Column column;
+        Column<T> column;
 
         public SortDirection SortDirection
         {

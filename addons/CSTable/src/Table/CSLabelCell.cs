@@ -35,7 +35,7 @@ namespace CraigStarsTable
             AddConstantOverride("margin_left", 3);
             AddConstantOverride("margin_bottom", 3);
 
-            italicFont = ResourceLoader.Load<DynamicFontData>("res://addons/CSTable/assets/OpenSans-Italic.ttf");
+            italicFont = ResourceLoader.Load<DynamicFontData>("res://addons/CSTable/assets/OpenSans-Italic.ttf");         
 
             UpdateCell();
         }

@@ -154,7 +154,7 @@ namespace CraigStarsTable
         /// </summary>
         List<IColumnHeader<T>> columnHeaders = new List<IColumnHeader<T>>();
 
-        public Table()
+        public Table() : base()
         {
             SizeFlagsHorizontal = (int)SizeFlags.ExpandFill;
             SizeFlagsVertical = (int)SizeFlags.ExpandFill;

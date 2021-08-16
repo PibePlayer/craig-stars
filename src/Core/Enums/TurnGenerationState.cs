@@ -31,7 +31,7 @@ namespace CraigStars
         UpdatingPlayers,
         VictoryCheck,
         RunningTurnProcessors,
-        Saving,
         Finished,
+        Saving,
     }
 }

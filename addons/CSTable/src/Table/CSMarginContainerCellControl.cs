@@ -23,7 +23,6 @@ namespace CraigStarsTable
         public Cell Cell { get; set; }
         public Row<T> Row { get; set; }
 
-
         public override void _Ready()
         {
             Connect("gui_input", this, nameof(OnGuiInput));

@@ -18,7 +18,7 @@ namespace CraigStarsTable
 
         protected DynamicFontData italicFont;
 
-        public CSButtonCell()
+        public CSButtonCell() : base() 
         {
             SizeFlagsHorizontal = (int)SizeFlags.ExpandFill;
             RectMinSize = new Vector2(16, 16);

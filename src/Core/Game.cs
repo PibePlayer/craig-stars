@@ -27,16 +27,6 @@ namespace CraigStars
         /// </summary>
         [JsonIgnore] public ITechStore TechStore { get; set; }
 
-        /// <summary>
-        /// The GamesManager is used to save turns
-        /// </summary>
-        [JsonIgnore] public IGamesManager GamesManager { get; set; }
-
-        /// <summary>
-        /// The TurnProcessorManager used for AI
-        /// </summary>
-        [JsonIgnore] public ITurnProcessorManager TurnProcessorManager { get; set; }
-
         #region PublicGameInfo
 
         /// <summary>
@@ -44,6 +34,7 @@ namespace CraigStars
         /// in the game that match up with PublicGameInfo properties are just forwarded
         /// </summary>
         [JsonIgnore] public PublicGameInfo GameInfo { get; set; } = new PublicGameInfo();
+        public Guid Guid { get => GameInfo.Guid; set => GameInfo.Guid = value; }
         public string Name { get => GameInfo.Name; set => GameInfo.Name = value; }
         public Rules Rules { get => GameInfo.Rules; private set => GameInfo.Rules = value; }
         public VictoryConditions VictoryConditions { get => GameInfo.VictoryConditions; set => GameInfo.VictoryConditions = value; }
@@ -93,13 +84,8 @@ namespace CraigStars
         [JsonIgnore]
         List<MapObject> deletedMapObjects = new List<MapObject>();
 
-        // for tests or fast generation
-        [JsonIgnore] public bool SaveToDisk { get; set; } = true;
-        [JsonIgnore] public bool Multithreaded { get; set; } = true;
-
         TurnGenerator turnGenerator;
         TurnSubmitter turnSubmitter;
-        Task aiSubmittingTask;
 
         public Game()
         {
@@ -121,15 +107,12 @@ namespace CraigStars
         }
 
         [OnDeserialized]
-        internal async void OnDeserialized(StreamingContext context)
+        internal void OnDeserialized(StreamingContext context)
         {
             GameInfo.Players.AddRange(Players.Cast<PublicPlayerInfo>());
 
             // Update the Game dictionaries used for lookups, like PlanetsByGuid, FleetsByGuid, etc.
             UpdateDictionaries();
-
-            // make sure AIs submit their turns
-            await SubmitAITurns();
         }
 
         public void ComputeAggregates()
@@ -160,7 +143,7 @@ namespace CraigStars
             MapObjectsByLocation = mapObjects.ToLookup(mo => mo.Position).ToDictionary(lookup => lookup.Key, lookup => lookup.ToList());
         }
 
-        public void Init(List<Player> players, Rules rules, ITechStore techStore, IGamesManager gamesManager, ITurnProcessorManager turnProcessorManager)
+        public void Init(List<Player> players, Rules rules, ITechStore techStore)
         {
             Players.Clear();
             Players.AddRange(players);
@@ -172,8 +155,6 @@ namespace CraigStars
 
             Rules = rules;
             TechStore = techStore;
-            GamesManager = gamesManager;
-            TurnProcessorManager = turnProcessorManager;
         }
 
         /// <summary>
@@ -195,17 +176,12 @@ namespace CraigStars
 
             AfterTurnGeneration();
 
-            SaveGame();
-
-            // this can happen in the background
-            var _ = SubmitAITurns();
         }
 
         public void SubmitTurn(Player player)
         {
             log.Info($"{Year}: {player} submitted turn");
             turnSubmitter.SubmitTurn(player);
-            SaveGame();
         }
 
         public void UnsubmitTurn(PublicPlayerInfo player)
@@ -214,9 +190,6 @@ namespace CraigStars
             if (gamePlayer != null)
             {
                 gamePlayer.SubmittedTurn = false;
-                // TODO: what happens if we are in the middle of generating a turn?
-                // it should just be a no-op, but we should tell the player somehow
-                SaveGame();
             }
             else
             {
@@ -241,62 +214,24 @@ namespace CraigStars
         /// <summary>
         /// Generate a new turn
         /// </summary>
-        public async Task GenerateTurn()
+        public void GenerateTurn()
         {
-            await aiSubmittingTask;
             GameInfo.State = GameState.GeneratingTurn;
-            Action generateTurn = () =>
-            {
-                log.Info($"{Year} Generating new turn");
+            log.Info($"{Year} Generating new turn");
 
-                // after new player actions and designs are submitted, we need
-                // to compute aggregates for fleets and designs
-                // for turn generation
-                ComputeAggregates();
+            // after new player actions and designs are submitted, we need
+            // to compute aggregates for fleets and designs
+            // for turn generation
+            ComputeAggregates();
 
-                turnGenerator.GenerateTurn();
+            turnGenerator.GenerateTurn();
 
-                // do any post-turn generation steps
-                AfterTurnGeneration();
+            // do any post-turn generation steps
+            AfterTurnGeneration();
 
-                TurnGeneratorAdvancedEvent?.Invoke(TurnGenerationState.Saving);
+            TurnGeneratorAdvancedEvent?.Invoke(TurnGenerationState.Finished);
 
-                SaveGame();
-
-                TurnGeneratorAdvancedEvent?.Invoke(TurnGenerationState.Finished);
-
-                log.Info($"{Year} Generating turn complete");
-
-            };
-
-            if (Multithreaded)
-            {
-                await Task.Factory.StartNew(generateTurn);
-            }
-            else
-            {
-                generateTurn();
-            }
-
-            // After we have notified players 
-            await SubmitAITurns();
-
-            if (Year < Rules.StartingYear + GameInfo.QuickStartTurns)
-            {
-                Players.ForEach(p =>
-                {
-                    if (!p.AIControlled)
-                    {
-                        p.RunTurnProcessors(TurnProcessorManager);
-                        SubmitTurn(p);
-                    }
-                });
-                if (aiSubmittingTask != null)
-                {
-                    await aiSubmittingTask;
-                }
-                await GenerateTurn();
-            }
+            log.Info($"{Year} Generating turn complete");
         }
 
 
@@ -331,30 +266,6 @@ namespace CraigStars
             });
         }
 
-        internal void SaveGame()
-        {
-            if (SaveToDisk && Year >= Rules.StartingYear + GameInfo.QuickStartTurns)
-            {
-                // serialize the game to JSON. This must complete before we can
-                // modify any state
-                var gameJson = GamesManager.SerializeGame(this, Multithreaded);
-
-                if (Multithreaded)
-                {
-                    // now that we have our json, we can save the game to dis in a separate task
-                    Task.Run(() =>
-                    {
-                        GamesManager.SaveGame(gameJson, Multithreaded);
-                    }).Wait();
-                }
-                else
-                {
-                    GamesManager.SaveGame(gameJson, Multithreaded);
-                }
-            }
-        }
-
-
         /// <summary>
         /// To reference objects between player knowledge and the server's data, we build Dictionaries by Guid
         /// </summary>
@@ -384,54 +295,6 @@ namespace CraigStars
             MineralPackets.ForEach(mp => CargoHoldersByGuid[mp.Guid] = mp);
             Salvage.ForEach(s => CargoHoldersByGuid[s.Guid] = s);
 
-        }
-
-        /// <summary>
-        /// Submit any AI turns
-        /// This submits all turns in separate threads and returns a Task for them all to complete
-        /// </summary>
-        async Task SubmitAITurns()
-        {
-            var tasks = new List<Task>();
-            // submit AI turns
-            foreach (var player in Players)
-            {
-                if (player.AIControlled && !player.SubmittedTurn)
-                {
-                    Action submitAITurn = () =>
-                    {
-                        try
-                        {
-                            foreach (var processor in TurnProcessorManager.TurnProcessors)
-                            {
-                                processor.Process(player);
-                            }
-                            SubmitTurn(player);
-                        }
-                        catch (Exception e)
-                        {
-                            log.Error($"Failed to submit AI turn {player}", e);
-                        }
-                    };
-                    // if (Multithreaded)
-                    // {
-                    //     tasks.Add(Task.Run(submitAITurn));
-                    // }
-                    // else
-                    // {
-                    submitAITurn();
-                    // }
-                }
-            }
-            // if (Multithreaded)
-            // {
-            //     aiSubmittingTask = Task.Run(() => Task.WaitAll(tasks.ToArray()));
-            // }
-            // else
-            // {
-            aiSubmittingTask = Task.CompletedTask;
-            // }
-            await aiSubmittingTask;
         }
 
         #region Event Handlers

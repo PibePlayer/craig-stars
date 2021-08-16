@@ -16,6 +16,16 @@ namespace CraigStars.Server
     {
         static CSLog log = LogProvider.GetLogger(typeof(Server));
 
+        // for tests or fast generation
+        public bool SaveToDisk { get; set; } = true;
+        public bool Multithreaded { get; set; } = true;
+        Task aiSubmittingTask;
+
+        /// <summary>
+        /// The GamesManager is used to save turns
+        /// </summary>
+        public IGamesManager GamesManager { get; set; }
+
         /// <summary>
         /// The game that is being created/loaded
         /// </summary>
@@ -29,6 +39,7 @@ namespace CraigStars.Server
             base._Ready();
 
             clientEventPublisher = CreateClientEventPublisher();
+            GamesManager = Singletons.GamesManager.Instance;
 
             clientEventPublisher.GameStartRequestedEvent += OnGameStartRequested;
             clientEventPublisher.SubmitTurnRequestedEvent += OnSubmitTurnRequested;
@@ -71,12 +82,15 @@ namespace CraigStars.Server
         {
             if (settings.ContinueGame)
             {
-                LoadGame(settings.Name, settings.Year, multithreaded: true, saveToDisk: true);
+                Game = LoadGame(settings.Name, settings.Year, multithreaded: true, saveToDisk: true);
             }
             else
             {
-                CreateNewGame(settings, multithreaded: true, saveToDisk: true);
+                Game = CreateNewGame(settings, multithreaded: true, saveToDisk: true);
             }
+            // submit the AI player turns
+            var _ = SubmitAITurns(Game);
+
             // notify each player of a game start event
             Game.GameInfo.State = GameState.WaitingForPlayers;
             PublishGameStartedEvent();
@@ -90,6 +104,7 @@ namespace CraigStars.Server
         protected virtual void OnSubmitTurnRequested(Player player)
         {
             Game.SubmitTurn(player);
+            SaveGame(Game);
             PublishTurnSubmittedEvent(player);
 
             if (Game.AllPlayersSubmitted())
@@ -108,6 +123,7 @@ namespace CraigStars.Server
         protected virtual void OnUnsubmitTurnRequested(PublicPlayerInfo player)
         {
             Game.UnsubmitTurn(player);
+            SaveGame(Game);
             PublishTurnUnsubmittedEvent(player);
         }
 
@@ -119,10 +135,17 @@ namespace CraigStars.Server
         /// On next turn, generate a new turn
         /// </summary>
         /// <returns></returns>
-        public async void GenerateNewTurnDeferred()
+        public void GenerateNewTurnDeferred()
         {
-            await Game.GenerateTurn();
-            Game.GameInfo.State = GameState.WaitingForPlayers;
+            Action generateTurn = () =>
+            {
+                Game.GenerateTurn();
+                Game.GameInfo.State = GameState.WaitingForPlayers;
+                SaveGame(Game);
+                var _ = SubmitAITurns(Game);
+            };
+            // await Task.Factory.StartNew(generateTurn);
+            generateTurn();
             PublishTurnPassedEvent();
         }
 
@@ -133,25 +156,28 @@ namespace CraigStars.Server
         /// </summary>
         public Game CreateNewGame(GameSettings<Player> settings, bool multithreaded, bool saveToDisk)
         {
-            Game = new Game()
+            var game = new Game()
             {
                 Name = settings.Name,
-                Multithreaded = multithreaded,
-                SaveToDisk = saveToDisk,
                 GameInfo = settings
             };
-            if (GamesManager.Instance.GameExists(Game.Name))
+            if (GamesManager.Exists(game.Name))
             {
-                GamesManager.Instance.DeleteGame(Game.Name);
+                GamesManager.DeleteGame(game.Name);
             }
             // PlayersManager.Instance.NumPlayers = PlayersManager.Instance.Players.Count;
-            Game.Init(settings.Players, RulesManager.Rules, TechStore.Instance, GamesManager.Instance, TurnProcessorManager.Instance);
-            Game.GenerateUniverse();
+            game.Init(settings.Players, RulesManager.Rules, TechStore.Instance);
+            game.GenerateUniverse();
 
             // TODO: remove this turn process stuff later
-            Game.Players.ForEach(player => player.Settings.TurnProcessors.AddRange(TurnProcessorManager.Instance.TurnProcessors.Select(p => p.Name)));
+            game.Players.ForEach(player => player.Settings.TurnProcessors.AddRange(TurnProcessorManager.Instance.TurnProcessors.Select(p => p.Name)));
 
-            return Game;
+            Multithreaded = multithreaded;
+            SaveToDisk = saveToDisk;
+
+            SaveGame(game);
+
+            return game;
         }
 
         /// <summary>
@@ -159,15 +185,90 @@ namespace CraigStars.Server
         /// </summary>
         public Game LoadGame(string gameName, int year, bool multithreaded, bool saveToDisk)
         {
-            Game = GamesManager.Instance.LoadGame(TechStore.Instance, TurnProcessorManager.Instance, gameName, year);
-            Game.Multithreaded = multithreaded;
-            Game.SaveToDisk = saveToDisk;
+            var game = GamesManager.LoadGame(TechStore.Instance, TurnProcessorManager.Instance, gameName, year);
 
             // TODO: remove this turn process stuff later
-            Game.Players.ForEach(player => player.Settings.TurnProcessors.AddRange(TurnProcessorManager.Instance.TurnProcessors.Select(p => p.Name)));
+            game.Players.ForEach(player => player.Settings.TurnProcessors.AddRange(TurnProcessorManager.Instance.TurnProcessors.Select(p => p.Name)));
 
-            return Game;
+            Multithreaded = multithreaded;
+            SaveToDisk = saveToDisk;
+
+            // Make sure on load, AI players submit their turns
+            var _ = SubmitAITurns(game);
+
+            return game;
         }
 
+        protected void SaveGame(Game game)
+        {
+            if (SaveToDisk && game.Year >= game.Rules.StartingYear + game.GameInfo.QuickStartTurns)
+            {
+                // serialize the game to JSON. This must complete before we can
+                // modify any state
+                var gameJson = GamesManager.SerializeGame(game, Multithreaded);
+
+                if (Multithreaded)
+                {
+                    // now that we have our json, we can save the game to dis in a separate task
+                    Task.Run(() =>
+                    {
+                        GamesManager.SaveGame(gameJson, Multithreaded);
+                    }).Wait();
+                }
+                else
+                {
+                    GamesManager.SaveGame(gameJson, Multithreaded);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Submit any AI turns
+        /// This submits all turns in separate threads and returns a Task for them all to complete
+        /// </summary>
+        async Task SubmitAITurns(Game game)
+        {
+            var tasks = new List<Task>();
+            // submit AI turns
+            foreach (var player in game.Players)
+            {
+                if (player.AIControlled && !player.SubmittedTurn)
+                {
+                    Action submitAITurn = () =>
+                    {
+                        try
+                        {
+                            foreach (var processor in TurnProcessorManager.Instance.TurnProcessors)
+                            {
+                                processor.Process(player);
+                            }
+                            // Treat this AI player like a player that just submitted their turn
+                            OnSubmitTurnRequested(player);
+                        }
+                        catch (Exception e)
+                        {
+                            log.Error($"Failed to submit AI turn {player}", e);
+                        }
+                    };
+                    // if (Multithreaded)
+                    // {
+                    //     tasks.Add(Task.Run(submitAITurn));
+                    // }
+                    // else
+                    // {
+                    submitAITurn();
+                    // }
+                }
+            }
+            // if (Multithreaded)
+            // {
+            //     aiSubmittingTask = Task.Run(() => Task.WaitAll(tasks.ToArray()));
+            // }
+            // else
+            // {
+            aiSubmittingTask = Task.CompletedTask;
+            // }
+            await aiSubmittingTask;
+        }
     }
 }

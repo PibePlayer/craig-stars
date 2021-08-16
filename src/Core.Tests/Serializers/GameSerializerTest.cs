@@ -95,7 +95,6 @@ namespace CraigStars.Tests
 
             Game game = new Game()
             {
-                SaveToDisk = false,
                 TechStore = StaticTechStore.Instance,
                 Players = new List<Player>() { player, otherPlayer },
                 Planets = new List<Planet>() { planet1, planet2 },
@@ -105,7 +104,7 @@ namespace CraigStars.Tests
             var json = Serializers.SerializeGame(game, Serializers.CreateGameSettings(game));
             log.Info($"\n{json}");
 
-            Game loaded = new Game() { SaveToDisk = false, TechStore = StaticTechStore.Instance };
+            Game loaded = new Game() { TechStore = StaticTechStore.Instance };
             Serializers.PopulateGame(json, loaded, Serializers.CreateGameSettings(loaded));
 
             Assert.AreEqual(game.Players.Count, loaded.Players.Count);
@@ -130,8 +129,8 @@ namespace CraigStars.Tests
             };
 
             // generate a tiny universe
-            Game game = new Game() { SaveToDisk = false, Size = Size.Tiny, Density = Density.Sparse };
-            game.Init(new List<Player>() { player1, player2 }, new Rules(0), StaticTechStore.Instance, new TestGamesManager(), new TestTurnProcessorManager());
+            Game game = new Game() { Size = Size.Tiny, Density = Density.Sparse };
+            game.Init(new List<Player>() { player1, player2 }, new Rules(0), StaticTechStore.Instance);
             game.GenerateUniverse();
 
             var gameSettings = Serializers.CreateGameSettings(game);
@@ -145,7 +144,7 @@ namespace CraigStars.Tests
             // log.Info($"Player2: \n{player2Json}");
 
             // reload the game
-            Game loaded = new Game() { SaveToDisk = false, TechStore = StaticTechStore.Instance };
+            Game loaded = new Game() { TechStore = StaticTechStore.Instance };
             Serializers.PopulateGame(gameJson, loaded, Serializers.CreateGameSettings(loaded));
             var loadSettings = Serializers.CreatePlayerSettings(loaded.Players.Cast<PublicPlayerInfo>().ToList(), loaded.TechStore);
             Serializers.PopulatePlayer(player1Json, loaded.Players[0], loadSettings);

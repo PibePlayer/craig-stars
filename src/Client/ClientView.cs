@@ -9,7 +9,7 @@ namespace CraigStars.Client
 {
     public class ClientView : Node
     {
-        static CSLog log = LogProvider.GetLogger(typeof(GameView));
+        static CSLog log = LogProvider.GetLogger(typeof(ClientView));
 
         /// <summary>
         /// The GameInfo passed in when we're created
@@ -50,6 +50,7 @@ namespace CraigStars.Client
             EventManager.PlayTurnRequestedEvent += OnPlayTurnRequested;
             EventManager.TurnSubmittedEvent += OnTurnSubmitted;
             EventManager.TurnUnsubmittedEvent += OnTurnUnsubmitted;
+            EventManager.TurnGeneratingEvent += OnTurnGenerating;
             EventManager.TurnGeneratorAdvancedEvent += OnTurnGeneratorAdvanced;
             EventManager.TurnPassedEvent += OnTurnPassed;
 
@@ -68,11 +69,12 @@ namespace CraigStars.Client
 
             EventManager.GameStartedEvent -= OnGameStarted;
             EventManager.SubmitTurnRequestedEvent -= OnSubmitTurnRequested;
+            EventManager.PlayTurnRequestedEvent -= OnPlayTurnRequested;
             EventManager.TurnSubmittedEvent -= OnTurnSubmitted;
             EventManager.TurnUnsubmittedEvent -= OnTurnUnsubmitted;
-            EventManager.PlayTurnRequestedEvent -= OnPlayTurnRequested;
-            EventManager.TurnPassedEvent -= OnTurnPassed;
+            EventManager.TurnGeneratingEvent -= OnTurnGenerating;
             EventManager.TurnGeneratorAdvancedEvent -= OnTurnGeneratorAdvanced;
+            EventManager.TurnPassedEvent -= OnTurnPassed;
         }
 
         #region GameView Loading/Reloading
@@ -134,11 +136,30 @@ namespace CraigStars.Client
         }
 
         /// <summary>
+        /// Remove the GameView and free it, then show the progress
+        /// container (and the TurnStatus)
+        /// </summary>
+        void RemoveGameViewAndShowTurnGeneration()
+        {
+            container.Visible = true;
+            // remove the old game view and re-add it
+            if (gameView != null && IsInstanceValid(gameView))
+            {
+                log.Debug("Removing GameView from tree");
+                RemoveChild(gameView);
+                gameView.QueueFree();
+                gameView = null;
+            }
+        }
+
+        /// <summary>
         /// When a new gameview is loaded, show it
         /// </summary>
         /// <param name="scene"></param>
         void SetNewGameView()
         {
+            log.Debug("Setting new GameView and hiding turn generation view");
+
             OS.SetWindowTitle($"{projectName} - {GameInfo.Name}: Year {GameInfo.Year} - {Me?.Name}");
 
             PlayersManager.GameInfo = GameInfo;
@@ -149,22 +170,6 @@ namespace CraigStars.Client
             AddChild(gameView);
 
             EventManager.PublishGameViewResetEvent(GameInfo);
-        }
-
-        /// <summary>
-        /// Remove the GameView and free it, then show the progress
-        /// container (and the TurnStatus)
-        /// </summary>
-        void RemoveGameViewAndShow()
-        {
-            container.Visible = true;
-            // remove the old game view and re-add it
-            if (gameView != null && IsInstanceValid(gameView))
-            {
-                RemoveChild(gameView);
-                gameView.QueueFree();
-            }
-
         }
 
         #endregion
@@ -201,10 +206,11 @@ namespace CraigStars.Client
                 }
 
                 // we just submitted our turn, remove the game view and show this container
-                RemoveGameViewAndShow();
+                RemoveGameViewAndShowTurnGeneration();
 
                 // this was us, show the dialog
                 turnGenerationStatus.Visible = true;
+                turnGenerationStatus.UpdatePlayerStatuses();
             }
         }
 
@@ -213,7 +219,7 @@ namespace CraigStars.Client
             if (player == PlayersManager.Me)
             {
                 // we just submitted our turn, remove the game view and show this container
-                RemoveGameViewAndShow();
+                RemoveGameViewAndShowTurnGeneration();
                 // this was us, show the dialog
                 turnGenerationStatus.Visible = true;
                 turnGenerationStatus.UpdatePlayerStatuses();
@@ -245,6 +251,17 @@ namespace CraigStars.Client
                 localPlayer.SubmittedTurn = false;
             }
         }
+
+        void OnTurnGenerating()
+        {
+            // we just submitted our turn, remove the game view and show this container
+            RemoveGameViewAndShowTurnGeneration();
+
+            // this was us, show the dialog
+            turnGenerationStatus.Visible = true;
+            turnGenerationStatus.UpdatePlayerStatuses();
+        }
+
 
         /// <summary>
         /// While a turn is being generated, this will update the progress bar
@@ -284,7 +301,7 @@ namespace CraigStars.Client
                 PlayersManager.Me = player;
                 PlayersManager.Me.RunTurnProcessors(TurnProcessorManager.Instance);
                 OS.SetWindowTitle($"{projectName} - {gameInfo.Name}: Year {gameInfo.Year}");
-                CallDeferred(nameof(ReloadGameView));
+                ReloadGameView();
             }
         }
 
@@ -298,7 +315,7 @@ namespace CraigStars.Client
             if (player != null)
             {
                 PlayersManager.Me = player;
-                RemoveGameViewAndShow();
+                RemoveGameViewAndShowTurnGeneration();
                 CallDeferred(nameof(ReloadGameView));
             }
         }

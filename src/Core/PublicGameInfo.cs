@@ -21,6 +21,7 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(PublicGameInfo));
 
+        public Guid Guid { get; set; } = Guid.NewGuid();
         public string Name { get; set; } = "A Barefoot Jaywalk";
         public int QuickStartTurns { get; set; } = 0;
         public Size Size { get; set; } = Size.Small;

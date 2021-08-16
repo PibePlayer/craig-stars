@@ -14,7 +14,7 @@ namespace CraigStarsTable
 
         DynamicFontData italicFont;
 
-        public CSLabelCell() {
+        public CSLabelCell() : base() {
             SizeFlagsHorizontal = (int)SizeFlags.ExpandFill;
             RectMinSize = new Vector2(16, 16);
         }

@@ -23,9 +23,9 @@ namespace CraigStars.Tests
         [Test]
         public void TestGenerateUniverse()
         {
-            var game = new Game() { SaveToDisk = false };
+            var game = new Game();
             var rules = new Rules(0);
-            game.Init(new List<Player>() { new Player() }, rules, StaticTechStore.Instance, new TestGamesManager(), new TestTurnProcessorManager());
+            game.Init(new List<Player>() { new Player() }, rules, StaticTechStore.Instance);
             game.GenerateUniverse();
 
             Assert.AreEqual(rules.GetNumPlanets(game.Size, game.Density), game.Planets.Count);
@@ -34,20 +34,20 @@ namespace CraigStars.Tests
         }
 
         [Test]
-        public async Task TestGenerateTurn()
+        public void TestGenerateTurn()
         {
             // create a new game with universe
-            var game = new Game() { SaveToDisk = false };
+            var game = new Game();
             var player = new Player();
             var rules = new Rules(0);
-            game.Init(new List<Player>() { player }, rules, StaticTechStore.Instance, new TestGamesManager(), new TestTurnProcessorManager());
+            game.Init(new List<Player>() { player }, rules, StaticTechStore.Instance);
             game.GenerateUniverse();
 
             // submit the player
             game.SubmitTurn(player);
 
             // generate the turn
-            await game.GenerateTurn();
+            game.GenerateTurn();
 
             // make sure our turn was generated and the player's report was updated
             Assert.Greater(player.Homeworld.Population, rules.StartingPopulation);
@@ -58,12 +58,11 @@ namespace CraigStars.Tests
         /// Test generating multiple turns with an AI and Human player
         /// </summary>
         [Test]
-        public async Task TestGenerateManyTurns()
+        public void TestGenerateManyTurns()
         {
             // create a new game with universe
             var game = new Game()
             {
-                SaveToDisk = false,
                 Size = Size.Huge,
                 Density = Density.Packed,
             };
@@ -71,7 +70,7 @@ namespace CraigStars.Tests
             var player = new Player();
             var aiPlayer = new Player() { AIControlled = true };
             var rules = new Rules(0);
-            game.Init(new List<Player>() { player, aiPlayer }, rules, StaticTechStore.Instance, new TestGamesManager(), new TestTurnProcessorManager());
+            game.Init(new List<Player>() { player, aiPlayer }, rules, StaticTechStore.Instance);
             game.GenerateUniverse();
 
             // // turn off logging but for errors
@@ -90,7 +89,7 @@ namespace CraigStars.Tests
                 game.SubmitTurn(player);
 
                 // generate the turn
-                await game.GenerateTurn();
+                game.GenerateTurn();
             }
             stopwatch.Stop();
 

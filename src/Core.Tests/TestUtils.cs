@@ -17,7 +17,6 @@ namespace CraigStars.Tests
             PlayerIntel playerIntel = new();
             Game game = new()
             {
-                SaveToDisk = false,
                 TechStore = StaticTechStore.Instance
             };
             var player = new Player()
@@ -87,7 +86,6 @@ namespace CraigStars.Tests
             PlayerIntel playerIntel = new();
             Game game = new()
             {
-                SaveToDisk = false,
                 TechStore = StaticTechStore.Instance
             };
             var player1 = new Player()

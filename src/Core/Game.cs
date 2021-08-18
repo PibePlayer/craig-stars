@@ -109,6 +109,7 @@ namespace CraigStars
         [OnDeserialized]
         internal void OnDeserialized(StreamingContext context)
         {
+            GameInfo.Players.Clear();
             GameInfo.Players.AddRange(Players.Cast<PublicPlayerInfo>());
 
             // Update the Game dictionaries used for lookups, like PlanetsByGuid, FleetsByGuid, etc.

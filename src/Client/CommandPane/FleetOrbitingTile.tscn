@@ -1,26 +1,33 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://src/Client/CommandPane/FleetOrbitingTile.cs" type="Script" id=1]
+[ext_resource path="res://src/Client/CommandPane/Tile.tscn" type="PackedScene" id=2]
 
-[node name="FleetOrbitingTile" type="VBoxContainer"]
-margin_top = 18.0
-margin_right = 180.0
-margin_bottom = 38.0
+[node name="FleetOrbitingTile" instance=ExtResource( 2 )]
 script = ExtResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
+[node name="Panel" parent="." index="0"]
+margin_bottom = 54.0
+
+[node name="VBoxContainer" parent="." index="1"]
+margin_bottom = 54.0
+
+[node name="TitleLabel" parent="VBoxContainer/TitleContainer" index="0"]
+text = "In Deep Space"
+
+[node name="Controls" parent="VBoxContainer" index="1"]
+margin_bottom = 44.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/Controls" index="0"]
 margin_right = 180.0
 margin_bottom = 20.0
 
-[node name="GotoButton" type="Button" parent="HBoxContainer"]
+[node name="GotoButton" type="Button" parent="VBoxContainer/Controls/HBoxContainer" index="0"]
 margin_right = 43.0
 margin_bottom = 20.0
 text = "Goto"
 
-[node name="CargoTransferButton" type="Button" parent="HBoxContainer"]
+[node name="CargoTransferButton" type="Button" parent="VBoxContainer/Controls/HBoxContainer" index="1"]
 margin_left = 117.0
 margin_right = 180.0
 margin_bottom = 20.0

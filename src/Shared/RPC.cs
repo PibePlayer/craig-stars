@@ -238,7 +238,7 @@ namespace CraigStars.Singletons
             {
                 // deserialize the new game settings and set our list of network players to the Players property
                 GameSettings<Player> settings = Serializers.DeserializeObject<GameSettings<Player>>(settingsJson);
-                settings.Players = players;
+                settings.Players = new(players);
 
                 // make sure the sending player is the host
                 var callerNetworkId = GetTree().GetRpcSenderId();
@@ -305,14 +305,17 @@ namespace CraigStars.Singletons
         [Remote]
         public void SubmitTurn(string playerJson)
         {
+            // find the network player by this number
             var networkId = GetTree().GetRpcSenderId();
             var player = players.Find(player => player.NetworkId == networkId);
             if (player != null)
             {
+                // load the actual player from JSON
                 log.Info($"Server: {player} submitted turn");
+                player = new Player() { Num = player.Num };
                 Serializers.PopulatePlayer(playerJson, player, Serializers.CreatePlayerSettings(players.Cast<PublicPlayerInfo>().ToList(), TechStore.Instance));
-                player.SetupMapObjectMappings();
-                player.ComputeAggregates();
+
+                // submit this player's turn to the server
                 SubmitTurnRequestedEvent?.Invoke(player);
             }
             else
@@ -320,6 +323,22 @@ namespace CraigStars.Singletons
                 log.Error($"Player for networkId: {networkId} not found");
             }
 
+        }
+
+        public void SendGameStarting(PublicGameInfo gameInfo)
+        {
+            string gameInfoJson = Serializers.Serialize(gameInfo);
+            log.Info($"{LogPrefix}: Sending GameStarting to players");
+            Rpc(nameof(GameStarting), gameInfoJson);
+        }
+
+        [Remote]
+        public void GameStarting(string gameInfoJson)
+        {
+            PublicGameInfo gameInfo = Serializers.DeserializeObject<PublicGameInfo>(gameInfoJson);
+
+            Client.EventManager.PublishGameStartingEvent(gameInfo);
+            log.Info($"{LogPrefix} Received GameStarting");
         }
 
         /// <summary>

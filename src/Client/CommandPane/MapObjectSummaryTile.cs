@@ -6,11 +6,8 @@ using CraigStars.Singletons;
 
 namespace CraigStars.Client
 {
-    public class MapObjectSummaryTile : Control, ITileContent
+    public class MapObjectSummaryTile : Control
     {
-        public event UpdateTitleAction UpdateTitleEvent;
-        public event UpdateVisibilityAction UpdateVisibilityEvent;
-
         public MapObjectSprite CommandedMapObject
         {
             get => mapObject; set
@@ -21,6 +18,7 @@ namespace CraigStars.Client
         }
         MapObjectSprite mapObject;
 
+        Label titleLabel;
         TextureRect textureRect;
         Button nextButton;
         Button prevButton;
@@ -28,10 +26,11 @@ namespace CraigStars.Client
 
         public override void _Ready()
         {
-            textureRect = FindNode("TextureRect") as TextureRect;
-            nextButton = FindNode("NextButton") as Button;
-            prevButton = FindNode("PrevButton") as Button;
-            renameButton = FindNode("RenameButton") as Button;
+            titleLabel = (Label)FindNode("TitleLabel");
+            textureRect = (TextureRect)FindNode("TextureRect");
+            nextButton = (Button)FindNode("NextButton");
+            prevButton = (Button)FindNode("PrevButton");
+            renameButton = (Button)FindNode("RenameButton");
 
             nextButton.Connect("pressed", this, nameof(OnNextButtonPressed));
             prevButton.Connect("pressed", this, nameof(OnPrevButtonPressed));
@@ -72,7 +71,7 @@ namespace CraigStars.Client
         {
             if (CommandedMapObject != null)
             {
-                UpdateTitleEvent?.Invoke(mapObject.ObjectName);
+                titleLabel.Text = mapObject.ObjectName;
                 if (CommandedMapObject is PlanetSprite planetSprite)
                 {
                     textureRect.Texture = TextureLoader.Instance.FindTexture(planetSprite.Planet);
@@ -84,7 +83,7 @@ namespace CraigStars.Client
             }
             else
             {
-                UpdateTitleEvent?.Invoke("Unknown");
+                titleLabel.Text = "Unknown";
             }
         }
     }

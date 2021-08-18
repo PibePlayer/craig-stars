@@ -17,8 +17,8 @@ namespace CraigStars.Client
         public override void _Ready()
         {
             base._Ready();
-            gotoButton = GetNode<Button>("HBoxContainer/GotoButton");
-            cargoTransferButton = GetNode<Button>("HBoxContainer/CargoTransferButton");
+            gotoButton = (Button)FindNode("GotoButton");
+            cargoTransferButton = (Button)FindNode("CargoTransferButton");
 
             gotoButton.Connect("pressed", this, nameof(OnGotoButtonPressed));
             cargoTransferButton.Connect("pressed", this, nameof(OnCargoTransferButtonPressed));

@@ -34,26 +34,26 @@ namespace CraigStars.Client
         {
             base._Ready();
 
-            loadTexture = ResourceLoader.Load<Texture>("res://assets/gui/icons/ArrowUp.svg");
-            unloadTexture = ResourceLoader.Load<Texture>("res://assets/gui/icons/ArrowDown.svg");
-            noneTexture = ResourceLoader.Load<Texture>("res://assets/gui/icons/Close.svg");
+            loadTexture = CSResourceLoader.GetTexture("ArrowUp.svg");
+            unloadTexture = CSResourceLoader.GetTexture("ArrowDown.svg");
+            noneTexture = CSResourceLoader.GetTexture("Close.svg");
 
             waypointTask = (OptionButton)FindNode("WaypointTask");
 
-            transportContainer = GetNode<Container>("TransportContainer");
-            fuelTask = GetNode<TextureRect>("TransportContainer/TransportSummaryContainer/FuelTask");
-            ironiumTask = GetNode<TextureRect>("TransportContainer/TransportSummaryContainer/IroniumTask");
-            boraniumTask = GetNode<TextureRect>("TransportContainer/TransportSummaryContainer/BoraniumTask");
-            germaniumTask = GetNode<TextureRect>("TransportContainer/TransportSummaryContainer/GermaniumTask");
-            colonistsTask = GetNode<TextureRect>("TransportContainer/TransportSummaryContainer/ColonistsTask");
-            editButton = GetNode<Button>("TransportContainer/TransportButtonsContainer/EditButton");
-            applyPlanMenuButton = GetNode<MenuButton>("TransportContainer/TransportButtonsContainer/ApplyPlanMenuButton");
-            transportPlanEditPopupPanel = GetNode<PopupPanel>("TransportPlanEditPopupPanel");
-            transportPlanEditOKButton = GetNode<Button>("TransportPlanEditPopupPanel/VBoxContainer/TransportPlanEditOKButton");
-            transportPlanDetail = GetNode<TransportPlanDetail>("TransportPlanEditPopupPanel/VBoxContainer/TransportPlanDetail");
+            transportContainer = (Container)FindNode("TransportContainer");
+            fuelTask = (TextureRect)FindNode("FuelTask");
+            ironiumTask = (TextureRect)FindNode("IroniumTask");
+            boraniumTask = (TextureRect)FindNode("BoraniumTask");
+            germaniumTask = (TextureRect)FindNode("GermaniumTask");
+            colonistsTask = (TextureRect)FindNode("ColonistsTask");
+            editButton = (Button)FindNode("EditButton");
+            applyPlanMenuButton = (MenuButton)FindNode("ApplyPlanMenuButton");
+            transportPlanEditPopupPanel = (PopupPanel)FindNode("TransportPlanEditPopupPanel");
+            transportPlanEditOKButton = (Button)FindNode("TransportPlanEditOKButton");
+            transportPlanDetail = (TransportPlanDetail)FindNode("TransportPlanDetail");
             transportPlanDetail.ShowName = false;
 
-            remoteMiningWaypointTaskContainer = GetNode<RemoteMiningWaypointTaskContainer>("RemoteMiningWaypointTaskContainer");
+            remoteMiningWaypointTaskContainer = (RemoteMiningWaypointTaskContainer)FindNode("RemoteMiningWaypointTaskContainer");
 
             waypointTask.PopulateOptionButton<WaypointTask>((task) => EnumUtils.GetLabelForWaypointTask(task));
 

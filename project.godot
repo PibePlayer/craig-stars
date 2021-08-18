@@ -47,6 +47,7 @@ config/icon="res://icon.png"
 
 [autoload]
 
+CsResourceLoader="*res://src/Client/Singletons/CSResourceLoader.tscn"
 RulesManager="*res://src/Client/Singletons/RulesManager.tscn"
 RacesManager="*res://src/Client/Singletons/RacesManager.tscn"
 GamesManager="*res://src/Client/Singletons/GamesManager.tscn"
@@ -60,6 +61,7 @@ SceneChanger="*res://src/Client/Singletons/SceneChanger.tscn"
 HullSummaryPopup="*res://src/Client/Singletons/HullSummaryPopup.tscn"
 TechSummaryPopup="*res://src/Client/Singletons/TechSummaryPopup.tscn"
 CsConfirmDialog="*res://src/Client/Singletons/CSConfirmDialog.tscn"
+CSTableResourceLoader="*res://addons/CSTable/src/Table/CSTableResourceLoader.tscn"
 
 [debug]
 

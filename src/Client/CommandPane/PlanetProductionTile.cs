@@ -23,7 +23,7 @@ namespace CraigStars.Client
             clearButton = (Button)FindNode("ClearButton");
             routeButton = (Button)FindNode("RouteButton");
             routeTo = (Label)FindNode("RouteTo");
-            productionQueue = GetNode<QueuedPlanetProductionQueueItems>("MarginContainer/ProductionQueue");
+            productionQueue = GetNode<QueuedPlanetProductionQueueItems>("VBoxContainer/Controls/MarginContainer/ProductionQueue");
 
             changeButton.Connect("pressed", this, nameof(OnChangeButtonPressed));
             clearButton.Connect("pressed", this, nameof(OnClearButtonPressed));

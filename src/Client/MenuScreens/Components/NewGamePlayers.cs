@@ -18,7 +18,7 @@ namespace CraigStars.Client
         {
             PlayersContainer = GetNode<Container>("ScrollContainer/MarginContainer/PlayersContainer");
             addPlayerButton = GetNode<Button>("HBoxContainer/AddPlayerButton");
-            playerChooserScene = ResourceLoader.Load<PackedScene>("res://src/Client/MenuScreens/Components/PlayerChooser.tscn");
+            playerChooserScene = CSResourceLoader.GetPackedScene("PlayerChooser.tscn");
 
             addPlayerButton.Connect("pressed", this, nameof(OnAddPlayerButtonPressed));
 

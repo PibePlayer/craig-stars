@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using CraigStars.Client;
+using Newtonsoft.Json;
 
 namespace CraigStars.Server
 {
@@ -8,47 +10,86 @@ namespace CraigStars.Server
     {
         static CSLog log = LogProvider.GetLogger(typeof(LocalServer));
 
-        #region Server events
-
-        // The SinglePlayerServer class recieves network messages and publishes events to it's local instance
-        // This way, a server can listen for events only on the RPC instance in its scene tree
-
-        public event Action GameStartRequestedEvent;
-        public event Action<Player> SubmitTurnRequestedEvent;
-
-        #endregion
+        protected JsonSerializerSettings playerSerializerSettings;
 
         protected override IClientEventPublisher CreateClientEventPublisher()
         {
             return new LocalClientEventPublisher();
         }
 
-        #region Publishers
-
-        protected override void PublishPlayerUpdatedEvent(PublicPlayerInfo player)
+        /// <summary>
+        /// Override OnSubmitTurnRequested to clone the player
+        /// </summary>
+        /// <param name="player"></param>
+        protected override void OnSubmitTurnRequested(Player player)
         {
-            // do nothing, no need to notify players about other player updates
-            // in a LocalServer
+            if (player.AIControlled)
+            {
+                base.OnSubmitTurnRequested(player);
+            }
+            else
+            {
+                // before submitting this turn to the server, clone the player
+                var clone = new Player();
+                var playerJson = Serializers.Serialize(player, playerSerializerSettings);
+                Serializers.PopulatePlayer(playerJson, clone, playerSerializerSettings);
+
+                base.OnSubmitTurnRequested(clone);
+            }
         }
 
-        protected override void PublishGameStartedEvent()
+
+        #region Publishers
+
+        protected override void PublishGameStartingEvent(PublicGameInfo gameInfo)
         {
+            var gameInfoJson = Serializers.Serialize(gameInfo);
+            PublicGameInfo gameInfoClone = Serializers.DeserializeObject<PublicGameInfo>(gameInfoJson);
+            Client.EventManager.PublishGameStartingEvent(gameInfoClone);
+        }
+
+
+        protected async override void PublishGameStartedEvent()
+        {
+            // we have a new game, so create the player serializer settings
+            PublicGameInfo gameInfoClone = null;
+            await Task.Run(() =>
+            {
+                log.Debug($"Creating Player SerializerSettings GameStartedEvent.");
+                playerSerializerSettings = Serializers.CreatePlayerSettings(Game.GameInfo.Players, Game.TechStore);
+                var gameInfoJson = Serializers.Serialize(Game.GameInfo);
+                gameInfoClone = Serializers.DeserializeObject<PublicGameInfo>(gameInfoJson);
+            });
+
             // send a signal per non ai player in the game
             // For hotseat games, the ClientView will store all players that can play
             foreach (var player in Game.Players.Where(player => !player.AIControlled))
             {
-                Client.EventManager.PublishGameStartedEvent(Game.GameInfo, player);
+                var playerClone = new Player();
+                await Task.Run(() =>
+                {
+                    log.Debug($"Creating clone of {player} for GameStartedEvent.");
+                    var playerJson = Serializers.Serialize(player, playerSerializerSettings);
+                    Serializers.PopulatePlayer(playerJson, playerClone, playerSerializerSettings);
+                });
+
+                log.Debug($"{player} GameStartedEvent.");
+                Client.EventManager.PublishGameStartedEvent(gameInfoClone, playerClone);
             }
         }
 
         protected override void PublishTurnSubmittedEvent(PublicPlayerInfo player)
         {
-            Client.EventManager.PublishTurnSubmittedEvent(player);
+            PublicPlayerInfo playerClone = new PublicPlayerInfo(player);
+
+            log.Debug($"{player} TurnSubmittedEvent.");
+            Client.EventManager.PublishTurnSubmittedEvent(playerClone);
         }
 
         protected override void PublishTurnUnsubmittedEvent(PublicPlayerInfo player)
         {
-            Client.EventManager.PublishTurnUnsubmittedEvent(player);
+            PublicPlayerInfo playerClone = new PublicPlayerInfo(player);
+            Client.EventManager.PublishTurnUnsubmittedEvent(playerClone);
         }
 
         protected override void PublishTurnGeneratingEvent()
@@ -61,12 +102,21 @@ namespace CraigStars.Server
             Client.EventManager.PublishTurnGeneratorAdvancedEvent(state);
         }
 
-        protected override void PublishTurnPassedEvent()
+        protected async override void PublishTurnPassedEvent()
         {
             // notify each non AI player about the new turn
             foreach (var player in Game.Players.Where(player => !player.AIControlled))
             {
-                Client.EventManager.PublishTurnPassedEvent(Game.GameInfo, player);
+                var clone = new Player();
+                await Task.Run(() =>
+                {
+                    log.Debug($"Creating clone of {player} for TurnPassedEvent.");
+                    var playerJson = Serializers.Serialize(player, playerSerializerSettings);
+                    Serializers.PopulatePlayer(playerJson, clone, playerSerializerSettings);
+                });
+
+                log.Debug($"Notifying {player} of TurnPassedEvent.");
+                Client.EventManager.PublishTurnPassedEvent(Game.GameInfo, clone);
             }
         }
 

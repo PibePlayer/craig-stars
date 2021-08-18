@@ -55,6 +55,11 @@ namespace CraigStars.Singletons
             return $"{GetSaveGameYearFolder(gameName, year)}/game.json";
         }
 
+        public static string GetSaveGameInfoFile(string gameName, int year)
+        {
+            return $"{GetSaveGameYearFolder(gameName, year)}/game-info.json";
+        }
+
         public static string GetSaveGamePlayerPath(string gameName, int year, int playerNum)
         {
             return $"{GetSaveGameYearFolder(gameName, year)}/game-player-{playerNum}.json";
@@ -188,7 +193,27 @@ namespace CraigStars.Singletons
             }
         }
 
-        public Game LoadGame(ITechStore techStore, ITurnProcessorManager turnProcessorManager, string name, int year = -1)
+        public PublicGameInfo LoadGameInfo(string name, int year = -1)
+        {
+            PublicGameInfo gameInfo;
+            using (var saveGameInfo = new File())
+            {
+                var path = GetSaveGameInfoFile(name, year);
+                if (!saveGameInfo.FileExists(path))
+                {
+                    return null;
+                }
+                saveGameInfo.Open(path, File.ModeFlags.Read);
+                var gameInfoJson = saveGameInfo.GetAsText();
+                saveGameInfo.Close();
+
+                gameInfo = Serializers.DeserializeObject<PublicGameInfo>(gameInfoJson);
+            }
+
+            return gameInfo;
+        }
+
+        public Game LoadGame(ITechStore techStore, string name, int year = -1)
         {
             var game = new Game() { TechStore = techStore, Name = name };
 
@@ -264,20 +289,28 @@ namespace CraigStars.Singletons
             if (multithreaded)
             {
                 // queue up the various disk tasks
-                saveTasks.Add(Task.Factory.StartNew(() =>
+                saveTasks.Add(Task.Run(() =>
                 {
+                    var saveGameInfo = new File();
+                    saveGameInfo.Open(GetSaveGameInfoFile(gameJson.Name, gameJson.Year), File.ModeFlags.Write);
+                    saveGameInfo.StoreString(gameJson.GameInfo);
+                    saveGameInfo.Close();
+
                     var saveGame = new File();
                     saveGame.Open(GetSaveGameFile(gameJson.Name, gameJson.Year), File.ModeFlags.Write);
-
                     saveGame.StoreString(gameJson.Game);
                     saveGame.Close();
                 }));
             }
             else
             {
+                var saveGameInfo = new File();
+                saveGameInfo.Open(GetSaveGameInfoFile(gameJson.Name, gameJson.Year), File.ModeFlags.Write);
+                saveGameInfo.StoreString(gameJson.GameInfo);
+                saveGameInfo.Close();
+
                 var saveGame = new File();
                 saveGame.Open(GetSaveGameFile(gameJson.Name, gameJson.Year), File.ModeFlags.Write);
-
                 saveGame.StoreString(gameJson.Game);
                 saveGame.Close();
             }
@@ -289,7 +322,7 @@ namespace CraigStars.Singletons
                 var playerNum = i;
                 if (multithreaded)
                 {
-                    saveTasks.Add(Task.Factory.StartNew(() =>
+                    saveTasks.Add(Task.Run(() =>
                     {
                         var playerSave = new File();
                         playerSave.Open(GetSaveGamePlayerPath(gameJson.Name, gameJson.Year, playerNum), File.ModeFlags.Write);

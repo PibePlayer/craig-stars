@@ -58,7 +58,7 @@ namespace CraigStars
             {
                 // TODO: this is eventually slowing way down
                 // I think I might be hitting some threadpool starvation issues
-                // scanTasks.Add(Task.Factory.StartNew(() =>
+                // scanTasks.Add(Task.Run(() =>
                 // {
                     try
                     {

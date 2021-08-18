@@ -60,7 +60,7 @@ namespace CraigStars
 
             PlayersManager.Me.RunTurnProcessors(TurnProcessorManager.Instance);
             // add the universe to the viewport
-            scanner.Init();
+            scanner.CallDeferred("Init");
         }
 
         public override void _ExitTree()

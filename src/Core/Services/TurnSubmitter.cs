@@ -29,6 +29,7 @@ namespace CraigStars
             UpdateShipDesigns(player);
             UpdateProductionQueues(player);
 
+            Game.Players[player.Num].SubmittedTurn = true;
             player.SubmittedTurn = true;
         }
 

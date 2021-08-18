@@ -165,7 +165,6 @@ namespace CraigStars.Client
 
         protected override void OnOk()
         {
-            base._Ready();
             if (netCargoDiff != Cargo.Empty || netFuelDiff != 0)
             {
                 var me = PlayersManager.Me;
@@ -216,6 +215,8 @@ namespace CraigStars.Client
                 netCargoDiff = new Cargo();
                 netFuelDiff = 0;
             }
+
+            Hide();
         }
 
         void OnSourceCargoTransferRequested(Cargo newCargo, int fuel)

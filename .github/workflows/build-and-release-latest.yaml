@@ -99,9 +99,10 @@ jobs:
           - platform: linux
             extension: .x86_64
             type: executable
-          - platform: html
-            extension: .html
-            type: executable
+          # html support doesn't work with multithreading, so disabling for now
+          # - platform: html
+          #   extension: .html
+          #   type: executable
     container:
       image: barichello/godot-ci:mono-3.3.2
     steps:

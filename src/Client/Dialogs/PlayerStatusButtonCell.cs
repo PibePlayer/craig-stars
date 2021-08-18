@@ -41,7 +41,10 @@ namespace CraigStars.Client
 
         void OnPlayerStatusChanged(PublicPlayerInfo player)
         {
-            UpdateCell();
+            if (IsVisibleInTree())
+            {
+                UpdateCell();
+            }
         }
 
         protected override void UpdateCell()

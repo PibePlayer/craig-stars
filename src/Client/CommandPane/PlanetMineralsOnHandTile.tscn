@@ -1,33 +1,40 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
-[ext_resource path="res://src/Client/CommandPane/PlanetMineralsOnHandTile.cs" type="Script" id=1]
+[ext_resource path="res://src/Client/CommandPane/Tile.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/Client/Tooltips/MineralTooltip.tscn" type="PackedScene" id=2]
 [ext_resource path="res://src/Client/Tooltips/MinesTooltip.tscn" type="PackedScene" id=3]
 [ext_resource path="res://src/Client/Tooltips/FactoriesTooltip.tscn" type="PackedScene" id=4]
+[ext_resource path="res://src/Client/CommandPane/PlanetMineralsOnHandTile.cs" type="Script" id=5]
 
-[node name="PlanetMineralsOnHandTile" type="VBoxContainer"]
-margin_top = 18.0
-margin_right = 180.0
-margin_bottom = 112.0
-script = ExtResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+[node name="PlanetMineralsOnHandTile" instance=ExtResource( 1 )]
+script = ExtResource( 5 )
 
-[node name="MineralsGrid" type="GridContainer" parent="."]
+[node name="Panel" parent="." index="0"]
+margin_bottom = 128.0
+
+[node name="VBoxContainer" parent="." index="1"]
+margin_bottom = 128.0
+
+[node name="TitleLabel" parent="VBoxContainer/TitleContainer" index="0"]
+text = "Minerals On Hand"
+
+[node name="Controls" parent="VBoxContainer" index="1"]
+margin_bottom = 118.0
+
+[node name="MineralsGrid" type="GridContainer" parent="VBoxContainer/Controls" index="0"]
 margin_right = 180.0
 margin_bottom = 50.0
 size_flags_horizontal = 3
 columns = 2
 
-[node name="IroniumLabel" type="Label" parent="MineralsGrid"]
+[node name="IroniumLabel" type="Label" parent="VBoxContainer/Controls/MineralsGrid" index="0"]
 margin_right = 154.0
 margin_bottom = 14.0
 size_flags_horizontal = 3
 custom_colors/font_color = Color( 0.0352941, 0.376471, 1, 1 )
 text = "Ironium"
 
-[node name="Ironium" type="Label" parent="MineralsGrid"]
+[node name="Ironium" type="Label" parent="VBoxContainer/Controls/MineralsGrid" index="1"]
 margin_left = 158.0
 margin_right = 180.0
 margin_bottom = 14.0
@@ -36,7 +43,7 @@ mouse_default_cursor_shape = 16
 text = "0kT"
 align = 2
 
-[node name="BoraniumLabel" type="Label" parent="MineralsGrid"]
+[node name="BoraniumLabel" type="Label" parent="VBoxContainer/Controls/MineralsGrid" index="2"]
 margin_top = 18.0
 margin_right = 154.0
 margin_bottom = 32.0
@@ -44,7 +51,7 @@ size_flags_horizontal = 3
 custom_colors/font_color = Color( 0.0313726, 0.505882, 0.0392157, 1 )
 text = "Boranium"
 
-[node name="Boranium" type="Label" parent="MineralsGrid"]
+[node name="Boranium" type="Label" parent="VBoxContainer/Controls/MineralsGrid" index="3"]
 margin_left = 158.0
 margin_top = 18.0
 margin_right = 180.0
@@ -54,7 +61,7 @@ mouse_default_cursor_shape = 16
 text = "0kT"
 align = 2
 
-[node name="GermaniumLabel" type="Label" parent="MineralsGrid"]
+[node name="GermaniumLabel" type="Label" parent="VBoxContainer/Controls/MineralsGrid" index="4"]
 margin_top = 36.0
 margin_right = 154.0
 margin_bottom = 50.0
@@ -62,7 +69,7 @@ size_flags_horizontal = 3
 custom_colors/font_color = Color( 0.996078, 1, 0, 1 )
 text = "Germanium"
 
-[node name="Germanium" type="Label" parent="MineralsGrid"]
+[node name="Germanium" type="Label" parent="VBoxContainer/Controls/MineralsGrid" index="5"]
 margin_left = 158.0
 margin_top = 36.0
 margin_right = 180.0
@@ -72,25 +79,25 @@ mouse_default_cursor_shape = 16
 text = "0kT"
 align = 2
 
-[node name="HSeparator" type="HSeparator" parent="."]
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer/Controls" index="1"]
 margin_top = 54.0
 margin_right = 180.0
 margin_bottom = 58.0
 
-[node name="MinesAndFactoriesGrid" type="GridContainer" parent="."]
+[node name="MinesAndFactoriesGrid" type="GridContainer" parent="VBoxContainer/Controls" index="2"]
 margin_top = 62.0
 margin_right = 180.0
 margin_bottom = 94.0
 size_flags_horizontal = 3
 columns = 2
 
-[node name="MinesLabel" type="Label" parent="MinesAndFactoriesGrid"]
+[node name="MinesLabel" type="Label" parent="VBoxContainer/Controls/MinesAndFactoriesGrid" index="0"]
 margin_right = 116.0
 margin_bottom = 14.0
 size_flags_horizontal = 3
 text = "Mines"
 
-[node name="Mines" type="Label" parent="MinesAndFactoriesGrid"]
+[node name="Mines" type="Label" parent="VBoxContainer/Controls/MinesAndFactoriesGrid" index="1"]
 margin_left = 120.0
 margin_right = 180.0
 margin_bottom = 14.0
@@ -99,14 +106,14 @@ mouse_default_cursor_shape = 16
 text = "10 of 203"
 align = 2
 
-[node name="FactoriesLabel" type="Label" parent="MinesAndFactoriesGrid"]
+[node name="FactoriesLabel" type="Label" parent="VBoxContainer/Controls/MinesAndFactoriesGrid" index="2"]
 margin_top = 18.0
 margin_right = 116.0
 margin_bottom = 32.0
 size_flags_horizontal = 3
 text = "Factories"
 
-[node name="Factories" type="Label" parent="MinesAndFactoriesGrid"]
+[node name="Factories" type="Label" parent="VBoxContainer/Controls/MinesAndFactoriesGrid" index="3"]
 margin_left = 120.0
 margin_top = 18.0
 margin_right = 180.0
@@ -116,16 +123,16 @@ mouse_default_cursor_shape = 16
 text = "10 of 203"
 align = 2
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="CanvasLayer" type="CanvasLayer" parent="VBoxContainer/Controls" index="3"]
 layer = 35
 
-[node name="FactoriesTooltip" parent="CanvasLayer" instance=ExtResource( 4 )]
+[node name="FactoriesTooltip" parent="VBoxContainer/Controls/CanvasLayer" index="0" instance=ExtResource( 4 )]
 
-[node name="MineralTooltip" parent="CanvasLayer" instance=ExtResource( 2 )]
+[node name="MineralTooltip" parent="VBoxContainer/Controls/CanvasLayer" index="1" instance=ExtResource( 2 )]
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_top = 116.0
 margin_right = 212.0
 margin_bottom = 201.0
 
-[node name="MinesTooltip" parent="CanvasLayer" instance=ExtResource( 3 )]
+[node name="MinesTooltip" parent="VBoxContainer/Controls/CanvasLayer" index="2" instance=ExtResource( 3 )]

@@ -22,7 +22,7 @@ namespace CraigStars.Client
         public override void _Ready()
         {
             base._Ready();
-            statsGrid = GetNode<Container>("StatsGrid");
+            statsGrid = GetNode<Container>("VBoxContainer/Controls/StatsGrid");
 
             dockCapacity = FindNode("DockCapacity") as Label;
             armor = FindNode("Armor") as Label;

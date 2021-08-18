@@ -230,6 +230,7 @@ namespace CraigStars
             DeletedDesigns.Clear();
             MergedFleets.Clear();
             Messages.Clear();
+
         }
 
         /// <summary>

@@ -1,97 +1,105 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
-[ext_resource path="res://src/Client/CommandPane/FleetCompositionTile.cs" type="Script" id=1]
+[ext_resource path="res://src/Client/CommandPane/Tile.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/Client/CommandPane/FleetCompositionTileTokens.tscn" type="PackedScene" id=2]
+[ext_resource path="res://src/Client/CommandPane/FleetCompositionTile.cs" type="Script" id=3]
 
-[node name="FleetCompositionTile" type="VBoxContainer"]
-margin_top = 18.0
-margin_right = 187.0
-margin_bottom = 182.0
-script = ExtResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+[node name="FleetCompositionTile" instance=ExtResource( 1 )]
+script = ExtResource( 3 )
 
-[node name="Tokens" parent="." instance=ExtResource( 2 )]
+[node name="Panel" parent="." index="0"]
+margin_bottom = 198.0
+
+[node name="VBoxContainer" parent="." index="1"]
+margin_bottom = 198.0
+
+[node name="TitleLabel" parent="VBoxContainer/TitleContainer" index="0"]
+text = "Fleet Composition"
+
+[node name="Controls" parent="VBoxContainer" index="1"]
+margin_bottom = 188.0
+
+[node name="Tokens" parent="VBoxContainer/Controls" index="0" instance=ExtResource( 2 )]
+margin_right = 180.0
 rect_min_size = Vector2( 0, 80 )
 rect_rotation = 0.0
 
-[node name="BattlePlanHBoxContainer" type="HBoxContainer" parent="."]
+[node name="BattlePlanHBoxContainer" type="HBoxContainer" parent="VBoxContainer/Controls" index="1"]
 margin_top = 84.0
-margin_right = 187.0
+margin_right = 180.0
 margin_bottom = 104.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="BattlePlanLabel" type="Label" parent="BattlePlanHBoxContainer"]
+[node name="BattlePlanLabel" type="Label" parent="VBoxContainer/Controls/BattlePlanHBoxContainer" index="0"]
 margin_top = 3.0
 margin_right = 69.0
 margin_bottom = 17.0
 text = "Battle Plan"
 
-[node name="BattlePlanOptionButton" type="OptionButton" parent="BattlePlanHBoxContainer"]
+[node name="BattlePlanOptionButton" type="OptionButton" parent="VBoxContainer/Controls/BattlePlanHBoxContainer" index="1"]
 margin_left = 73.0
-margin_right = 187.0
+margin_right = 180.0
 margin_bottom = 20.0
 size_flags_horizontal = 3
 
-[node name="Grid" type="GridContainer" parent="."]
+[node name="Grid" type="GridContainer" parent="VBoxContainer/Controls" index="2"]
 margin_top = 108.0
-margin_right = 187.0
+margin_right = 180.0
 margin_bottom = 140.0
 size_flags_horizontal = 3
 columns = 2
 
-[node name="EstimatedRangeLabel" type="Label" parent="Grid"]
-margin_right = 120.0
+[node name="EstimatedRangeLabel" type="Label" parent="VBoxContainer/Controls/Grid" index="0"]
+margin_right = 113.0
 margin_bottom = 14.0
 size_flags_horizontal = 3
 text = "Est. Range"
 
-[node name="EstimatedRange" type="Label" parent="Grid"]
-margin_left = 124.0
-margin_right = 187.0
+[node name="EstimatedRange" type="Label" parent="VBoxContainer/Controls/Grid" index="1"]
+margin_left = 117.0
+margin_right = 180.0
 margin_bottom = 14.0
 text = "25654 l.y."
 align = 2
 
-[node name="PercentCloakedLabel" type="Label" parent="Grid"]
+[node name="PercentCloakedLabel" type="Label" parent="VBoxContainer/Controls/Grid" index="2"]
 margin_top = 18.0
-margin_right = 120.0
+margin_right = 113.0
 margin_bottom = 32.0
 size_flags_horizontal = 3
 text = "Percent Cloaked"
 
-[node name="PercentCloaked" type="Label" parent="Grid"]
-margin_left = 124.0
+[node name="PercentCloaked" type="Label" parent="VBoxContainer/Controls/Grid" index="3"]
+margin_left = 117.0
 margin_top = 18.0
-margin_right = 187.0
+margin_right = 180.0
 margin_bottom = 32.0
 text = "none"
 align = 2
 
-[node name="ButtonsHBoxContainer" type="HBoxContainer" parent="."]
+[node name="ButtonsHBoxContainer" type="HBoxContainer" parent="VBoxContainer/Controls" index="3"]
 margin_top = 144.0
-margin_right = 187.0
+margin_right = 180.0
 margin_bottom = 164.0
 
-[node name="SplitButton" type="Button" parent="ButtonsHBoxContainer"]
-margin_right = 59.0
+[node name="SplitButton" type="Button" parent="VBoxContainer/Controls/ButtonsHBoxContainer" index="0"]
+margin_right = 55.0
 margin_bottom = 20.0
 size_flags_horizontal = 3
 text = "Split"
 
-[node name="SplitAllButton" type="Button" parent="ButtonsHBoxContainer"]
-margin_left = 63.0
-margin_right = 124.0
+[node name="SplitAllButton" type="Button" parent="VBoxContainer/Controls/ButtonsHBoxContainer" index="1"]
+margin_left = 59.0
+margin_right = 120.0
 margin_bottom = 20.0
 size_flags_horizontal = 3
 text = "Split All"
 
-[node name="MergeButton" type="Button" parent="ButtonsHBoxContainer"]
-margin_left = 128.0
-margin_right = 187.0
+[node name="MergeButton" type="Button" parent="VBoxContainer/Controls/ButtonsHBoxContainer" index="2"]
+margin_left = 124.0
+margin_right = 180.0
 margin_bottom = 20.0
 size_flags_horizontal = 3
 text = "Merge"

@@ -26,9 +26,9 @@ namespace CraigStars.Client
             mines = FindNode("Mines") as Label;
             factories = FindNode("Factories") as Label;
 
-            mineralTooltip = GetNode<MineralTooltip>("CanvasLayer/MineralTooltip");
-            minesTooltip = GetNode<MinesTooltip>("CanvasLayer/MinesTooltip");
-            factoriesTooltip = GetNode<FactoriesTooltip>("CanvasLayer/FactoriesTooltip");
+            mineralTooltip = GetNode<MineralTooltip>("VBoxContainer/Controls/CanvasLayer/MineralTooltip");
+            minesTooltip = GetNode<MinesTooltip>("VBoxContainer/Controls/CanvasLayer/MinesTooltip");
+            factoriesTooltip = GetNode<FactoriesTooltip>("VBoxContainer/Controls/CanvasLayer/FactoriesTooltip");
 
             ironium.Connect("gui_input", this, nameof(OnMineralGuiInput), new Godot.Collections.Array() { MineralType.Ironium });
             boranium.Connect("gui_input", this, nameof(OnMineralGuiInput), new Godot.Collections.Array() { MineralType.Boranium });

@@ -23,10 +23,10 @@ namespace CraigStars.Client
         public override void _Ready()
         {
             base._Ready();
-            otherFleetsOptionButton = GetNode<OptionButton>("OtherFleetsOptionButton");
-            gotoButton = GetNode<Button>("HBoxContainer/GotoButton");
-            mergeButton = GetNode<Button>("HBoxContainer/MergeButton");
-            cargoTransferButton = GetNode<Button>("HBoxContainer/CargoTransferButton");
+            otherFleetsOptionButton = (OptionButton)FindNode("OtherFleetsOptionButton");
+            gotoButton = (Button)FindNode("GotoButton");
+            mergeButton = (Button)FindNode("MergeButton");
+            cargoTransferButton = (Button)FindNode("CargoTransferButton");
 
             gotoButton.Connect("pressed", this, nameof(OnGotoButtonPressed));
             mergeButton.Connect("pressed", this, nameof(OnMergeButtonPressed));
@@ -37,9 +37,9 @@ namespace CraigStars.Client
 
         void OnGotoButtonPressed()
         {
-            if (CommandedFleet != null && CommandedFleet.Orbiting != null)
+            if (CommandedFleet != null && selectedFleet != null)
             {
-                EventManager.PublishGotoMapObjectEvent(CommandedFleet.Orbiting);
+                EventManager.PublishGotoMapObjectEvent(selectedFleet);
             }
         }
 
@@ -73,6 +73,7 @@ namespace CraigStars.Client
                 otherFleets = CommandedFleet.OtherFleets?.Where(f => f.OwnedByMe).ToList();
                 if (otherFleets?.Count > 0)
                 {
+                    selectedFleet = otherFleets[0];
                     cargoTransferButton.Disabled = false;
                     mergeButton.Disabled = false;
                     gotoButton.Disabled = false;
@@ -84,6 +85,7 @@ namespace CraigStars.Client
                 }
                 else
                 {
+                    selectedFleet = null;
                     cargoTransferButton.Disabled = true;
                     mergeButton.Disabled = true;
                     gotoButton.Disabled = true;

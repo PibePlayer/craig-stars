@@ -3,16 +3,16 @@ using Godot;
 
 namespace CraigStars.Client
 {
-    public class PlanetTile : Control, ITileContent
+    public class PlanetTile : Control
     {
         public PlanetSprite CommandedPlanet { get; set; }
         public Player Me { get => PlayersManager.Me; }
 
-        public event UpdateTitleAction UpdateTitleEvent;
-        public event UpdateVisibilityAction UpdateVisibilityEvent;
+        Label titleLabel;
 
         public override void _Ready()
         {
+            titleLabel = (Label)FindNode("TitleLabel");
             EventManager.MapObjectCommandedEvent += OnMapObjectCommanded;
             EventManager.TurnPassedEvent += OnTurnPassed;
         }
@@ -25,7 +25,7 @@ namespace CraigStars.Client
 
         protected void UpdateTitle(string title)
         {
-            UpdateTitleEvent?.Invoke(title);
+            titleLabel.Text = title;
         }
 
         protected virtual void OnTurnPassed(PublicGameInfo gameInfo, Player player)
@@ -38,7 +38,6 @@ namespace CraigStars.Client
         {
             CommandedPlanet = mapObject as PlanetSprite;
             Visible = CommandedPlanet != null;
-            UpdateVisibilityEvent?.Invoke(Visible);
             UpdateControls();
         }
 

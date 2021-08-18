@@ -116,10 +116,6 @@ namespace CraigStars.Server
         #endregion
 
         #region Publishers
-        protected override void PublishPlayerUpdatedEvent(PublicPlayerInfo player)
-        {
-            rpc.SendPlayerUpdated(player);
-        }
 
         protected override void PublishGameStartedEvent()
         {
@@ -160,6 +156,11 @@ namespace CraigStars.Server
         {
             // tell everyone we have a new turn and send along their player data
             rpc.SendTurnPassed(Game);
+        }
+
+        protected override void PublishGameStartingEvent(PublicGameInfo gameInfo)
+        {
+            rpc.SendGameStarting(gameInfo);
         }
 
         #endregion

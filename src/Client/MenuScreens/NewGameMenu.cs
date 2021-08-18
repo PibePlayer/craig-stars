@@ -38,13 +38,13 @@ namespace CraigStars.Client
 
             newGamePlayers.InitPlayersForSinglePlayerGame();
 
-            EventManager.GameStartedEvent += OnGameStarted;
+            EventManager.GameStartingEvent += OnGameStarting;
         }
 
         public override void _ExitTree()
         {
             base._ExitTree();
-            EventManager.GameStartedEvent -= OnGameStarted;
+            EventManager.GameStartingEvent -= OnGameStarting;
         }
 
         void OnFastHotseatToggled(bool toggled)
@@ -90,13 +90,11 @@ namespace CraigStars.Client
         /// The server will notify us when the game is ready
         /// </summary>
         /// <param name="gameInfo"></param>
-        void OnGameStarted(PublicGameInfo gameInfo, Player player)
+        void OnGameStarting(PublicGameInfo gameInfo)
         {
             this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (clientView) =>
             {
-                PlayersManager.Me = player;
                 clientView.GameInfo = gameInfo;
-                clientView.LocalPlayers = new List<Player>() { player };
             });
         }
 

@@ -74,14 +74,14 @@ namespace CraigStars.Client
 
         public override void _Ready()
         {
-            waypointAreaScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/WaypointArea.tscn");
-            scannerCoverageScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/ScannerCoverage.tscn");
-            planetScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/PlanetSprite.tscn");
-            fleetScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/FleetSprite.tscn");
-            salvageScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/SalvageSprite.tscn");
-            mineFieldScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/MineFieldSprite.tscn");
-            mineralPacketScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/MineralPacketSprite.tscn");
-            wormholeScene = ResourceLoader.Load<PackedScene>("res://src/Client/Scanner/WormholeSprite.tscn");
+            waypointAreaScene = CSResourceLoader.GetPackedScene("WaypointArea.tscn");
+            scannerCoverageScene = CSResourceLoader.GetPackedScene("ScannerCoverage.tscn");
+            planetScene = CSResourceLoader.GetPackedScene("PlanetSprite.tscn");
+            fleetScene = CSResourceLoader.GetPackedScene("FleetSprite.tscn");
+            salvageScene = CSResourceLoader.GetPackedScene("SalvageSprite.tscn");
+            mineFieldScene = CSResourceLoader.GetPackedScene("MineFieldSprite.tscn");
+            mineralPacketScene = CSResourceLoader.GetPackedScene("MineralPacketSprite.tscn");
+            wormholeScene = CSResourceLoader.GetPackedScene("WormholeSprite.tscn");
 
             // get some nodes
             selectedMapObjectIndicatorSprite = GetNode<SelectedMapObjectIndicatorSprite>("SelectedMapObjectIndicatorSprite");
@@ -678,7 +678,7 @@ namespace CraigStars.Client
         /// </summary>
         void OnCommandedFleetChanged()
         {
-            log.Debug($"CommandedFleetChanged to {CommandedFleet}");
+            log.Debug($"CommandedFleetChanged to {(CommandedFleet == null ? "None" : CommandedFleet)}");
             waypointAreas.ForEach(wpa => { if (IsInstanceValid(wpa)) { RemoveChild(wpa); wpa.DisconnectAll(); wpa.QueueFree(); } });
             waypointAreas.Clear();
             selectedWaypoint = null;

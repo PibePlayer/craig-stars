@@ -3,7 +3,7 @@ using System;
 using CraigStars.Client;
 using CraigStars.Server;
 using CSServer = CraigStars.Server.Server;
-
+using System.Threading.Tasks;
 
 namespace CraigStars.Singletons
 {
@@ -31,6 +31,8 @@ namespace CraigStars.Singletons
             instance = this;
         }
 
+        TaskFactory GodotTaskFactory { get; set; }
+
         /// <summary>
         /// Servers have their own sceneTree
         /// </summary>
@@ -40,6 +42,7 @@ namespace CraigStars.Singletons
         public override void _Ready()
         {
             SetProcess(false);
+            GodotTaskFactory = new TaskFactory(TaskScheduler.FromCurrentSynchronizationContext());
         }
 
         public override void _Process(float delta)
@@ -66,7 +69,8 @@ namespace CraigStars.Singletons
         public void NewGame(GameSettings<Player> settings)
         {
             localGameSettings = settings;
-            server = GD.Load<PackedScene>("res://src/Server/LocalServer.tscn").Instance<LocalServer>();
+            server = ResourceLoader.Load<PackedScene>("res://src/Server/LocalServer.tscn").Instance<LocalServer>();
+            server.GodotTaskFactory = GodotTaskFactory;
             AddChild(server);
 
             CallDeferred(nameof(PublishLocalGameStartRequest));
@@ -87,7 +91,8 @@ namespace CraigStars.Singletons
                 Year = year,
             };
 
-            server = GD.Load<PackedScene>("res://src/Server/LocalServer.tscn").Instance<LocalServer>();
+            server = ResourceLoader.Load<PackedScene>("res://src/Server/LocalServer.tscn").Instance<LocalServer>();
+            server.GodotTaskFactory = GodotTaskFactory;
             AddChild((Node)server);
 
             CallDeferred(nameof(PublishLocalGameStartRequest));
@@ -131,10 +136,11 @@ namespace CraigStars.Singletons
             serverTree.Root.RenderTargetUpdateMode = Viewport.UpdateMode.Disabled;
 
             // add singletons (multipletons)
-            var rpc = GD.Load<PackedScene>("res://src/Shared/RPC.tscn").Instance<RPC>();
+            var rpc = ResourceLoader.Load<PackedScene>("res://src/Shared/RPC.tscn").Instance<RPC>();
             rpc.Name = "RPC";
             serverTree.Root.AddChild(rpc);
-            server = GD.Load<PackedScene>("res://src/Server/NetworkServer.tscn").Instance<NetworkServer>();
+            server = ResourceLoader.Load<PackedScene>("res://src/Server/NetworkServer.tscn").Instance<NetworkServer>();
+            server.GodotTaskFactory = GodotTaskFactory;
             serverTree.Root.AddChild(server);
 
             var peer = new NetworkedMultiplayerENet();

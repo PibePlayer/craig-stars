@@ -67,12 +67,18 @@ namespace CraigStars.Client
 
         void OnTurnSubmitted(PublicPlayerInfo submittingPlayer)
         {
-            UpdatePlayerStatuses();
+            if (IsVisibleInTree())
+            {
+                UpdatePlayerStatuses();
+            }
         }
 
         void OnTurnGenerating()
         {
-            UpdatePlayerStatuses();
+            if (IsVisibleInTree())
+            {
+                UpdatePlayerStatuses();
+            }
         }
 
         void OnPlayTurnButtonPressed(int playerNum)

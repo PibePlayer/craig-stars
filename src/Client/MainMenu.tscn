@@ -52,8 +52,8 @@ margin_bottom = 500.0
 rect_min_size = Vector2( 500, 500 )
 
 [node name="MenuButtons" type="VBoxContainer" parent="VBoxContainer/CenterContainer/Panel"]
-margin_left = 50.0
-margin_right = 450.0
+margin_left = 49.5496
+margin_right = 449.55
 margin_bottom = 500.0
 rect_min_size = Vector2( 400, 0 )
 alignment = 1
@@ -62,17 +62,17 @@ __meta__ = {
 }
 
 [node name="NewGameButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MenuButtons"]
-margin_top = 168.0
+margin_top = 150.0
 margin_right = 400.0
-margin_bottom = 188.0
+margin_bottom = 170.0
 size_flags_horizontal = 3
 text = "New Game"
 script = ExtResource( 4 )
 
 [node name="LoadGameButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MenuButtons"]
-margin_top = 192.0
+margin_top = 174.0
 margin_right = 400.0
-margin_bottom = 212.0
+margin_bottom = 194.0
 size_flags_horizontal = 3
 text = "Load Game"
 script = ExtResource( 4 )
@@ -108,37 +108,50 @@ value = 2400.0
 align = 2
 
 [node name="HostGameButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MenuButtons"]
-margin_top = 216.0
+margin_top = 198.0
 margin_right = 400.0
-margin_bottom = 236.0
+margin_bottom = 218.0
 text = "Host Game"
 
 [node name="JoinGameButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MenuButtons"]
-margin_top = 240.0
+margin_top = 222.0
 margin_right = 400.0
-margin_bottom = 260.0
+margin_bottom = 242.0
 text = "Join Game"
 
 [node name="CustomRacesButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MenuButtons"]
-margin_top = 264.0
+margin_top = 246.0
 margin_right = 400.0
-margin_bottom = 284.0
+margin_bottom = 266.0
 text = "Custom Races"
 script = ExtResource( 4 )
 
 [node name="SettingsButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MenuButtons"]
-margin_top = 288.0
+margin_top = 270.0
 margin_right = 400.0
-margin_bottom = 308.0
+margin_bottom = 290.0
 text = "Settings"
 script = ExtResource( 4 )
 
 [node name="ExitButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MenuButtons"]
-margin_top = 312.0
+margin_top = 294.0
 margin_right = 400.0
-margin_bottom = 332.0
+margin_bottom = 314.0
 text = "Exit"
 script = ExtResource( 4 )
+
+[node name="ProgressLabel" type="Label" parent="VBoxContainer/CenterContainer/Panel/MenuButtons"]
+margin_top = 318.0
+margin_right = 400.0
+margin_bottom = 332.0
+text = "Loading Resources"
+align = 1
+valign = 2
+
+[node name="ProgressBar" type="ProgressBar" parent="VBoxContainer/CenterContainer/Panel/MenuButtons"]
+margin_top = 336.0
+margin_right = 400.0
+margin_bottom = 350.0
 
 [node name="JoinWindow" type="WindowDialog" parent="."]
 margin_left = 470.0

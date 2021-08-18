@@ -39,8 +39,9 @@ namespace CraigStars
 
             if (multithreaded)
             {
-                saveTasks.Add(Task.Factory.StartNew(() =>
+                saveTasks.Add(Task.Run(() =>
                 {
+                    gameJson.GameInfo = Serializers.Serialize(game.GameInfo);
                     gameJson.Game = Serializers.SerializeGame(game, gameSerializerSettings);
                 }));
             }
@@ -55,7 +56,7 @@ namespace CraigStars
                 var playerNum = i;
                 if (multithreaded)
                 {
-                    saveTasks.Add(Task.Factory.StartNew(() =>
+                    saveTasks.Add(Task.Run(() =>
                         {
                             var json = Serializers.Serialize(player, playerSerializerSettings);
                             gameJson.Players[playerNum] = json;

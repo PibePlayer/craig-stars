@@ -20,7 +20,7 @@ namespace CraigStars.Client
         public override void _Ready()
         {
             base._Ready();
-            tokens = GetNode<FleetCompositionTileTokens>("Tokens");
+            tokens = (FleetCompositionTileTokens)FindNode("Tokens");
             estimatedRange = (Label)FindNode("EstimatedRange");
             percentCloaked = (Label)FindNode("PercentCloaked");
 

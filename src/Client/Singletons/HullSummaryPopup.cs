@@ -58,14 +58,16 @@ namespace CraigStars.Singletons
             if ((@event.IsActionPressed("ui_select") || @event.IsActionPressed("ui_cancel")) && IsVisibleInTree())
             {
                 Hide();
+                CallDeferred(nameof(DecrementDialogRefCount));
             }
         }
 
         public override void _UnhandledInput(InputEvent @event)
         {
-            if (@event.IsActionPressed("ui_select") || @event.IsActionPressed("ui_cancel"))
+            if (@event.IsActionPressed("ui_select") || @event.IsActionPressed("ui_cancel") && IsVisibleInTree())
             {
                 Hide();
+                CallDeferred(nameof(DecrementDialogRefCount));
             }
         }
 
@@ -83,9 +85,15 @@ namespace CraigStars.Singletons
             Instance.RectPosition = new Vector2(mousePos.x, Mathf.Clamp(yPos, 0, Instance.GetViewportRect().Size.y - Instance.RectSize.y));
             Instance.hullSummary.UpdateControls();
             Instance.Show();
+            DialogManager.DialogRefCount++;
         }
 
         #endregion
+
+        void DecrementDialogRefCount()
+        {
+            DialogManager.DialogRefCount--;
+        }
 
     }
 }

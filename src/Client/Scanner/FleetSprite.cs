@@ -42,7 +42,7 @@ namespace CraigStars.Client
         Sprite selected;
         Sprite active;
 
-        List<Sprite> stateSprites = new List<Sprite>();
+        List<Sprite> stateSprites;
 
         public override void _Ready()
         {
@@ -51,8 +51,10 @@ namespace CraigStars.Client
             active = GetNode<Sprite>("Sprite/Active");
             spriteContainer = GetNode<Node2D>("Sprite");
 
-            stateSprites.Add(selected);
-            stateSprites.Add(active);
+            stateSprites = new List<Sprite>() {
+                selected,
+                active
+            };
 
             collisionShape = GetNode<CollisionShape2D>("CollisionShape2D");
             collisionShape.Disabled = Orbiting != null;

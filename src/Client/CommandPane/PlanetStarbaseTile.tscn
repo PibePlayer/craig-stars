@@ -1,145 +1,152 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://src/Client/CommandPane/PlanetStarbaseTile.cs" type="Script" id=1]
+[ext_resource path="res://src/Client/CommandPane/Tile.tscn" type="PackedScene" id=2]
 
-[node name="PlanetStarbaseTile" type="VBoxContainer"]
-margin_top = 18.0
-margin_right = 187.0
-margin_bottom = 172.0
+[node name="PlanetStarbaseTile" instance=ExtResource( 2 )]
 script = ExtResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
-[node name="StatsGrid" type="GridContainer" parent="."]
-margin_right = 187.0
+[node name="Panel" parent="." index="0"]
+margin_bottom = 188.0
+
+[node name="VBoxContainer" parent="." index="1"]
+margin_bottom = 188.0
+
+[node name="TitleLabel" parent="VBoxContainer/TitleContainer" index="0"]
+text = "Starbase"
+
+[node name="Controls" parent="VBoxContainer" index="1"]
+margin_bottom = 178.0
+
+[node name="StatsGrid" type="GridContainer" parent="VBoxContainer/Controls" index="0"]
+margin_right = 180.0
 margin_bottom = 68.0
 mouse_default_cursor_shape = 16
 size_flags_horizontal = 3
 columns = 2
 
-[node name="DockCapacityLabel" type="Label" parent="StatsGrid"]
-margin_right = 119.0
+[node name="DockCapacityLabel" type="Label" parent="VBoxContainer/Controls/StatsGrid" index="0"]
+margin_right = 112.0
 margin_bottom = 14.0
 size_flags_horizontal = 3
 text = "Dock Capacity"
 
-[node name="DockCapacity" type="Label" parent="StatsGrid"]
-margin_left = 123.0
-margin_right = 187.0
+[node name="DockCapacity" type="Label" parent="VBoxContainer/Controls/StatsGrid" index="1"]
+margin_left = 116.0
+margin_right = 180.0
 margin_bottom = 14.0
 text = "Unlimited"
 align = 2
 
-[node name="ArmorLabel" type="Label" parent="StatsGrid"]
+[node name="ArmorLabel" type="Label" parent="VBoxContainer/Controls/StatsGrid" index="2"]
 margin_top = 18.0
-margin_right = 119.0
+margin_right = 112.0
 margin_bottom = 32.0
 size_flags_horizontal = 3
 text = "Armor"
 
-[node name="Armor" type="Label" parent="StatsGrid"]
-margin_left = 123.0
+[node name="Armor" type="Label" parent="VBoxContainer/Controls/StatsGrid" index="3"]
+margin_left = 116.0
 margin_top = 18.0
-margin_right = 187.0
+margin_right = 180.0
 margin_bottom = 32.0
 text = "500dp"
 align = 2
 
-[node name="ShieldsLabel" type="Label" parent="StatsGrid"]
+[node name="ShieldsLabel" type="Label" parent="VBoxContainer/Controls/StatsGrid" index="4"]
 margin_top = 36.0
-margin_right = 119.0
+margin_right = 112.0
 margin_bottom = 50.0
 size_flags_horizontal = 3
 text = "Shields"
 
-[node name="Shields" type="Label" parent="StatsGrid"]
-margin_left = 123.0
+[node name="Shields" type="Label" parent="VBoxContainer/Controls/StatsGrid" index="5"]
+margin_left = 116.0
 margin_top = 36.0
-margin_right = 187.0
+margin_right = 180.0
 margin_bottom = 50.0
 text = "800dp"
 align = 2
 
-[node name="DamageLabel" type="Label" parent="StatsGrid"]
+[node name="DamageLabel" type="Label" parent="VBoxContainer/Controls/StatsGrid" index="6"]
 margin_top = 54.0
-margin_right = 119.0
+margin_right = 112.0
 margin_bottom = 68.0
 size_flags_horizontal = 3
 text = "Damage"
 
-[node name="Damage" type="Label" parent="StatsGrid"]
-margin_left = 123.0
+[node name="Damage" type="Label" parent="VBoxContainer/Controls/StatsGrid" index="7"]
+margin_left = 116.0
 margin_top = 54.0
-margin_right = 187.0
+margin_right = 180.0
 margin_bottom = 68.0
 text = "none"
 align = 2
 
-[node name="HSeparator" type="HSeparator" parent="."]
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer/Controls" index="1"]
 margin_top = 72.0
-margin_right = 187.0
+margin_right = 180.0
 margin_bottom = 76.0
 
-[node name="StargateGrid" type="GridContainer" parent="."]
+[node name="StargateGrid" type="GridContainer" parent="VBoxContainer/Controls" index="2"]
 margin_top = 80.0
-margin_right = 187.0
+margin_right = 180.0
 margin_bottom = 94.0
 size_flags_horizontal = 3
 columns = 2
 
-[node name="StargateLabel" type="Label" parent="StargateGrid"]
-margin_right = 151.0
+[node name="StargateLabel" type="Label" parent="VBoxContainer/Controls/StargateGrid" index="0"]
+margin_right = 144.0
 margin_bottom = 14.0
 size_flags_horizontal = 3
 text = "Stargate"
 
-[node name="Stargate" type="Label" parent="StargateGrid"]
-margin_left = 155.0
-margin_right = 187.0
+[node name="Stargate" type="Label" parent="VBoxContainer/Controls/StargateGrid" index="1"]
+margin_left = 148.0
+margin_right = 180.0
 margin_bottom = 14.0
 text = "none"
 align = 2
 
-[node name="MassDriverGrid" type="GridContainer" parent="."]
+[node name="MassDriverGrid" type="GridContainer" parent="VBoxContainer/Controls" index="3"]
 margin_top = 98.0
-margin_right = 187.0
+margin_right = 180.0
 margin_bottom = 154.0
 size_flags_horizontal = 3
 columns = 2
 
-[node name="MassDriverLabel" type="Label" parent="MassDriverGrid"]
-margin_right = 151.0
+[node name="MassDriverLabel" type="Label" parent="VBoxContainer/Controls/MassDriverGrid" index="0"]
+margin_right = 144.0
 margin_bottom = 14.0
 size_flags_horizontal = 3
 text = "Mass Driver"
 
-[node name="MassDriver" type="Label" parent="MassDriverGrid"]
-margin_left = 155.0
-margin_right = 187.0
+[node name="MassDriver" type="Label" parent="VBoxContainer/Controls/MassDriverGrid" index="1"]
+margin_left = 148.0
+margin_right = 180.0
 margin_bottom = 14.0
 text = "none"
 align = 2
 
-[node name="DestinationLabel" type="Label" parent="MassDriverGrid"]
+[node name="DestinationLabel" type="Label" parent="VBoxContainer/Controls/MassDriverGrid" index="2"]
 margin_top = 18.0
-margin_right = 151.0
+margin_right = 144.0
 margin_bottom = 32.0
 hint_tooltip = "The planet to fling packets at"
 mouse_filter = 1
 size_flags_horizontal = 3
 text = "Destination"
 
-[node name="Destination" type="Label" parent="MassDriverGrid"]
-margin_left = 155.0
+[node name="Destination" type="Label" parent="VBoxContainer/Controls/MassDriverGrid" index="3"]
+margin_left = 148.0
 margin_top = 18.0
-margin_right = 187.0
+margin_right = 180.0
 margin_bottom = 32.0
 text = "none"
 align = 2
 
-[node name="SetDestinationButton" type="Button" parent="MassDriverGrid"]
+[node name="SetDestinationButton" type="Button" parent="VBoxContainer/Controls/MassDriverGrid" index="4"]
 margin_top = 36.0
-margin_right = 151.0
+margin_right = 144.0
 margin_bottom = 56.0
 text = "Set Destination"

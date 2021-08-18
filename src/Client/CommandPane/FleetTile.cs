@@ -6,20 +6,20 @@ using System.Collections.Generic;
 
 namespace CraigStars.Client
 {
-    public class FleetTile : AbstractCommandedFleetControl, ITileContent
+    public class FleetTile : AbstractCommandedFleetControl
     {
 
-        public event UpdateTitleAction UpdateTitleEvent;
-        public event UpdateVisibilityAction UpdateVisibilityEvent;
+        Label titleLabel;
 
         public override void _Ready()
         {
             base._Ready();
+            titleLabel = (Label)FindNode("TitleLabel");
         }
 
         protected void UpdateTitle(string title)
         {
-            UpdateTitleEvent?.Invoke(title);
+            titleLabel.Text = title;
         }
 
         /// <summary>
@@ -31,7 +31,6 @@ namespace CraigStars.Client
         protected override void UpdateControls()
         {
             Visible = CommandedFleet != null;
-            UpdateVisibilityEvent?.Invoke(Visible);
         }
 
     }

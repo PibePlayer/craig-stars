@@ -26,9 +26,9 @@ namespace CraigStars.Client
             defenses = FindNode("Defenses") as Label;
             defenseType = FindNode("DefenseType") as Label;
             defenseCoverage = FindNode("DefenseCoverage") as Label;
-            populationTooltip = GetNode<PopulationTooltip>("CanvasLayer/PopulationTooltip");
+            populationTooltip = GetNode<PopulationTooltip>("VBoxContainer/Controls/CanvasLayer/PopulationTooltip");
             population.Connect("gui_input", this, nameof(OnTooltipGuiInput), new Godot.Collections.Array() { populationTooltip });
-            resourcesTooltip = GetNode<ResourcesTooltip>("CanvasLayer/ResourcesTooltip");
+            resourcesTooltip = GetNode<ResourcesTooltip>("VBoxContainer/Controls/CanvasLayer/ResourcesTooltip");
             resources.Connect("gui_input", this, nameof(OnTooltipGuiInput), new Godot.Collections.Array() { resourcesTooltip });
 
         }

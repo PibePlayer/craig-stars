@@ -19,7 +19,6 @@ namespace CraigStarsTable
     public class Table<T> : Control where T : class
     {
         public const int NoRowSelected = -1;
-        public const string DefaultCellControlScript = "res://addons/CSTable/src/Table/CSLabelCell.cs";
 
         public delegate void RowAction(int rowIndex, int colIndex, Cell cell, T metadata);
         public event RowAction RowSelectedEvent;
@@ -37,7 +36,7 @@ namespace CraigStarsTable
                 // var _ = ResetTable();
             }
         }
-        string columnHeaderScene = "res://addons/CSTable/src/Table/ColumnHeader.tscn";
+        string columnHeaderScene = CSTableResourceLoader.DefaultColumnHeaderScene;
 
         /// <summary>
         /// The scene that will be used to render each cell by default. Note, the control
@@ -374,7 +373,7 @@ namespace CraigStarsTable
             if (ShowHeader)
             {
                 // add headers
-                var scene = GD.Load<PackedScene>(ColumnHeaderScene);
+                var scene = (ColumnHeaderScene == CSTableResourceLoader.DefaultColumnHeaderScene) ? CSTableResourceLoader.Instance.DefaultColumnHeader : ResourceLoader.Load<PackedScene>(ColumnHeaderScene);
                 foreach (var col in Data.VisibleColumns)
                 {
                     var columnHeaderInstance = scene.Instance() as Control;
@@ -406,7 +405,7 @@ namespace CraigStarsTable
             // 2. The table could have an override for the default
             // 
             // We prioritize scenes over scripts.
-            var defaultScene = GD.Load<CSharpScript>(DefaultCellControlScript);
+            var defaultScene = CSTableResourceLoader.Instance.DefaultCellControl;
             var sceneForColumn = Data.Columns.Select<Column<T>, Resource>(col =>
             {
                 if (!String.IsNullOrEmpty(col.Scene) && !String.IsNullOrEmpty(col.Script))
@@ -419,19 +418,19 @@ namespace CraigStarsTable
                 }
                 if (col.Scene != null)
                 {
-                    return GD.Load<PackedScene>(col.Scene);
+                    return ResourceLoader.Load<PackedScene>(col.Scene);
                 }
                 else if (col.Script != null)
                 {
-                    return GD.Load<CSharpScript>(col.Script);
+                    return ResourceLoader.Load<CSharpScript>(col.Script);
                 }
                 else if (!String.IsNullOrEmpty(CellControlScene))
                 {
-                    return GD.Load<PackedScene>(CellControlScene);
+                    return ResourceLoader.Load<PackedScene>(CellControlScene);
                 }
                 else if (!String.IsNullOrEmpty(CellControlScript))
                 {
-                    return GD.Load<CSharpScript>(CellControlScript);
+                    return ResourceLoader.Load<CSharpScript>(CellControlScript);
                 }
                 else
                 {

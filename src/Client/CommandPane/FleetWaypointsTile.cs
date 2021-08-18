@@ -24,21 +24,21 @@ namespace CraigStars.Client
 
         public override void _Ready()
         {
-            waypoints = FindNode("Waypoints") as ItemList;
-            comingFrom = FindNode("ComingFrom") as Label;
-            comingFromLabel = FindNode("ComingFromLabel") as Label;
-            nextWaypoint = FindNode("NextWaypoint") as Label;
-            nextWaypointLabel = FindNode("NextWaypointLabel") as Label;
-            distanceLabel = FindNode("DistanceLabel") as Label;
-            distance = FindNode("Distance") as Label;
-            warpFactorText = FindNode("WarpFactorText") as Label;
-            warpFactor = FindNode("WarpFactor") as WarpFactor;
-            travelTime = FindNode("TravelTime") as Label;
-            selectedWaypointGrid = FindNode("SelectedWaypointGrid") as Control;
-            estimatedFuelUsage = FindNode("EstimatedFuelUsage") as Label;
-            travelTimeLabel = FindNode("TravelTimeLabel") as Label;
-            estimatedFuelUsageLabel = FindNode("EstimatedFuelUsageLabel") as Label;
-            repeatOrdersCheckBox = GetNode<CheckBox>("RepeatOrdersCheckBox");
+            waypoints = (ItemList)FindNode("Waypoints");
+            comingFrom = (Label)FindNode("ComingFrom");
+            comingFromLabel = (Label)FindNode("ComingFromLabel");
+            nextWaypoint = (Label)FindNode("NextWaypoint");
+            nextWaypointLabel = (Label)FindNode("NextWaypointLabel");
+            distanceLabel = (Label)FindNode("DistanceLabel");
+            distance = (Label)FindNode("Distance");
+            warpFactorText = (Label)FindNode("WarpFactorText");
+            warpFactor = (WarpFactor)FindNode("WarpFactor");
+            travelTime = (Label)FindNode("TravelTime");
+            selectedWaypointGrid = (Control)FindNode("SelectedWaypointGrid");
+            estimatedFuelUsage = (Label)FindNode("EstimatedFuelUsage");
+            travelTimeLabel = (Label)FindNode("TravelTimeLabel");
+            estimatedFuelUsageLabel = (Label)FindNode("EstimatedFuelUsageLabel");
+            repeatOrdersCheckBox = (CheckBox)FindNode("RepeatOrdersCheckBox");
 
             selectedWaypointGrid.Visible = false;
             base._Ready();

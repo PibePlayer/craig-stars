@@ -59,7 +59,7 @@ namespace CraigStars.Client
         Line2D packetTargetLine;
         Label nameLabel;
 
-        List<Sprite> stateSprites = new List<Sprite>();
+        List<Sprite> stateSprites;
 
         public override void _Ready()
         {
@@ -75,12 +75,14 @@ namespace CraigStars.Client
             nameLabel = GetNode<Label>("NameLabel");
 
             // create a list of these sprites
-            stateSprites.Add(known);
-            stateSprites.Add(unknown);
-            stateSprites.Add(inhabited);
-            stateSprites.Add(inhabitedCommanded);
-            stateSprites.Add(orbiting);
-            stateSprites.Add(orbitingCommanded);
+            stateSprites = new List<Sprite>() {
+                known,
+                unknown,
+                inhabited,
+                inhabitedCommanded,
+                orbiting,
+                orbitingCommanded
+            };
         }
 
         public override void _ExitTree()

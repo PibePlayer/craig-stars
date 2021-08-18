@@ -17,7 +17,7 @@ namespace CraigStars.Client
         {
             base._Ready();
 
-            rowScene = ResourceLoader.Load<PackedScene>("res://src/Client/CommandPane/FleetCompositionTileTokensRow.tscn");
+            rowScene = CSResourceLoader.GetPackedScene("FleetCompositionTileTokensRow.tscn");
             tokens = GetNode<Control>("ScrollContainer/Tokens");
         }
 

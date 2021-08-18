@@ -19,6 +19,9 @@ namespace CraigStars.Client
         Label continueGameNameLabel;
         SpinBox continueGameYearSpinBox;
 
+        Label progressLabel;
+        ProgressBar progressBar;
+
         private bool joining = false;
 
         public override void _Ready()
@@ -33,6 +36,9 @@ namespace CraigStars.Client
             continueGameButton = (Button)FindNode("ContinueGameButton");
             continueGameNameLabel = (Label)FindNode("ContinueGameNameLabel");
             continueGameYearSpinBox = (SpinBox)FindNode("ContinueGameYearSpinBox");
+
+            progressLabel = GetNode<Label>("VBoxContainer/CenterContainer/Panel/MenuButtons/ProgressLabel");
+            progressBar = GetNode<ProgressBar>("VBoxContainer/CenterContainer/Panel/MenuButtons/ProgressBar");
 
             hostPortEdit.Text = Settings.Instance.ServerPort.ToString();
             joinHostEdit.Text = Settings.Instance.ClientHost;
@@ -67,15 +73,30 @@ namespace CraigStars.Client
             hostWindow.FindNode("HostButton").Connect("pressed", this, nameof(OnHostWindowHostButtonPressed));
 
             NetworkClient.Instance.PlayerUpdatedEvent += OnPlayerUpdated;
-            EventManager.GameStartedEvent += OnGameStarted;
+            EventManager.GameStartingEvent += OnGameStarting;
             GetTree().Connect("server_disconnected", this, nameof(OnServerDisconnected));
             GetTree().Connect("connection_failed", this, nameof(OnConnectionFailed));
+
         }
 
         public override void _ExitTree()
         {
             NetworkClient.Instance.PlayerUpdatedEvent -= OnPlayerUpdated;
-            EventManager.GameStartedEvent -= OnGameStarted;
+            EventManager.GameStartingEvent -= OnGameStarting;
+        }
+
+        public override void _Process(float delta)
+        {
+            base._Process(delta);
+            if (CSResourceLoader.TotalResources > 0 && CSResourceLoader.Loaded < CSResourceLoader.TotalResources)
+            {
+                progressBar.Value = (float)CSResourceLoader.Loaded / CSResourceLoader.TotalResources * 100;
+            }
+            else
+            {
+                SetProcess(false);
+                progressBar.Visible = progressLabel.Visible = false;
+            }
         }
 
         void OnJoinWindowCancelButtonPressed()
@@ -174,13 +195,11 @@ namespace CraigStars.Client
         /// The server will notify us when the game is ready
         /// </summary>
         /// <param name="gameInfo"></param>
-        void OnGameStarted(PublicGameInfo gameInfo, Player player)
+        void OnGameStarting(PublicGameInfo gameInfo)
         {
             this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (clientView) =>
             {
-                PlayersManager.Me = player;
                 clientView.GameInfo = gameInfo;
-                clientView.LocalPlayers = new List<Player>() { player };
             });
         }
     }

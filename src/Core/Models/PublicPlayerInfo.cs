@@ -23,6 +23,16 @@ namespace CraigStars
         public bool Victor { get; set; }
         public HashSet<VictoryConditionType> AchievedVictoryConditions { get; set; } = new HashSet<VictoryConditionType>();
 
+        public PublicPlayerInfo()
+        {
+
+        }
+
+        public PublicPlayerInfo(PublicPlayerInfo other)
+        {
+            Update(other);
+        }
+
         /// <summary>
         /// Update our data from another player info (probably from a network call)
         /// </summary>
@@ -31,14 +41,17 @@ namespace CraigStars
         {
             NetworkId = playerInfo.NetworkId;
             Num = playerInfo.Num;
+            Name = playerInfo.Name;
             RaceName = playerInfo.RaceName;
             RacePluralName = playerInfo.RacePluralName;
-            Name = playerInfo.Name;
             Host = playerInfo.Host;
             Ready = playerInfo.Ready;
             AIControlled = playerInfo.AIControlled;
             SubmittedTurn = playerInfo.SubmittedTurn;
             Color = playerInfo.Color;
+            PublicScore = playerInfo.PublicScore.Clone();
+            Victor = playerInfo.Victor;
+            AchievedVictoryConditions = new(playerInfo.AchievedVictoryConditions);
         }
 
         public override string ToString()

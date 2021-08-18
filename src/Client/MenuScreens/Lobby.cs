@@ -34,7 +34,7 @@ namespace CraigStars.Client
             RPC.Instance(GetTree()).PlayerJoinedEvent += OnPlayerJoined;
             RPC.Instance(GetTree()).PlayersUpdatedEvent += OnPlayersUpdated;
             RPC.Instance(GetTree()).PlayerLeftEvent += OnPlayerLeft;
-            EventManager.GameStartedEvent += OnGameStarted;
+            EventManager.GameStartingEvent += OnGameStarting;
             NetworkClient.Instance.PlayerUpdatedEvent += OnPlayerUpdated;
 
             chatMessage.Connect("text_entered", this, nameof(OnChatMessageTextEntered));
@@ -65,7 +65,7 @@ namespace CraigStars.Client
             RPC.Instance(GetTree()).PlayerJoinedEvent -= OnPlayerJoined;
             RPC.Instance(GetTree()).PlayerLeftEvent -= OnPlayerLeft;
             RPC.Instance(GetTree()).PlayersUpdatedEvent -= OnPlayersUpdated;
-            EventManager.GameStartedEvent -= OnGameStarted;
+            EventManager.GameStartingEvent -= OnGameStarting;
             NetworkClient.Instance.PlayerUpdatedEvent -= OnPlayerUpdated;
         }
 
@@ -114,14 +114,12 @@ namespace CraigStars.Client
         /// If we are joining a server, it will send an RPC message that sends this signal to us
         /// </summary>
         /// <param name="gameInfo"></param>
-        void OnGameStarted(PublicGameInfo gameInfo, Player player)
+        void OnGameStarting(PublicGameInfo gameInfo)
         {
             // Change to the ClientView using this new GameInfo
             this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (clientView) =>
             {
-                PlayersManager.Me = player;
                 clientView.GameInfo = gameInfo;
-                clientView.LocalPlayers = new List<Player>() { player };
             });
         }
 

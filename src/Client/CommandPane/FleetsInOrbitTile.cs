@@ -19,8 +19,8 @@ namespace CraigStars.Client
         {
             base._Ready();
 
-            fleetsInOrbitOptionButton = GetNode<OptionButton>("FleetsInOrbitOptionButton");
-            gotoButton = GetNode<Button>("HBoxContainer/GotoButton");
+            fleetsInOrbitOptionButton = (OptionButton)FindNode("FleetsInOrbitOptionButton");
+            gotoButton = (Button)FindNode("GotoButton");
 
             fuelBar = (CargoBar)FindNode("FuelBar");
             cargoBar = (CargoBar)FindNode("CargoBar");

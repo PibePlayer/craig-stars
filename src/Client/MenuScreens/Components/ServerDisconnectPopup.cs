@@ -12,9 +12,13 @@ namespace CraigStars.Client
             GetNode<AcceptDialog>("ServerDisconnectedDialog").Connect("confirmed", this, nameof(OnServerDisconnectedDialogConfirmed));
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            NetworkClient.Instance.ServerDisconnectedEvent -= OnServerDisconnected;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                NetworkClient.Instance.ServerDisconnectedEvent -= OnServerDisconnected;
+            }
         }
 
         void OnServerDisconnected()

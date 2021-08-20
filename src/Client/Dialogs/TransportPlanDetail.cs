@@ -51,15 +51,17 @@ namespace CraigStars
             fuelTransportTask.TransportTaskUpdatedEvent += OnTransportTaskUpdated;
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            base._ExitTree();
-
-            ironiumTransportTask.TransportTaskUpdatedEvent -= OnTransportTaskUpdated;
-            boraniumTransportTask.TransportTaskUpdatedEvent -= OnTransportTaskUpdated;
-            germaniumTransportTask.TransportTaskUpdatedEvent -= OnTransportTaskUpdated;
-            colonistsTransportTask.TransportTaskUpdatedEvent -= OnTransportTaskUpdated;
-            fuelTransportTask.TransportTaskUpdatedEvent -= OnTransportTaskUpdated;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                ironiumTransportTask.TransportTaskUpdatedEvent -= OnTransportTaskUpdated;
+                boraniumTransportTask.TransportTaskUpdatedEvent -= OnTransportTaskUpdated;
+                germaniumTransportTask.TransportTaskUpdatedEvent -= OnTransportTaskUpdated;
+                colonistsTransportTask.TransportTaskUpdatedEvent -= OnTransportTaskUpdated;
+                fuelTransportTask.TransportTaskUpdatedEvent -= OnTransportTaskUpdated;
+            }
         }
 
         private void OnTransportTaskUpdated(CargoType cargoType, WaypointTaskTransportAction action, int amount)

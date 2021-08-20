@@ -41,13 +41,16 @@ namespace CraigStars.Server
             rpc.PlayerMessageEvent += OnPlayerMessage;
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            base._ExitTree();
-            GetTree().Disconnect("network_peer_connected", this, nameof(OnPlayerConnected));
-            GetTree().Disconnect("network_peer_disconnected", this, nameof(OnPlayerDisconnected));
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                GetTree().Disconnect("network_peer_connected", this, nameof(OnPlayerConnected));
+                GetTree().Disconnect("network_peer_disconnected", this, nameof(OnPlayerDisconnected));
 
-            rpc.PlayerMessageEvent -= OnPlayerMessage;
+                rpc.PlayerMessageEvent -= OnPlayerMessage;
+            }
         }
 
         protected override IClientEventPublisher CreateClientEventPublisher()

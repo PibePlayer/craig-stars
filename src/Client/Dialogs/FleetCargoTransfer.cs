@@ -77,13 +77,17 @@ namespace CraigStars.Client
             UpdateControls();
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            fuelBar.ValueUpdatedEvent -= OnFuelBarValueUpdated;
-            ironiumBar.ValueUpdatedEvent -= OnIroniumBarValueUpdated;
-            boraniumBar.ValueUpdatedEvent -= OnBoraniumBarValueUpdated;
-            germaniumBar.ValueUpdatedEvent -= OnGermaniumBarValueUpdated;
-            colonistsBar.ValueUpdatedEvent -= OnColonistsBarValueUpdated;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                fuelBar.ValueUpdatedEvent -= OnFuelBarValueUpdated;
+                ironiumBar.ValueUpdatedEvent -= OnIroniumBarValueUpdated;
+                boraniumBar.ValueUpdatedEvent -= OnBoraniumBarValueUpdated;
+                germaniumBar.ValueUpdatedEvent -= OnGermaniumBarValueUpdated;
+                colonistsBar.ValueUpdatedEvent -= OnColonistsBarValueUpdated;
+            }
         }
 
         /// <summary>

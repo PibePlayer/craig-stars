@@ -22,9 +22,13 @@ namespace CraigStars.Client
             techTree.TechSelectedEvent += OnTechSelected;
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            techTree.TechSelectedEvent -= OnTechSelected;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                techTree.TechSelectedEvent -= OnTechSelected;
+            }
         }
 
         protected override void OnVisibilityChanged()

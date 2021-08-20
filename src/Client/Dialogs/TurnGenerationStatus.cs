@@ -49,12 +49,16 @@ namespace CraigStars.Client
             EventManager.TurnGeneratorAdvancedEvent += OnTurnGeneratorAdvanced;
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            playerStatusTable.RowSelectedEvent -= OnPlayerStatusRowSelected;
-            EventManager.TurnSubmittedEvent -= OnTurnSubmitted;
-            EventManager.TurnGeneratingEvent -= OnTurnGenerating;
-            EventManager.TurnGeneratorAdvancedEvent -= OnTurnGeneratorAdvanced;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                playerStatusTable.RowSelectedEvent -= OnPlayerStatusRowSelected;
+                EventManager.TurnSubmittedEvent -= OnTurnSubmitted;
+                EventManager.TurnGeneratingEvent -= OnTurnGenerating;
+                EventManager.TurnGeneratorAdvancedEvent -= OnTurnGeneratorAdvanced;
+            }
         }
 
         void OnPlayerStatusRowSelected(int rowIndex, int colIndex, Cell cell, object metadata)

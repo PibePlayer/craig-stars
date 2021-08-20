@@ -32,11 +32,14 @@ namespace CraigStars.Client
             EventManager.TurnUnsubmittedEvent += OnPlayerStatusChanged;
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            base._ExitTree();
-            EventManager.TurnSubmittedEvent -= OnPlayerStatusChanged;
-            EventManager.TurnUnsubmittedEvent -= OnPlayerStatusChanged;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                EventManager.TurnSubmittedEvent -= OnPlayerStatusChanged;
+                EventManager.TurnUnsubmittedEvent -= OnPlayerStatusChanged;
+            }
         }
 
         void OnPlayerStatusChanged(PublicPlayerInfo player)

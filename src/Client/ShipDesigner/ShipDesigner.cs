@@ -52,11 +52,15 @@ namespace CraigStars.Client
             Connect("visibility_changed", this, nameof(OnVisible));
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            designerHullSummary.SlotUpdatedEvent -= OnSlotUpdated;
-            designerHullSummary.SlotPressedEvent -= OnSlotPressed;
-            hullComponentsTechTree.TechSelectedEvent -= OnHullComponentSelectedEvent;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                designerHullSummary.SlotUpdatedEvent -= OnSlotUpdated;
+                designerHullSummary.SlotPressedEvent -= OnSlotPressed;
+                hullComponentsTechTree.TechSelectedEvent -= OnHullComponentSelectedEvent;
+            }
         }
 
         public override void _Input(InputEvent @event)

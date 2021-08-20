@@ -45,19 +45,6 @@ namespace CraigStars.Client
             }
         }
 
-        public override void _Ready()
-        {
-            // wire up signals
-            EventManager.MapObjectCommandedEvent += OnMapObjectCommanded;
-            EventManager.TurnPassedEvent += OnTurnPassed;
-        }
-
-        public override void _ExitTree()
-        {
-            EventManager.MapObjectCommandedEvent -= OnMapObjectCommanded;
-            EventManager.TurnPassedEvent -= OnTurnPassed;
-        }
-
         public override string ToString()
         {
             return $"{GetType().Name}: {ObjectName}";
@@ -102,21 +89,6 @@ namespace CraigStars.Client
         {
             return Enumerable.Empty<MapObjectSprite>().ToList();
         }
-
-        #region Virtuals
-
-        protected virtual void OnMapObjectCommanded(MapObjectSprite mapObject)
-        {
-            // in case one of our peers is activated, update our sprite on activate
-            UpdateSprite();
-        }
-
-        protected virtual void OnTurnPassed(PublicGameInfo gameInfo, Player player)
-        {
-            UpdateSprite();
-        }
-
-        #endregion
 
     }
 }

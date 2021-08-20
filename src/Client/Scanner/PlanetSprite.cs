@@ -83,13 +83,9 @@ namespace CraigStars.Client
                 orbiting,
                 orbitingCommanded
             };
-        }
 
-        public override void _ExitTree()
-        {
-            base._ExitTree();
+            UpdateSprite();
         }
-
 
         public override List<MapObjectSprite> GetPeers()
         {
@@ -221,7 +217,7 @@ namespace CraigStars.Client
 
         public override void UpdateSprite()
         {
-            if (!IsInstanceValid(this))
+            if (!IsInstanceValid(this) || nameLabel == null)
             {
                 return;
             }

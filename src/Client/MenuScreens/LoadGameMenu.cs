@@ -39,10 +39,13 @@ namespace CraigStars.Client
             EventManager.GameStartingEvent += OnGameStarting;
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            base._ExitTree();
-            EventManager.GameStartingEvent -= OnGameStarting;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                EventManager.GameStartingEvent -= OnGameStarting;
+            }
         }
 
         void OnGameSaved(Game game, string filename)

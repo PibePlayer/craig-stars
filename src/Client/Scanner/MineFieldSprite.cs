@@ -80,6 +80,11 @@ namespace CraigStars.Client
 
         public override void UpdateSprite()
         {
+            if (!IsInstanceValid(this) || polygon == null)
+            {
+                return;
+            }
+
             if (MineField != null)
             {
                 Radius = MineField.Radius;
@@ -95,7 +100,8 @@ namespace CraigStars.Client
                 Modulate = MineField.Owner.Color;
             }
 
-            if (State == ScannerState.Selected) {
+            if (State == ScannerState.Selected)
+            {
                 Modulate = Modulate.Lightened(.5f);
             }
         }

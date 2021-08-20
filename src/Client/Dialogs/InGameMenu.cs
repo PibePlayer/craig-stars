@@ -30,11 +30,14 @@ namespace CraigStars.Client
             EventManager.PlayerDirtyChangedEvent += OnPlayerDirtyChanged;
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            base._ExitTree();
-            DialogManager.DialogRefCount = 0;
-            EventManager.PlayerDirtyChangedEvent -= OnPlayerDirtyChanged;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                DialogManager.DialogRefCount = 0;
+                EventManager.PlayerDirtyChangedEvent -= OnPlayerDirtyChanged;
+            }
         }
 
         void OnPlayerDirtyChanged()

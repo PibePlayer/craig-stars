@@ -21,13 +21,16 @@ namespace CraigStars.Client
             EventManager.WaypointMovedEvent += OnWaypointMoved;
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            base._ExitTree();
-            EventManager.WaypointSelectedEvent -= OnWaypointSelected;
-            EventManager.WaypointAddedEvent -= OnWaypointAdded;
-            EventManager.WaypointDeletedEvent -= OnWaypointDeleted;
-            EventManager.WaypointMovedEvent -= OnWaypointMoved;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                EventManager.WaypointSelectedEvent -= OnWaypointSelected;
+                EventManager.WaypointAddedEvent -= OnWaypointAdded;
+                EventManager.WaypointDeletedEvent -= OnWaypointDeleted;
+                EventManager.WaypointMovedEvent -= OnWaypointMoved;
+            }
         }
 
         void OnWaypointSelected(Waypoint waypoint)

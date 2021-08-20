@@ -4,10 +4,11 @@ using System.Linq;
 
 using CraigStars.Singletons;
 using CraigStars.Client;
+using System.Threading.Tasks;
 
 namespace CraigStars
 {
-    public class GameView : Node
+    public class GameView : Control
     {
         static CSLog log = LogProvider.GetLogger(typeof(GameView));
 
@@ -15,6 +16,7 @@ namespace CraigStars
         /// This is the main view into the universe
         /// </summary>
         Scanner scanner;
+        Control gui;
 
         ProductionQueueDialog productionQueueDialog;
         CargoTransferDialog cargoTransferDialog;
@@ -31,6 +33,7 @@ namespace CraigStars
 
         public override void _Ready()
         {
+            gui = FindNode("GUI") as Control;
             scanner = FindNode("Scanner") as Scanner;
             productionQueueDialog = GetNode<ProductionQueueDialog>("CanvasLayer/ProductionQueueDialog");
             cargoTransferDialog = GetNode<CargoTransferDialog>("CanvasLayer/CargoTransferDialog");
@@ -58,26 +61,59 @@ namespace CraigStars
             Client.EventManager.MergeFleetsDialogRequestedEvent += OnMergeFleetsDialogRequested;
             Client.EventManager.BattleViewerDialogRequestedEvent += OnBattleViewerDialogRequested;
 
-            PlayersManager.Me.RunTurnProcessors(TurnProcessorManager.Instance);
-            // add the universe to the viewport
-            scanner.CallDeferred("Init");
+            Connect("visibility_changed", this, nameof(OnVisibilityChangedAsync));
         }
 
-        public override void _ExitTree()
-        {
-            Client.EventManager.ProductionQueueDialogRequestedEvent -= OnProductionQueueDialogRequested;
-            Client.EventManager.CargoTransferDialogRequestedEvent -= OnCargoTransferRequested;
-            Client.EventManager.ResearchDialogRequestedEvent -= OnResearchDialogRequested;
-            Client.EventManager.BattlePlansDialogRequestedEvent -= OnBattlePlansDialogRequested;
-            Client.EventManager.TransportPlansDialogRequestedEvent -= OnTransportPlansDialogRequested;
-            Client.EventManager.ReportsDialogRequestedEvent -= OnReportsDialogRequested;
-            Client.EventManager.ShipDesignerDialogRequestedEvent -= OnShipDesignerDialogRequested;
-            Client.EventManager.PlayerStatusDialogRequestedEvent -= OnPlayerStatusDialogRequested;
-            Client.EventManager.TechBrowserDialogRequestedEvent -= OnTechBrowserDialogRequested;
-            Client.EventManager.RaceDesignerDialogRequestedEvent -= OnRaceDesignerDialogRequested;
-            Client.EventManager.MergeFleetsDialogRequestedEvent -= OnMergeFleetsDialogRequested;
-            Client.EventManager.BattleViewerDialogRequestedEvent -= OnBattleViewerDialogRequested;
+        Task scannerInitTask;
 
+        async void OnVisibilityChangedAsync()
+        {
+            if (IsVisibleInTree())
+            {
+                log.Debug("Resetting scanner");
+                PlayersManager.Me.RunTurnProcessors(TurnProcessorManager.Instance);
+                // add the universe to the viewport
+                gui.Visible = true;
+                RemoveChild(scanner);
+                scannerInitTask = Task.Run(() => scanner.Init());
+                await scannerInitTask;
+                AddChild(scanner);
+                CallDeferred(nameof(FocusHomeworld));
+
+                DialogManager.DialogRefCount = 0;
+            }
+            else
+            {
+                gui.Visible = false;
+            }
+        }
+
+        async void FocusHomeworld()
+        {
+            await scannerInitTask;
+            scanner.FocusHomeworld();
+        }
+
+
+
+        public override void _Notification(int what)
+        {
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                Client.EventManager.ProductionQueueDialogRequestedEvent -= OnProductionQueueDialogRequested;
+                Client.EventManager.CargoTransferDialogRequestedEvent -= OnCargoTransferRequested;
+                Client.EventManager.ResearchDialogRequestedEvent -= OnResearchDialogRequested;
+                Client.EventManager.BattlePlansDialogRequestedEvent -= OnBattlePlansDialogRequested;
+                Client.EventManager.TransportPlansDialogRequestedEvent -= OnTransportPlansDialogRequested;
+                Client.EventManager.ReportsDialogRequestedEvent -= OnReportsDialogRequested;
+                Client.EventManager.ShipDesignerDialogRequestedEvent -= OnShipDesignerDialogRequested;
+                Client.EventManager.PlayerStatusDialogRequestedEvent -= OnPlayerStatusDialogRequested;
+                Client.EventManager.TechBrowserDialogRequestedEvent -= OnTechBrowserDialogRequested;
+                Client.EventManager.RaceDesignerDialogRequestedEvent -= OnRaceDesignerDialogRequested;
+                Client.EventManager.MergeFleetsDialogRequestedEvent -= OnMergeFleetsDialogRequested;
+                Client.EventManager.BattleViewerDialogRequestedEvent -= OnBattleViewerDialogRequested;
+            }
         }
 
         void OnTechBrowserDialogRequested()

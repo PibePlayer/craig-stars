@@ -221,19 +221,22 @@ namespace CraigStars.Client
             // Show();
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            gravHabEditor.HabChangedEvent -= OnHabChanged;
-            tempHabEditor.HabChangedEvent -= OnHabChanged;
-            radHabEditor.HabChangedEvent -= OnHabChanged;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                gravHabEditor.HabChangedEvent -= OnHabChanged;
+                tempHabEditor.HabChangedEvent -= OnHabChanged;
+                radHabEditor.HabChangedEvent -= OnHabChanged;
 
-            energyResearchCost.ResearchCostLevelChangedEvent -= OnResearchCostChanged;
-            weaponsResearchCost.ResearchCostLevelChangedEvent -= OnResearchCostChanged;
-            propulsionResearchCost.ResearchCostLevelChangedEvent -= OnResearchCostChanged;
-            constructionResearchCost.ResearchCostLevelChangedEvent -= OnResearchCostChanged;
-            electronicsResearchCost.ResearchCostLevelChangedEvent -= OnResearchCostChanged;
-            biotechnologyResearchCost.ResearchCostLevelChangedEvent -= OnResearchCostChanged;
-
+                energyResearchCost.ResearchCostLevelChangedEvent -= OnResearchCostChanged;
+                weaponsResearchCost.ResearchCostLevelChangedEvent -= OnResearchCostChanged;
+                propulsionResearchCost.ResearchCostLevelChangedEvent -= OnResearchCostChanged;
+                constructionResearchCost.ResearchCostLevelChangedEvent -= OnResearchCostChanged;
+                electronicsResearchCost.ResearchCostLevelChangedEvent -= OnResearchCostChanged;
+                biotechnologyResearchCost.ResearchCostLevelChangedEvent -= OnResearchCostChanged;
+            }
         }
 
         void OnHabChanged(HabType type, int low, int high, bool immune)

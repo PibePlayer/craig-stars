@@ -81,11 +81,15 @@ namespace CraigStars.Client
 
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            shipDesigner.CancelledEvent -= OnShipDesignerCancelled;
-            shipDesignTree.DesignSelectedEvent -= OnShipDesignSelectedEvent;
-            starbaseDesignTree.DesignSelectedEvent -= OnStarbaseDesignSelectedEvent;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                shipDesigner.CancelledEvent -= OnShipDesignerCancelled;
+                shipDesignTree.DesignSelectedEvent -= OnShipDesignSelectedEvent;
+                starbaseDesignTree.DesignSelectedEvent -= OnStarbaseDesignSelectedEvent;
+            }
         }
 
         public override void _Input(InputEvent @event)

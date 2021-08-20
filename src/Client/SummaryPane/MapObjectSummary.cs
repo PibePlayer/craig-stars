@@ -23,24 +23,20 @@ namespace CraigStars.Client
         public override void _Ready()
         {
             EventManager.MapObjectSelectedEvent += OnMapObjectSelected;
-            EventManager.TurnPassedEvent += OnTurnPassed;
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            EventManager.MapObjectSelectedEvent -= OnMapObjectSelected;
-            EventManager.TurnPassedEvent -= OnTurnPassed;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                EventManager.MapObjectSelectedEvent -= OnMapObjectSelected;
+            }
         }
 
         void OnMapObjectSelected(MapObjectSprite mapObject)
         {
             MapObject = mapObject as T;
-        }
-
-        void OnTurnPassed(PublicGameInfo gameInfo, Player player)
-        {
-            MapObject = null;
-            UpdateControls();
         }
 
         protected abstract void UpdateControls();

@@ -60,14 +60,16 @@ namespace CraigStars
             Connect("visibility_changed", this, nameof(OnVisibilityChanged));
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            base._ExitTree();
-
-            if (table != null)
+            base._Notification(what);
+            if (what == NotificationPredelete)
             {
-                table.RowSelectedEvent -= OnSelectItem;
-                table.RowActivatedEvent -= OnActivateItem;
+                if (table != null)
+                {
+                    table.RowSelectedEvent -= OnSelectItem;
+                    table.RowActivatedEvent -= OnActivateItem;
+                }
             }
         }
 

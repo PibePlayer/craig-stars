@@ -59,14 +59,18 @@ namespace CraigStars.Client
             }
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            RPC.Instance(GetTree()).PlayerMessageEvent -= OnPlayerMessage;
-            RPC.Instance(GetTree()).PlayerJoinedEvent -= OnPlayerJoined;
-            RPC.Instance(GetTree()).PlayerLeftEvent -= OnPlayerLeft;
-            RPC.Instance(GetTree()).PlayersUpdatedEvent -= OnPlayersUpdated;
-            EventManager.GameStartingEvent -= OnGameStarting;
-            NetworkClient.Instance.PlayerUpdatedEvent -= OnPlayerUpdated;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                RPC.Instance(GetTree()).PlayerMessageEvent -= OnPlayerMessage;
+                RPC.Instance(GetTree()).PlayerJoinedEvent -= OnPlayerJoined;
+                RPC.Instance(GetTree()).PlayerLeftEvent -= OnPlayerLeft;
+                RPC.Instance(GetTree()).PlayersUpdatedEvent -= OnPlayersUpdated;
+                EventManager.GameStartingEvent -= OnGameStarting;
+                NetworkClient.Instance.PlayerUpdatedEvent -= OnPlayerUpdated;
+            }
         }
 
         void CheckStartGameButton()

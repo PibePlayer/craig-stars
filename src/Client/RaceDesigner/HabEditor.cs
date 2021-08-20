@@ -95,9 +95,13 @@ namespace CraigStars
             UpdateControls();
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            hab.BarChangedEvent -= OnBarChanged;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                hab.BarChangedEvent -= OnBarChanged;
+            }
         }
 
         void OnBarChanged(int low, int high)

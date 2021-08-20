@@ -213,11 +213,14 @@ namespace CraigStarsTable
             ResetTable();
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            base._ExitTree();
-            Data.SortEvent -= OnDataSorted;
-            Data.FilterEvent -= OnDataFiltered;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                Data.SortEvent -= OnDataSorted;
+                Data.FilterEvent -= OnDataFiltered;
+            }
         }
 
         public override void _Draw()

@@ -26,10 +26,13 @@ namespace CraigStars.Client
             EventManager.ViewportAlternateSelectEvent += OnViewportAlternateSelect;
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            base._ExitTree();
-            EventManager.ViewportAlternateSelectEvent -= OnViewportAlternateSelect;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                EventManager.ViewportAlternateSelectEvent -= OnViewportAlternateSelect;
+            }
         }
 
         /// <summary>

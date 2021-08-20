@@ -41,10 +41,13 @@ namespace CraigStars.Client
             EventManager.PacketDestinationChangedEvent += OnPacketDestinationChanged;
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            base._ExitTree();
-            EventManager.PacketDestinationChangedEvent -= OnPacketDestinationChanged;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                EventManager.PacketDestinationChangedEvent -= OnPacketDestinationChanged;
+            }
         }
 
         void OnPacketDestinationChanged(Planet planet, Planet target)

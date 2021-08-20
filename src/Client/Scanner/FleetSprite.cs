@@ -60,16 +60,7 @@ namespace CraigStars.Client
             collisionShape.Disabled = Orbiting != null;
             waypointsLine = GetNode<Line2D>("Waypoints");
             UpdateWaypointsLine();
-
-            EventManager.WaypointMovedEvent += OnWaypointMoved;
-
-        }
-
-        public override void _ExitTree()
-        {
-            base._ExitTree();
-
-            EventManager.WaypointMovedEvent -= OnWaypointMoved;
+            UpdateSprite();
         }
 
         public override void _Draw()
@@ -95,6 +86,11 @@ namespace CraigStars.Client
                     DrawLine(-Fleet.Heading * i * distancePerYear - perpendicular * 5, -Fleet.Heading * i * distancePerYear + perpendicular * 5, color, 2);
                 }
             }
+        }
+
+        public void OnWaypointMoved()
+        {
+            UpdateWaypointsLine();
         }
 
         /// <summary>
@@ -195,14 +191,6 @@ namespace CraigStars.Client
             }
         }
 
-        void OnWaypointMoved(Fleet fleet, Waypoint waypoint)
-        {
-            if (fleet == Fleet)
-            {
-                UpdateWaypointsLine();
-            }
-        }
-
         public override List<MapObjectSprite> GetPeers()
         {
             List<MapObjectSprite> peers = new List<MapObjectSprite>();
@@ -235,7 +223,7 @@ namespace CraigStars.Client
 
         public override void UpdateSprite()
         {
-            if (!IsInstanceValid(this))
+            if (!IsInstanceValid(this) || waypointsLine == null)
             {
                 return;
             }

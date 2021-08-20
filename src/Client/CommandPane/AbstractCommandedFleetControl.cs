@@ -28,29 +28,24 @@ namespace CraigStars.Client
         public override void _Ready()
         {
             EventManager.MapObjectCommandedEvent += OnMapObjectActivated;
-            EventManager.TurnPassedEvent += OnTurnPassed;
             EventManager.FleetDeletedEvent += OnFleetDeleted;
             EventManager.FleetsCreatedEvent += OnFleetsCreated;
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            base._ExitTree();
-            EventManager.MapObjectCommandedEvent -= OnMapObjectActivated;
-            EventManager.TurnPassedEvent -= OnTurnPassed;
-            EventManager.FleetDeletedEvent -= OnFleetDeleted;
-            EventManager.FleetsCreatedEvent -= OnFleetsCreated;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                EventManager.MapObjectCommandedEvent -= OnMapObjectActivated;
+                EventManager.FleetDeletedEvent -= OnFleetDeleted;
+                EventManager.FleetsCreatedEvent -= OnFleetsCreated;
+            }
         }
 
         protected virtual void OnMapObjectActivated(MapObjectSprite mapObject)
         {
             CommandedFleet = mapObject as FleetSprite;
-            UpdateControls();
-        }
-
-        protected virtual void OnTurnPassed(PublicGameInfo gameInfo, Player player)
-        {
-            CommandedFleet = null;
             UpdateControls();
         }
 

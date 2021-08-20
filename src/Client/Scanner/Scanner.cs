@@ -109,22 +109,26 @@ namespace CraigStars.Client
             EventManager.PacketDestinationToggleEvent += OnPacketDestinationToggle;
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            EventManager.MapObjectCommandedEvent -= OnMapObjectCommanded;
-            EventManager.GotoMapObjectEvent -= OnGotoMapObject;
-            EventManager.GotoMapObjectSpriteEvent -= OnGotoMapObjectSprite;
-            EventManager.CommandNextMapObjectEvent -= OnCommandNextMapObject;
-            EventManager.CommandPrevMapObjectEvent -= OnCommandPrevMapObject;
-            EventManager.CommandMapObjectEvent -= OnCommandMapObject;
-            EventManager.SelectMapObjectEvent -= OnSelectMapObject;
-            EventManager.FleetDeletedEvent -= OnFleetDeleted;
-            EventManager.FleetsCreatedEvent -= OnFleetsCreated;
-            EventManager.WaypointAddedEvent -= OnWaypointAdded;
-            EventManager.WaypointSelectedEvent -= OnWaypointSelected;
-            EventManager.WaypointDeletedEvent -= OnWaypointDeleted;
-            EventManager.PlanetViewStateUpdatedEvent -= OnPlanetViewStateUpdated;
-            EventManager.PacketDestinationToggleEvent -= OnPacketDestinationToggle;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                EventManager.MapObjectCommandedEvent -= OnMapObjectCommanded;
+                EventManager.GotoMapObjectEvent -= OnGotoMapObject;
+                EventManager.GotoMapObjectSpriteEvent -= OnGotoMapObjectSprite;
+                EventManager.CommandNextMapObjectEvent -= OnCommandNextMapObject;
+                EventManager.CommandPrevMapObjectEvent -= OnCommandPrevMapObject;
+                EventManager.CommandMapObjectEvent -= OnCommandMapObject;
+                EventManager.SelectMapObjectEvent -= OnSelectMapObject;
+                EventManager.FleetDeletedEvent -= OnFleetDeleted;
+                EventManager.FleetsCreatedEvent -= OnFleetsCreated;
+                EventManager.WaypointAddedEvent -= OnWaypointAdded;
+                EventManager.WaypointSelectedEvent -= OnWaypointSelected;
+                EventManager.WaypointDeletedEvent -= OnWaypointDeleted;
+                EventManager.PlanetViewStateUpdatedEvent -= OnPlanetViewStateUpdated;
+                EventManager.PacketDestinationToggleEvent -= OnPacketDestinationToggle;
+            }
         }
 
         #region Scanner MapObject Init
@@ -136,7 +140,6 @@ namespace CraigStars.Client
         {
             AddMapObjectsToViewport();
             UpdateScanners();
-            FocusHomeworld();
         }
 
         /// <summary>
@@ -147,29 +150,34 @@ namespace CraigStars.Client
             log.Debug($"{Me.Game.Year} Refreshing transient viewport objects.");
             CommandedFleet = null;
             CommandedPlanet = null;
+            commandedMapObject = null;
+            selectedMapObject = null;
 
-            // remove old planets, in case we switched players
-            Planets.ForEach(oldPlanet =>
+            if (Planets.Count == 0)
             {
-                oldPlanet.Disconnect("input_event", this, nameof(OnInputEvent));
-                oldPlanet.Disconnect("mouse_entered", this, nameof(OnMouseEntered));
-                oldPlanet.Disconnect("mouse_exited", this, nameof(OnMouseExited));
-                oldPlanet.QueueFree();
-            });
-            Planets.Clear();
-
-            Planets.AddRange(Me.AllPlanets.Select(planet =>
+                Planets.AddRange(Me.AllPlanets.Select(planet =>
+                {
+                    var planetSprite = planetScene.Instance() as PlanetSprite;
+                    planetSprite.Planet = planet;
+                    planetSprite.Position = planet.Position;
+                    return planetSprite;
+                }));
+                var planetsNode = GetNode("Planets");
+                Planets.ForEach(p => planetsNode.AddChild(p));
+                Planets.ForEach(p => p.Connect("input_event", this, nameof(OnInputEvent), new Godot.Collections.Array() { p }));
+                Planets.ForEach(p => p.Connect("mouse_entered", this, nameof(OnMouseEntered), new Godot.Collections.Array() { p }));
+                Planets.ForEach(p => p.Connect("mouse_exited", this, nameof(OnMouseExited), new Godot.Collections.Array() { p }));
+            }
+            else
             {
-                var planetSprite = planetScene.Instance() as PlanetSprite;
-                planetSprite.Planet = planet;
-                planetSprite.Position = planet.Position;
-                return planetSprite;
-            }));
-            var planetsNode = GetNode("Planets");
-            Planets.ForEach(p => planetsNode.AddChild(p));
-            Planets.ForEach(p => p.Connect("input_event", this, nameof(OnInputEvent), new Godot.Collections.Array() { p }));
-            Planets.ForEach(p => p.Connect("mouse_entered", this, nameof(OnMouseEntered), new Godot.Collections.Array() { p }));
-            Planets.ForEach(p => p.Connect("mouse_exited", this, nameof(OnMouseExited), new Godot.Collections.Array() { p }));
+                // reset each planet with data for this player
+                Me.AllPlanets.Each((planet, index) =>
+                {
+                    var planetSprite = Planets[index];
+                    planetSprite.Planet = planet;
+                    planetSprite.Position = planet.Position;
+                });
+            }
 
             Planets.ForEach(planetSprite =>
             {
@@ -318,8 +326,9 @@ namespace CraigStars.Client
         /// <summary>
         /// Focus on the current player's homeworld
         /// </summary>
-        void FocusHomeworld()
+        public void FocusHomeworld()
         {
+            log.Debug("Focusing homeworld");
             var homeworld = GetHomeWorldOrDefault();
             if (homeworld != null)
             {
@@ -358,6 +367,7 @@ namespace CraigStars.Client
         /// </summary>
         void UpdateScanners()
         {
+            log.Debug("Updating Scanner Scanners");
             // clear out the old scanners
             Scanners.ForEach(s => { s.GetParent()?.RemoveChild(s); s.QueueFree(); });
             Scanners.Clear();
@@ -404,6 +414,8 @@ namespace CraigStars.Client
                     AddScannerCoverage(fleet.Position, rangePen, true);
                 }
             }
+
+            log.Debug("Finished updating Scanner Scanners");
         }
 
         void AddScannerCoverage(Vector2 position, int range, bool pen)
@@ -460,6 +472,8 @@ namespace CraigStars.Client
                     activeWaypointArea.Waypoint.Target = closest.MapObject;
                 }
 
+                // tell the Fleet we moved its waypoint and notify and client UI elements about it as well
+                CommandedFleet.OnWaypointMoved();
                 EventManager.PublishWaypointMovedEvent(activeWaypointArea.Fleet, activeWaypointArea.Waypoint);
 
             }

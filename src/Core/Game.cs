@@ -113,7 +113,7 @@ namespace CraigStars
             GameInfo.Players.AddRange(Players.Cast<PublicPlayerInfo>());
 
             // Update the Game dictionaries used for lookups, like PlanetsByGuid, FleetsByGuid, etc.
-            UpdateDictionaries();
+            UpdateInternalDictionaries();
         }
 
         public void ComputeAggregates()
@@ -159,7 +159,7 @@ namespace CraigStars
         }
 
         /// <summary>
-        /// Generate a new Universe 
+        /// Generate a new Universe and update all players with turn 0 scan knowledge
         /// </summary>
         public void GenerateUniverse()
         {
@@ -169,7 +169,7 @@ namespace CraigStars
 
             ComputeAggregates();
 
-            UpdateDictionaries();
+            UpdateInternalDictionaries();
 
             // update player intel with new universe
             var scanStep = new PlayerScanStep(this);
@@ -246,17 +246,10 @@ namespace CraigStars
             TurnGeneratorAdvancedEvent?.Invoke(TurnGenerationState.UpdatingPlayers);
 
             // Update the Game dictionaries used for lookups, like PlanetsByGuid, FleetsByGuid, etc.
-            UpdateDictionaries();
+            UpdateInternalDictionaries();
 
-            // update our player information as if we'd just generated a new turn
-            UpdatePlayers();
-        }
-
-        /// <summary>
-        /// After a turn is generated, update some data on each player (like their current best planetary scanner)
-        /// </summary>
-        internal void UpdatePlayers()
-        {
+            // After a turn is generated, update some data on each player 
+            // (like their current best planetary scanner)
             Players.ForEach(p =>
             {
                 p.Game.Year = Year;
@@ -270,7 +263,7 @@ namespace CraigStars
         /// <summary>
         /// To reference objects between player knowledge and the server's data, we build Dictionaries by Guid
         /// </summary>
-        internal void UpdateDictionaries()
+        internal void UpdateInternalDictionaries()
         {
             // build game dictionaries by guid
             DesignsByGuid = Designs.ToLookup(d => d.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);

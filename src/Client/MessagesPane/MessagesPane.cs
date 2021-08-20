@@ -9,8 +9,8 @@ namespace CraigStars.Client
     public class MessagesPane : MarginContainer
     {
         public Player Me { get => PlayersManager.Me; }
+        public PublicGameInfo GameInfo { get => PlayersManager.GameInfo; }
 
-        PublicGameInfo gameInfo;
         TextEdit messageText;
         Label titleLabel;
         CheckBox filterMessageTypeCheckbox;
@@ -42,7 +42,6 @@ namespace CraigStars.Client
             filterMessageTypeCheckbox.Connect("toggled", this, nameof(OnFilterMessageTypeCheckboxToggled));
             filterMessagesCheckbox.Connect("toggled", this, nameof(OnFilterMessagesCheckboxToggled));
 
-            EventManager.TurnPassedEvent += OnTurnPassed;
             EventManager.GameViewResetEvent += OnGameViewResetEvent;
             EventManager.MapObjectSelectedEvent += OnMapObjectSelected;
             EventManager.PlayerDirtyChangedEvent += OnPlayerDirtyChanged;
@@ -50,13 +49,15 @@ namespace CraigStars.Client
             UpdateControls();
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            EventManager.TurnPassedEvent -= OnTurnPassed;
-            EventManager.GameViewResetEvent -= OnGameViewResetEvent;
-            EventManager.MapObjectSelectedEvent -= OnMapObjectSelected;
-            EventManager.PlayerDirtyChangedEvent -= OnPlayerDirtyChanged;
-
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                EventManager.GameViewResetEvent -= OnGameViewResetEvent;
+                EventManager.MapObjectSelectedEvent -= OnMapObjectSelected;
+                EventManager.PlayerDirtyChangedEvent -= OnPlayerDirtyChanged;
+            }
         }
 
         private void OnPlayerDirtyChanged()
@@ -127,13 +128,6 @@ namespace CraigStars.Client
 
         void OnGameViewResetEvent(PublicGameInfo gameInfo)
         {
-            this.gameInfo = gameInfo;
-            OnTurnPassed(gameInfo, PlayersManager.Me);
-        }
-
-        void OnTurnPassed(PublicGameInfo gameInfo, Player player)
-        {
-            this.gameInfo = gameInfo;
             messageNum = 0;
             if (Me != null && Me.Messages.Count > 0)
             {
@@ -155,7 +149,7 @@ namespace CraigStars.Client
             if (messages.Count > 0)
             {
                 filterMessageTypeCheckbox.Visible = true;
-                titleLabel.Text = $"Year: {gameInfo?.Year}{changesMadeIndicator} Message {messageNum + 1} of {messages.Count}{(filterMessagesCheckbox.Pressed ? $" ({Me.Messages.Count} total)" : "")}";
+                titleLabel.Text = $"Year: {GameInfo?.Year}{changesMadeIndicator} Message {messageNum + 1} of {messages.Count}{(filterMessagesCheckbox.Pressed ? $" ({Me.Messages.Count} total)" : "")}";
                 if (messageNum >= 0 && messageNum < messages.Count)
                 {
                     activeMessage = messages[messageNum];
@@ -188,7 +182,7 @@ namespace CraigStars.Client
             else
             {
                 filterMessageTypeCheckbox.Visible = false;
-                titleLabel.Text = $"Year: {gameInfo?.Year}{changesMadeIndicator} No Messages{(filterMessagesCheckbox.Pressed ? $" ({Me.Messages.Count} filtered)" : "")}";
+                titleLabel.Text = $"Year: {GameInfo?.Year}{changesMadeIndicator} No Messages{(filterMessagesCheckbox.Pressed ? $" ({Me.Messages.Count} filtered)" : "")}";
                 prevButton.Disabled = nextButton.Disabled = gotoButton.Disabled = true;
                 activeMessage = null;
                 messageNum = 0;

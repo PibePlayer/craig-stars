@@ -39,9 +39,13 @@ namespace CraigStars.Client
             EventManager.MapObjectCommandedEvent += OnMapObjectCommanded;
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            EventManager.MapObjectCommandedEvent -= OnMapObjectCommanded;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                EventManager.MapObjectCommandedEvent -= OnMapObjectCommanded;
+            }
         }
 
         void OnNextButtonPressed()

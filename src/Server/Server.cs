@@ -56,13 +56,16 @@ namespace CraigStars.Server
             clientEventPublisher.UnsubmitTurnRequestedEvent += OnUnsubmitTurnRequested;
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            base._ExitTree();
-            aiTurnSubmitter.TurnSubmitRequestedEvent -= OnAITurnSubmitRequested;
-            clientEventPublisher.GameStartRequestedEvent -= OnGameStartRequested;
-            clientEventPublisher.SubmitTurnRequestedEvent -= OnSubmitTurnRequested;
-            clientEventPublisher.UnsubmitTurnRequestedEvent -= OnUnsubmitTurnRequested;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                aiTurnSubmitter.TurnSubmitRequestedEvent -= OnAITurnSubmitRequested;
+                clientEventPublisher.GameStartRequestedEvent -= OnGameStartRequested;
+                clientEventPublisher.SubmitTurnRequestedEvent -= OnSubmitTurnRequested;
+                clientEventPublisher.UnsubmitTurnRequestedEvent -= OnUnsubmitTurnRequested;
+            }
         }
 
         /// <summary>
@@ -262,7 +265,7 @@ namespace CraigStars.Server
             game.GenerateUniverse();
 
             // TODO: remove this turn process stuff later
-            game.Players.ForEach(player => player.Settings.TurnProcessors.AddRange(TurnProcessorManager.Instance.TurnProcessors.Select(p => p.Name)));
+            // game.Players.ForEach(player => player.Settings.TurnProcessors.AddRange(TurnProcessorManager.Instance.TurnProcessors.Select(p => p.Name)));
 
             Multithreaded = multithreaded;
             SaveToDisk = saveToDisk;
@@ -291,7 +294,7 @@ namespace CraigStars.Server
             log.Debug($"Loaded {gameName}:{year} from disk");
 
             // TODO: remove this turn process stuff later
-            game.Players.ForEach(player => player.Settings.TurnProcessors.AddRange(TurnProcessorManager.Instance.TurnProcessors.Select(p => p.Name)));
+            // game.Players.ForEach(player => player.Settings.TurnProcessors.AddRange(TurnProcessorManager.Instance.TurnProcessors.Select(p => p.Name)));
 
             Multithreaded = multithreaded;
             SaveToDisk = saveToDisk;

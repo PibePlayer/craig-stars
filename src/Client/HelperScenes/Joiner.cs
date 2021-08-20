@@ -21,11 +21,14 @@ namespace CraigStars.Client
             NetworkClient.Instance.JoinGame(Settings.Instance.ClientHost, Settings.Instance.ClientPort);
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            base._ExitTree();
-            RPC.Instance(GetTree()).PlayerJoinedEvent -= OnPlayerJoined;
-            RPC.Instance(GetTree()).PlayerMessageEvent -= OnPlayerMessage;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                RPC.Instance(GetTree()).PlayerJoinedEvent -= OnPlayerJoined;
+                RPC.Instance(GetTree()).PlayerMessageEvent -= OnPlayerMessage;
+            }
         }
 
         void OnPlayerMessage(PlayerMessage message)

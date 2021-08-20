@@ -76,13 +76,18 @@ namespace CraigStars.Client
             EventManager.GameViewResetEvent += OnGameViewReset;
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            EventManager.GameViewResetEvent -= OnGameViewReset;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                EventManager.GameViewResetEvent -= OnGameViewReset;
+            }
         }
 
         void OnGameViewReset(PublicGameInfo gameInfo)
         {
+            submitTurnButton.Disabled = false;
             normalViewToolButton.Pressed = Me.UISettings.PlanetViewState == PlanetViewState.Normal;
             percentViewToolButton.Pressed = Me.UISettings.PlanetViewState == PlanetViewState.Percent;
             populationViewToolButton.Pressed = Me.UISettings.PlanetViewState == PlanetViewState.Population;

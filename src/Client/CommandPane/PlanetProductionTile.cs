@@ -30,10 +30,13 @@ namespace CraigStars.Client
             EventManager.ProductionQueueChangedEvent += OnProductionQueueChanged;
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            base._ExitTree();
-            EventManager.ProductionQueueChangedEvent -= OnProductionQueueChanged;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                EventManager.ProductionQueueChangedEvent -= OnProductionQueueChanged;
+            }
         }
 
         void OnProductionQueueChanged(Planet planet)

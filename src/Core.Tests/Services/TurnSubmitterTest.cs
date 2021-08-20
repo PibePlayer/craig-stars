@@ -27,7 +27,7 @@ namespace CraigStars.Tests
                 BaseHab = new Hab(),
                 Hab = new Hab(),
             });
-            game.UpdateDictionaries();
+            game.UpdateInternalDictionaries();
 
             // make our player aware of the planets and their fleets
             PlayerPlanetReportGenerationStep playerPlanetReportGenerationStep = new(game);

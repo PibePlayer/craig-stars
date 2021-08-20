@@ -27,24 +27,20 @@ namespace CraigStars.Client
             icon = GetNode<TextureRect>("HBoxContainer/Panel/Icon");
 
             EventManager.MapObjectSelectedEvent += OnMapObjectSelected;
-            EventManager.TurnPassedEvent += OnTurnPassed;
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            EventManager.MapObjectSelectedEvent -= OnMapObjectSelected;
-            EventManager.TurnPassedEvent -= OnTurnPassed;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                EventManager.MapObjectSelectedEvent -= OnMapObjectSelected;
+            }
         }
 
         void OnMapObjectSelected(MapObjectSprite mapObject)
         {
             mineField = mapObject as MineFieldSprite;
-            UpdateControls();
-        }
-
-        void OnTurnPassed(PublicGameInfo gameInfo, Player player)
-        {
-            mineField = null;
             UpdateControls();
         }
 

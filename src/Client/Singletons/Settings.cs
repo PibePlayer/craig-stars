@@ -193,10 +193,14 @@ namespace CraigStars.Client
             EventManager.TurnPassedEvent += OnTurnPassed;
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            EventManager.GameStartedEvent -= OnGameStarted;
-            EventManager.TurnPassedEvent -= OnTurnPassed;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                EventManager.GameStartedEvent -= OnGameStarted;
+                EventManager.TurnPassedEvent -= OnTurnPassed;
+            }
         }
 
         void OnGameStarted(PublicGameInfo gameInfo, Player player)

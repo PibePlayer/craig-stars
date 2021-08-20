@@ -14,24 +14,19 @@ namespace CraigStars.Client
         {
             titleLabel = (Label)FindNode("TitleLabel");
             EventManager.MapObjectCommandedEvent += OnMapObjectCommanded;
-            EventManager.TurnPassedEvent += OnTurnPassed;
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            EventManager.MapObjectCommandedEvent -= OnMapObjectCommanded;
-            EventManager.TurnPassedEvent -= OnTurnPassed;
+            base._Notification(what);
+            if (what == NotificationPredelete) {
+                EventManager.MapObjectCommandedEvent -= OnMapObjectCommanded;
+            }
         }
 
         protected void UpdateTitle(string title)
         {
             titleLabel.Text = title;
-        }
-
-        protected virtual void OnTurnPassed(PublicGameInfo gameInfo, Player player)
-        {
-            CommandedPlanet = null;
-            UpdateControls();
         }
 
         protected virtual void OnMapObjectCommanded(MapObjectSprite mapObject)

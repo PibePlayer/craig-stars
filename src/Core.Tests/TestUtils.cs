@@ -71,8 +71,8 @@ namespace CraigStars.Tests
             planet.OrbitingFleets.Add(fleet);
 
             player.SetupMapObjectMappings();
-            game.UpdateDictionaries();
-            game.UpdatePlayers();
+            game.UpdateInternalDictionaries();
+            game.AfterTurnGeneration();
 
             return game;
         }
@@ -195,8 +195,8 @@ namespace CraigStars.Tests
 
             player1.SetupMapObjectMappings();
             player2.SetupMapObjectMappings();
-            game.UpdateDictionaries();
-            game.UpdatePlayers();
+            game.UpdateInternalDictionaries();
+            game.AfterTurnGeneration();
 
             return game;
         }

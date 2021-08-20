@@ -124,7 +124,7 @@ namespace CraigStars.Tests
 
             }
 
-            game.UpdateDictionaries();
+            game.UpdateInternalDictionaries();
             game.ComputeAggregates();
 
             // we should discover this fleet

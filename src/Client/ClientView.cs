@@ -68,15 +68,22 @@ namespace CraigStars.Client
 
             PlayersManager.Me = null;
             PlayersManager.GameInfo = null;
+        }
 
-            EventManager.GameStartedEvent -= OnGameStarted;
-            EventManager.SubmitTurnRequestedEvent -= OnSubmitTurnRequested;
-            EventManager.PlayTurnRequestedEvent -= OnPlayTurnRequested;
-            EventManager.TurnSubmittedEvent -= OnTurnSubmitted;
-            EventManager.TurnUnsubmittedEvent -= OnTurnUnsubmitted;
-            EventManager.TurnGeneratingEvent -= OnTurnGenerating;
-            EventManager.TurnGeneratorAdvancedEvent -= OnTurnGeneratorAdvanced;
-            EventManager.TurnPassedEvent -= OnTurnPassed;
+        public override void _Notification(int what)
+        {
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                EventManager.GameStartedEvent -= OnGameStarted;
+                EventManager.SubmitTurnRequestedEvent -= OnSubmitTurnRequested;
+                EventManager.PlayTurnRequestedEvent -= OnPlayTurnRequested;
+                EventManager.TurnSubmittedEvent -= OnTurnSubmitted;
+                EventManager.TurnUnsubmittedEvent -= OnTurnUnsubmitted;
+                EventManager.TurnGeneratingEvent -= OnTurnGenerating;
+                EventManager.TurnGeneratorAdvancedEvent -= OnTurnGeneratorAdvanced;
+                EventManager.TurnPassedEvent -= OnTurnPassed;
+            }
         }
 
         #region GameView Loading/Reloading
@@ -109,9 +116,10 @@ namespace CraigStars.Client
             if (gameView != null && IsInstanceValid(gameView))
             {
                 log.Debug("Removing GameView from tree");
-                RemoveChild(gameView);
-                gameView.QueueFree();
-                gameView = null;
+                gameView.Visible = false;
+                // RemoveChild(gameView);
+                // gameView.QueueFree();
+                // gameView = null;
             }
         }
 
@@ -130,9 +138,13 @@ namespace CraigStars.Client
             // Create a new instande of GameView. Note, we have to create it
             // new, otherwise _Ready() won't be called if we re-use the same scene
             // TODO: we should probably re-use this scene
-            gameView = gameViewScene.Instance<GameView>();
-            AddChild(gameView);
+            if (gameView == null)
+            {
+                gameView = gameViewScene.Instance<GameView>();
+                AddChild(gameView);
+            }
 
+            gameView.Visible = true;
             container.Visible = false;
             turnGenerationStatus.Visible = false;
 

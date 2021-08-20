@@ -18,7 +18,6 @@ namespace CraigStars.Client
             set
             {
                 scanRange = value;
-                Update();
             }
         }
         int scanRange = 0;
@@ -35,14 +34,18 @@ namespace CraigStars.Client
         public override void _Ready()
         {
             base._Ready();
+            Update();
 
             EventManager.ScannerScaleUpdatedEvent += OnScannerScaleUpdated;
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            base._ExitTree();
-            EventManager.ScannerScaleUpdatedEvent -= OnScannerScaleUpdated;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                EventManager.ScannerScaleUpdatedEvent -= OnScannerScaleUpdated;
+            }
         }
 
         public override void _Draw()

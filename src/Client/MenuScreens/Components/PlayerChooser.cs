@@ -77,9 +77,13 @@ namespace CraigStars.Client
 
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            EventManager.RaceSavedEvent -= OnRaceSaved;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                EventManager.RaceSavedEvent -= OnRaceSaved;
+            }
         }
 
         public bool Validate()

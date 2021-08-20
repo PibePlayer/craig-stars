@@ -49,11 +49,14 @@ namespace CraigStars.Client
             EventManager.WaypointMovedEvent += OnWaypointMoved;
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            base._ExitTree();
-            warpFactor.WarpSpeedChangedEvent -= OnWarpSpeedChanged;
-            EventManager.WaypointMovedEvent -= OnWaypointMoved;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                warpFactor.WarpSpeedChangedEvent -= OnWarpSpeedChanged;
+                EventManager.WaypointMovedEvent -= OnWaypointMoved;
+            }
         }
 
         void OnWarpSpeedChanged(int warpSpeed)

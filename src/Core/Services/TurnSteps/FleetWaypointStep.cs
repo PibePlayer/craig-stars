@@ -222,9 +222,11 @@ namespace CraigStars
                             transferAmount = Math.Min(availableToUnload, cargoDestination.AvailableCapacity);
                             break;
                         case WaypointTaskTransportAction.UnloadAmount:
+                            // TODO: Fill In
                             break;
                         case WaypointTaskTransportAction.SetAmountTo:
                         case WaypointTaskTransportAction.SetWaypointTo:
+                            // TODO: Fill In
                             break;
                         default:
                             log.Error($"{Game.Year}: {fleet.Player} {fleet.Name} Trying to process an unsupported unload task action: {task.action}");
@@ -321,11 +323,14 @@ namespace CraigStars
                             transferAmount = Math.Min(availableToLoad, capacity);
                             break;
                         case WaypointTaskTransportAction.LoadAmount:
+                            // TODO: Fill In
                             break;
                         case WaypointTaskTransportAction.LoadDunnage:
+                            // TODO: Fill In
                             break;
                         case WaypointTaskTransportAction.SetAmountTo:
                         case WaypointTaskTransportAction.SetWaypointTo:
+                            // TODO: Fill In
                             break;
                         default:
                             log.Error($"{Game.Year}: {fleet.Player} {fleet.Name} Trying to process an unsupported unload task action: {task.action}");
@@ -549,14 +554,19 @@ namespace CraigStars
                     }
                     break;
                 case WaypointTask.MergeWithFleet:
+                    // TODO: Fill In
                     break;
                 case WaypointTask.Patrol:
+                    // TODO: Fill In
                     break;
                 case WaypointTask.RemoteMining:
+                    // TODO: Fill In
                     break;
                 case WaypointTask.Route:
+                    // TODO: Fill In
                     break;
                 case WaypointTask.TransferFleet:
+                    // TODO: Fill In
                     break;
             }
         }

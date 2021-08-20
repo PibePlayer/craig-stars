@@ -72,9 +72,13 @@ namespace CraigStars.Client
             NetworkClient.Instance.PlayerUpdatedEvent += OnPlayerUpdated;
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            NetworkClient.Instance.PlayerUpdatedEvent -= OnPlayerUpdated;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                NetworkClient.Instance.PlayerUpdatedEvent -= OnPlayerUpdated;
+            }
         }
 
         void UpdateName()

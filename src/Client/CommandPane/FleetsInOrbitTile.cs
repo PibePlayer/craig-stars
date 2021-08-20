@@ -32,10 +32,13 @@ namespace CraigStars.Client
 
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            cargoBar.ValueUpdatedEvent -= OnCargoBarPressed;
-            base._ExitTree();
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                cargoBar.ValueUpdatedEvent -= OnCargoBarPressed;
+            }
         }
 
         void OnCargoBarPressed(int newValue)

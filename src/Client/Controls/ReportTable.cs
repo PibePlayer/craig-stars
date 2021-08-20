@@ -37,23 +37,17 @@ namespace CraigStars.Client
             showOwnedButton.Connect("pressed", this, nameof(OnShowOwnedPressed));
             showAllButton.Connect("pressed", this, nameof(OnShowAllPressed));
 
-            EventManager.TurnPassedEvent += OnTurnPassed;
             table.RowSelectedEvent += OnRowSelected;
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            base._ExitTree();
-            EventManager.TurnPassedEvent -= OnTurnPassed;
-            table.RowSelectedEvent -= OnRowSelected;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                table.RowSelectedEvent -= OnRowSelected;
+            }
         }
-
-        void OnTurnPassed(PublicGameInfo gameInfo, Player player)
-        {
-            table.Data.Clear();
-            table.ClearTable();
-        }
-
 
         void OnRowSelected(int rowIndex, int colIndex, Cell cell, object metadata)
         {
@@ -67,7 +61,7 @@ namespace CraigStars.Client
         {
             log.Info("Resettibng table data");
             table.Data.Clear();
-            
+
             AddColumns();
             foreach (T item in GetItems())
             {

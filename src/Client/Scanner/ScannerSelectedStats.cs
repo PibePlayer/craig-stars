@@ -30,11 +30,15 @@ namespace CraigStars.Client
             EventManager.MapObjectCommandedEvent += OnMapObjectCommanded;
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            EventManager.MapObjectHighlightedEvent -= OnMapObjectHighlighted;
-            EventManager.MapObjectSelectedEvent -= OnMapObjectSelected;
-            EventManager.MapObjectCommandedEvent -= OnMapObjectCommanded;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                EventManager.MapObjectHighlightedEvent -= OnMapObjectHighlighted;
+                EventManager.MapObjectSelectedEvent -= OnMapObjectSelected;
+                EventManager.MapObjectCommandedEvent -= OnMapObjectCommanded;
+            }
         }
 
         void OnMapObjectHighlighted(MapObjectSprite mapObject)

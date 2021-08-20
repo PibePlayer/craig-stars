@@ -67,13 +67,15 @@ namespace CraigStars.Client
 
             Connect("visibility_changed", this, nameof(OnVisible));
             EventManager.MapObjectSelectedEvent += OnMapObjectSelected;
-            EventManager.TurnPassedEvent += OnTurnPassed;
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            EventManager.MapObjectSelectedEvent -= OnMapObjectSelected;
-            EventManager.TurnPassedEvent -= OnTurnPassed;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                EventManager.MapObjectSelectedEvent -= OnMapObjectSelected;
+            }
         }
 
         void OnVisible()
@@ -91,11 +93,6 @@ namespace CraigStars.Client
         void OnMapObjectSelected(MapObjectSprite mapObject)
         {
             Planet = mapObject as PlanetSprite;
-        }
-
-        void OnTurnPassed(PublicGameInfo gameInfo, Player player)
-        {
-            UpdateControls();
         }
 
         void OnMineralGuiInput(InputEvent @event, MineralType type)

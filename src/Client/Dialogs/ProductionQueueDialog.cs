@@ -75,12 +75,16 @@ namespace CraigStars.Client
             EventManager.MapObjectCommandedEvent += OnMapObjectCommanded;
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            availableItems.ItemSelectedEvent -= OnSelectAvailableItem;
-            availableItems.ItemActivatedEvent -= OnAddItem;
-            queuedItems.ItemSelectedEvent -= OnSelectQueuedItem;
-            EventManager.MapObjectCommandedEvent -= OnMapObjectCommanded;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                availableItems.ItemSelectedEvent -= OnSelectAvailableItem;
+                availableItems.ItemActivatedEvent -= OnAddItem;
+                queuedItems.ItemSelectedEvent -= OnSelectQueuedItem;
+                EventManager.MapObjectCommandedEvent -= OnMapObjectCommanded;
+            }
         }
 
         /// <summary>

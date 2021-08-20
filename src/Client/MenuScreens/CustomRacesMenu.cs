@@ -35,9 +35,13 @@ namespace CraigStars.Client
             UpdateItemList();
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            EventManager.RaceSavedEvent -= OnRaceSaved;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                EventManager.RaceSavedEvent -= OnRaceSaved;
+            }
         }
 
         void OnRaceSaved(Race race, string filename)

@@ -51,13 +51,15 @@ namespace CraigStars.Client
             otherFleetsButton.Connect("pressed", this, nameof(OnOtherFleetsButtonPressed));
 
             EventManager.MapObjectSelectedEvent += OnMapObjectSelected;
-            EventManager.TurnPassedEvent += OnTurnPassed;
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            EventManager.MapObjectSelectedEvent -= OnMapObjectSelected;
-            EventManager.TurnPassedEvent -= OnTurnPassed;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                EventManager.MapObjectSelectedEvent -= OnMapObjectSelected;
+            }
         }
 
         void OnOtherFleetsButtonPressed()
@@ -108,11 +110,6 @@ namespace CraigStars.Client
             {
                 MapObject = mapObject;
             }
-        }
-
-        void OnTurnPassed(PublicGameInfo gameInfo, Player player)
-        {
-            UpdateControls();
         }
 
         void UpdateControls()

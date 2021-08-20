@@ -51,10 +51,14 @@ namespace CraigStars.Singletons
             serverTree?.Multiplayer?.Poll();
         }
 
-        public override void _ExitTree()
+        public override void _Notification(int what)
         {
-            serverTree?.Free();
-            serverTree = null;
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                serverTree?.Free();
+                serverTree = null;
+            }
         }
 
         #region Single Player

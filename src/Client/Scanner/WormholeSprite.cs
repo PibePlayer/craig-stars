@@ -25,7 +25,7 @@ namespace CraigStars.Client
 
         public override void UpdateSprite()
         {
-            if (!IsInstanceValid(this))
+            if (!IsInstanceValid(this) || desinationLine == null)
             {
                 return;
             }

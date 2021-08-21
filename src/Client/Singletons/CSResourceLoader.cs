@@ -1,3 +1,4 @@
+using CraigStars.Client;
 using Godot;
 using System;
 using System.Collections.Generic;
@@ -59,7 +60,33 @@ namespace CraigStars.Singletons
                     Textures.Add(path.GetFile(), ResourceLoader.Load<Texture>(path));
                     Loaded++;
                 });
+
+                // pre-instantiate some planets
+                var planetScene = PackedScenes["PlanetSprite.tscn"];
+                var fleetScene = PackedScenes["FleetSprite.tscn"];
+                var scannerCoverageScene = PackedScenes["ScannerCoverage.tscn"];
+                for (int i = 0; i < 128; i++)
+                {
+                    NodePool.Return<PlanetSprite>(planetScene.Instance<PlanetSprite>());
+                    NodePool.Return<ScannerCoverage>(scannerCoverageScene.Instance<ScannerCoverage>());
+                    NodePool.Return<FleetSprite>(fleetScene.Instance<FleetSprite>());
+                }
             });
+        }
+
+        public override void _Notification(int what)
+        {
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                NodePool.FreeAll<PlanetSprite>();
+                NodePool.FreeAll<FleetSprite>();
+                NodePool.FreeAll<WormholeSprite>();
+                NodePool.FreeAll<MineralPacketSprite>();
+                NodePool.FreeAll<MineFieldSprite>();
+                NodePool.FreeAll<SalvageSprite>();
+                NodePool.FreeAll<ScannerCoverage>();
+            }
         }
 
         public static PackedScene GetPackedScene(string filename)

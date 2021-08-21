@@ -324,6 +324,7 @@ namespace CraigStars
             planet.Starbase.Name = item.Design.Name;
             planet.Starbase.Tokens.Add(new ShipToken(item.Design, 1));
             planet.Starbase.ComputeAggregate(true);
+            planet.PacketSpeed = planet.Starbase.Aggregate.SafePacketSpeed;
             Message.FleetBuilt(planet.Player, item.Design, planet.Starbase, 1);
 
         }

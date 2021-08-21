@@ -76,12 +76,12 @@ namespace CraigStars
 
         public Intel<ShipDesign> DesignIntel { get; set; } = new Intel<ShipDesign>();
         public Intel<Planet> PlanetIntel { get; set; } = new Intel<Planet>();
-        public Intel<Fleet> FleetIntel { get; set; } = new Intel<Fleet>();
         public Intel<MineField> MineFieldIntel { get; set; } = new Intel<MineField>();
         public Intel<MineralPacket> MineralPacketIntel { get; set; } = new Intel<MineralPacket>();
         public Intel<Salvage> SalvageIntel { get; set; } = new Intel<Salvage>();
         public Intel<Wormhole> WormholeIntel { get; set; } = new Intel<Wormhole>();
         public Intel<MysteryTrader> MysteryTraderIntel { get; set; } = new Intel<MysteryTrader>();
+        public Intel<Fleet> FleetIntel { get; set; } = new Intel<Fleet>();
         public List<BattleRecord> Battles { get; set; } = new List<BattleRecord>();
 
         #endregion
@@ -110,11 +110,6 @@ namespace CraigStars
         [JsonIgnore] public IEnumerable<Planet> AllPlanets { get => PlanetIntel.All; }
         [JsonIgnore] public Dictionary<Guid, Planet> PlanetsByGuid { get => PlanetIntel.ItemsByGuid; }
 
-        [JsonIgnore] public List<Fleet> Fleets { get => FleetIntel.Owned; }
-        [JsonIgnore] public List<Fleet> ForeignFleets { get => FleetIntel.Foriegn; }
-        [JsonIgnore] public IEnumerable<Fleet> AllFleets { get => FleetIntel.All; }
-        [JsonIgnore] public Dictionary<Guid, Fleet> FleetsByGuid { get => FleetIntel.ItemsByGuid; }
-
         [JsonIgnore] public List<Salvage> Salvage { get => SalvageIntel.Foriegn; }
         [JsonIgnore] public Dictionary<Guid, Salvage> SalvageByGuid { get => SalvageIntel.ItemsByGuid; }
 
@@ -133,6 +128,11 @@ namespace CraigStars
         [JsonIgnore] public List<MineralPacket> ForeignMineralPackets { get => MineralPacketIntel.Foriegn; }
         [JsonIgnore] public IEnumerable<MineralPacket> AllMineralPackets { get => MineralPacketIntel.All; }
         [JsonIgnore] public Dictionary<Guid, MineralPacket> MineralPacketsByGuid { get => MineralPacketIntel.ItemsByGuid; }
+
+        [JsonIgnore] public List<Fleet> Fleets { get => FleetIntel.Owned; }
+        [JsonIgnore] public List<Fleet> ForeignFleets { get => FleetIntel.Foriegn; }
+        [JsonIgnore] public IEnumerable<Fleet> AllFleets { get => FleetIntel.All; }
+        [JsonIgnore] public Dictionary<Guid, Fleet> FleetsByGuid { get => FleetIntel.ItemsByGuid; }
 
         /// <summary>
         /// All map objects by their guid, for lookups

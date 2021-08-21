@@ -15,6 +15,7 @@ namespace CraigStars.Client
         public static event Action<GameSettings<Player>> GameStartRequestedEvent;
         public static event Action<PublicGameInfo> GameStartingEvent;
         public static event Action<PublicGameInfo, Player> GameStartedEvent;
+        public static event Action<PublicGameInfo> GameExitingEvent;
         public static event Action<Player> SubmitTurnRequestedEvent;
         public static event Action<PublicPlayerInfo> TurnSubmittedEvent;
         public static event Action<PublicPlayerInfo> UnsubmitTurnRequestedEvent;
@@ -28,6 +29,7 @@ namespace CraigStars.Client
 
         public static void PublishGameStartRequestedEvent(GameSettings<Player> settings) => GameStartRequestedEvent?.Invoke(settings);
         public static void PublishGameStartingEvent(PublicGameInfo gameInfo) => GameStartingEvent?.Invoke(gameInfo);
+        public static void PublishGameExitingEvent(PublicGameInfo gameInfo) => GameExitingEvent?.Invoke(gameInfo);
         public static void PublishGameStartedEvent(PublicGameInfo gameInfo, Player player) => GameStartedEvent?.Invoke(gameInfo, player);
         public static void PublishSubmitTurnRequestedEvent(Player player) => SubmitTurnRequestedEvent?.Invoke(player);
         public static void PublishTurnSubmittedEvent(PublicPlayerInfo player) => TurnSubmittedEvent?.Invoke(player);

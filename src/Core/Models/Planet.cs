@@ -35,7 +35,7 @@ namespace CraigStars
         [JsonIgnore] public List<Fleet> OrbitingFleets { get; set; } = new List<Fleet>();
 
         public Starbase Starbase { get; set; }
-        public int PacketSpeed { get; set; } = 5;
+        public int PacketSpeed { get; set; } = 0;
         [JsonProperty(IsReference = true)]
         public Planet PacketTarget { get; set; }
 

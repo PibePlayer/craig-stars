@@ -107,6 +107,7 @@ namespace CraigStars.Client
             EventManager.WaypointDeletedEvent += OnWaypointDeleted;
             EventManager.PlanetViewStateUpdatedEvent += OnPlanetViewStateUpdated;
             EventManager.PacketDestinationToggleEvent += OnPacketDestinationToggle;
+            EventManager.GameExitingEvent += OnGameExiting;
         }
 
         public override void _Notification(int what)
@@ -128,6 +129,43 @@ namespace CraigStars.Client
                 EventManager.WaypointDeletedEvent -= OnWaypointDeleted;
                 EventManager.PlanetViewStateUpdatedEvent -= OnPlanetViewStateUpdated;
                 EventManager.PacketDestinationToggleEvent -= OnPacketDestinationToggle;
+                EventManager.GameExitingEvent -= OnGameExiting;
+            }
+        }
+
+        /// <summary>
+        /// Return any pooled resources to the node pool
+        /// </summary>
+        /// <param name="obj"></param>
+        void OnGameExiting(PublicGameInfo obj)
+        {
+            // give these objects back to the NodePool
+            mapObjects.ForEach(mo => ReturnNode(mo));
+            Scanners.ForEach(s => NodePool.Return(s));
+            PenScanners.ForEach(s => NodePool.Return(s));
+
+            // clear our local lists
+            mapObjects.Clear();
+            Scanners.Clear();
+            PenScanners.Clear();
+        }
+
+        void ReturnNode(MapObjectSprite value)
+        {
+            switch (value)
+            {
+                case PlanetSprite planetSprite:
+                    NodePool.Return(planetSprite);
+                    break;
+                case FleetSprite fleetSprite:
+                    NodePool.Return(fleetSprite);
+                    break;
+                case WormholeSprite wormholeSprite:
+                    NodePool.Return(wormholeSprite);
+                    break;
+                default:
+                    value.QueueFree();
+                    break;
             }
         }
 
@@ -140,6 +178,18 @@ namespace CraigStars.Client
         {
             AddMapObjectsToViewport();
             UpdateScanners();
+        }
+
+        /// <summary>
+        /// Update all sprites in the viewport so they are at their correct state
+        /// </summary>
+        public void UpdateSprites()
+        {
+            mapObjects.ForEach(mo =>
+            {
+                // log.Debug($"Updating {mo.GetType()} {mo}");
+                mo.UpdateSprite();
+            });
         }
 
         /// <summary>
@@ -157,7 +207,7 @@ namespace CraigStars.Client
             {
                 Planets.AddRange(Me.AllPlanets.Select(planet =>
                 {
-                    var planetSprite = planetScene.Instance() as PlanetSprite;
+                    var planetSprite = NodePool.Get<PlanetSprite>(planetScene);
                     planetSprite.Planet = planet;
                     planetSprite.Position = planet.Position;
                     return planetSprite;
@@ -190,9 +240,12 @@ namespace CraigStars.Client
                 }
             });
 
+            log.Debug($"{Me.Game.Year} Refreshed Planets.");
+
             // rebuild our MapObjectsByGuid
             Fleets.ForEach(fleet => { if (fleet.Orbiting != null) { fleet.Orbiting.OrbitingFleets.Clear(); } });
             RemoveMapObjects(transientMapObjects);
+            log.Debug($"{Me.Game.Year} Removed previous MapObjects.");
             MapObjectsByGuid = Planets.Cast<MapObjectSprite>().ToLookup(p => p.MapObject.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
 
             // clear out existing waypoint areas
@@ -202,6 +255,7 @@ namespace CraigStars.Client
             // rebuild our list of transient map objects nad the guid
             transientMapObjects.Clear();
             transientMapObjects.AddRange(AddFleetsToViewport());
+            log.Debug($"{Me.Game.Year} Refreshed Fleets.");
             transientMapObjects.AddRange(AddMapObjectsToViewport<Salvage, SalvageSprite>(Me.Salvage, salvageScene, GetNode("Salvage")));
             transientMapObjects.AddRange(AddMapObjectsToViewport<Wormhole, WormholeSprite>(Me.Wormholes, wormholeScene, GetNode("Wormholes")));
             transientMapObjects.AddRange(AddMapObjectsToViewport<MineField, MineFieldSprite>(Me.AllMineFields, mineFieldScene, GetNode("MineFields")));
@@ -210,7 +264,6 @@ namespace CraigStars.Client
             mapObjects.Clear();
             mapObjects.AddRange(Planets);
             mapObjects.AddRange(transientMapObjects);
-            mapObjects.ForEach(mo => mo.UpdateSprite());
 
             mapObjectsByLocation = mapObjects.ToLookup(mo => mo.MapObject.Position).ToDictionary(lookup => lookup.Key, lookup => lookup.ToList());
 
@@ -224,6 +277,7 @@ namespace CraigStars.Client
         /// <typeparam name="T"></typeparam>
         void RemoveMapObjects<T>(List<T> mapObjects) where T : MapObjectSprite
         {
+            log.Debug($"Removing {mapObjects.Count} {typeof(T)} from viewport.");
             mapObjects.ForEach(mo =>
             {
                 if (IsInstanceValid(mo))
@@ -233,7 +287,7 @@ namespace CraigStars.Client
                     mo.Disconnect("mouse_entered", this, nameof(OnMouseEntered));
                     mo.Disconnect("mouse_exited", this, nameof(OnMouseExited));
                     MapObjectsByGuid.Remove(mo.MapObject.Guid);
-                    mo.QueueFree();
+                    NodePool.Return<T>(mo);
                 }
             });
             mapObjects.Clear();
@@ -257,7 +311,7 @@ namespace CraigStars.Client
 
             sprites.AddRange(mapObjects.Select(mapObject =>
             {
-                var sprite = spriteScene.Instance() as U;
+                var sprite = NodePool.Get<U>(spriteScene);
                 sprite.MapObject = mapObject;
                 sprite.Position = mapObject.Position;
                 MapObjectsByGuid[mapObject.Guid] = sprite;
@@ -269,6 +323,8 @@ namespace CraigStars.Client
                 sprite.Connect("mouse_exited", this, nameof(OnMouseExited), new Godot.Collections.Array() { sprite });
                 return sprite;
             }));
+
+            log.Debug($"Added {sprites.Count} {typeof(U)} sprites to viewport.");
 
             return sprites;
         }
@@ -369,7 +425,10 @@ namespace CraigStars.Client
         {
             log.Debug("Updating Scanner Scanners");
             // clear out the old scanners
-            Scanners.ForEach(s => { s.GetParent()?.RemoveChild(s); s.QueueFree(); });
+            Scanners.ForEach(s => NodePool.Return<ScannerCoverage>(s, returned =>
+            {
+                returned.GetParent().RemoveChild(returned);
+            }));
             Scanners.Clear();
 
             foreach (var planet in Planets)
@@ -420,7 +479,8 @@ namespace CraigStars.Client
 
         void AddScannerCoverage(Vector2 position, int range, bool pen)
         {
-            ScannerCoverage scanner = scannerCoverageScene.Instance() as ScannerCoverage;
+            // grab a scanner from our pool
+            ScannerCoverage scanner = NodePool.Get<ScannerCoverage>(scannerCoverageScene);
             scanner.Position = position;
             if (pen)
             {
@@ -1045,7 +1105,7 @@ namespace CraigStars.Client
             var newFleetSprites = fleets.Select(fleet =>
             {
                 log.Debug($"User created new fleet {fleet.Name} - {fleet.Guid}");
-                var fleetSprite = fleetScene.Instance() as FleetSprite;
+                var fleetSprite = NodePool.Get<FleetSprite>(fleetScene);
                 fleetSprite.MapObject = fleet;
                 fleetSprite.Position = fleet.Position;
                 MapObjectsByGuid[fleet.Guid] = fleetSprite;

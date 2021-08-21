@@ -65,7 +65,7 @@ namespace CraigStars.Client
                 yLabel.Text = $"Y: {mapObject.Position.y:0.#}";
                 nameLabel.Text = $"{mapObject.ObjectName}";
 
-                if (highlightedMapObject != commandedMapObject && commandedMapObject != null)
+                if (highlightedMapObject != commandedMapObject && commandedMapObject != null && IsInstanceValid(commandedMapObject))
                 {
                     var dist = Math.Abs(highlightedMapObject.Position.DistanceTo(commandedMapObject.Position));
                     distanceLabel.Text = $"{dist:0.#} light years from {commandedMapObject.ObjectName}";

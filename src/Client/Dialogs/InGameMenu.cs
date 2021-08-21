@@ -48,8 +48,10 @@ namespace CraigStars.Client
         public override void _UnhandledInput(InputEvent @event)
         {
             // if the user presses escape and we don't have other dialogs open, show this one
-            if (Input.IsActionJustPressed("in_game_menu") && DialogManager.DialogRefCount == 0)
+            var refCount = DialogManager.DialogRefCount;
+            if (Input.IsActionJustPressed("in_game_menu") && refCount <= 0)
             {
+                DialogManager.DialogRefCount = 0;
                 PopupCentered();
             }
 
@@ -81,10 +83,15 @@ namespace CraigStars.Client
             if (Me.Dirty)
             {
                 CSConfirmDialog.Show("You have unsaved changes to your turn, are you sure you want to exit?",
-                () => GetTree().Quit());
+                () =>
+                {
+                    EventManager.PublishGameExitingEvent(PlayersManager.GameInfo);
+                    GetTree().Quit();
+                });
             }
             else
             {
+                EventManager.PublishGameExitingEvent(PlayersManager.GameInfo);
                 GetTree().Quit();
             }
         }
@@ -96,12 +103,14 @@ namespace CraigStars.Client
                 CSConfirmDialog.Show("You have unsaved changes to your turn, are you sure you want to exit?",
                 () =>
                 {
+                    EventManager.PublishGameExitingEvent(PlayersManager.GameInfo);
                     ServerManager.Instance.ExitGame();
                     loader.LoadScene("res://src/Client/MainMenu.tscn");
                 });
             }
             else
             {
+                EventManager.PublishGameExitingEvent(PlayersManager.GameInfo);
                 ServerManager.Instance.ExitGame();
                 loader.LoadScene("res://src/Client/MainMenu.tscn");
             }

@@ -78,7 +78,7 @@ namespace CraigStars
                 scannerInitTask = Task.Run(() => scanner.Init());
                 await scannerInitTask;
                 AddChild(scanner);
-                CallDeferred(nameof(FocusHomeworld));
+                CallDeferred(nameof(AfterScannerInit));
 
                 DialogManager.DialogRefCount = 0;
             }
@@ -88,13 +88,17 @@ namespace CraigStars
             }
         }
 
-        async void FocusHomeworld()
+        /// <summary>
+        /// After the scanner is initialized and added
+        /// to the view, update stuff and focus the homeworld
+        /// </summary>
+        /// <returns></returns>
+        async void AfterScannerInit()
         {
             await scannerInitTask;
+            scanner.UpdateSprites();
             scanner.FocusHomeworld();
         }
-
-
 
         public override void _Notification(int what)
         {

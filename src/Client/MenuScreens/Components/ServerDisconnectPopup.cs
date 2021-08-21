@@ -40,6 +40,7 @@ namespace CraigStars.Client
 
         void OnServerDisconnectedDialogConfirmed()
         {
+            EventManager.PublishGameExitingEvent(PlayersManager.GameInfo);
             GetTree().ChangeScene("res://src/Client/MainMenu.tscn");
         }
     }

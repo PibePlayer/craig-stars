@@ -1,11 +1,12 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using Godot;
 
 namespace CraigStarsTable
 {
-    public static class NodePool
+    public static class CSTableNodePool
     {
         static class PerType<T> where T : Node
         {

@@ -112,14 +112,14 @@ namespace CraigStarsTable
         /// <summary>
         /// Property with function that provides column header instances
         /// </summary>
-        public virtual Func<Column<T>, Control> ColumnHeaderProvider { get; set; } = (col) => NodePool.Get<ColumnHeader>(CSTableResourceLoader.Instance.DefaultColumnHeaderScene);
+        public virtual Func<Column<T>, Control> ColumnHeaderProvider { get; set; } = (col) => CSTableNodePool.Get<ColumnHeader>(CSTableResourceLoader.Instance.DefaultColumnHeaderScene);
 
         /// <summary>
         /// Property with function that provides cell instances
         /// </summary>
         public virtual Func<Column<T>, Cell, Row<T>, ICSCellControl<T>> CellProvider { get; set; } = (col, cell, row) =>
         {
-            CSLabelCell<T> labelCell = NodePool.Get<CSLabelCell<T>>();
+            CSLabelCell<T> labelCell = CSTableNodePool.Get<CSLabelCell<T>>();
             labelCell.Column = col;
             labelCell.Cell = cell;
             labelCell.Row = row;
@@ -243,17 +243,34 @@ namespace CraigStarsTable
                 if (child is ColumnHeader<T> columnHeader)
                 {
                     columnHeader.SortEvent -= OnSortEvent;
+                    if (columnHeader is ColumnHeader poolResource)
+                    {
+                        columnHeader.Disconnect("item_rect_changed", this, nameof(OnResized));
+                        CSTableNodePool.Return<ColumnHeader>(poolResource);
+                    } else {
+                        child.QueueFree();
+                    }
                 }
-
-                if (child is ICSCellControl<T> cell)
+                else if (child is ICSCellControl<T> cell)
                 {
                     cell.MouseEnteredEvent -= OnMouseEntered;
                     cell.MouseExitedEvent -= OnMouseExited;
                     cell.CellSelectedEvent -= OnCellSelected;
                     cell.CellActivatedEvent -= OnCellActivated;
+                    if (child is CSLabelCell labelCell)
+                    {
+                        CSTableNodePool.Return<CSLabelCell>(labelCell);
+                    }
+                    else
+                    {
+                        child.QueueFree();
+                    }
+                }
+                else
+                {
+                    child.QueueFree();
                 }
 
-                child.QueueFree();
             }
 
             columnHeaders.Clear();

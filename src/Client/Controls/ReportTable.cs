@@ -59,7 +59,7 @@ namespace CraigStars.Client
 
         public void ResetTableData()
         {
-            log.Info("Resettibng table data");
+            log.Debug("Resetting table data");
             table.Data.Clear();
 
             AddColumns();

@@ -47,13 +47,13 @@ namespace CraigStarsTable
                 // precreate enough cells for a 10x50 table
                 for (int i = 0; i < 10 * 50; i++)
                 {
-                    NodePool.Return<CSLabelCell>(new CSLabelCell());
+                    CSTableNodePool.Return<CSLabelCell>(new CSLabelCell());
                 }
 
                 for (int i = 0; i < 10; i++)
                 {
                     // pre-create column headers
-                    NodePool.Return<ColumnHeader>(DefaultColumnHeaderScene.Instance<ColumnHeader>());
+                    CSTableNodePool.Return<ColumnHeader>(DefaultColumnHeaderScene.Instance<ColumnHeader>());
                 }
             });
         }
@@ -63,8 +63,8 @@ namespace CraigStarsTable
             base._Notification(what);
             if (what == NotificationPredelete)
             {
-                NodePool.FreeAll<CSLabelCell>();
-                NodePool.FreeAll<ColumnHeader>();
+                CSTableNodePool.FreeAll<CSLabelCell>();
+                CSTableNodePool.FreeAll<ColumnHeader>();
             }
         }
 

@@ -837,6 +837,12 @@ namespace CraigStars
         /// <value></value>
         public bool MineFieldsAreScanners { get => Race.PRT == PRT.SD; }
 
+        /// <summary>
+        /// Do this player's minefields act like scanners?
+        /// </summary>
+        /// <value></value>
+        public bool FleetReproduce { get => Race.PRT == PRT.IS; }
+
         #endregion
 
         #region Equals Overload

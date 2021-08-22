@@ -429,6 +429,20 @@ namespace CraigStars
             player.Messages.Add(new Message(MessageType.PlanetDiscovery, text, planet));
         }
 
+        public static void FleetReproduce(Player player, Fleet fleet, int colonistsGrown, Planet planet = null, int over = 0)
+        {
+            string text;
+            if (planet == null || over == 0)
+            {
+                text = $"Your colonists in {fleet.Name} have made good use of their time increasing their on-board number by {colonistsGrown} colonists.";
+            }
+            else
+            {
+                text = $"Breeding activities on {fleet.Name} have overflowed living space. {over} colonists have been beamed down to {planet.Name}.";
+            }
+            player.Messages.Add(new Message(MessageType.FleetReproduce, text, fleet));
+        }
+
         public static void FleetCompletedAssignedOrders(Player player, Fleet fleet)
         {
             string text = $"{fleet.Name} has completed its assigned orders";

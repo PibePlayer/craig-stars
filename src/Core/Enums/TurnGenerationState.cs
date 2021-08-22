@@ -11,6 +11,7 @@ namespace CraigStars
         Waypoint,
         MovePackets,
         MoveFleets,
+        FleetReproduce,
         DecaySalvage,
         DecayMineralPackets,
         WormholeJiggle,

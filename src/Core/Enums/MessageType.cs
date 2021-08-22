@@ -43,6 +43,7 @@ namespace CraigStars
         MineralPacketDamage             = 1ul << 33,
         MineralPacketLanded             = 1ul << 34,
         Victor                          = 1ul << 35,
+        FleetReproduce                  = 1ul << 36,
         
     }
 }

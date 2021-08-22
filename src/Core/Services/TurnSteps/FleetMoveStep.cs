@@ -17,6 +17,7 @@ namespace CraigStars
         public override void Process()
         {
             Game.Fleets.ForEach(fleet => Move(fleet));
+            Game.Fleets.ForEach(fleet => AfterMove(fleet));
         }
 
         /// <summary>
@@ -47,6 +48,15 @@ namespace CraigStars
                 fleet.WarpSpeed = 0;
                 fleet.Heading = Vector2.Zero;
             }
+        }
+
+        /// <summary>
+        /// Process fleets after they have moved. This is where IS colonists on freighters grow
+        /// </summary>
+        /// <param name="fleet"></param>
+        internal void AfterMove(Fleet fleet)
+        {
+            
         }
 
         /// <summary>

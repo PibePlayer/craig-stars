@@ -64,6 +64,7 @@ namespace CraigStars
                 new FleetWaypointStep(game, 0), // wp0
                 new PacketMoveStep(game, 0),
                 new FleetMoveStep(game),
+                new FleetReproduceStep(game),
                 new DecaySalvageStep(game),
                 new DecayPacketsStep(game),
                 new WormholeJiggleStep(game),

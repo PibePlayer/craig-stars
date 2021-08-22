@@ -144,6 +144,9 @@ namespace CraigStars
         [DefaultValue(20)]
         public int BuiltInScannerJoaTMultiplier = 20;
 
+        [DefaultValue(.5f)]
+        public float ISFreighterGrowthFactor = .5f;
+
         /// <summary>
         /// SS races have 300 cloak units built in (or 75% cloaking)
         /// </summary>

@@ -1,3 +1,4 @@
+using CraigStars.Singletons;
 using CraigStarsTable;
 using Godot;
 using System;
@@ -21,7 +22,17 @@ namespace CraigStars
                 "Quantity",
                 "Col3",
                 new Column("hidden", hidden: true),
-                new Column("Surface Minerals", scene: "res://src/Client/Controls/MineralsCell.tscn")
+                new Column("Surface Minerals")
+                {
+                    CellProvider = (col, cell, row) =>
+                    {
+                        var cellControl = CSResourceLoader.GetPackedScene("MineralsCell.tscn").Instance<MineralsCell>();
+                        cellControl.Column = col;
+                        cellControl.Cell = cell;
+                        cellControl.Row = row;
+                        return cellControl;
+                    }
+                }
             );
 
             // add some rows of data

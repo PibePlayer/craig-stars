@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
 using Godot;
 
 namespace CraigStarsTable
@@ -8,11 +11,9 @@ namespace CraigStarsTable
     public class CSTableResourceLoader : Node
     {
 
-        public const string DefaultCellControlScript = "res://addons/CSTable/src/Table/CSLabelCell.cs";
-        public const string DefaultColumnHeaderScene = "res://addons/CSTable/src/Table/ColumnHeader.tscn";
+        public const string DefaultColumnHeaderScenePath = "res://addons/CSTable/src/Table/ColumnHeader.tscn";
 
-        public CSharpScript DefaultCellControl { get; set; }
-        public PackedScene DefaultColumnHeader { get; set; }
+        public PackedScene DefaultColumnHeaderScene { get; set; }
 
         /// <summary>
         /// Server is a singleton
@@ -31,13 +32,41 @@ namespace CraigStarsTable
             instance = this;
         }
 
+        Task loadTask;
+
         public override void _Ready()
         {
             base._Ready();
             instance = this;
 
-            DefaultColumnHeader = ResourceLoader.Load<PackedScene>(DefaultColumnHeaderScene);
-            DefaultCellControl = ResourceLoader.Load<CSharpScript>(DefaultCellControlScript);
+
+            loadTask = Task.Run(() =>
+            {
+                DefaultColumnHeaderScene = ResourceLoader.Load<PackedScene>(DefaultColumnHeaderScenePath);
+
+                // precreate enough cells for a 10x50 table
+                for (int i = 0; i < 10 * 50; i++)
+                {
+                    NodePool.Return<CSLabelCell>(new CSLabelCell());
+                }
+
+                for (int i = 0; i < 10; i++)
+                {
+                    // pre-create column headers
+                    NodePool.Return<ColumnHeader>(DefaultColumnHeaderScene.Instance<ColumnHeader>());
+                }
+            });
         }
+
+        public override void _Notification(int what)
+        {
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                NodePool.FreeAll<CSLabelCell>();
+                NodePool.FreeAll<ColumnHeader>();
+            }
+        }
+
     }
 }

@@ -5,7 +5,6 @@ namespace CraigStarsTable
 {
     public abstract class CSMarginContainerCellControl : CSMarginContainerCellControl<object>
     {
-
     }
 
     /// <summary>
@@ -22,6 +21,17 @@ namespace CraigStarsTable
         public Column<T> Column { get; set; }
         public Cell Cell { get; set; }
         public Row<T> Row { get; set; }
+
+        public CSMarginContainerCellControl() : base()
+        {
+        }
+
+        public CSMarginContainerCellControl(Column<T> col, Cell cell, Row<T> row) : this()
+        {
+            Column = col;
+            Cell = cell;
+            Row = row;
+        }
 
         public override void _Ready()
         {

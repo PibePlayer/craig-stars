@@ -126,7 +126,7 @@ namespace CraigStars.Client
         /// </summary>
         protected override void OnVisibilityChanged()
         {
-            if (Visible)
+            if (IsVisibleInTree())
             {
                 totalRounds = BattleRecord.ActionsPerRound.Count;
                 totalPhases = BattleRecord.ActionsPerRound.Sum(actionsPerRound => actionsPerRound.Count);

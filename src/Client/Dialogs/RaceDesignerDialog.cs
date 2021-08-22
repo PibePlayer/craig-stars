@@ -271,7 +271,7 @@ namespace CraigStars.Client
         protected override void OnVisibilityChanged()
         {
             base.OnVisibilityChanged();
-            if (Visible)
+            if (IsVisibleInTree())
             {
                 loadingRace = true;
                 tabContainer.CurrentTab = 0;

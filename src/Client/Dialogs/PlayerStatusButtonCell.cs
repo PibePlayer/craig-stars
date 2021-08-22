@@ -57,6 +57,15 @@ namespace CraigStars.Client
             // setup a label as well as a button
             if (label != null)
             {
+                if (Row.Metadata.SubmittedTurn)
+                {
+                    Cell.Text = "Submitted";
+                }
+                else
+                {
+                    Cell.Text = "Waiting to Submit";
+                }
+
                 label.Text = Cell.Text;
                 label.Align = Column.Align;
 

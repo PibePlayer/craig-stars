@@ -34,7 +34,7 @@ namespace CraigStars.Client
         protected override void OnVisibilityChanged()
         {
             base.OnVisibilityChanged();
-            if (Visible)
+            if (IsVisibleInTree())
             {
                 techTree.FocusSearch();
             }

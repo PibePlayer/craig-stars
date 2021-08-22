@@ -26,6 +26,8 @@ namespace CraigStars.Singletons
             "res://src/Client/Scanner/MineFieldSprite.tscn",
             "res://src/Client/Scanner/MineralPacketSprite.tscn",
             "res://src/Client/Scanner/WormholeSprite.tscn",
+            "res://src/Client/Controls/MineralsCell.tscn",
+            "res://src/Client/Controls/CargoCell.tscn"
         };
 
         static List<string> texturePaths = new()
@@ -40,13 +42,15 @@ namespace CraigStars.Singletons
         public static int Loaded { get; set; }
 
 
-        static Task loadTask;
+        static Task sceneLoadTask;
+        static Task spriteLoadTask;
 
-        public override void _Ready()
+        public async override void _Ready()
         {
-            TotalResources = packedScenePaths.Count + texturePaths.Count;
+            int preloadedSprites = 128;
+            TotalResources = packedScenePaths.Count + texturePaths.Count + preloadedSprites;
 
-            loadTask = Task.Run(() =>
+            sceneLoadTask = Task.Run(() =>
             {
                 packedScenePaths.ForEach(path =>
                 {
@@ -60,16 +64,21 @@ namespace CraigStars.Singletons
                     Textures.Add(path.GetFile(), ResourceLoader.Load<Texture>(path));
                     Loaded++;
                 });
-
+            });
+            
+            await sceneLoadTask;
+            spriteLoadTask = Task.Run(() =>
+            {
                 // pre-instantiate some planets
                 var planetScene = PackedScenes["PlanetSprite.tscn"];
                 var fleetScene = PackedScenes["FleetSprite.tscn"];
                 var scannerCoverageScene = PackedScenes["ScannerCoverage.tscn"];
-                for (int i = 0; i < 128; i++)
+                for (int i = 0; i < preloadedSprites; i++)
                 {
                     NodePool.Return<PlanetSprite>(planetScene.Instance<PlanetSprite>());
                     NodePool.Return<ScannerCoverage>(scannerCoverageScene.Instance<ScannerCoverage>());
                     NodePool.Return<FleetSprite>(fleetScene.Instance<FleetSprite>());
+                    Loaded++;
                 }
             });
         }
@@ -91,7 +100,7 @@ namespace CraigStars.Singletons
 
         public static PackedScene GetPackedScene(string filename)
         {
-            loadTask.Wait();
+            sceneLoadTask.Wait(TimeSpan.FromSeconds(5));
             if (PackedScenes.TryGetValue(filename, out PackedScene resource))
             {
                 return resource;
@@ -102,7 +111,7 @@ namespace CraigStars.Singletons
 
         public static Texture GetTexture(string filename)
         {
-            loadTask.Wait();
+            sceneLoadTask.Wait(TimeSpan.FromSeconds(5));
             if (Textures.TryGetValue(filename, out Texture resource))
             {
                 return resource;

@@ -25,50 +25,6 @@ namespace CraigStarsTable
         public event RowAction RowActivatedEvent;
 
         /// <summary>
-        /// The scene that will be used to render each column header
-        /// </summary>
-        [Export(PropertyHint.File, "*.tscn")]
-        public string ColumnHeaderScene
-        {
-            get => columnHeaderScene; set
-            {
-                columnHeaderScene = value;
-                // var _ = ResetTable();
-            }
-        }
-        string columnHeaderScene = CSTableResourceLoader.DefaultColumnHeaderScene;
-
-        /// <summary>
-        /// The scene that will be used to render each cell by default. Note, the control
-        /// class for this must implement the ICellControl interface
-        /// This defaults to a simple label
-        /// </summary>
-        [Export(PropertyHint.File, "*.tscn")]
-        public string CellControlScene
-        {
-            get => cellControlScene; set
-            {
-                cellControlScene = value;
-            }
-        }
-        string cellControlScene = "";
-
-        /// <summary>
-        /// The scene that will be used to render each cell by default. Note, the control
-        /// class for this must implement the ICellControl interface
-        /// This defaults to a simple label
-        /// </summary>
-        [Export(PropertyHint.File, "*.cs")]
-        public string CellControlScript
-        {
-            get => cellControlScript; set
-            {
-                cellControlScript = value;
-            }
-        }
-        string cellControlScript = "";
-
-        /// <summary>
         /// True to show the column headers
         /// </summary>
         [Export]
@@ -152,6 +108,23 @@ namespace CraigStarsTable
         /// Keep track of column headers to toggle sort direction icons
         /// </summary>
         List<IColumnHeader<T>> columnHeaders = new List<IColumnHeader<T>>();
+
+        /// <summary>
+        /// Property with function that provides column header instances
+        /// </summary>
+        public virtual Func<Column<T>, Control> ColumnHeaderProvider { get; set; } = (col) => NodePool.Get<ColumnHeader>(CSTableResourceLoader.Instance.DefaultColumnHeaderScene);
+
+        /// <summary>
+        /// Property with function that provides cell instances
+        /// </summary>
+        public virtual Func<Column<T>, Cell, Row<T>, ICSCellControl<T>> CellProvider { get; set; } = (col, cell, row) =>
+        {
+            CSLabelCell<T> labelCell = NodePool.Get<CSLabelCell<T>>();
+            labelCell.Column = col;
+            labelCell.Cell = cell;
+            labelCell.Row = row;
+            return labelCell;
+        };
 
         public Table() : base()
         {
@@ -321,6 +294,7 @@ namespace CraigStarsTable
         {
             if (gridContainer != null && Data != null)
             {
+                tableUpdateMutex.WaitOne();
 
                 ClearTable();
 
@@ -333,28 +307,41 @@ namespace CraigStarsTable
                     SelectedRow = 0;
                     Update();
                 }
+                tableUpdateMutex.ReleaseMutex();
             }
         }
+
+        System.Threading.Mutex tableUpdateMutex = new System.Threading.Mutex();
 
         /// <summary>
         /// Clear the table and redraw it with new/updated data
         /// </summary>
-        public void ResetRows()
+        public async void ResetRows()
         {
             if (gridContainer != null && Data != null)
             {
+                tableUpdateMutex.WaitOne();
 
-                ClearRows();
+                RemoveChild(gridContainer);
+                await Task.Run(() =>
+                {
+                    ClearRows();
+
+                    if (Data.VisibleColumns.Count() > 0)
+                    {
+                        AddRows();
+                        // if we are selecting a row that is 
+                        if (SelectedRow > cellControls.GetLength(0))
+                        {
+                            SelectedRow = NoRowSelected;
+                        }
+                    }
+                });
+
+                AddChild(gridContainer);
 
                 if (Data.VisibleColumns.Count() > 0)
                 {
-                    AddRows();
-                    // if we are selecting a row that is 
-                    if (SelectedRow > cellControls.GetLength(0))
-                    {
-                        SelectedRow = NoRowSelected;
-                    }
-
                     Update();
 
                     if (SelectedRow != NoRowSelected && cellControls.GetLength(0) > SelectedRow)
@@ -365,6 +352,8 @@ namespace CraigStarsTable
                         }
                     }
                 }
+
+                tableUpdateMutex.ReleaseMutex();
             }
         }
 
@@ -376,10 +365,9 @@ namespace CraigStarsTable
             if (ShowHeader)
             {
                 // add headers
-                var scene = (ColumnHeaderScene == CSTableResourceLoader.DefaultColumnHeaderScene) ? CSTableResourceLoader.Instance.DefaultColumnHeader : ResourceLoader.Load<PackedScene>(ColumnHeaderScene);
                 foreach (var col in Data.VisibleColumns)
                 {
-                    var columnHeaderInstance = scene.Instance() as Control;
+                    var columnHeaderInstance = ColumnHeaderProvider?.Invoke(col);
                     if (columnHeaderInstance is IColumnHeader<T> header)
                     {
                         header.Column = col;
@@ -403,51 +391,15 @@ namespace CraigStarsTable
         {
             int rowIndex = 0;
 
-            // Check for scene overrides
-            // 1. Each cell could have an override
-            // 2. The table could have an override for the default
-            // 
-            // We prioritize scenes over scripts.
-            var defaultScene = CSTableResourceLoader.Instance.DefaultCellControl;
-            var sceneForColumn = Data.Columns.Select<Column<T>, Resource>(col =>
-            {
-                if (!String.IsNullOrEmpty(col.Scene) && !String.IsNullOrEmpty(col.Script))
-                {
-                    GD.Print($"Column {col.Name} contains a script and scene override. Will use {col.Scene}.");
-                }
-                else if (!String.IsNullOrEmpty(CellControlScript) && !String.IsNullOrEmpty(CellControlScene))
-                {
-                    GD.Print($"Table contains a script and scene override. Will use {CellControlScene}.");
-                }
-                if (col.Scene != null)
-                {
-                    return ResourceLoader.Load<PackedScene>(col.Scene);
-                }
-                else if (col.Script != null)
-                {
-                    return ResourceLoader.Load<CSharpScript>(col.Script);
-                }
-                else if (!String.IsNullOrEmpty(CellControlScene))
-                {
-                    return ResourceLoader.Load<PackedScene>(CellControlScene);
-                }
-                else if (!String.IsNullOrEmpty(CellControlScript))
-                {
-                    return ResourceLoader.Load<CSharpScript>(CellControlScript);
-                }
-                else
-                {
-                    return defaultScene;
-                }
-            }).ToArray();
-
-            var rows = Data.SourceRows;
-            cellControls = new Control[rows.Count, Data.Columns.Count];
+            // copy the rows so we don't have an issue if the source is modified
+            var rows = Data.SourceRows.ToList();
+            var cols = Data.Columns.ToList();
+            cellControls = new Control[rows.Count, cols.Count];
             foreach (var row in rows)
             {
                 for (int columnIndex = 0; columnIndex < row.Data.Count; columnIndex++)
                 {
-                    var col = Data.Columns[columnIndex];
+                    var col = cols[columnIndex];
                     if (col.Hidden)
                     {
                         continue;
@@ -459,30 +411,8 @@ namespace CraigStarsTable
                     ICSCellControl<T> node = col.CreateCell(col, cell, row);
                     if (node == null)
                     {
-                        var scene = sceneForColumn[columnIndex];
-                        if (scene is CSharpScript script)
-                        {
-                            var instance = script.New();
-                            node = instance as ICSCellControl<T>;
-                        }
-                        else if (scene is PackedScene packedScene)
-                        {
-                            node = packedScene.Instance() as ICSCellControl<T>;
-                        }
-                        else
-                        {
-                            throw new Exception($"Table Cell Scene/Script {scene} is not a CSharpScript or PackedScene and can't be instanced.");
-                        }
-
-                        if (node == null)
-                        {
-                            throw new Exception($"Table Cell Scene/Script {scene} is not an ICellControl.");
-                        }
-                        node.Column = col;
-                        node.Cell = cell;
-                        node.Row = row;
+                        node = CellProvider?.Invoke(col, cell, row);
                     }
-
 
                     node.MouseEnteredEvent += OnMouseEntered;
                     node.MouseExitedEvent += OnMouseExited;
@@ -511,15 +441,15 @@ namespace CraigStarsTable
 
         public void UpdateRows()
         {
-
             var rows = Data.Rows.ToList();
+            var cols = Data.Columns.ToList();
             var numVisibleColumns = Data.VisibleColumns.Count();
             for (int rowIndex = 0; rowIndex < rows.Count; rowIndex++)
             {
                 var row = rows[rowIndex];
-                for (int columnIndex = 0, nonHiddenColumnIndex = 0; columnIndex < Data.Columns.Count; columnIndex++)
+                for (int columnIndex = 0, nonHiddenColumnIndex = 0; columnIndex < cols.Count; columnIndex++)
                 {
-                    var col = Data.Columns[columnIndex];
+                    var col = cols[columnIndex];
                     if (col.Hidden)
                     {
                         continue;
@@ -577,7 +507,7 @@ namespace CraigStarsTable
 
         void OnVisible()
         {
-            if (Visible)
+            if (IsVisibleInTree())
             {
                 var firstRow = Data.Rows.FirstOrDefault();
                 if (firstRow != null)

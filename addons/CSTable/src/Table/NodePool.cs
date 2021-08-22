@@ -3,11 +3,10 @@ using System;
 using System.Collections.Concurrent;
 using Godot;
 
-namespace CraigStars.Singletons
+namespace CraigStarsTable
 {
     public static class NodePool
     {
-        static CSLog log = LogProvider.GetLogger(typeof(NodePool));
         static class PerType<T> where T : Node
         {
             public static ConcurrentBag<T> bag = new ConcurrentBag<T>();
@@ -22,8 +21,20 @@ namespace CraigStars.Singletons
             }
             else
             {
-                log.Debug($"Instantiating new {typeof(T)}");
                 return packedScene.Instance<T>();
+            }
+        }
+
+        public static T Get<T>() where T : Node, new()
+        {
+            var bag = PerType<T>.bag;
+            if (bag.TryTake(out T item))
+            {
+                return item;
+            }
+            else
+            {
+                return new T();
             }
         }
 
@@ -36,8 +47,6 @@ namespace CraigStars.Singletons
             // make sure this item isn't cleaned up when the parent goes away
             // it will be freed in CSResourceLoader
             item.GetParent()?.RemoveChild(item);
-
-            log.Debug($"Returned NodePool resource {typeof(T)} {item} to pool.");
         }
 
         public static void FreeAll<T>() where T : Node
@@ -45,7 +54,6 @@ namespace CraigStars.Singletons
             var bag = PerType<T>.bag;
             while (bag.TryTake(out T item))
             {
-                log.Debug($"Freeing NodePool resource {typeof(T)} {item}");
                 item.Free();
             }
         }

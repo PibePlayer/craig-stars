@@ -13,7 +13,6 @@ namespace CraigStars.Client
         PublicGameInfo GameInfo { get => PlayersManager.GameInfo; }
 
         Label yearLabel;
-        Container playerStatusContainer;
         PlayersTable playerStatusTable;
 
         // Called when the node enters the scene tree for the first time.
@@ -21,14 +20,13 @@ namespace CraigStars.Client
         {
             base._Ready();
             yearLabel = GetNode<Label>("VBoxContainer/YearLabel");
-            playerStatusContainer = (Container)FindNode("PlayerStatusContainer");
             playerStatusTable = GetNode<PlayersTable>("VBoxContainer/ScrollContainer/PlayerStatusTable");
 
             playerStatusTable.Data.Clear();
             playerStatusTable.Data.AddColumns("Num", "Name", "Race");
             playerStatusTable.Data.AddColumn(new Column<PublicPlayerInfo>("Status")
             {
-                OnCreateCellControl = (col, cell, row) => new PlayerStatusButtonCell(col, cell, row,
+                CellProvider = (col, cell, row) => new PlayerStatusButtonCell(col, cell, row,
                     (CSButtonCell<PublicPlayerInfo> buttonCell) =>
                     {
                         if (buttonCell.Row.Metadata.SubmittedTurn)
@@ -108,6 +106,7 @@ namespace CraigStars.Client
         /// </summary>
         public void UpdatePlayerStatuses()
         {
+            bool resetTable = playerStatusTable.Data.Rows.Count() != GameInfo.Players.Count;
             playerStatusTable.Data.ClearRows();
             GameInfo.Players.ForEach(player =>
             {
@@ -120,51 +119,13 @@ namespace CraigStars.Client
                 );
             });
 
-            playerStatusTable.ResetTable();
-
-            foreach (Node node in playerStatusContainer.GetChildren())
+            if (resetTable)
             {
-                playerStatusContainer.RemoveChild(node);
-                node.QueueFree();
+                playerStatusTable.ResetTable();
             }
-
-            foreach (var player in GameInfo.Players)
+            else
             {
-                playerStatusContainer.AddChild(new Label()
-                {
-                    Text = $"{player.Num} - {player.RacePluralName} ({player.Name})",
-                    Modulate = player.Color,
-                    SizeFlagsHorizontal = (int)SizeFlags.ExpandFill
-                });
-
-                if (player.AIControlled)
-                {
-                    playerStatusContainer.AddChild(new Label() { Text = $"{(player.SubmittedTurn ? "Submitted" : "Waiting to Submit")}" });
-                }
-                else
-                {
-                    if (player == Me)
-                    {
-                        if (player.SubmittedTurn && GameInfo.State != GameState.GeneratingTurn)
-                        {
-                            var button = new Button();
-                            button.Text = "Unsubmit";
-                            button.Connect("pressed", this, nameof(OnUnsubmitButtonPressed), new Godot.Collections.Array() { player.Num });
-                            playerStatusContainer.AddChild(button);
-                        }
-                        else
-                        {
-                            playerStatusContainer.AddChild(new Label() { Text = "Waiting to Submit" });
-                        }
-                    }
-                    else
-                    {
-                        var button = new Button();
-                        button.Text = "Play Turn";
-                        button.Connect("pressed", this, nameof(OnPlayTurnButtonPressed), new Godot.Collections.Array() { player.Num });
-                        playerStatusContainer.AddChild(button);
-                    }
-                }
+                playerStatusTable.UpdateRows();
             }
         }
     }

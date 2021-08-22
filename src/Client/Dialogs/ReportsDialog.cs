@@ -27,7 +27,7 @@ namespace CraigStars.Client
         protected override void OnVisibilityChanged()
         {
             base.OnVisibilityChanged();
-            if (Visible)
+            if (IsVisibleInTree())
             {
                 planetsTable.ShowAll = false;
                 fleetsTable.ShowAll = false;

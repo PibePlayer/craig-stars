@@ -186,7 +186,7 @@ namespace CraigStars.Client
 
         public override void _Input(InputEvent @event)
         {
-            if (turnGenerating)
+            if (turnGenerating || !IsInsideTree())
             {
                 return;
             }

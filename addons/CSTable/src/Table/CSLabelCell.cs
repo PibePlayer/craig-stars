@@ -14,7 +14,14 @@ namespace CraigStarsTable
 
         DynamicFontData italicFont;
 
-        public CSLabelCell() : base() {
+        public CSLabelCell() : base()
+        {
+            SizeFlagsHorizontal = (int)SizeFlags.ExpandFill;
+            RectMinSize = new Vector2(16, 16);
+        }
+
+        public CSLabelCell(Column<T> col, Cell cell, Row<T> row) : base(col, cell, row)
+        {
             SizeFlagsHorizontal = (int)SizeFlags.ExpandFill;
             RectMinSize = new Vector2(16, 16);
         }
@@ -35,7 +42,7 @@ namespace CraigStarsTable
             AddConstantOverride("margin_left", 3);
             AddConstantOverride("margin_bottom", 3);
 
-            italicFont = ResourceLoader.Load<DynamicFontData>("res://addons/CSTable/assets/OpenSans-Italic.ttf");         
+            italicFont = ResourceLoader.Load<DynamicFontData>("res://addons/CSTable/assets/OpenSans-Italic.ttf");
 
             UpdateCell();
         }

@@ -104,7 +104,7 @@ namespace CraigStars
         /// </summary>
         protected virtual void OnVisibilityChanged()
         {
-            if (Visible && table != null)
+            if (IsVisibleInTree() && table != null)
             {
                 UpdateItems();
                 if (table.Data.SourceRows.Count > 0)

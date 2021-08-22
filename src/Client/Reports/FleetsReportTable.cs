@@ -31,7 +31,17 @@ namespace CraigStars.Client
             "ETA",
             "Task",
             "Fuel",
-            new Column("Cargo", scene: "res://src/Client/Controls/CargoCell.tscn"),
+            new Column("Cargo")
+            {
+                CellProvider = (col, cell, row) =>
+                {
+                    var cellControl = CSResourceLoader.GetPackedScene("CargoCell.tscn").Instance<CargoCell>();
+                    cellControl.Column = col;
+                    cellControl.Cell = cell;
+                    cellControl.Row = row;
+                    return cellControl;
+                }
+            },
             "Mass"
             );
         }
@@ -48,11 +58,11 @@ namespace CraigStars.Client
 
             var owner = "--";
             var ownerColor = Colors.Gray;
-            var location = item.Waypoints[0].TargetName;
             var destination = "--";
             var etaText = "--";
             var eta = double.MaxValue;
             var task = "(no task here)";
+            String location = "--";
 
             if (item.Owner != null)
             {
@@ -60,10 +70,12 @@ namespace CraigStars.Client
                 if (item.OwnedBy(PlayersManager.Me))
                 {
                     ownerColor = Colors.White;
+                    location = item.Waypoints[0].TargetName;
                 }
                 else
                 {
                     ownerColor = item.Owner.Color;
+                    location = (item.Orbiting != null) ? item.Orbiting.Name : Utils.TextUtils.GetPositionString(item.Position);
                 }
             }
             else

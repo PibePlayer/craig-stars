@@ -9,7 +9,6 @@ namespace CraigStars
     {
         public ProductionQueueItemsTable() : base()
         {
-            CellControlScript = "res://addons/CraigStarsComponents/src/ProductionQueueItemLabelCell.cs";
             ShowHeader = false;
             BorderStyle = BorderStyle.None;
             SizeFlagsHorizontal = (int)SizeFlags.ExpandFill;

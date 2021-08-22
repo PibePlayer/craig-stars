@@ -32,7 +32,17 @@ namespace CraigStars.Client
                 "Mine",
                 "Factory",
                 "Defense",
-                new Column("Surface Minerals", scene: "res://src/Client/Controls/MineralsCell.tscn")
+                new Column("Surface Minerals")
+                {
+                    CellProvider = (col, cell, row) =>
+                    {
+                        var cellControl = CSResourceLoader.GetPackedScene("MineralsCell.tscn").Instance<MineralsCell>();
+                        cellControl.Column = col;
+                        cellControl.Cell = cell;
+                        cellControl.Row = row;
+                        return cellControl;
+                    }
+                }
             );
 
         }

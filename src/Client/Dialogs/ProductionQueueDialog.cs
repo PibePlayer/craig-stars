@@ -112,7 +112,7 @@ namespace CraigStars.Client
         {
             // if the player is currently looking at the production queue and a new item comes up, reset ourselves to its
             // items
-            if (Visible && mapObject is PlanetSprite planet)
+            if (IsVisibleInTree() && mapObject is PlanetSprite planet)
             {
                 Planet = planet.Planet;
                 OnAboutToShow();

@@ -287,7 +287,7 @@ namespace CraigStars.Client
                     mo.Disconnect("mouse_entered", this, nameof(OnMouseEntered));
                     mo.Disconnect("mouse_exited", this, nameof(OnMouseExited));
                     MapObjectsByGuid.Remove(mo.MapObject.Guid);
-                    NodePool.Return<T>(mo);
+                    ReturnNode(mo);
                 }
             });
             mapObjects.Clear();

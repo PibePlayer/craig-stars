@@ -42,6 +42,8 @@ namespace CraigStars.Server
 
         protected IClientEventPublisher clientEventPublisher;
 
+        protected System.Threading.Mutex saveGameMutex = new System.Threading.Mutex();
+
         public override void _Ready()
         {
             base._Ready();
@@ -113,9 +115,6 @@ namespace CraigStars.Server
 
                     // notify each player of a game start event
                     Game.GameInfo.State = GameState.WaitingForPlayers;
-
-                    // submit the AI player turns
-                    aiTurnSubmitter.SubmitAITurns(Game);
                 }
                 catch (Exception e)
                 {
@@ -125,6 +124,9 @@ namespace CraigStars.Server
             });
 
             await GodotTaskFactory.StartNew(() => PublishGameStartedEvent());
+
+            // submit the AI player turns
+            aiTurnSubmitter.SubmitAITurns(Game);
         }
 
         /// <summary>
@@ -156,10 +158,8 @@ namespace CraigStars.Server
                     log.Debug($"{Game.Year}: Submitting turn for {player}");
                     Game.SubmitTurn(player);
                     await GodotTaskFactory.StartNew(() => PublishTurnSubmittedEvent(player));
-                    if (saveGame)
-                    {
-                        SaveGame(Game);
-                    }
+
+                    SaveGame(Game);
 
                     if (Game.AllPlayersSubmitted())
                     {
@@ -173,6 +173,7 @@ namespace CraigStars.Server
                 catch (Exception e)
                 {
                     log.Error("Failed to process OnSubmitTurnRequested event.", e);
+                    throw e;
                 }
             });
         }
@@ -193,6 +194,7 @@ namespace CraigStars.Server
                 catch (Exception e)
                 {
                     log.Error($"Failed to unsubmit turn for {player}", e);
+                    throw e;
                 }
             });
 
@@ -217,11 +219,11 @@ namespace CraigStars.Server
                 {
                     Game.GenerateTurn();
                     Game.GameInfo.State = GameState.WaitingForPlayers;
-                    SaveGame(Game);
                 }
                 catch (Exception e)
                 {
                     log.Error("Failed to generate new turn.", e);
+                    throw e;
                 }
             };
             if (Multithreaded)
@@ -235,8 +237,10 @@ namespace CraigStars.Server
 
             Game.TurnGeneratorAdvancedEvent -= OnTurnGeneratorAdvanced;
 
-            aiTurnSubmitter.SubmitAITurns(Game);
             await GodotTaskFactory.StartNew(() => PublishTurnPassedEvent());
+
+            SaveGame(Game);
+            aiTurnSubmitter.SubmitAITurns(Game);
         }
 
         void OnTurnGeneratorAdvanced(TurnGenerationState state)
@@ -304,23 +308,22 @@ namespace CraigStars.Server
 
         protected void SaveGame(Game game)
         {
-            lock (game.Name)
+            try
             {
+                saveGameMutex.WaitOne();
+
                 if (SaveToDisk && game.Year >= game.Rules.StartingYear + game.GameInfo.QuickStartTurns)
                 {
                     if (Multithreaded)
                     {
                         // now that we have our json, we can save the game to dis in a separate task
-                        Task.Run(() =>
-                        {
-                            log.Debug($"{Game.Year}: Saving game {Game.Name} to disk.");
-                            // serialize the game to JSON. This must complete before we can
-                            // modify any state
-                            var gameJson = GamesManager.SerializeGame(game, Multithreaded);
+                        log.Debug($"{game.Year}: Saving game {game.Name} to disk.");
+                        // serialize the game to JSON. This must complete before we can
+                        // modify any state
+                        var gameJson = GamesManager.SerializeGame(game, Multithreaded);
 
-                            GamesManager.SaveGame(gameJson, Multithreaded);
-                            log.Debug($"{Game.Year}: Finished saving game {Game.Name} to disk.");
-                        });
+                        GamesManager.SaveGame(gameJson, Multithreaded);
+                        log.Debug($"{game.Year}: Finished saving game {game.Name} to disk.");
                     }
                     else
                     {
@@ -332,7 +335,15 @@ namespace CraigStars.Server
                     }
                 }
             }
-
+            catch (Exception e)
+            {
+                log.Error($"{game.Year}: Failed to save game {game.Name}.", e);
+                throw e;
+            }
+            finally
+            {
+                saveGameMutex.ReleaseMutex();
+            }
         }
     }
 }

@@ -10,9 +10,7 @@ namespace CraigStarsTable
             int index = 0,
             bool sortable = true,
             bool hidden = false,
-            Label.AlignEnum align = Label.AlignEnum.Left,
-            string scene = null,
-            string script = null) : base(name, index, sortable, hidden, align, scene, script)
+            Label.AlignEnum align = Label.AlignEnum.Left) : base(name, index, sortable, hidden, align)
         {
 
         }
@@ -30,30 +28,19 @@ namespace CraigStarsTable
         public Label.AlignEnum Align { get; set; } = Label.AlignEnum.Left;
 
         /// <summary>
-        /// Override the Script path for this column's cells
-        /// When rendering a cell, first an override script is checked for, then an override cell.
-        /// If neither is present, it will use the default script (LabelCell.cs)
-        /// </summary>
-        public string Script { get; set; }
-
-        /// <summary>
-        /// Override the Sceme path for this column's cells
-        /// When rendering a cell, first an override script is checked for, then an override cell.
-        /// If neither is present, it will use the default script (LabelCell.cs)
-        /// </summary>
-        /// <value></value>
-        public string Scene { get; set; }
-
-        /// <summary>
         /// If set, use this scene to render cells instead of the table default
         /// </summary>
         public string CellScene { get; set; }
 
-        public Func<Column<T>, Cell, Row<T>, ICSCellControl<T>> OnCreateCellControl { get; set; }
+        /// <summary>
+        /// Optional property with function that provides cell instances. this allows clients to override
+        /// behavior for creating cells for a single column
+        /// </summary>
+        public virtual Func<Column<T>, Cell, Row<T>, ICSCellControl<T>> CellProvider { get; set; }
 
         public ICSCellControl<T> CreateCell(Column<T> col, Cell cell, Row<T> row)
         {
-            return OnCreateCellControl?.Invoke(col, cell, row);
+            return CellProvider?.Invoke(col, cell, row);
         }
 
         public Column()
@@ -65,9 +52,7 @@ namespace CraigStarsTable
             int index = 0,
             bool sortable = true,
             bool hidden = false,
-            Label.AlignEnum align = Label.AlignEnum.Left,
-            string scene = null,
-            string script = null)
+            Label.AlignEnum align = Label.AlignEnum.Left)
         {
             if (name != null)
             {
@@ -81,8 +66,6 @@ namespace CraigStarsTable
             Hidden = hidden;
             Sortable = sortable;
             Align = align;
-            Scene = scene;
-            Script = script;
         }
     }
 }

@@ -60,25 +60,3 @@ custom_constants/margin_top = 0
 custom_constants/margin_left = 0
 custom_constants/margin_bottom = 0
 script = ExtResource( 3 )
-
-[node name="PlayerStatusContainer" type="GridContainer" parent="VBoxContainer/ScrollContainer"]
-visible = false
-margin_right = 190.0
-margin_bottom = 134.0
-size_flags_horizontal = 3
-size_flags_vertical = 3
-custom_constants/vseparation = 5
-columns = 2
-
-[node name="PlayerLabel" type="Label" parent="VBoxContainer/ScrollContainer/PlayerStatusContainer"]
-margin_right = 51.0
-margin_bottom = 14.0
-text = "Player 1"
-
-[node name="PlayerStatusLabel" type="Label" parent="VBoxContainer/ScrollContainer/PlayerStatusContainer"]
-margin_left = 55.0
-margin_right = 190.0
-margin_bottom = 14.0
-size_flags_horizontal = 3
-text = "Submitted"
-align = 2

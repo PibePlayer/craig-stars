@@ -59,7 +59,7 @@ namespace CraigStars.Client
         /// </summary>
         protected override void OnVisibilityChanged()
         {
-            if (Visible)
+            if (IsVisibleInTree())
             {
                 deletedPlans.Clear();
                 transportPlans.Clear();

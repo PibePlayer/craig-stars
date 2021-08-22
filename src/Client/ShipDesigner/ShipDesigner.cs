@@ -109,7 +109,7 @@ namespace CraigStars.Client
 
         void OnVisible()
         {
-            if (Visible && SourceShipDesign != null)
+            if (IsVisibleInTree() && SourceShipDesign != null)
             {
                 ResetDesignerShipDesignFromSource();
                 designerHullSummary.Hull = Hull;

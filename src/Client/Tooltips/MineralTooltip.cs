@@ -5,6 +5,7 @@ namespace CraigStars
 {
     public class MineralTooltip : CSTooltip
     {
+        PlanetService planetService = new();
         public MineralType Type { get; set; } = MineralType.Ironium;
 
         Label typeLabel;
@@ -34,7 +35,7 @@ namespace CraigStars
             {
                 onSurfaceValueLabel.Text = $"{Planet.Cargo[Type]}kT";
                 mineralConcentrationValueLabel.Text = $"{Planet.MineralConcentration[Type]}";
-                miningRateValueLabel.Text = $"{Planet.MineralOutput[Type]}kT/yr";
+                miningRateValueLabel.Text = $"{planetService.GetMineralOutput(Planet, Me)[Type]}kT/yr";
             }
         }
 

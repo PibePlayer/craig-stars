@@ -8,6 +8,8 @@ namespace CraigStars.Client
 {
     public class MergeFleetsDialog : GameViewDialog
     {
+        FleetService fleetService = new();
+        
         public FleetSprite SourceFleet { get; set; }
 
         Button okButton;
@@ -73,7 +75,7 @@ namespace CraigStars.Client
                 Me.FleetOrders.Add(order);
 
                 // merge the fleet on the client
-                SourceFleet.Fleet.Merge(order);
+                fleetService.Merge(SourceFleet.Fleet, Me, order);
                 fleetsToMerge.ForEach(f => { Me.MergedFleets.Add(f); Me.Fleets.Remove(f); });
                 fleetSpritesToMerge.ForEach(f => EventManager.PublishFleetDeletedEvent(f.Fleet));
             }

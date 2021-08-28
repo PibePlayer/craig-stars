@@ -67,6 +67,7 @@ namespace CraigStars.Client
             raceOptionButton.Connect("item_selected", this, nameof(OnRaceOptionButtonItemSelected));
             aiControlledCheckBoxButton.Connect("pressed", this, nameof(UpdateAIControls));
             aiDifficultyOptionButton.PopulateOptionButton<AIDifficulty>();
+            aiDifficultyOptionButton.Connect("item_selected", this, nameof(OnAIDifficultyOptionButtonItemSelected));
             colorPickerButton.Connect("color_changed", this, nameof(OnColorChanged));
             removePlayerButton.Connect("pressed", this, nameof(OnRemovePlayerButtonPressed));
 
@@ -108,6 +109,14 @@ namespace CraigStars.Client
         void OnNameLineEditTextChanged(string newText)
         {
             Player.Name = newText;
+        }
+
+        void OnAIDifficultyOptionButtonItemSelected(int index)
+        {
+            if (Player != null)
+            {
+                Player.AIDifficulty = (AIDifficulty)index;
+            }
         }
 
         void UpdateAIControls()

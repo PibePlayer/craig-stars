@@ -31,11 +31,12 @@ namespace CraigStars.Tests
         [Test]
         public void TestProcessItem()
         {
+            var player = game.Players[0];
             var planet = game.Planets[0];
 
             // this should build a mine with nothing leftover
             var item = new ProductionQueueItem(QueueItemType.Mine, 1);
-            var result = step.ProcessItem(planet, item, new Cost(resources: 5));
+            var result = step.ProcessItem(planet, player, item, new Cost(resources: 5));
             Assert.AreEqual(true, result.completed);
             Assert.AreEqual(Cost.Zero, result.remainingCost);
             Assert.AreEqual(1, planet.Mines);
@@ -44,7 +45,7 @@ namespace CraigStars.Tests
             // this should build one mine, but not complete
             planet.Mines = 0;
             item = new ProductionQueueItem(QueueItemType.Mine, 2);
-            result = step.ProcessItem(planet, item, new Cost(resources: 5));
+            result = step.ProcessItem(planet, player, item, new Cost(resources: 5));
             Assert.AreEqual(false, result.completed);
             Assert.AreEqual(Cost.Zero, result.remainingCost);
             Assert.AreEqual(1, planet.Mines);
@@ -53,7 +54,7 @@ namespace CraigStars.Tests
             // this should build two mines, with some leftover cost for building new stuff
             planet.Mines = 0;
             item = new ProductionQueueItem(QueueItemType.Mine, 2);
-            result = step.ProcessItem(planet, item, new Cost(10, 20, 30, 40));
+            result = step.ProcessItem(planet, player, item, new Cost(10, 20, 30, 40));
             Assert.AreEqual(true, result.completed);
             Assert.AreEqual(new Cost(10, 20, 30, 30), result.remainingCost);
             Assert.AreEqual(2, planet.Mines);
@@ -62,7 +63,7 @@ namespace CraigStars.Tests
             // this should build one mine and partially build 1 more
             planet.Mines = 0;
             item = new ProductionQueueItem(QueueItemType.Mine, 2);
-            result = step.ProcessItem(planet, item, new Cost(resources: 8));
+            result = step.ProcessItem(planet, player, item, new Cost(resources: 8));
             Assert.AreEqual(false, result.completed);
             Assert.AreEqual(Cost.Zero, result.remainingCost);
             Assert.AreEqual(1, planet.Mines);
@@ -73,7 +74,7 @@ namespace CraigStars.Tests
             // but we should still have 2 auto mines in the queue
             planet.Mines = 0;
             item = new ProductionQueueItem(QueueItemType.AutoMines, 2);
-            result = step.ProcessItem(planet, item, new Cost(resources: 8));
+            result = step.ProcessItem(planet, player, item, new Cost(resources: 8));
             Assert.AreEqual(false, result.completed);
             Assert.AreEqual(Cost.Zero, result.remainingCost);
             Assert.AreEqual(1, planet.Mines);
@@ -85,34 +86,38 @@ namespace CraigStars.Tests
         [Test]
         public void TestProcessItemOverBuild()
         {
+            var player = game.Players[0];
             var planet = game.Planets[0];
+            PlanetService planetService = new();
+            var maxMines = planetService.GetMaxMines(planet, player);
+            var maxPossibleMines = planetService.GetMaxPossibleMines(planet, player);
 
             // we have the max possible mines, so we won't actually build any
-            planet.Mines = planet.MaxPossibleMines;
+            planet.Mines = maxPossibleMines;
             var item = new ProductionQueueItem(QueueItemType.Mine, 1);
-            var result = step.ProcessItem(planet, item, new Cost(resources: 5));
+            var result = step.ProcessItem(planet, player, item, new Cost(resources: 5));
             Assert.AreEqual(true, result.completed);
             Assert.AreEqual(new Cost(resources: 5), result.remainingCost);
-            Assert.AreEqual(planet.MaxPossibleMines, planet.Mines);
+            Assert.AreEqual(maxPossibleMines, planet.Mines);
 
             // we have the max usable mines, so we won't actually build any auto mines
-            planet.Mines = planet.MaxMines;
+            planet.Mines = maxMines;
             item = new ProductionQueueItem(QueueItemType.AutoMines, 1);
-            result = step.ProcessItem(planet, item, new Cost(resources: 5));
+            result = step.ProcessItem(planet, player, item, new Cost(resources: 5));
             Assert.AreEqual(true, result.completed);
             Assert.AreEqual(new Cost(resources: 5), result.remainingCost);
-            Assert.AreEqual(planet.MaxMines, planet.Mines);
-
+            Assert.AreEqual(maxMines, planet.Mines);
         }
 
         [Test]
         public void TestProcessItemContinueBuild()
         {
+            var player = game.Players[0];
             var planet = game.Planets[0];
 
             // we partially built this mine last round, finish it this round
             var item = new ProductionQueueItem(QueueItemType.Mine, 1, allocated: new Cost(resources: 3));
-            var result = step.ProcessItem(planet, item, new Cost(resources: 5));
+            var result = step.ProcessItem(planet, player, item, new Cost(resources: 5));
             Assert.AreEqual(true, result.completed);
             Assert.AreEqual(new Cost(resources: 3), result.remainingCost); // 3 leftover resources
             Assert.AreEqual(0, item.Quantity);
@@ -122,7 +127,7 @@ namespace CraigStars.Tests
             // next mine
             planet.Mines = 0;
             item = new ProductionQueueItem(QueueItemType.Mine, 2, allocated: new Cost(resources: 3));
-            result = step.ProcessItem(planet, item, new Cost(resources: 5)); // allocate 5 more resources
+            result = step.ProcessItem(planet, player, item, new Cost(resources: 5)); // allocate 5 more resources
             Assert.AreEqual(false, result.completed);
             Assert.AreEqual(Cost.Zero, result.remainingCost); // spend everything
             Assert.AreEqual(new Cost(resources: 3), item.Allocated); // 3 leftover resources allocated to the next item
@@ -138,15 +143,15 @@ namespace CraigStars.Tests
             var planet = game.Planets[0];
 
             // should build one mine
-            step.BuildItem(planet, new ProductionQueueItem(QueueItemType.Mine), 1);
+            step.BuildItem(planet, player, new ProductionQueueItem(QueueItemType.Mine), 1);
             Assert.AreEqual(1, planet.Mines);
 
             // should build two factories
-            step.BuildItem(planet, new ProductionQueueItem(QueueItemType.AutoFactories), 2);
+            step.BuildItem(planet, player, new ProductionQueueItem(QueueItemType.AutoFactories), 2);
             Assert.AreEqual(2, planet.Factories);
 
             // should build three defenses
-            step.BuildItem(planet, new ProductionQueueItem(QueueItemType.Defenses), 3);
+            step.BuildItem(planet, player, new ProductionQueueItem(QueueItemType.Defenses), 3);
             Assert.AreEqual(3, planet.Defenses);
 
             // give this player some total terraforming and terraform a few times
@@ -155,7 +160,7 @@ namespace CraigStars.Tests
             player.TechLevels = new TechLevel(biotechnology: 10);
 
             // should terrform three times
-            step.BuildItem(planet, new ProductionQueueItem(QueueItemType.TerraformEnvironment), 3);
+            step.BuildItem(planet, player, new ProductionQueueItem(QueueItemType.TerraformEnvironment), 3);
             Assert.AreEqual(new Hab(41, 41, 41), planet.Hab);
         }
 
@@ -174,12 +179,12 @@ namespace CraigStars.Tests
             };
 
             // should terraform one point
-            step.Terraform(planet);
+            step.Terraform(planet, player);
             Assert.AreEqual(new Hab(48, 50, 50), planet.Hab);
 
             // should terraform backwards
             planet.Hab = new Hab(53, 50, 50);
-            step.Terraform(planet);
+            step.Terraform(planet, player);
             Assert.AreEqual(new Hab(52, 50, 50), planet.Hab);
         }
 
@@ -187,6 +192,7 @@ namespace CraigStars.Tests
         public void TestBuildSingleComplete()
         {
             // make a starter homeworld that only contributes leftovers to research
+            var player = game.Players[0];
             var planet = game.Planets[0];
             planet.Factories = 10;
             planet.Mines = 10;
@@ -199,7 +205,7 @@ namespace CraigStars.Tests
             };
             planet.Cargo = new Cargo(germanium: 4, colonists: planet.Cargo.Colonists);
 
-            var leftoverResources = step.Build(planet);
+            var leftoverResources = step.Build(planet, player);
             Assert.AreEqual(11, planet.Factories);
             Assert.AreEqual(0, planet.ProductionQueue.Items.Count);
             Assert.AreEqual(new Cargo(colonists: planet.Cargo.Colonists), planet.Cargo);
@@ -209,6 +215,7 @@ namespace CraigStars.Tests
         [Test]
         public void TestBuildIncomplete()
         {
+            var player = game.Players[0];
             var planet = game.Planets[0];
 
             // build a factory and mine without enough germanium
@@ -217,7 +224,7 @@ namespace CraigStars.Tests
                 new ProductionQueueItem(QueueItemType.Mine, 1)
             };
             planet.Cargo = new Cargo(germanium: 3, colonists: planet.Cargo.Colonists);
-            step.Build(planet);
+            step.Build(planet, player);
 
             // should use all germanium and allocate it to factory (and 7 resources, which is 3/4 of the 10 required)
             // the mine should remain unbuilt
@@ -232,6 +239,7 @@ namespace CraigStars.Tests
         [Test]
         public void TestBuildAuto()
         {
+            var player = game.Players[0];
             // make the planet a standard homeworld with 35 available resources
             var planet = game.Planets[0];
             planet.Factories = 10;
@@ -245,7 +253,7 @@ namespace CraigStars.Tests
                 new ProductionQueueItem(QueueItemType.AutoMines, 1)
             };
             planet.Cargo = new Cargo(germanium: 3, colonists: planet.Cargo.Colonists);
-            step.Build(planet);
+            step.Build(planet, player);
 
             // should use all germanium and allocate it to factory (and 7 resources, which is 3/4 of the 10 required)
             // the mine should be built
@@ -285,7 +293,7 @@ namespace CraigStars.Tests
                 new ProductionQueueItem(QueueItemType.ShipToken, 5, design),
             };
             planet.Cargo = new Cargo(germanium: 3, colonists: planet.Cargo.Colonists);
-            step.Build(planet);
+            step.Build(planet, player);
 
             // should use all germanium and allocate it to factory (and 7 resources, which is 3/4 of the 10 required)
             // 5 mines should be built, no fleets should be built
@@ -332,7 +340,7 @@ namespace CraigStars.Tests
                 new ProductionQueueItem(QueueItemType.ShipToken, 1, design2),
             };
             planet.Cargo = new Cargo(1000, 1000, 1000, colonists: planet.Cargo.Colonists);
-            step.Build(planet);
+            step.Build(planet, player);
 
             // 1 mine, 1 factory, and 2 ships should be built
             // no terraforming because we are maxed

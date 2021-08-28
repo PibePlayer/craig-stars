@@ -34,6 +34,8 @@ namespace CraigStars
     /// </summary>
     public class PlanetBombStep : TurnGenerationStep
     {
+        PlanetService planetService = new();
+
         public PlanetBombStep(Game game) : base(game, TurnGenerationState.Bomb) { }
 
         public override void Process()
@@ -91,11 +93,10 @@ namespace CraigStars
         /// Bomb a planet with normal bombs
         /// </summary>
         /// <param name="planet"></param>
-        /// <param name="player"></param>
+        /// <param name="attacker"></param>
         /// <param name="bombers"></param>
-        void BombPlanet(Planet planet, Player player, IEnumerable<Fleet> bombers)
+        void BombPlanet(Planet planet, Player attacker, IEnumerable<Fleet> bombers)
         {
-            var defenseCoverage = planet.DefenseCoverage;
 
             // do all normal bombs
             foreach (var fleet in bombers)
@@ -103,6 +104,7 @@ namespace CraigStars
                 if (fleet.Aggregate.Bombs.Count > 0)
                 {
                     // figure out the killRate and minKill for this fleet's bombs
+                    var defenseCoverage = planetService.GetDefenseCoverage(planet, planet.Player);
                     var killRateColonistsKilled = RoundToNearest(GetColonistsKilled(planet.Population, defenseCoverage, fleet.Aggregate.Bombs));
                     var minColonistsKilled = RoundToNearest(GetMinColonistsKilled(planet.Population, defenseCoverage, fleet.Aggregate.Bombs));
 
@@ -112,7 +114,7 @@ namespace CraigStars
                     planet.Population = leftoverPopulation;
 
                     // apply this against mines/factories and defenses proportionally
-                    var structuresDestroyed = GetStructuresDestroyed(planet.DefenseCoverage, fleet.Aggregate.Bombs);
+                    var structuresDestroyed = GetStructuresDestroyed(defenseCoverage, fleet.Aggregate.Bombs);
                     var totalStructures = planet.Mines + planet.Factories + planet.Defenses;
                     var leftoverMines = 0;
                     var leftoverFactories = 0;
@@ -134,7 +136,7 @@ namespace CraigStars
                     planet.Defenses = leftoverDefenses;
 
                     // let each player know a bombing happened
-                    Message.PlanetBombed(player, planet, fleet, actualKilled, minesDestroyed, factoriesDestroyed, defensesDestroyed);
+                    Message.PlanetBombed(attacker, planet, fleet, actualKilled, minesDestroyed, factoriesDestroyed, defensesDestroyed);
                     Message.PlanetBombed(planet.Player, planet, fleet, actualKilled, minesDestroyed, factoriesDestroyed, defensesDestroyed);
                 }
             }
@@ -145,11 +147,11 @@ namespace CraigStars
         /// Have a player smartbomb a planet
         /// </summary>
         /// <param name="planet"></param>
-        /// <param name="player"></param>
+        /// <param name="attacker"></param>
         /// <param name="bombers"></param>
-        void SmartBombPlanet(Planet planet, Player player, IEnumerable<Fleet> bombers)
+        void SmartBombPlanet(Planet planet, Player attacker, IEnumerable<Fleet> bombers)
         {
-            var smartDefenseCoverage = planet.SmartDefenseCoverage;
+            var smartDefenseCoverage = planetService.GetDefenseCoverageSmart(planet, planet.Player, Game.Rules);
             // now do all smart bombs
             foreach (var fleet in bombers)
             {
@@ -163,7 +165,7 @@ namespace CraigStars
                     planet.Population = leftoverPopulation;
 
                     // let each player know a bombing happened
-                    Message.PlanetSmartBombed(player, planet, fleet, actualKilled);
+                    Message.PlanetSmartBombed(attacker, planet, fleet, actualKilled);
                     Message.PlanetSmartBombed(planet.Player, planet, fleet, actualKilled);
                 }
             }

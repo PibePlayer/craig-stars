@@ -183,7 +183,7 @@ namespace CraigStars.Client
                     }
                     else
                     {
-                        var fuelCost = CommandedFleet.Fleet.GetFuelCost(to.WarpFactor, waypointDistance);
+                        var fuelCost = fleetService.GetFuelCost(CommandedFleet.Fleet, Me, to.WarpFactor, waypointDistance);
                         travelTime.Text = $"{Math.Ceiling(from.GetTimeToWaypoint(to))} years";
                         estimatedFuelUsage.Text = $"{fuelCost}mg";
                         if (fuelCost > CommandedFleet.Fleet.Fuel)

@@ -34,6 +34,7 @@ namespace CraigStars
         List<FleetWaypoint> otherTasks = new List<FleetWaypoint>();
         List<PlanetInvasion> invasions = new List<PlanetInvasion>();
 
+        PlanetService planetService = new();
         InvasionProcessor invasionProcessor;
         PlanetDiscoverer planetDiscoverer;
 
@@ -257,7 +258,7 @@ namespace CraigStars
             if (ValidateRemoteMining(fleet, wp, planet))
             {
                 // remote mine!
-                planet.Cargo += planet.GetMineralOutput(fleet.Aggregate.MiningRate);
+                planet.Cargo += planetService.GetMineralOutput(planet, fleet.Aggregate.MiningRate);
                 planetDiscoverer.DiscoverRemoteMined(fleet.Player, planet);
             }
             else
@@ -414,7 +415,7 @@ namespace CraigStars
         /// </summary>
         void ProcessInvasionTask(PlanetInvasion task)
         {
-            invasionProcessor.InvadePlanet(task.Planet, task.Fleet.Player, task.Fleet, task.ColonistsToDrop);
+            invasionProcessor.InvadePlanet(task.Planet, task.Planet.Player, task.Fleet.Player, task.Fleet, task.ColonistsToDrop);
         }
 
 

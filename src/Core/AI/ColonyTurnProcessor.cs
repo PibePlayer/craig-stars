@@ -13,6 +13,9 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(ColonyTurnProcessor));
 
+        PlanetService planetService = new();
+        FleetService fleetService = new();
+
         // the required population density required of a planet in order to suck people off of it
         // setting this to .25 because we don't want to suck people off a planet until it's reached the
         // max of its growth rate (over 1/4 crowded)
@@ -35,7 +38,7 @@ namespace CraigStars
             .OrderByDescending(planet => player.Race.GetPlanetHabitability(planet.BaseHab.Value))
             .ToList();
             var buildablePlanets = player.Planets
-                .Where(planet => planet.CanBuild(player, colonyShip.Aggregate.Mass) && planet.PopulationDensity >= PopulationDensityRequired)
+                .Where(planet => planetService.CanBuild(planet, player, colonyShip.Aggregate.Mass) && planetService.GetPopulationDensity(planet, player, player.Rules) >= PopulationDensityRequired)
                 .ToList();
             var colonizerFleets = player.Fleets.Where(fleet => fleet.Aggregate.Purposes.Contains(ShipDesignPurpose.Colonizer));
 
@@ -52,7 +55,7 @@ namespace CraigStars
             foreach (var fleet in colonizerFleets.Where(
                 f => f.Waypoints.Count == 1 &&
                 f.Orbiting?.Player == player &&
-                f.Orbiting.GetPopulationDensity(f.Orbiting.Population - f.AvailableCapacity) >= PopulationDensityRequired)
+                planetService.GetPopulationDensity(f.Orbiting, player, player.Rules, f.Orbiting.Population - f.AvailableCapacity) >= PopulationDensityRequired)
             )
             {
                 var planetToColonize = ClosestPlanet(fleet, colonizablePlanets);
@@ -65,8 +68,8 @@ namespace CraigStars
                     {
                         CargoTransferUtils.CreateCargoTransferOrder(fleet.Player, colonists, fleet, sourcePlanet);
 
-                        fleet.Waypoints.Add(Waypoint.TargetWaypoint(planetToColonize, fleet.GetDefaultWarpFactor(), WaypointTask.Colonize));
-                        fleet.Waypoints[1].WarpFactor = fleet.GetBestWarpFactor(fleet.Waypoints[0], fleet.Waypoints[1]);
+                        fleet.Waypoints.Add(Waypoint.TargetWaypoint(planetToColonize, fleetService.GetDefaultWarpFactor(fleet, player), WaypointTask.Colonize));
+                        fleet.Waypoints[1].WarpFactor = fleetService.GetBestWarpFactor(fleet, player, fleet.Waypoints[0], fleet.Waypoints[1]);
 
                         // remove this planet from our list
                         colonizablePlanets.Remove(planetToColonize);

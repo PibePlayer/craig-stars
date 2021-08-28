@@ -6,6 +6,7 @@ namespace CraigStars
 {
     public class ResourcesTooltip : CSTooltip
     {
+        PlanetService planetService = new();
         RichTextLabel tipRichTextLabel;
 
         public override void _Ready()
@@ -17,9 +18,9 @@ namespace CraigStars
         {
             if (Planet != null)
             {
-                tipRichTextLabel.BbcodeText = $"[b]{Planet.Name}[/b] generates [b]{Planet.ResourcesPerYear}[/b] resources each year. " +
-                $"[b]{Planet.ResourcesPerYearResearch}[/b] of these resources have been alloocated to research. That leaves " +
-                $"[b]{Planet.ResourcesPerYearAvailable}[/b] resources for use by the planet";
+                tipRichTextLabel.BbcodeText = $"[b]{Planet.Name}[/b] generates [b]{planetService.GetResourcesPerYear(Planet, Me)}[/b] resources each year. " +
+                $"[b]{planetService.GetResourcesPerYearResearch(Planet, Me)}[/b] of these resources have been alloocated to research. That leaves " +
+                $"[b]{planetService.GetResourcesPerYearAvailable(Planet, Me)}[/b] resources for use by the planet";
             }
         }
     }

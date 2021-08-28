@@ -16,6 +16,8 @@ namespace CraigStars
         static CSLog log = LogProvider.GetLogger(typeof(PacketMoveStep));
         public const string ProcessedPacketsContextKey = "ProcessedPackets";
 
+        PlanetService planetService = new();
+
         HashSet<MineralPacket> processedMineralPackets = new HashSet<MineralPacket>();
 
         // some things (like remote mining) only happen on wp1
@@ -139,7 +141,7 @@ namespace CraigStars
                 var percentCaughtSafely = (float)speedOfReceiver / speedOfPacket;
                 var mineralsRecovered = weight * percentCaughtSafely + weight * (1 / 3f) * (1 - percentCaughtSafely);
                 var rawDamage = (speedOfPacket - speedOfReceiver) * weight / 160f;
-                var damageWithDefenses = rawDamage * (1 - planet.DefenseCoverage);
+                var damageWithDefenses = rawDamage * (1 - planetService.GetDefenseCoverage(planet, planet.Player));
                 var colonistsKilled = RoundToNearest(Math.Max(damageWithDefenses * planet.Population / 1000f, damageWithDefenses * 100));
                 var defensesDestroyed = (int)Math.Max(planet.Defenses * damageWithDefenses / 1000, damageWithDefenses / 20);
 

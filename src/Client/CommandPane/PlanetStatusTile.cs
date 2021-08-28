@@ -51,11 +51,11 @@ namespace CraigStars.Client
             if (CommandedPlanet != null)
             {
                 population.Text = $"{CommandedPlanet.Planet.Population:n0}";
-                resources.Text = $"{CommandedPlanet.Planet.ResourcesPerYearAvailable:n0} of {CommandedPlanet.Planet.ResourcesPerYear:n0}";
-                defenses.Text = $"{CommandedPlanet.Planet.Defenses:n0} of {CommandedPlanet.Planet.MaxDefenses:n0}";
+                resources.Text = $"{planetService.GetResourcesPerYearAvailable(CommandedPlanet.Planet, Me):n0} of {planetService.GetResourcesPerYear(CommandedPlanet.Planet, Me):n0}";
+                defenses.Text = $"{CommandedPlanet.Planet.Defenses:n0} of {planetService.GetMaxDefenses(CommandedPlanet.Planet, Me):n0}";
                 var defense = CommandedPlanet.Planet.Player?.GetBestDefense();
                 defenseType.Text = defense?.Name;
-                defenseCoverage.Text = $"{CommandedPlanet.Planet?.DefenseCoverage:P1}";
+                defenseCoverage.Text = $"{planetService.GetDefenseCoverage(CommandedPlanet.Planet, Me):P1}";
                 if (CommandedPlanet.Planet.Scanner)
                 {
                     var scanner = CommandedPlanet.Planet.Player.GetBestPlanetaryScanner();

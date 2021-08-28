@@ -10,21 +10,22 @@ namespace CraigStars
     /// </summary>
     public class FleetMoveStep : TurnGenerationStep
     {
-        MineFieldDamager mineFieldDamager = new MineFieldDamager();
-        ShipDesignDiscoverer designDiscoverer = new ShipDesignDiscoverer();
+        MineFieldDamager mineFieldDamager = new();
+        ShipDesignDiscoverer designDiscoverer = new();
+        FleetService fleetService = new();
+        
         public FleetMoveStep(Game game) : base(game, TurnGenerationState.MoveFleets) { }
 
         public override void Process()
         {
-            Game.Fleets.ForEach(fleet => Move(fleet));
-            Game.Fleets.ForEach(fleet => AfterMove(fleet));
+            Game.Fleets.ForEach(fleet => Move(fleet, fleet.Player));
         }
 
         /// <summary>
         /// Move a fleet
         /// </summary>
         /// <param name="fleet"></param>
-        internal void Move(Fleet fleet)
+        internal void Move(Fleet fleet, Player player)
         {
             if (fleet.Waypoints.Count > 1)
             {
@@ -35,11 +36,11 @@ namespace CraigStars
                 if (wp1.WarpFactor == Waypoint.StargateWarpFactor)
                 {
                     // yeah, gate!
-                    GateFleet(fleet, wp0, wp1, totalDist);
+                    GateFleet(fleet, player, wp0, wp1, totalDist);
                 }
                 else
                 {
-                    MoveFleet(fleet, wp0, wp1, totalDist);
+                    MoveFleet(fleet, player, wp0, wp1, totalDist);
                 }
 
             }
@@ -51,22 +52,13 @@ namespace CraigStars
         }
 
         /// <summary>
-        /// Process fleets after they have moved. This is where IS colonists on freighters grow
-        /// </summary>
-        /// <param name="fleet"></param>
-        internal void AfterMove(Fleet fleet)
-        {
-            
-        }
-
-        /// <summary>
         /// Move the fleet the cool way, with stargates!
         /// </summary>
         /// <param name="fleet"></param>
         /// <param name="wp0"></param>
         /// <param name="wp1"></param>
         /// <param name="totalDist"></param>
-        internal void GateFleet(Fleet fleet, Waypoint wp0, Waypoint wp1, float totalDist)
+        internal void GateFleet(Fleet fleet, Player player, Waypoint wp0, Waypoint wp1, float totalDist)
         {
             // if we got here, both source and dest have stargates
             var sourcePlanet = fleet.Orbiting;
@@ -74,27 +66,27 @@ namespace CraigStars
 
             if (sourcePlanet == null || !sourcePlanet.HasStargate)
             {
-                Message.FleetStargateInvalidSource(fleet.Player, fleet, wp0);
+                Message.FleetStargateInvalidSource(player, fleet, wp0);
                 return;
             }
             if (destPlanet == null || !destPlanet.HasStargate)
             {
-                Message.FleetStargateInvalidDest(fleet.Player, fleet, wp0, wp1);
+                Message.FleetStargateInvalidDest(player, fleet, wp0, wp1);
                 return;
             }
-            if (!sourcePlanet.Player.IsFriend(fleet.Player))
+            if (!sourcePlanet.Player.IsFriend(player))
             {
-                Message.FleetStargateInvalidSourceOwner(fleet.Player, fleet, wp0, wp1);
+                Message.FleetStargateInvalidSourceOwner(player, fleet, wp0, wp1);
                 return;
             }
-            if (!destPlanet.Player.IsFriend(fleet.Player))
+            if (!destPlanet.Player.IsFriend(player))
             {
-                Message.FleetStargateInvalidDestOwner(fleet.Player, fleet, wp0, wp1);
+                Message.FleetStargateInvalidDestOwner(player, fleet, wp0, wp1);
                 return;
             }
-            if (fleet.Cargo.Colonists > 0 && !sourcePlanet.OwnedBy(fleet.Player))
+            if (fleet.Cargo.Colonists > 0 && !sourcePlanet.OwnedBy(player))
             {
-                Message.FleetStargateInvalidColonists(fleet.Player, fleet, wp0, wp1);
+                Message.FleetStargateInvalidColonists(player, fleet, wp0, wp1);
                 return;
             }
 
@@ -108,7 +100,7 @@ namespace CraigStars
             // check if we are exceeding the max distance
             if (totalDist > minSafeRange * Game.Rules.StargateMaxRangeFactor)
             {
-                Message.FleetStargateInvalidRange(fleet.Player, fleet, wp0, wp1, totalDist);
+                Message.FleetStargateInvalidRange(player, fleet, wp0, wp1, totalDist);
                 return;
             }
 
@@ -117,22 +109,22 @@ namespace CraigStars
             {
                 if (token.Design.Aggregate.Mass > minSafeHullMass * Game.Rules.StargateMaxHullMassFactor)
                 {
-                    Message.FleetStargateInvalidMass(fleet.Player, fleet, wp0, wp1);
+                    Message.FleetStargateInvalidMass(player, fleet, wp0, wp1);
                     return;
                 }
             }
 
             // dump cargo if we aren't IT
-            if (fleet.Cargo.Total > 0 && fleet.Player.Race.PRT != PRT.IT)
+            if (fleet.Cargo.Total > 0 && player.Race.PRT != PRT.IT)
             {
-                Message.FleetStargateDumpedCargo(fleet.Player, fleet, wp0, wp1, fleet.Cargo);
+                Message.FleetStargateDumpedCargo(player, fleet, wp0, wp1, fleet.Cargo);
                 fleet.AttemptTransfer(-fleet.Cargo);
                 sourcePlanet.AttemptTransfer(fleet.Cargo);
             }
 
             // apply overgate damage and delete tokens (and possibly the fleet)
             // also vanish tokens for non IT races
-            ApplyOvergatePenalty(fleet, totalDist, wp0, wp1, sourceStargate, destStargate);
+            ApplyOvergatePenalty(fleet, player, totalDist, wp0, wp1, sourceStargate, destStargate);
 
             if (fleet.Tokens.Count > 0)
             {
@@ -148,7 +140,7 @@ namespace CraigStars
         /// <param name="wp0"></param>
         /// <param name="wp1"></param>
         /// <param name="totalDist"></param>
-        internal void MoveFleet(Fleet fleet, Waypoint wp0, Waypoint wp1, float totalDist)
+        internal void MoveFleet(Fleet fleet, Player player, Waypoint wp0, Waypoint wp1, float totalDist)
         {
             float dist = wp1.WarpFactor * wp1.WarpFactor;
 
@@ -159,7 +151,7 @@ namespace CraigStars
             }
 
             // get the cost for the fleet
-            int fuelCost = fleet.GetFuelCost(wp1.WarpFactor, dist);
+            int fuelCost = fleetService.GetFuelCost(fleet, player, wp1.WarpFactor, dist);
             int fuelGenerated = 0;
             if (fuelCost > fleet.Fuel)
             {
@@ -169,31 +161,31 @@ namespace CraigStars
                 dist = dist * distanceFactor;
 
                 // collide with minefields on route, but don't hit a minefield if we run out of fuel beforehand
-                dist = CheckForMineFields(fleet, wp1, dist);
+                dist = CheckForMineFields(fleet, player, wp1, dist);
 
                 fleet.Fuel = 0;
-                wp1.WarpFactor = fleet.GetNoFuelWarpFactor();
-                Message.FleetOutOfFuel(fleet.Player, fleet, wp1.WarpFactor);
+                wp1.WarpFactor = fleetService.GetNoFuelWarpFactor(fleet, player);
+                Message.FleetOutOfFuel(player, fleet, wp1.WarpFactor);
 
                 // if we ran out of fuel 60% of the way to our normal distance, the remaining 40% of our time
                 // was spent travelling at fuel generation speeds:
                 var remainingDistanceTravelled = (1 - distanceFactor) * (wp1.WarpFactor * wp1.WarpFactor);
                 dist += remainingDistanceTravelled;
-                fuelGenerated = fleet.GetFuelGeneration(wp1.WarpFactor, remainingDistanceTravelled);
+                fuelGenerated = fleetService.GetFuelGeneration(fleet, player, wp1.WarpFactor, remainingDistanceTravelled);
             }
             else
             {
                 // collide with minefields on route, but don't hit a minefield if we run out of fuel beforehand
-                var actualDist = CheckForMineFields(fleet, wp1, dist);
+                var actualDist = CheckForMineFields(fleet, player, wp1, dist);
                 if (actualDist != dist)
                 {
                     dist = actualDist;
-                    fuelCost = fleet.GetFuelCost(wp1.WarpFactor, dist);
+                    fuelCost = fleetService.GetFuelCost(fleet, player, wp1.WarpFactor, dist);
                     // we hit a minefield, update fuel usage
                 }
 
                 fleet.Fuel -= fuelCost;
-                fuelGenerated = fleet.GetFuelGeneration(wp1.WarpFactor, dist);
+                fuelGenerated = fleetService.GetFuelGeneration(fleet, player, wp1.WarpFactor, dist);
             }
 
             // message the player about fuel generation
@@ -201,7 +193,7 @@ namespace CraigStars
             if (fuelGenerated > 0)
             {
                 fleet.Fuel += fuelGenerated;
-                Message.FleetGeneratedFuel(fleet.Player, fleet, fuelGenerated);
+                Message.FleetGeneratedFuel(player, fleet, fuelGenerated);
             }
 
             // assuming we move at all, make sure we are no longer orbiting any planets
@@ -292,7 +284,7 @@ namespace CraigStars
         /// <param name="fleet"></param>
         /// <param name="sourceStargate"></param>
         /// <param name="destStargate"></param>
-        internal void ApplyOvergatePenalty(Fleet fleet, float distance, Waypoint wp0, Waypoint wp1, TechHullComponent sourceStargate, TechHullComponent destStargate)
+        internal void ApplyOvergatePenalty(Fleet fleet, Player player, float distance, Waypoint wp0, Waypoint wp1, TechHullComponent sourceStargate, TechHullComponent destStargate)
         {
             int totalDamage = 0;
             int shipsLostToDamage = 0;
@@ -302,7 +294,7 @@ namespace CraigStars
             {
                 startingShips += token.Quantity;
                 // Inner stellar travellers never lose ships to the void
-                if (fleet.Player.Race.PRT != PRT.IT)
+                if (player.Race.PRT != PRT.IT)
                 {
                     var rangeVanishChance = token.GetStargateRangeVanishingChance(distance, sourceStargate.SafeRange);
                     var massVanishingChance = token.GetStargateMassVanishingChance(sourceStargate.SafeHullMass, Game.Rules.StargateMaxHullMassFactor);
@@ -356,13 +348,13 @@ namespace CraigStars
             if (fleet.Tokens.Count == 0)
             {
                 EventManager.PublishMapObjectDeletedEvent(fleet);
-                Message.FleetStargateDestroyed(fleet.Player, fleet, wp0, wp1);
+                Message.FleetStargateDestroyed(player, fleet, wp0, wp1);
             }
             else
             {
                 if (totalDamage > 0 || shipsLostToTheVoid > 0)
                 {
-                    Message.FleetStargateDamaged(fleet.Player, fleet, wp0, wp1, totalDamage, startingShips, shipsLostToDamage, shipsLostToTheVoid);
+                    Message.FleetStargateDamaged(player, fleet, wp0, wp1, totalDamage, startingShips, shipsLostToDamage, shipsLostToTheVoid);
                 }
             }
         }
@@ -375,10 +367,10 @@ namespace CraigStars
         /// <param name="dest"></param>
         /// <param name="distance"></param>
         /// <returns>The actual distance travelled, if stopped by a minefield</returns>
-        internal float CheckForMineFields(Fleet fleet, Waypoint dest, float distance)
+        internal float CheckForMineFields(Fleet fleet, Player player, Waypoint dest, float distance)
         {
             int safeWarpBonus = 0;
-            if (fleet.Player.Race.PRT == PRT.SD)
+            if (player.Race.PRT == PRT.SD)
             {
                 safeWarpBonus = Game.Rules.SDSafeWarpBonus;
             }

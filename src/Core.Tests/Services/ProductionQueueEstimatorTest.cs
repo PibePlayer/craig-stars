@@ -42,13 +42,13 @@ namespace CraigStars.Tests
             };
 
             // single mine should complete in 1 turn
-            estimator.CalculateCompletionEstimates(planet, items, true);
+            estimator.CalculateCompletionEstimates(planet, player, items, true);
             Assert.AreEqual(1, item1.yearsToBuildAll);
             Assert.AreEqual(1, item1.yearsToBuildOne);
 
             // 14 mines 5 resources each are 1 turn for one mine, 2 turns for all
             item1.Quantity = 14;
-            estimator.CalculateCompletionEstimates(planet, items, true);
+            estimator.CalculateCompletionEstimates(planet, player, items, true);
             Assert.AreEqual(1, item1.yearsToBuildOne);
             Assert.AreEqual(2, item1.yearsToBuildAll);
         }
@@ -81,7 +81,7 @@ namespace CraigStars.Tests
                 item2,
             };
 
-            estimator.CalculateCompletionEstimates(planet, items, true);
+            estimator.CalculateCompletionEstimates(planet, player, items, true);
             Assert.AreEqual(1, item1.yearsToBuildOne);
             Assert.AreEqual(2, item1.yearsToBuildAll);
 

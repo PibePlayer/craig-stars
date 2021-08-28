@@ -9,7 +9,8 @@ namespace CraigStars
     /// </summary>
     public class PlayerResearchStep : TurnGenerationStep
     {
-        Researcher researcher = new Researcher();
+        PlanetService planetService = new();
+        Researcher researcher = new();
 
         public PlayerResearchStep(Game game) : base(game, TurnGenerationState.Research) { }
 
@@ -22,7 +23,7 @@ namespace CraigStars
                 var resourcesToSpend = 0;
                 foreach (var planet in playerPlanets)
                 {
-                    resourcesToSpend += playerPlanets.Sum(p => p.ResourcesPerYearResearch);
+                    resourcesToSpend += playerPlanets.Sum(p => planetService.GetResourcesPerYearResearch(p, p.Player));
                 }
 
                 // research for this player

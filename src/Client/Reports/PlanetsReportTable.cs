@@ -11,6 +11,8 @@ namespace CraigStars.Client
     {
         static CSLog log = LogProvider.GetLogger(typeof(PlanetsReportTable));
 
+        PlanetService planetService = new();
+
         public bool ShowAll { get; set; }
 
         public Column ownerColumn;
@@ -87,7 +89,7 @@ namespace CraigStars.Client
                 {
                     owner = "--";
                 }
-                capacity = item.Population / (float)item.GetMaxPopulation(race, player.Rules);
+                capacity = planetService.GetPopulationDensity(item, player, RulesManager.Rules);
                 habitability = race.GetPlanetHabitability(item.Hab.Value);
                 habitabilityText = $"{habitability:.#}%";
                 habColor = habitability > 0 ? Colors.Green : Colors.Red;

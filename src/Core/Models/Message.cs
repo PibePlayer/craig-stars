@@ -389,7 +389,7 @@ namespace CraigStars
                 $"Remote mining robots from {fleet.Name} had orders to mine in deep space. The order has been canceled.", fleet));
         }
 
-        public static void PlanetDiscovered(Player player, Planet planet)
+        public static void PlanetDiscovered(Player player, Planet planet, Hab terraformAmount)
         {
             long habValue = player.Race.GetPlanetHabitability(planet.BaseHab.Value);
             string text;
@@ -399,7 +399,7 @@ namespace CraigStars
             }
             else
             {
-                Hab terraformedHab = planet.Hab.Value + planet.GetTerraformAmount(player);
+                Hab terraformedHab = planet.Hab.Value + terraformAmount;
                 long terraformHabValue = habValue;
 
                 if (planet.BaseHab.Value != terraformedHab)

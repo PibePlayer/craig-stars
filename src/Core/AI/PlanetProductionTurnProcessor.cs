@@ -12,6 +12,7 @@ namespace CraigStars
     public class PlanetProductionTurnProcessor : TurnProcessor
     {
         static CSLog log = LogProvider.GetLogger(typeof(PlanetProductionTurnProcessor));
+        PlanetService planetService = new();
         ProductionQueueEstimator estimator = new ProductionQueueEstimator();
 
         // the required population density required of a planet in order to suck people off of it
@@ -28,7 +29,7 @@ namespace CraigStars
         {
             foreach (var planet in player.Planets)
             {
-                if (planet.GetBestTerraform() != null)
+                if (planetService.GetBestTerraform(planet, player) != null)
                 {
                     planet.ProductionQueue.EnsureHasItem(new ProductionQueueItem(QueueItemType.AutoMaxTerraform, 5), 1);
                 }

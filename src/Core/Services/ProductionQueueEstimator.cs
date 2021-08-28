@@ -9,6 +9,7 @@ namespace CraigStars
     /// </summary>
     public class ProductionQueueEstimator
     {
+        PlanetService planetService = new();
 
         /// <summary>
         /// Completion estimate internal structure
@@ -32,21 +33,21 @@ namespace CraigStars
         /// <param name="planet"></param>
         /// <param name="items"></param>
         /// <param name="contributesOnlyLeftoverToResearch"></param>
-        public void CalculateCompletionEstimates(Planet planet, List<ProductionQueueItem> items, bool contributesOnlyLeftoverToResearch)
+        public void CalculateCompletionEstimates(Planet planet, Player player, List<ProductionQueueItem> items, bool contributesOnlyLeftoverToResearch)
         {
             // figure out how many resources we have per year
             int yearlyResources = 0;
             if (contributesOnlyLeftoverToResearch)
             {
-                yearlyResources = planet.ResourcesPerYear;
+                yearlyResources = planetService.GetResourcesPerYear(planet, player);
             }
             else
             {
-                yearlyResources = planet.ResourcesPerYearAvailable;
+                yearlyResources = planetService.GetResourcesPerYearAvailable(planet, player);
             }
 
             // this is how man resources and minerals our planet produces each year
-            Cost yearlyAvailableToSpend = new Cost(planet.MineralOutput, yearlyResources);
+            Cost yearlyAvailableToSpend = new Cost(planetService.GetMineralOutput(planet, player), yearlyResources);
 
             // allocate all minerals on the planet to our starting "cost"
             Cost previousItemsCost = -planet.Cargo.ToCost();

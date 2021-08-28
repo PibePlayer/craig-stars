@@ -26,6 +26,8 @@ namespace CraigStars
     /// </summary>
     public class CalculateScoreStep : TurnGenerationStep
     {
+        PlanetService planetService = new();
+
         public CalculateScoreStep(Game game) : base(game, TurnGenerationState.CalculatingScore) { }
 
         public override void Process()
@@ -61,7 +63,7 @@ namespace CraigStars
                 }
                 // Planets:  From 1 to 6 points, scoring 1 point for each 100,000 colonists
                 score.Score += Mathf.Clamp(planet.Population / 100000, 1, 6);
-                score.Resources += planet.ResourcesPerYear;
+                score.Resources += planetService.GetResourcesPerYear(planet, player);
             }
 
             score.TechLevels = player.TechLevels.Sum();

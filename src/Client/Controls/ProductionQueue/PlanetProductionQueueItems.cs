@@ -5,6 +5,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace CraigStars
 {
@@ -13,6 +14,8 @@ namespace CraigStars
     /// </summary>
     public abstract class PlanetProductionQueueItems : ScrollContainer
     {
+        protected PlanetService planetService = new();
+
         public const int NoItemSelected = -1;
         public delegate void ItemAction(ProductionQueueItem item);
         public event ItemAction ItemSelectedEvent;
@@ -33,7 +36,6 @@ namespace CraigStars
                 planet = value;
                 // update the items when the planet changes
                 OnPlanetUpdated();
-                UpdateItems();
             }
         }
         Planet planet;
@@ -102,11 +104,11 @@ namespace CraigStars
         /// <summary>
         /// When the dialog becomes visible, update the controls for this player
         /// </summary>
-        protected virtual void OnVisibilityChanged()
+        protected async virtual void OnVisibilityChanged()
         {
             if (IsVisibleInTree() && table != null)
             {
-                UpdateItems();
+                await UpdateItems();
                 if (table.Data.SourceRows.Count > 0)
                 {
                     table.SelectedRow = 0;
@@ -119,7 +121,7 @@ namespace CraigStars
             table.Data.ClearRows();
         }
 
-        public abstract void UpdateItems();
+        public virtual Task UpdateItems() => Task.CompletedTask;
 
         /// <summary>
         /// Get the currently selected item, or null if the top of the queue is selected
@@ -177,15 +179,15 @@ namespace CraigStars
                 int yearlyResources = 0;
                 if (ContributesOnlyLeftoverToResearch)
                 {
-                    yearlyResources = Planet.ResourcesPerYear;
+                    yearlyResources = planetService.GetResourcesPerYear(Planet, Me);
                 }
                 else
                 {
-                    yearlyResources = Planet.ResourcesPerYearAvailable;
+                    yearlyResources = planetService.GetResourcesPerYearAvailable(Planet, Me);
                 }
 
                 // this is how man resources and minerals our planet produces each year
-                yearlyAvailableCost = new Cost(Planet.MineralOutput, yearlyResources);
+                yearlyAvailableCost = new Cost(planetService.GetMineralOutput(Planet, Me), yearlyResources);
 
                 // Get the total availble cost of this planet's yearly output + resources on hand.
                 availableCost = yearlyAvailableCost + Planet.Cargo.ToCost();

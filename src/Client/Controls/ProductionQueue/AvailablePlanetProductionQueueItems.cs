@@ -4,6 +4,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace CraigStars
 {
@@ -18,29 +19,17 @@ namespace CraigStars
         {
             base._Ready();
 
-            table.Data.AddColumn("Item");
+            table.Data.AddColumn("Item", sortable: false);
             table.ResetTable();
         }
 
-        /// <summary>
-        /// When a planet is updated, reset our internal Items list to whatever is currently in the planet queue
-        /// </summary>
-        protected override void OnPlanetUpdated()
-        {
-            base.OnPlanetUpdated();
-            if (Planet != null)
-            {
-                AddAvailableItems();
-            }
-        }
-
-        public override void UpdateItems()
+        public async override Task UpdateItems()
         {
             if (Planet != null)
             {
                 table.Data.ClearRows();
                 AddAvailableItems();
-                table.ResetRows();
+                await table.ResetRows();
             }
         }
 
@@ -54,7 +43,7 @@ namespace CraigStars
             {
                 Me.Designs.ForEach(design =>
                 {
-                    if (Planet.CanBuild(Me, design.Aggregate.Mass))
+                    if (planetService.CanBuild(Planet, Me, design.Aggregate.Mass))
                     {
                         if (design.Hull.Starbase)
                         {
@@ -82,7 +71,7 @@ namespace CraigStars
             AddAvailableItem(new ProductionQueueItem(QueueItemType.Defenses));
             AddAvailableItem(new ProductionQueueItem(QueueItemType.MineralAlchemy));
 
-            if (Planet.CanTerraform())
+            if (planetService.CanTerraform(Planet, Me))
             {
                 AddAvailableItem(new ProductionQueueItem(QueueItemType.TerraformEnvironment));
             }

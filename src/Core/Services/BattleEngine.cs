@@ -177,7 +177,8 @@ namespace CraigStars
         };
 
         public Rules Rules { get; set; } = new Rules(0);
-        public ShipDesignDiscoverer designDiscoverer = new ShipDesignDiscoverer();
+        public ShipDesignDiscoverer designDiscoverer = new();
+        public FleetService fleetService = new();
 
         public BattleEngine(Rules rules)
         {
@@ -293,7 +294,7 @@ namespace CraigStars
             var secondaryTargets = new List<BattleToken>();
 
             // Find all enemy tokens
-            foreach (var token in battle.RemainingTokens.Where(token => attacker.Fleet.WillAttack(token.Player)))
+            foreach (var token in battle.RemainingTokens.Where(token => fleetService.WillAttack(attacker.Fleet, attacker.Player, token.Player)))
             {
                 // if we will target this
                 if (WillTarget(primaryTarget, token) && weapon.IsInRange(token))
@@ -894,7 +895,7 @@ namespace CraigStars
             BattleTargetType secondaryTargetOrder = attacker.Fleet.BattlePlan.SecondaryTarget;
 
             // TODO: We need to account for the fact that if a fleet targets us, we will target them back
-            foreach (var defender in defenders.Where(defender => !(defender.Destroyed || defender.RanAway) && attacker.Fleet.WillAttack(defender.Player)))
+            foreach (var defender in defenders.Where(defender => !(defender.Destroyed || defender.RanAway) && fleetService.WillAttack(attacker.Fleet, attacker.Player, defender.Player)))
             {
                 // if we would target this defender with our primary target and it's more attactive than our current primaryTarget, pick it
                 if (WillTarget(primaryTargetOrder, defender))

@@ -6,6 +6,7 @@ namespace CraigStars
 {
     public class MinesTooltip : CSTooltip
     {
+        PlanetService planetService = new();
         RichTextLabel tipRichTextLabel;
 
         public override void _Ready()
@@ -18,8 +19,8 @@ namespace CraigStars
             if (Planet != null)
             {
                 tipRichTextLabel.BbcodeText = $"You have [b]{Planet.Mines} Mines[/b] on [b]{Planet.Name}[/b]. " +
-                $"You may build up to [b]{Planet.MaxPossibleMines} Mines[/b]; however, your colonists are currently capable of operating only " +
-                $"[b]{Planet.MaxMines}[/b] of them";
+                $"You may build up to [b]{planetService.GetMaxPossibleMines(Planet, Me)} Mines[/b]; however, your colonists are currently capable of operating only " +
+                $"[b]{planetService.GetMaxMines(Planet, Me)}[/b] of them";
             }
         }
     }

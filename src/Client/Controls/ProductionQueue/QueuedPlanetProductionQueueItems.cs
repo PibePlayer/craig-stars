@@ -5,6 +5,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace CraigStars
 {
@@ -56,7 +57,7 @@ namespace CraigStars
             AddTopOfQueueItem();
         }
 
-        public override void UpdateItems()
+        public async override Task UpdateItems()
         {
             if (Planet != null)
             {
@@ -65,7 +66,7 @@ namespace CraigStars
                 AddQueudItems();
 
                 table.SelectedRow = ShowTopOfQueue ? SelectedItemIndex + 1 : SelectedItemIndex;
-                table.ResetRows();
+                await table.ResetRows();
 
                 table.Update();
 
@@ -98,7 +99,7 @@ namespace CraigStars
             table.Data.AddRowAdvanced(metadata: item, color: color, italic: italic, item.FullName, item.Quantity);
         }
 
-        void UpdateQueuedItems()
+        async void UpdateQueuedItems()
         {
             table.Data.ClearRows();
             AddTopOfQueueItem();
@@ -111,7 +112,7 @@ namespace CraigStars
                 AddQueuedItem(item, index++);
             });
 
-            table.ResetRows();
+            await table.ResetRows();
 
             // re-select our selected item or select the top
             if (SelectedItemIndex >= 0 && SelectedItemIndex < Items.Count)
@@ -128,7 +129,7 @@ namespace CraigStars
 
         void UpdateItemCompletionEstimates()
         {
-            estimator.CalculateCompletionEstimates(Planet, Items, ContributesOnlyLeftoverToResearch);
+            estimator.CalculateCompletionEstimates(Planet, Me, Items, ContributesOnlyLeftoverToResearch);
         }
 
         void AddTopOfQueueItem()
@@ -191,7 +192,7 @@ namespace CraigStars
                     log.Debug($"Added new item to at {SelectedItemIndex} - {item}");
                 }
             }
-            UpdateItems();
+            var _  = UpdateItems();
 
         }
 
@@ -214,7 +215,7 @@ namespace CraigStars
                         SelectedItemIndex = SelectedItemIndex - 1;
                     }
                 }
-                UpdateItems();
+                var _  = UpdateItems();
             }
         }
 
@@ -228,7 +229,7 @@ namespace CraigStars
                 Items[SelectedItemIndex] = previousItem;
                 Items[SelectedItemIndex - 1] = selectedItem;
                 SelectedItemIndex--;
-                UpdateItems();
+                var _  = UpdateItems();
             }
         }
 
@@ -242,7 +243,7 @@ namespace CraigStars
                 Items[SelectedItemIndex] = nextItem;
                 Items[SelectedItemIndex + 1] = selectedItem;
                 SelectedItemIndex++;
-                UpdateItems();
+                var _  = UpdateItems();
             }
 
         }

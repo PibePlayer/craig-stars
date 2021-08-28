@@ -6,6 +6,8 @@ namespace CraigStars.Client
 {
     public class PlanetSummaryContainer : VBoxContainer
     {
+        PlanetService planetService = new();
+
         [Export]
         public GUIColors GUIColors { get; set; } = new GUIColors();
 
@@ -129,7 +131,7 @@ namespace CraigStars.Client
                 {
                     int habValue = race.GetPlanetHabitability(hab);
                     int terraformHabValue = habValue;
-                    Hab terraformedHab = planet.Hab.Value + planet.GetTerraformAmount(Me);
+                    Hab terraformedHab = planet.Hab.Value + planetService.GetTerraformAmount(planet, Me);
                     if (terraformedHab != hab)
                     {
                         terraformHabValue = race.GetPlanetHabitability(terraformedHab);

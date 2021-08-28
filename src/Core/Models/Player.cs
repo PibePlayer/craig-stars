@@ -669,21 +669,6 @@ namespace CraigStars
         }
 
         /// <summary>
-        /// Merge
-        /// </summary>
-        /// <param name="order"></param>
-        public void MergeFleet(MergeFleetOrder order)
-        {
-            order.Source.Merge(order);
-            foreach (var fleet in order.Source.OtherFleets)
-            {
-                MergedFleets.Add(fleet);
-                Fleets.Remove(fleet);
-                FleetsByGuid.Remove(fleet.Guid);
-            }
-        }
-
-        /// <summary>
         /// Go through each message and update the target to a value from our reports
         /// </summary>
         public void UpdateMessageTargets()

@@ -11,6 +11,7 @@ namespace CraigStars
     public class PlanetDiscoverer : Discoverer<Planet>
     {
         static CSLog log = LogProvider.GetLogger(typeof(PlanetDiscoverer));
+        PlanetService planetService = new();
 
         ShipDesignDiscoverer designDiscoverer = new ShipDesignDiscoverer();
 
@@ -89,7 +90,7 @@ namespace CraigStars
 
                 if (reportAge == MapObject.Unexplored)
                 {
-                    Message.PlanetDiscovered(player, itemReport);
+                    Message.PlanetDiscovered(player, itemReport, planetService.GetTerraformAmount(itemReport, player));
                 }
             }
         }

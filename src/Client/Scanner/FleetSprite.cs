@@ -9,6 +9,8 @@ namespace CraigStars.Client
 
     public class FleetSprite : MapObjectSprite
     {
+        FleetService fleetService = new();
+
         [Export]
         public GUIColors GUIColors { get; set; } = new GUIColors();
 
@@ -31,7 +33,19 @@ namespace CraigStars.Client
         /// A planet sprite this fleet is orbiting
         /// </summary>
         /// <value></value>
-        public PlanetSprite Orbiting { get; set; }
+        public PlanetSprite Orbiting
+        {
+            get => orbiting;
+            set
+            {
+                orbiting = value;
+                if (collisionShape != null)
+                {
+                    collisionShape.Disabled = Orbiting != null;
+                }
+            }
+        }
+        PlanetSprite orbiting;
 
         public List<FleetSprite> OtherFleets { get; set; } = new List<FleetSprite>();
 
@@ -57,7 +71,6 @@ namespace CraigStars.Client
             };
 
             collisionShape = GetNode<CollisionShape2D>("CollisionShape2D");
-            collisionShape.Disabled = Orbiting != null;
             waypointsLine = GetNode<Line2D>("Waypoints");
             UpdateWaypointsLine();
             UpdateSprite();
@@ -106,7 +119,7 @@ namespace CraigStars.Client
             {
                 index = Fleet.Waypoints.FindIndex(wp => wp == after);
             }
-            int warpFactor = Fleet.GetDefaultWarpFactor();
+            int warpFactor = fleetService.GetDefaultWarpFactor(Fleet, Me);
             WaypointTask task = Fleet.Waypoints[index].Task;
             WaypointTransportTasks transportTasks = Fleet.Waypoints[index].TransportTasks;
             if (index >= 0)
@@ -121,7 +134,7 @@ namespace CraigStars.Client
             }
 
             Fleet.Waypoints.Insert(index + 1, waypoint);
-            waypoint.WarpFactor = Fleet.GetBestWarpFactor(Fleet.Waypoints[index], waypoint);
+            waypoint.WarpFactor = fleetService.GetBestWarpFactor(Fleet, Me, Fleet.Waypoints[index], waypoint);
 
             UpdateWaypointsLine();
 
@@ -142,7 +155,7 @@ namespace CraigStars.Client
                 index = Fleet.Waypoints.FindIndex(wp => wp == after);
             }
 
-            int warpFactor = Fleet.GetDefaultWarpFactor();
+            int warpFactor = fleetService.GetDefaultWarpFactor(Fleet, Me);
             if (index >= 0)
             {
                 warpFactor = Fleet.Waypoints[index].WarpFactor;
@@ -155,7 +168,7 @@ namespace CraigStars.Client
 
 
             Fleet.Waypoints.Insert(index + 1, waypoint);
-            waypoint.WarpFactor = Fleet.GetBestWarpFactor(Fleet.Waypoints[index], waypoint);
+            waypoint.WarpFactor = fleetService.GetBestWarpFactor(Fleet, Me, Fleet.Waypoints[index], waypoint);
 
             UpdateWaypointsLine();
 
@@ -178,9 +191,9 @@ namespace CraigStars.Client
             }
         }
 
-        void UpdateWaypointsLine()
+        public void UpdateWaypointsLine()
         {
-            if (Fleet != null)
+            if (Fleet != null && waypointsLine != null)
             {
                 Vector2[] points = Fleet.Waypoints
                     .Skip(1)

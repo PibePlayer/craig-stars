@@ -5,6 +5,7 @@ namespace CraigStars
 {
     public class RemoteMiningWaypointTaskContainer : VBoxContainer
     {
+        PlanetService planetService = new();
         Label remoteMiningLabel;
 
         Container remoteMiningSummaryContainer;
@@ -56,7 +57,7 @@ namespace CraigStars
 
                 remoteMiningLabel.Modulate = Colors.White;
                 remoteMiningLabel.Text = "Mining Rate per Year:";
-                Mineral output = Planet.GetMineralOutput(Fleet.Aggregate.MiningRate);
+                Mineral output = planetService.GetMineralOutput(Planet, Fleet.Aggregate.MiningRate);
                 ironium.Text = output.Ironium.ToString();
                 boranium.Text = output.Boranium.ToString();
                 germanium.Text = output.Germanium.ToString();

@@ -13,6 +13,9 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(ScoutTurnProcessor));
 
+        PlanetService planetService = new();
+        FleetService fleetService = new();
+
         public ScoutTurnProcessor() : base("Scouter") { }
 
         /// <summary>
@@ -29,7 +32,7 @@ namespace CraigStars
 
             // find all the planets we don't know about yet
             List<Planet> unknownPlanets = player.AllPlanets.Where(planet => !planet.Explored).ToList();
-            List<Planet> buildablePlanets = player.Planets.Where(planet => planet.CanBuild(player, scoutShip.Aggregate.Mass)).ToList();
+            List<Planet> buildablePlanets = player.Planets.Where(planet => planetService.CanBuild(planet, player, scoutShip.Aggregate.Mass)).ToList();
 
             // get all the fleets that can scan and don't have waypoints yet
             List<Fleet> scannerFleets = new List<Fleet>();
@@ -59,8 +62,8 @@ namespace CraigStars
                 if (planetToScout != null)
                 {
                     // add this planet as a waypoint
-                    fleet.Waypoints.Add(Waypoint.TargetWaypoint(planetToScout, fleet.GetDefaultWarpFactor(), WaypointTask.None));
-                    fleet.Waypoints[1].WarpFactor = fleet.GetBestWarpFactor(fleet.Waypoints[0], fleet.Waypoints[1]);
+                    fleet.Waypoints.Add(Waypoint.TargetWaypoint(planetToScout, fleetService.GetDefaultWarpFactor(fleet, player), WaypointTask.None));
+                    fleet.Waypoints[1].WarpFactor = fleetService.GetBestWarpFactor(fleet, player, fleet.Waypoints[0], fleet.Waypoints[1]);
 
                     // remove this planet from our list
                     unknownPlanets.Remove(planetToScout);

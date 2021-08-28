@@ -11,6 +11,9 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(BomberTurnProcessor));
 
+        PlanetService planetService = new();
+        FleetService fleetService = new();
+
         public BomberTurnProcessor() : base("Bomber") { }
 
         /// <summary>
@@ -34,7 +37,7 @@ namespace CraigStars
                 planet.Owner != null &&
                 !planet.OwnedBy(player)
             ).ToList();
-            var buildablePlanets = player.Planets.Where(planet => planet.CanBuild(player, bomber.Aggregate.Mass)).ToList();
+            var buildablePlanets = player.Planets.Where(planet => planetService.CanBuild(planet, player, bomber.Aggregate.Mass)).ToList();
             var bomberFleets = player.Fleets.Where(fleet => fleet.Aggregate.Purposes.Contains(ShipDesignPurpose.Bomber));
 
             foreach (var fleet in bomberFleets)
@@ -53,8 +56,8 @@ namespace CraigStars
                 Planet planetToBomb = ClosestPlanet(fleet, bombablePlanets);
                 if (planetToBomb != null && fleet.Waypoints[0].Target != planetToBomb)
                 {
-                    fleet.Waypoints.Add(Waypoint.TargetWaypoint(planetToBomb, fleet.GetDefaultWarpFactor()));
-                    fleet.Waypoints[1].WarpFactor = fleet.GetBestWarpFactor(fleet.Waypoints[0], fleet.Waypoints[1]);
+                    fleet.Waypoints.Add(Waypoint.TargetWaypoint(planetToBomb, fleetService.GetDefaultWarpFactor(fleet, player)));
+                    fleet.Waypoints[1].WarpFactor = fleetService.GetBestWarpFactor(fleet, player, fleet.Waypoints[0], fleet.Waypoints[1]);
 
                     // remove this planet from our list
                     bombablePlanets.Remove(planetToBomb);

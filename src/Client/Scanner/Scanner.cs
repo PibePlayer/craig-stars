@@ -226,6 +226,8 @@ namespace CraigStars.Client
                     var planetSprite = Planets[index];
                     planetSprite.Planet = planet;
                     planetSprite.Position = planet.Position;
+                    planetSprite.OrbitingFleets.Clear();
+                    planetSprite.PacketTarget = null;
                 });
             }
 
@@ -243,7 +245,6 @@ namespace CraigStars.Client
             log.Debug($"{Me.Game.Year} Refreshed Planets.");
 
             // rebuild our MapObjectsByGuid
-            Fleets.ForEach(fleet => { if (fleet.Orbiting != null) { fleet.Orbiting.OrbitingFleets.Clear(); } });
             RemoveMapObjects(transientMapObjects);
             log.Debug($"{Me.Game.Year} Removed previous MapObjects.");
             MapObjectsByGuid = Planets.Cast<MapObjectSprite>().ToLookup(p => p.MapObject.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
@@ -341,11 +342,15 @@ namespace CraigStars.Client
 
             Fleets.ForEach(fleetSprite =>
             {
+                fleetSprite.UpdateWaypointsLine();
                 var fleet = fleetSprite.Fleet;
+
                 if (fleet.Orbiting != null && MapObjectsByGuid.TryGetValue(fleet.Orbiting.Guid, out var mapObjectSprite) && mapObjectSprite is PlanetSprite planetSprite)
                 {
                     planetSprite.OrbitingFleets.Add(fleetSprite);
                     fleetSprite.Orbiting = planetSprite;
+                } else {
+                    fleetSprite.Orbiting = null;
                 }
             });
 

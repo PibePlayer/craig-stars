@@ -333,7 +333,7 @@ namespace CraigStarsTable
         /// <summary>
         /// Clear the table and redraw it with new/updated data
         /// </summary>
-        public async void ResetRows()
+        public async Task ResetRows()
         {
             if (gridContainer != null && Data != null)
             {

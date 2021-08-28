@@ -11,6 +11,8 @@ namespace CraigStars
     /// </summary>
     public class CheckVictoryStep : TurnGenerationStep
     {
+        PlanetService planetService = new();
+
         public CheckVictoryStep(Game game) : base(game, TurnGenerationState.VictoryCheck) { }
 
         public override void Process()
@@ -120,7 +122,7 @@ namespace CraigStars
 
         internal void CheckProductionCapacity(Player player)
         {
-            var productionCapacity = player.Planets.Sum(planet => planet.ResourcesPerYear);
+            var productionCapacity = player.Planets.Sum(planet => planetService.GetResourcesPerYear(planet, player));
             if (productionCapacity >= Game.VictoryConditions.ProductionCapacity)
             {
                 player.AchievedVictoryConditions.Add(VictoryConditionType.ProductionCapacity);

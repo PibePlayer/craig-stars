@@ -11,6 +11,7 @@ namespace CraigStars
     public class PlanetProductionStep : TurnGenerationStep
     {
         static CSLog log = LogProvider.GetLogger(typeof(PlanetProductionStep));
+        PlanetService planetService = new();
 
         public PlanetProductionStep(Game game) : base(game, TurnGenerationState.Production) { }
 
@@ -33,7 +34,7 @@ namespace CraigStars
         {
             OwnedPlanets.ForEach(planet =>
             {
-                Build(planet);
+                Build(planet, planet.Player);
             });
         }
 
@@ -42,11 +43,11 @@ namespace CraigStars
         /// </summary>
         /// <param name="planet"></param>
         /// <returns></returns>
-        public int Build(Planet planet)
+        public int Build(Planet planet, Player player)
         {
             // allocate surface minerals + resources not going to research
             Cost allocated = new Cost(planet.Cargo.Ironium, planet.Cargo.Boranium, planet.Cargo.Germanium,
-                                      planet.ResourcesPerYearAvailable);
+                                      planetService.GetResourcesPerYearAvailable(planet, player));
 
             // add the production queue's last turn resources
             var queue = planet.ProductionQueue;
@@ -56,7 +57,7 @@ namespace CraigStars
             while (index != -1 && index < queue.Items.Count)
             {
                 var item = queue.Items[index];
-                var result = ProcessItem(planet, item, allocated);
+                var result = ProcessItem(planet, player, item, allocated);
                 allocated = result.remainingCost;
                 if (result.completed)
                 {
@@ -100,7 +101,7 @@ namespace CraigStars
         /// <param name="item">The item to process</param>
         /// <param name="allocated">The amount of resources and minerals we have to allocate to this item</param>
         /// <returns></returns>
-        internal ProcessItemResult ProcessItem(Planet planet, ProductionQueueItem item, Cost allocated)
+        internal ProcessItemResult ProcessItem(Planet planet, Player player, ProductionQueueItem item, Cost allocated)
         {
             if (item.IsPacket && !planet.HasMassDriver)
             {
@@ -116,7 +117,7 @@ namespace CraigStars
             }
 
             // no need to build anymore of this, skip it.
-            int quantityDesired = planet.GetQuantityToBuild(item.Quantity, item.Type);
+            int quantityDesired = planetService.GetQuantityToBuild(planet, planet.Player, item.Quantity, item.Type);
             if (quantityDesired == 0)
             {
                 return new ProcessItemResult(completed: true, allocated);
@@ -141,7 +142,7 @@ namespace CraigStars
             {
                 if (numBuilt > 0)
                 {
-                    BuildItem(planet, item, numBuilt);
+                    BuildItem(planet, player, item, numBuilt);
                 }
             }
 
@@ -186,28 +187,28 @@ namespace CraigStars
         /// <param name="numBuilt"></param>
         /// <param name="rules"></param>
         /// <returns></returns>
-        internal void BuildItem(Planet planet, ProductionQueueItem item, int numBuilt)
+        internal void BuildItem(Planet planet, Player player, ProductionQueueItem item, int numBuilt)
         {
             if (item.Type == QueueItemType.Mine || item.Type == QueueItemType.AutoMines)
             {
                 log.Debug($"{Game.Year}: {planet.Player} built {numBuilt} mines on {planet.Name}");
                 planet.Mines += numBuilt;
                 // this should never need to clamp because we adjust quantity in Build(), but just in case
-                planet.Mines = Mathf.Clamp(planet.Mines, 0, planet.MaxPossibleMines);
+                planet.Mines = Mathf.Clamp(planet.Mines, 0, planetService.GetMaxPossibleMines(planet, player));
                 Message.Mine(planet.Player, planet, numBuilt);
             }
             else if (item.Type == QueueItemType.Factory || item.Type == QueueItemType.AutoFactories)
             {
                 log.Debug($"{Game.Year}: {planet.Player} built {numBuilt} factories on {planet.Name}");
                 planet.Factories += numBuilt;
-                planet.Factories = Mathf.Clamp(planet.Factories, 0, planet.MaxPossibleFactories);
+                planet.Factories = Mathf.Clamp(planet.Factories, 0, planetService.GetMaxPossibleFactories(planet, player));
                 Message.Factory(planet.Player, planet, numBuilt);
             }
             else if (item.Type == QueueItemType.Defenses || item.Type == QueueItemType.AutoDefenses)
             {
                 log.Debug($"{Game.Year}: {planet.Player} built {numBuilt} defenses on {planet.Name}");
                 planet.Defenses += numBuilt;
-                planet.Defenses = Mathf.Clamp(planet.Defenses, 0, planet.MaxDefenses);
+                planet.Defenses = Mathf.Clamp(planet.Defenses, 0, planetService.GetMaxDefenses(planet, player));
                 Message.Defense(planet.Player, planet, numBuilt);
             }
             else if (item.IsTerraform)
@@ -215,7 +216,7 @@ namespace CraigStars
                 for (int i = 0; i < numBuilt; i++)
                 {
                     // terraform one at a time to ensure the best things get terraformed
-                    Terraform(planet);
+                    Terraform(planet, player);
                 }
             }
             else if (item.IsPacket)
@@ -370,9 +371,9 @@ namespace CraigStars
         /// Terraform this planet one step in whatever the best option is
         /// </summary>
         /// <param name="planet"></param>
-        internal void Terraform(Planet planet)
+        internal void Terraform(Planet planet, Player player)
         {
-            var bestHab = planet.GetBestTerraform();
+            var bestHab = planetService.GetBestTerraform(planet, player);
             if (bestHab.HasValue)
             {
                 var habType = bestHab.Value;

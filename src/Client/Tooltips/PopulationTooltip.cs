@@ -6,6 +6,7 @@ namespace CraigStars
 {
     public class PopulationTooltip : CSTooltip
     {
+        PlanetService planetService = new();
         RichTextLabel tipRichTextLabel;
 
         public override void _Ready()
@@ -20,11 +21,11 @@ namespace CraigStars
                 if (Planet.Player == Me)
                 {
                     var hab = Me.Race.GetPlanetHabitability(Planet.Hab.Value);
-                    var growthAmount = Planet.GrowthAmount;
+                    var growthAmount = planetService.GetGrowthAmount(Planet, Me, RulesManager.Rules);
                     if (hab > 0)
                     {
                         tipRichTextLabel.BbcodeText = $"Your population on [b]{Planet.Name}[/b] is [b]{Planet.Population:n0}[/b]." +
-                            $"[b]{Planet.Name}[/b] will support a population of up to [b]{Planet.GetMaxPopulation(Me.Race, Me.Rules):n0}[/b]" +
+                            $"[b]{Planet.Name}[/b] will support a population of up to [b]{planetService.GetMaxPopulation(Planet, Me, RulesManager.Rules):n0}[/b]" +
                             $" of your colonists.\n";
                     }
                     else
@@ -51,7 +52,7 @@ namespace CraigStars
                     tipRichTextLabel.BbcodeText = $"[b]{Planet.Name}[/b] is uninhabited.\n";
                     if (hab > 0)
                     {
-                        tipRichTextLabel.BbcodeText += $"If you were to colonize [b]{Planet.Name}[/b], it would support up to [b]{Planet.GetMaxPopulation(Me.Race, Me.Rules):n0}[/b] " +
+                        tipRichTextLabel.BbcodeText += $"If you were to colonize [b]{Planet.Name}[/b], it would support up to [b]{planetService.GetMaxPopulation(Planet, Me, RulesManager.Rules):n0}[/b] " +
                             "of your colonists";
                     }
                     else
@@ -67,7 +68,7 @@ namespace CraigStars
                     tipRichTextLabel.BbcodeText = $"[b]{Planet.Name}[/b] is uninhabited.\n";
                     if (hab > 0)
                     {
-                        tipRichTextLabel.BbcodeText += $"If you were to colonize [b]{Planet.Name}[/b], it would support up to [b]{Planet.GetMaxPopulation(Me.Race, Me.Rules):n0}[/b] " +
+                        tipRichTextLabel.BbcodeText += $"If you were to colonize [b]{Planet.Name}[/b], it would support up to [b]{planetService.GetMaxPopulation(Planet, Me, RulesManager.Rules):n0}[/b] " +
                             "of your colonists";
                     }
                     else

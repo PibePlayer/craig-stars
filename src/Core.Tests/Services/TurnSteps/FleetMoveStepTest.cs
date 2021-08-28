@@ -46,7 +46,7 @@ namespace CraigStars.Tests
             design.Player = player1;
             var fleet = new Fleet()
             {
-                Player = game.Players[0],
+                Player = player1,
                 Tokens = new List<ShipToken>() {
                     new ShipToken(design, 1)
                 },
@@ -64,7 +64,7 @@ namespace CraigStars.Tests
             // send the fleet at warp 9, straight through the minefield
             var dest = new Waypoint() { Position = new Vector2(20, 0), WarpFactor = 9 };
             var dist = dest.WarpFactor * dest.WarpFactor;
-            var actualDist = step.CheckForMineFields(fleet, dest, dist);
+            var actualDist = step.CheckForMineFields(fleet, player1, dest, dist);
 
             // we should come to a dead stop
             Assert.AreEqual(5, actualDist, .01);
@@ -76,7 +76,7 @@ namespace CraigStars.Tests
 
             dest = new Waypoint() { Position = new Vector2(20, 0), WarpFactor = 9 };
             dist = dest.WarpFactor * dest.WarpFactor;
-            actualDist = step.CheckForMineFields(fleet, dest, dist);
+            actualDist = step.CheckForMineFields(fleet, player1, dest, dist);
 
             // we should come to a dead stop
             Assert.Greater(actualDist, 5);
@@ -113,7 +113,7 @@ namespace CraigStars.Tests
             design.Player = player1;
             var fleet = new Fleet()
             {
-                Player = game.Players[0],
+                Player = player1,
                 Tokens = new List<ShipToken>() {
                     new ShipToken(design, 1)
                 },
@@ -131,7 +131,7 @@ namespace CraigStars.Tests
             // send the fleet at warp 9, straight up, should miss minefield
             var dest = new Waypoint() { Position = new Vector2(-15, 20), WarpFactor = 9 };
             var dist = dest.WarpFactor * dest.WarpFactor;
-            var actualDist = step.CheckForMineFields(fleet, dest, dist);
+            var actualDist = step.CheckForMineFields(fleet, player1, dest, dist);
 
             // we should go our normal distance
             Assert.AreEqual(dist, actualDist, .01);
@@ -142,7 +142,7 @@ namespace CraigStars.Tests
             fleet.Position = new Vector2(-10, 0);
             dest = new Waypoint() { Position = new Vector2(15, 0), WarpFactor = 5 };
             dist = dest.WarpFactor * dest.WarpFactor;
-            actualDist = step.CheckForMineFields(fleet, dest, dist);
+            actualDist = step.CheckForMineFields(fleet, player1, dest, dist);
 
             // we should go through
             Assert.AreEqual(dist, actualDist, .01);

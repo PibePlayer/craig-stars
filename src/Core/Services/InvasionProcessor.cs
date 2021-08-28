@@ -21,6 +21,8 @@ namespace CraigStars
     public class InvasionProcessor
     {
 
+        PlanetService planetService = new();
+
         /// <summary>
         /// An attacker is invading a planet
         /// </summary>
@@ -28,7 +30,7 @@ namespace CraigStars
         /// <param name="attacker"></param>
         /// <param name="fleet">The invading fleet</param>
         /// <param name="colonistsDropped"></param>
-        public void InvadePlanet(Planet planet, Player attacker, Fleet fleet, int colonistsDropped)
+        public void InvadePlanet(Planet planet, Player defender, Player attacker, Fleet fleet, int colonistsDropped)
         {
             if (planet.Uninhabited || planet.Population == 0)
             {
@@ -38,7 +40,7 @@ namespace CraigStars
             }
 
             // figure out how many attackers are stopped by defenses
-            int attackers = (int)(colonistsDropped * (1 - planet.DefenseCoverage * attacker.Rules.InvasionDefenseCoverageFactor));
+            int attackers = (int)(colonistsDropped * (1 - planetService.GetDefenseCoverage(planet, defender) * attacker.Rules.InvasionDefenseCoverageFactor));
             int defenders = planet.Population;
 
             // determine bonuses for warmongers and inner strength

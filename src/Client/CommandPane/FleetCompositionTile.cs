@@ -61,7 +61,7 @@ namespace CraigStars.Client
             // TODO: this is a bit fragile. If we add these fleets to the player's
             // Fleets in the Fleet.Split, we end up adding the fleets to the player's list twice.
             // This Fleet.Split should probably be handled differently...
-            var fleets = CommandedFleet.Fleet.Split(order);
+            var fleets = fleetService.Split(CommandedFleet.Fleet, Me, order);
             fleets.ForEach(newFleet =>
             {
                 Me.FleetsByGuid[newFleet.Guid] = newFleet;
@@ -104,7 +104,7 @@ namespace CraigStars.Client
                     battlePlanOptionButton.Select(selectedBattlePlanIndex);
                 }
 
-                estimatedRange.Text = $"{CommandedFleet.Fleet.GetEstimatedRange()} l.y.";
+                estimatedRange.Text = $"{fleetService.GetEstimatedRange(CommandedFleet.Fleet, Me)} l.y.";
                 if (CommandedFleet.Fleet.Aggregate.CloakPercent == 0)
                 {
                     percentCloaked.Text = "None";

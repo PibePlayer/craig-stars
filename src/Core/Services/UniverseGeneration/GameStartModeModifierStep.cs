@@ -12,6 +12,8 @@ namespace CraigStars.UniverseGeneration
     /// </summary>
     public class GameStartModeModifierStep : UniverseGenerationStep
     {
+        PlanetService planetService = new();
+
         public GameStartModeModifierStep(Game game) : base(game, UniverseGenerationState.GameStartMode) { }
 
         public override void Process()
@@ -50,9 +52,10 @@ namespace CraigStars.UniverseGeneration
             // build some mines
             ownedPlanets.ForEach(planet =>
             {
-                planet.Mines = Mathf.Clamp(planet.Mines + mineFactoryBonus, 0, planet.MaxPossibleMines);
-                planet.Factories = Mathf.Clamp(planet.Factories + mineFactoryBonus, 0, planet.MaxPossibleFactories);
-                planet.Defenses = Mathf.Clamp(planet.Defenses + defenseBonus, 0, planet.MaxDefenses);
+                var player = planet.Player;
+                planet.Mines = Mathf.Clamp(planet.Mines + mineFactoryBonus, 0, planetService.GetMaxPossibleMines(planet, player));
+                planet.Factories = Mathf.Clamp(planet.Factories + mineFactoryBonus, 0, planetService.GetMaxPossibleFactories(planet, player));
+                planet.Defenses = Mathf.Clamp(planet.Defenses + defenseBonus, 0, planetService.GetMaxDefenses(planet, player));
             });
 
 

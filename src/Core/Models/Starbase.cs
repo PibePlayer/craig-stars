@@ -17,20 +17,6 @@ namespace CraigStars
         [JsonIgnore]
         public ShipDesign Design { get => Tokens[0].Design; }
 
-        /// <summary>
-        /// Starbases don't have fuel
-        /// </summary>
-        /// <param name="warpFactor"></param>
-        /// <param name="mass"></param>
-        /// <param name="dist"></param>
-        /// <param name="ifeFactor"></param>
-        /// <param name="engine"></param>
-        /// <returns></returns>
-        internal override int GetFuelCost(int warpFactor, int mass, double dist, double ifeFactor, TechEngine engine)
-        {
-            return 0;
-        }
-
         public override void ComputeAggregate(bool recompute = false)
         {
             if (Aggregate.Computed && !recompute)

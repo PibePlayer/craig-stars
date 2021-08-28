@@ -10,6 +10,7 @@ namespace CraigStars
     public class FleetSweepMinesStep : TurnGenerationStep
     {
         static CSLog log = LogProvider.GetLogger(typeof(DecayMinesStep));
+        FleetService fleetService = new();
 
         public FleetSweepMinesStep(Game game) : base(game, TurnGenerationState.MineSweeping) { }
 
@@ -20,7 +21,7 @@ namespace CraigStars
             {
                 // sweep mines from any minefields we would attack that we are contained by
                 foreach (var mineField in Game.MineFields.Where(mineField =>
-                    fleet.WillAttack(mineField.Player) &&
+                    fleetService.WillAttack(fleet, fleet.Player, mineField.Player) &&
                     IsPointInCircle(fleet.Position, mineField.Position, mineField.Radius)))
                 {
                     // only sweep one fleet per fleet
@@ -34,7 +35,7 @@ namespace CraigStars
             {
                 // sweep mines from any minefields we would attack that we are contained by
                 foreach (var mineField in Game.MineFields.Where(mineField =>
-                    planet.Starbase.WillAttack(mineField.Player) &&
+                    fleetService.WillAttack(planet.Starbase, planet.Player, mineField.Player) &&
                     IsPointInCircle(planet.Starbase.Position, mineField.Position, mineField.Radius)))
                 {
                     // only sweep one fleet per fleet

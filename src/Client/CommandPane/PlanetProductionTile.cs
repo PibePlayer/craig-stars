@@ -73,6 +73,7 @@ namespace CraigStars.Client
         {
             productionQueue.ShowTopOfQueue = CommandedPlanet?.Planet?.ProductionQueue?.Items.Count == 0;
             productionQueue.Planet = CommandedPlanet?.Planet;
+            var _ = productionQueue.UpdateItems();
             base.UpdateControls();
         }
 

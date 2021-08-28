@@ -47,7 +47,7 @@ namespace CraigStars.Tests
 
             // 10000 attackers for 10000 undefended defenders, attacker wins
             int attackers = 10000;
-            invasionProcessor.InvadePlanet(planet, fleetOwner, fleet, attackers);
+            invasionProcessor.InvadePlanet(planet, planetOwner, fleetOwner, fleet, attackers);
 
             Assert.AreEqual(1, planetOwner.Messages.Count);
             Assert.AreEqual(1, fleetOwner.Messages.Count);
@@ -93,7 +93,7 @@ namespace CraigStars.Tests
 
             // 5000 attackers for 10000 undefended defenders, defenders win
             int attackers = 5000;
-            invasionProcessor.InvadePlanet(planet, fleetOwner, fleet, attackers);
+            invasionProcessor.InvadePlanet(planet, planetOwner, fleetOwner, fleet, attackers);
 
             Assert.AreEqual(1, planetOwner.Messages.Count);
             Assert.AreEqual(1, fleetOwner.Messages.Count);
@@ -138,7 +138,7 @@ namespace CraigStars.Tests
 
             // 100,000 attackers for 100,000 well defended defenders, defenders win
             int attackers = 100000;
-            invasionProcessor.InvadePlanet(planet, fleetOwner, fleet, attackers);
+            invasionProcessor.InvadePlanet(planet, planetOwner, fleetOwner, fleet, attackers);
 
             Assert.AreEqual(1, planetOwner.Messages.Count);
             Assert.AreEqual(1, fleetOwner.Messages.Count);

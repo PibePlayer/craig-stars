@@ -8,7 +8,7 @@ namespace CraigStars.Client
 {
     public class FleetTile : AbstractCommandedFleetControl
     {
-
+        protected FleetService fleetService = new();
         Label titleLabel;
 
         public override void _Ready()

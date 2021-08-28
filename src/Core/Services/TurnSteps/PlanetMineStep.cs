@@ -7,13 +7,14 @@ namespace CraigStars
     /// </summary>
     public class PlanetMineStep : TurnGenerationStep
     {
+        PlanetService planetService = new();
         public PlanetMineStep(Game game) : base(game, TurnGenerationState.Mining) { }
 
         public override void Process()
         {
             OwnedPlanets.ForEach(p =>
             {
-                p.Cargo += p.MineralOutput;
+                p.Cargo += planetService.GetMineralOutput(p, p.Player);
                 p.MineYears += p.Mines;
                 int mineralDecayFactor = Game.Rules.MineralDecayFactor;
                 int minMineralConcentration = p.Homeworld ? Game.Rules.MinHomeworldMineralConcentration : Game.Rules.MinMineralConcentration;

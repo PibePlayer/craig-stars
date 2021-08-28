@@ -12,6 +12,8 @@ namespace CraigStars.Client
         const int MaxPlanetValueRadius = 10;
         const int MaxPopulationRadius = 20;
 
+        PlanetService planetService = new();
+
         [Export]
         public GUIColors GUIColors { get; set; } = new GUIColors();
 
@@ -159,7 +161,7 @@ namespace CraigStars.Client
                         {
                             // this is a red planet, draw it differently
                             int terraformHabValue = hab;
-                            Hab terraformedHab = Planet.Hab.Value + Planet.GetTerraformAmount(Me);
+                            Hab terraformedHab = Planet.Hab.Value + planetService.GetTerraformAmount(Planet, Me);
                             if (terraformedHab != Planet.Hab)
                             {
                                 // this is a bad planet but we can terraform it

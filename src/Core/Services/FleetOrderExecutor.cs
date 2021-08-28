@@ -9,6 +9,7 @@ namespace CraigStars
     public class FleetOrderExecutor
     {
         static CSLog log = LogProvider.GetLogger(typeof(FleetOrderExecutor));
+        FleetService fleetService = new();
 
         public Game Game { get; }
 
@@ -100,7 +101,7 @@ namespace CraigStars
 
                     if (mergingFleets.Count > 0)
                     {
-                        source.Merge(new MergeFleetOrder()
+                        fleetService.Merge(source, source.Player, new MergeFleetOrder()
                         {
                             Source = source,
                             MergingFleets = mergingFleets
@@ -126,7 +127,7 @@ namespace CraigStars
             {
                 if (source.Player == player)
                 {
-                    var newFleets = source.Split(new SplitAllFleetOrder { Source = source, NewFleetGuids = order.NewFleetGuids });
+                    var newFleets = fleetService.Split(source, source.Player, new SplitAllFleetOrder { Source = source, NewFleetGuids = order.NewFleetGuids });
 
                     newFleets.ForEach(f => EventManager.PublishMapObjectCreatedEvent(f));
                     log.Debug($"Executing user SplitAllFleetOrder for {source.Name}");

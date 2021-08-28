@@ -200,5 +200,49 @@ namespace CraigStars.Tests
 
             return game;
         }
+
+        /// <summary>
+        /// Helper method to get a long range scout fleet
+        /// </summary>
+        /// <returns></returns>
+        internal static Fleet GetLongRangeScout(Player player)
+        {
+            var design = ShipDesigns.LongRangeScount.Clone();
+            design.Player = new Player();
+
+            var fleet = new Fleet()
+            {
+                Player = design.Player,
+                Tokens = new List<ShipToken>() {
+                  new ShipToken(design, 1)
+                }
+            };
+
+            fleet.ComputeAggregate();
+            fleet.Fuel = fleet.FuelCapacity;
+            return fleet;
+        }
+
+        /// <summary>
+        /// Helper method to get a long range scout fleet
+        /// </summary>
+        /// <returns></returns>
+        internal static Fleet GetStalwartDefender(Player player)
+        {
+            var design = ShipDesigns.StalwartDefender.Clone();
+            design.Player = new Player();
+
+            var fleet = new Fleet()
+            {
+                Player = design.Player,
+                Tokens = new List<ShipToken>() {
+                  new ShipToken(design, 1)
+                }
+            };
+
+            fleet.ComputeAggregate();
+            fleet.Fuel = fleet.FuelCapacity;
+            return fleet;
+        }
     }
 }

@@ -13,6 +13,9 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(PopulationRebalancerTurnProcessor));
 
+        PlanetService planetService = new();
+        FleetService fleetService = new();
+
         // the required population density required of a planet in order to suck people off of it
         // setting this to .25 because we don't want to suck people off a planet until it's reached the
         // max of its growth rate (over 1/4 crowded)
@@ -29,11 +32,11 @@ namespace CraigStars
             ShipDesign design = player.GetLatestDesign(ShipDesignPurpose.Freighter);
 
             var lowPopPlanets = player.Planets
-            .Where(planet => planet.PopulationDensity < PopulationDensityRequired)
+            .Where(planet => planetService.GetPopulationDensity(planet, player, player.Rules) < PopulationDensityRequired)
             .OrderBy(planet => planet.Population)
             .ToList();
             var buildablePlanets = player.Planets
-                .Where(planet => planet.CanBuild(player, design.Aggregate.Mass) && planet.PopulationDensity >= PopulationDensityRequired)
+                .Where(planet => planetService.CanBuild(planet, player, design.Aggregate.Mass) && planetService.GetPopulationDensity(planet, player, player.Rules) >= PopulationDensityRequired)
                 .ToList();
             var fleets = player.Fleets.Where(fleet => fleet.Aggregate.Purposes.Contains(ShipDesignPurpose.Freighter));
 
@@ -50,7 +53,7 @@ namespace CraigStars
             foreach (var fleet in fleets.Where(
                 f => f.Waypoints.Count == 1 &&
                 f.Orbiting?.Player == player &&
-                f.Orbiting.GetPopulationDensity(f.Orbiting.Population - f.AvailableCapacity) >= PopulationDensityRequired)
+                planetService.GetPopulationDensity(f.Orbiting, player, player.Rules, f.Orbiting.Population - f.AvailableCapacity) >= PopulationDensityRequired)
             )
             {
                 if (lowPopPlanets.Count > 0)
@@ -66,13 +69,13 @@ namespace CraigStars
                         // drop off colonists
                         var wp1 = Waypoint.TargetWaypoint(
                             lowPopPlanet,
-                            fleet.GetDefaultWarpFactor(),
+                            fleetService.GetDefaultWarpFactor(fleet, player),
                             WaypointTask.Transport,
                             new WaypointTransportTasks(colonists: new WaypointTransportTask(WaypointTaskTransportAction.UnloadAll)));
                         fleet.Waypoints.Add(wp1);
 
                         // return home
-                        fleet.Waypoints.Add(Waypoint.TargetWaypoint(fleet.Orbiting, fleet.GetDefaultWarpFactor()));
+                        fleet.Waypoints.Add(Waypoint.TargetWaypoint(fleet.Orbiting, fleetService.GetDefaultWarpFactor(fleet, player)));
 
                         // remove this planet from our list
                         lowPopPlanets.Remove(lowPopPlanet);

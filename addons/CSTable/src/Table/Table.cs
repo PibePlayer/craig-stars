@@ -126,6 +126,8 @@ namespace CraigStarsTable
             return labelCell;
         };
 
+        // System.Threading.Mutex tableUpdateMutex;
+
         public Table() : base()
         {
             SizeFlagsHorizontal = (int)SizeFlags.ExpandFill;
@@ -182,6 +184,8 @@ namespace CraigStarsTable
 
             Data.SortEvent += OnDataSorted;
             Data.FilterEvent += OnDataFiltered;
+
+            // tableUpdateMutex = new System.Threading.Mutex(true, GetPath());
 
             ResetTable();
         }
@@ -247,7 +251,9 @@ namespace CraigStarsTable
                     {
                         columnHeader.Disconnect("item_rect_changed", this, nameof(OnResized));
                         CSTableNodePool.Return<ColumnHeader>(poolResource);
-                    } else {
+                    }
+                    else
+                    {
                         child.QueueFree();
                     }
                 }
@@ -311,24 +317,27 @@ namespace CraigStarsTable
         {
             if (gridContainer != null && Data != null)
             {
-                tableUpdateMutex.WaitOne();
-
-                ClearTable();
-
-                if (Data.VisibleColumns.Count() > 0)
+                using (var mutex = new System.Threading.Mutex())
                 {
-                    gridContainer.Columns = Data.VisibleColumns.Count();
+                    mutex.WaitOne();
 
-                    AddColumnHeaders();
-                    AddRows();
-                    SelectedRow = 0;
-                    Update();
+                    ClearTable();
+
+                    if (Data.VisibleColumns.Count() > 0)
+                    {
+                        gridContainer.Columns = Data.VisibleColumns.Count();
+
+                        AddColumnHeaders();
+                        AddRows();
+                        SelectedRow = 0;
+                        Update();
+                    }
+
+                    mutex.ReleaseMutex();
                 }
-                tableUpdateMutex.ReleaseMutex();
             }
         }
 
-        System.Threading.Mutex tableUpdateMutex = new System.Threading.Mutex();
 
         /// <summary>
         /// Clear the table and redraw it with new/updated data
@@ -337,40 +346,51 @@ namespace CraigStarsTable
         {
             if (gridContainer != null && Data != null)
             {
-                tableUpdateMutex.WaitOne();
-
-                RemoveChild(gridContainer);
-                await Task.Run(() =>
+                using (var mutex = new System.Threading.Mutex())
                 {
-                    ClearRows();
+                    mutex.WaitOne();
+
+                    RemoveChild(gridContainer);
+                    await Task.Run(() =>
+                    {
+                        try
+                        {
+                            ClearRows();
+
+                            if (Data.VisibleColumns.Count() > 0)
+                            {
+                                AddRows();
+                                // if we are selecting a row that is 
+                                if (SelectedRow > cellControls.GetLength(0))
+                                {
+                                    SelectedRow = NoRowSelected;
+                                }
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            GD.PrintErr("Failed to add table rows: ", e);
+                            throw e;
+                        }
+                    });
+
+                    AddChild(gridContainer);
 
                     if (Data.VisibleColumns.Count() > 0)
                     {
-                        AddRows();
-                        // if we are selecting a row that is 
-                        if (SelectedRow > cellControls.GetLength(0))
+                        Update();
+
+                        if (SelectedRow != NoRowSelected && cellControls.GetLength(0) > SelectedRow)
                         {
-                            SelectedRow = NoRowSelected;
+                            if (cellControls[SelectedRow, 0] is ICSCellControl<T> cell)
+                            {
+                                RowSelectedEvent?.Invoke(SelectedRow, 0, cell.Cell, cell.Row.Metadata);
+                            }
                         }
                     }
-                });
 
-                AddChild(gridContainer);
-
-                if (Data.VisibleColumns.Count() > 0)
-                {
-                    Update();
-
-                    if (SelectedRow != NoRowSelected && cellControls.GetLength(0) > SelectedRow)
-                    {
-                        if (cellControls[SelectedRow, 0] is ICSCellControl<T> cell)
-                        {
-                            RowSelectedEvent?.Invoke(SelectedRow, 0, cell.Cell, cell.Row.Metadata);
-                        }
-                    }
+                    mutex.ReleaseMutex();
                 }
-
-                tableUpdateMutex.ReleaseMutex();
             }
         }
 

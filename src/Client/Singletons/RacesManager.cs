@@ -55,8 +55,14 @@ namespace CraigStars.Singletons
         {
             List<string> raceFiles = new List<string>();
 
+
             using (var directory = new Directory())
             {
+                if (!directory.DirExists(SaveDirPath))
+                {
+                    return raceFiles;
+                }
+
                 directory.Open(SaveDirPath);
                 directory.ListDirBegin(skipHidden: true);
                 while (true)
@@ -110,9 +116,9 @@ namespace CraigStars.Singletons
 
                 log.Info($"Saving race to {path}");
                 raceFile.Open(path, File.ModeFlags.Write);
-                log.Debug($"Race json {json}");
                 try
                 {
+                    log.Debug($"Saving Race: PRT: ${race.PRT}, {json}");
                     raceFile.StoreString(json);
                     Client.EventManager.PublishRaceSavedEvent(race, filename);
                 }

@@ -22,7 +22,7 @@ namespace CraigStars.Client
 
         void GoToLobby()
         {
-            this.ChangeSceneTo<Lobby>("res://src/Client/MenuScreens/Lobby.tscn", (instance) =>
+            this.ChangeSceneTo<LobbyMenu>("res://src/Client/MenuScreens/LobbyMenu.tscn", (instance) =>
             {
                 instance.HostMode = true;
             });

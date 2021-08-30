@@ -6,7 +6,7 @@
 [ext_resource path="res://assets/gui/icons/Player.png" type="Texture" id=4]
 [ext_resource path="res://assets/gui/icons/CloseIcon.png" type="Texture" id=5]
 
-[node name="PlayerReadyContainer1" type="HBoxContainer"]
+[node name="PlayerReadyContainer" type="HBoxContainer"]
 margin_right = 480.0
 margin_bottom = 20.0
 rect_min_size = Vector2( 0, 32 )
@@ -15,9 +15,11 @@ script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
-PlayerNum = 1
+PlayerNum = null
+Ready = null
 
 [node name="Name" type="Label" parent="."]
+visible = false
 modulate = Color( 0.764706, 0.196078, 0.196078, 1 )
 margin_top = 9.0
 margin_right = 366.0
@@ -26,8 +28,7 @@ size_flags_horizontal = 3
 text = "Bit Buckets"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
-margin_left = 370.0
-margin_right = 480.0
+margin_right = 110.0
 margin_bottom = 32.0
 alignment = 2
 

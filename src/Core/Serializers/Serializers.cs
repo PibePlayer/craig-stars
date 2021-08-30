@@ -23,7 +23,7 @@ namespace CraigStars
             {
                 NullValueHandling = NullValueHandling.Ignore,
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-                DefaultValueHandling = DefaultValueHandling.Ignore,
+                // DefaultValueHandling = DefaultValueHandling.Ignore,
                 // TraceWriter = traceWriter,
 
                 Converters = new JsonConverter[] {

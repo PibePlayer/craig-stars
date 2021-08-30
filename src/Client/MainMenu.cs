@@ -19,9 +19,6 @@ namespace CraigStars.Client
         Label continueGameNameLabel;
         SpinBox continueGameYearSpinBox;
 
-        Label progressLabel;
-        ProgressBar progressBar;
-
         private bool joining = false;
 
         public override void _Ready()
@@ -37,8 +34,6 @@ namespace CraigStars.Client
             continueGameNameLabel = (Label)FindNode("ContinueGameNameLabel");
             continueGameYearSpinBox = (SpinBox)FindNode("ContinueGameYearSpinBox");
 
-            progressLabel = GetNode<Label>("VBoxContainer/CenterContainer/Panel/MenuButtons/ProgressLabel");
-            progressBar = GetNode<ProgressBar>("VBoxContainer/CenterContainer/Panel/MenuButtons/ProgressBar");
 
             hostPortEdit.Text = Settings.Instance.ServerPort.ToString();
             joinHostEdit.Text = Settings.Instance.ClientHost;
@@ -89,19 +84,6 @@ namespace CraigStars.Client
             }
         }
 
-        public override void _Process(float delta)
-        {
-            base._Process(delta);
-            if (CSResourceLoader.TotalResources > 0 && CSResourceLoader.Loaded < CSResourceLoader.TotalResources)
-            {
-                progressBar.Value = (float)CSResourceLoader.Loaded / CSResourceLoader.TotalResources * 100;
-            }
-            else
-            {
-                SetProcess(false);
-                progressBar.Visible = progressLabel.Visible = false;
-            }
-        }
 
         void OnJoinWindowCancelButtonPressed()
         {
@@ -156,14 +138,13 @@ namespace CraigStars.Client
         void OnHostWindowHostButtonPressed()
         {
             PlayersManager.Reset();
-            PlayersManager.CreatePlayersForNewGame();
             Settings.Instance.ServerPort = int.Parse(hostPortEdit.Text);
             ServerManager.Instance.HostGame(Settings.Instance.ServerPort);
 
             // join the server we just created
             CallDeferred(nameof(HostJoinNewlyHostedGame));
 
-            this.ChangeSceneTo<Lobby>("res://src/Client/MenuScreens/Lobby.tscn", (instance) =>
+            this.ChangeSceneTo<LobbyMenu>("res://src/Client/MenuScreens/LobbyMenu.tscn", (instance) =>
             {
                 instance.HostMode = true;
             });
@@ -191,7 +172,7 @@ namespace CraigStars.Client
         {
             if (joining && this.IsClient() && player.NetworkId == this.GetNetworkId())
             {
-                GetTree().ChangeScene("res://src/Client/MenuScreens/Lobby.tscn");
+                GetTree().ChangeScene("res://src/Client/MenuScreens/LobbyMenu.tscn");
             }
         }
 

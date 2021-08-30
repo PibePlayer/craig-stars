@@ -5,12 +5,9 @@ using System.Collections.Generic;
 
 namespace CraigStars.Client
 {
-    public class Lobby : MarginContainer
+    public class LobbyMenu : MarginContainer
     {
-        static CSLog log = LogProvider.GetLogger(typeof(Lobby));
-
-        [Export]
-        public PackedScene PlayerReadyContainerScene { get; set; }
+        static CSLog log = LogProvider.GetLogger(typeof(LobbyMenu));
 
         public bool HostMode { get; set; }
 
@@ -18,24 +15,33 @@ namespace CraigStars.Client
         LineEdit chatMessage;
         Button startGameButton;
         Control playerReadyContainers;
+        NewGameOptions newGameOptions;
+
+        public Player me;
 
         List<PublicPlayerInfo> joinedPlayers = new List<PublicPlayerInfo>();
+        List<PlayerChooser> playerChoosers = new List<PlayerChooser>();
 
         public List<PlayerMessage> InitialMessages { get; } = new List<PlayerMessage>();
+
+        RPC rpc;
 
         public override void _Ready()
         {
             chat = (TextEdit)FindNode("Chat");
             chatMessage = (LineEdit)FindNode("ChatMessage");
             startGameButton = (Button)FindNode("StartGameButton");
-            playerReadyContainers = FindNode("PlayerReadyContainers") as Control;
+            playerReadyContainers = (Control)FindNode("PlayerReadyContainers");
+            newGameOptions = (NewGameOptions)FindNode("NewGameOptions");
+            rpc = RPC.Instance(GetTree());
 
-            RPC.Instance(GetTree()).PlayerMessageEvent += OnPlayerMessage;
-            RPC.Instance(GetTree()).PlayerJoinedEvent += OnPlayerJoined;
-            RPC.Instance(GetTree()).PlayersUpdatedEvent += OnPlayersUpdated;
-            RPC.Instance(GetTree()).PlayerLeftEvent += OnPlayerLeft;
+            rpc.PlayerMessageEvent += OnPlayerMessage;
+            rpc.PlayerJoinedEvent += OnPlayerJoined;
+            rpc.ServerPlayersListEvent += OnServerPlayersList;
+            rpc.PlayerLeftEvent += OnPlayerLeft;
             EventManager.GameStartingEvent += OnGameStarting;
             NetworkClient.Instance.PlayerUpdatedEvent += OnPlayerUpdated;
+            rpc.ServerPlayerDataEvent += OnServerPlayerData;
 
             chatMessage.Connect("text_entered", this, nameof(OnChatMessageTextEntered));
             FindNode("BackButton").Connect("pressed", this, nameof(OnBackButtonPressed));
@@ -54,8 +60,14 @@ namespace CraigStars.Client
 
             if (HostMode)
             {
+                newGameOptions.Visible = true;
                 startGameButton.Visible = true;
                 CheckStartGameButton();
+            }
+            else
+            {
+                newGameOptions.Visible = false;
+                startGameButton.Visible = false;
             }
         }
 
@@ -64,12 +76,32 @@ namespace CraigStars.Client
             base._Notification(what);
             if (what == NotificationPredelete)
             {
-                RPC.Instance(GetTree()).PlayerMessageEvent -= OnPlayerMessage;
-                RPC.Instance(GetTree()).PlayerJoinedEvent -= OnPlayerJoined;
-                RPC.Instance(GetTree()).PlayerLeftEvent -= OnPlayerLeft;
-                RPC.Instance(GetTree()).PlayersUpdatedEvent -= OnPlayersUpdated;
+                rpc.PlayerMessageEvent -= OnPlayerMessage;
+                rpc.PlayerJoinedEvent -= OnPlayerJoined;
+                rpc.PlayerLeftEvent -= OnPlayerLeft;
+                rpc.ServerPlayersListEvent -= OnServerPlayersList;
+                rpc.ServerPlayerDataEvent -= OnServerPlayerData;
                 EventManager.GameStartingEvent -= OnGameStarting;
                 NetworkClient.Instance.PlayerUpdatedEvent -= OnPlayerUpdated;
+            }
+        }
+
+        void OnServerPlayerData(Player player)
+        {
+            if (player.NetworkId == GetTree().GetNetworkUniqueId())
+            {
+                me = player;
+                Node previousPlayerNode = (Node)playerReadyContainers.GetChildren()[player.Num];
+
+                NewGamePlayer playerChooser = ResourceLoader.Load<PackedScene>("res://src/Client/MenuScreens/Components/NewGamePlayer.tscn").Instance<NewGamePlayer>();
+                playerChooser.Player = player;
+
+                playerReadyContainers.AddChildBelowNode(previousPlayerNode, playerChooser);
+                previousPlayerNode.QueueFree();
+            }
+            else
+            {
+                log.Warn("We recieved player data for a different network player... that's not right.");
             }
         }
 
@@ -98,10 +130,10 @@ namespace CraigStars.Client
         /// <param name="p"></param>
         void AddPlayerReadyContainer(PublicPlayerInfo p)
         {
-            PlayerReadyContainer playerReadyContainer = PlayerReadyContainerScene.Instance() as PlayerReadyContainer;
-            playerReadyContainer.PlayerNum = p.Num;
-            playerReadyContainer.Player = p;
-            playerReadyContainers.AddChild(playerReadyContainer);
+            NewGameNetworkPlayer playerChooser = ResourceLoader.Load<PackedScene>("res://src/Client/MenuScreens/Components/NewGameNetworkPlayer.tscn").Instance<NewGameNetworkPlayer>();
+            playerChooser.Player = p;
+            playerReadyContainers.AddChild(playerChooser);
+            playerChoosers.Add(playerChooser);
         }
 
         #region Event Handlers
@@ -110,7 +142,7 @@ namespace CraigStars.Client
         {
             var me = joinedPlayers.Find(player => player.NetworkId == GetTree().GetNetworkUniqueId());
 
-            RPC.Instance(GetTree()).SendMessage(newText, me.Num);
+            rpc.SendMessage(newText, me.Num);
             chatMessage.Text = "";
         }
 
@@ -143,7 +175,12 @@ namespace CraigStars.Client
             }
         }
 
-        void OnPlayersUpdated(List<PublicPlayerInfo> players)
+        /// <summary>
+        /// The server has sent us a list of all players in the game
+        /// We add them to our PlayerReadyContainers control
+        /// </summary>
+        /// <param name="players"></param>
+        void OnServerPlayersList(List<PublicPlayerInfo> players)
         {
             foreach (Node child in playerReadyContainers.GetChildren())
             {
@@ -168,7 +205,7 @@ namespace CraigStars.Client
 
             foreach (Node child in playerReadyContainers.GetChildren())
             {
-                if (child is PlayerReadyContainer playerReadyContainer && playerReadyContainer.Player == player)
+                if (child is PlayerChooser playerReadyContainer && playerReadyContainer.Player == player)
                 {
                     playerReadyContainers.RemoveChild(child);
                     child.QueueFree();
@@ -188,12 +225,13 @@ namespace CraigStars.Client
 
         void OnReadyButtonPressed()
         {
-            var me = joinedPlayers.Find(player => player.NetworkId == GetTree().GetNetworkUniqueId());
-            if (me != null)
+            var myPublicPlayer = joinedPlayers.Find(player => player.NetworkId == GetTree().GetNetworkUniqueId());
+            if (myPublicPlayer != null)
             {
-                me.Ready = !me.Ready;
+                myPublicPlayer.Ready = !myPublicPlayer.Ready;
+                me.Ready = myPublicPlayer.Ready;
 
-                NetworkClient.Instance.PublishPlayerUpdatedEvent(me, notifyPeers: true, GetTree());
+                NetworkClient.Instance.PublishPlayerUpdatedEvent(myPublicPlayer, notifyPeers: true, GetTree());
             }
             else
             {
@@ -205,17 +243,11 @@ namespace CraigStars.Client
         {
             log.Info("Host: All players ready, starting the game!");
 
-            // TODO: start with settings from UI
-            GameSettings<Player> settings = new GameSettings<Player>()
-            {
-                Name = "Network Game",
-                Size = Size.Small,
-                Density = Density.Normal,
-            };
+            GameSettings<Player> settings = newGameOptions.GetGameSettings();
 
             // Note: The server already knows about the game's players, so no need to pass
             // those along here
-            RPC.Instance(GetTree()).SendGameStartRequested(settings);
+            rpc.SendGameStartRequested(settings);
         }
 
         #endregion

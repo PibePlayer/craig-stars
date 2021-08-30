@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://src/Client/MainMenu.cs" type="Script" id=1]
 [ext_resource path="res://assets/gui/DroidSans.ttf" type="DynamicFontData" id=2]
 [ext_resource path="res://src/Client/Controls/NumLineEdit.tscn" type="PackedScene" id=3]
 [ext_resource path="res://addons/CraigStarsComponents/src/CSButton.cs" type="Script" id=4]
+[ext_resource path="res://src/Client/Controls/CSResourceLoaderProgress.tscn" type="PackedScene" id=5]
 
 [sub_resource type="DynamicFont" id=1]
 size = 50
@@ -62,17 +63,17 @@ __meta__ = {
 }
 
 [node name="NewGameButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MenuButtons"]
-margin_top = 150.0
+margin_top = 145.0
 margin_right = 400.0
-margin_bottom = 170.0
+margin_bottom = 165.0
 size_flags_horizontal = 3
 text = "New Game"
 script = ExtResource( 4 )
 
 [node name="LoadGameButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MenuButtons"]
-margin_top = 174.0
+margin_top = 169.0
 margin_right = 400.0
-margin_bottom = 194.0
+margin_bottom = 189.0
 size_flags_horizontal = 3
 text = "Load Game"
 script = ExtResource( 4 )
@@ -108,50 +109,41 @@ value = 2400.0
 align = 2
 
 [node name="HostGameButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MenuButtons"]
-margin_top = 198.0
+margin_top = 193.0
 margin_right = 400.0
-margin_bottom = 218.0
+margin_bottom = 213.0
 text = "Host Game"
 
 [node name="JoinGameButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MenuButtons"]
-margin_top = 222.0
+margin_top = 217.0
 margin_right = 400.0
-margin_bottom = 242.0
+margin_bottom = 237.0
 text = "Join Game"
 
 [node name="CustomRacesButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MenuButtons"]
-margin_top = 246.0
+margin_top = 241.0
 margin_right = 400.0
-margin_bottom = 266.0
+margin_bottom = 261.0
 text = "Custom Races"
 script = ExtResource( 4 )
 
 [node name="SettingsButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MenuButtons"]
-margin_top = 270.0
+margin_top = 265.0
 margin_right = 400.0
-margin_bottom = 290.0
+margin_bottom = 285.0
 text = "Settings"
 script = ExtResource( 4 )
 
 [node name="ExitButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MenuButtons"]
-margin_top = 294.0
+margin_top = 289.0
 margin_right = 400.0
-margin_bottom = 314.0
+margin_bottom = 309.0
 text = "Exit"
 script = ExtResource( 4 )
 
-[node name="ProgressLabel" type="Label" parent="VBoxContainer/CenterContainer/Panel/MenuButtons"]
-margin_top = 318.0
-margin_right = 400.0
-margin_bottom = 332.0
-text = "Loading Resources"
-align = 1
-valign = 2
-
-[node name="ProgressBar" type="ProgressBar" parent="VBoxContainer/CenterContainer/Panel/MenuButtons"]
-margin_top = 336.0
-margin_right = 400.0
-margin_bottom = 350.0
+[node name="CSResourceLoaderProgress" parent="VBoxContainer/CenterContainer/Panel/MenuButtons" instance=ExtResource( 5 )]
+margin_top = 313.0
+margin_bottom = 355.0
 
 [node name="JoinWindow" type="WindowDialog" parent="."]
 margin_left = 470.0

@@ -27,7 +27,9 @@ namespace CraigStars.Singletons
         public event Action<PublicPlayerInfo> UnsubmitTurnRequestedEvent;
 
         public event Action<PlayerMessage> PlayerMessageEvent;
-        public event Action<List<PublicPlayerInfo>> PlayersUpdatedEvent;
+        public event Action<Player, Race> RaceUpdatedEvent;
+        public event Action<Player> ServerPlayerDataEvent;
+        public event Action<List<PublicPlayerInfo>> ServerPlayersListEvent;
         public event Action<PublicPlayerInfo> PlayerJoinedEvent;
         public event Action<PublicPlayerInfo> PlayerLeftEvent;
 
@@ -166,24 +168,15 @@ namespace CraigStars.Singletons
         /// </summary>
         /// <param name="players"></param>
         /// <param name="networkId"></param>
-        public void SendPlayersUpdated(List<PublicPlayerInfo> players, int networkId = 0)
+        public void SendClientPlayersList(List<PublicPlayerInfo> players, int networkId)
         {
             // servers listen for signals and notify clients
             if (this.IsServer())
             {
                 var playersArray = new Godot.Collections.Array(players.Select(p => Serializers.Serialize(p)).ToArray());
-                if (networkId == 0)
-                {
-                    log.Debug($"{LogPrefix} Sending all players to all clients");
-                    // we are a server, tell the clients we have a player update
-                    Rpc(nameof(PlayersUpdated), playersArray);
-                }
-                else
-                {
-                    log.Debug($"{LogPrefix} Sending player infos to network player: {networkId}");
-                    // we are a server, tell the clients we have a player update
-                    RpcId(networkId, nameof(PlayersUpdated), playersArray);
-                }
+                log.Debug($"{LogPrefix} Sending player infos to network player: {networkId}");
+                // we are a server, tell the clients we have a player update
+                RpcId(networkId, nameof(ServerPlayersList), playersArray);
             }
             else
             {
@@ -196,7 +189,7 @@ namespace CraigStars.Singletons
         /// </summary>
         /// <param name="data"></param>
         [Remote]
-        public void PlayersUpdated(Godot.Collections.Array jsons)
+        public void ServerPlayersList(Godot.Collections.Array jsons)
         {
             var players = new List<PublicPlayerInfo>(jsons.Count);
             foreach (string json in jsons)
@@ -214,7 +207,7 @@ namespace CraigStars.Singletons
             }
 
             // notify listeners that we have updated Player
-            PlayersUpdatedEvent?.Invoke(players);
+            ServerPlayersListEvent?.Invoke(players);
         }
 
         #endregion
@@ -263,23 +256,17 @@ namespace CraigStars.Singletons
         /// This is called by the server to send each player their player information
         /// </summary>
         /// <param name="player"></param>
-        public void SendPlayerDataUpdated(Game game)
+        public void SendClientPlayerData(Player player)
         {
-            var settings = Serializers.CreatePlayerSettings(game.Players.Cast<PublicPlayerInfo>().ToList(), game.TechStore);
-            foreach (var player in game.Players)
-            {
-                if (player.NetworkId != 1)
-                {
-                    log.Info($"Server: Sending {player} updated player data");
-                    var json = Serializers.Serialize(player, settings);
-                    RpcId(player.NetworkId, nameof(PlayerDataUpdated), player.Num, json);
-                }
-            }
+            var settings = Serializers.CreatePlayerSettings(new List<PublicPlayerInfo>() { player }, TechStore.Instance);
 
+            log.Info($"Server: Sending {player} updated player data");
+            string json = Serializers.Serialize(player, settings);
+            RpcId(player.NetworkId, nameof(ServerPlayerData), player.Num, json);
         }
 
         [Remote]
-        public void PlayerDataUpdated(int playerNum, string playerJson)
+        public void ServerPlayerData(int playerNum, string playerJson)
         {
             log.Info("Client: Server sent player data, updated Me");
             var player = new Player() { Num = playerNum };
@@ -288,6 +275,9 @@ namespace CraigStars.Singletons
             player.SetupMapObjectMappings();
             player.ComputeAggregates();
             log.Info("Client: Done recieving updated player data");
+
+            // notify any listeners that we have new data for this player
+            ServerPlayerDataEvent?.Invoke(player);
         }
 
         /// <summary>
@@ -324,6 +314,40 @@ namespace CraigStars.Singletons
             }
 
         }
+
+        /// <summary>
+        /// This is called by clients to submit turns to the server
+        /// </summary>
+        /// <param name="player">The player (probably PlayersManager.Me) submitting the turn</param>
+        public void SendUpdateRace(Race race)
+        {
+            log.Info($"Client: Sending race to server");
+            var json = Serializers.Serialize(race);
+            RpcId(1, nameof(UpdateRace), json);
+        }
+
+        [Remote]
+        public void UpdateRace(string raceJson)
+        {
+            // find the network player by this number
+            var networkId = GetTree().GetRpcSenderId();
+            var player = players.Find(player => player.NetworkId == networkId);
+            if (player != null)
+            {
+                // load the actual player from JSON
+                log.Info($"Server: {player} sent race");
+                var race = Serializers.DeserializeObject<Race>(raceJson);
+                player.Race = race;
+
+                // submit this player's turn to the server
+                RaceUpdatedEvent?.Invoke(player, race);
+            }
+            else
+            {
+                log.Error($"Player for networkId: {networkId} not found");
+            }
+
+        }        
 
         public void SendGameStarting(PublicGameInfo gameInfo)
         {

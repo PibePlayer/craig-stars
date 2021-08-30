@@ -6,7 +6,6 @@ namespace CraigStars.Client
 {
     public class InGameMenu : GameViewDialog
     {
-        Loader loader;
         Button saveTurnButton;
         Button exitGameButton;
         Button exitToMainMenuButton;
@@ -14,7 +13,6 @@ namespace CraigStars.Client
         public override void _Ready()
         {
             base._Ready();
-            loader = GetNode<Loader>("MarginContainer/CenterContainer/VBoxContainer/Loader");
             saveTurnButton = GetNode<Button>("MarginContainer/CenterContainer/VBoxContainer/SaveTurnButton");
             exitGameButton = GetNode<Button>("MarginContainer/CenterContainer/VBoxContainer/ExitGameButton");
             exitToMainMenuButton = GetNode<Button>("MarginContainer/CenterContainer/VBoxContainer/ExitToMainMenuButton");
@@ -105,14 +103,14 @@ namespace CraigStars.Client
                 {
                     EventManager.PublishGameExitingEvent(PlayersManager.GameInfo);
                     ServerManager.Instance.ExitGame();
-                    loader.LoadScene("res://src/Client/MainMenu.tscn");
+                    GetTree().ChangeScene("res://src/Client/MainMenu.tscn");
                 });
             }
             else
             {
                 EventManager.PublishGameExitingEvent(PlayersManager.GameInfo);
                 ServerManager.Instance.ExitGame();
-                loader.LoadScene("res://src/Client/MainMenu.tscn");
+                GetTree().ChangeScene("res://src/Client/MainMenu.tscn");
             }
         }
 

@@ -12,16 +12,7 @@ namespace CraigStars.Client
         /// </summary>
         /// <value></value>
         [Export(PropertyHint.Range, "1,5")]
-        public int PlayerNum
-        {
-            get => playerNum;
-            set
-            {
-                playerNum = value;
-                UpdateName();
-            }
-        }
-        int playerNum = 0;
+        public int PlayerNum { get; set; }
 
         /// <summary>
         /// the index of the player who owns this building
@@ -64,7 +55,7 @@ namespace CraigStars.Client
             playerIcon = GetNode<TextureRect>("HBoxContainer/PlayerIcon");
             robotIcon = GetNode<TextureRect>("HBoxContainer/RobotIcon");
 
-            UpdateName();
+            UpdateControls();
             if (!Engine.EditorHint && Player != null)
             {
                 OnPlayerUpdated(Player);
@@ -81,16 +72,24 @@ namespace CraigStars.Client
             }
         }
 
-        void UpdateName()
+        void OnPlayerUpdated(PublicPlayerInfo player)
+        {
+            if (Player != null && player.Num == Player.Num)
+            {
+                Player = player;
+                UpdateControls();
+            }
+        }
+
+        public void UpdateControls()
         {
             if (nameLabel != null && readyLabel != null)
             {
-                var player = Player;
-                if (player != null)
+                if (Player != null)
                 {
-                    Ready = player.Ready;
-                    robotIcon.Visible = player.AIControlled;
-                    playerIcon.Visible = !player.AIControlled;
+                    Ready = Player.Ready;
+                    robotIcon.Visible = Player.AIControlled;
+                    playerIcon.Visible = !Player.AIControlled;
 
                     var color = Player.Color;
                     nameLabel.Modulate = color;
@@ -113,12 +112,5 @@ namespace CraigStars.Client
 
         }
 
-        void OnPlayerUpdated(PublicPlayerInfo player)
-        {
-            if (player.Num == PlayerNum)
-            {
-                UpdateName();
-            }
-        }
     }
 }

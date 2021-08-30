@@ -1,91 +1,35 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://src/Client/MenuScreens/CustomRacesMenu.cs" type="Script" id=1]
-[ext_resource path="res://assets/gui/DroidSans.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://src/Client/MenuScreens/BaseMenu.tscn" type="PackedScene" id=2]
 [ext_resource path="res://src/Client/Dialogs/RaceDesignerDialog.tscn" type="PackedScene" id=3]
 
-[sub_resource type="DynamicFont" id=1]
-size = 50
-font_data = ExtResource( 2 )
-
-[node name="CustomRaces" type="MarginContainer"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-rect_pivot_offset = Vector2( 622, 55 )
-custom_constants/margin_right = 0
-custom_constants/margin_top = 0
-custom_constants/margin_left = 0
-custom_constants/margin_bottom = 0
+[node name="CustomRacesMenu" instance=ExtResource( 2 )]
+rect_pivot_offset = Vector2( 175, 506 )
 script = ExtResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
-margin_right = 1440.0
-margin_bottom = 900.0
-alignment = 1
-
-[node name="Title" type="Label" parent="VBoxContainer"]
-margin_top = 168.0
-margin_right = 1440.0
-margin_bottom = 228.0
-custom_fonts/font = SubResource( 1 )
+[node name="Title" parent="VBoxContainer" index="0"]
 text = "Custom Races"
-align = 1
 
-[node name="CenterContainer" type="CenterContainer" parent="VBoxContainer"]
-margin_top = 232.0
-margin_right = 1440.0
-margin_bottom = 732.0
-rect_min_size = Vector2( 500, 500 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Panel" type="Panel" parent="VBoxContainer/CenterContainer"]
-margin_left = 470.0
-margin_right = 970.0
-margin_bottom = 500.0
-rect_min_size = Vector2( 500, 500 )
-
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/CenterContainer/Panel"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-alignment = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="MenuButtons" type="VBoxContainer" parent="VBoxContainer/CenterContainer/Panel/HBoxContainer"]
-margin_left = 50.0
-margin_right = 450.0
-margin_bottom = 500.0
-rect_min_size = Vector2( 400, 0 )
-alignment = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="TitleLabel" type="Label" parent="VBoxContainer/CenterContainer/Panel/HBoxContainer/MenuButtons"]
-margin_top = 67.0
+[node name="TitleLabel" type="Label" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons" index="0"]
+margin_top = 62.0
 margin_right = 400.0
-margin_bottom = 81.0
+margin_bottom = 76.0
 text = "Races"
 
-[node name="RaceItemList" type="ItemList" parent="VBoxContainer/CenterContainer/Panel/HBoxContainer/MenuButtons"]
-margin_top = 85.0
+[node name="RaceItemList" type="ItemList" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons" index="1"]
+margin_top = 80.0
 margin_right = 400.0
-margin_bottom = 385.0
+margin_bottom = 380.0
 rect_min_size = Vector2( 0, 300 )
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/CenterContainer/Panel/HBoxContainer/MenuButtons"]
-margin_top = 389.0
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons" index="2"]
+margin_top = 384.0
 margin_right = 400.0
-margin_bottom = 409.0
+margin_bottom = 404.0
 alignment = 2
 
-[node name="NewButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/HBoxContainer/MenuButtons/HBoxContainer"]
+[node name="NewButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer" index="0"]
 margin_left = 167.0
 margin_right = 242.0
 margin_bottom = 20.0
@@ -95,7 +39,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="EditButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/HBoxContainer/MenuButtons/HBoxContainer"]
+[node name="EditButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer" index="1"]
 margin_left = 246.0
 margin_right = 321.0
 margin_bottom = 20.0
@@ -105,7 +49,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="DeleteButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/HBoxContainer/MenuButtons/HBoxContainer"]
+[node name="DeleteButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer" index="2"]
 margin_left = 325.0
 margin_right = 400.0
 margin_bottom = 20.0
@@ -115,12 +59,10 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="BackButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/HBoxContainer/MenuButtons"]
-margin_top = 413.0
-margin_right = 400.0
-margin_bottom = 433.0
-text = "Back"
+[node name="BackButton" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons" index="3"]
+margin_top = 408.0
+margin_bottom = 428.0
 
-[node name="RaceDesignerDialog" parent="." instance=ExtResource( 3 )]
-margin_right = 1440.0
-margin_bottom = 900.0
+[node name="RaceDesignerDialog" parent="." index="1" instance=ExtResource( 3 )]
+margin_right = 1920.0
+margin_bottom = 1080.0

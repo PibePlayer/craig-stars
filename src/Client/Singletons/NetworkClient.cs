@@ -129,5 +129,15 @@ namespace CraigStars.Client
             RPC.Instance(GetTree()).SendSubmitTurn(player);
         }
 
+        /// <summary>
+        /// Submit a race to the server
+        /// </summary>
+        /// <param name="player"></param>
+        public void UpdateRaceOnServer(Race race)
+        {
+            // tell the server we submitted our turn
+            RPC.Instance(GetTree()).SendUpdateRace(race);
+        }
+
     }
 }

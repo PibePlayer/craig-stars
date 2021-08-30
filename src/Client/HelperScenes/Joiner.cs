@@ -13,10 +13,13 @@ namespace CraigStars.Client
     {
         public List<PlayerMessage> Messages { get; } = new List<PlayerMessage>();
 
+        RPC rpc;
+
         public override void _Ready()
         {
-            RPC.Instance(GetTree()).PlayerJoinedEvent += OnPlayerJoined;
-            RPC.Instance(GetTree()).PlayerMessageEvent += OnPlayerMessage;
+            rpc = RPC.Instance(GetTree());
+            rpc.PlayerJoinedEvent += OnPlayerJoined;
+            rpc.PlayerMessageEvent += OnPlayerMessage;
 
             NetworkClient.Instance.JoinGame(Settings.Instance.ClientHost, Settings.Instance.ClientPort);
         }
@@ -26,8 +29,8 @@ namespace CraigStars.Client
             base._Notification(what);
             if (what == NotificationPredelete)
             {
-                RPC.Instance(GetTree()).PlayerJoinedEvent -= OnPlayerJoined;
-                RPC.Instance(GetTree()).PlayerMessageEvent -= OnPlayerMessage;
+                rpc.PlayerJoinedEvent -= OnPlayerJoined;
+                rpc.PlayerMessageEvent -= OnPlayerMessage;
             }
         }
 
@@ -47,7 +50,7 @@ namespace CraigStars.Client
 
         void GoToLobby()
         {
-            this.ChangeSceneTo<Lobby>("res://src/Client/MenuScreens/Lobby.tscn", (instance) =>
+            this.ChangeSceneTo<LobbyMenu>("res://src/Client/MenuScreens/LobbyMenu.tscn", (instance) =>
             {
                 instance.InitialMessages.AddRange(Messages);
             });

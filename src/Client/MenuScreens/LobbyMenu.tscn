@@ -1,0 +1,177 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://src/Client/MenuScreens/BaseMenu.tscn" type="PackedScene" id=1]
+[ext_resource path="res://src/Client/MenuScreens/Components/PlayerReadyContainer.tscn" type="PackedScene" id=2]
+[ext_resource path="res://src/Client/MenuScreens/LobbyMenu.cs" type="Script" id=3]
+[ext_resource path="res://src/Client/MenuScreens/Components/NewGameOptions.tscn" type="PackedScene" id=4]
+[ext_resource path="res://src/Client/MenuScreens/Components/ServerDisconnectPopup.tscn" type="PackedScene" id=5]
+
+[node name="LobbyMenu" instance=ExtResource( 1 )]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 0.0
+margin_top = 0.0
+margin_right = 0.0
+margin_bottom = 0.0
+script = ExtResource( 3 )
+
+[node name="VBoxContainer" parent="." index="0"]
+margin_right = 1440.0
+margin_bottom = 900.0
+
+[node name="Title" parent="VBoxContainer" index="0"]
+margin_top = 0.0
+margin_right = 1440.0
+margin_bottom = 60.0
+text = "Let's All Go to the Lobby"
+
+[node name="CenterContainer" parent="VBoxContainer" index="1"]
+margin_top = 64.0
+margin_right = 1440.0
+margin_bottom = 900.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Panel" parent="VBoxContainer/CenterContainer" index="0"]
+margin_left = 0.0
+margin_top = 18.0
+margin_right = 1440.0
+margin_bottom = 818.0
+rect_min_size = Vector2( 1440, 800 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="HBoxContainer" parent="VBoxContainer/CenterContainer/Panel/MarginContainer" index="0"]
+margin_right = 1435.0
+margin_bottom = 795.0
+
+[node name="MenuButtons" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer" index="0"]
+margin_left = 0.0
+margin_right = 1430.0
+margin_bottom = 790.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons" index="0"]
+margin_top = 110.0
+margin_right = 1430.0
+margin_bottom = 656.0
+
+[node name="ChatContainer" type="VBoxContainer" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer" index="0"]
+margin_right = 713.0
+margin_bottom = 546.0
+rect_min_size = Vector2( 700, 500 )
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer/ChatContainer" index="0"]
+margin_right = 713.0
+margin_bottom = 14.0
+text = "Chat"
+
+[node name="Chat" type="TextEdit" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer/ChatContainer" index="1"]
+margin_top = 18.0
+margin_right = 713.0
+margin_bottom = 518.0
+rect_min_size = Vector2( 0, 500 )
+text = "Welcome to the server..."
+readonly = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ChatMessage" type="LineEdit" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer/ChatContainer" index="2"]
+margin_top = 522.0
+margin_right = 713.0
+margin_bottom = 546.0
+placeholder_text = "  Send a message"
+
+[node name="PlayerReadyContainer" type="VBoxContainer" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer" index="1"]
+margin_left = 717.0
+margin_right = 1430.0
+margin_bottom = 546.0
+rect_min_size = Vector2( 450, 0 )
+size_flags_horizontal = 3
+
+[node name="NewGameOptions" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer/PlayerReadyContainer" index="0" instance=ExtResource( 4 )]
+margin_right = 713.0
+GameName = "A Multiplayer Barefoot Jaywalk"
+
+[node name="Players" type="Label" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer/PlayerReadyContainer" index="1"]
+margin_top = 76.0
+margin_right = 713.0
+margin_bottom = 90.0
+text = "Players"
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer/PlayerReadyContainer" index="2"]
+margin_top = 94.0
+margin_right = 713.0
+margin_bottom = 502.0
+size_flags_vertical = 3
+custom_constants/margin_right = 10
+custom_constants/margin_top = 5
+custom_constants/margin_left = 10
+custom_constants/margin_bottom = 5
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PlayerReadyContainers" type="VBoxContainer" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer/PlayerReadyContainer/MarginContainer" index="0"]
+margin_left = 10.0
+margin_top = 5.0
+margin_right = 703.0
+margin_bottom = 403.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PlayerReadyContainer1" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer/PlayerReadyContainer/MarginContainer/PlayerReadyContainers" index="0" instance=ExtResource( 2 )]
+margin_right = 693.0
+margin_bottom = 32.0
+rect_rotation = 0.0
+Ready = false
+PlayerNum = 0
+
+[node name="LobbyButtons" type="HBoxContainer" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer/PlayerReadyContainer" index="3"]
+margin_top = 506.0
+margin_right = 713.0
+margin_bottom = 546.0
+rect_min_size = Vector2( 0, 40 )
+custom_constants/separation = 5
+alignment = 1
+
+[node name="StartButtonContainer" type="HBoxContainer" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer/PlayerReadyContainer/LobbyButtons" index="0"]
+margin_right = 608.0
+margin_bottom = 40.0
+size_flags_horizontal = 3
+
+[node name="StartGameButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer/PlayerReadyContainer/LobbyButtons/StartButtonContainer" index="0"]
+visible = false
+margin_right = 120.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 120, 0 )
+disabled = true
+text = "Start Game"
+
+[node name="ReadyButtonContainer" type="HBoxContainer" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer/PlayerReadyContainer/LobbyButtons" index="1"]
+margin_left = 613.0
+margin_right = 713.0
+margin_bottom = 40.0
+alignment = 2
+
+[node name="ReadyButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer/PlayerReadyContainer/LobbyButtons/ReadyButtonContainer" index="0"]
+margin_right = 100.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 100, 0 )
+text = "Ready"
+
+[node name="BackButton" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons" index="1"]
+margin_top = 660.0
+margin_right = 1430.0
+margin_bottom = 680.0
+
+[node name="Popup" parent="." index="1" instance=ExtResource( 5 )]
+visible = false
+margin_right = 1440.0
+margin_bottom = 900.0

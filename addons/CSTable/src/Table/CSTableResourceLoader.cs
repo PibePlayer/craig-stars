@@ -32,30 +32,46 @@ namespace CraigStarsTable
             instance = this;
         }
 
-        Task loadTask;
+        public static int TotalResources { get; set; }
+        public static int Loaded { get; set; }
+
+        static Task sceneLoadTask;
+        static Task spriteLoadTask;
 
         public override void _Ready()
         {
             base._Ready();
             instance = this;
 
+            int numCells = 10 * 50;
+            int numHeaders = 10;
 
-            loadTask = Task.Run(() =>
+            TotalResources = 1 + numCells + numHeaders;
+            Loaded = 0;
+
+            sceneLoadTask = Task.Run(() =>
             {
                 DefaultColumnHeaderScene = ResourceLoader.Load<PackedScene>(DefaultColumnHeaderScenePath);
+                Loaded++;
+            });
 
+            spriteLoadTask = Task.Run(() =>
+            {
                 // precreate enough cells for a 10x50 table
-                for (int i = 0; i < 10 * 50; i++)
+                for (int i = 0; i < numCells; i++)
                 {
                     CSTableNodePool.Return<CSLabelCell>(new CSLabelCell());
+                    Loaded++;
                 }
 
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < numHeaders; i++)
                 {
                     // pre-create column headers
                     CSTableNodePool.Return<ColumnHeader>(DefaultColumnHeaderScene.Instance<ColumnHeader>());
+                    Loaded++;
                 }
             });
+
         }
 
         public override void _Notification(int what)

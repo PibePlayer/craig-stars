@@ -193,7 +193,6 @@ namespace CraigStars
                 }
             }
             var _  = UpdateItems();
-
         }
 
         public void RemoveItem(int quantity)

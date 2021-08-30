@@ -15,7 +15,6 @@ namespace CraigStars.Singletons
 
         static List<string> packedScenePaths = new()
         {
-            "res://src/Client/MenuScreens/Components/PlayerChooser.tscn",
             "res://src/Client/GameView.tscn",
             "res://src/Client/CommandPane/FleetCompositionTileTokensRow.tscn",
             "res://src/Client/Scanner/WaypointArea.tscn",
@@ -50,6 +49,7 @@ namespace CraigStars.Singletons
             int preloadedSprites = 128;
             TotalResources = packedScenePaths.Count + texturePaths.Count + preloadedSprites;
 
+            log.Debug("Loading scenes");
             sceneLoadTask = Task.Run(() =>
             {
                 packedScenePaths.ForEach(path =>
@@ -65,8 +65,9 @@ namespace CraigStars.Singletons
                     Loaded++;
                 });
             });
-            
+
             await sceneLoadTask;
+            log.Debug("Populating NodePool with sprites");
             spriteLoadTask = Task.Run(() =>
             {
                 // pre-instantiate some planets
@@ -81,6 +82,7 @@ namespace CraigStars.Singletons
                     Loaded++;
                 }
             });
+            log.Debug("Done populating NodePool with sprites");
         }
 
         public override void _Notification(int what)
@@ -100,7 +102,7 @@ namespace CraigStars.Singletons
 
         public static PackedScene GetPackedScene(string filename)
         {
-            sceneLoadTask.Wait(TimeSpan.FromSeconds(5));
+            sceneLoadTask.Wait();
             if (PackedScenes.TryGetValue(filename, out PackedScene resource))
             {
                 return resource;
@@ -111,7 +113,7 @@ namespace CraigStars.Singletons
 
         public static Texture GetTexture(string filename)
         {
-            sceneLoadTask.Wait(TimeSpan.FromSeconds(5));
+            sceneLoadTask.Wait();
             if (Textures.TryGetValue(filename, out Texture resource))
             {
                 return resource;

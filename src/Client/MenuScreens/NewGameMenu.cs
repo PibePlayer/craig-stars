@@ -8,7 +8,6 @@ namespace CraigStars.Client
 {
     public class NewGameMenu : MarginContainer
     {
-        Loader loader;
         CheckButton fastHotseatCheckButton;
         Button startButton;
         Button backButton;
@@ -20,7 +19,6 @@ namespace CraigStars.Client
         public override void _Ready()
         {
             base._Ready();
-            loader = GetNode<Loader>("VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/BottomHBoxContainer/Loader");
             startButton = GetNode<Button>("VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/StartButton");
             backButton = GetNode<Button>("VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/BackButton");
 

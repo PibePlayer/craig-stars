@@ -10,6 +10,9 @@ namespace CraigStars.Client
     public class NewGameOptions : GridContainer
     {
         [Export]
+        public String GameName { get; set; } = "A Barefoot Jaywalk";
+
+        [Export]
         public Size Size { get; set; } = Size.Small;
 
         [Export]
@@ -30,6 +33,7 @@ namespace CraigStars.Client
 
             sizeOptionButton.Selected = (int)Size;
             densityOptionButton.Selected = (int)Density;
+            nameLineEdit.Text = GameName;
         }
 
         public GameSettings<Player> GetGameSettings()

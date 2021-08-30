@@ -1,7 +1,6 @@
 [gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://src/Client/Dialogs/InGameMenu.cs" type="Script" id=1]
-[ext_resource path="res://src/Client/Controls/Loader.tscn" type="PackedScene" id=3]
 
 [node name="InGameMenu" type="WindowDialog"]
 pause_mode = 2
@@ -39,11 +38,6 @@ margin_bottom = 160.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
-
-[node name="Loader" parent="MarginContainer/CenterContainer/VBoxContainer" instance=ExtResource( 3 )]
-margin_left = 47.0
-margin_right = 79.0
-size_flags_horizontal = 4
 
 [node name="SaveTurnButton" type="Button" parent="MarginContainer/CenterContainer/VBoxContainer"]
 margin_right = 127.0

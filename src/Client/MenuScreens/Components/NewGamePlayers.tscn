@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://src/Client/MenuScreens/Components/NewGamePlayers.cs" type="Script" id=1]
-[ext_resource path="res://src/Client/MenuScreens/Components/PlayerChooser.tscn" type="PackedScene" id=2]
+[ext_resource path="res://src/Client/MenuScreens/Components/NewGamePlayer.tscn" type="PackedScene" id=2]
 
 [node name="NewGamePlayers" type="VBoxContainer"]
 margin_top = 76.0
@@ -39,8 +39,8 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="MarginContainer" type="MarginContainer" parent="ScrollContainer"]
-margin_right = 400.0
-margin_bottom = 298.0
+margin_right = 402.0
+margin_bottom = 286.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 custom_constants/margin_right = 5
@@ -51,12 +51,12 @@ custom_constants/margin_bottom = 15
 [node name="PlayersContainer" type="VBoxContainer" parent="ScrollContainer/MarginContainer"]
 margin_left = 5.0
 margin_top = 15.0
-margin_right = 395.0
-margin_bottom = 283.0
+margin_right = 397.0
+margin_bottom = 271.0
 custom_constants/separation = 10
 
-[node name="PlayerChooser" parent="ScrollContainer/MarginContainer/PlayersContainer" instance=ExtResource( 2 )]
+[node name="NewGamePlayer" parent="ScrollContainer/MarginContainer/PlayersContainer" instance=ExtResource( 2 )]
 margin_left = 0.0
 margin_top = 0.0
-margin_right = 390.0
+margin_right = 392.0
 margin_bottom = 96.0

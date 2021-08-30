@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace CraigStars
 {
@@ -8,8 +10,10 @@ namespace CraigStars
     {
         public string Name { get; set; } = "Humanoid";
         public string PluralName { get; set; } = "Humanoids";
-        public SpendLeftoverPointsOn SpendLeftoverPointsOn { get; set; } = SpendLeftoverPointsOn.SurfaceMinerals;
-            public PRT PRT { get; set; } = PRT.JoaT;
+        public SpendLeftoverPointsOn SpendLeftoverPointsOn { get; set; }
+        
+        [DefaultValue(PRT.JoaT)]
+        public PRT PRT { get; set; } = PRT.JoaT;
         public HashSet<LRT> LRTs { get; set; } = new HashSet<LRT>();
 
         public Hab HabLow { get => habLow; set { habLow = value; habCenter = null; } }

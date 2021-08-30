@@ -12,13 +12,13 @@ namespace CraigStars.Client
 
         Container PlayersContainer;
         Button addPlayerButton;
-        PackedScene playerChooserScene;
+        PackedScene newGamePlayerScene;
 
         public override void _Ready()
         {
             PlayersContainer = GetNode<Container>("ScrollContainer/MarginContainer/PlayersContainer");
             addPlayerButton = GetNode<Button>("HBoxContainer/AddPlayerButton");
-            playerChooserScene = CSResourceLoader.GetPackedScene("PlayerChooser.tscn");
+            newGamePlayerScene = ResourceLoader.Load<PackedScene>("res://src/Client/MenuScreens/Components/NewGamePlayer.tscn");
 
             addPlayerButton.Connect("pressed", this, nameof(OnAddPlayerButtonPressed));
 
@@ -36,7 +36,7 @@ namespace CraigStars.Client
 
             Players.ForEach(player =>
             {
-                var playerChooser = playerChooserScene.Instance<PlayerChooser>();
+                var playerChooser = newGamePlayerScene.Instance<NewGamePlayer>();
                 playerChooser.Player = player;
                 playerChooser.PlayerRemovedEvent += OnPlayerRemoved;
                 PlayersContainer.AddChild(playerChooser);
@@ -48,19 +48,19 @@ namespace CraigStars.Client
         {
             var player = PlayersManager.CreateNewPlayer(Players.Count);
             Players.Add(player);
-            var playerChooser = playerChooserScene.Instance<PlayerChooser>();
+            var playerChooser = newGamePlayerScene.Instance<NewGamePlayer>();
             playerChooser.Player = player;
             playerChooser.PlayerRemovedEvent += OnPlayerRemoved;
 
             PlayersContainer.AddChild(playerChooser);
         }
 
-        void OnPlayerRemoved(PlayerChooser playerChooser, Player player)
+        void OnPlayerRemoved(PlayerChooser<Player> playerChooser, Player player)
         {
-            Players.Remove(player);
+            Players.RemoveAt(player.Num);
             PlayersContainer.RemoveChild(playerChooser);
-            playerChooser.QueueFree();
             playerChooser.PlayerRemovedEvent -= OnPlayerRemoved;
+            playerChooser.QueueFree();
 
             // reassign player numbers in case we deleted a player out of the middle
             Players.Each((player, index) => player.Num = index);

@@ -29,16 +29,20 @@ namespace CraigStars.Server
         List<Player> players = new List<Player>();
 
         RPC rpc;
+        SceneTree sceneTree;
 
         public override void _Ready()
         {
             base._Ready();
 
-            GetTree().Connect("network_peer_connected", this, nameof(OnPlayerConnected));
-            GetTree().Connect("network_peer_disconnected", this, nameof(OnPlayerDisconnected));
+            sceneTree = GetTree();
 
-            rpc = RPC.Instance(GetTree());
+            sceneTree.Connect("network_peer_connected", this, nameof(OnPlayerConnected));
+            sceneTree.Connect("network_peer_disconnected", this, nameof(OnPlayerDisconnected));
+
+            rpc = RPC.Instance(sceneTree);
             rpc.PlayerMessageEvent += OnPlayerMessage;
+            rpc.RaceUpdatedEvent += OnRaceUpdated;
         }
 
         public override void _Notification(int what)
@@ -46,11 +50,20 @@ namespace CraigStars.Server
             base._Notification(what);
             if (what == NotificationPredelete)
             {
-                GetTree().Disconnect("network_peer_connected", this, nameof(OnPlayerConnected));
-                GetTree().Disconnect("network_peer_disconnected", this, nameof(OnPlayerDisconnected));
-
+                if (sceneTree.NativeInstance != IntPtr.Zero)
+                {
+                    sceneTree.Disconnect("network_peer_connected", this, nameof(OnPlayerConnected));
+                    sceneTree.Disconnect("network_peer_disconnected", this, nameof(OnPlayerDisconnected));
+                }
                 rpc.PlayerMessageEvent -= OnPlayerMessage;
+                rpc.RaceUpdatedEvent -= OnRaceUpdated;
             }
+        }
+
+        void OnRaceUpdated(Player player, Race race)
+        {
+            var serverPlayer = players.Find(p => p.Num == player.Num);
+            serverPlayer.Race = race;
         }
 
         protected override IClientEventPublisher CreateClientEventPublisher()
@@ -94,7 +107,10 @@ namespace CraigStars.Server
             rpc.SendPlayerJoined(newPlayer);
 
             // tell this player about the other players
-            rpc.SendPlayersUpdated(players.Cast<PublicPlayerInfo>().ToList(), networkId);
+            rpc.SendClientPlayersList(players.Cast<PublicPlayerInfo>().ToList(), networkId);
+
+            // tell this player about themselves
+            rpc.SendClientPlayerData(newPlayer);
 
             // tell this player about all the messages
             rpc.SendAllMessages(networkId, Messages);

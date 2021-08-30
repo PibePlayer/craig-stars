@@ -1,97 +1,33 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://src/Client/MenuScreens/SettingsMenu.cs" type="Script" id=1]
-[ext_resource path="res://assets/gui/DroidSans.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://src/Client/MenuScreens/BaseMenu.tscn" type="PackedScene" id=1]
+[ext_resource path="res://src/Client/MenuScreens/SettingsMenu.cs" type="Script" id=2]
 
-[sub_resource type="DynamicFont" id=1]
-size = 50
-font_data = ExtResource( 2 )
+[node name="SettingsMenu" instance=ExtResource( 1 )]
+script = ExtResource( 2 )
 
-[node name="Settings" type="MarginContainer"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -960.0
-margin_top = -540.0
-margin_right = 960.0
-margin_bottom = 540.0
-custom_constants/margin_right = 0
-custom_constants/margin_top = 0
-custom_constants/margin_left = 0
-custom_constants/margin_bottom = 0
-script = ExtResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
-margin_right = 1920.0
-margin_bottom = 1080.0
-alignment = 1
-
-[node name="Title" type="Label" parent="VBoxContainer"]
-margin_top = 258.0
-margin_right = 1920.0
-margin_bottom = 318.0
-custom_fonts/font = SubResource( 1 )
+[node name="Title" parent="VBoxContainer" index="0"]
 text = "Settings"
-align = 1
 
-[node name="CenterContainer" type="CenterContainer" parent="VBoxContainer"]
-margin_top = 322.0
-margin_right = 1920.0
-margin_bottom = 822.0
-rect_min_size = Vector2( 500, 500 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Panel" type="Panel" parent="VBoxContainer/CenterContainer"]
-margin_left = 710.0
-margin_right = 1210.0
-margin_bottom = 500.0
-rect_min_size = Vector2( 500, 500 )
-
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/CenterContainer/Panel"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-alignment = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="MenuButtons" type="VBoxContainer" parent="VBoxContainer/CenterContainer/Panel/HBoxContainer"]
-margin_left = 50.0
-margin_right = 450.0
-margin_bottom = 500.0
-rect_min_size = Vector2( 400, 0 )
-alignment = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Label" type="Label" parent="VBoxContainer/CenterContainer/Panel/HBoxContainer/MenuButtons"]
-margin_top = 209.0
+[node name="Label" type="Label" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons" index="0"]
+margin_top = 204.0
 margin_right = 400.0
-margin_bottom = 223.0
+margin_bottom = 218.0
 text = "Some games have more settings than others."
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="FastHotseatCheckButton" type="CheckButton" parent="VBoxContainer/CenterContainer/Panel/HBoxContainer/MenuButtons"]
+[node name="FastHotseatCheckButton" type="CheckButton" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons" index="1"]
 margin_left = 240.0
-margin_top = 227.0
+margin_top = 222.0
 margin_right = 400.0
-margin_bottom = 267.0
+margin_bottom = 262.0
 hint_tooltip = "When a player submits their  turn, automatically advance to the next player."
 size_flags_horizontal = 8
 text = "Fast Hotseat"
 align = 2
 
-[node name="BackButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/HBoxContainer/MenuButtons"]
-margin_top = 271.0
-margin_right = 400.0
-margin_bottom = 291.0
-text = "Back"
+[node name="BackButton" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons" index="2"]
+margin_top = 266.0
+margin_bottom = 286.0

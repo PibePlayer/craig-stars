@@ -10,7 +10,6 @@ namespace CraigStars.Client
     {
         static CSLog log = LogProvider.GetLogger(typeof(LoadGameMenu));
 
-        Loader loader;
         Button loadButton;
         Button backButton;
         Button deleteButton;
@@ -22,11 +21,10 @@ namespace CraigStars.Client
         public override void _Ready()
         {
             base._Ready();
-            loader = GetNode<Loader>("VBoxContainer/CenterContainer/Panel/HBoxContainer/MenuButtons/HBoxContainer/Loader");
-            loadButton = GetNode<Button>("VBoxContainer/CenterContainer/Panel/HBoxContainer/MenuButtons/HBoxContainer/LoadButton");
+            loadButton = GetNode<Button>("VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer/LoadButton");
             deleteButton = (Button)FindNode("DeleteButton");
             gameItemList = (ItemList)FindNode("GameItemList");
-            backButton = GetNode<Button>("VBoxContainer/CenterContainer/Panel/HBoxContainer/MenuButtons/BackButton");
+            backButton = GetNode<Button>("VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/BackButton");
 
             backButton.Connect("pressed", this, nameof(OnBackPressed));
 

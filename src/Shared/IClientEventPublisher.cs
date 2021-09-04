@@ -8,6 +8,7 @@ namespace CraigStars.Server
     /// </summary>
     public interface IClientEventPublisher
     {
+        event Action<PublicPlayerInfo> PlayerDataRequestedEvent;
         event Action<GameSettings<Player>> GameStartRequestedEvent;
         event Action<Player> SubmitTurnRequestedEvent;
         event Action<PublicPlayerInfo> UnsubmitTurnRequestedEvent;

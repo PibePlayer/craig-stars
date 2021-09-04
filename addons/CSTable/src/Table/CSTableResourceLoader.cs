@@ -49,11 +49,8 @@ namespace CraigStarsTable
             TotalResources = 1 + numCells + numHeaders;
             Loaded = 0;
 
-            sceneLoadTask = Task.Run(() =>
-            {
-                DefaultColumnHeaderScene = ResourceLoader.Load<PackedScene>(DefaultColumnHeaderScenePath);
-                Loaded++;
-            });
+            DefaultColumnHeaderScene = ResourceLoader.Load<PackedScene>(DefaultColumnHeaderScenePath);
+            Loaded++;
 
             spriteLoadTask = Task.Run(() =>
             {

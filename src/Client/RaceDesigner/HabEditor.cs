@@ -100,7 +100,11 @@ namespace CraigStars
             base._Notification(what);
             if (what == NotificationPredelete)
             {
-                hab.BarChangedEvent -= OnBarChanged;
+                // in the editor, this is called when _Ready isn't
+                if (hab != null)
+                {
+                    hab.BarChangedEvent -= OnBarChanged;
+                }
             }
         }
 

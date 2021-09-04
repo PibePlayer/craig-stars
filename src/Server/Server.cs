@@ -12,6 +12,14 @@ namespace CraigStars.Server
     /// <summary>
     /// The Server class manages creating new games, loading save games, accepting turn submittals, and generating new turns.
     /// This class is implemented by a SinglePlayerServer and a NetworkServer. 
+    /// 
+    /// TODO: 
+    /// * Server shoud send client player data
+    /// * Clients save player file locally (with token from server)
+    /// * All requests to server include token (to authenticate)
+    /// * Server can re-send/regenerate token to be given to player if they lose it
+    /// ** player can redownload turn, if necessary
+    /// Continuing a game will load player save, and launch the server in the background to connect
     /// </summary>
     public abstract class Server : Node, IServer
     {
@@ -31,6 +39,8 @@ namespace CraigStars.Server
         /// </summary>
         /// <value></value>
         public TaskFactory GodotTaskFactory { get; set; }
+
+        public GameSettings<Player> Settings { get; set; }
 
         /// <summary>
         /// The game that is being created/loaded
@@ -53,9 +63,15 @@ namespace CraigStars.Server
             aiTurnSubmitter = new AITurnSubmitter(TurnProcessorManager.Instance, Multithreaded);
             aiTurnSubmitter.TurnSubmitRequestedEvent += OnAITurnSubmitRequested;
 
+            clientEventPublisher.PlayerDataRequestedEvent += OnPlayerDataRequested;
             clientEventPublisher.GameStartRequestedEvent += OnGameStartRequested;
             clientEventPublisher.SubmitTurnRequestedEvent += OnSubmitTurnRequested;
             clientEventPublisher.UnsubmitTurnRequestedEvent += OnUnsubmitTurnRequested;
+
+            if (Settings != null && Settings.ContinueGame)
+            {
+                OnGameStartRequested(Settings);
+            }
         }
 
         public override void _Notification(int what)
@@ -64,12 +80,12 @@ namespace CraigStars.Server
             if (what == NotificationPredelete)
             {
                 aiTurnSubmitter.TurnSubmitRequestedEvent -= OnAITurnSubmitRequested;
+                clientEventPublisher.PlayerDataRequestedEvent -= OnPlayerDataRequested;
                 clientEventPublisher.GameStartRequestedEvent -= OnGameStartRequested;
                 clientEventPublisher.SubmitTurnRequestedEvent -= OnSubmitTurnRequested;
                 clientEventPublisher.UnsubmitTurnRequestedEvent -= OnUnsubmitTurnRequested;
             }
         }
-
         /// <summary>
         /// Create a new IServerEventPublisher that will pass events
         /// from the client to the server
@@ -82,6 +98,7 @@ namespace CraigStars.Server
         // These abstract functions must be overridden by the single player or network server
         // To notify clients (through RPC or signals) about game state changes
 
+        protected abstract void PublishPlayerDataEvent(Player player);
         protected abstract void PublishGameStartedEvent();
         protected abstract void PublishGameStartingEvent(PublicGameInfo gameInfo);
         protected abstract void PublishTurnSubmittedEvent(PublicPlayerInfo player);
@@ -93,6 +110,19 @@ namespace CraigStars.Server
         #endregion
 
         #region Client Event Handlers
+
+        protected void OnPlayerDataRequested(PublicPlayerInfo player)
+        {
+            if (Game != null && player.Num >= 0 && player.Num < Game.Players.Count)
+            {
+                var fullPlayer = Game.Players[player.Num];
+                PublishPlayerDataEvent(fullPlayer);
+            }
+            else
+            {
+                log.Error($"PlayerDataRequested for invalid player/game state: Player: {player}, Game: {Game}");
+            }
+        }
 
         protected async void OnGameStartRequested(GameSettings<Player> settings)
         {
@@ -291,7 +321,7 @@ namespace CraigStars.Server
         /// <summary>
         /// Load a game from disk into the Game property
         /// </summary>
-        public Game LoadGame(string gameName, int year, bool multithreaded, bool saveToDisk)
+        public virtual Game LoadGame(string gameName, int year, bool multithreaded, bool saveToDisk)
         {
             log.Debug($"Loading {gameName}:{year} from disk");
             var game = GamesManager.LoadGame(TechStore.Instance, gameName, year);

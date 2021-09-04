@@ -24,10 +24,16 @@ namespace CraigStars.Client
 
         public T Player { get; set; } = new Player() as T;
 
+        /// <summary>
+        /// True if this control is part of the Host's lobby
+        /// </summary>
+        /// <value></value>
+        public bool ShowRemoveButton { get; set; } = true;
+
         Label playerNumLabel;
         PlayerReadyContainer playerReadyContainer;
 
-        Button removePlayerButton;
+        protected Button removePlayerButton;
 
 
         public override void _Ready()
@@ -36,7 +42,6 @@ namespace CraigStars.Client
 
             playerReadyContainer = GetNode<PlayerReadyContainer>("HBoxContainer/PlayerReady/PlayerReadyContainer");
             removePlayerButton = GetNode<Button>("HBoxContainer/PlayerReady/RemovePlayerButton");
-
             removePlayerButton.Connect("pressed", this, nameof(OnRemovePlayerButtonPressed));
 
             UpdateControls();
@@ -51,6 +56,7 @@ namespace CraigStars.Client
         {
             if (Player != null && playerNumLabel != null)
             {
+                removePlayerButton.Visible = ShowRemoveButton;
                 playerNumLabel.Text = $"{Player.Num + 1}";
                 playerReadyContainer.Player = Player;
                 playerReadyContainer.UpdateControls();

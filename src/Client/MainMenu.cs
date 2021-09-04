@@ -19,6 +19,9 @@ namespace CraigStars.Client
         Label continueGameNameLabel;
         SpinBox continueGameYearSpinBox;
 
+        List<PlayerMessage> Messages { get; } = new List<PlayerMessage>();
+        RPC rpc;
+
         private bool joining = false;
 
         public override void _Ready()
@@ -67,7 +70,11 @@ namespace CraigStars.Client
             hostWindow.Connect("popup_hide", this, nameof(OnHostWindowPopupHide));
             hostWindow.FindNode("HostButton").Connect("pressed", this, nameof(OnHostWindowHostButtonPressed));
 
-            NetworkClient.Instance.PlayerUpdatedEvent += OnPlayerUpdated;
+            rpc = RPC.Instance(GetTree());
+            rpc.PlayerJoinedNewGameEvent += OnPlayerJoinedNewGame;
+            rpc.PlayerJoinedExistingGameEvent += OnPlayerJoinedExistingGame;
+            rpc.PlayerMessageEvent += OnPlayerMessage;
+
             EventManager.GameStartingEvent += OnGameStarting;
             GetTree().Connect("server_disconnected", this, nameof(OnServerDisconnected));
             GetTree().Connect("connection_failed", this, nameof(OnConnectionFailed));
@@ -79,7 +86,9 @@ namespace CraigStars.Client
             base._Notification(what);
             if (what == NotificationPredelete)
             {
-                NetworkClient.Instance.PlayerUpdatedEvent -= OnPlayerUpdated;
+                rpc.PlayerJoinedNewGameEvent -= OnPlayerJoinedNewGame;
+                rpc.PlayerJoinedExistingGameEvent -= OnPlayerJoinedExistingGame;
+                rpc.PlayerMessageEvent -= OnPlayerMessage;
                 EventManager.GameStartingEvent -= OnGameStarting;
             }
         }
@@ -146,7 +155,7 @@ namespace CraigStars.Client
 
             this.ChangeSceneTo<LobbyMenu>("res://src/Client/MenuScreens/LobbyMenu.tscn", (instance) =>
             {
-                instance.HostMode = true;
+                instance.IsHost = true;
             });
         }
 
@@ -158,6 +167,8 @@ namespace CraigStars.Client
             NetworkClient.Instance.JoinGame("localhost", Settings.Instance.ServerPort);
         }
 
+        #region Joining Network Games
+
         public void OnServerDisconnected()
         {
             joining = false;
@@ -168,13 +179,39 @@ namespace CraigStars.Client
             joining = false;
         }
 
-        void OnPlayerUpdated(PublicPlayerInfo player)
+
+        void OnPlayerMessage(PlayerMessage message)
         {
+            Messages.Add(message);
+        }
+
+        void OnPlayerJoinedNewGame(PublicPlayerInfo player)
+        {
+            // once our player is updated from the server, go to the lobby
             if (joining && this.IsClient() && player.NetworkId == this.GetNetworkId())
             {
-                GetTree().ChangeScene("res://src/Client/MenuScreens/LobbyMenu.tscn");
+                this.ChangeSceneTo<LobbyMenu>("res://src/Client/MenuScreens/LobbyMenu.tscn", (instance) =>
+                {
+                    instance.InitialMessages.AddRange(Messages);
+                    instance.PlayerName = Settings.Instance.PlayerName;
+                });
             }
         }
+
+        void OnPlayerJoinedExistingGame(PublicGameInfo gameInfo)
+        {
+            // once our player is updated from the server, go to the lobby
+            if (this.IsClient())
+            {
+                this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (clientView) =>
+                {
+                    clientView.GameInfo = gameInfo;
+                    clientView.PlayerName = Settings.Instance.PlayerName;
+                });
+            }
+        }
+
+        #endregion
 
         /// <summary>
         /// The server will notify us when the game is ready

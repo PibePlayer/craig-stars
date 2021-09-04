@@ -18,6 +18,14 @@ namespace CraigStars.Client
         /// <value></value>
         public PublicGameInfo GameInfo { get; set; }
 
+        public string PlayerName { get; set; }
+
+        /// <summary>
+        /// Set to true to automatically try and become the player that matches your name
+        /// </summary>
+        /// <value></value>
+        public bool AutoJoin { get; set; }
+
         Player Me { get => PlayersManager.Me; }
 
         /// <summary>
@@ -45,10 +53,12 @@ namespace CraigStars.Client
             turnGenerationStatus = GetNode<TurnGenerationStatus>("CanvasLayer/Container/PanelContainer/VBoxContainer/TurnGenerationStatus");
 
             projectName = ProjectSettings.GetSetting("application/config/name").ToString();
+            PlayerName ??= Settings.Instance.PlayerName;
 
             EventManager.GameStartedEvent += OnGameStarted;
             EventManager.SubmitTurnRequestedEvent += OnSubmitTurnRequested;
             EventManager.PlayTurnRequestedEvent += OnPlayTurnRequested;
+            EventManager.PlayerDataEvent += OnPlayerData;
             EventManager.TurnSubmittedEvent += OnTurnSubmitted;
             EventManager.TurnUnsubmittedEvent += OnTurnUnsubmitted;
             EventManager.TurnGeneratingEvent += OnTurnGenerating;
@@ -78,6 +88,7 @@ namespace CraigStars.Client
                 EventManager.GameStartedEvent -= OnGameStarted;
                 EventManager.SubmitTurnRequestedEvent -= OnSubmitTurnRequested;
                 EventManager.PlayTurnRequestedEvent -= OnPlayTurnRequested;
+                EventManager.PlayerDataEvent -= OnPlayerData;
                 EventManager.TurnSubmittedEvent -= OnTurnSubmitted;
                 EventManager.TurnUnsubmittedEvent -= OnTurnUnsubmitted;
                 EventManager.TurnGeneratingEvent -= OnTurnGenerating;
@@ -314,7 +325,41 @@ namespace CraigStars.Client
                 RemoveGameViewAndShowTurnGeneration();
                 CallDeferred(nameof(LoadGameView));
             }
+            else
+            {
+                if (this.IsMultiplayer())
+                {
+                    RPC.Instance(GetTree()).ClientSendServerPlayerDataRequest(GameInfo.Players[playerNum]);
+                }
+                else
+                {
+                    EventManager.PublishPlayerDataRequestedEvent(GameInfo.Players[playerNum]);
+                }
+            }
         }
+
+        /// <summary>
+        /// The server sent us player data
+        /// </summary>
+        /// <param name="player"></param>
+        void OnPlayerData(PublicGameInfo gameInfo, Player player)
+        {
+            LocalPlayers.Remove(player);
+            LocalPlayers.Add(player);
+
+            // if we don't already have a local player, play this player
+            if (PlayersManager.Me == null)
+            {
+                GameInfo = gameInfo;
+                PlayersManager.GameInfo = gameInfo;
+                PlayersManager.Me = player;
+                PlayersManager.Me.RunTurnProcessors(TurnProcessorManager.Instance);
+                OS.SetWindowTitle($"{projectName} - {gameInfo.Name}: Year {gameInfo.Year}");
+                LoadGameView();
+            }
+        }
+
+
 
         #endregion
 

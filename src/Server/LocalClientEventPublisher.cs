@@ -13,22 +13,33 @@ namespace CraigStars.Server
         public event Action<GameSettings<Player>> GameStartRequestedEvent;
         public event Action<Player> SubmitTurnRequestedEvent;
         public event Action<PublicPlayerInfo> UnsubmitTurnRequestedEvent;
+        public event Action<PublicPlayerInfo> PlayerDataRequestedEvent;
 
         public LocalClientEventPublisher()
         {
             Client.EventManager.GameStartRequestedEvent += OnGameStartRequested;
             Client.EventManager.SubmitTurnRequestedEvent += OnSubmitTurnRequested;
             Client.EventManager.UnsubmitTurnRequestedEvent += OnUnsubmitTurnRequested;
+            Client.EventManager.PlayerDataRequestedEvent += OnPlayerDataRequested;
         }
+
 
         ~LocalClientEventPublisher()
         {
+            Client.EventManager.GameStartRequestedEvent -= OnGameStartRequested;
             Client.EventManager.SubmitTurnRequestedEvent -= OnSubmitTurnRequested;
+            Client.EventManager.UnsubmitTurnRequestedEvent -= OnUnsubmitTurnRequested;
+            Client.EventManager.PlayerDataRequestedEvent -= OnPlayerDataRequested;
         }
 
         void OnGameStartRequested(GameSettings<Player> settings)
         {
             GameStartRequestedEvent?.Invoke(settings);
+        }
+
+        void OnPlayerDataRequested(PublicPlayerInfo player)
+        {
+            PlayerDataRequestedEvent?.Invoke(player);
         }
 
         void OnSubmitTurnRequested(Player player)

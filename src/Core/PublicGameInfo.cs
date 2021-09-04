@@ -77,5 +77,10 @@ namespace CraigStars
             };
         }
 
+        public override string ToString()
+        {
+            return $"{Year}:{Name}";
+        }
+
     }
 }

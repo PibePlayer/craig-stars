@@ -192,7 +192,7 @@ namespace CraigStars
                     log.Debug($"Added new item to at {SelectedItemIndex} - {item}");
                 }
             }
-            var _  = UpdateItems();
+            var _ = UpdateItems();
         }
 
         public void RemoveItem(int quantity)
@@ -214,7 +214,7 @@ namespace CraigStars
                         SelectedItemIndex = SelectedItemIndex - 1;
                     }
                 }
-                var _  = UpdateItems();
+                var _ = UpdateItems();
             }
         }
 
@@ -228,7 +228,7 @@ namespace CraigStars
                 Items[SelectedItemIndex] = previousItem;
                 Items[SelectedItemIndex - 1] = selectedItem;
                 SelectedItemIndex--;
-                var _  = UpdateItems();
+                var _ = UpdateItems();
             }
         }
 
@@ -242,7 +242,7 @@ namespace CraigStars
                 Items[SelectedItemIndex] = nextItem;
                 Items[SelectedItemIndex + 1] = selectedItem;
                 SelectedItemIndex++;
-                var _  = UpdateItems();
+                var _ = UpdateItems();
             }
 
         }

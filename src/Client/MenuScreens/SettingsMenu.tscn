@@ -9,25 +9,42 @@ script = ExtResource( 2 )
 [node name="Title" parent="VBoxContainer" index="0"]
 text = "Settings"
 
-[node name="Label" type="Label" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons" index="0"]
-margin_top = 204.0
+[node name="GridContainer" type="GridContainer" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons" index="0"]
+margin_top = 199.0
 margin_right = 400.0
-margin_bottom = 218.0
-text = "Some games have more settings than others."
-__meta__ = {
-"_edit_use_anchors_": false
-}
+margin_bottom = 267.0
+columns = 2
 
-[node name="FastHotseatCheckButton" type="CheckButton" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons" index="1"]
-margin_left = 240.0
-margin_top = 222.0
+[node name="NameLabel" type="Label" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/GridContainer" index="0"]
+margin_top = 5.0
+margin_right = 85.0
+margin_bottom = 19.0
+rect_min_size = Vector2( 80, 0 )
+text = "Player Name:"
+align = 2
+
+[node name="NameLineEdit" type="LineEdit" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/GridContainer" index="1"]
+margin_left = 89.0
 margin_right = 400.0
-margin_bottom = 262.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+text = "Bob"
+
+[node name="Spacer" type="Label" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/GridContainer" index="2"]
+margin_top = 41.0
+margin_right = 85.0
+margin_bottom = 55.0
+
+[node name="FastHotseatCheckButton" type="CheckButton" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/GridContainer" index="3"]
+margin_left = 240.0
+margin_top = 28.0
+margin_right = 400.0
+margin_bottom = 68.0
 hint_tooltip = "When a player submits their  turn, automatically advance to the next player."
 size_flags_horizontal = 8
 text = "Fast Hotseat"
 align = 2
 
-[node name="BackButton" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons" index="2"]
-margin_top = 266.0
-margin_bottom = 286.0
+[node name="BackButton" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons" index="1"]
+margin_top = 271.0
+margin_bottom = 291.0

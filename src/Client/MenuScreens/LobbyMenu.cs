@@ -9,15 +9,18 @@ namespace CraigStars.Client
     {
         static CSLog log = LogProvider.GetLogger(typeof(LobbyMenu));
 
-        public bool HostMode { get; set; }
+        public bool IsHost { get; set; }
+        public string PlayerName { get; set; }
 
         TextEdit chat;
         LineEdit chatMessage;
         Button startGameButton;
+        Button addPlayerButton;
         Control playerReadyContainers;
         NewGameOptions newGameOptions;
 
-        public Player me;
+        Player me;
+
 
         List<PublicPlayerInfo> joinedPlayers = new List<PublicPlayerInfo>();
         List<PlayerChooser> playerChoosers = new List<PlayerChooser>();
@@ -33,22 +36,25 @@ namespace CraigStars.Client
             startGameButton = (Button)FindNode("StartGameButton");
             playerReadyContainers = (Control)FindNode("PlayerReadyContainers");
             newGameOptions = (NewGameOptions)FindNode("NewGameOptions");
+            addPlayerButton = (Button)FindNode("AddPlayerButton");
             rpc = RPC.Instance(GetTree());
 
             rpc.PlayerMessageEvent += OnPlayerMessage;
-            rpc.PlayerJoinedEvent += OnPlayerJoined;
+            rpc.PlayerJoinedNewGameEvent += OnPlayerJoinedNewGame;
             rpc.ServerPlayersListEvent += OnServerPlayersList;
             rpc.PlayerLeftEvent += OnPlayerLeft;
+            rpc.ServerPlayerDataEvent += OnServerPlayerData;
+
             EventManager.GameStartingEvent += OnGameStarting;
             NetworkClient.Instance.PlayerUpdatedEvent += OnPlayerUpdated;
-            rpc.ServerPlayerDataEvent += OnServerPlayerData;
 
             chatMessage.Connect("text_entered", this, nameof(OnChatMessageTextEntered));
             FindNode("BackButton").Connect("pressed", this, nameof(OnBackButtonPressed));
             FindNode("ReadyButton").Connect("pressed", this, nameof(OnReadyButtonPressed));
             startGameButton.Connect("pressed", this, nameof(OnStartGameButtonPressed));
+            addPlayerButton.Connect("pressed", this, nameof(OnAddPlayerButtonPressed));
 
-            // setup any initial messages we recieved from the server before joining
+            // setup any initial messages we received from the server before joining
             InitialMessages.ForEach(m => AddPlayerMessage(m));
 
             // clear out the PlayerReadyContainers and add one per player
@@ -58,17 +64,21 @@ namespace CraigStars.Client
                 child.QueueFree();
             }
 
-            if (HostMode)
+            if (IsHost)
             {
                 newGameOptions.Visible = true;
                 startGameButton.Visible = true;
+                addPlayerButton.Visible = true;
                 CheckStartGameButton();
             }
             else
             {
                 newGameOptions.Visible = false;
                 startGameButton.Visible = false;
+                addPlayerButton.Visible = false;
             }
+
+            PlayerName ??= Settings.Instance.PlayerName;
         }
 
         public override void _Notification(int what)
@@ -77,7 +87,7 @@ namespace CraigStars.Client
             if (what == NotificationPredelete)
             {
                 rpc.PlayerMessageEvent -= OnPlayerMessage;
-                rpc.PlayerJoinedEvent -= OnPlayerJoined;
+                rpc.PlayerJoinedNewGameEvent -= OnPlayerJoinedNewGame;
                 rpc.PlayerLeftEvent -= OnPlayerLeft;
                 rpc.ServerPlayersListEvent -= OnServerPlayersList;
                 rpc.ServerPlayerDataEvent -= OnServerPlayerData;
@@ -86,22 +96,31 @@ namespace CraigStars.Client
             }
         }
 
-        void OnServerPlayerData(Player player)
+        void OnServerPlayerData(PublicGameInfo gameInfo, Player player)
         {
-            if (player.NetworkId == GetTree().GetNetworkUniqueId())
+            if (player.NetworkId == GetTree().GetNetworkUniqueId() || player.AIControlled)
             {
-                me = player;
+                if (!player.AIControlled)
+                {
+                    me = player;
+                    me.Name = PlayerName;
+                }
                 Node previousPlayerNode = (Node)playerReadyContainers.GetChildren()[player.Num];
 
                 NewGamePlayer playerChooser = ResourceLoader.Load<PackedScene>("res://src/Client/MenuScreens/Components/NewGamePlayer.tscn").Instance<NewGamePlayer>();
                 playerChooser.Player = player;
+                playerChooser.ShowRemoveButton = player.AIControlled;
+                playerChooser.PlayerRemovedEvent += OnRemoveAIPlayer;
 
                 playerReadyContainers.AddChildBelowNode(previousPlayerNode, playerChooser);
                 previousPlayerNode.QueueFree();
+
+                // let the server know about our new name
+                NetworkClient.Instance.PublishPlayerUpdatedEvent(me, notifyPeers: true, GetTree());
             }
             else
             {
-                log.Warn("We recieved player data for a different network player... that's not right.");
+                log.Warn("We received player data for a different network player... that's not right.");
             }
         }
 
@@ -132,6 +151,8 @@ namespace CraigStars.Client
         {
             NewGameNetworkPlayer playerChooser = ResourceLoader.Load<PackedScene>("res://src/Client/MenuScreens/Components/NewGameNetworkPlayer.tscn").Instance<NewGameNetworkPlayer>();
             playerChooser.Player = p;
+            playerChooser.ShowRemoveButton = IsHost;
+            playerChooser.PlayerRemovedEvent += OnKickPlayer;
             playerReadyContainers.AddChild(playerChooser);
             playerChoosers.Add(playerChooser);
         }
@@ -169,7 +190,7 @@ namespace CraigStars.Client
             var existingPlayer = joinedPlayers.Find(p => p.Num == player.Num);
             existingPlayer.Update(player);
 
-            if (HostMode)
+            if (IsHost)
             {
                 CheckStartGameButton();
             }
@@ -193,24 +214,76 @@ namespace CraigStars.Client
             joinedPlayers.ForEach(player => AddPlayerReadyContainer(player));
         }
 
-        void OnPlayerJoined(PublicPlayerInfo player)
+        void OnPlayerJoinedNewGame(PublicPlayerInfo player)
         {
             joinedPlayers.Add(player);
             AddPlayerReadyContainer(player);
         }
 
-        void OnPlayerLeft(PublicPlayerInfo player)
+        void OnPlayerLeft(PublicPlayerInfo player, List<PublicPlayerInfo> remainingPlayers)
         {
-            joinedPlayers.Remove(player);
+            joinedPlayers = new(remainingPlayers);
 
+            int remainingPlayerIndex = 0;
             foreach (Node child in playerReadyContainers.GetChildren())
             {
-                if (child is PlayerChooser playerReadyContainer && playerReadyContainer.Player == player)
+                if (child is NewGamePlayer newGamePlayer)
                 {
-                    playerReadyContainers.RemoveChild(child);
-                    child.QueueFree();
-                    break;
+                    if (newGamePlayer.Player == player)
+                    {
+                        playerReadyContainers.RemoveChild(child);
+                        child.QueueFree();
+                    }
+                    else
+                    {
+                        newGamePlayer.Player.Update(remainingPlayers[remainingPlayerIndex++]);
+                        newGamePlayer.UpdateControls();
+                    }
                 }
+                else if (child is NewGameNetworkPlayer newGameNetworkPlayer)
+                {
+                    if (newGameNetworkPlayer.Player == player)
+                    {
+                        playerReadyContainers.RemoveChild(child);
+                        child.QueueFree();
+                    }
+                    else
+                    {
+                        newGameNetworkPlayer.Player = remainingPlayers[remainingPlayerIndex++];
+                        newGameNetworkPlayer.UpdateControls();
+                    }
+                }
+            }
+
+            // update our player number if it changed
+            var myNewPlayerNum = remainingPlayers.Find(p => p.NetworkId == GetTree().GetNetworkUniqueId()).Num;
+            me.Num = myNewPlayerNum;
+
+
+        }
+
+        void OnRemoveAIPlayer(PlayerChooser<Player> playerChooser, Player player)
+        {
+            playerReadyContainers.RemoveChild(playerChooser);
+            joinedPlayers.Remove(player);
+            playerChooser.QueueFree();
+            NetworkClient.Instance.KickPlayer(player.Num);
+        }
+
+        void OnKickPlayer(PlayerChooser<PublicPlayerInfo> playerChooser, PublicPlayerInfo player)
+        {
+            playerReadyContainers.RemoveChild(playerChooser);
+            joinedPlayers.Remove(player);
+            playerChooser.QueueFree();
+            NetworkClient.Instance.KickPlayer(player.Num);
+        }
+
+        void OnAddPlayerButtonPressed()
+        {
+            if (IsHost)
+            {
+                // tell the server to add a new AI player
+                NetworkClient.Instance.AddAIPlayer();
             }
         }
 
@@ -244,10 +317,11 @@ namespace CraigStars.Client
             log.Info("Host: All players ready, starting the game!");
 
             GameSettings<Player> settings = newGameOptions.GetGameSettings();
+            settings.Mode = GameMode.MultiPlayer;
 
             // Note: The server already knows about the game's players, so no need to pass
             // those along here
-            rpc.SendGameStartRequested(settings);
+            rpc.ClientSendServerGameStartRequested(settings);
         }
 
         #endregion

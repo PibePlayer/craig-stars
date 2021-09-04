@@ -9,7 +9,7 @@ namespace CraigStars.Client
     public class MergeFleetsDialog : GameViewDialog
     {
         FleetService fleetService = new();
-        
+
         public FleetSprite SourceFleet { get; set; }
 
         Button okButton;

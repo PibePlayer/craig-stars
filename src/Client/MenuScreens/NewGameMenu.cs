@@ -3,6 +3,7 @@ using System;
 using CraigStars.Singletons;
 using CraigStars.Utils;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CraigStars.Client
 {
@@ -62,6 +63,7 @@ namespace CraigStars.Client
         {
             GameSettings<Player> settings = newGameOptions.GetGameSettings();
             settings.Players = newGamePlayers.Players;
+            settings.Mode = settings.Players.Where(p => !p.AIControlled).Count() > 1 ? GameMode.Hotseat : GameMode.SinglePlayer;
 
             // start a new game and change to the client view
             Action startGame = () =>

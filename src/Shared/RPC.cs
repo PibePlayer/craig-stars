@@ -23,15 +23,19 @@ namespace CraigStars.Singletons
         // The RPC class recieves network messages and publishes events to it's local instance
         // This way, a server can listen for events only on the RPC instance in its scene tree
         public event Action<GameSettings<Player>> GameStartRequestedEvent;
+        public event Action<PublicPlayerInfo> PlayerDataRequestedEvent;
         public event Action<Player> SubmitTurnRequestedEvent;
         public event Action<PublicPlayerInfo> UnsubmitTurnRequestedEvent;
 
         public event Action<PlayerMessage> PlayerMessageEvent;
         public event Action<Player, Race> RaceUpdatedEvent;
-        public event Action<Player> ServerPlayerDataEvent;
+        public event Action AddAIPlayerEvent;
+        public event Action<int> KickPlayerEvent;
+        public event Action<PublicGameInfo, Player> ServerPlayerDataEvent;
         public event Action<List<PublicPlayerInfo>> ServerPlayersListEvent;
-        public event Action<PublicPlayerInfo> PlayerJoinedEvent;
-        public event Action<PublicPlayerInfo> PlayerLeftEvent;
+        public event Action<PublicPlayerInfo> PlayerJoinedNewGameEvent;
+        public event Action<PublicGameInfo> PlayerJoinedExistingGameEvent;
+        public event Action<PublicPlayerInfo, List<PublicPlayerInfo>> PlayerLeftEvent;
 
         #endregion
 
@@ -39,7 +43,13 @@ namespace CraigStars.Singletons
         /// The server side RPC needs an active list of players for deserializing player
         /// json for turn submittals
         /// </summary>
-        List<Player> players;
+        public List<Player> Players { get; set; } = new List<Player>();
+
+        /// <summary>
+        /// The server side RPC needs an active list of players for deserializing player
+        /// json for turn submittals
+        /// </summary>
+        public List<int> NetworkIds { get; set; } = new();
 
         /// <summary>
         /// We have a uniqe RPC instance per scene tree
@@ -47,11 +57,6 @@ namespace CraigStars.Singletons
         public static RPC Instance(SceneTree sceneTree)
         {
             return sceneTree.Root.GetNode<RPC>("/root/RPC");
-        }
-
-        public void SetPlayers(List<Player> players)
-        {
-            this.players = players;
         }
 
         #region Player RPC Calls
@@ -63,7 +68,12 @@ namespace CraigStars.Singletons
             Rpc(nameof(Message), Serializers.Serialize(playerMessage));
         }
 
-        public void SendAllMessages(int networkId, List<PlayerMessage> messages)
+        /// <summary>
+        /// Send a client 
+        /// </summary>
+        /// <param name="networkId"></param>
+        /// <param name="messages"></param>
+        public void ServerSendClientAllMessages(int networkId, List<PlayerMessage> messages)
         {
             log.Debug($"{LogPrefix} Sending All Messages to {networkId}");
             messages.ForEach(m => RpcId(networkId, nameof(Message), Serializers.Serialize(m)));
@@ -91,55 +101,95 @@ namespace CraigStars.Singletons
             }
         }
 
-        public void SendPlayerJoined(PublicPlayerInfo player)
+        /// <summary>
+        /// Send a message to all clients that a new player joined
+        /// </summary>
+        /// <param name="player"></param>
+        public void ServerSendClientPlayerJoinedNewGame(PublicPlayerInfo player)
         {
             // send our peers an update of a player
             log.Debug($"{LogPrefix} Notifying clients about player join: {player}");
-            Rpc(nameof(PlayerJoined), Serializers.Serialize(player));
+            var playerJson = Serializers.Serialize(player);
+            Rpc(nameof(PlayerJoinedNewGame), playerJson);
         }
 
         [Remote]
-        public void PlayerJoined(string json)
+        public void PlayerJoinedNewGame(string playerJson)
         {
-            var player = Serializers.DeserializeObject<PublicPlayerInfo>(json);
+            var player = Serializers.DeserializeObject<PublicPlayerInfo>(playerJson);
             if (player != null)
             {
                 log.Debug($"{LogPrefix} Received PlayerJoined event for Player {player.Num} - {player.Name} (NetworkId: {player.NetworkId}");
 
                 // notify listeners that we have updated Player
-                PlayerJoinedEvent?.Invoke(player);
+                PlayerJoinedNewGameEvent?.Invoke(player);
             }
             else
             {
-                log.Error($"{LogPrefix} Failed to parse json: {json}");
+                log.Error($"{LogPrefix} Failed to parse json: {playerJson}");
             }
         }
 
-        public void SendPlayerLeft(PublicPlayerInfo player)
+        /// <summary>
+        /// If a network game is in progress, send the newly joined player the gameInfo so they
+        /// can resume playing a player
+        /// </summary>
+        /// <param name="player"></param>
+        public void ServerSendClientPlayerJoinedExistingGame(int networkId, PublicGameInfo gameInfo)
         {
             // send our peers an update of a player
-            log.Debug($"{LogPrefix} Notifying clients about player left: {player}");
-            Rpc(nameof(PlayerLeft), Serializers.Serialize(player));
+            log.Debug($"{LogPrefix} Notifying new player about game: {gameInfo}");
+            var gameInfoJson = Serializers.Serialize(gameInfo);
+            RpcId(networkId, nameof(PlayerJoinedExistingGame), gameInfoJson);
         }
 
         [Remote]
-        public void PlayerLeft(string json)
+        public void PlayerJoinedExistingGame(string gameInfoJson)
         {
-            var player = Serializers.DeserializeObject<PublicPlayerInfo>(json);
+            var gameInfo = Serializers.DeserializeObject<PublicGameInfo>(gameInfoJson);
+            if (gameInfo != null)
+            {
+                log.Debug($"{LogPrefix} Received PlayerJoinedExistingGame event from server.");
+
+                // notify listeners that we have updated Player
+                PlayerJoinedExistingGameEvent?.Invoke(gameInfo);
+            }
+            else
+            {
+                log.Error($"{LogPrefix} Failed to parse json: {gameInfoJson}");
+            }
+        }
+
+        /// <summary>
+        /// Send a message to all clients that a player left
+        /// </summary>
+        /// <param name="player"></param>
+        public void ServerSendClientPlayerLeft(PublicPlayerInfo player, List<PublicPlayerInfo> remainingPlayers)
+        {
+            // send our peers an update of a player
+            log.Debug($"{LogPrefix} Notifying clients about player left: {player}");
+            Rpc(nameof(PlayerLeft), Serializers.Serialize(player), Serializers.Serialize(remainingPlayers));
+        }
+
+        [Remote]
+        public void PlayerLeft(string playerJson, string remainingPlayersJson)
+        {
+            var player = Serializers.DeserializeObject<PublicPlayerInfo>(playerJson);
+            var remainingPlayers = Serializers.DeserializeObject<List<PublicPlayerInfo>>(remainingPlayersJson);
             if (player != null)
             {
                 log.Debug($"{LogPrefix} Received PlayerLeft event for Player {player.Num} - {player.Name} (NetworkId: {player.NetworkId}");
 
                 // notify listeners that we have updated Player
-                PlayerLeftEvent?.Invoke(player);
+                PlayerLeftEvent?.Invoke(player, remainingPlayers);
             }
             else
             {
-                log.Error($"{LogPrefix} Failed to parse json: {json}");
+                log.Error($"{LogPrefix} Failed to parse json: {playerJson}");
             }
         }
 
-        public void SendPlayerUpdated(PublicPlayerInfo player)
+        public void ClientSendServerPlayerUpdated(PublicPlayerInfo player)
         {
             // send our peers an update of a player
             log.Debug($"{LogPrefix} Notifying clients about player update: {player}");
@@ -154,8 +204,55 @@ namespace CraigStars.Singletons
             {
                 log.Debug($"{LogPrefix} Received PlayerUpdated event for Player {player.Num} - {player.Name} (NetworkId: {player.NetworkId}");
 
+                if (this.IsServer())
+                {
+                    if (player.Num >= 0 && player.Num < Players.Count && Players[player.Num].NetworkId == GetTree().GetRpcSenderId())
+                    {
+                        log.Info($"{LogPrefix} Updating server side player: {player}");
+                        Players[player.Num].Update(player);
+                    }
+                    else
+                    {
+                        log.Error($"{LogPrefix} Received Invalid PlayerUpdated event for Player {player} from {GetTree().GetRpcSenderId()}");
+                    }
+                }
                 // notify listeners that we have updated Player
                 NetworkClient.Instance.PublishPlayerUpdatedEvent(player);
+            }
+            else
+            {
+                log.Error($"{LogPrefix} Failed to parse json: {json}");
+            }
+        }
+
+        public void ClientSendServerPlayerDataRequest(PublicPlayerInfo player)
+        {
+            // send our peers an update of a player
+            log.Debug($"{LogPrefix} Asking server for a player data update: {player}");
+            Rpc(nameof(PlayerDataRequested), Serializers.Serialize(player));
+        }
+
+        [Remote]
+        public void PlayerDataRequested(string json)
+        {
+            var player = Serializers.DeserializeObject<PublicPlayerInfo>(json);
+            if (player != null)
+            {
+                log.Debug($"{LogPrefix} Received PlayerDataRequested event for Player {player.Num} - {player.Name} (NetworkId: {player.NetworkId}");
+
+                if (this.IsServer())
+                {
+                    if (player.Num >= 0 && player.Num < Players.Count) // && Players[player.Num].NetworkId == GetTree().GetRpcSenderId())
+                    {
+                        log.Info($"{LogPrefix} Sending server side player to player: {player}");
+                        Players[player.Num].NetworkId = GetTree().GetRpcSenderId();
+                        PlayerDataRequestedEvent?.Invoke(player);
+                    }
+                    else
+                    {
+                        log.Error($"{LogPrefix} Received Invalid PlayerDataRequested event for Player {player} from {GetTree().GetRpcSenderId()}");
+                    }
+                }
             }
             else
             {
@@ -216,7 +313,78 @@ namespace CraigStars.Singletons
         /// This is called by the server to send each player their player information
         /// </summary>
         /// <param name="player"></param>
-        public void SendGameStartRequested(GameSettings<Player> settings)
+        public void ClientSendServerAddAIPlayer()
+        {
+
+            log.Info($"{LogPrefix}: Sending AddAIPlayer to server");
+            RpcId(1, nameof(AddAIPlayer));
+        }
+
+        [Remote]
+        public void AddAIPlayer()
+        {
+            if (this.IsServer())
+            {
+                // make sure the sending player is the host
+                var callerNetworkId = GetTree().GetRpcSenderId();
+                var player = Players.Find(player => player.NetworkId == callerNetworkId);
+                if (player == null || player.Host == false)
+                {
+                    log.Error($"{LogPrefix}: Received AddAIPlayer from {callerNetworkId}, player doesn't exist or isn't host.");
+                }
+                else
+                {
+                    log.Info($"{LogPrefix}: Received AddAIPlayer from {player}");
+                    AddAIPlayerEvent?.Invoke();
+                }
+            }
+            else
+            {
+                log.Error("A client received a AddAIPlayer RPC call");
+            }
+        }
+
+        /// <summary>
+        /// This is called by the server to send each player their player information
+        /// </summary>
+        /// <param name="player"></param>
+        public void ClientSendServerKickPlayer(int playerNum)
+        {
+
+            log.Info($"{LogPrefix}: Sending KickPlayer to server");
+            RpcId(1, nameof(KickPlayer), playerNum);
+        }
+
+        [Remote]
+        public void KickPlayer(int playerNum)
+        {
+            if (this.IsServer())
+            {
+                // make sure the sending player is the host
+                var callerNetworkId = GetTree().GetRpcSenderId();
+                var player = Players.Find(player => player.NetworkId == callerNetworkId);
+                if (player == null || player.Host == false)
+                {
+                    log.Error($"{LogPrefix}: Received KickPlayer from {callerNetworkId}, player doesn't exist or isn't host.");
+                }
+                else
+                {
+                    log.Info($"{LogPrefix}: Received KickPlayer from {player} to kick {playerNum}");
+                    KickPlayerEvent?.Invoke(playerNum);
+                }
+            }
+            else
+            {
+                log.Error("A client received a KickPlayer RPC call");
+            }
+        }
+
+
+        /// <summary>
+        /// This is called by the server to send each player their player information
+        /// </summary>
+        /// <param name="player"></param>
+        public void ClientSendServerGameStartRequested(GameSettings<Player> settings)
         {
 
             log.Info($"{LogPrefix}: Sending GameStartRequested to server");
@@ -231,11 +399,11 @@ namespace CraigStars.Singletons
             {
                 // deserialize the new game settings and set our list of network players to the Players property
                 GameSettings<Player> settings = Serializers.DeserializeObject<GameSettings<Player>>(settingsJson);
-                settings.Players = new(players);
+                settings.Players = new(Players);
 
                 // make sure the sending player is the host
                 var callerNetworkId = GetTree().GetRpcSenderId();
-                var player = players.Find(player => player.NetworkId == callerNetworkId);
+                var player = Players.Find(player => player.NetworkId == callerNetworkId);
                 if (player == null || player.Host == false)
                 {
                     log.Error($"{LogPrefix}: Received GameStartRequested from {callerNetworkId}, player doesn't exist or isn't host.");
@@ -256,28 +424,42 @@ namespace CraigStars.Singletons
         /// This is called by the server to send each player their player information
         /// </summary>
         /// <param name="player"></param>
-        public void SendClientPlayerData(Player player)
+        public void ServerSendClientPlayerData(PublicGameInfo gameInfo, Player player)
         {
-            var settings = Serializers.CreatePlayerSettings(new List<PublicPlayerInfo>() { player }, TechStore.Instance);
+            var players = gameInfo != null ? gameInfo.Players : new List<PublicPlayerInfo>() { player };
+            var settings = Serializers.CreatePlayerSettings(players, TechStore.Instance);
 
             log.Info($"Server: Sending {player} updated player data");
             string json = Serializers.Serialize(player, settings);
-            RpcId(player.NetworkId, nameof(ServerPlayerData), player.Num, json);
+            string gameInfoJson = gameInfo != null ? Serializers.Serialize(gameInfo) : null;
+
+            // send this player their data, unless this is an AI player, then send it to the first player (the host)
+            // so that player can configure the AI player
+            var networkId = player.NetworkId;
+            if (networkId == 0)
+            {
+                networkId = Players[0].NetworkId;
+            }
+
+            RpcId(networkId, nameof(ServerPlayerData), gameInfoJson, player.Num, json);
         }
 
         [Remote]
-        public void ServerPlayerData(int playerNum, string playerJson)
+        public void ServerPlayerData(string gameInfoJson, int playerNum, string playerJson)
         {
-            log.Info("Client: Server sent player data, updated Me");
+            log.Info("Client: Server sent player data");
+            PublicGameInfo gameInfo = gameInfoJson != null ? Serializers.DeserializeObject<PublicGameInfo>(gameInfoJson) : null;
             var player = new Player() { Num = playerNum };
+            var players = gameInfo != null ? gameInfo.Players : new List<PublicPlayerInfo>() { player };
 
-            Serializers.PopulatePlayer(playerJson, player, Serializers.CreatePlayerSettings(new List<PublicPlayerInfo>() { player }, TechStore.Instance));
+            Serializers.PopulatePlayer(playerJson, player, Serializers.CreatePlayerSettings(players, TechStore.Instance));
             player.SetupMapObjectMappings();
             player.ComputeAggregates();
             log.Info("Client: Done recieving updated player data");
 
             // notify any listeners that we have new data for this player
-            ServerPlayerDataEvent?.Invoke(player);
+            ServerPlayerDataEvent?.Invoke(gameInfo, player);
+            Client.EventManager.PublishPlayerDataEvent(gameInfo, player);
         }
 
         /// <summary>
@@ -297,13 +479,13 @@ namespace CraigStars.Singletons
         {
             // find the network player by this number
             var networkId = GetTree().GetRpcSenderId();
-            var player = players.Find(player => player.NetworkId == networkId);
+            var player = Players.Find(player => player.NetworkId == networkId);
             if (player != null)
             {
                 // load the actual player from JSON
                 log.Info($"Server: {player} submitted turn");
                 player = new Player() { Num = player.Num };
-                Serializers.PopulatePlayer(playerJson, player, Serializers.CreatePlayerSettings(players.Cast<PublicPlayerInfo>().ToList(), TechStore.Instance));
+                Serializers.PopulatePlayer(playerJson, player, Serializers.CreatePlayerSettings(Players.Cast<PublicPlayerInfo>().ToList(), TechStore.Instance));
 
                 // submit this player's turn to the server
                 SubmitTurnRequestedEvent?.Invoke(player);
@@ -331,7 +513,7 @@ namespace CraigStars.Singletons
         {
             // find the network player by this number
             var networkId = GetTree().GetRpcSenderId();
-            var player = players.Find(player => player.NetworkId == networkId);
+            var player = Players.Find(player => player.NetworkId == networkId);
             if (player != null)
             {
                 // load the actual player from JSON
@@ -347,7 +529,7 @@ namespace CraigStars.Singletons
                 log.Error($"Player for networkId: {networkId} not found");
             }
 
-        }        
+        }
 
         public void SendGameStarting(PublicGameInfo gameInfo)
         {

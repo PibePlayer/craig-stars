@@ -26,7 +26,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="log4net" Version="2.0.12"></PackageReference>
-        <PackageReference Include="Newtonsoft.Json" Version="12.0.3"></PackageReference>
+        <PackageReference Include="CommandLineParser" Version="2.8.0" />
+        <PackageReference Include="log4net" Version="2.0.12" />
+        <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+        <PackageReference Include="Ensure.That" Version="10.1.0" />
     </ItemGroup>
 </Project>

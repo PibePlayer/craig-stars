@@ -3,6 +3,9 @@ using System;
 using CraigStars.Singletons;
 using CraigStars.Utils;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Linq;
+using CraigStarsTable;
 
 namespace CraigStars.Client
 {
@@ -14,27 +17,38 @@ namespace CraigStars.Client
         Button backButton;
         Button deleteButton;
 
-        ItemList gameItemList;
+        PublicGameInfosTable gamesTable;
 
-        string selectedGame = null;
+        PublicGameInfo selectedGame;
 
-        public override void _Ready()
+        List<PublicGameInfo> gameInfos;
+
+        public override async void _Ready()
         {
             base._Ready();
             loadButton = GetNode<Button>("VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer/LoadButton");
             deleteButton = (Button)FindNode("DeleteButton");
-            gameItemList = (ItemList)FindNode("GameItemList");
+            gamesTable = (PublicGameInfosTable)FindNode("GamesTable");
             backButton = GetNode<Button>("VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/BackButton");
 
             backButton.Connect("pressed", this, nameof(OnBackPressed));
 
             loadButton.Connect("pressed", this, nameof(OnLoadButtonPressed));
             deleteButton.Connect("pressed", this, nameof(OnDeleteButtonPressed));
-            gameItemList.Connect("item_activated", this, nameof(OnGameListItemActivated));
 
-            UpdateItemList();
+            gamesTable.Data.AddColumn("Name");
+            gamesTable.Data.AddColumn("Mode");
+            gamesTable.Data.AddColumn("Size");
+            gamesTable.Data.AddColumn("Year");
+            gamesTable.Data.AddColumn("Players", align: Label.AlignEnum.Right);
 
             EventManager.GameStartingEvent += OnGameStarting;
+
+            // load the full games and update the UI
+            await Task.Run(() => gameInfos = GamesManager.Instance.GetSavedGameInfos());
+            gamesTable.RowSelectedEvent += OnRowSelected;
+            gamesTable.RowActivatedEvent += OnRowActivated;
+            UpdateItemList();
         }
 
         public override void _Notification(int what)
@@ -43,8 +57,21 @@ namespace CraigStars.Client
             if (what == NotificationPredelete)
             {
                 EventManager.GameStartingEvent -= OnGameStarting;
+                gamesTable.RowSelectedEvent -= OnRowSelected;
             }
         }
+
+        void OnRowSelected(int rowIndex, int colIndex, Cell cell, PublicGameInfo metadata)
+        {
+            selectedGame = metadata;
+        }
+
+        void OnRowActivated(int rowIndex, int colIndex, Cell cell, PublicGameInfo metadata)
+        {
+            selectedGame = metadata;
+            OnLoadButtonPressed();
+        }
+
 
         void OnGameSaved(Game game, string filename)
         {
@@ -53,11 +80,17 @@ namespace CraigStars.Client
 
         void UpdateItemList()
         {
-            gameItemList.Clear();
-            foreach (var game in GamesManager.Instance.GetSavedGames())
+            gamesTable.Data.ClearRows();
+            selectedGame = null;
+            if (gameInfos != null)
             {
-                gameItemList.AddItem(game);
+                foreach (var game in gameInfos)
+                {
+                    gamesTable.Data.AddRowAdvanced(game, Colors.White, false, game.Name, game.Mode.ToString(), game.Size.ToString(), game.Year, game.Players.Count);
+                }
             }
+
+            gamesTable.ResetTable();
         }
 
         void OnGameListItemActivated(int index)
@@ -67,19 +100,17 @@ namespace CraigStars.Client
 
         void OnLoadButtonPressed()
         {
-            var selected = gameItemList.GetSelectedItems();
-            if (selected.Length == 1)
+            if (selectedGame != null)
             {
-                var gameFile = gameItemList.GetItemText(selected[0]);
-                var gameYears = GamesManager.Instance.GetSavedGameYears(gameFile);
+                var gameYears = GamesManager.Instance.GetSavedGameYears(selectedGame.Name);
                 if (gameYears.Count > 0)
                 {
                     var gameYear = gameYears[gameYears.Count - 1];
-                    Settings.Instance.ContinueGame = gameFile;
+                    Settings.Instance.ContinueGame = selectedGame.Name;
                     Settings.Instance.ContinueYear = gameYear;
 
                     loadButton.Disabled = backButton.Disabled = true;
-                    ServerManager.Instance.ContinueGame(gameFile, gameYear);
+                    ServerManager.Instance.ContinueGame(selectedGame.Name, gameYear);
                 }
             }
         }
@@ -98,14 +129,13 @@ namespace CraigStars.Client
 
         void OnDeleteButtonPressed()
         {
-            var selected = gameItemList.GetSelectedItems();
-            if (selected.Length == 1)
+            if (selectedGame != null)
             {
-                var gameFile = gameItemList.GetItemText(selected[0]);
-                CSConfirmDialog.Show($"Are you sure you want to delete the game {gameFile}?",
+                GamesManager.Instance.DeleteGame(selectedGame.Name);
+                CSConfirmDialog.Show($"Are you sure you want to delete the game {selectedGame.Name}?",
                 () =>
                 {
-                    GamesManager.Instance.DeleteGame(gameFile);
+                    GamesManager.Instance.DeleteGame(selectedGame.Name);
                     UpdateItemList();
                 });
             }

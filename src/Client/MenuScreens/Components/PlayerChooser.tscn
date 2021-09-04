@@ -49,8 +49,8 @@ rect_pivot_offset = Vector2( -376, -139 )
 margin_right = 110.0
 margin_bottom = 32.0
 rect_rotation = 0.0
-Ready = false
 PlayerNum = 0
+Ready = false
 
 [node name="RemovePlayerButton" type="Button" parent="HBoxContainer/PlayerReady"]
 margin_left = 70.0

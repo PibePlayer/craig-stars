@@ -12,6 +12,12 @@ namespace CraigStars
         List<string> GetSavedGames();
 
         /// <summary>
+        /// Get a list of saved games 
+        /// </summary>
+        /// <returns>A sorted list of saved games</returns>
+        List<PublicGameInfo> GetSavedGameInfos();
+
+        /// <summary>
         /// Get a list of saved years for a game
         /// </summary>
         /// <param name="gameName"></param>

@@ -106,6 +106,42 @@ namespace CraigStars.Singletons
         }
 
         /// <summary>
+        /// Get a list of all game folders
+        /// </summary>
+        /// <returns>A list of game folders</returns>
+        public List<PublicGameInfo> GetSavedGameInfos()
+        {
+            List<PublicGameInfo> games = new List<PublicGameInfo>();
+            List<string> gameFolders = new List<string>();
+
+            if (!GameSaveFolderExists())
+            {
+                return games;
+            }
+
+            using (var directory = new Directory())
+            {
+                directory.Open(SaveDirPath);
+                directory.ListDirBegin(skipNavigational: true, skipHidden: true);
+                while (true)
+                {
+                    string file = directory.GetNext();
+                    if (file == null || file.Empty())
+                    {
+                        break;
+                    }
+                    if (directory.CurrentIsDir())
+                    {
+                        games.Add(LoadGameInfo(file));
+                    }
+                }
+            }
+
+            gameFolders.Sort();
+            return games;
+        }
+
+        /// <summary>
         /// Get a list of all year folders for a game
         /// </summary>
         /// <returns>A list of year folders for a game</returns>
@@ -196,6 +232,10 @@ namespace CraigStars.Singletons
         public PublicGameInfo LoadGameInfo(string name, int year = -1)
         {
             PublicGameInfo gameInfo;
+            if (year == -1) {
+                var years = GetSavedGameYears(name);
+                year = years[years.Count - 1];
+            }
             using (var saveGameInfo = new File())
             {
                 var path = GetSaveGameInfoFile(name, year);

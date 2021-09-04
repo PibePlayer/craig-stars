@@ -24,7 +24,7 @@ namespace CraigStars.Client
         {
             this.ChangeSceneTo<LobbyMenu>("res://src/Client/MenuScreens/LobbyMenu.tscn", (instance) =>
             {
-                instance.HostMode = true;
+                instance.IsHost = true;
             });
             CallDeferred(nameof(HostJoinNewlyHostedGame));
         }

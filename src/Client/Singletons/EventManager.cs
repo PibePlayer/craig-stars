@@ -16,18 +16,21 @@ namespace CraigStars.Client
         public static event Action<PublicGameInfo> GameStartingEvent;
         public static event Action<PublicGameInfo, Player> GameStartedEvent;
         public static event Action<PublicGameInfo> GameExitingEvent;
+        public static event Action<PublicPlayerInfo> PlayerDataRequestedEvent;
         public static event Action<Player> SubmitTurnRequestedEvent;
         public static event Action<PublicPlayerInfo> TurnSubmittedEvent;
         public static event Action<PublicPlayerInfo> UnsubmitTurnRequestedEvent;
         public static event Action<PublicPlayerInfo> TurnUnsubmittedEvent;
         public static event Action<int> PlayTurnRequestedEvent;
 
+        public static event Action<PublicGameInfo, Player> PlayerDataEvent;
         public static event Action TurnGeneratingEvent;
         public static event Action<TurnGenerationState> TurnGeneratorAdvancedEvent;
         public static event Action<PublicGameInfo, Player> TurnPassedEvent;
         public static event Action<PublicGameInfo> GameViewResetEvent;
 
         public static void PublishGameStartRequestedEvent(GameSettings<Player> settings) => GameStartRequestedEvent?.Invoke(settings);
+        public static void PublishPlayerDataRequestedEvent(PublicPlayerInfo player) => PlayerDataRequestedEvent?.Invoke(player);
         public static void PublishGameStartingEvent(PublicGameInfo gameInfo) => GameStartingEvent?.Invoke(gameInfo);
         public static void PublishGameExitingEvent(PublicGameInfo gameInfo) => GameExitingEvent?.Invoke(gameInfo);
         public static void PublishGameStartedEvent(PublicGameInfo gameInfo, Player player) => GameStartedEvent?.Invoke(gameInfo, player);
@@ -37,6 +40,7 @@ namespace CraigStars.Client
         public static void PublishTurnUnsubmittedEvent(PublicPlayerInfo player) => TurnUnsubmittedEvent?.Invoke(player);
         public static void PublishPlayTurnRequestedEvent(int playerNum) => PlayTurnRequestedEvent?.Invoke(playerNum);
 
+        public static void PublishPlayerDataEvent(PublicGameInfo gameInfo, Player player) => PlayerDataEvent?.Invoke(gameInfo, player);
         public static void PublishTurnGeneratorAdvancedEvent(TurnGenerationState state) => TurnGeneratorAdvancedEvent?.Invoke(state);
         public static void PublishTurnGeneratingEvent() => TurnGeneratingEvent?.Invoke();
         public static void PublishTurnPassedEvent(PublicGameInfo gameInfo, Player player) => TurnPassedEvent?.Invoke(gameInfo, player);

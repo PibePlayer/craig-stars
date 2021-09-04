@@ -349,7 +349,9 @@ namespace CraigStars.Client
                 {
                     planetSprite.OrbitingFleets.Add(fleetSprite);
                     fleetSprite.Orbiting = planetSprite;
-                } else {
+                }
+                else
+                {
                     fleetSprite.Orbiting = null;
                 }
             });

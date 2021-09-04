@@ -44,7 +44,8 @@ namespace CraigStars.Utils
         /// <returns></returns>
         public static bool IsMultiplayer(this Node node)
         {
-            return node.GetTree().HasNetworkPeer();
+            var tree = node.GetTree();
+            return tree != null && tree.HasNetworkPeer();
         }
 
         /// <summary>

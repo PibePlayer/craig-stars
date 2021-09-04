@@ -41,6 +41,20 @@ namespace CraigStars.Server
 
         #region Publishers
 
+        protected async override void PublishPlayerDataEvent(Player player)
+        {
+            var playerClone = new Player();
+            await Task.Run(() =>
+            {
+                log.Debug($"Creating clone of {player} for GameStartedEvent.");
+                var playerJson = Serializers.Serialize(player, playerSerializerSettings);
+                Serializers.PopulatePlayer(playerJson, playerClone, playerSerializerSettings);
+            });
+
+            log.Debug($"{player} GameStartedEvent.");
+            Client.EventManager.PublishPlayerDataEvent(Game.GameInfo, playerClone);
+        }
+
         protected override void PublishGameStartingEvent(PublicGameInfo gameInfo)
         {
             var gameInfoJson = Serializers.Serialize(gameInfo);

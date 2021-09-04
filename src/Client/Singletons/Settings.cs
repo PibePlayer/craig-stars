@@ -13,6 +13,18 @@ namespace CraigStars.Client
 
         #region Settings Saved to Disk
 
+        public string PlayerName
+        {
+            get => playerName;
+            set
+            {
+                playerName = value;
+                config?.SetValue("network", "player_name", playerName);
+                Save();
+            }
+        }
+        string playerName = "Craig";
+
         public string ContinueGame
         {
             get => continueGame;
@@ -177,6 +189,7 @@ namespace CraigStars.Client
                 clientPort = int.Parse(config.GetValue("network", "client_port", clientPort).ToString());
                 clientHost = config.GetValue("network", "client_host", clientHost).ToString();
                 serverPort = int.Parse(config.GetValue("network", "server_port", serverPort).ToString());
+                playerName = config.GetValue("network", "player_name", playerName).ToString();
 
                 if (SaveToDisk && config.HasSectionKey("game", "continue_game") && config.HasSectionKey("game", "continue_year"))
                 {

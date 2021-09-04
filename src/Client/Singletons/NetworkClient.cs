@@ -14,6 +14,8 @@ namespace CraigStars.Client
         public event Action ServerDisconnectedEvent;
         public event Action<PublicPlayerInfo> PlayerUpdatedEvent;
 
+        RPC rpc;
+
         /// <summary>
         /// NetworkClient is a singleton
         /// </summary>
@@ -34,6 +36,8 @@ namespace CraigStars.Client
         // Called when the node enters the scene tree for the first time.
         public override void _Ready()
         {
+            rpc = RPC.Instance(GetTree());
+
         }
 
         /// <summary>
@@ -115,8 +119,15 @@ namespace CraigStars.Client
             PlayerUpdatedEvent?.Invoke(player);
             if (notifyPeers && sceneTree != null)
             {
-                RPC.Instance(sceneTree).SendPlayerUpdated(player);
+                rpc.ClientSendServerPlayerUpdated(player);
             }
+        }
+
+        public void StartGame(GameSettings<Player> settings)
+        {
+            // Note: The server already knows about the game's players, so no need to pass
+            // those along here
+            rpc.ClientSendServerGameStartRequested(settings);
         }
 
         /// <summary>
@@ -126,7 +137,7 @@ namespace CraigStars.Client
         public void SubmitTurnToServer(Player player)
         {
             // tell the server we submitted our turn
-            RPC.Instance(GetTree()).SendSubmitTurn(player);
+            rpc.SendSubmitTurn(player);
         }
 
         /// <summary>
@@ -136,7 +147,27 @@ namespace CraigStars.Client
         public void UpdateRaceOnServer(Race race)
         {
             // tell the server we submitted our turn
-            RPC.Instance(GetTree()).SendUpdateRace(race);
+            rpc.SendUpdateRace(race);
+        }
+
+        /// <summary>
+        /// Tell the server to add an AI player
+        /// </summary>
+        /// <param name="player"></param>
+        public void AddAIPlayer()
+        {
+            // tell the server we submitted our turn
+            rpc.ClientSendServerAddAIPlayer();
+        }
+
+        /// <summary>
+        /// Tell the server to kick out a player
+        /// </summary>
+        /// <param name="player"></param>
+        public void KickPlayer(int playerNum)
+        {
+            // tell the server we submitted our turn
+            rpc.ClientSendServerKickPlayer(playerNum);
         }
 
     }

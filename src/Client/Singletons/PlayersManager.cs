@@ -23,10 +23,8 @@ namespace CraigStars.Singletons
         };
 
         static string[] playerNames = new string[] {
-            "Craig",
             "Ted",
             "Joe",
-            "Bob",
             "Lance",
             "Elias",
             "Eva",

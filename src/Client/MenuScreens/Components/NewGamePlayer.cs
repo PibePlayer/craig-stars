@@ -103,7 +103,7 @@ namespace CraigStars.Client
             Player.Name = newText;
             if (this.IsMultiplayer())
             {
-                rpc.SendPlayerUpdated(Player);
+                NetworkClient.Instance.PublishPlayerUpdatedEvent(Player, notifyPeers: true, GetTree());
             }
         }
 
@@ -112,7 +112,7 @@ namespace CraigStars.Client
             Player.Color = color;
             if (this.IsMultiplayer())
             {
-                rpc.SendPlayerUpdated(Player);
+                NetworkClient.Instance.PublishPlayerUpdatedEvent(Player, notifyPeers: true, GetTree());
             }
         }
 
@@ -198,7 +198,7 @@ namespace CraigStars.Client
             if (selected == null)
             {
                 raceOptionButton.Selected = -1;
-                raceOptionButton.Text = "Choose race...";
+                raceOptionButton.Text = "Humanoids (Built In)";
             }
         }
 

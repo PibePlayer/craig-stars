@@ -63,7 +63,7 @@ namespace CraigStars.Singletons
 
         #region Single Player
 
-        GameSettings<Player> localGameSettings;
+        GameSettings<Player> settings;
 
         /// <summary>
         /// Create a new single player server and generate a new game
@@ -72,7 +72,7 @@ namespace CraigStars.Singletons
         /// <returns></returns>
         public void NewGame(GameSettings<Player> settings)
         {
-            localGameSettings = settings;
+            this.settings = settings;
             server = ResourceLoader.Load<PackedScene>("res://src/Server/LocalServer.tscn").Instance<LocalServer>();
             server.GodotTaskFactory = GodotTaskFactory;
             AddChild(server);
@@ -88,25 +88,36 @@ namespace CraigStars.Singletons
         public void ContinueGame(String gameName, int year)
         {
             // setup our GameSettings to be a continue game
-            localGameSettings = new GameSettings<Player>()
+            settings = new GameSettings<Player>()
             {
                 ContinueGame = true,
                 Name = gameName,
                 Year = year,
             };
 
-            server = ResourceLoader.Load<PackedScene>("res://src/Server/LocalServer.tscn").Instance<LocalServer>();
-            server.GodotTaskFactory = GodotTaskFactory;
-            AddChild((Node)server);
+            var gameInfo = GamesManager.Instance.LoadGameInfo(gameName, year);
+            if (gameInfo.Mode == GameMode.MultiPlayer)
+            {
+                HostGame(settings: settings);
 
-            CallDeferred(nameof(PublishLocalGameStartRequest));
+                CallDeferred(nameof(JoinHostedGame));
+            }
+            else
+            {
+                server = ResourceLoader.Load<PackedScene>("res://src/Server/LocalServer.tscn").Instance<LocalServer>();
+                server.GodotTaskFactory = GodotTaskFactory;
+                AddChild((Node)server);
+
+                CallDeferred(nameof(PublishLocalGameStartRequest));
+            }
+
         }
 
         public void ExitGame()
         {
             if (server != null)
             {
-                RemoveChild(server);
+                server.GetParent()?.RemoveChild(server);
                 server.QueueFree();
                 server = null;
             }
@@ -117,7 +128,12 @@ namespace CraigStars.Singletons
         /// </summary>
         void PublishLocalGameStartRequest()
         {
-            Client.EventManager.PublishGameStartRequestedEvent(localGameSettings);
+            Client.EventManager.PublishGameStartRequestedEvent(settings);
+        }
+
+        void JoinHostedGame()
+        {
+            NetworkClient.Instance.JoinGame("localhost", 3000);
         }
 
         #endregion
@@ -128,7 +144,7 @@ namespace CraigStars.Singletons
         /// <summary>
         /// Host a new game, starting a server
         /// </summary>
-        public void HostGame(int port = 3000)
+        public void HostGame(int port = 3000, GameSettings<Player> settings = null)
         {
             if (serverTree != null)
             {
@@ -145,6 +161,7 @@ namespace CraigStars.Singletons
             serverTree.Root.AddChild(rpc);
             server = ResourceLoader.Load<PackedScene>("res://src/Server/NetworkServer.tscn").Instance<NetworkServer>();
             server.GodotTaskFactory = GodotTaskFactory;
+            server.Settings = settings;
             serverTree.Root.AddChild(server);
 
             var peer = new NetworkedMultiplayerENet();
@@ -159,7 +176,15 @@ namespace CraigStars.Singletons
             // start updating the serverTree
             SetProcess(true);
 
-            log.Info("Hosting new game");
+            if (settings != null && settings.ContinueGame)
+            {
+                log.Info("Hosting saved game");
+            }
+            else
+            {
+                log.Info("Hosting new game");
+            }
+
         }
 
         /// <summary>
@@ -168,14 +193,15 @@ namespace CraigStars.Singletons
         public void CloseConnection()
         {
             SetProcess(false);
-            var peer = serverTree.NetworkPeer as NetworkedMultiplayerENet;
-            if (peer != null && peer.GetConnectionStatus() == NetworkedMultiplayerPeer.ConnectionStatus.Connected)
-            {
-                log.Info("Closing connection");
-                peer.CloseConnection();
-            }
             if (serverTree != null)
             {
+                var peer = serverTree.NetworkPeer as NetworkedMultiplayerENet;
+                if (peer != null && peer.GetConnectionStatus() == NetworkedMultiplayerPeer.ConnectionStatus.Connected)
+                {
+                    log.Info("Closing connection");
+                    peer.CloseConnection();
+                }
+
                 foreach (Node child in serverTree.Root.GetChildren())
                 {
                     serverTree.Root.RemoveChild(child);

@@ -22,7 +22,7 @@ namespace CraigStars.Singletons
             }
             else
             {
-                log.Debug($"Instantiating new {typeof(T)}");
+                // log.Debug($"Instantiating new {typeof(T)}");
                 return packedScene.Instance<T>();
             }
         }
@@ -37,7 +37,7 @@ namespace CraigStars.Singletons
             // it will be freed in CSResourceLoader
             item.GetParent()?.RemoveChild(item);
 
-            log.Debug($"Returned NodePool resource {typeof(T)} {item} to pool.");
+            // log.Debug($"Returned NodePool resource {typeof(T)} {item} to pool.");
         }
 
         public static void FreeAll<T>() where T : Node
@@ -45,7 +45,7 @@ namespace CraigStars.Singletons
             var bag = PerType<T>.bag;
             while (bag.TryTake(out T item))
             {
-                log.Debug($"Freeing NodePool resource {typeof(T)} {item}");
+                // log.Debug($"Freeing NodePool resource {typeof(T)} {item}");
                 item.Free();
             }
         }

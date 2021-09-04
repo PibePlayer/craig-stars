@@ -239,7 +239,7 @@ namespace CraigStars.Client
         void OnClear()
         {
             queuedItems.Items.Clear();
-            var _  = queuedItems.UpdateItems();
+            var _ = queuedItems.UpdateItems();
         }
 
         void OnRemoveItem()

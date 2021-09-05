@@ -317,11 +317,26 @@ namespace CraigStars.Client
             log.Info("Host: All players ready, starting the game!");
 
             GameSettings<Player> settings = newGameOptions.GetGameSettings();
-            settings.Mode = GameMode.MultiPlayer;
+            settings.Mode = GameMode.NetworkedMultiPlayer;
 
-            // Note: The server already knows about the game's players, so no need to pass
-            // those along here
-            rpc.ClientSendServerGameStartRequested(settings);
+            if (GamesManager.Instance.GameExists(settings.Name))
+            {
+                CSConfirmDialog.Show($"A game named {settings.Name} already exists. Are you sure you want to overwrite it?", () =>
+                {
+                    // delete the existing game
+                    GamesManager.Instance.DeleteGame(settings.Name);
+                    // Note: The server already knows about the game's players, so no need to pass
+                    // those along here
+                    rpc.ClientSendServerStartNewGameRequested(settings);
+                });
+            }
+            else
+            {
+                // Note: The server already knows about the game's players, so no need to pass
+                // those along here
+                rpc.ClientSendServerStartNewGameRequested(settings);
+            }
+
         }
 
         #endregion

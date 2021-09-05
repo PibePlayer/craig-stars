@@ -9,7 +9,8 @@ namespace CraigStars.Server
     public interface IClientEventPublisher
     {
         event Action<PublicPlayerInfo> PlayerDataRequestedEvent;
-        event Action<GameSettings<Player>> GameStartRequestedEvent;
+        event Action<GameSettings<Player>> StartNewGameRequestedEvent;
+        event Action<string, int> ContinueGameRequestedEvent;
         event Action<Player> SubmitTurnRequestedEvent;
         event Action<PublicPlayerInfo> UnsubmitTurnRequestedEvent;
     }

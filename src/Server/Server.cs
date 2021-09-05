@@ -31,7 +31,7 @@ namespace CraigStars.Server
         /// <summary>
         /// The GamesManager is used to save turns
         /// </summary>
-        public IGamesManager GamesManager { get; set; }
+        public GamesManager GamesManager { get; set; }
 
         /// <summary>
         /// This TaskFactory is configured to schedule executions on the main thread so it's safe for sending events to
@@ -39,8 +39,6 @@ namespace CraigStars.Server
         /// </summary>
         /// <value></value>
         public TaskFactory GodotTaskFactory { get; set; }
-
-        public GameSettings<Player> Settings { get; set; }
 
         /// <summary>
         /// The game that is being created/loaded
@@ -59,19 +57,21 @@ namespace CraigStars.Server
             base._Ready();
 
             clientEventPublisher = CreateClientEventPublisher();
-            GamesManager = Singletons.GamesManager.Instance;
-            aiTurnSubmitter = new AITurnSubmitter(TurnProcessorManager.Instance, Multithreaded);
             aiTurnSubmitter.TurnSubmitRequestedEvent += OnAITurnSubmitRequested;
 
             clientEventPublisher.PlayerDataRequestedEvent += OnPlayerDataRequested;
-            clientEventPublisher.GameStartRequestedEvent += OnGameStartRequested;
+            clientEventPublisher.StartNewGameRequestedEvent += OnStartNewGameRequested;
+            clientEventPublisher.ContinueGameRequestedEvent += OnContinueGameRequested;
             clientEventPublisher.SubmitTurnRequestedEvent += OnSubmitTurnRequested;
             clientEventPublisher.UnsubmitTurnRequestedEvent += OnUnsubmitTurnRequested;
 
-            if (Settings != null && Settings.ContinueGame)
-            {
-                OnGameStartRequested(Settings);
-            }
+        }
+
+        public void Init(TaskFactory godotTaskFactory, GamesManager gamesManager, TurnProcessorManager turnProcessorManager)
+        {
+            GamesManager = gamesManager;
+            GodotTaskFactory = godotTaskFactory;
+            aiTurnSubmitter = new AITurnSubmitter(turnProcessorManager, Multithreaded);
         }
 
         public override void _Notification(int what)
@@ -81,11 +81,13 @@ namespace CraigStars.Server
             {
                 aiTurnSubmitter.TurnSubmitRequestedEvent -= OnAITurnSubmitRequested;
                 clientEventPublisher.PlayerDataRequestedEvent -= OnPlayerDataRequested;
-                clientEventPublisher.GameStartRequestedEvent -= OnGameStartRequested;
+                clientEventPublisher.StartNewGameRequestedEvent -= OnStartNewGameRequested;
+                clientEventPublisher.ContinueGameRequestedEvent -= OnContinueGameRequested;
                 clientEventPublisher.SubmitTurnRequestedEvent -= OnSubmitTurnRequested;
                 clientEventPublisher.UnsubmitTurnRequestedEvent -= OnUnsubmitTurnRequested;
             }
         }
+
         /// <summary>
         /// Create a new IServerEventPublisher that will pass events
         /// from the client to the server
@@ -100,9 +102,10 @@ namespace CraigStars.Server
 
         protected abstract void PublishPlayerDataEvent(Player player);
         protected abstract void PublishGameStartedEvent();
+        protected abstract void PublishGameContinuedEvent();
         protected abstract void PublishGameStartingEvent(PublicGameInfo gameInfo);
-        protected abstract void PublishTurnSubmittedEvent(PublicPlayerInfo player);
-        protected abstract void PublishTurnUnsubmittedEvent(PublicPlayerInfo player);
+        protected abstract void PublishTurnSubmittedEvent(PublicGameInfo gameInfo, PublicPlayerInfo player);
+        protected abstract void PublishTurnUnsubmittedEvent(PublicGameInfo gameInfo, PublicPlayerInfo player);
         protected abstract void PublishTurnGeneratingEvent();
         protected abstract void PublishTurnGeneratorAdvancedEvent(TurnGenerationState state);
         protected abstract void PublishTurnPassedEvent();
@@ -124,24 +127,15 @@ namespace CraigStars.Server
             }
         }
 
-        protected async void OnGameStartRequested(GameSettings<Player> settings)
+        protected async void OnStartNewGameRequested(GameSettings<Player> settings)
         {
 
             await Task.Run(() =>
             {
                 try
                 {
-                    if (settings.ContinueGame)
-                    {
-                        PublicGameInfo gameInfo = LoadGameInfo(settings.Name, settings.Year);
-                        GodotTaskFactory.StartNew(() => PublishGameStartingEvent(gameInfo));
-                        Game = LoadGame(settings.Name, settings.Year, multithreaded: true, saveToDisk: true);
-                    }
-                    else
-                    {
-                        GodotTaskFactory.StartNew(() => PublishGameStartingEvent(settings));
-                        Game = CreateNewGame(settings, multithreaded: true, saveToDisk: true);
-                    }
+                    GodotTaskFactory.StartNew(() => PublishGameStartingEvent(settings));
+                    Game = CreateNewGame(settings, multithreaded: true, saveToDisk: true);
 
                     // notify each player of a game start event
                     Game.GameInfo.State = GameState.WaitingForPlayers;
@@ -158,6 +152,38 @@ namespace CraigStars.Server
             // submit the AI player turns
             aiTurnSubmitter.SubmitAITurns(Game);
         }
+
+        public async Task ContinueGame(string gameName, int year)
+        {
+            await Task.Run(() =>
+            {
+                try
+                {
+                    PublicGameInfo gameInfo = GamesManager.LoadServerGameInfo(gameName, year);
+                    GodotTaskFactory.StartNew(() => PublishGameStartingEvent(gameInfo));
+                    Game = LoadGame(gameInfo.Name, gameInfo.Year, multithreaded: true, saveToDisk: true);
+
+                    // notify each player of a game start event
+                    Game.GameInfo.State = GameState.WaitingForPlayers;
+                }
+                catch (Exception e)
+                {
+                    log.Error("Failed to create new game or load game.", e);
+                    throw e;
+                }
+            });
+
+            await GodotTaskFactory.StartNew(() => PublishGameContinuedEvent());
+
+            // submit the AI player turns
+            aiTurnSubmitter.SubmitAITurns(Game);
+        }
+
+        protected async void OnContinueGameRequested(string gameName, int year)
+        {
+            await ContinueGame(gameName, year);
+        }
+
 
         /// <summary>
         /// 
@@ -187,7 +213,7 @@ namespace CraigStars.Server
                 {
                     log.Debug($"{Game.Year}: Submitting turn for {player}");
                     Game.SubmitTurn(player);
-                    await GodotTaskFactory.StartNew(() => PublishTurnSubmittedEvent(player));
+                    await GodotTaskFactory.StartNew(() => PublishTurnSubmittedEvent(Game.GameInfo, player));
 
                     SaveGame(Game);
 
@@ -228,7 +254,7 @@ namespace CraigStars.Server
                 }
             });
 
-            await GodotTaskFactory.StartNew(() => PublishTurnUnsubmittedEvent(player));
+            await GodotTaskFactory.StartNew(() => PublishTurnUnsubmittedEvent(Game.GameInfo, player));
         }
 
         #endregion
@@ -314,7 +340,7 @@ namespace CraigStars.Server
         /// </summary>
         public PublicGameInfo LoadGameInfo(string gameName, int year)
         {
-            var gameInfo = GamesManager.LoadGameInfo(gameName, year);
+            var gameInfo = GamesManager.LoadServerGameInfo(gameName, year);
             return gameInfo;
         }
 

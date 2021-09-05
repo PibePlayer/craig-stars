@@ -13,6 +13,9 @@ namespace CraigStars.Singletons
     {
         static CSLog log = LogProvider.GetLogger(typeof(CSResourceLoader));
 
+        public static event Action SceneLoadCompeteEvent;
+        public static event Action SpriteLoadCompeteEvent;
+
         static List<string> packedScenePaths = new()
         {
             "res://src/Client/GameView.tscn",
@@ -67,6 +70,7 @@ namespace CraigStars.Singletons
             });
 
             await sceneLoadTask;
+            SceneLoadCompeteEvent?.Invoke();
             log.Debug("Populating NodePool with sprites");
             spriteLoadTask = Task.Run(() =>
             {
@@ -83,6 +87,7 @@ namespace CraigStars.Singletons
                 }
             });
             log.Debug("Done populating NodePool with sprites");
+            SpriteLoadCompeteEvent?.Invoke();
         }
 
         public override void _Notification(int what)

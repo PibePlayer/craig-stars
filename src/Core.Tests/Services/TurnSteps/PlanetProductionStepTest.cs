@@ -280,7 +280,7 @@ namespace CraigStars.Tests
             planet.ContributesOnlyLeftoverToResearch = true;
             var design = ShipDesigns.LongRangeScount.Clone();
             design.Player = player;
-            design.ComputeAggregate();
+            design.ComputeAggregate(player);
             player.Designs.Add(design);
 
 
@@ -325,9 +325,9 @@ namespace CraigStars.Tests
             var design1 = ShipDesigns.LongRangeScount.Clone();
             var design2 = ShipDesigns.SantaMaria.Clone();
             design1.Player = player;
-            design1.ComputeAggregate();
+            design1.ComputeAggregate(player);
             design2.Player = player;
-            design2.ComputeAggregate();
+            design2.ComputeAggregate(player);
             player.Designs.Add(design1);
             player.Designs.Add(design2);
 

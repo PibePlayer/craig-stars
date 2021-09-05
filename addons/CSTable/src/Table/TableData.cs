@@ -149,7 +149,7 @@ namespace CraigStarsTable
             });
         }
 
-        public void Filter(String filterText)
+        public void Filter(string filterText)
         {
             FilterText = filterText;
 

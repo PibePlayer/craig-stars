@@ -21,8 +21,10 @@ namespace CraigStars
         {
             simpleSettings = new JsonSerializerSettings()
             {
+                Formatting = Formatting.Indented,
                 NullValueHandling = NullValueHandling.Ignore,
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                ObjectCreationHandling = ObjectCreationHandling.Replace,
                 // DefaultValueHandling = DefaultValueHandling.Ignore,
                 // TraceWriter = traceWriter,
 
@@ -47,6 +49,7 @@ namespace CraigStars
                 NullValueHandling = NullValueHandling.Ignore,
                 ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
                 DefaultValueHandling = DefaultValueHandling.Ignore,
+                ObjectCreationHandling = ObjectCreationHandling.Replace,
                 TraceWriter = traceWriter,
                 ContractResolver = new PlayerContractResolver<PublicPlayerInfo>(players, techStore),
 

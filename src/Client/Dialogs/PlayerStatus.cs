@@ -8,6 +8,7 @@ namespace CraigStars.Client
 {
     public class PlayerStatus : TabContainer
     {
+        protected PublicGameInfo GameInfo { get => PlayersManager.GameInfo; }
         protected Player Me { get => PlayersManager.Me; }
 
         TurnGenerationStatus turnGenerationStatus;
@@ -24,10 +25,12 @@ namespace CraigStars.Client
 
         public void OnVisible(PublicGameInfo gameInfo)
         {
-            // turnGenerationStatus.GameInfo = gameInfo;
-            turnGenerationStatus.UpdatePlayerStatuses();
-            ResetScoreTable(gameInfo);
-            ResetVictoryTable(gameInfo);
+            if (IsVisibleInTree())
+            {
+                turnGenerationStatus.UpdatePlayerStatuses();
+                ResetScoreTable(gameInfo);
+                ResetVictoryTable(gameInfo);
+            }
         }
 
 
@@ -69,7 +72,7 @@ namespace CraigStars.Client
                 var player = gameInfo.Players[i];
                 var index = i + 1;
 
-                if (player == Me || Me.Game.ScoresVisible)
+                if (player == Me || GameInfo.ScoresVisible)
                 {
                     var playerScore = player == Me ? Me.Score : player.PublicScore;
                     planets[index] = playerScore.Planets;
@@ -130,7 +133,7 @@ namespace CraigStars.Client
             object[] OwnCapitalShips = new object[numPlayers + 1];
             object[] HighestScore = new object[numPlayers + 1];
 
-            var victoryConditions = Me.Game.VictoryConditions;
+            var victoryConditions = GameInfo.VictoryConditions;
             OwnPlanets[0] = $"Own {((int)(victoryConditions.OwnPlanets / 100f * Me.AllPlanets.Count()))} planets.";
             AttainTechLevels[0] = $"Attain Tech {victoryConditions.AttainTechLevel} in {victoryConditions.AttainTechLevelNumFields} fields.";
             ExceedScore[0] = $"Excced a score of {victoryConditions.ExceedScore}.";

@@ -132,14 +132,13 @@ namespace CraigStars
             return filledRequiredSlots == requiredHullSlotByIndex.Count;
         }
 
-        public void ComputeAggregate(Player player = null, bool recompute = false)
+        public void ComputeAggregate(Player player, bool recompute = false)
         {
             if (Aggregate.Computed && !recompute)
             {
                 // don't recompute unless explicitly requested
                 return;
             }
-            player = player == null ? Player : player;
             var rules = player.Rules;
             Aggregate.Mass = Hull.Mass;
             Aggregate.Armor = Hull.Armor;
@@ -291,7 +290,7 @@ namespace CraigStars
             }
 
             // compute the scan ranges
-            ComputeScanRanges();
+            ComputeScanRanges(player);
 
             Aggregate.Computed = true;
         }
@@ -299,9 +298,9 @@ namespace CraigStars
         /// <summary>
         /// Recompute the cost every time a player gains a level.
         /// </summary>
-        void ComputeCost()
+        void ComputeCost(Player player)
         {
-            Aggregate.Cost = Hull.GetPlayerCost(Player);
+            Aggregate.Cost = Hull.GetPlayerCost(player);
             foreach (ShipDesignSlot slot in Slots)
             {
                 if (slot.HullComponent != null)
@@ -318,16 +317,16 @@ namespace CraigStars
         /// </summary>
         /// <param name="player"></param>
         /// <param name="rules"></param>
-        void ComputeScanRanges()
+        void ComputeScanRanges(Player player)
         {
             long scanRange = TechHullComponent.NoScanner;
             long scanRangePen = TechHullComponent.NoScanner;
 
             // compu thecanner as a built in JoaT scanner if it's build in
-            if (Player.Race.PRT == PRT.JoaT && Hull.BuiltInScannerForJoaT)
+            if (player.Race.PRT == PRT.JoaT && Hull.BuiltInScannerForJoaT)
             {
-                scanRange = (long)(Player.TechLevels.Electronics * Player.Rules.BuiltInScannerJoaTMultiplier);
-                if (!Player.Race.HasLRT(LRT.NAS))
+                scanRange = (long)(player.TechLevels.Electronics * player.Rules.BuiltInScannerJoaTMultiplier);
+                if (!player.Race.HasLRT(LRT.NAS))
                 {
                     scanRangePen = (long)Math.Pow(scanRange / 2, 4);
                 }
@@ -395,10 +394,10 @@ namespace CraigStars
             if (Player.Race.PRT == PRT.JoaT && Hull != null && Hull.BuiltInScannerForJoaT && field == TechField.Electronics)
             {
                 // update our scanner aggregate
-                ComputeScanRanges();
+                ComputeScanRanges(player);
             }
 
-            ComputeCost();
+            ComputeCost(player);
         }
 
         #endregion

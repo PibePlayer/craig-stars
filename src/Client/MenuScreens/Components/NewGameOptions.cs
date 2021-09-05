@@ -10,7 +10,7 @@ namespace CraigStars.Client
     public class NewGameOptions : GridContainer
     {
         [Export]
-        public String GameName { get; set; } = "A Barefoot Jaywalk";
+        public string GameName { get; set; } = "A Barefoot Jaywalk";
 
         [Export]
         public Size Size { get; set; } = Size.Small;

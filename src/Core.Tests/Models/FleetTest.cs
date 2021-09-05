@@ -13,7 +13,8 @@ namespace CraigStars.Tests
         public void TestComputeCloak()
         {
             var design = ShipDesigns.LongRangeScount.Clone();
-            design.Player = new Player();
+            var player = new Player();
+            design.Player = player;
 
             var fleet = new Fleet()
             {
@@ -28,7 +29,7 @@ namespace CraigStars.Tests
             Assert.AreEqual(0, fleet.Aggregate.CloakPercent);
 
             design.Slots[2].HullComponent = Techs.StealthCloak;
-            design.ComputeAggregate(recompute: true);
+            design.ComputeAggregate(player, recompute: true);
             fleet.ComputeAggregate(recompute: true);
             Assert.AreEqual(35, fleet.Aggregate.CloakPercent);
 
@@ -102,7 +103,7 @@ namespace CraigStars.Tests
             // fill it with cargo
             fleet.Cargo = Cargo.OfAmount(CargoType.Ironium, fleet.AvailableCapacity);
 
-            freighterDesign.ComputeAggregate(recompute: true);
+            freighterDesign.ComputeAggregate(player, recompute: true);
             fleet.ComputeAggregate(recompute: true);
             Assert.AreEqual(20, fleet.Aggregate.CloakPercent);
 
@@ -138,7 +139,7 @@ namespace CraigStars.Tests
             // fill it with cargo, should be the same cloak
             fleet.Cargo = Cargo.OfAmount(CargoType.Ironium, fleet.AvailableCapacity);
 
-            freighterDesign.ComputeAggregate(recompute: true);
+            freighterDesign.ComputeAggregate(player, recompute: true);
             fleet.ComputeAggregate(recompute: true);
             Assert.AreEqual(75, fleet.Aggregate.CloakPercent);
 

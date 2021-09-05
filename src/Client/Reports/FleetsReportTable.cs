@@ -62,7 +62,7 @@ namespace CraigStars.Client
             var etaText = "--";
             var eta = double.MaxValue;
             var task = "(no task here)";
-            String location = "--";
+            var location = "--";
 
             if (item.Owner != null)
             {

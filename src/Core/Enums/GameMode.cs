@@ -6,7 +6,7 @@ namespace CraigStars
     public enum GameMode
     {
         SinglePlayer,
-        MultiPlayer,
+        NetworkedMultiPlayer,
         Hotseat,
     }
 }

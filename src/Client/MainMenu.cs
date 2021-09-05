@@ -8,6 +8,8 @@ namespace CraigStars.Client
 {
     public class MainMenu : MarginContainer
     {
+        static CSLog log = LogProvider.GetLogger(typeof(MainMenu));
+
         WindowDialog hostWindow;
         WindowDialog joinWindow;
         LineEdit joinHostEdit;
@@ -111,12 +113,17 @@ namespace CraigStars.Client
             var port = int.Parse(((LineEdit)joinWindow.FindNode("PortEdit")).Text);
             Settings.Instance.ClientHost = host;
             Settings.Instance.ClientPort = port;
-            NetworkClient.Instance.JoinGame(host, port);
+            NetworkClient.Instance.JoinNewGame(host, port);
         }
 
         void OnContinueGameButtonPressed()
         {
-            ServerManager.Instance.ContinueGame(Settings.Instance.ContinueGame, (int)continueGameYearSpinBox.Value);
+            var (gameInfo, players) = ServerManager.Instance.ContinueGame(Settings.Instance.ContinueGame, (int)continueGameYearSpinBox.Value);
+            this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (clientView) =>
+            {
+                clientView.GameInfo = gameInfo;
+                clientView.LocalPlayers = players;
+            });
         }
 
         void OnHostGameButtonPressed()
@@ -148,7 +155,7 @@ namespace CraigStars.Client
         {
             PlayersManager.Reset();
             Settings.Instance.ServerPort = int.Parse(hostPortEdit.Text);
-            ServerManager.Instance.HostGame(Settings.Instance.ServerPort);
+            ServerManager.Instance.HostGame(port: Settings.Instance.ServerPort);
 
             // join the server we just created
             CallDeferred(nameof(HostJoinNewlyHostedGame));
@@ -164,7 +171,7 @@ namespace CraigStars.Client
         /// </summary>
         void HostJoinNewlyHostedGame()
         {
-            NetworkClient.Instance.JoinGame("localhost", Settings.Instance.ServerPort);
+            NetworkClient.Instance.JoinNewGame("localhost", Settings.Instance.ServerPort);
         }
 
         #region Joining Network Games

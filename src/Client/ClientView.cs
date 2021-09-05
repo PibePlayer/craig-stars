@@ -56,6 +56,7 @@ namespace CraigStars.Client
             PlayerName ??= Settings.Instance.PlayerName;
 
             EventManager.GameStartedEvent += OnGameStarted;
+            EventManager.GameContinuedEvent += OnGameContinued;
             EventManager.SubmitTurnRequestedEvent += OnSubmitTurnRequested;
             EventManager.PlayTurnRequestedEvent += OnPlayTurnRequested;
             EventManager.PlayerDataEvent += OnPlayerData;
@@ -68,6 +69,23 @@ namespace CraigStars.Client
             // set the game info for the turn generation status to our GameInfo (whether we are a client or the host)
             // turnGenerationStatus.GameInfo = GameInfo;
             PlayersManager.GameInfo = GameInfo;
+            if (LocalPlayers.Count > 0)
+            {
+                // if we are starting with a player preloaded, go right into the game
+                PlayersManager.Me = LocalPlayers[0];
+
+                if (GameInfo.Mode == GameMode.NetworkedMultiPlayer)
+                {
+                    NetworkClient.Instance.JoinExistingGame(Settings.Instance.ClientHost, Settings.Instance.ClientPort, PlayersManager.Me);
+                }
+
+                // don't show the game if we already submitted
+                if (!PlayersManager.Me.SubmittedTurn)
+                {
+                    CallDeferred(nameof(LoadGameView));
+                }
+
+            }
             turnGenerationStatus.UpdatePlayerStatuses();
             OS.SetWindowTitle($"{projectName} - {GameInfo.Name}: Year {GameInfo.Year}");
         }
@@ -128,9 +146,6 @@ namespace CraigStars.Client
             {
                 log.Debug("Removing GameView from tree");
                 gameView.Visible = false;
-                // RemoveChild(gameView);
-                // gameView.QueueFree();
-                // gameView = null;
             }
         }
 
@@ -177,25 +192,34 @@ namespace CraigStars.Client
         {
             log.Info("OnGameStarted");
             LocalPlayers.Add(player);
+
+            PlayersManager.GameInfo = GameInfo = gameInfo;
+            PlayersManager.GameInfo.Players.ForEach(p => log.Debug($"{PlayersManager.GameInfo}: Player: {p}, Submitted: {p.SubmittedTurn}"));
+            GamesManager.Instance.SavePlayer(player);
             if (PlayersManager.Me == null)
             {
-                GameInfo = gameInfo;
                 PlayersManager.Me = player;
-                PlayersManager.GameInfo = gameInfo;
                 CallDeferred(nameof(LoadGameView));
             }
             else
             {
-                PlayersManager.GameInfo = gameInfo;
                 CallDeferred(nameof(LoadGameView));
             }
         }
+
+        void OnGameContinued(PublicGameInfo gameInfo)
+        {
+            // the server is ready
+            PlayersManager.GameInfo = GameInfo = gameInfo;
+        }
+
 
         void OnSubmitTurnRequested(Player player)
         {
             // we submitted our turn, switch to turn submitter view
             if (player == PlayersManager.Me)
             {
+                player.SubmittedTurn = true;
                 if (this.IsMultiplayer())
                 {
                     // submit our turn to the server
@@ -208,13 +232,25 @@ namespace CraigStars.Client
                 // this was us, show the dialog
                 turnGenerationStatus.Visible = true;
                 turnGenerationStatus.UpdatePlayerStatuses();
+
+                // save our game
+                GamesManager.Instance.SavePlayer(player);
             }
         }
 
-        void OnTurnSubmitted(PublicPlayerInfo player)
+        void OnTurnSubmitted(PublicGameInfo gameInfo, PublicPlayerInfo player)
         {
+            PlayersManager.GameInfo = GameInfo = gameInfo;
+            PlayersManager.GameInfo.Players.ForEach(p => log.Debug($"{PlayersManager.GameInfo}: Player: {p}, Submitted: {p.SubmittedTurn}"));
+
             var localPublicPlayer = GameInfo.Players.Find(p => p.Num == player.Num);
             localPublicPlayer.Update(player);
+
+            if (PlayersManager.Me != null)
+            {
+                GamesManager.Instance.SavePlayerGameInfo(gameInfo, PlayersManager.Me.Num);
+            }
+
             if (player == PlayersManager.Me)
             {
                 // we just submitted our turn, remove the game view and show this container
@@ -245,13 +281,21 @@ namespace CraigStars.Client
 
         }
 
-        void OnTurnUnsubmitted(PublicPlayerInfo player)
+        void OnTurnUnsubmitted(PublicGameInfo gameInfo, PublicPlayerInfo player)
         {
+            PlayersManager.GameInfo = GameInfo = gameInfo;
             // put this player back into rotation so they can be played
             var localPlayer = LocalPlayers.Find(p => p == player);
             if (localPlayer != null)
             {
                 localPlayer.SubmittedTurn = false;
+                // save our game
+                GamesManager.Instance.SavePlayer(localPlayer);
+            }
+
+            if (PlayersManager.Me != null)
+            {
+                GamesManager.Instance.SavePlayerGameInfo(gameInfo, PlayersManager.Me.Num);
             }
 
             var localPublicPlayer = GameInfo.Players.Find(p => p.Num == player.Num);
@@ -300,11 +344,12 @@ namespace CraigStars.Client
             LocalPlayers.Remove(player);
             LocalPlayers.Add(player);
 
+            GamesManager.Instance.SavePlayer(player);
+
             // if we don't already have a local player, play this player
             if (PlayersManager.Me == null)
             {
-                GameInfo = gameInfo;
-                PlayersManager.GameInfo = gameInfo;
+                PlayersManager.GameInfo = GameInfo = gameInfo;
                 PlayersManager.Me = player;
                 PlayersManager.Me.RunTurnProcessors(TurnProcessorManager.Instance);
                 OS.SetWindowTitle($"{projectName} - {gameInfo.Name}: Year {gameInfo.Year}");
@@ -325,17 +370,6 @@ namespace CraigStars.Client
                 RemoveGameViewAndShowTurnGeneration();
                 CallDeferred(nameof(LoadGameView));
             }
-            else
-            {
-                if (this.IsMultiplayer())
-                {
-                    RPC.Instance(GetTree()).ClientSendServerPlayerDataRequest(GameInfo.Players[playerNum]);
-                }
-                else
-                {
-                    EventManager.PublishPlayerDataRequestedEvent(GameInfo.Players[playerNum]);
-                }
-            }
         }
 
         /// <summary>
@@ -351,7 +385,7 @@ namespace CraigStars.Client
             if (PlayersManager.Me == null)
             {
                 GameInfo = gameInfo;
-                PlayersManager.GameInfo = gameInfo;
+                PlayersManager.GameInfo = GameInfo = gameInfo;
                 PlayersManager.Me = player;
                 PlayersManager.Me.RunTurnProcessors(TurnProcessorManager.Instance);
                 OS.SetWindowTitle($"{projectName} - {gameInfo.Name}: Year {gameInfo.Year}");

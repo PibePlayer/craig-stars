@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace CraigStars
 {
@@ -13,6 +14,8 @@ namespace CraigStars
         public int Biotechnology { get; set; }
 
         public TechLevel() { }
+
+        [JsonConstructor]
         public TechLevel(int energy = 0, int weapons = 0, int propulsion = 0, int construction = 0, int electronics = 0, int biotechnology = 0)
         {
             Energy = energy;

@@ -9,8 +9,9 @@ namespace CraigStars.Client
     public class TurnGenerationStatus : MarginContainer
     {
         static CSLog log = LogProvider.GetLogger(typeof(TurnGenerationStatus));
-        Player Me { get => PlayersManager.Me; }
+
         PublicGameInfo GameInfo { get => PlayersManager.GameInfo; }
+        Player Me { get => PlayersManager.Me; }
 
         Label yearLabel;
         PlayersTable playerStatusTable;
@@ -67,7 +68,7 @@ namespace CraigStars.Client
             }
         }
 
-        void OnTurnSubmitted(PublicPlayerInfo submittingPlayer)
+        void OnTurnSubmitted(PublicGameInfo gameInfo, PublicPlayerInfo submittingPlayer)
         {
             if (IsVisibleInTree())
             {

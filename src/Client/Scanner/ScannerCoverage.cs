@@ -48,6 +48,16 @@ namespace CraigStars.Client
             }
         }
 
+        /// <summary>
+        /// When the scanner is removed and added back to the tree, make sure
+        /// the scanner images are updated
+        /// </summary>
+        public override void _EnterTree()
+        {
+            base._EnterTree();
+            Update();
+        }
+
         public override void _Draw()
         {
             int scaledRange = (int)(ScanRange * Me.UISettings.ScannerPercent / 100f);

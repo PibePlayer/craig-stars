@@ -14,7 +14,7 @@ namespace CraigStars.Client
         {
             PlayersManager.Reset();
             PlayersManager.CreatePlayersForNewGame();
-            ServerManager.Instance.HostGame(Settings.Instance.ServerPort);
+            ServerManager.Instance.HostGame(port: Settings.Instance.ServerPort);
 
             // join our own game
             CallDeferred(nameof(GoToLobby));
@@ -34,7 +34,7 @@ namespace CraigStars.Client
         /// </summary>
         void HostJoinNewlyHostedGame()
         {
-            NetworkClient.Instance.JoinGame("localhost", Settings.Instance.ServerPort);
+            NetworkClient.Instance.JoinNewGame("localhost", Settings.Instance.ServerPort);
         }
 
     }

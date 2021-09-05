@@ -10,14 +10,16 @@ namespace CraigStars.Server
     /// </summary>
     public class LocalClientEventPublisher : IClientEventPublisher
     {
-        public event Action<GameSettings<Player>> GameStartRequestedEvent;
+        public event Action<GameSettings<Player>> StartNewGameRequestedEvent;
+        public event Action<string, int> ContinueGameRequestedEvent;
         public event Action<Player> SubmitTurnRequestedEvent;
         public event Action<PublicPlayerInfo> UnsubmitTurnRequestedEvent;
         public event Action<PublicPlayerInfo> PlayerDataRequestedEvent;
 
         public LocalClientEventPublisher()
         {
-            Client.EventManager.GameStartRequestedEvent += OnGameStartRequested;
+            Client.EventManager.StartNewGameRequestedEvent += OnStartNewGameRequested;
+            Client.EventManager.ContinueGameRequestedEvent += OnContinueGameRequested;
             Client.EventManager.SubmitTurnRequestedEvent += OnSubmitTurnRequested;
             Client.EventManager.UnsubmitTurnRequestedEvent += OnUnsubmitTurnRequested;
             Client.EventManager.PlayerDataRequestedEvent += OnPlayerDataRequested;
@@ -26,15 +28,21 @@ namespace CraigStars.Server
 
         ~LocalClientEventPublisher()
         {
-            Client.EventManager.GameStartRequestedEvent -= OnGameStartRequested;
+            Client.EventManager.StartNewGameRequestedEvent -= OnStartNewGameRequested;
+            Client.EventManager.ContinueGameRequestedEvent += OnContinueGameRequested;
             Client.EventManager.SubmitTurnRequestedEvent -= OnSubmitTurnRequested;
             Client.EventManager.UnsubmitTurnRequestedEvent -= OnUnsubmitTurnRequested;
             Client.EventManager.PlayerDataRequestedEvent -= OnPlayerDataRequested;
         }
 
-        void OnGameStartRequested(GameSettings<Player> settings)
+        void OnStartNewGameRequested(GameSettings<Player> settings)
         {
-            GameStartRequestedEvent?.Invoke(settings);
+            StartNewGameRequestedEvent?.Invoke(settings);
+        }
+
+        void OnContinueGameRequested(string gameName, int year)
+        {
+            ContinueGameRequestedEvent?.Invoke(gameName, year);
         }
 
         void OnPlayerDataRequested(PublicPlayerInfo player)

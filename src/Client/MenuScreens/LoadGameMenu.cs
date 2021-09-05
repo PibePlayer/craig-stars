@@ -42,8 +42,6 @@ namespace CraigStars.Client
             gamesTable.Data.AddColumn("Year");
             gamesTable.Data.AddColumn("Players", align: Label.AlignEnum.Right);
 
-            EventManager.GameStartingEvent += OnGameStarting;
-
             // load the full games and update the UI
             await Task.Run(() => gameInfos = GamesManager.Instance.GetSavedGameInfos());
             gamesTable.RowSelectedEvent += OnRowSelected;
@@ -56,7 +54,6 @@ namespace CraigStars.Client
             base._Notification(what);
             if (what == NotificationPredelete)
             {
-                EventManager.GameStartingEvent -= OnGameStarting;
                 gamesTable.RowSelectedEvent -= OnRowSelected;
             }
         }
@@ -102,7 +99,8 @@ namespace CraigStars.Client
         {
             if (selectedGame != null)
             {
-                var gameYears = GamesManager.Instance.GetSavedGameYears(selectedGame.Name);
+                // TODO: this doesn't work if you aren't player 0...
+                var gameYears = GamesManager.Instance.GetSavedGameYears(selectedGame.Name, playerSaves: true, playerNum: 0);
                 if (gameYears.Count > 0)
                 {
                     var gameYear = gameYears[gameYears.Count - 1];
@@ -110,21 +108,16 @@ namespace CraigStars.Client
                     Settings.Instance.ContinueYear = gameYear;
 
                     loadButton.Disabled = backButton.Disabled = true;
-                    ServerManager.Instance.ContinueGame(selectedGame.Name, gameYear);
+
+                    var (gameInfo, players) = ServerManager.Instance.ContinueGame(selectedGame.Name, gameYear);
+                    this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (clientView) =>
+                    {
+                        clientView.GameInfo = gameInfo;
+                        clientView.LocalPlayers = players;
+                    });
+
                 }
             }
-        }
-
-        /// <summary>
-        /// The server will notify us when the game is ready
-        /// </summary>
-        /// <param name="gameInfo"></param>
-        void OnGameStarting(PublicGameInfo gameInfo)
-        {
-            this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (clientView) =>
-            {
-                clientView.GameInfo = gameInfo;
-            });
         }
 
         void OnDeleteButtonPressed()

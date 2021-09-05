@@ -15,6 +15,12 @@ namespace CraigStars
         static CSLog log = LogProvider.GetLogger(typeof(Player));
 
         /// <summary>
+        /// Each player starts with an API token that is used to identify it to the server
+        /// </summary>
+        /// <returns></returns>
+        public string Token { get; set; } = System.Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+
+        /// <summary>
         /// /// The player needs to know information about the game
         /// </summary>
         public PublicGameInfo Game { get; set; } = new();
@@ -230,7 +236,6 @@ namespace CraigStars
             DeletedDesigns.Clear();
             MergedFleets.Clear();
             Messages.Clear();
-
         }
 
         /// <summary>

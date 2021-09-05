@@ -12,15 +12,17 @@ namespace CraigStars.Client
 
         #region Turn Generation events
 
-        public static event Action<GameSettings<Player>> GameStartRequestedEvent;
+        public static event Action<GameSettings<Player>> StartNewGameRequestedEvent;
+        public static event Action<string, int> ContinueGameRequestedEvent;
         public static event Action<PublicGameInfo> GameStartingEvent;
         public static event Action<PublicGameInfo, Player> GameStartedEvent;
+        public static event Action<PublicGameInfo> GameContinuedEvent;
         public static event Action<PublicGameInfo> GameExitingEvent;
         public static event Action<PublicPlayerInfo> PlayerDataRequestedEvent;
         public static event Action<Player> SubmitTurnRequestedEvent;
-        public static event Action<PublicPlayerInfo> TurnSubmittedEvent;
+        public static event Action<PublicGameInfo, PublicPlayerInfo> TurnSubmittedEvent;
         public static event Action<PublicPlayerInfo> UnsubmitTurnRequestedEvent;
-        public static event Action<PublicPlayerInfo> TurnUnsubmittedEvent;
+        public static event Action<PublicGameInfo, PublicPlayerInfo> TurnUnsubmittedEvent;
         public static event Action<int> PlayTurnRequestedEvent;
 
         public static event Action<PublicGameInfo, Player> PlayerDataEvent;
@@ -29,15 +31,17 @@ namespace CraigStars.Client
         public static event Action<PublicGameInfo, Player> TurnPassedEvent;
         public static event Action<PublicGameInfo> GameViewResetEvent;
 
-        public static void PublishGameStartRequestedEvent(GameSettings<Player> settings) => GameStartRequestedEvent?.Invoke(settings);
+        public static void PublishStartNewGameRequestedEvent(GameSettings<Player> settings) => StartNewGameRequestedEvent?.Invoke(settings);
+        public static void PublishContinueGameRequestedEvent(string gameName, int year) => ContinueGameRequestedEvent?.Invoke(gameName, year);
         public static void PublishPlayerDataRequestedEvent(PublicPlayerInfo player) => PlayerDataRequestedEvent?.Invoke(player);
         public static void PublishGameStartingEvent(PublicGameInfo gameInfo) => GameStartingEvent?.Invoke(gameInfo);
         public static void PublishGameExitingEvent(PublicGameInfo gameInfo) => GameExitingEvent?.Invoke(gameInfo);
         public static void PublishGameStartedEvent(PublicGameInfo gameInfo, Player player) => GameStartedEvent?.Invoke(gameInfo, player);
+        public static void PublishGameContinuedEvent(PublicGameInfo gameInfo) => GameContinuedEvent?.Invoke(gameInfo);
         public static void PublishSubmitTurnRequestedEvent(Player player) => SubmitTurnRequestedEvent?.Invoke(player);
-        public static void PublishTurnSubmittedEvent(PublicPlayerInfo player) => TurnSubmittedEvent?.Invoke(player);
+        public static void PublishTurnSubmittedEvent(PublicGameInfo gameInfo, PublicPlayerInfo player) => TurnSubmittedEvent?.Invoke(gameInfo, player);
         public static void PublishUnsubmitTurnRequestedEvent(PublicPlayerInfo player) => UnsubmitTurnRequestedEvent?.Invoke(player);
-        public static void PublishTurnUnsubmittedEvent(PublicPlayerInfo player) => TurnUnsubmittedEvent?.Invoke(player);
+        public static void PublishTurnUnsubmittedEvent(PublicGameInfo gameInfo, PublicPlayerInfo player) => TurnUnsubmittedEvent?.Invoke(gameInfo, player);
         public static void PublishPlayTurnRequestedEvent(int playerNum) => PlayTurnRequestedEvent?.Invoke(playerNum);
 
         public static void PublishPlayerDataEvent(PublicGameInfo gameInfo, Player player) => PlayerDataEvent?.Invoke(gameInfo, player);

@@ -11,7 +11,30 @@ namespace CraigStars
     /// </summary>
     public class PublicGameInfo : GameSettings<PublicPlayerInfo>
     {
-
+        public PublicGameInfo() { }
+        public PublicGameInfo(PublicGameInfo gameInfo)
+        {
+            Name = gameInfo.Name;
+            QuickStartTurns = gameInfo.QuickStartTurns;
+            Size = gameInfo.Size;
+            Density = gameInfo.Density;
+            PlayerPositions = gameInfo.PlayerPositions;
+            RandomEvents = gameInfo.RandomEvents;
+            ComputerPlayersFormAlliances = gameInfo.ComputerPlayersFormAlliances;
+            PublicPlayerScores = gameInfo.PublicPlayerScores;
+            StartMode = gameInfo.StartMode;
+            Year = gameInfo.Year;
+            Mode = gameInfo.Mode;
+            State = gameInfo.State;
+            Rules = gameInfo.Rules;
+            VictoryConditions = gameInfo.VictoryConditions;
+            VictorDeclared = gameInfo.VictorDeclared;
+            Players = new();
+            foreach (var player in gameInfo.Players)
+            {
+                Players.Add(new PublicPlayerInfo(player));
+            }
+        }
     }
 
     /// <summary>
@@ -33,7 +56,6 @@ namespace CraigStars
         public GameStartMode StartMode { get; set; } = GameStartMode.Normal;
 
         public int Year { get; set; } = 2400;
-        public bool ContinueGame { get; set; }
         public GameMode Mode { get; set; } = GameMode.SinglePlayer;
         public GameState State { get; set; } = GameState.Setup;
         public Rules Rules { get; set; } = new Rules(0);
@@ -79,7 +101,7 @@ namespace CraigStars
 
         public override string ToString()
         {
-            return $"{Year}:{Name}";
+            return $"{Year}: {Name}";
         }
 
     }

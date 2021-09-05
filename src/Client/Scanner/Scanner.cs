@@ -12,6 +12,7 @@ namespace CraigStars.Client
         static CSLog log = LogProvider.GetLogger(typeof(Scanner));
 
         protected Player Me { get => PlayersManager.Me; }
+        protected PublicGameInfo GameInfo { get => PlayersManager.GameInfo; }
 
         PackedScene waypointAreaScene;
         PackedScene scannerCoverageScene;
@@ -197,7 +198,7 @@ namespace CraigStars.Client
         /// </summary>
         void AddMapObjectsToViewport()
         {
-            log.Debug($"{Me.Game.Year} Refreshing transient viewport objects.");
+            log.Debug($"{GameInfo.Year} Refreshing transient viewport objects.");
             CommandedFleet = null;
             CommandedPlanet = null;
             commandedMapObject = null;
@@ -242,11 +243,11 @@ namespace CraigStars.Client
                 }
             });
 
-            log.Debug($"{Me.Game.Year} Refreshed Planets.");
+            log.Debug($"{GameInfo.Year} Refreshed Planets.");
 
             // rebuild our MapObjectsByGuid
             RemoveMapObjects(transientMapObjects);
-            log.Debug($"{Me.Game.Year} Removed previous MapObjects.");
+            log.Debug($"{GameInfo.Year} Removed previous MapObjects.");
             MapObjectsByGuid = Planets.Cast<MapObjectSprite>().ToLookup(p => p.MapObject.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
 
             // clear out existing waypoint areas
@@ -256,7 +257,7 @@ namespace CraigStars.Client
             // rebuild our list of transient map objects nad the guid
             transientMapObjects.Clear();
             transientMapObjects.AddRange(AddFleetsToViewport());
-            log.Debug($"{Me.Game.Year} Refreshed Fleets.");
+            log.Debug($"{GameInfo.Year} Refreshed Fleets.");
             transientMapObjects.AddRange(AddMapObjectsToViewport<Salvage, SalvageSprite>(Me.Salvage, salvageScene, GetNode("Salvage")));
             transientMapObjects.AddRange(AddMapObjectsToViewport<Wormhole, WormholeSprite>(Me.Wormholes, wormholeScene, GetNode("Wormholes")));
             transientMapObjects.AddRange(AddMapObjectsToViewport<MineField, MineFieldSprite>(Me.AllMineFields, mineFieldScene, GetNode("MineFields")));
@@ -268,7 +269,7 @@ namespace CraigStars.Client
 
             mapObjectsByLocation = mapObjects.ToLookup(mo => mo.MapObject.Position).ToDictionary(lookup => lookup.Key, lookup => lookup.ToList());
 
-            log.Debug($"{Me.Game.Year} Done refreshing transient viewport objects.");
+            log.Debug($"{GameInfo.Year} Done refreshing transient viewport objects.");
         }
 
         /// <summary>
@@ -437,6 +438,12 @@ namespace CraigStars.Client
                 returned.GetParent().RemoveChild(returned);
             }));
             Scanners.Clear();
+
+            PenScanners.ForEach(s => NodePool.Return<ScannerCoverage>(s, returned =>
+            {
+                returned.GetParent().RemoveChild(returned);
+            }));
+            PenScanners.Clear();
 
             foreach (var planet in Planets)
             {

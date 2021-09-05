@@ -42,7 +42,7 @@ namespace CraigStars.Client
             }
         }
 
-        void OnPlayerStatusChanged(PublicPlayerInfo player)
+        void OnPlayerStatusChanged(PublicGameInfo gameInfo, PublicPlayerInfo player)
         {
             if (IsVisibleInTree())
             {
@@ -50,6 +50,12 @@ namespace CraigStars.Client
             }
         }
 
+        /// <summary>
+        /// Update the player status cell with a button if we can unsubmit/submit/play
+        /// or with text if this is an AI player or some other player
+        /// 
+        /// TODO: This code is awful. It needs to be cleaned up and unit tested
+        /// </summary>
         protected override void UpdateCell()
         {
             base.UpdateCell();
@@ -94,23 +100,32 @@ namespace CraigStars.Client
                 }
 
                 // just show a label if this is an AI player or we are generating a turn
-                if ((GameInfo.State == GameState.GeneratingTurn || GameInfo.State == GameState.Setup) || Row.Metadata.AIControlled || Me == Row.Metadata)
+                if ((GameInfo.State == GameState.GeneratingTurn || GameInfo.State == GameState.Setup) || Row.Metadata.AIControlled)
                 {
                     button.Visible = false;
                     label.Visible = true;
                 }
                 else
                 {
-                    if (Row.Metadata.SubmittedTurn)
+                    if (Me == null || Me != Row.Metadata || (Me != null && Me.SubmittedTurn))
                     {
-                        button.Text = "Unsubmit Turn";
+                        label.Visible = false;
+                        button.Visible = true;
+
+                        if (Row.Metadata.SubmittedTurn)
+                        {
+                            button.Text = "Unsubmit Turn";
+                        }
+                        else
+                        {
+                            button.Text = "Play Turn";
+                        }
                     }
                     else
                     {
-                        button.Text = "Play Turn";
+                        button.Visible = false;
+                        label.Visible = true;
                     }
-                    label.Visible = false;
-                    button.Visible = true;
                 }
             }
         }

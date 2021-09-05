@@ -14,6 +14,12 @@ namespace CraigStars.Client
         public event Action ServerDisconnectedEvent;
         public event Action<PublicPlayerInfo> PlayerUpdatedEvent;
 
+        /// <summary>
+        /// The player this network client is playing as
+        /// </summary>
+        /// <value></value>
+        public Player Player { get; set; }
+
         RPC rpc;
 
         /// <summary>
@@ -46,6 +52,12 @@ namespace CraigStars.Client
         public void OnConnectedToServer()
         {
             log.Info("Connected to server");
+            if (Player != null)
+            {
+                // we have connected to this server
+                // make sure the server updates our records
+                rpc.ClientSendServerPlayerRejoinedGame(Player);
+            }
         }
 
         /// <summary>
@@ -65,13 +77,10 @@ namespace CraigStars.Client
             log.Info("Connecting to server failed");
         }
 
-        /// <summary>
-        /// Join an existing game by address and port
-        /// </summary>
-        /// <param name="address"></param>
-        /// <param name="port"></param>
-        public void JoinGame(string address, int port)
+        void ConnectToServer(string address, int port)
         {
+            CloseConnection();
+
             // hook up to networkclient specific network events
             GetTree().Connect("server_disconnected", this, nameof(OnServerDisconnected));
             GetTree().Connect("connected_to_server", this, nameof(OnConnectedToServer));
@@ -88,17 +97,44 @@ namespace CraigStars.Client
             GetTree().NetworkPeer = peer;
 
             log.Info($"Joined game (as {GetTree().GetNetworkUniqueId()}) at {address}:{port}");
+
         }
+
+        /// <summary>
+        /// Join an existing game by address and port
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="port"></param>
+        public void JoinNewGame(string address, int port)
+        {
+            ConnectToServer(address, port);
+        }
+
+        /// <summary>
+        /// Join an existing game by address and port
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="port"></param>
+        public void JoinExistingGame(string address, int port, Player player)
+        {
+            // on connection, we tell the server we are resuming play as a player
+            Player = player;
+            ConnectToServer(address, port);
+        }
+
 
         /// <summary>
         /// Close the connection to a server or all networkclients
         /// </summary>
         public void CloseConnection()
         {
-            // hook up to networkclient specific network events
-            GetTree().Disconnect("server_disconnected", this, nameof(OnServerDisconnected));
-            GetTree().Disconnect("connected_to_server", this, nameof(OnConnectedToServer));
-            GetTree().Disconnect("connection_failed", this, nameof(OnConnectionFailed));
+            if (GetTree().IsConnected("server_disconnected", this, nameof(OnServerDisconnected)))
+            {
+                // disconnect networkclient specific network events
+                GetTree().Disconnect("server_disconnected", this, nameof(OnServerDisconnected));
+                GetTree().Disconnect("connected_to_server", this, nameof(OnConnectedToServer));
+                GetTree().Disconnect("connection_failed", this, nameof(OnConnectionFailed));
+            }
 
             var peer = GetTree().NetworkPeer as NetworkedMultiplayerENet;
             if (peer != null && peer.GetConnectionStatus() == NetworkedMultiplayerPeer.ConnectionStatus.Connected)
@@ -127,7 +163,19 @@ namespace CraigStars.Client
         {
             // Note: The server already knows about the game's players, so no need to pass
             // those along here
-            rpc.ClientSendServerGameStartRequested(settings);
+            rpc.ClientSendServerStartNewGameRequested(settings);
+        }
+
+        /// <summary>
+        /// Tell a headless server to continue an existing game (not currently being used)
+        /// </summary>
+        /// <param name="gameName"></param>
+        /// <param name="year"></param>
+        public void ContinueGame(string gameName, int year)
+        {
+            // Note: The server already knows about the game's players, so no need to pass
+            // those along here
+            rpc.ClientSendServerContinueGameRequested(gameName, year);
         }
 
         /// <summary>
@@ -137,7 +185,7 @@ namespace CraigStars.Client
         public void SubmitTurnToServer(Player player)
         {
             // tell the server we submitted our turn
-            rpc.SendSubmitTurn(player);
+            rpc.ClientSendServerSubmitTurn(player);
         }
 
         /// <summary>
@@ -147,7 +195,7 @@ namespace CraigStars.Client
         public void UpdateRaceOnServer(Race race)
         {
             // tell the server we submitted our turn
-            rpc.SendUpdateRace(race);
+            rpc.ClientSendServerUpdateRace(race);
         }
 
         /// <summary>

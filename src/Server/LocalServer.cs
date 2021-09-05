@@ -57,53 +57,64 @@ namespace CraigStars.Server
 
         protected override void PublishGameStartingEvent(PublicGameInfo gameInfo)
         {
-            var gameInfoJson = Serializers.Serialize(gameInfo);
-            PublicGameInfo gameInfoClone = Serializers.DeserializeObject<PublicGameInfo>(gameInfoJson);
+            var gameInfoClone = new PublicGameInfo(gameInfo);
             Client.EventManager.PublishGameStartingEvent(gameInfoClone);
         }
 
+        async Task<Player> GetPlayerClone(Player player)
+        {
+            var playerClone = new Player();
+            await Task.Run(() =>
+            {
+                log.Debug($"Creating clone of {player} for GameStartedEvent.");
+                var playerJson = Serializers.Serialize(player, playerSerializerSettings);
+                Serializers.PopulatePlayer(playerJson, playerClone, playerSerializerSettings);
+            });
+            return playerClone;
+        }
 
         protected async override void PublishGameStartedEvent()
         {
-            // we have a new game, so create the player serializer settings
-            PublicGameInfo gameInfoClone = null;
-            await Task.Run(() =>
-            {
-                log.Debug($"Creating Player SerializerSettings GameStartedEvent.");
-                playerSerializerSettings = Serializers.CreatePlayerSettings(Game.GameInfo.Players, Game.TechStore);
-                var gameInfoJson = Serializers.Serialize(Game.GameInfo);
-                gameInfoClone = Serializers.DeserializeObject<PublicGameInfo>(gameInfoJson);
-            });
+            playerSerializerSettings = Serializers.CreatePlayerSettings(Game.GameInfo.Players, Game.TechStore);
 
             // send a signal per non ai player in the game
             // For hotseat games, the ClientView will store all players that can play
             foreach (var player in Game.Players.Where(player => !player.AIControlled))
             {
-                var playerClone = new Player();
-                await Task.Run(() =>
-                {
-                    log.Debug($"Creating clone of {player} for GameStartedEvent.");
-                    var playerJson = Serializers.Serialize(player, playerSerializerSettings);
-                    Serializers.PopulatePlayer(playerJson, playerClone, playerSerializerSettings);
-                });
+                var playerClone = await GetPlayerClone(player);
 
+                // we have a new game, so create the player serializer settings
+                PublicGameInfo gameInfoClone = new PublicGameInfo(Game.GameInfo);
                 log.Debug($"{player} GameStartedEvent.");
+
                 Client.EventManager.PublishGameStartedEvent(gameInfoClone, playerClone);
             }
         }
 
-        protected override void PublishTurnSubmittedEvent(PublicPlayerInfo player)
+        protected override void PublishGameContinuedEvent()
         {
+            playerSerializerSettings = Serializers.CreatePlayerSettings(Game.GameInfo.Players, Game.TechStore);
+            // we have a new game, so create the player serializer settings
+            PublicGameInfo gameInfoClone = new PublicGameInfo(Game.GameInfo);
+
+            log.Debug($"GameContinuedEvent.");
+            Client.EventManager.PublishGameContinuedEvent(gameInfoClone);
+        }
+
+        protected override void PublishTurnSubmittedEvent(PublicGameInfo gameInfo, PublicPlayerInfo player)
+        {
+            PublicGameInfo gameInfoClone = new PublicGameInfo(gameInfo);
             PublicPlayerInfo playerClone = new PublicPlayerInfo(player);
 
             log.Debug($"{player} TurnSubmittedEvent.");
-            Client.EventManager.PublishTurnSubmittedEvent(playerClone);
+            Client.EventManager.PublishTurnSubmittedEvent(gameInfo, playerClone);
         }
 
-        protected override void PublishTurnUnsubmittedEvent(PublicPlayerInfo player)
+        protected override void PublishTurnUnsubmittedEvent(PublicGameInfo gameInfo, PublicPlayerInfo player)
         {
+            PublicGameInfo gameInfoClone = new PublicGameInfo(gameInfo);
             PublicPlayerInfo playerClone = new PublicPlayerInfo(player);
-            Client.EventManager.PublishTurnUnsubmittedEvent(playerClone);
+            Client.EventManager.PublishTurnUnsubmittedEvent(gameInfoClone, playerClone);
         }
 
         protected override void PublishTurnGeneratingEvent()

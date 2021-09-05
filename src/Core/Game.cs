@@ -111,6 +111,7 @@ namespace CraigStars
         {
             GameInfo.Players.Clear();
             GameInfo.Players.AddRange(Players.Cast<PublicPlayerInfo>());
+            Players.ForEach(player => player.Game = GameInfo);
 
             // Update the Game dictionaries used for lookups, like PlanetsByGuid, FleetsByGuid, etc.
             UpdateInternalDictionaries();
@@ -181,16 +182,25 @@ namespace CraigStars
 
         public void SubmitTurn(Player player)
         {
-            log.Info($"{Year}: {player} submitted turn");
-            turnSubmitter.SubmitTurn(player);
+            if (player.Num >= 0 && player.Num < Players.Count)
+            {
+                log.Info($"{Year}: {player} submitted turn");
+                Players[player.Num].SubmittedTurn = true;
+                GameInfo.Players[player.Num].SubmittedTurn = true;
+                turnSubmitter.SubmitTurn(player);
+            }
+            else
+            {
+                log.Error($"{player} not found in game.");
+            }
         }
 
         public void UnsubmitTurn(PublicPlayerInfo player)
         {
-            var gamePlayer = Players.Find(p => p.Num == player.Num);
-            if (gamePlayer != null)
+            if (player.Num >= 0 && player.Num < Players.Count)
             {
-                gamePlayer.SubmittedTurn = false;
+                Players[player.Num].SubmittedTurn = false;
+                GameInfo.Players[player.Num].SubmittedTurn = false;
             }
             else
             {

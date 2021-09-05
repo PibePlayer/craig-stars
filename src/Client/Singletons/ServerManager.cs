@@ -4,6 +4,8 @@ using CraigStars.Client;
 using CraigStars.Server;
 using CSServer = CraigStars.Server.Server;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CraigStars.Singletons
 {
@@ -64,6 +66,7 @@ namespace CraigStars.Singletons
         #region Single Player
 
         GameSettings<Player> settings;
+        PublicGameInfo gameInfo;
 
         /// <summary>
         /// Create a new single player server and generate a new game
@@ -74,43 +77,54 @@ namespace CraigStars.Singletons
         {
             this.settings = settings;
             server = ResourceLoader.Load<PackedScene>("res://src/Server/LocalServer.tscn").Instance<LocalServer>();
-            server.GodotTaskFactory = GodotTaskFactory;
+            server.Init(GodotTaskFactory, GamesManager.Instance, TurnProcessorManager.Instance);
             AddChild(server);
 
-            CallDeferred(nameof(PublishLocalGameStartRequest));
+            CallDeferred(nameof(PublishLocalStartNewGameRequest));
         }
+
+        List<Player> continuePlayers;
 
         /// <summary>
         /// Create a new single player server and load a saved game game
         /// </summary>
         /// <param name="settings"></param>
         /// <returns></returns>
-        public void ContinueGame(String gameName, int year)
+        public (PublicGameInfo, List<Player>) ContinueGame(string gameName, int year, int playerNum = -1)
         {
-            // setup our GameSettings to be a continue game
-            settings = new GameSettings<Player>()
+            continuePlayers = new List<Player>();
+            gameInfo = GamesManager.Instance.LoadPlayerGameInfo(gameName, year);
+            if (playerNum == -1)
             {
-                ContinueGame = true,
-                Name = gameName,
-                Year = year,
-            };
+                var playersWithSaves = GamesManager.Instance.GetPlayerSaves(gameInfo);
+                if (playersWithSaves.Count > 0)
+                {
+                    playersWithSaves.ForEach(player =>
+                    {
+                        continuePlayers.Add(GamesManager.Instance.LoadPlayerSave(gameInfo, player.Num));
+                    });
+                    log.Info($"Loading player save for player {playerNum}");
+                }
+                else
+                {
+                    throw new System.IO.FileNotFoundException($"Could not find a player save for game: {gameInfo}.");
+                }
+            }
 
-            var gameInfo = GamesManager.Instance.LoadGameInfo(gameName, year);
-            if (gameInfo.Mode == GameMode.MultiPlayer)
+            if (gameInfo.Mode == GameMode.NetworkedMultiPlayer && continuePlayers.Any(p => p.Host))
             {
-                HostGame(settings: settings);
-
-                CallDeferred(nameof(JoinHostedGame));
+                HostGame(continueGameName: gameInfo.Name, continueGameYear: gameInfo.Year);
             }
             else
             {
                 server = ResourceLoader.Load<PackedScene>("res://src/Server/LocalServer.tscn").Instance<LocalServer>();
-                server.GodotTaskFactory = GodotTaskFactory;
+                server.Init(GodotTaskFactory, GamesManager.Instance, TurnProcessorManager.Instance);
                 AddChild((Node)server);
 
-                CallDeferred(nameof(PublishLocalGameStartRequest));
+                CallDeferred(nameof(PublishLocalContinueGameRequest), gameInfo.Name, gameInfo.Year);
             }
 
+            return (gameInfo, continuePlayers);
         }
 
         public void ExitGame()
@@ -126,14 +140,17 @@ namespace CraigStars.Singletons
         /// <summary>
         /// For local games, we publish a GameStartRequestedEvent
         /// </summary>
-        void PublishLocalGameStartRequest()
+        void PublishLocalStartNewGameRequest()
         {
-            Client.EventManager.PublishGameStartRequestedEvent(settings);
+            Client.EventManager.PublishStartNewGameRequestedEvent(settings);
         }
 
-        void JoinHostedGame()
+        /// <summary>
+        /// For local games, we publish a GameStartRequestedEvent
+        /// </summary>
+        void PublishLocalContinueGameRequest(string gameName, int year)
         {
-            NetworkClient.Instance.JoinGame("localhost", 3000);
+            Client.EventManager.PublishContinueGameRequestedEvent(gameName, year);
         }
 
         #endregion
@@ -144,7 +161,7 @@ namespace CraigStars.Singletons
         /// <summary>
         /// Host a new game, starting a server
         /// </summary>
-        public void HostGame(int port = 3000, GameSettings<Player> settings = null)
+        public async void HostGame(int port = 3000, string continueGameName = null, int continueGameYear = -1)
         {
             if (serverTree != null)
             {
@@ -160,8 +177,11 @@ namespace CraigStars.Singletons
             rpc.Name = "RPC";
             serverTree.Root.AddChild(rpc);
             server = ResourceLoader.Load<PackedScene>("res://src/Server/NetworkServer.tscn").Instance<NetworkServer>();
-            server.GodotTaskFactory = GodotTaskFactory;
-            server.Settings = settings;
+            server.Init(GodotTaskFactory, GamesManager.Instance, TurnProcessorManager.Instance);
+            if (continueGameName != null && continueGameYear != -1)
+            {
+                await server.ContinueGame(continueGameName, continueGameYear);
+            }
             serverTree.Root.AddChild(server);
 
             var peer = new NetworkedMultiplayerENet();
@@ -176,14 +196,7 @@ namespace CraigStars.Singletons
             // start updating the serverTree
             SetProcess(true);
 
-            if (settings != null && settings.ContinueGame)
-            {
-                log.Info("Hosting saved game");
-            }
-            else
-            {
-                log.Info("Hosting new game");
-            }
+            log.Info("Started network server to host game");
 
         }
 

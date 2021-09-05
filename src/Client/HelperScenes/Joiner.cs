@@ -21,26 +21,61 @@ namespace CraigStars.Client
 
         public class Options
         {
-            [Option('n', "player-name", Required = true, HelpText = "The player to join a game as.")]
+            [Option('n', "player-name", Required = false, HelpText = "The player to join a game as.")]
             public string PlayerName { get; set; }
+
+            [Option("continue", Required = false, HelpText = "Continue an existing game")]
+            public bool ContinueExistingGame { get; set; }
+
         }
 
         string playerName;
+        bool continueExistingGame;
+        Player continuePlayer;
 
         public override void _Ready()
         {
             rpc = RPC.Instance(GetTree());
-            rpc.PlayerJoinedNewGameEvent += OnPlayerJoinedNewGame;
-            rpc.PlayerJoinedExistingGameEvent += OnPlayerJoinedExistingGame;
             rpc.PlayerMessageEvent += OnPlayerMessage;
 
             Parser.Default.ParseArguments<Options>(OS.GetCmdlineArgs()).WithParsed<Options>(o =>
             {
-                playerName = o.PlayerName;
-                log.Info($"Setting PlayerName to {playerName}");
+                playerName = o.PlayerName ?? "Bob";
+                continueExistingGame = o.ContinueExistingGame;
+                log.Info($"Setting PlayerName to {playerName} (continue: {continueExistingGame}");
             });
 
-            NetworkClient.Instance.JoinGame(Settings.Instance.ClientHost, Settings.Instance.ClientPort);
+            CSResourceLoader.SceneLoadCompeteEvent += OnSceneLoadComplete;
+
+            if (!continueExistingGame)
+            {
+                rpc.PlayerJoinedNewGameEvent += OnPlayerJoinedNewGame;
+                NetworkClient.Instance.JoinNewGame(Settings.Instance.ClientHost, Settings.Instance.ClientPort);
+            }
+
+        }
+
+        void OnSceneLoadComplete()
+        {
+            if (continueExistingGame)
+            {
+                CallDeferred(nameof(ContinueGame));
+            }
+        }
+
+        void ContinueGame()
+        {
+            var gameInfo = GamesManager.Instance.LoadPlayerGameInfo(Settings.Instance.ContinueGame, Settings.Instance.ContinueYear);
+            log.Info($"Continuing game {gameInfo}, with players: {string.Join(", ", gameInfo.Players.Select(p => p.ToString()).ToList())}");
+            var playerByName = GamesManager.Instance.GetPlayerSaves(gameInfo).Find(p => p.Name == playerName);
+            log.Info($"Continuing with player {playerByName}");
+            continuePlayer = GamesManager.Instance.LoadPlayerSave(gameInfo, playerByName.Num);
+
+            this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (clientView) =>
+            {
+                clientView.GameInfo = gameInfo;
+                clientView.LocalPlayers = new List<Player>() { continuePlayer };
+            });
         }
 
         public override void _Notification(int what)
@@ -49,7 +84,6 @@ namespace CraigStars.Client
             if (what == NotificationPredelete)
             {
                 rpc.PlayerJoinedNewGameEvent -= OnPlayerJoinedNewGame;
-                rpc.PlayerJoinedExistingGameEvent -= OnPlayerJoinedExistingGame;
                 rpc.PlayerMessageEvent -= OnPlayerMessage;
             }
         }
@@ -68,18 +102,6 @@ namespace CraigStars.Client
                 {
                     instance.InitialMessages.AddRange(Messages);
                     instance.PlayerName = playerName;
-                });
-            }
-        }
-
-        private void OnPlayerJoinedExistingGame(PublicGameInfo gameInfo)
-        {
-            // once our player is updated from the server, go to the lobby
-            if (this.IsClient())
-            {
-                this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (clientView) =>
-                {
-                    clientView.GameInfo = gameInfo;
                 });
             }
         }

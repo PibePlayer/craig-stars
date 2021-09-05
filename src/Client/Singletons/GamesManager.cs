@@ -9,7 +9,7 @@ namespace CraigStars.Singletons
     /// <summary>
     /// Manages listing/loading/saving games
     /// </summary>
-    public class GamesManager : Node, IGamesManager
+    public class GamesManager : Node
     {
         static CSLog log = LogProvider.GetLogger(typeof(GamesManager));
 
@@ -68,6 +68,11 @@ namespace CraigStars.Singletons
         public static string GetSavePlayerPath(string gameName, int year, int playerNum)
         {
             return $"{GetSaveGameYearFolder(gameName, year)}/player-{playerNum}.json";
+        }
+
+        public static string GetSavePlayerGameInfoPath(string gameName, int year, int playerNum)
+        {
+            return $"{GetSaveGameYearFolder(gameName, year)}/player-{playerNum}-game-info.json";
         }
 
         /// <summary>
@@ -132,7 +137,7 @@ namespace CraigStars.Singletons
                     }
                     if (directory.CurrentIsDir())
                     {
-                        games.Add(LoadGameInfo(file));
+                        games.Add(LoadPlayerGameInfo(file));
                     }
                 }
             }
@@ -144,8 +149,9 @@ namespace CraigStars.Singletons
         /// <summary>
         /// Get a list of all year folders for a game
         /// </summary>
+        /// <param name="playerSaves">True to load player years for player saves only</param>
         /// <returns>A list of year folders for a game</returns>
-        public List<int> GetSavedGameYears(string gameName)
+        public List<int> GetSavedGameYears(string gameName, bool playerSaves, int playerNum = 0)
         {
             List<int> gameYears = new List<int>();
             using (var directory = new Directory())
@@ -161,7 +167,15 @@ namespace CraigStars.Singletons
                     }
                     if (directory.CurrentIsDir() && int.TryParse(file, out var year))
                     {
-                        gameYears.Add(year);
+                        if (playerSaves && Exists(GetSavePlayerGameInfoPath(gameName, year, playerNum)))
+                        {
+                            gameYears.Add(year);
+                        }
+                        else if (!playerSaves && Exists(GetSaveGameInfoFile(gameName, year)))
+                        {
+                            // add all years 
+                            gameYears.Add(year);
+                        }
                     }
                 }
             }
@@ -186,7 +200,7 @@ namespace CraigStars.Singletons
         /// <summary>
         /// Return true if a game with this name exists
         /// </summary>
-        /// <param name="gameName"></param>
+        /// <param name="gameName">blah</param>
         /// <returns></returns>
         public bool GameExists(string gameName)
         {
@@ -229,16 +243,65 @@ namespace CraigStars.Singletons
             }
         }
 
-        public PublicGameInfo LoadGameInfo(string name, int year = -1)
+        public PublicGameInfo LoadServerGameInfo(string name, int year)
         {
             PublicGameInfo gameInfo;
-            if (year == -1) {
-                var years = GetSavedGameYears(name);
+            using (var saveGameInfo = new File())
+            {
+                var path = GetSaveGameInfoFile(name, year);
+                if (!saveGameInfo.FileExists(path))
+                {
+                    return null;
+                }
+                saveGameInfo.Open(path, File.ModeFlags.Read);
+                var gameInfoJson = saveGameInfo.GetAsText();
+                saveGameInfo.Close();
+
+                gameInfo = Serializers.DeserializeObject<PublicGameInfo>(gameInfoJson);
+            }
+
+            return gameInfo;
+        }
+
+        /// <summary>
+        /// Load a player PublicGameInfo from disk.
+        /// 
+        /// TODO: This doesn't really work if we aren't player 0. I need to rethink this multiplayer file stuff..
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="year"></param>
+        /// <param name="playerNum"></param>
+        /// <returns></returns>
+        public PublicGameInfo LoadPlayerGameInfo(string name, int year = -1, int playerNum = 0)
+        {
+            PublicGameInfo gameInfo;
+            if (year == -1)
+            {
+                var years = GetSavedGameYears(name, playerSaves: true, playerNum: playerNum);
                 year = years[years.Count - 1];
             }
             using (var saveGameInfo = new File())
             {
-                var path = GetSaveGameInfoFile(name, year);
+                var path = GetSavePlayerGameInfoPath(name, year, playerNum);
+                if (!saveGameInfo.FileExists(path))
+                {
+                    return null;
+                }
+                saveGameInfo.Open(path, File.ModeFlags.Read);
+                var gameInfoJson = saveGameInfo.GetAsText();
+                saveGameInfo.Close();
+
+                gameInfo = Serializers.DeserializeObject<PublicGameInfo>(gameInfoJson);
+            }
+
+            return gameInfo;
+        }
+
+        PublicGameInfo LoadGameInfo(string path)
+        {
+            PublicGameInfo gameInfo;
+            using (var saveGameInfo = new File())
+            {
                 if (!saveGameInfo.FileExists(path))
                 {
                     return null;
@@ -270,7 +333,7 @@ namespace CraigStars.Singletons
 
                 var gameSerializerSettings = Serializers.CreateGameSettings(game);
                 Serializers.PopulateGame(gameJson, game, gameSerializerSettings);
-                var settings = Serializers.CreatePlayerSettings(game.Players.Cast<PublicPlayerInfo>().ToList(), game.TechStore);
+                var settings = Serializers.CreatePlayerSettings(game.GameInfo.Players, game.TechStore);
                 foreach (var player in game.Players)
                 {
                     using (var playerSave = new File())
@@ -391,14 +454,46 @@ namespace CraigStars.Singletons
             return Serializers.Serialize(player, Serializers.CreatePlayerSettings(player.Game.Players, TechStore.Instance));
         }
 
-        public void SavePlayer(Player player)
+        public async void SavePlayerGameInfo(PublicGameInfo gameInfo, int playerNum)
         {
-            using (var playerSave = new File())
+            // save the player's copy of the gameInfo, in case it doesn't already exist
+            var playerGameInfoPath = GetSavePlayerGameInfoPath(gameInfo.Name, gameInfo.Year, playerNum);
+
+            using (var playerGameInfo = new File())
             {
-                playerSave.Open(GetSavePlayerPath(player.Game.Name, player.Game.Year, player.Num), File.ModeFlags.Write);
-                playerSave.StoreString(SerializePlayer(player));
-                playerSave.Close();
+                playerGameInfo.Open(playerGameInfoPath, File.ModeFlags.Write);
+                await Task.Run(() =>
+                {
+                    playerGameInfo.StoreString(Serializers.Serialize(gameInfo));
+                });
+                playerGameInfo.Close();
             }
+        }
+
+        public async void SavePlayer(Player player)
+        {
+            // save the player's copy of the gameInfo, in case it doesn't already exist
+            var playerGameInfoPath = GetSavePlayerGameInfoPath(player.Game.Name, player.Game.Year, player.Num);
+
+            using (var playerGameInfo = new File())
+            {
+                playerGameInfo.Open(playerGameInfoPath, File.ModeFlags.Write);
+                await Task.Run(() =>
+                {
+                    playerGameInfo.StoreString(Serializers.Serialize(player.Game));
+                });
+                playerGameInfo.Close();
+            }
+
+            await Task.Run(() =>
+            {
+                using (var playerSave = new File())
+                {
+                    playerSave.Open(GetSavePlayerPath(player.Game.Name, player.Game.Year, player.Num), File.ModeFlags.Write);
+                    playerSave.StoreString(SerializePlayer(player));
+                    playerSave.Close();
+                }
+            });
         }
 
         public bool HasPlayerSave(Player player)
@@ -406,19 +501,37 @@ namespace CraigStars.Singletons
             return Exists(GetSavePlayerPath(player.Game.Name, player.Game.Year, player.Num));
         }
 
-        public void LoadPlayerSave(Player player, List<PublicPlayerInfo> players)
+        /// <summary>
+        /// Get all the player saves for this game
+        /// </summary>
+        /// <param name="gameInfo"></param>
+        /// <returns></returns>
+        public List<PublicPlayerInfo> GetPlayerSaves(PublicGameInfo gameInfo)
         {
-            var game = player.Game;
-            using (var playerSave = new File())
-            {
-                playerSave.Open(GetSavePlayerPath(game.Name, game.Year, player.Num), File.ModeFlags.Read);
-                var json = playerSave.GetAsText();
-
-                Serializers.PopulatePlayer(json, player, Serializers.CreatePlayerSettings(players, TechStore.Instance));
-            }
+            // return all players that have save game files on disk
+            return gameInfo.Players.Where(player => Exists(GetSavePlayerPath(gameInfo.Name, gameInfo.Year, player.Num))).ToList();
         }
 
+        /// <summary>
+        /// Load a player from a player save file
+        /// </summary>
+        /// <param name="gameInfo"></param>
+        /// <param name="playerNum"></param>
+        /// <returns></returns>
+        public Player LoadPlayerSave(PublicGameInfo gameInfo, int playerNum)
+        {
+            using (var playerSave = new File())
+            {
+                playerSave.Open(GetSavePlayerPath(gameInfo.Name, gameInfo.Year, playerNum), File.ModeFlags.Read);
+                var json = playerSave.GetAsText();
+                playerSave.Close();
 
+                var player = new Player();
+                Serializers.PopulatePlayer(json, player, Serializers.CreatePlayerSettings(gameInfo.Players, TechStore.Instance));
+                return player;
+            }
 
+            throw new System.IO.InvalidDataException($"Failed to load player {playerNum} for game: {gameInfo?.Name}");
+        }
     }
 }

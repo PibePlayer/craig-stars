@@ -5,7 +5,7 @@ using System.Linq;
 using CraigStars.Singletons;
 using CraigStars.Utils;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class TechSummary : Control
     {
@@ -52,6 +52,8 @@ namespace CraigStars
         Container statsContainer;
         Container descriptionContainer;
 
+        EngineGraph engineGraph;
+
         public override void _Ready()
         {
             base._Ready();
@@ -87,6 +89,9 @@ namespace CraigStars
             statsContainer = FindNode("StatsContainer") as Container;
             descriptionContainer = FindNode("DescriptionContainer") as Container;
 
+            // engines have a graph
+            engineGraph = FindNode("EngineGraph") as EngineGraph;
+
             iconTextureRect.Connect("gui_input", this, nameof(OnIconGUIInput));
 
         }
@@ -113,8 +118,10 @@ namespace CraigStars
         /// </summary>
         void UpdateControls()
         {
-            if (Tech != null)
+            if (Tech != null && descriptionContainer != null)
             {
+                descriptionContainer.Visible = true;
+                engineGraph.Visible = false;
                 nameLabel.Text = Tech.Name;
                 costGrid.Cost = Tech.Cost;
                 if (Tech is TechHull)
@@ -178,6 +185,13 @@ namespace CraigStars
                         AddDescription($"Allows you to modify a planet's {terraform.HabType} by up to {terraform.Ability}% from its original value");
                     }
 
+                }
+                else if (Tech is TechEngine engine)
+                {
+                    descriptionContainer.Visible = false;
+                    engineGraph.Visible = true;
+                    engineGraph.Engine = engine;
+                    engineGraph.UpdateControls();
                 }
                 else if (Tech is TechHullComponent hullComponent)
                 {

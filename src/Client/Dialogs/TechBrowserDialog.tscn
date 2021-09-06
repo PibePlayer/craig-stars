@@ -6,8 +6,13 @@
 [ext_resource path="res://src/Client/Controls/TechTree.tscn" type="PackedScene" id=4]
 
 [node name="TechBrowserDialog" instance=ExtResource( 3 )]
-visible = false
+visible = true
+rect_min_size = Vector2( 800, 400 )
 script = ExtResource( 1 )
+
+[node name="VBoxContainer" parent="MarginContainer" index="0"]
+margin_right = 794.0
+margin_bottom = 409.0
 
 [node name="TechTree" parent="MarginContainer/VBoxContainer/HBoxContainerContent" index="0" instance=ExtResource( 4 )]
 margin_bottom = 380.0

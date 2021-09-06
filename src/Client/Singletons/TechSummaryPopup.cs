@@ -1,3 +1,4 @@
+using CraigStars.Client;
 using Godot;
 using System;
 

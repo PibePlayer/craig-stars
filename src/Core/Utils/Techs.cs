@@ -40,17 +40,17 @@ namespace CraigStars
             Mass = 4,
             IdealSpeed = 5,
             FuelUsage = new int[] {
-                0,
-                0,
-                25,
-                100,
-                100,
-                100,
-                180,
-                500,
-                800,
-                900,
-                1080
+                0, // 0
+                0, // 1
+                25, // 2
+                100, // 3
+                100, // 4
+                100, // 5
+                180, // 6
+                500, // 7
+                800, // 8
+                900, // 9
+                1080 // 10
             }
         };
         public static readonly TechEngine FuelMizer = new TechEngine("Fuel Mizer", new Cost(8, 0, 0, 11), new TechRequirements(propulsion: 2, lrtsRequired: LRT.IFE), 30)
@@ -78,17 +78,17 @@ namespace CraigStars
             Mass = 9,
             IdealSpeed = 6,
             FuelUsage = new int[] {
-                0,
-                0,
-                20,
-                60,
-                100,
-                100,
-                105,
-                450,
-                750,
-                900,
-                1080
+                0, // 0
+                0, // 1
+                20, // 2
+                60, // 3
+                100, // 4
+                100, // 5
+                105, // 6
+                450, // 7
+                750, // 8
+                900, // 9
+                1080 // 10
             }
         };
         public static readonly TechEngine DaddyLongLegs7 = new TechEngine("Daddy Long Legs 7", new Cost(11, 0, 3, 12), new TechRequirements(propulsion: 5), 50)

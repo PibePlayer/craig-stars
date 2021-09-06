@@ -21,7 +21,7 @@ namespace CraigStars.Server
     /// ** player can redownload turn, if necessary
     /// Continuing a game will load player save, and launch the server in the background to connect
     /// </summary>
-    public abstract class Server : Node, IServer
+    public abstract class Server : Node
     {
         static CSLog log = LogProvider.GetLogger(typeof(Server));
 

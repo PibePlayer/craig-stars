@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace CraigStars.Server
 {
-    public class LocalServer : Server, IServer
+    public class LocalServer : Server
     {
         static CSLog log = LogProvider.GetLogger(typeof(LocalServer));
 

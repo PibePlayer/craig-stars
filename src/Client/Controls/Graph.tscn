@@ -1,0 +1,64 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://src/Client/Controls/Graph.cs" type="Script" id=1]
+[ext_resource path="res://src/Client/Controls/GraphContent.tscn" type="PackedScene" id=2]
+[ext_resource path="res://assets/gui/DroidSans.ttf" type="DynamicFontData" id=3]
+
+[sub_resource type="DynamicFont" id=1]
+font_data = ExtResource( 3 )
+
+[node name="Graph" type="MarginContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = -912.0
+margin_bottom = -382.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+margin_right = 528.0
+margin_bottom = 518.0
+
+[node name="Title" type="Label" parent="VBoxContainer"]
+margin_right = 528.0
+margin_bottom = 19.0
+custom_fonts/font = SubResource( 1 )
+text = "Title"
+align = 1
+
+[node name="GraphContainer" type="GridContainer" parent="VBoxContainer"]
+margin_top = 23.0
+margin_right = 528.0
+margin_bottom = 518.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+columns = 2
+
+[node name="YAxis" type="VBoxContainer" parent="VBoxContainer/GraphContainer"]
+margin_right = 50.0
+margin_bottom = 461.0
+rect_min_size = Vector2( 50, 0 )
+
+[node name="GraphContent" parent="VBoxContainer/GraphContainer" instance=ExtResource( 2 )]
+margin_left = 54.0
+margin_right = 528.0
+margin_bottom = 461.0
+rect_min_size = Vector2( 100, 100 )
+border_color = Color( 0.431373, 0.431373, 0.431373, 1 )
+border_width = 2.0
+editor_only = false
+
+[node name="XAxisLabel" type="Label" parent="VBoxContainer/GraphContainer"]
+margin_top = 473.0
+margin_right = 50.0
+margin_bottom = 487.0
+text = "X Axis"
+
+[node name="XAxis" type="HBoxContainer" parent="VBoxContainer/GraphContainer"]
+margin_left = 54.0
+margin_top = 465.0
+margin_right = 528.0
+margin_bottom = 495.0
+rect_min_size = Vector2( 0, 30 )

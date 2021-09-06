@@ -13,6 +13,7 @@ namespace CraigStars.Client
 
         protected Label label;
 
+        public PlayerStatusButtonCell() { }
         public PlayerStatusButtonCell(Column<PublicPlayerInfo> col, Cell cell, Row<PublicPlayerInfo> row, Action<CSButtonCell<PublicPlayerInfo>> onPressed) : base(col, cell, row, onPressed)
         {
         }

@@ -507,9 +507,7 @@ namespace CraigStars.Client
             scanner.ScanRange = range;
             scanner.Pen = pen;
             Scanners.Add(scanner);
-
         }
-
 
         #endregion
 

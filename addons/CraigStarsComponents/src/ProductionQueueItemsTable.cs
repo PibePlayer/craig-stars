@@ -2,7 +2,7 @@ using CraigStarsTable;
 using Godot;
 using System;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     [Tool]
     public class ProductionQueueItemsTable : Table<ProductionQueueItem>

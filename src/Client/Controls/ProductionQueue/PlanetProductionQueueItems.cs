@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     /// <summary>
     /// This component is used for 

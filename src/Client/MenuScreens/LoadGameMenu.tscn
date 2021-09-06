@@ -2,7 +2,7 @@
 
 [ext_resource path="res://src/Client/MenuScreens/LoadGameMenu.cs" type="Script" id=1]
 [ext_resource path="res://src/Client/MenuScreens/BaseMenu.tscn" type="PackedScene" id=2]
-[ext_resource path="res://addons/CraigStarsComponents/src/PublicGameInfosTable.cs" type="Script" id=3]
+[ext_resource path="res://addons/CraigStarsComponents/src/PlayerSavesTable.cs" type="Script" id=3]
 
 [node name="LoadGameMenu" instance=ExtResource( 2 )]
 script = ExtResource( 1 )
@@ -26,7 +26,7 @@ margin_right = 790.0
 margin_bottom = 14.0
 text = "Games"
 
-[node name="GamesTable" type="MarginContainer" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons" index="1"]
+[node name="SavesTable" type="MarginContainer" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons" index="1"]
 margin_top = 18.0
 margin_right = 790.0
 margin_bottom = 442.0

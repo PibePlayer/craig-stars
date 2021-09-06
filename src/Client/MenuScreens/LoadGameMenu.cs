@@ -17,18 +17,18 @@ namespace CraigStars.Client
         Button backButton;
         Button deleteButton;
 
-        PublicGameInfosTable gamesTable;
+        PlayerSavesTable savesTable;
 
-        PublicGameInfo selectedGame;
+        PlayerSave selectedSave;
 
-        List<PublicGameInfo> gameInfos;
+        List<PlayerSave> saves;
 
         public override async void _Ready()
         {
             base._Ready();
             loadButton = GetNode<Button>("VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer/LoadButton");
             deleteButton = (Button)FindNode("DeleteButton");
-            gamesTable = (PublicGameInfosTable)FindNode("GamesTable");
+            savesTable = (PlayerSavesTable)FindNode("SavesTable");
             backButton = GetNode<Button>("VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/BackButton");
 
             backButton.Connect("pressed", this, nameof(OnBackPressed));
@@ -36,16 +36,17 @@ namespace CraigStars.Client
             loadButton.Connect("pressed", this, nameof(OnLoadButtonPressed));
             deleteButton.Connect("pressed", this, nameof(OnDeleteButtonPressed));
 
-            gamesTable.Data.AddColumn("Name");
-            gamesTable.Data.AddColumn("Mode");
-            gamesTable.Data.AddColumn("Size");
-            gamesTable.Data.AddColumn("Year");
-            gamesTable.Data.AddColumn("Players", align: Label.AlignEnum.Right);
+            savesTable.Data.AddColumn("Name");
+            savesTable.Data.AddColumn("Mode");
+            savesTable.Data.AddColumn("Size");
+            savesTable.Data.AddColumn("Year");
+            savesTable.Data.AddColumn("Player");
+            savesTable.Data.AddColumn("Players", align: Label.AlignEnum.Right);
 
             // load the full games and update the UI
-            await Task.Run(() => gameInfos = GamesManager.Instance.GetSavedGameInfos());
-            gamesTable.RowSelectedEvent += OnRowSelected;
-            gamesTable.RowActivatedEvent += OnRowActivated;
+            await Task.Run(() => saves = GamesManager.Instance.GetPlayerSaves());
+            savesTable.RowSelectedEvent += OnRowSelected;
+            savesTable.RowActivatedEvent += OnRowActivated;
             UpdateItemList();
         }
 
@@ -54,18 +55,18 @@ namespace CraigStars.Client
             base._Notification(what);
             if (what == NotificationPredelete)
             {
-                gamesTable.RowSelectedEvent -= OnRowSelected;
+                savesTable.RowSelectedEvent -= OnRowSelected;
             }
         }
 
-        void OnRowSelected(int rowIndex, int colIndex, Cell cell, PublicGameInfo metadata)
+        void OnRowSelected(int rowIndex, int colIndex, Cell cell, PlayerSave metadata)
         {
-            selectedGame = metadata;
+            selectedSave = metadata;
         }
 
-        void OnRowActivated(int rowIndex, int colIndex, Cell cell, PublicGameInfo metadata)
+        void OnRowActivated(int rowIndex, int colIndex, Cell cell, PlayerSave metadata)
         {
-            selectedGame = metadata;
+            selectedSave = metadata;
             OnLoadButtonPressed();
         }
 
@@ -77,17 +78,29 @@ namespace CraigStars.Client
 
         void UpdateItemList()
         {
-            gamesTable.Data.ClearRows();
-            selectedGame = null;
-            if (gameInfos != null)
+            savesTable.Data.ClearRows();
+            selectedSave = null;
+            if (saves != null)
             {
-                foreach (var game in gameInfos)
+                foreach (var save in saves)
                 {
-                    gamesTable.Data.AddRowAdvanced(game, Colors.White, false, game.Name, game.Mode.ToString(), game.Size.ToString(), game.Year, game.Players.Count);
+                    if (save.GameInfo.Mode == GameMode.Hotseat && save.PlayerNum != 0)
+                    {
+                        // only show the first hotseat player
+                        continue;
+                    }
+                    savesTable.Data.AddRowAdvanced(save, Colors.White, false,
+                        save.GameInfo.Name,
+                        save.GameInfo.Mode.ToString(),
+                        save.GameInfo.Size.ToString(),
+                        save.GameInfo.Year,
+                        save.GameInfo.Players[save.PlayerNum].Name,
+                        save.GameInfo.Players.Count
+                    );
                 }
             }
 
-            gamesTable.ResetTable();
+            savesTable.ResetTable();
         }
 
         void OnGameListItemActivated(int index)
@@ -97,38 +110,37 @@ namespace CraigStars.Client
 
         void OnLoadButtonPressed()
         {
-            if (selectedGame != null)
+            if (selectedSave != null)
             {
-                // TODO: this doesn't work if you aren't player 0...
-                var gameYears = GamesManager.Instance.GetSavedGameYears(selectedGame.Name, playerSaves: true, playerNum: 0);
-                if (gameYears.Count > 0)
+                Settings.Instance.ContinueGame = selectedSave.GameInfo.Name;
+                Settings.Instance.ContinueYear = selectedSave.GameInfo.Year;
+
+                loadButton.Disabled = backButton.Disabled = true;
+
+                // for multiplayer games, load only our player save.
+                // For singleplayer/hotseat games, load all players
+                var (gameInfo, players) = ServerManager.Instance.ContinueGame(
+                    selectedSave.GameInfo.Name,
+                    selectedSave.GameInfo.Year,
+                    selectedSave.GameInfo.Mode == GameMode.NetworkedMultiPlayer ? selectedSave.PlayerNum : -1
+                );
+                this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (clientView) =>
                 {
-                    var gameYear = gameYears[gameYears.Count - 1];
-                    Settings.Instance.ContinueGame = selectedGame.Name;
-                    Settings.Instance.ContinueYear = gameYear;
-
-                    loadButton.Disabled = backButton.Disabled = true;
-
-                    var (gameInfo, players) = ServerManager.Instance.ContinueGame(selectedGame.Name, gameYear);
-                    this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (clientView) =>
-                    {
-                        clientView.GameInfo = gameInfo;
-                        clientView.LocalPlayers = players;
-                    });
-
-                }
+                    clientView.GameInfo = gameInfo;
+                    clientView.LocalPlayers = players;
+                });
             }
         }
 
         void OnDeleteButtonPressed()
         {
-            if (selectedGame != null)
+            if (selectedSave != null)
             {
-                GamesManager.Instance.DeleteGame(selectedGame.Name);
-                CSConfirmDialog.Show($"Are you sure you want to delete the game {selectedGame.Name}?",
+                GamesManager.Instance.DeleteGame(selectedSave.GameInfo.Name);
+                CSConfirmDialog.Show($"Are you sure you want to delete the game {selectedSave.GameInfo.Name}?",
                 () =>
                 {
-                    GamesManager.Instance.DeleteGame(selectedGame.Name);
+                    GamesManager.Instance.DeleteGame(selectedSave.GameInfo.Name);
                     UpdateItemList();
                 });
             }

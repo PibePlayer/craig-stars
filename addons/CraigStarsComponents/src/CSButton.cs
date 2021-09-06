@@ -2,7 +2,7 @@ using CraigStarsTable;
 using Godot;
 using System;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     /// <summary>
     /// Custom button type to allow for an event based button

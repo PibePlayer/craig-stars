@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using CraigStars.Client;
 using CraigStars.Utils;
 using Godot;
 
@@ -114,10 +116,10 @@ namespace CraigStars.Singletons
         /// Get a list of all game folders
         /// </summary>
         /// <returns>A list of game folders</returns>
-        public List<PublicGameInfo> GetSavedGameInfos()
+        public List<PlayerSave> GetPlayerSaves()
         {
-            List<PublicGameInfo> games = new List<PublicGameInfo>();
-            List<string> gameFolders = new List<string>();
+            List<PlayerSave> games = new();
+            List<string> gameFolders = new();
 
             if (!GameSaveFolderExists())
             {
@@ -137,7 +139,7 @@ namespace CraigStars.Singletons
                     }
                     if (directory.CurrentIsDir())
                     {
-                        games.Add(LoadPlayerGameInfo(file));
+                        games.AddRange(LoadPlayerSaves(file));
                     }
                 }
             }
@@ -151,7 +153,7 @@ namespace CraigStars.Singletons
         /// </summary>
         /// <param name="playerSaves">True to load player years for player saves only</param>
         /// <returns>A list of year folders for a game</returns>
-        public List<int> GetSavedGameYears(string gameName, bool playerSaves, int playerNum = 0)
+        public List<int> GetSavedGameYears(string gameName)
         {
             List<int> gameYears = new List<int>();
             using (var directory = new Directory())
@@ -167,21 +169,49 @@ namespace CraigStars.Singletons
                     }
                     if (directory.CurrentIsDir() && int.TryParse(file, out var year))
                     {
-                        if (playerSaves && Exists(GetSavePlayerGameInfoPath(gameName, year, playerNum)))
-                        {
-                            gameYears.Add(year);
-                        }
-                        else if (!playerSaves && Exists(GetSaveGameInfoFile(gameName, year)))
-                        {
+                        // if (playerSaves && Exists(GetSavePlayerGameInfoPath(gameName, year, playerNum)))
+                        // {
+                        //     gameYears.Add(year);
+                        // }
+                        // else if (!playerSaves && Exists(GetSaveGameInfoFile(gameName, year)))
+                        // {
                             // add all years 
                             gameYears.Add(year);
-                        }
+                        // }
                     }
                 }
             }
 
             gameYears.Sort();
             return gameYears;
+        }
+
+        /// <summary>
+        /// List all files at a path
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public List<string> ListFiles(string path)
+        {
+            List<string> files = new();
+            using (var directory = new Directory())
+            {
+                directory.Open(path);
+                directory.ListDirBegin(skipHidden: true);
+                while (true)
+                {
+                    string file = directory.GetNext();
+                    if (file == null || file.Empty())
+                    {
+                        break;
+                    }
+                    if (!directory.CurrentIsDir())
+                    {
+                        files.Add(file);
+                    }
+                }
+            }
+            return files;
         }
 
         /// <summary>
@@ -263,6 +293,47 @@ namespace CraigStars.Singletons
             return gameInfo;
         }
 
+        public List<PlayerSave> LoadPlayerSaves(string name, int year = -1)
+        {
+            List<PlayerSave> playerSaves = new();
+            if (year == -1)
+            {
+                var years = GetSavedGameYears(name);
+                year = years[years.Count - 1];
+            }
+            using (var saveGameInfo = new File())
+            {
+                // match player-0-game-info.json, player-1-game-info.json
+                var pattern = @"player-(\d+)-game-info.json";
+
+                List<int> playerNums = ListFiles(GetSaveGameYearFolder(name, year))
+                    .Select(file =>
+                    {
+                        var match = Regex.Match(file, pattern);
+                        return match.Success ? int.Parse(match.Groups[1].Value) : -1;
+                    })
+                    .Where(playerNum => playerNum != -1)
+                    .ToList();
+
+                foreach (int playerNum in playerNums)
+                {
+                    var path = GetSavePlayerGameInfoPath(name, year, playerNum);
+                    if (!saveGameInfo.FileExists(path))
+                    {
+                        return null;
+                    }
+                    saveGameInfo.Open(path, File.ModeFlags.Read);
+                    var gameInfoJson = saveGameInfo.GetAsText();
+                    saveGameInfo.Close();
+
+                    // we found a save!
+                    playerSaves.Add(new(Serializers.DeserializeObject<PublicGameInfo>(gameInfoJson), playerNum));
+                }
+            }
+
+            return playerSaves;
+        }
+
         /// <summary>
         /// Load a player PublicGameInfo from disk.
         /// 
@@ -277,7 +348,7 @@ namespace CraigStars.Singletons
             PublicGameInfo gameInfo;
             if (year == -1)
             {
-                var years = GetSavedGameYears(name, playerSaves: true, playerNum: playerNum);
+                var years = GetSavedGameYears(name);
                 year = years[years.Count - 1];
             }
             using (var saveGameInfo = new File())

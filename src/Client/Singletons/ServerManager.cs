@@ -110,6 +110,10 @@ namespace CraigStars.Singletons
                     throw new System.IO.FileNotFoundException($"Could not find a player save for game: {gameInfo}.");
                 }
             }
+            else
+            {
+                continuePlayers.Add(GamesManager.Instance.LoadPlayerSave(gameInfo, playerNum));
+            }
 
             if (gameInfo.Mode == GameMode.NetworkedMultiPlayer && continuePlayers.Any(p => p.Host))
             {

@@ -17,7 +17,8 @@ namespace CraigStars.Client
 
         public List<PlayerMessage> Messages { get; } = new List<PlayerMessage>();
 
-        RPC rpc;
+        ServerRPC serverRPC;
+        ClientRPC clientRPC;
 
         public class Options
         {
@@ -35,8 +36,9 @@ namespace CraigStars.Client
 
         public override void _Ready()
         {
-            rpc = RPC.Instance(GetTree());
-            rpc.PlayerMessageEvent += OnPlayerMessage;
+            serverRPC = ServerRPC.Instance(GetTree());
+            clientRPC = ClientRPC.Instance(GetTree());
+            clientRPC.PlayerMessageEvent += OnPlayerMessage;
 
             Parser.Default.ParseArguments<Options>(OS.GetCmdlineArgs()).WithParsed<Options>(o =>
             {
@@ -49,7 +51,7 @@ namespace CraigStars.Client
 
             if (!continueExistingGame)
             {
-                rpc.PlayerJoinedNewGameEvent += OnPlayerJoinedNewGame;
+                clientRPC.PlayerJoinedNewGameEvent += OnPlayerJoinedNewGame;
                 NetworkClient.Instance.JoinNewGame(Settings.Instance.ClientHost, Settings.Instance.ClientPort);
             }
 
@@ -83,8 +85,8 @@ namespace CraigStars.Client
             base._Notification(what);
             if (what == NotificationPredelete)
             {
-                rpc.PlayerJoinedNewGameEvent -= OnPlayerJoinedNewGame;
-                rpc.PlayerMessageEvent -= OnPlayerMessage;
+                clientRPC.PlayerJoinedNewGameEvent -= OnPlayerJoinedNewGame;
+                clientRPC.PlayerMessageEvent -= OnPlayerMessage;
             }
         }
 

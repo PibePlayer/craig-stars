@@ -20,7 +20,7 @@ namespace CraigStars.Client
         /// <value></value>
         public Player Player { get; set; }
 
-        RPC rpc;
+        ServerRPC rpc;
 
         /// <summary>
         /// NetworkClient is a singleton
@@ -42,7 +42,7 @@ namespace CraigStars.Client
         // Called when the node enters the scene tree for the first time.
         public override void _Ready()
         {
-            rpc = RPC.Instance(GetTree());
+            rpc = ServerRPC.Instance(GetTree());
 
         }
 
@@ -56,7 +56,7 @@ namespace CraigStars.Client
             {
                 // we have connected to this server
                 // make sure the server updates our records
-                rpc.ClientSendServerPlayerRejoinedGame(Player);
+                rpc.SendPlayerRejoinedGame(Player);
             }
         }
 
@@ -155,7 +155,7 @@ namespace CraigStars.Client
             PlayerUpdatedEvent?.Invoke(player);
             if (notifyPeers && sceneTree != null)
             {
-                rpc.ClientSendServerPlayerUpdated(player);
+                rpc.SendPlayerUpdated(player);
             }
         }
 
@@ -163,7 +163,7 @@ namespace CraigStars.Client
         {
             // Note: The server already knows about the game's players, so no need to pass
             // those along here
-            rpc.ClientSendServerStartNewGameRequested(settings);
+            rpc.SendStartNewGameRequest(settings);
         }
 
         /// <summary>
@@ -175,7 +175,7 @@ namespace CraigStars.Client
         {
             // Note: The server already knows about the game's players, so no need to pass
             // those along here
-            rpc.ClientSendServerContinueGameRequested(gameName, year);
+            rpc.SendContinueGameRequested(gameName, year);
         }
 
         /// <summary>
@@ -185,7 +185,7 @@ namespace CraigStars.Client
         public void SubmitTurnToServer(Player player)
         {
             // tell the server we submitted our turn
-            rpc.ClientSendServerSubmitTurn(player);
+            rpc.SendSubmitTurn(player);
         }
 
         /// <summary>
@@ -195,7 +195,7 @@ namespace CraigStars.Client
         public void UpdateRaceOnServer(Race race)
         {
             // tell the server we submitted our turn
-            rpc.ClientSendServerUpdateRace(race);
+            rpc.SendUpdateRace(race);
         }
 
         /// <summary>
@@ -205,7 +205,7 @@ namespace CraigStars.Client
         public void AddAIPlayer()
         {
             // tell the server we submitted our turn
-            rpc.ClientSendServerAddAIPlayer();
+            rpc.SendAddAIPlayer();
         }
 
         /// <summary>
@@ -215,7 +215,7 @@ namespace CraigStars.Client
         public void KickPlayer(int playerNum)
         {
             // tell the server we submitted our turn
-            rpc.ClientSendServerKickPlayer(playerNum);
+            rpc.SendKickPlayer(playerNum);
         }
 
     }

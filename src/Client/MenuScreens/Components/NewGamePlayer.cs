@@ -21,11 +21,11 @@ namespace CraigStars.Client
         CheckBox aiControlledCheckBoxButton;
         OptionButton aiDifficultyOptionButton;
 
-        RPC rpc;
+        ServerRPC rpc;
 
         public override void _Ready()
         {
-            rpc = RPC.Instance(GetTree());
+            rpc = ServerRPC.Instance(GetTree());
 
             nameLineEdit = GetNode<LineEdit>("HBoxContainer/PlayerDetails/NameHBoxContainer/NameLineEdit");
 

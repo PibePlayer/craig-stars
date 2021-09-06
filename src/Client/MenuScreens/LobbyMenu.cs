@@ -27,7 +27,8 @@ namespace CraigStars.Client
 
         public List<PlayerMessage> InitialMessages { get; } = new List<PlayerMessage>();
 
-        RPC rpc;
+        ServerRPC serverRPC;
+        ClientRPC clientRPC;
 
         public override void _Ready()
         {
@@ -37,13 +38,14 @@ namespace CraigStars.Client
             playerReadyContainers = (Control)FindNode("PlayerReadyContainers");
             newGameOptions = (NewGameOptions)FindNode("NewGameOptions");
             addPlayerButton = (Button)FindNode("AddPlayerButton");
-            rpc = RPC.Instance(GetTree());
+            serverRPC = ServerRPC.Instance(GetTree());
+            clientRPC = ClientRPC.Instance(GetTree());
 
-            rpc.PlayerMessageEvent += OnPlayerMessage;
-            rpc.PlayerJoinedNewGameEvent += OnPlayerJoinedNewGame;
-            rpc.ServerPlayersListEvent += OnServerPlayersList;
-            rpc.PlayerLeftEvent += OnPlayerLeft;
-            rpc.ServerPlayerDataEvent += OnServerPlayerData;
+            clientRPC.PlayerMessageEvent += OnPlayerMessage;
+            clientRPC.PlayerJoinedNewGameEvent += OnPlayerJoinedNewGame;
+            clientRPC.ServerPlayersListEvent += OnServerPlayersList;
+            clientRPC.PlayerLeftEvent += OnPlayerLeft;
+            clientRPC.ServerPlayerDataEvent += OnServerPlayerData;
 
             EventManager.GameStartingEvent += OnGameStarting;
             NetworkClient.Instance.PlayerUpdatedEvent += OnPlayerUpdated;
@@ -86,11 +88,11 @@ namespace CraigStars.Client
             base._Notification(what);
             if (what == NotificationPredelete)
             {
-                rpc.PlayerMessageEvent -= OnPlayerMessage;
-                rpc.PlayerJoinedNewGameEvent -= OnPlayerJoinedNewGame;
-                rpc.PlayerLeftEvent -= OnPlayerLeft;
-                rpc.ServerPlayersListEvent -= OnServerPlayersList;
-                rpc.ServerPlayerDataEvent -= OnServerPlayerData;
+                clientRPC.PlayerMessageEvent -= OnPlayerMessage;
+                clientRPC.PlayerJoinedNewGameEvent -= OnPlayerJoinedNewGame;
+                clientRPC.PlayerLeftEvent -= OnPlayerLeft;
+                clientRPC.ServerPlayersListEvent -= OnServerPlayersList;
+                clientRPC.ServerPlayerDataEvent -= OnServerPlayerData;
                 EventManager.GameStartingEvent -= OnGameStarting;
                 NetworkClient.Instance.PlayerUpdatedEvent -= OnPlayerUpdated;
             }
@@ -163,7 +165,7 @@ namespace CraigStars.Client
         {
             var me = joinedPlayers.Find(player => player.NetworkId == GetTree().GetNetworkUniqueId());
 
-            rpc.SendMessage(newText, me.Num);
+            clientRPC.SendMessage(newText, me.Num);
             chatMessage.Text = "";
         }
 
@@ -327,14 +329,14 @@ namespace CraigStars.Client
                     GamesManager.Instance.DeleteGame(settings.Name);
                     // Note: The server already knows about the game's players, so no need to pass
                     // those along here
-                    rpc.ClientSendServerStartNewGameRequested(settings);
+                    serverRPC.SendStartNewGameRequest(settings);
                 });
             }
             else
             {
                 // Note: The server already knows about the game's players, so no need to pass
                 // those along here
-                rpc.ClientSendServerStartNewGameRequested(settings);
+                serverRPC.SendStartNewGameRequest(settings);
             }
 
         }

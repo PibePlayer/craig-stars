@@ -22,7 +22,7 @@ namespace CraigStars.Client
         SpinBox continueGameYearSpinBox;
 
         List<PlayerMessage> Messages { get; } = new List<PlayerMessage>();
-        RPC rpc;
+        ClientRPC clientRPC;
 
         private bool joining = false;
 
@@ -38,7 +38,6 @@ namespace CraigStars.Client
             continueGameButton = (Button)FindNode("ContinueGameButton");
             continueGameNameLabel = (Label)FindNode("ContinueGameNameLabel");
             continueGameYearSpinBox = (SpinBox)FindNode("ContinueGameYearSpinBox");
-
 
             hostPortEdit.Text = Settings.Instance.ServerPort.ToString();
             joinHostEdit.Text = Settings.Instance.ClientHost;
@@ -72,10 +71,10 @@ namespace CraigStars.Client
             hostWindow.Connect("popup_hide", this, nameof(OnHostWindowPopupHide));
             hostWindow.FindNode("HostButton").Connect("pressed", this, nameof(OnHostWindowHostButtonPressed));
 
-            rpc = RPC.Instance(GetTree());
-            rpc.PlayerJoinedNewGameEvent += OnPlayerJoinedNewGame;
-            rpc.PlayerJoinedExistingGameEvent += OnPlayerJoinedExistingGame;
-            rpc.PlayerMessageEvent += OnPlayerMessage;
+            clientRPC = ClientRPC.Instance(GetTree());
+            clientRPC.PlayerJoinedNewGameEvent += OnPlayerJoinedNewGame;
+            clientRPC.PlayerJoinedExistingGameEvent += OnPlayerJoinedExistingGame;
+            clientRPC.PlayerMessageEvent += OnPlayerMessage;
 
             EventManager.GameStartingEvent += OnGameStarting;
             GetTree().Connect("server_disconnected", this, nameof(OnServerDisconnected));
@@ -88,9 +87,9 @@ namespace CraigStars.Client
             base._Notification(what);
             if (what == NotificationPredelete)
             {
-                rpc.PlayerJoinedNewGameEvent -= OnPlayerJoinedNewGame;
-                rpc.PlayerJoinedExistingGameEvent -= OnPlayerJoinedExistingGame;
-                rpc.PlayerMessageEvent -= OnPlayerMessage;
+                clientRPC.PlayerJoinedNewGameEvent -= OnPlayerJoinedNewGame;
+                clientRPC.PlayerJoinedExistingGameEvent -= OnPlayerJoinedExistingGame;
+                clientRPC.PlayerMessageEvent -= OnPlayerMessage;
                 EventManager.GameStartingEvent -= OnGameStarting;
             }
         }

@@ -177,9 +177,12 @@ namespace CraigStars.Singletons
             serverTree.Root.RenderTargetUpdateMode = Viewport.UpdateMode.Disabled;
 
             // add singletons (multipletons)
-            var rpc = ResourceLoader.Load<PackedScene>("res://src/Shared/RPC.tscn").Instance<RPC>();
-            rpc.Name = "RPC";
-            serverTree.Root.AddChild(rpc);
+            var serverRPC = ResourceLoader.Load<PackedScene>("res://src/Shared/ServerRPC.tscn").Instance<ServerRPC>();
+            serverRPC.Name = "ServerRPC";
+            serverTree.Root.AddChild(serverRPC);
+            var clientRPC = ResourceLoader.Load<PackedScene>("res://src/Shared/ClientRPC.tscn").Instance<ClientRPC>();
+            clientRPC.Name = "ClientRPC";
+            serverTree.Root.AddChild(clientRPC);
             server = ResourceLoader.Load<PackedScene>("res://src/Server/NetworkServer.tscn").Instance<NetworkServer>();
             server.Init(GodotTaskFactory, GamesManager.Instance, TurnProcessorManager.Instance);
             if (continueGameName != null && continueGameYear != -1)

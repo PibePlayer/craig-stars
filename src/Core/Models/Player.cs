@@ -33,7 +33,7 @@ namespace CraigStars
         /// Each player gets a copy of rules from the server. These rules are used
         /// for computing various values both for the UI and during turn generation
         /// </summary>
-        public Rules Rules { get; set; }
+        public Rules Rules { get; set; } = new Rules(0);
 
         /// <summary>
         /// Each player gets a TechStore from the server (or client)

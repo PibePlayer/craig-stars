@@ -28,7 +28,7 @@ namespace CraigStars
         /// <summary>
         /// a new turn! build some ships
         /// </summary>
-        public override void Process(Player player)
+        public override void Process(PublicGameInfo gameInfo, Player player)
         {
             // find the first colony ship design
             ShipDesign colonyShip = shipDesignerTurnProcessor.DesignColonizer(player);
@@ -38,7 +38,7 @@ namespace CraigStars
             .OrderByDescending(planet => player.Race.GetPlanetHabitability(planet.BaseHab.Value))
             .ToList();
             var buildablePlanets = player.Planets
-                .Where(planet => planetService.CanBuild(planet, player, colonyShip.Aggregate.Mass) && planetService.GetPopulationDensity(planet, player, player.Rules) >= PopulationDensityRequired)
+                .Where(planet => planetService.CanBuild(planet, player, colonyShip.Aggregate.Mass) && planetService.GetPopulationDensity(planet, player, gameInfo.Rules) >= PopulationDensityRequired)
                 .ToList();
             var colonizerFleets = player.Fleets.Where(fleet => fleet.Aggregate.Purposes.Contains(ShipDesignPurpose.Colonizer));
 
@@ -55,7 +55,7 @@ namespace CraigStars
             foreach (var fleet in colonizerFleets.Where(
                 f => f.Waypoints.Count == 1 &&
                 f.Orbiting?.Player == player &&
-                planetService.GetPopulationDensity(f.Orbiting, player, player.Rules, f.Orbiting.Population - f.AvailableCapacity) >= PopulationDensityRequired)
+                planetService.GetPopulationDensity(f.Orbiting, player, gameInfo.Rules, f.Orbiting.Population - f.AvailableCapacity) >= PopulationDensityRequired)
             )
             {
                 var planetToColonize = ClosestPlanet(fleet, colonizablePlanets);
@@ -76,13 +76,13 @@ namespace CraigStars
                     }
                     else
                     {
-                        log.Error($"{player.Game.Year}: {player} Failed to transfer {fleet.AvailableCapacity}kT colonists from {sourcePlanet.Name} to {fleet.Name} for colonization.");
+                        log.Error($"{gameInfo.Year}: {player} Failed to transfer {fleet.AvailableCapacity}kT colonists from {sourcePlanet.Name} to {fleet.Name} for colonization.");
                     }
 
                 }
             }
 
-            BuildFleets(buildablePlanets, colonizablePlanets.Count, colonyShip);
+            BuildFleets(gameInfo, buildablePlanets, colonizablePlanets.Count, colonyShip);
 
         }
 
@@ -92,7 +92,7 @@ namespace CraigStars
         /// <param name="buildablePlanets"></param>
         /// <param name="numShipsNeeded"></param>
         /// <param name="colonyShip"></param>
-        void BuildFleets(List<Planet> buildablePlanets, int numShipsNeeded, ShipDesign colonyShip)
+        void BuildFleets(PublicGameInfo gameInfo, List<Planet> buildablePlanets, int numShipsNeeded, ShipDesign colonyShip)
         {
             if (colonyShip != null)
             {
@@ -109,7 +109,7 @@ namespace CraigStars
                         {
                             isBuilding = true;
                             queuedToBeBuilt++;
-                            log.Debug($"{planet.Player.Game.Year}: {planet.Name} is already building a colony ship");
+                            log.Debug($"{gameInfo.Year}: {planet.Name} is already building a colony ship");
                         }
                     }
 

@@ -90,7 +90,7 @@ namespace CraigStars
         /// Build a simple battle between two players, one with a Stalwart Defender, one with a Long Range Scout
         /// </summary>
         /// <returns></returns>
-        public static List<Fleet> GetFleetsForAllDesignBattle(Player player1 = null, Player player2 = null)
+        public static List<Fleet> GetFleetsForAllDesignBattle(PublicGameInfo gameInfo, Player player1 = null, Player player2 = null)
         {
             if (player1 == null)
             {
@@ -113,7 +113,7 @@ namespace CraigStars
             player2.Race.PluralName = "Rabbitoids";
 
             ShipDesignerTurnProcessor designerTurnProcessor = new ShipDesignerTurnProcessor();
-            designerTurnProcessor.Process(player1);
+            designerTurnProcessor.Process(gameInfo, player1);
 
             player1.Fleets.Add(new Fleet()
             {
@@ -125,7 +125,7 @@ namespace CraigStars
             });
 
             designerTurnProcessor = new ShipDesignerTurnProcessor();
-            designerTurnProcessor.Process(player2);
+            designerTurnProcessor.Process(gameInfo, player2);
 
             player2.Fleets.Add(new Fleet()
             {
@@ -154,6 +154,7 @@ namespace CraigStars
         /// </summary>
         /// <returns></returns>
         public static List<Fleet> GetFleetsForDesignsBattle(
+            PublicGameInfo gameInfo,
             Player player1,
             Player player2,
             HashSet<string> player1DesignNames,
@@ -165,7 +166,7 @@ namespace CraigStars
             player2.Race.PluralName = "Rabbitoids";
 
             ShipDesignerTurnProcessor designerTurnProcessor = new ShipDesignerTurnProcessor();
-            designerTurnProcessor.Process(player1);
+            designerTurnProcessor.Process(gameInfo, player1);
 
             player1.Fleets.Add(new Fleet()
             {
@@ -177,7 +178,7 @@ namespace CraigStars
             });
 
             designerTurnProcessor = new ShipDesignerTurnProcessor();
-            designerTurnProcessor.Process(player2);
+            designerTurnProcessor.Process(gameInfo, player2);
 
             player2.Fleets.Add(new Fleet()
             {
@@ -222,10 +223,10 @@ namespace CraigStars
         /// <param name="player1"></param>
         /// <param name="player2"></param>
         /// <returns></returns>
-        public static BattleRecord GetDesignsBattleRecord(Player player1, Player player2, HashSet<string> player1DesignNames, HashSet<string> player2DesignNames)
+        public static BattleRecord GetDesignsBattleRecord(PublicGameInfo gameInfo, Player player1, Player player2, HashSet<string> player1DesignNames, HashSet<string> player2DesignNames)
         {
             BattleEngine battleEngine = new BattleEngine(new Rules(0));
-            var battle = battleEngine.BuildBattle(GetFleetsForDesignsBattle(player1, player2, player1DesignNames, player2DesignNames));
+            var battle = battleEngine.BuildBattle(GetFleetsForDesignsBattle(gameInfo, player1, player2, player1DesignNames, player2DesignNames));
             battleEngine.RunBattle(battle);
 
             return battle.PlayerRecords.First().Value;

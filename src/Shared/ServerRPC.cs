@@ -270,12 +270,12 @@ namespace CraigStars.Singletons
         /// This is called by clients to submit turns to the server
         /// </summary>
         /// <param name="player">The player (probably PlayersManager.Me) submitting the turn</param>
-        public void SendSubmitTurn(Player player)
+        public void SendSubmitTurn(PublicGameInfo gameInfo, Player player)
         {
-            var settings = Serializers.CreatePlayerSettings(player.Game.Players, player.TechStore);
+            var settings = Serializers.CreatePlayerSettings(gameInfo.Players, player.TechStore);
             log.Info($"Client: Submitting turn to server");
             var playerJson = Serializers.Serialize(player, settings);
-            RpcId(1, nameof(TurnSubmitRequested), player.Token, Serializers.Serialize(player.Game), playerJson);
+            RpcId(1, nameof(TurnSubmitRequested), player.Token, Serializers.Serialize(gameInfo), playerJson);
         }
 
         [Remote]

@@ -237,7 +237,14 @@ namespace CraigStars.Client
 
                 if (ShipDesign != null)
                 {
-                    nameLabel.Text = ShipDesign.Name;
+                    if (Editable)
+                    {
+                        nameLabel.Text = $"{ShipDesign.Name}";
+                    }
+                    else
+                    {
+                        nameLabel.Text = $"{ShipDesign.Name} v{ShipDesign.Version}";
+                    }
                     icon.Texture = TextureLoader.Instance.FindTexture(ShipDesign);
 
                     ShipDesign.ComputeAggregate(PlayersManager.Me);

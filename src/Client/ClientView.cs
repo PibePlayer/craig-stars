@@ -195,7 +195,7 @@ namespace CraigStars.Client
 
             PlayersManager.GameInfo = GameInfo = gameInfo;
             PlayersManager.GameInfo.Players.ForEach(p => log.Debug($"{PlayersManager.GameInfo}: Player: {p}, Submitted: {p.SubmittedTurn}"));
-            GamesManager.Instance.SavePlayer(player);
+            GamesManager.Instance.SavePlayer(PlayersManager.GameInfo, player);
             if (PlayersManager.Me == null)
             {
                 PlayersManager.Me = player;
@@ -223,7 +223,7 @@ namespace CraigStars.Client
                 if (this.IsMultiplayer())
                 {
                     // submit our turn to the server
-                    NetworkClient.Instance.SubmitTurnToServer(player);
+                    NetworkClient.Instance.SubmitTurnToServer(PlayersManager.GameInfo, player);
                 }
 
                 // we just submitted our turn, remove the game view and show this container
@@ -234,7 +234,7 @@ namespace CraigStars.Client
                 turnGenerationStatus.UpdatePlayerStatuses();
 
                 // save our game
-                GamesManager.Instance.SavePlayer(player);
+                GamesManager.Instance.SavePlayer(PlayersManager.GameInfo, player);
             }
         }
 
@@ -290,7 +290,7 @@ namespace CraigStars.Client
             {
                 localPlayer.SubmittedTurn = false;
                 // save our game
-                GamesManager.Instance.SavePlayer(localPlayer);
+                GamesManager.Instance.SavePlayer(PlayersManager.GameInfo, localPlayer);
             }
 
             if (PlayersManager.Me != null)
@@ -344,14 +344,14 @@ namespace CraigStars.Client
             LocalPlayers.Remove(player);
             LocalPlayers.Add(player);
 
-            GamesManager.Instance.SavePlayer(player);
+            GamesManager.Instance.SavePlayer(PlayersManager.GameInfo, player);
 
             // if we don't already have a local player, play this player
             if (PlayersManager.Me == null)
             {
                 PlayersManager.GameInfo = GameInfo = gameInfo;
                 PlayersManager.Me = player;
-                PlayersManager.Me.RunTurnProcessors(TurnProcessorManager.Instance);
+                PlayersManager.Me.RunTurnProcessors(PlayersManager.GameInfo, TurnProcessorManager.Instance);
                 OS.SetWindowTitle($"{projectName} - {gameInfo.Name}: Year {gameInfo.Year}");
                 LoadGameView();
             }
@@ -387,7 +387,7 @@ namespace CraigStars.Client
                 GameInfo = gameInfo;
                 PlayersManager.GameInfo = GameInfo = gameInfo;
                 PlayersManager.Me = player;
-                PlayersManager.Me.RunTurnProcessors(TurnProcessorManager.Instance);
+                PlayersManager.Me.RunTurnProcessors(PlayersManager.GameInfo, TurnProcessorManager.Instance);
                 OS.SetWindowTitle($"{projectName} - {gameInfo.Name}: Year {gameInfo.Year}");
                 LoadGameView();
             }

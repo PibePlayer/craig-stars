@@ -111,7 +111,6 @@ namespace CraigStars
         {
             GameInfo.Players.Clear();
             GameInfo.Players.AddRange(Players.Cast<PublicPlayerInfo>());
-            Players.ForEach(player => player.Game = GameInfo);
 
             // Update the Game dictionaries used for lookups, like PlanetsByGuid, FleetsByGuid, etc.
             UpdateInternalDictionaries();
@@ -153,7 +152,7 @@ namespace CraigStars
             GameInfo.Players.AddRange(Players.Cast<PublicPlayerInfo>());
 
             // make sure each player knows about the game
-            Players.ForEach(player => player.Game = GameInfo);
+            Players.ForEach(player => player.Rules = Rules);
 
             Rules = rules;
             TechStore = techStore;
@@ -262,7 +261,6 @@ namespace CraigStars
             // (like their current best planetary scanner)
             Players.ForEach(p =>
             {
-                p.Game.Year = Year;
                 p.PlanetaryScanner = p.GetBestPlanetaryScanner();
                 p.ComputeAggregates();
                 p.SetupMapObjectMappings();

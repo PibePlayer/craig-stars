@@ -49,7 +49,7 @@ namespace CraigStars
         /// <summary>
         /// Process a turn
         /// </summary>
-        public abstract void Process(Player player);
+        public abstract void Process(PublicGameInfo gameInfo, Player player);
 
     }
 }

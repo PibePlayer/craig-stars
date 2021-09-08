@@ -558,8 +558,11 @@ namespace CraigStars.Client
             Player player2 = players[1] as Player;
             player2.TechLevels = new TechLevel(6, 6, 6, 6, 6, 6);
 
+            var gameInfo = new PublicGameInfo() { Players = new List<PublicPlayerInfo>() { player1, player2 } };
+
             var battleEngine = new BattleEngine(RulesManager.Rules);
             var battle = battleEngine.BuildBattle(TestBattleUtils.GetFleetsForDesignsBattle(
+                gameInfo,
                 player1,
                 player2,
                 new HashSet<string>() { "Destroyer", "Space Station" },

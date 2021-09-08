@@ -38,7 +38,7 @@ namespace CraigStars.Server
                     {
                         foreach (var processor in turnProcessorManager.TurnProcessors)
                         {
-                            processor.Process(player);
+                            processor.Process(game.GameInfo, player);
                         }
                         // We are done processing, submit a turn
                         TurnSubmitRequestedEvent?.Invoke(player);

@@ -18,7 +18,7 @@ namespace CraigStars
         /// <summary>
         /// Make sure our mine layers lay mines
         /// </summary>
-        public override void Process(Player player)
+        public override void Process(PublicGameInfo gameInfo, Player player)
         {
             foreach (Fleet fleet in player.Fleets.Where(fleet => fleet.Aggregate.Purposes.Contains(ShipDesignPurpose.SpeedMineLayer) ||
             fleet.Aggregate.Purposes.Contains(ShipDesignPurpose.DamageMineLayer)))

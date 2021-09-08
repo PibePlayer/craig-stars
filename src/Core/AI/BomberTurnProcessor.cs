@@ -19,7 +19,7 @@ namespace CraigStars
         /// <summary>
         /// a new turn! build some ships
         /// </summary>
-        public override void Process(Player player)
+        public override void Process(PublicGameInfo gameInfo, Player player)
         {
             // find the first colony ship design
             // TODO: pick the best one

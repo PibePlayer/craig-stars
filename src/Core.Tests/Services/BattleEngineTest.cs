@@ -217,7 +217,10 @@ namespace CraigStars.Tests
             var player2 = new Player() { Num = 1, Name = "Ted" };
             player2.TechLevels = new TechLevel(6, 6, 6, 6, 6, 6);
 
+            var gameInfo = new PublicGameInfo() { Players = new() { player1, player2 } };
+
             var battle = battleEngine.BuildBattle(TestBattleUtils.GetFleetsForDesignsBattle(
+                gameInfo,
                 player1,
                 player2,
                 new HashSet<string>() { "Destroyer", "Space Station" },

@@ -26,17 +26,17 @@ namespace CraigStars
         /// <summary>
         /// a new turn! build some ships
         /// </summary>
-        public override void Process(Player player)
+        public override void Process(PublicGameInfo gameInfo, Player player)
         {
             // find the first colony ship design
             ShipDesign design = player.GetLatestDesign(ShipDesignPurpose.Freighter);
 
             var lowPopPlanets = player.Planets
-            .Where(planet => planetService.GetPopulationDensity(planet, player, player.Rules) < PopulationDensityRequired)
+            .Where(planet => planetService.GetPopulationDensity(planet, player, gameInfo.Rules) < PopulationDensityRequired)
             .OrderBy(planet => planet.Population)
             .ToList();
             var buildablePlanets = player.Planets
-                .Where(planet => planetService.CanBuild(planet, player, design.Aggregate.Mass) && planetService.GetPopulationDensity(planet, player, player.Rules) >= PopulationDensityRequired)
+                .Where(planet => planetService.CanBuild(planet, player, design.Aggregate.Mass) && planetService.GetPopulationDensity(planet, player, gameInfo.Rules) >= PopulationDensityRequired)
                 .ToList();
             var fleets = player.Fleets.Where(fleet => fleet.Aggregate.Purposes.Contains(ShipDesignPurpose.Freighter));
 
@@ -53,7 +53,7 @@ namespace CraigStars
             foreach (var fleet in fleets.Where(
                 f => f.Waypoints.Count == 1 &&
                 f.Orbiting?.Player == player &&
-                planetService.GetPopulationDensity(f.Orbiting, player, player.Rules, f.Orbiting.Population - f.AvailableCapacity) >= PopulationDensityRequired)
+                planetService.GetPopulationDensity(f.Orbiting, player, gameInfo.Rules, f.Orbiting.Population - f.AvailableCapacity) >= PopulationDensityRequired)
             )
             {
                 if (lowPopPlanets.Count > 0)
@@ -79,16 +79,16 @@ namespace CraigStars
 
                         // remove this planet from our list
                         lowPopPlanets.Remove(lowPopPlanet);
-                        log.Info($"{player.Game.Year}: {player} {fleet.Name} assigned to transport {fleet.Cargo.Colonists * 100} colonists from {fleet.Orbiting.Name} to {lowPopPlanet.Name}");
+                        log.Info($"{gameInfo.Year}: {player} {fleet.Name} assigned to transport {fleet.Cargo.Colonists * 100} colonists from {fleet.Orbiting.Name} to {lowPopPlanet.Name}");
                     }
                     else
                     {
-                        log.Error($"{player.Game.Year}: {player} Failed to transfer {fleet.AvailableCapacity}kT colonists from {sourcePlanet.Name} to {fleet.Name} for pop transfer.");
+                        log.Error($"{gameInfo.Year}: {player} Failed to transfer {fleet.AvailableCapacity}kT colonists from {sourcePlanet.Name} to {fleet.Name} for pop transfer.");
                     }
                 }
             }
 
-            BuildFleets(buildablePlanets, lowPopPlanets.Count, design);
+            BuildFleets(gameInfo, buildablePlanets, lowPopPlanets.Count, design);
 
         }
 
@@ -98,7 +98,7 @@ namespace CraigStars
         /// <param name="buildablePlanets"></param>
         /// <param name="numShipsNeeded"></param>
         /// <param name="design"></param>
-        void BuildFleets(List<Planet> buildablePlanets, int numShipsNeeded, ShipDesign design)
+        void BuildFleets(PublicGameInfo gameInfo, List<Planet> buildablePlanets, int numShipsNeeded, ShipDesign design)
         {
             if (design != null)
             {
@@ -114,7 +114,7 @@ namespace CraigStars
                         {
                             isBuilding = true;
                             queuedToBeBuilt++;
-                            log.Debug($"{planet.Player.Game.Year}: {planet.Name} is already building a {item.Design.Purpose}");
+                            log.Debug($"{gameInfo.Year}: {planet.Name} is already building a {item.Design.Purpose}");
                         }
                     }
 
@@ -132,7 +132,7 @@ namespace CraigStars
                     if (queuedToBeBuilt < numShipsNeeded)
                     {
                         planet.ProductionQueue.AddAfter(new ProductionQueueItem(QueueItemType.ShipToken, 1, design), QueueItemType.AutoFactories);
-                        log.Debug($"{planet.Player.Game.Year}: {planet.Name} building {design.Name} for pop transfer");
+                        log.Debug($"{gameInfo.Year}: {planet.Name} building {design.Name} for pop transfer");
                         queuedToBeBuilt++;
                     }
                 }

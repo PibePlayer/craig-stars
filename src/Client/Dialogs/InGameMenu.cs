@@ -71,7 +71,7 @@ namespace CraigStars.Client
 
         void OnSaveTurnButtonPressed()
         {
-            GamesManager.Instance.SavePlayer(Me);
+            GamesManager.Instance.SavePlayer(GameInfo, Me);
             Me.Dirty = false;
             EventManager.PublishPlayerDirtyEvent();
         }

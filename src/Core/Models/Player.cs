@@ -21,11 +21,6 @@ namespace CraigStars
         public string Token { get; set; } = System.Convert.ToBase64String(Guid.NewGuid().ToByteArray());
 
         /// <summary>
-        /// /// The player needs to know information about the game
-        /// </summary>
-        public PublicGameInfo Game { get; set; } = new();
-
-        /// <summary>
         /// true if this player has made changes and needs to save
         /// </summary>
         /// <value></value>
@@ -38,7 +33,7 @@ namespace CraigStars
         /// Each player gets a copy of rules from the server. These rules are used
         /// for computing various values both for the UI and during turn generation
         /// </summary>
-        public Rules Rules { get => Game.Rules; }
+        public Rules Rules { get; set; }
 
         /// <summary>
         /// Each player gets a TechStore from the server (or client)
@@ -326,14 +321,14 @@ namespace CraigStars
         /// Run all configured TurnProcessors for this player
         /// </summary>
         /// <param name="turnProcessorManager"></param>
-        public void RunTurnProcessors(ITurnProcessorManager turnProcessorManager)
+        public void RunTurnProcessors(PublicGameInfo gameInfo, ITurnProcessorManager turnProcessorManager)
         {
             Settings.TurnProcessors.ForEach(processorName =>
             {
                 var processor = turnProcessorManager.GetTurnProcessor(processorName);
                 if (processor != null)
                 {
-                    processor.Process(this);
+                    processor.Process(gameInfo, this);
                 }
             });
         }

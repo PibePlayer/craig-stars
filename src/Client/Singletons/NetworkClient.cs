@@ -182,10 +182,10 @@ namespace CraigStars.Client
         /// Submit a turn to the server
         /// </summary>
         /// <param name="player"></param>
-        public void SubmitTurnToServer(Player player)
+        public void SubmitTurnToServer(PublicGameInfo gameInfo, Player player)
         {
             // tell the server we submitted our turn
-            rpc.SendSubmitTurn(player);
+            rpc.SendSubmitTurn(gameInfo, player);
         }
 
         /// <summary>

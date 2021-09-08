@@ -520,9 +520,9 @@ namespace CraigStars.Singletons
             log.Info($"{gameJson.Year}:{gameJson.Name} saved to {dirPath}");
         }
 
-        public string SerializePlayer(Player player)
+        public string SerializePlayer(PublicGameInfo gameInfo, Player player)
         {
-            return Serializers.Serialize(player, Serializers.CreatePlayerSettings(player.Game.Players, TechStore.Instance));
+            return Serializers.Serialize(player, Serializers.CreatePlayerSettings(gameInfo.Players, TechStore.Instance));
         }
 
         public async void SavePlayerGameInfo(PublicGameInfo gameInfo, int playerNum)
@@ -541,17 +541,17 @@ namespace CraigStars.Singletons
             }
         }
 
-        public async void SavePlayer(Player player)
+        public async void SavePlayer(PublicGameInfo gameInfo, Player player)
         {
             // save the player's copy of the gameInfo, in case it doesn't already exist
-            var playerGameInfoPath = GetSavePlayerGameInfoPath(player.Game.Name, player.Game.Year, player.Num);
+            var playerGameInfoPath = GetSavePlayerGameInfoPath(gameInfo.Name, gameInfo.Year, player.Num);
 
             using (var playerGameInfo = new File())
             {
                 playerGameInfo.Open(playerGameInfoPath, File.ModeFlags.Write);
                 await Task.Run(() =>
                 {
-                    playerGameInfo.StoreString(Serializers.Serialize(player.Game));
+                    playerGameInfo.StoreString(Serializers.Serialize(gameInfo));
                 });
                 playerGameInfo.Close();
             }
@@ -560,16 +560,16 @@ namespace CraigStars.Singletons
             {
                 using (var playerSave = new File())
                 {
-                    playerSave.Open(GetSavePlayerPath(player.Game.Name, player.Game.Year, player.Num), File.ModeFlags.Write);
-                    playerSave.StoreString(SerializePlayer(player));
+                    playerSave.Open(GetSavePlayerPath(gameInfo.Name, gameInfo.Year, player.Num), File.ModeFlags.Write);
+                    playerSave.StoreString(SerializePlayer(gameInfo, player));
                     playerSave.Close();
                 }
             });
         }
 
-        public bool HasPlayerSave(Player player)
+        public bool HasPlayerSave(PublicGameInfo gameInfo, Player player)
         {
-            return Exists(GetSavePlayerPath(player.Game.Name, player.Game.Year, player.Num));
+            return Exists(GetSavePlayerPath(gameInfo.Name, gameInfo.Year, player.Num));
         }
 
         /// <summary>

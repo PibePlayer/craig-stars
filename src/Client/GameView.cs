@@ -71,7 +71,7 @@ namespace CraigStars
             if (IsVisibleInTree())
             {
                 log.Debug("Resetting scanner");
-                PlayersManager.Me.RunTurnProcessors(TurnProcessorManager.Instance);
+                PlayersManager.Me.RunTurnProcessors(PlayersManager.GameInfo, TurnProcessorManager.Instance);
                 // add the universe to the viewport
                 gui.Visible = true;
                 RemoveChild(scanner);

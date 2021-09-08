@@ -28,6 +28,7 @@ namespace CraigStars.Client
         Button saveDesignButton;
         Button cancelDesignButton;
         LineEdit designNameLineEdit;
+        Label versionLabel;
         Label errorLabel;
 
         public override void _Ready()
@@ -39,6 +40,7 @@ namespace CraigStars.Client
             saveDesignButton = FindNode("SaveDesignButton") as Button;
             cancelDesignButton = FindNode("CancelDesignButton") as Button;
             designNameLineEdit = FindNode("DesignNameLineEdit") as LineEdit;
+            versionLabel = FindNode("VersionLabel") as Label;
             errorLabel = FindNode("ErrorLabel") as Label;
 
             designNameLineEdit.Connect("text_changed", this, nameof(OnDesignNameLineEditTextChanged));
@@ -100,6 +102,10 @@ namespace CraigStars.Client
             {
                 var design = SourceShipDesign.Copy();
                 design.ComputeAggregate(PlayersManager.Me);
+                if (!EditingExisting)
+                {
+                    design.Version++;
+                }
 
                 designerHullSummary.ShipDesign = design;
                 designerHullSummary.UpdateControls();
@@ -116,6 +122,7 @@ namespace CraigStars.Client
                 designerHullSummary.UpdateControls();
                 saveDesignButton.Text = "Save Design";
                 cancelDesignButton.Text = "Cancel";
+                versionLabel.Text = $"v{designerHullSummary.ShipDesign.Version}";
                 IsDirty = false;
                 UpdateControls();
             }
@@ -186,12 +193,13 @@ namespace CraigStars.Client
         void UpdateControls()
         {
             var name = designNameLineEdit.Text;
+            var version = designerHullSummary.ShipDesign.Version;
             // Check if we have a ship design by this name already. If we 
             var nameAlreadyExists = PlayersManager.Me.Designs
                 // If we are not editing existing, check all ship designs for name conflicts
                 // if we ARE editing an existing design, remove it from the ships to check for name conflicts
                 .Where(sd => !EditingExisting || sd != SourceShipDesign)
-                .Any(sd => sd.Name == name);
+                .Any(sd => sd.Name == name && sd.Version == version);
             designNameLineEdit.Modulate = Colors.White;
             errorLabel.Visible = false;
             IsValid = true;

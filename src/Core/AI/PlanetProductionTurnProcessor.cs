@@ -25,7 +25,7 @@ namespace CraigStars
         /// <summary>
         /// a new turn! build some ships
         /// </summary>
-        public override void Process(Player player)
+        public override void Process(PublicGameInfo gameInfo, Player player)
         {
             foreach (var planet in player.Planets)
             {

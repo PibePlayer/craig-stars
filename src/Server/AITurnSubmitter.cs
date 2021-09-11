@@ -15,12 +15,10 @@ namespace CraigStars.Server
         public event Action<Player> TurnSubmitRequestedEvent;
 
         ITurnProcessorManager turnProcessorManager;
-        bool multithreaded;
 
-        public AITurnSubmitter(ITurnProcessorManager turnProcessorManager, bool multithreaded)
+        public AITurnSubmitter(ITurnProcessorManager turnProcessorManager)
         {
             this.turnProcessorManager = turnProcessorManager;
-            this.multithreaded = multithreaded;
         }
 
         /// <summary>
@@ -49,39 +47,6 @@ namespace CraigStars.Server
                     }
                 }
             });
-            // var tasks = new List<Action>();
-            // // submit AI turns
-            // foreach (var player in game.Players)
-            // {
-            //     if (player.AIControlled && !player.SubmittedTurn)
-            //     {
-            //         Action submitAITurn = () =>
-            //         {
-            //             try
-            //             {
-            //                 foreach (var processor in turnProcessorManager.TurnProcessors)
-            //                 {
-            //                     processor.Process(player);
-            //                 }
-            //                 // We are done processing, submit a turn
-            //                 TurnSubmitRequestedEvent?.Invoke(player);
-            //             }
-            //             catch (Exception e)
-            //             {
-            //                 log.Error($"Failed to submit AI turn {player}", e);
-            //             }
-            //         };
-            //         tasks.Add(submitAITurn);
-            //     }
-            // }
-            // if (multithreaded)
-            // {
-            //     Task.Run(() => Task.WaitAll(tasks.Select(task => Task.Run(task)).ToArray()));
-            // }
-            // else
-            // {
-            //     tasks.ForEach(_ => _.Invoke());
-            // }
         }
     }
 }

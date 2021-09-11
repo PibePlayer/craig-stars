@@ -10,7 +10,7 @@ namespace CraigStars.Server
     {
         static CSLog log = LogProvider.GetLogger(typeof(LocalServer));
 
-        protected JsonSerializerSettings playerSerializerSettings;
+        protected PlayerJsonSerializerSettings playerSerializerSettings;
 
         protected override IClientEventPublisher CreateClientEventPublisher()
         {
@@ -61,19 +61,17 @@ namespace CraigStars.Server
             Client.EventManager.PublishGameStartingEvent(gameInfoClone);
         }
 
-        async Task<Player> GetPlayerClone(Player player)
+        Player GetPlayerClone(Player player)
         {
-            var playerClone = new Player();
-            await Task.Run(() =>
-            {
-                log.Debug($"Creating clone of {player} for GameStartedEvent.");
-                var playerJson = Serializers.Serialize(player, playerSerializerSettings);
-                Serializers.PopulatePlayer(playerJson, playerClone, playerSerializerSettings);
-            });
+            var playerClone = new Player() { Num = player.Num };
+            log.Debug($"Creating clone of {player} for GameStartedEvent.");
+            var playerJson = Serializers.Serialize(player, playerSerializerSettings);
+            playerSerializerSettings.UpdatePlayer(playerClone);
+            Serializers.PopulatePlayer(playerJson, playerClone, playerSerializerSettings);
             return playerClone;
         }
 
-        protected async override void PublishGameStartedEvent()
+        protected override void PublishGameStartedEvent()
         {
             playerSerializerSettings = Serializers.CreatePlayerSettings(Game.GameInfo.Players, Game.TechStore);
 
@@ -81,7 +79,7 @@ namespace CraigStars.Server
             // For hotseat games, the ClientView will store all players that can play
             foreach (var player in Game.Players.Where(player => !player.AIControlled))
             {
-                var playerClone = await GetPlayerClone(player);
+                var playerClone = GetPlayerClone(player);
 
                 // we have a new game, so create the player serializer settings
                 PublicGameInfo gameInfoClone = new PublicGameInfo(Game.GameInfo);
@@ -127,24 +125,24 @@ namespace CraigStars.Server
             Client.EventManager.PublishTurnGeneratorAdvancedEvent(state);
         }
 
-        protected async override void PublishTurnPassedEvent()
+        protected override void PublishTurnPassedEvent()
         {
             // notify each non AI player about the new turn
             foreach (var player in Game.Players.Where(player => !player.AIControlled))
             {
-                var clone = new Player();
-                await Task.Run(() =>
-                {
-                    log.Debug($"Creating clone of {player} for TurnPassedEvent.");
-                    var playerJson = Serializers.Serialize(player, playerSerializerSettings);
-                    Serializers.PopulatePlayer(playerJson, clone, playerSerializerSettings);
-                });
+                var clone = new Player() { Num = player.Num };
+                log.Debug($"Creating clone of {player} for TurnPassedEvent.");
+                var playerJson = Serializers.Serialize(player, playerSerializerSettings);
+                playerSerializerSettings.UpdatePlayer(clone);
+                Serializers.PopulatePlayer(playerJson, clone, playerSerializerSettings);
 
                 log.Debug($"Notifying {player} of TurnPassedEvent.");
                 Client.EventManager.PublishTurnPassedEvent(Game.GameInfo, clone);
             }
+
         }
 
         #endregion
     }
 }
+

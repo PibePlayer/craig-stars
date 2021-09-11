@@ -245,7 +245,7 @@ namespace CraigStars.Singletons
             var player = new Player() { Num = playerNum };
             var players = gameInfo != null ? gameInfo.Players : new List<PublicPlayerInfo>() { player };
 
-            Serializers.PopulatePlayer(playerJson, player, Serializers.CreatePlayerSettings(players, TechStore.Instance));
+            Serializers.PopulatePlayer(playerJson, player, Serializers.CreatePlayerSettings(players, TechStore.Instance, gameInfo != null ? player : null));
             log.Info("Client: Done recieving updated player data");
 
             // notify any listeners that we have new data for this player
@@ -293,8 +293,7 @@ namespace CraigStars.Singletons
 
             // make sure our deserializer maps up our player correctly
             var player = new Player() { Num = playerNum };
-            var playerSerializationSettings = Serializers.CreatePlayerSettings(gameInfo.Players, TechStore.Instance);
-            Serializers.PopulatePlayer(playerJson, player, playerSerializationSettings);
+            Serializers.PopulatePlayer(playerJson, player, Serializers.CreatePlayerSettings(gameInfo.Players, TechStore.Instance, player));
 
             // notify any clients that we have a new game
             Client.EventManager.PublishGameStartedEvent(gameInfo, player);
@@ -374,8 +373,7 @@ namespace CraigStars.Singletons
 
             // make sure our deserializer maps up our player correctly
             var player = new Player() { Num = playerNum };
-            var playerSerializationSettings = Serializers.CreatePlayerSettings(gameInfo.Players, TechStore.Instance);
-            Serializers.PopulatePlayer(playerJson, player, playerSerializationSettings);
+            Serializers.PopulatePlayer(playerJson, player, Serializers.CreatePlayerSettings(gameInfo.Players, TechStore.Instance, player));
 
             Client.EventManager.PublishTurnPassedEvent(gameInfo, player);
             log.Info($"{player} Received TurnPassed");

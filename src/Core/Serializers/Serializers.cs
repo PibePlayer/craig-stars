@@ -41,24 +41,18 @@ namespace CraigStars
         /// </summary>
         /// <param name="players"></param>
         /// <returns></returns>
-        public static JsonSerializerSettings CreatePlayerSettings(List<PublicPlayerInfo> players, ITechStore techStore)
+        public static PlayerJsonSerializerSettings CreatePlayerSettings(List<PublicPlayerInfo> players, ITechStore techStore, Player player = null)
         {
-            return new JsonSerializerSettings()
+            var settings = new PlayerJsonSerializerSettings(players, techStore);
+            if (player != null)
             {
-                Formatting = Formatting.Indented,
-                NullValueHandling = NullValueHandling.Ignore,
-                ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
-                DefaultValueHandling = DefaultValueHandling.Ignore,
-                ObjectCreationHandling = ObjectCreationHandling.Replace,
-                TraceWriter = traceWriter,
-                ContractResolver = new PlayerContractResolver<PublicPlayerInfo>(players, techStore),
+                // use this player reference in our settings
+                // this will mean any player references with this player num will use
+                // this player object instead of the one from the players list
+                settings.UpdatePlayer(player);
+            }
 
-                Converters = new JsonConverter[] {
-                    new ColorJsonConverter(),
-                    new StringEnumConverter(),
-                    new BattleRecordTokenActionConverter()
-                }
-            };
+            return settings;
         }
 
         /// <summary>

@@ -95,7 +95,7 @@ namespace CraigStars.Tests
             // add a message about our homeworld
             Message.HomePlanet(player, planet1);
 
-            var settings = Serializers.CreatePlayerSettings(new List<PublicPlayerInfo>() { player, otherPlayer }, StaticTechStore.Instance);
+            var settings = Serializers.CreatePlayerSettings(new List<PublicPlayerInfo>() { player, otherPlayer }, StaticTechStore.Instance, player);
             var json = Serializers.Serialize(player, settings);
 
             // populate this player object
@@ -103,7 +103,7 @@ namespace CraigStars.Tests
             {
                 TechStore = StaticTechStore.Instance,
             };
-            var loadSettings = Serializers.CreatePlayerSettings(new List<PublicPlayerInfo>() { loadedPlayer, otherPlayer }, StaticTechStore.Instance);
+            var loadSettings = Serializers.CreatePlayerSettings(new List<PublicPlayerInfo>() { loadedPlayer, otherPlayer }, StaticTechStore.Instance, loadedPlayer);
             Serializers.PopulatePlayer(json, loadedPlayer, loadSettings);
 
             // make sure we have some basic stats

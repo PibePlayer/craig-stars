@@ -16,6 +16,18 @@ namespace CraigStars
             Players = players;
         }
 
+        public void UpdatePlayer(T player)
+        {
+            if (player != null && player.Num >= 0 && player.Num < Players.Count)
+            {
+                Players[player.Num] = player;
+            }
+            else
+            {
+                throw new InvalidOperationException($"Player {player} either null or the player number is out of range for this PlayerNumConverter.");
+            }
+        }
+
         public override T ReadJson(JsonReader reader, Type objectType, T existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             var num = reader.Value;

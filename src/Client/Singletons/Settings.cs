@@ -102,30 +102,6 @@ namespace CraigStars.Client
         #region Volatile Settings
 
         /// <summary>
-        /// By default we are multithreaded, but we disable it on the web
-        /// </summary>
-        /// <value></value>
-        public static bool Multithreaded
-        {
-            get
-            {
-                if (!multithreaded.HasValue)
-                {
-                    try
-                    {
-                        multithreaded = OS.GetName().ToLower() != "html5";
-                    }
-                    catch (Exception)
-                    {
-                        multithreaded = true;
-                    }
-                }
-                return multithreaded.Value;
-            }
-        }
-        static bool? multithreaded;
-
-        /// <summary>
         /// By default we save to disk, but we disable it on the web
         /// </summary>
         /// <value></value>

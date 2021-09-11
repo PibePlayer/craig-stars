@@ -69,9 +69,9 @@ namespace CraigStars.Client
             GetTree().Paused = false;
         }
 
-        void OnSaveTurnButtonPressed()
+        async void OnSaveTurnButtonPressed()
         {
-            GamesManager.Instance.SavePlayer(GameInfo, Me);
+            await GamesManager.Instance.SavePlayer(GameInfo, Me);
             Me.Dirty = false;
             EventManager.PublishPlayerDirtyEvent();
         }

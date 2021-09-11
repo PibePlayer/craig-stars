@@ -16,15 +16,22 @@ namespace CraigStars
     public class PlayerContractResolver<T> : DefaultContractResolver where T : PublicPlayerInfo
     {
         static CSLog log = LogProvider.GetLogger(typeof(PlayerContractResolver<T>));
-        List<T> players;
         PlayerNumConverter<T> playerNumConverter;
         TechNameConverter techNameConverter;
 
         public PlayerContractResolver(List<T> players, ITechStore techStore)
         {
-            this.players = players;
             playerNumConverter = new PlayerNumConverter<T>(players);
             techNameConverter = new TechNameConverter(techStore);
+        }
+
+        /// <summary>
+        /// Update a player in the PlayerContractResolver with a new player reference
+        /// </summary>
+        /// <param name="player"></param>
+        public void UpdatePlayer(T player)
+        {
+            playerNumConverter.UpdatePlayer(player);
         }
 
         protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)

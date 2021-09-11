@@ -184,9 +184,9 @@ namespace CraigStars
             if (player.Num >= 0 && player.Num < Players.Count)
             {
                 log.Info($"{Year}: {player} submitted turn");
+                Players[player.Num] = player;
                 Players[player.Num].SubmittedTurn = true;
                 GameInfo.Players[player.Num].SubmittedTurn = true;
-                turnSubmitter.SubmitTurn(player);
             }
             else
             {
@@ -228,6 +228,9 @@ namespace CraigStars
         {
             GameInfo.State = GameState.GeneratingTurn;
             log.Info($"{Year} Generating new turn");
+
+            // submit these actions to the actual game objects
+            Players.ForEach(player => turnSubmitter.SubmitTurn(player));
 
             // after new player actions and designs are submitted, we need
             // to compute aggregates for fleets and designs

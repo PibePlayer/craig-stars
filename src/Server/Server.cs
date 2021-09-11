@@ -26,7 +26,6 @@ namespace CraigStars.Server
         static CSLog log = LogProvider.GetLogger(typeof(Server));
 
         public bool SaveToDisk { get; set; } = true;
-        public bool Multithreaded { get; set; } = true;
 
         /// <summary>
         /// The GamesManager is used to save turns
@@ -71,7 +70,7 @@ namespace CraigStars.Server
         {
             GamesManager = gamesManager;
             GodotTaskFactory = godotTaskFactory;
-            aiTurnSubmitter = new AITurnSubmitter(turnProcessorManager, Multithreaded);
+            aiTurnSubmitter = new AITurnSubmitter(turnProcessorManager);
         }
 
         public override void _Notification(int what)
@@ -269,7 +268,7 @@ namespace CraigStars.Server
         {
             Game.TurnGeneratorAdvancedEvent += OnTurnGeneratorAdvanced;
 
-            Action generateTurn = () =>
+            await Task.Run(() =>
             {
                 try
                 {
@@ -281,15 +280,7 @@ namespace CraigStars.Server
                     log.Error("Failed to generate new turn.", e);
                     throw e;
                 }
-            };
-            if (Multithreaded)
-            {
-                await Task.Run(generateTurn);
-            }
-            else
-            {
-                generateTurn();
-            }
+            });
 
             Game.TurnGeneratorAdvancedEvent -= OnTurnGeneratorAdvanced;
 
@@ -327,7 +318,6 @@ namespace CraigStars.Server
             // TODO: remove this turn process stuff later
             // game.Players.ForEach(player => player.Settings.TurnProcessors.AddRange(TurnProcessorManager.Instance.TurnProcessors.Select(p => p.Name)));
 
-            Multithreaded = multithreaded;
             SaveToDisk = saveToDisk;
 
             SaveGame(game);
@@ -356,7 +346,6 @@ namespace CraigStars.Server
             // TODO: remove this turn process stuff later
             // game.Players.ForEach(player => player.Settings.TurnProcessors.AddRange(TurnProcessorManager.Instance.TurnProcessors.Select(p => p.Name)));
 
-            Multithreaded = multithreaded;
             SaveToDisk = saveToDisk;
 
             return game;
@@ -370,25 +359,14 @@ namespace CraigStars.Server
 
                 if (SaveToDisk && game.Year >= game.Rules.StartingYear + game.GameInfo.QuickStartTurns)
                 {
-                    if (Multithreaded)
-                    {
-                        // now that we have our json, we can save the game to dis in a separate task
-                        log.Debug($"{game.Year}: Saving game {game.Name} to disk.");
-                        // serialize the game to JSON. This must complete before we can
-                        // modify any state
-                        var gameJson = GamesManager.SerializeGame(game, Multithreaded);
+                    // now that we have our json, we can save the game to dis in a separate task
+                    log.Debug($"{game.Year}: Saving game {game.Name} to disk.");
+                    // serialize the game to JSON. This must complete before we can
+                    // modify any state
+                    var gameJson = GamesManager.SerializeGame(game);
 
-                        GamesManager.SaveGame(gameJson, Multithreaded);
-                        log.Debug($"{game.Year}: Finished saving game {game.Name} to disk.");
-                    }
-                    else
-                    {
-                        // serialize the game to JSON. This must complete before we can
-                        // modify any state
-                        var gameJson = GamesManager.SerializeGame(game, Multithreaded);
-
-                        GamesManager.SaveGame(gameJson, Multithreaded);
-                    }
+                    GamesManager.SaveGame(gameJson);
+                    log.Debug($"{game.Year}: Finished saving game {game.Name} to disk.");
                 }
             }
             catch (Exception e)

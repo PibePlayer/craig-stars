@@ -195,7 +195,7 @@ namespace CraigStars.Client
 
             PlayersManager.GameInfo = GameInfo = gameInfo;
             PlayersManager.GameInfo.Players.ForEach(p => log.Debug($"{PlayersManager.GameInfo}: Player: {p}, Submitted: {p.SubmittedTurn}"));
-            GamesManager.Instance.SavePlayer(PlayersManager.GameInfo, player);
+            var _ = GamesManager.Instance.SavePlayer(gameInfo, player);
             if (PlayersManager.Me == null)
             {
                 PlayersManager.Me = player;
@@ -219,6 +219,7 @@ namespace CraigStars.Client
             // we submitted our turn, switch to turn submitter view
             if (player == PlayersManager.Me)
             {
+                var gameInfo = PlayersManager.GameInfo;
                 player.SubmittedTurn = true;
                 if (this.IsMultiplayer())
                 {
@@ -234,11 +235,11 @@ namespace CraigStars.Client
                 turnGenerationStatus.UpdatePlayerStatuses();
 
                 // save our game
-                GamesManager.Instance.SavePlayer(PlayersManager.GameInfo, player);
+                var _ = GamesManager.Instance.SavePlayer(gameInfo, player);
             }
         }
 
-        void OnTurnSubmitted(PublicGameInfo gameInfo, PublicPlayerInfo player)
+        async void OnTurnSubmitted(PublicGameInfo gameInfo, PublicPlayerInfo player)
         {
             PlayersManager.GameInfo = GameInfo = gameInfo;
             PlayersManager.GameInfo.Players.ForEach(p => log.Debug($"{PlayersManager.GameInfo}: Player: {p}, Submitted: {p.SubmittedTurn}"));
@@ -248,7 +249,7 @@ namespace CraigStars.Client
 
             if (PlayersManager.Me != null)
             {
-                GamesManager.Instance.SavePlayerGameInfo(gameInfo, PlayersManager.Me.Num);
+                await GamesManager.Instance.SavePlayerGameInfo(gameInfo, PlayersManager.Me.Num);
             }
 
             if (player == PlayersManager.Me)
@@ -281,7 +282,7 @@ namespace CraigStars.Client
 
         }
 
-        void OnTurnUnsubmitted(PublicGameInfo gameInfo, PublicPlayerInfo player)
+        async void OnTurnUnsubmitted(PublicGameInfo gameInfo, PublicPlayerInfo player)
         {
             PlayersManager.GameInfo = GameInfo = gameInfo;
             // put this player back into rotation so they can be played
@@ -290,12 +291,12 @@ namespace CraigStars.Client
             {
                 localPlayer.SubmittedTurn = false;
                 // save our game
-                GamesManager.Instance.SavePlayer(PlayersManager.GameInfo, localPlayer);
+                await GamesManager.Instance.SavePlayer(gameInfo, localPlayer);
             }
 
             if (PlayersManager.Me != null)
             {
-                GamesManager.Instance.SavePlayerGameInfo(gameInfo, PlayersManager.Me.Num);
+                await GamesManager.Instance.SavePlayerGameInfo(gameInfo, PlayersManager.Me.Num);
             }
 
             var localPublicPlayer = GameInfo.Players.Find(p => p.Num == player.Num);
@@ -337,14 +338,14 @@ namespace CraigStars.Client
             // EventManager.PublishTurnGeneratorAdvancedEvent(state);
         }
 
-        void OnTurnPassed(PublicGameInfo gameInfo, Player player)
+        async void OnTurnPassed(PublicGameInfo gameInfo, Player player)
         {
             // replace this player in the list
             // this uses our magic HashCode override that uses playerNum as the Equals
             LocalPlayers.Remove(player);
             LocalPlayers.Add(player);
 
-            GamesManager.Instance.SavePlayer(PlayersManager.GameInfo, player);
+            await GamesManager.Instance.SavePlayer(gameInfo, player);
 
             // if we don't already have a local player, play this player
             if (PlayersManager.Me == null)

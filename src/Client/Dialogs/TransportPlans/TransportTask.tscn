@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://src/Client/Dialogs/TransportTask.cs" type="Script" id=1]
+[ext_resource path="res://src/Client/Dialogs/TransportPlans/TransportTask.cs" type="Script" id=1]
 [ext_resource path="res://src/Client/GUIColors.tres" type="Resource" id=2]
 
 [node name="TransportTask" type="HBoxContainer"]
@@ -36,7 +36,7 @@ margin_right = 246.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 text = "None"
-items = [ "None", null, false, 0, null, "Load All", null, false, 1, null, "Unload All", null, false, 2, null, "Load Amount", null, false, 3, null, "Unload Amount", null, false, 4, null, "Fill Percent", null, false, 5, null, "Wait for Percent", null, false, 6, null, "Load Dunnage", null, false, 7, null, "Set Amount To", null, false, 8, null, "Set Waypoint To", null, false, 9, null ]
+items = [ "None", null, false, 0, null, "LoadOptimal", null, false, 1, null, "Load All", null, false, 2, null, "Unload All", null, false, 3, null, "Load Amount", null, false, 4, null, "Unload Amount", null, false, 5, null, "Fill Percent", null, false, 6, null, "Wait for Percent", null, false, 7, null, "Load Dunnage", null, false, 8, null, "Set Amount To", null, false, 9, null, "Set Waypoint To", null, false, 10, null ]
 selected = 0
 __meta__ = {
 "_edit_use_anchors_": false

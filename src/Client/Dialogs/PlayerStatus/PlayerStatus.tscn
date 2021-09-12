@@ -1,15 +1,15 @@
 [gd_scene load_steps=4 format=2]
 
-[ext_resource path="res://addons/CSTable/CSTable.cs" type="Script" id=1]
-[ext_resource path="res://src/Client/Dialogs/PlayerStatus.cs" type="Script" id=2]
-[ext_resource path="res://src/Client/Dialogs/TurnGenerationStatus.tscn" type="PackedScene" id=3]
+[ext_resource path="res://src/Client/Dialogs/PlayerStatus/PlayerStatus.cs" type="Script" id=1]
+[ext_resource path="res://src/Client/Dialogs/PlayerStatus/TurnGenerationStatus.tscn" type="PackedScene" id=2]
+[ext_resource path="res://addons/CSTable/CSTable.cs" type="Script" id=3]
 
 [node name="PlayerStatus" type="TabContainer"]
 margin_right = 785.0
 margin_bottom = 614.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-script = ExtResource( 2 )
+script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -22,7 +22,7 @@ margin_top = 32.0
 margin_right = -4.0
 margin_bottom = -4.0
 
-[node name="TurnGenerationStatus" parent="Status" instance=ExtResource( 3 )]
+[node name="TurnGenerationStatus" parent="Status" instance=ExtResource( 2 )]
 margin_right = 777.0
 margin_bottom = 578.0
 
@@ -44,7 +44,7 @@ custom_constants/margin_right = 0
 custom_constants/margin_top = 0
 custom_constants/margin_left = 0
 custom_constants/margin_bottom = 0
-script = ExtResource( 1 )
+script = ExtResource( 3 )
 
 [node name="Victory Conditions" type="MarginContainer" parent="."]
 visible = false
@@ -68,7 +68,7 @@ custom_constants/margin_right = 0
 custom_constants/margin_top = 0
 custom_constants/margin_left = 0
 custom_constants/margin_bottom = 0
-script = ExtResource( 1 )
+script = ExtResource( 3 )
 
 [node name="NumCriteriaRequiredLabel" type="Label" parent="Victory Conditions/VBoxContainer"]
 margin_top = 546.0

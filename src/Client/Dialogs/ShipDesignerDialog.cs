@@ -8,9 +8,6 @@ namespace CraigStars.Client
     public class ShipDesignerDialog : GameViewDialog
     {
 
-        Button okButton;
-
-
         TabContainer tabContainer;
 
         DesignTree shipDesignTree;
@@ -35,7 +32,6 @@ namespace CraigStars.Client
         public override void _Ready()
         {
             base._Ready();
-            okButton = FindNode("OKButton") as Button;
 
             shipDesignTabsContainer = FindNode("ShipDesignTabsContainer") as Container;
             tabContainer = FindNode("TabContainer") as TabContainer;
@@ -66,8 +62,6 @@ namespace CraigStars.Client
             shipDesignTree.DesignSelectedEvent += OnShipDesignSelectedEvent;
             starbaseDesignTree.DesignSelectedEvent += OnStarbaseDesignSelectedEvent;
             hullsTechTree.TechSelectedEvent += OnHullSelectedEvent;
-
-            okButton.Connect("pressed", this, nameof(OnOk));
 
             // wire up events for the various create/edit/delete buttons
             copyDesignButton.Connect("pressed", this, nameof(OnCopyDesignButtonPressed));
@@ -142,14 +136,6 @@ namespace CraigStars.Client
                 hullHullSummary.UpdateControls();
                 createShipDesignButton.Disabled = !Me.HasTech(tech);
             }
-        }
-
-        /// <summary>
-        /// Just hide the dialog on ok
-        /// </summary>
-        void OnOk()
-        {
-            Hide();
         }
 
         void OnCopyDesignButtonPressed()

@@ -3,13 +3,13 @@ using System;
 
 namespace CraigStars.Client
 {
-    public class PlayerStatusDialog : CSDialog
+    public class PlayerStatusDialog : GameViewDialog
     {
         PlayerStatus playerStatus;
         public override void _Ready()
         {
             base._Ready();
-            playerStatus = GetNode<PlayerStatus>("MarginContainer/VBoxContainer/HBoxContainerContent/PlayerStatus");
+            playerStatus = GetNode<PlayerStatus>("MarginContainer/VBoxContainer/ContentContainer/PlayerStatus");
         }
 
         /// <summary>

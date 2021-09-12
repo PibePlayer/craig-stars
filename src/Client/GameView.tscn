@@ -59,6 +59,7 @@ position = Vector2( 520, 0 )
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="GUI" type="Control" parent="CanvasLayer"]
+visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
 rect_min_size = Vector2( 514, 0 )
@@ -233,34 +234,32 @@ size_flags_vertical = 3
 [node name="ScannerSelectedStats" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/VBoxContainer" instance=ExtResource( 2 )]
 margin_top = 848.0
 
-[node name="PlayerStatusDialog" parent="CanvasLayer" instance=ExtResource( 5 )]
+[node name="ReportsDialog" parent="CanvasLayer" instance=ExtResource( 21 )]
 
-[node name="ResearchDialog" parent="CanvasLayer" instance=ExtResource( 15 )]
-visible = false
-margin_top = -1.79613
-margin_bottom = 401.204
-
-[node name="TechBrowserDialog" parent="CanvasLayer" instance=ExtResource( 17 )]
+[node name="RaceDesignerDialog" parent="CanvasLayer" instance=ExtResource( 27 )]
 
 [node name="ProductionQueueDialog" parent="CanvasLayer" instance=ExtResource( 13 )]
 
+[node name="ShipDesignerDialog" parent="CanvasLayer" instance=ExtResource( 18 )]
+visible = false
+
+[node name="PlayerStatusDialog" parent="CanvasLayer" instance=ExtResource( 5 )]
+
+[node name="ResearchDialog" parent="CanvasLayer" instance=ExtResource( 15 )]
+
 [node name="CargoTransferDialog" parent="CanvasLayer" instance=ExtResource( 14 )]
 
-[node name="ShipDesignerDialog" parent="CanvasLayer" instance=ExtResource( 18 )]
-
-[node name="ReportsDialog" parent="CanvasLayer" instance=ExtResource( 21 )]
+[node name="TechBrowserDialog" parent="CanvasLayer" instance=ExtResource( 17 )]
+visible = false
 
 [node name="MergeFleetsDialog" parent="CanvasLayer" instance=ExtResource( 26 )]
-
-[node name="RaceDesignerDialog" parent="CanvasLayer" instance=ExtResource( 27 )]
-Editable = false
-
-[node name="BattleViewerDialog" parent="CanvasLayer" instance=ExtResource( 28 )]
 
 [node name="InGameMenu" parent="CanvasLayer" instance=ExtResource( 29 )]
 
 [node name="TransportPlansDialog" parent="CanvasLayer" instance=ExtResource( 31 )]
 
 [node name="BattlePlansDialog" parent="CanvasLayer" instance=ExtResource( 30 )]
+
+[node name="BattleViewerDialog" parent="CanvasLayer" instance=ExtResource( 28 )]
 
 [node name="OtherObjectsPopupMenu" parent="CanvasLayer" instance=ExtResource( 32 )]

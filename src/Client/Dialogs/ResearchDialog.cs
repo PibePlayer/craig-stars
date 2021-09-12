@@ -43,8 +43,6 @@ namespace CraigStars.Client
         // future techs
         FutureTechs futureTechs;
 
-        Button okButton;
-
         public override void _Ready()
         {
             base._Ready();
@@ -87,8 +85,6 @@ namespace CraigStars.Client
             biotechnologyCheckBox.Connect("pressed", this, nameof(OnTechFieldSelected));
 
             Connect("about_to_show", this, nameof(OnAboutToShow));
-            Connect("popup_hide", this, nameof(OnPopupHide));
-            okButton.Connect("pressed", this, nameof(OnOK));
 
         }
 
@@ -97,12 +93,7 @@ namespace CraigStars.Client
             UpdateControls();
         }
 
-        void OnPopupHide()
-        {
-            // nothing to do here, we don't want to save
-        }
-
-        void OnOK()
+        protected override void OnOk()
         {
             Me.Researching = GetSelectedTechField();
 

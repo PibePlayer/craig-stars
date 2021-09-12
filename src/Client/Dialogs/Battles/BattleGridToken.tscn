@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://assets/gui/tech/ShipHull/Privateer0002.png" type="Texture" id=1]
-[ext_resource path="res://src/Client/Battles/BattleGridToken.cs" type="Script" id=2]
+[ext_resource path="res://src/Client/Dialogs/Battles/BattleGridToken.cs" type="Script" id=2]
 
 [node name="BattleGridToken" type="TextureRect"]
 margin_left = 2.0

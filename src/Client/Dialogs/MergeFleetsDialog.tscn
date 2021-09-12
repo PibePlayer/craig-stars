@@ -1,84 +1,75 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://src/Client/Dialogs/MergeFleetsDialog.cs" type="Script" id=1]
+[ext_resource path="res://src/Client/Dialogs/GameViewDialog.tscn" type="PackedScene" id=2]
 
-[node name="MergeFleetsDialog" type="WindowDialog"]
-margin_right = 346.0
-margin_bottom = 252.0
+[node name="MergeFleetsDialog" instance=ExtResource( 2 )]
+margin_right = 384.0
+margin_bottom = 263.0
 window_title = "Merge Fleets"
-resizable = true
 script = ExtResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
-anchor_right = 1.0
-anchor_bottom = 1.0
-custom_constants/margin_right = 10
-custom_constants/margin_top = 5
-custom_constants/margin_left = 10
-custom_constants/margin_bottom = 5
-__meta__ = {
-"_edit_use_anchors_": false
-}
+[node name="VBoxContainer" parent="MarginContainer" index="0"]
+margin_right = 374.0
+margin_bottom = 258.0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
-margin_left = 10.0
-margin_top = 5.0
-margin_right = 336.0
-margin_bottom = 247.0
+[node name="ContentContainer" parent="MarginContainer/VBoxContainer" index="0"]
+margin_right = 364.0
+margin_bottom = 229.0
 
-[node name="VBoxContainerFleets" type="VBoxContainer" parent="MarginContainer/HBoxContainer"]
-margin_right = 232.0
-margin_bottom = 242.0
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer" index="0"]
+margin_right = 364.0
+margin_bottom = 229.0
+
+[node name="VBoxContainerFleets" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/HBoxContainer" index="0"]
+margin_right = 270.0
+margin_bottom = 229.0
 size_flags_horizontal = 3
 
-[node name="FleetsItemListLabel" type="Label" parent="MarginContainer/HBoxContainer/VBoxContainerFleets"]
-margin_right = 232.0
+[node name="FleetsItemListLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/HBoxContainer/VBoxContainerFleets" index="0"]
+margin_right = 270.0
 margin_bottom = 14.0
 text = "Select the fleets you wish to merge"
 
-[node name="FleetsItemList" type="ItemList" parent="MarginContainer/HBoxContainer/VBoxContainerFleets"]
+[node name="FleetsItemList" type="ItemList" parent="MarginContainer/VBoxContainer/ContentContainer/HBoxContainer/VBoxContainerFleets" index="1"]
 margin_top = 18.0
-margin_right = 232.0
-margin_bottom = 242.0
+margin_right = 270.0
+margin_bottom = 229.0
 size_flags_vertical = 3
 select_mode = 1
 
-[node name="VBoxContainerButtons" type="VBoxContainer" parent="MarginContainer/HBoxContainer"]
-margin_left = 236.0
-margin_right = 326.0
-margin_bottom = 242.0
+[node name="VBoxContainerButtons" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/HBoxContainer" index="1"]
+margin_left = 274.0
+margin_right = 364.0
+margin_bottom = 229.0
 
-[node name="OKButton" type="Button" parent="MarginContainer/HBoxContainer/VBoxContainerButtons"]
+[node name="SpacerLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/HBoxContainer/VBoxContainerButtons" index="0"]
 margin_right = 90.0
-margin_bottom = 20.0
-rect_min_size = Vector2( 80, 0 )
-text = "OK"
+margin_bottom = 14.0
 
-[node name="CancelButton" type="Button" parent="MarginContainer/HBoxContainer/VBoxContainerButtons"]
-margin_top = 24.0
+[node name="SelectAllButton" type="Button" parent="MarginContainer/VBoxContainer/ContentContainer/HBoxContainer/VBoxContainerButtons" index="1"]
+margin_top = 18.0
 margin_right = 90.0
-margin_bottom = 44.0
-rect_min_size = Vector2( 80, 0 )
-text = "Cancel"
-
-[node name="SpacerLabel" type="Label" parent="MarginContainer/HBoxContainer/VBoxContainerButtons"]
-margin_top = 48.0
-margin_right = 90.0
-margin_bottom = 62.0
-
-[node name="SelectAllButton" type="Button" parent="MarginContainer/HBoxContainer/VBoxContainerButtons"]
-margin_top = 66.0
-margin_right = 90.0
-margin_bottom = 86.0
+margin_bottom = 38.0
 rect_min_size = Vector2( 80, 0 )
 text = "Select All"
 
-[node name="UnselectAllButton" type="Button" parent="MarginContainer/HBoxContainer/VBoxContainerButtons"]
-margin_top = 90.0
+[node name="UnselectAllButton" type="Button" parent="MarginContainer/VBoxContainer/ContentContainer/HBoxContainer/VBoxContainerButtons" index="2"]
+margin_top = 42.0
 margin_right = 90.0
-margin_bottom = 110.0
+margin_bottom = 62.0
 rect_min_size = Vector2( 80, 0 )
 text = "Unselect All"
+
+[node name="HBoxContainerButtons" parent="MarginContainer/VBoxContainer" index="1"]
+margin_top = 233.0
+margin_right = 364.0
+margin_bottom = 253.0
+
+[node name="HBoxContainerOKButton" parent="MarginContainer/VBoxContainer/HBoxContainerButtons" index="0"]
+margin_right = 364.0
+
+[node name="OKButton" parent="MarginContainer/VBoxContainer/HBoxContainerButtons/HBoxContainerOKButton" index="0"]
+margin_left = 274.0
+margin_right = 364.0
+rect_min_size = Vector2( 90, 0 )

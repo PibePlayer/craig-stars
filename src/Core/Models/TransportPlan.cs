@@ -6,23 +6,20 @@ namespace CraigStars
     /// <summary>
     /// Players can store transport plans to quickly apply a plan to a waypoint
     /// </summary>
-    public class TransportPlan
+    public class TransportPlan : PlayerPlan<TransportPlan>
     {
-        public TransportPlan() { }
-        public TransportPlan(string name)
+        public TransportPlan() : base() { }
+        public TransportPlan(string name) : base(name)
         {
-            Name = name;
         }
 
-        public Guid Guid { get; set; } = Guid.NewGuid();
-        public string Name { get; set; }
         public WaypointTransportTasks Tasks { get; set; }
 
         /// <summary>
         /// Make a clone of this transport plan
         /// </summary>
         /// <returns></returns>
-        public TransportPlan Clone()
+        public override TransportPlan Clone()
         {
             return new TransportPlan()
             {

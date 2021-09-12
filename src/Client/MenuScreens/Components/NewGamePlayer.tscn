@@ -8,7 +8,7 @@
 script = ExtResource( 2 )
 
 [node name="HBoxContainer" parent="." index="0"]
-margin_right = 392.0
+margin_right = 700.0
 margin_bottom = 96.0
 
 [node name="PlayerNumLabel" parent="HBoxContainer" index="0"]
@@ -16,31 +16,31 @@ margin_top = 29.0
 margin_bottom = 67.0
 
 [node name="PlayerDetails" parent="HBoxContainer" index="1"]
-margin_right = 278.0
+margin_right = 586.0
 margin_bottom = 96.0
 
 [node name="NameHBoxContainer" type="HBoxContainer" parent="HBoxContainer/PlayerDetails" index="0"]
-margin_right = 234.0
+margin_right = 542.0
 margin_bottom = 24.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="NameLineEdit" type="LineEdit" parent="HBoxContainer/PlayerDetails/NameHBoxContainer" index="0"]
-margin_right = 118.0
+margin_right = 426.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 placeholder_text = "Player Name"
 
 [node name="AIControlledCheckBox" type="CheckBox" parent="HBoxContainer/PlayerDetails/NameHBoxContainer" index="1"]
-margin_left = 122.0
-margin_right = 234.0
+margin_left = 430.0
+margin_right = 542.0
 margin_bottom = 24.0
 text = "AI Controlled"
 
 [node name="AIHBoxContainer" type="HBoxContainer" parent="HBoxContainer/PlayerDetails" index="1"]
 margin_top = 28.0
-margin_right = 234.0
+margin_right = 542.0
 margin_bottom = 48.0
 __meta__ = {
 "_edit_use_anchors_": false
@@ -55,39 +55,39 @@ text = "Difficulty"
 
 [node name="AIDifficultyOptionButton" type="OptionButton" parent="HBoxContainer/PlayerDetails/AIHBoxContainer" index="1"]
 margin_left = 84.0
-margin_right = 234.0
+margin_right = 542.0
 margin_bottom = 20.0
 rect_min_size = Vector2( 150, 0 )
 size_flags_horizontal = 3
 
 [node name="RaceOptionsHBoxContainer" type="HBoxContainer" parent="HBoxContainer/PlayerDetails" index="2"]
 margin_top = 52.0
-margin_right = 234.0
+margin_right = 542.0
 margin_bottom = 72.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="RaceOptionButton" type="OptionButton" parent="HBoxContainer/PlayerDetails/RaceOptionsHBoxContainer" index="0"]
-margin_right = 150.0
+margin_right = 458.0
 margin_bottom = 20.0
 size_flags_horizontal = 3
 
 [node name="NewRaceButton" type="Button" parent="HBoxContainer/PlayerDetails/RaceOptionsHBoxContainer" index="1"]
-margin_left = 154.0
-margin_right = 194.0
+margin_left = 462.0
+margin_right = 502.0
 margin_bottom = 20.0
 text = "New"
 
 [node name="EditRaceButton" type="Button" parent="HBoxContainer/PlayerDetails/RaceOptionsHBoxContainer" index="2"]
-margin_left = 198.0
-margin_right = 234.0
+margin_left = 506.0
+margin_right = 542.0
 margin_bottom = 20.0
 text = "Edit"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/PlayerDetails" index="3"]
 margin_top = 76.0
-margin_right = 234.0
+margin_right = 542.0
 margin_bottom = 96.0
 __meta__ = {
 "_edit_use_anchors_": false
@@ -102,18 +102,19 @@ text = "Color"
 
 [node name="ColorPickerButton" type="ColorPickerButton" parent="HBoxContainer/PlayerDetails/HBoxContainer" index="1"]
 margin_left = 84.0
-margin_right = 234.0
+margin_right = 542.0
 margin_bottom = 20.0
 size_flags_horizontal = 3
 text = "Color"
 edit_alpha = false
 
 [node name="PlayerReady" parent="HBoxContainer" index="2"]
-margin_left = 282.0
-margin_right = 392.0
+margin_left = 590.0
+margin_right = 700.0
 margin_bottom = 96.0
 
 [node name="RaceDesignerDialog" parent="." index="1" instance=ExtResource( 3 )]
+visible = false
 margin_top = 100.0
-margin_right = 1440.0
-margin_bottom = 1000.0
+margin_right = 700.0
+margin_bottom = 505.0

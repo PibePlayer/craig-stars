@@ -20,7 +20,6 @@ namespace CraigStars.Client
         Button clearButton;
         Button prevButton;
         Button nextButton;
-        Button okButton;
         CheckBox contributesOnlyLeftoverToResearchCheckbox;
 
         CostGrid availableItemCostGrid;
@@ -44,7 +43,6 @@ namespace CraigStars.Client
             clearButton = (Button)FindNode("ClearButton");
             prevButton = (Button)FindNode("PrevButton");
             nextButton = (Button)FindNode("NextButton");
-            okButton = (Button)FindNode("OKButton");
             contributesOnlyLeftoverToResearchCheckbox = (CheckBox)FindNode("ContributesOnlyLeftoverToResearchCheckbox");
 
             availableItemCostGrid = (CostGrid)FindNode("AvailableItemCostGrid");
@@ -62,7 +60,6 @@ namespace CraigStars.Client
 
             nextButton.Connect("pressed", this, nameof(OnNextButtonPressed));
             prevButton.Connect("pressed", this, nameof(OnPrevButtonPressed));
-            okButton.Connect("pressed", this, nameof(OnOk));
 
             Connect("about_to_show", this, nameof(OnAboutToShow));
             Connect("popup_hide", this, nameof(OnPopupHide));
@@ -164,7 +161,7 @@ namespace CraigStars.Client
         /// <summary>
         /// When the ok button is pressed, save all these changes to the other players
         /// </summary>
-        void OnOk()
+        protected override void OnOk()
         {
             Save();
             Hide();

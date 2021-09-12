@@ -7,22 +7,16 @@ namespace CraigStars.Client
 {
     public class ReportsDialog : GameViewDialog
     {
-        Button okButton;
-
         PlanetsReportTable planetsTable;
         FleetsReportTable fleetsTable;
 
         public override void _Ready()
         {
             base._Ready();
-            okButton = FindNode("OKButton") as Button;
-            planetsTable = GetNode<PlanetsReportTable>("MarginContainer/VBoxContainer/TabContainer/Planets/PlanetsTable");
-            fleetsTable = GetNode<FleetsReportTable>("MarginContainer/VBoxContainer/TabContainer/Fleets/FleetsTable");
+            planetsTable = GetNode<PlanetsReportTable>("MarginContainer/VBoxContainer/ContentContainer/TabContainer/Planets/PlanetsTable");
+            fleetsTable = GetNode<FleetsReportTable>("MarginContainer/VBoxContainer/ContentContainer/TabContainer/Fleets/FleetsTable");
 
-            okButton.Connect("pressed", this, nameof(OnOK));
         }
-
-        void OnOK() => Hide();
 
         protected override void OnVisibilityChanged()
         {

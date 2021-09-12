@@ -1019,9 +1019,16 @@ namespace CraigStars.Client
                                 }
                             }
 
-                            var newCommandedMapObject = mapObjectsAtLocation[commandedMapObjectIndex];
-                            log.Debug($"Commanding MapObject {newCommandedMapObject} (index {commandedMapObjectIndex})");
-                            EventManager.PublishCommandMapObjectEvent(newCommandedMapObject.MapObject);
+                            if (commandedMapObjectIndex >= 0 && commandedMapObjectIndex < mapObjectsAtLocation.Count)
+                            {
+                                var newCommandedMapObject = mapObjectsAtLocation[commandedMapObjectIndex];
+                                log.Debug($"Commanding MapObject {newCommandedMapObject} (index {commandedMapObjectIndex})");
+                                EventManager.PublishCommandMapObjectEvent(newCommandedMapObject.MapObject);
+                            }
+                            else
+                            {
+                                log.Error($"Cannot command next MapObject, index {commandedMapObjectIndex} is out of range [0, {mapObjectsAtLocation.Count}]");
+                            }
                         }
                         else if (selectedMapObject == mapObject && selectedMapObject.OwnedByMe)
                         {

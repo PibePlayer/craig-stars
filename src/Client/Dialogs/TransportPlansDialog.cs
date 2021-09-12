@@ -7,41 +7,20 @@ using System.Collections.Generic;
 namespace CraigStars.Client
 {
 
-    public class TransportPlansDialog : GameViewDialog
+    public class TransportPlansDialog : PlayerPlansDialog<TransportPlan>
     {
-        ItemList transportPlansItemList;
         TransportPlanDetail transportPlanDetail;
-        Label detailPlanNameLabel;
 
-        Button okButton;
-        Button newButton;
-        Button deleteButton;
-
-        List<TransportPlan> transportPlans = new List<TransportPlan>();
-        List<TransportPlan> deletedPlans = new List<TransportPlan>();
-        TransportPlan selectedPlan;
-
+        protected override List<TransportPlan> SourcePlans => Me.TransportPlans;
 
         public override void _Ready()
         {
             base._Ready();
-            transportPlansItemList = GetNode<ItemList>("MarginContainer/VBoxContainer/HBoxContainer/VBoxContainerList/TransportPlansItemList");
-            transportPlanDetail = GetNode<TransportPlanDetail>("MarginContainer/VBoxContainer/HBoxContainer/VBoxContainerDetail/TransportPlanDetail");
-            detailPlanNameLabel = GetNode<Label>("MarginContainer/VBoxContainer/HBoxContainer/VBoxContainerDetail/DetailPlanNameLabel");
-
-            okButton = GetNode<Button>("MarginContainer/VBoxContainer/HBoxContainerButtons/HBoxContainer2/OKButton");
-            newButton = GetNode<Button>("MarginContainer/VBoxContainer/HBoxContainerButtons/HBoxContainer/NewButton");
-            deleteButton = GetNode<Button>("MarginContainer/VBoxContainer/HBoxContainerButtons/HBoxContainer/DeleteButton");
-
-            transportPlansItemList.Connect("item_selected", this, nameof(OnTransportPlanSelected));
-
-            okButton.Connect("pressed", this, nameof(OnOk));
-            newButton.Connect("pressed", this, nameof(OnNewButtonPressed));
-            deleteButton.Connect("pressed", this, nameof(OnDeleteButtonPressed));
-
+            transportPlanDetail = GetNode<TransportPlanDetail>("MarginContainer/VBoxContainer/ContentContainer/HBoxContainer/VBoxContainerDetail/TransportPlanDetail");
+            transportPlanDetail.NameChangedEvent += OnNameChanged;
 
             // uncomment to test in scene
-            // PlayersManager.Instance.SetupPlayers();
+            // PlayersManager.Me = new Player();
             // Me.TransportPlans.Add(new TransportPlan("Default"));
             // Me.TransportPlans.Add(new TransportPlan("Load Colonists")
             // {
@@ -51,30 +30,31 @@ namespace CraigStars.Client
             // {
             //     Tasks = new WaypointTransportTasks(colonists: new WaypointTransportTask(WaypointTaskTransportAction.UnloadAll))
             // });
+
             // Show();
         }
 
-        /// <summary>
-        /// When the dialog becomes visible, update the controls for this player
-        /// </summary>
-        protected override void OnVisibilityChanged()
+        public override void _Notification(int what)
         {
-            if (IsVisibleInTree())
+            base._Notification(what);
+            if (what == NotificationPredelete)
             {
-                deletedPlans.Clear();
-                transportPlans.Clear();
-                Me.TransportPlans.ForEach(plan => transportPlans.Add(plan.Clone()));
-                UpdateTransportPlansItemList();
-                OnTransportPlanSelected(0);
+                transportPlanDetail.NameChangedEvent -= OnNameChanged;
             }
+        }
+
+        private void OnNameChanged(string newText)
+        {
+            // simulate a regular name change event
+            OnNameLineEditTextChanged(newText);
         }
 
         /// <summary>
         /// Save the changes back to the user
         /// </summary>
-        void OnOk()
+        protected override void OnOk()
         {
-            foreach (var plan in transportPlans)
+            foreach (var plan in plans)
             {
                 if (Me.TransportPlansByGuid.TryGetValue(plan.Guid, out var existingPlan))
                 {
@@ -109,58 +89,10 @@ namespace CraigStars.Client
             Hide();
         }
 
-        void OnNewButtonPressed()
+
+        protected override void OnPlanSelected()
         {
-            transportPlans.Add(new TransportPlan($"Battle Plan {transportPlans.Count + 1}"));
-            UpdateTransportPlansItemList();
+            transportPlanDetail.Plan = selectedPlan;
         }
-
-        /// <summary>
-        /// Delete the currently selected battle plan
-        /// TODO: Warn about in use battle plans
-        /// </summary>
-        void OnDeleteButtonPressed()
-        {
-            if (selectedPlan != null && selectedPlan != transportPlans[0])
-            {
-                deletedPlans.Add(selectedPlan);
-                transportPlans.Remove(selectedPlan);
-                UpdateTransportPlansItemList();
-                OnTransportPlanSelected(0);
-            }
-        }
-
-        void UpdateTransportPlansItemList()
-        {
-            transportPlansItemList.Clear();
-            transportPlans.Each((plan, index) =>
-            {
-                transportPlansItemList.AddItem(plan.Name);
-                if (index == 0)
-                {
-                    transportPlansItemList.SetItemCustomBgColor(0, Colors.DarkBlue);
-                }
-            });
-        }
-
-        void OnTransportPlanSelected(int index)
-        {
-            deleteButton.Disabled = false;
-            transportPlanDetail.ShowName = true;
-
-            if (index >= 0 && index < transportPlans.Count)
-            {
-                if (index == 0)
-                {
-                    // The default can't be deleted or have its name changed
-                    deleteButton.Disabled = true;
-                    transportPlanDetail.ShowName = false;
-                }
-                selectedPlan = transportPlans[index];
-                detailPlanNameLabel.Text = selectedPlan.Name;
-                transportPlanDetail.Plan = selectedPlan;
-            }
-        }
-
     }
 }

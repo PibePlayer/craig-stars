@@ -1,47 +1,33 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
-[ext_resource path="res://src/Client/Dialogs/ReportsDialog.cs" type="Script" id=1]
+[ext_resource path="res://src/Client/Dialogs/GameViewDialog.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/Client/Controls/ReportTable.tscn" type="PackedScene" id=2]
 [ext_resource path="res://src/Client/Reports/FleetsReportTable.cs" type="Script" id=3]
 [ext_resource path="res://src/Client/Reports/PlanetsReportTable.cs" type="Script" id=4]
+[ext_resource path="res://src/Client/Dialogs/ReportsDialog.cs" type="Script" id=5]
 
-[node name="ReportsDialog" type="WindowDialog"]
-margin_right = 1075.0
-margin_bottom = 767.0
+[node name="ReportsDialog" instance=ExtResource( 1 )]
+margin_right = 983.0
+margin_bottom = 585.0
+rect_min_size = Vector2( 1080, 770 )
 window_title = "Reports"
-resizable = true
-script = ExtResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+script = ExtResource( 5 )
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
-anchor_right = 1.0
-anchor_bottom = 1.0
-custom_constants/margin_right = 10
-custom_constants/margin_top = 5
-custom_constants/margin_left = 10
-custom_constants/margin_bottom = 5
-__meta__ = {
-"_edit_use_anchors_": false
-}
+[node name="VBoxContainer" parent="MarginContainer" index="0"]
+margin_right = 1070.0
+margin_bottom = 765.0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
-margin_left = 10.0
-margin_top = 5.0
-margin_right = 1065.0
-margin_bottom = 762.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
+[node name="ContentContainer" parent="MarginContainer/VBoxContainer" index="0"]
+margin_right = 1060.0
+margin_bottom = 736.0
 
-[node name="TabContainer" type="TabContainer" parent="MarginContainer/VBoxContainer"]
-margin_right = 1055.0
-margin_bottom = 733.0
+[node name="TabContainer" type="TabContainer" parent="MarginContainer/VBoxContainer/ContentContainer" index="0"]
+margin_right = 1060.0
+margin_bottom = 736.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Planets" type="MarginContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
+[node name="Planets" type="MarginContainer" parent="MarginContainer/VBoxContainer/ContentContainer/TabContainer" index="0"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 4.0
@@ -49,12 +35,12 @@ margin_top = 32.0
 margin_right = -4.0
 margin_bottom = -4.0
 
-[node name="PlanetsTable" parent="MarginContainer/VBoxContainer/TabContainer/Planets" instance=ExtResource( 2 )]
-margin_right = 1047.0
-margin_bottom = 697.0
+[node name="PlanetsTable" parent="MarginContainer/VBoxContainer/ContentContainer/TabContainer/Planets" index="0" instance=ExtResource( 2 )]
+margin_right = 1052.0
+margin_bottom = 700.0
 script = ExtResource( 4 )
 
-[node name="Fleets" type="MarginContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
+[node name="Fleets" type="MarginContainer" parent="MarginContainer/VBoxContainer/ContentContainer/TabContainer" index="1"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -63,20 +49,19 @@ margin_top = 32.0
 margin_right = -4.0
 margin_bottom = -4.0
 
-[node name="FleetsTable" parent="MarginContainer/VBoxContainer/TabContainer/Fleets" instance=ExtResource( 2 )]
-margin_right = 1047.0
-margin_bottom = 697.0
+[node name="FleetsTable" parent="MarginContainer/VBoxContainer/ContentContainer/TabContainer/Fleets" index="0" instance=ExtResource( 2 )]
+margin_right = 1052.0
+margin_bottom = 700.0
 script = ExtResource( 3 )
 
-[node name="HBoxContainerButtons" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
-margin_top = 737.0
-margin_right = 1055.0
-margin_bottom = 757.0
-alignment = 2
+[node name="HBoxContainerButtons" parent="MarginContainer/VBoxContainer" index="1"]
+margin_top = 740.0
+margin_right = 1060.0
+margin_bottom = 760.0
 
-[node name="OKButton" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainerButtons"]
-margin_left = 975.0
-margin_right = 1055.0
-margin_bottom = 20.0
-rect_min_size = Vector2( 80, 0 )
-text = "OK"
+[node name="HBoxContainerOKButton" parent="MarginContainer/VBoxContainer/HBoxContainerButtons" index="0"]
+margin_right = 1060.0
+
+[node name="OKButton" parent="MarginContainer/VBoxContainer/HBoxContainerButtons/HBoxContainerOKButton" index="0"]
+margin_left = 980.0
+margin_right = 1060.0

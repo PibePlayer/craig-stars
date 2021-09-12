@@ -5,7 +5,7 @@ using System;
 
 namespace CraigStars.Client
 {
-    public class CargoTransferDialog : CSDialog
+    public class CargoTransferDialog : GameViewDialog
     {
         static CSLog log = LogProvider.GetLogger(typeof(CargoTransferDialog));
 

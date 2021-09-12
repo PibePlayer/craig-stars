@@ -9,6 +9,8 @@ namespace CraigStars
 {
     public class TransportPlanDetail : VBoxContainer
     {
+        public event Action<string> NameChangedEvent;
+        
         public TransportPlan Plan
         {
             get => plan;
@@ -76,6 +78,7 @@ namespace CraigStars
             if (Plan != null)
             {
                 Plan.Name = newText;
+                NameChangedEvent?.Invoke(newText);
             }
         }
 

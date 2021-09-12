@@ -1,56 +1,45 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
-[ext_resource path="res://src/Client/Dialogs/ShipDesignerDialog.cs" type="Script" id=1]
+[ext_resource path="res://src/Client/Dialogs/GameViewDialog.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/Client/ShipDesigner/DesignTree.tscn" type="PackedScene" id=2]
 [ext_resource path="res://src/Client/ShipDesigner/HullSummary.tscn" type="PackedScene" id=3]
 [ext_resource path="res://src/Client/Controls/TechTree.tscn" type="PackedScene" id=4]
 [ext_resource path="res://src/Client/ShipDesigner/ShipDesigner.tscn" type="PackedScene" id=5]
+[ext_resource path="res://src/Client/Dialogs/ShipDesignerDialog.cs" type="Script" id=6]
 
-[node name="ShipDesignerDialog" type="WindowDialog"]
-margin_right = 1075.0
-margin_bottom = 767.0
+[node name="ShipDesignerDialog" instance=ExtResource( 1 )]
+rect_min_size = Vector2( 1075, 770 )
 window_title = "Ship Designer"
-resizable = true
-script = ExtResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+script = ExtResource( 6 )
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
-anchor_right = 1.0
-anchor_bottom = 1.0
-custom_constants/margin_right = 10
-custom_constants/margin_top = 5
-custom_constants/margin_left = 10
-custom_constants/margin_bottom = 5
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="ShipDesigner" parent="MarginContainer" instance=ExtResource( 5 )]
-visible = false
-margin_left = 10.0
-margin_top = 5.0
+[node name="VBoxContainer" parent="MarginContainer" index="0"]
 margin_right = 1065.0
-margin_bottom = 762.0
+margin_bottom = 765.0
+
+[node name="ContentContainer" parent="MarginContainer/VBoxContainer" index="0"]
+margin_right = 1055.0
+margin_bottom = 736.0
+
+[node name="ShipDesigner" parent="MarginContainer/VBoxContainer/ContentContainer" index="0" instance=ExtResource( 5 )]
+visible = false
+margin_right = 1055.0
+margin_bottom = 736.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="ShipDesignTabsContainer" type="VBoxContainer" parent="MarginContainer"]
-margin_left = 10.0
-margin_top = 5.0
-margin_right = 1065.0
-margin_bottom = 762.0
+[node name="ShipDesignTabsContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer" index="1"]
+margin_right = 1055.0
+margin_bottom = 736.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="TabContainer" type="TabContainer" parent="MarginContainer/ShipDesignTabsContainer"]
+[node name="TabContainer" type="TabContainer" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDesignTabsContainer" index="0"]
 margin_right = 1055.0
-margin_bottom = 733.0
+margin_bottom = 736.0
 size_flags_vertical = 3
 
-[node name="Ships" type="MarginContainer" parent="MarginContainer/ShipDesignTabsContainer/TabContainer"]
+[node name="Ships" type="MarginContainer" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDesignTabsContainer/TabContainer" index="0"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 4.0
@@ -58,53 +47,53 @@ margin_top = 32.0
 margin_right = -4.0
 margin_bottom = -4.0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/ShipDesignTabsContainer/TabContainer/Ships"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDesignTabsContainer/TabContainer/Ships" index="0"]
 margin_right = 1047.0
-margin_bottom = 697.0
+margin_bottom = 700.0
 
-[node name="ShipDesignTree" parent="MarginContainer/ShipDesignTabsContainer/TabContainer/Ships/HBoxContainer" instance=ExtResource( 2 )]
-margin_bottom = 697.0
+[node name="ShipDesignTree" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDesignTabsContainer/TabContainer/Ships/HBoxContainer" index="0" instance=ExtResource( 2 )]
+margin_bottom = 700.0
 ShowDesigns = 1
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/ShipDesignTabsContainer/TabContainer/Ships/HBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDesignTabsContainer/TabContainer/Ships/HBoxContainer" index="1"]
 margin_left = 304.0
 margin_right = 1047.0
-margin_bottom = 697.0
+margin_bottom = 700.0
 size_flags_horizontal = 3
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/ShipDesignTabsContainer/TabContainer/Ships/HBoxContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDesignTabsContainer/TabContainer/Ships/HBoxContainer/VBoxContainer" index="0"]
 margin_right = 743.0
 margin_bottom = 20.0
 alignment = 2
 
-[node name="CopyDesignButton" type="Button" parent="MarginContainer/ShipDesignTabsContainer/TabContainer/Ships/HBoxContainer/VBoxContainer/HBoxContainer"]
+[node name="CopyDesignButton" type="Button" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDesignTabsContainer/TabContainer/Ships/HBoxContainer/VBoxContainer/HBoxContainer" index="0"]
 margin_left = 601.0
 margin_right = 644.0
 margin_bottom = 20.0
 text = "Copy"
 
-[node name="EditDesignButton" type="Button" parent="MarginContainer/ShipDesignTabsContainer/TabContainer/Ships/HBoxContainer/VBoxContainer/HBoxContainer"]
+[node name="EditDesignButton" type="Button" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDesignTabsContainer/TabContainer/Ships/HBoxContainer/VBoxContainer/HBoxContainer" index="1"]
 margin_left = 648.0
 margin_right = 684.0
 margin_bottom = 20.0
 text = "Edit"
 
-[node name="DeleteDesignButton" type="Button" parent="MarginContainer/ShipDesignTabsContainer/TabContainer/Ships/HBoxContainer/VBoxContainer/HBoxContainer"]
+[node name="DeleteDesignButton" type="Button" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDesignTabsContainer/TabContainer/Ships/HBoxContainer/VBoxContainer/HBoxContainer" index="2"]
 margin_left = 688.0
 margin_right = 743.0
 margin_bottom = 20.0
 text = "Delete"
 
-[node name="ShipHullSummary" parent="MarginContainer/ShipDesignTabsContainer/TabContainer/Ships/HBoxContainer/VBoxContainer" instance=ExtResource( 3 )]
+[node name="ShipHullSummary" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDesignTabsContainer/TabContainer/Ships/HBoxContainer/VBoxContainer" index="1" instance=ExtResource( 3 )]
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_top = 24.0
 margin_right = 743.0
-margin_bottom = 697.0
+margin_bottom = 700.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Starbases" type="MarginContainer" parent="MarginContainer/ShipDesignTabsContainer/TabContainer"]
+[node name="Starbases" type="MarginContainer" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDesignTabsContainer/TabContainer" index="1"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -113,44 +102,44 @@ margin_top = 32.0
 margin_right = -4.0
 margin_bottom = -4.0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/ShipDesignTabsContainer/TabContainer/Starbases"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDesignTabsContainer/TabContainer/Starbases" index="0"]
 margin_right = 1047.0
-margin_bottom = 697.0
+margin_bottom = 700.0
 
-[node name="StarbaseDesignTree" parent="MarginContainer/ShipDesignTabsContainer/TabContainer/Starbases/HBoxContainer" instance=ExtResource( 2 )]
+[node name="StarbaseDesignTree" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDesignTabsContainer/TabContainer/Starbases/HBoxContainer" index="0" instance=ExtResource( 2 )]
 margin_bottom = 697.0
 ShowDesigns = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/ShipDesignTabsContainer/TabContainer/Starbases/HBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDesignTabsContainer/TabContainer/Starbases/HBoxContainer" index="1"]
 margin_left = 304.0
 margin_right = 1047.0
 margin_bottom = 697.0
 size_flags_horizontal = 3
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/ShipDesignTabsContainer/TabContainer/Starbases/HBoxContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDesignTabsContainer/TabContainer/Starbases/HBoxContainer/VBoxContainer" index="0"]
 margin_right = 743.0
 margin_bottom = 20.0
 alignment = 2
 
-[node name="CopyStarbaseDesignButton" type="Button" parent="MarginContainer/ShipDesignTabsContainer/TabContainer/Starbases/HBoxContainer/VBoxContainer/HBoxContainer"]
+[node name="CopyStarbaseDesignButton" type="Button" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDesignTabsContainer/TabContainer/Starbases/HBoxContainer/VBoxContainer/HBoxContainer" index="0"]
 margin_left = 606.0
 margin_right = 649.0
 margin_bottom = 20.0
 text = "Copy"
 
-[node name="EditStarbaseDesignButton" type="Button" parent="MarginContainer/ShipDesignTabsContainer/TabContainer/Starbases/HBoxContainer/VBoxContainer/HBoxContainer"]
+[node name="EditStarbaseDesignButton" type="Button" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDesignTabsContainer/TabContainer/Starbases/HBoxContainer/VBoxContainer/HBoxContainer" index="1"]
 margin_left = 653.0
 margin_right = 696.0
 margin_bottom = 20.0
 text = "Edit"
 
-[node name="DeleteStarbaseDesignButton" type="Button" parent="MarginContainer/ShipDesignTabsContainer/TabContainer/Starbases/HBoxContainer/VBoxContainer/HBoxContainer"]
+[node name="DeleteStarbaseDesignButton" type="Button" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDesignTabsContainer/TabContainer/Starbases/HBoxContainer/VBoxContainer/HBoxContainer" index="2"]
 margin_left = 700.0
 margin_right = 743.0
 margin_bottom = 20.0
 text = "Delete"
 
-[node name="StarbaseHullSummary" parent="MarginContainer/ShipDesignTabsContainer/TabContainer/Starbases/HBoxContainer/VBoxContainer" instance=ExtResource( 3 )]
+[node name="StarbaseHullSummary" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDesignTabsContainer/TabContainer/Starbases/HBoxContainer/VBoxContainer" index="1" instance=ExtResource( 3 )]
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_top = 24.0
@@ -158,7 +147,7 @@ margin_right = 743.0
 margin_bottom = 674.0
 size_flags_horizontal = 3
 
-[node name="Hulls" type="MarginContainer" parent="MarginContainer/ShipDesignTabsContainer/TabContainer"]
+[node name="Hulls" type="MarginContainer" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDesignTabsContainer/TabContainer" index="2"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -167,33 +156,33 @@ margin_top = 32.0
 margin_right = -4.0
 margin_bottom = -4.0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/ShipDesignTabsContainer/TabContainer/Hulls"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDesignTabsContainer/TabContainer/Hulls" index="0"]
 margin_right = 1047.0
-margin_bottom = 697.0
+margin_bottom = 700.0
 
-[node name="HullsTechTree" parent="MarginContainer/ShipDesignTabsContainer/TabContainer/Hulls/HBoxContainer" instance=ExtResource( 4 )]
+[node name="HullsTechTree" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDesignTabsContainer/TabContainer/Hulls/HBoxContainer" index="0" instance=ExtResource( 4 )]
 margin_bottom = 697.0
 TechsToDisplay = 4
 OnlyAvailable = true
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/ShipDesignTabsContainer/TabContainer/Hulls/HBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDesignTabsContainer/TabContainer/Hulls/HBoxContainer" index="1"]
 margin_left = 304.0
 margin_right = 1047.0
 margin_bottom = 697.0
 size_flags_horizontal = 3
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/ShipDesignTabsContainer/TabContainer/Hulls/HBoxContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDesignTabsContainer/TabContainer/Hulls/HBoxContainer/VBoxContainer" index="0"]
 margin_right = 743.0
 margin_bottom = 20.0
 alignment = 2
 
-[node name="CreateShipDesignButton" type="Button" parent="MarginContainer/ShipDesignTabsContainer/TabContainer/Hulls/HBoxContainer/VBoxContainer/HBoxContainer"]
+[node name="CreateShipDesignButton" type="Button" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDesignTabsContainer/TabContainer/Hulls/HBoxContainer/VBoxContainer/HBoxContainer" index="0"]
 margin_left = 642.0
 margin_right = 743.0
 margin_bottom = 20.0
 text = "Create Design"
 
-[node name="HullHullSummary" parent="MarginContainer/ShipDesignTabsContainer/TabContainer/Hulls/HBoxContainer/VBoxContainer" instance=ExtResource( 3 )]
+[node name="HullHullSummary" parent="MarginContainer/VBoxContainer/ContentContainer/ShipDesignTabsContainer/TabContainer/Hulls/HBoxContainer/VBoxContainer" index="1" instance=ExtResource( 3 )]
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_top = 24.0
@@ -201,15 +190,14 @@ margin_right = 743.0
 margin_bottom = 674.0
 size_flags_horizontal = 3
 
-[node name="HBoxContainerButtons" type="HBoxContainer" parent="MarginContainer/ShipDesignTabsContainer"]
-margin_top = 737.0
+[node name="HBoxContainerButtons" parent="MarginContainer/VBoxContainer" index="1"]
+margin_top = 740.0
 margin_right = 1055.0
-margin_bottom = 757.0
-alignment = 2
+margin_bottom = 760.0
 
-[node name="OKButton" type="Button" parent="MarginContainer/ShipDesignTabsContainer/HBoxContainerButtons"]
+[node name="HBoxContainerOKButton" parent="MarginContainer/VBoxContainer/HBoxContainerButtons" index="0"]
+margin_right = 1055.0
+
+[node name="OKButton" parent="MarginContainer/VBoxContainer/HBoxContainerButtons/HBoxContainerOKButton" index="0"]
 margin_left = 975.0
 margin_right = 1055.0
-margin_bottom = 20.0
-rect_min_size = Vector2( 80, 0 )
-text = "OK"

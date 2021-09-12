@@ -11,10 +11,17 @@ namespace CraigStars.Client
     {
         protected Player Me { get => PlayersManager.Me; }
         protected PublicGameInfo GameInfo { get => PlayersManager.GameInfo; }
+        protected Button okButton;
 
         public override void _Ready()
         {
             base._Ready();
+
+            okButton = GetNode("MarginContainer/VBoxContainer/HBoxContainerButtons/HBoxContainerOKButton/OKButton") as Button;
+            // TODO: once we migrate dialogs, remove this
+            okButton ??= FindNode("OKButton") as Button;
+            okButton?.Connect("pressed", this, nameof(OnOk));
+
             Connect("visibility_changed", this, nameof(OnVisibilityChanged));
         }
 
@@ -31,6 +38,14 @@ namespace CraigStars.Client
             {
                 CallDeferred(nameof(DecrementDialogRefCount));
             }
+        }
+
+        /// <summary>
+        /// Just hide the dialog on ok
+        /// </summary>
+        protected virtual void OnOk()
+        {
+            Hide();
         }
 
         void DecrementDialogRefCount()

@@ -1,0 +1,55 @@
+[gd_scene format=2]
+
+[node name="GameViewDialog" type="WindowDialog"]
+margin_right = 695.0
+margin_bottom = 403.0
+window_title = "Title"
+resizable = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_constants/margin_right = 10
+custom_constants/margin_top = 5
+custom_constants/margin_left = 10
+custom_constants/margin_bottom = 5
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+margin_left = 10.0
+margin_top = 5.0
+margin_right = 685.0
+margin_bottom = 398.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ContentContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+margin_right = 675.0
+margin_bottom = 369.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="HBoxContainerButtons" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+margin_top = 373.0
+margin_right = 675.0
+margin_bottom = 393.0
+
+[node name="HBoxContainerOKButton" type="HBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainerButtons"]
+margin_right = 675.0
+margin_bottom = 20.0
+size_flags_horizontal = 3
+size_flags_vertical = 10
+alignment = 2
+
+[node name="OKButton" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainerButtons/HBoxContainerOKButton"]
+margin_left = 595.0
+margin_right = 675.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 80, 0 )
+text = "OK"

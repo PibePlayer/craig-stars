@@ -10,16 +10,11 @@ namespace CraigStars
     /// * Tactic
     /// * Which players the fleet should attack
     /// </summary>
-    public class BattlePlan
+    public class BattlePlan : PlayerPlan<BattlePlan>
     {
-        public BattlePlan() { }
-        public BattlePlan(string name)
-        {
-            Name = name;
-        }
+        public BattlePlan() : base() { }
+        public BattlePlan(string name) : base(name) { }
 
-        public Guid Guid { get; set; } = Guid.NewGuid();
-        public string Name { get; set; }
         public BattleTargetType PrimaryTarget { get; set; } = BattleTargetType.ArmedShips;
         public BattleTargetType SecondaryTarget { get; set; } = BattleTargetType.Any;
         public BattleTactic Tactic { get; set; } = BattleTactic.MaximizeDamageRatio;
@@ -30,7 +25,7 @@ namespace CraigStars
         /// Make a clone of this battle plan
         /// </summary>
         /// <returns></returns>
-        public BattlePlan Clone()
+        public override BattlePlan Clone()
         {
             return new BattlePlan()
             {

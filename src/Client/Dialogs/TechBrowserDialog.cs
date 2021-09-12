@@ -16,8 +16,8 @@ namespace CraigStars.Client
         public override void _Ready()
         {
             base._Ready();
-            techTree = GetNode<TechTree>("MarginContainer/VBoxContainer/HBoxContainerContent/TechTree");
-            techSummary = GetNode<TechSummary>("MarginContainer/VBoxContainer/HBoxContainerContent/TechSummary");
+            techTree = GetNode<TechTree>("MarginContainer/VBoxContainer/ContentContainer/HBoxContainer/TechTree");
+            techSummary = GetNode<TechSummary>("MarginContainer/VBoxContainer/ContentContainer/HBoxContainer/TechSummary");
 
             techTree.TechSelectedEvent += OnTechSelected;
         }

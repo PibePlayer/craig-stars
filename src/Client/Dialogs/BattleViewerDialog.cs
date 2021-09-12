@@ -16,9 +16,6 @@ namespace CraigStars.Client
         [Export]
         public PackedScene BattleGridTokenScene { get; set; }
 
-        // for debugging, we can generate a test battle
-        bool useTestBattle = true;
-
         public BattleRecord BattleRecord { get; set; } = new BattleRecord();
 
         BattleGridSquare[,] Squares = new BattleGridSquare[10, 10];
@@ -71,38 +68,38 @@ namespace CraigStars.Client
             {
                 for (int x = 0; x < GridSize; x++)
                 {
-                    Squares[y, x] = GetNode<BattleGridSquare>($"MarginContainer/VBoxContainer/BattleContainer/BattleGrid/BattleGridSquare{(x + 1) + y * GridSize}");
+                    Squares[y, x] = GetNode<BattleGridSquare>($"MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/BattleContainer/BattleGrid/BattleGridSquare{(x + 1) + y * GridSize}");
                     Squares[y, x].Coordinates = new Vector2(y, x);
                     Squares[y, x].SelectedEvent += OnBattleGridSquareSelected;
                 }
             }
 
-            phaseLabel = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/PhaseRoundContainer/PhaseLabel");
-            roundLabel = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/PhaseRoundContainer/RoundLabel");
-            actionLabel = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/ActionDetailContainer/VBoxContainer/ActionLabel");
-            actionRaceLabel = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/ActionDetailContainer/VBoxContainer/ActionRaceLabel");
-            actionDesignLabel = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/ActionDetailContainer/VBoxContainer/ActionDesignLabel");
-            actionMoveLabel = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/ActionDetailContainer/VBoxContainer/ActionMoveLabel");
-            actionAttackLabelContainer = GetNode<Container>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/ActionDetailContainer/VBoxContainer/ActionAttackLabelContainer");
-            actionAttackLabel = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/ActionDetailContainer/VBoxContainer/ActionAttackLabelContainer/ActionAttackLabel");
-            actionAttackTargetLabel = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/ActionDetailContainer/VBoxContainer/ActionAttackLabelContainer/ActionAttackTargetLabel");
-            actionAttackLocationLabel = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/ActionDetailContainer/VBoxContainer/ActionAttackLabelContainer/ActionAttackLocationLabel");
-            actionAttackDamageLabel = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/ActionDetailContainer/VBoxContainer/ActionAttackLabelContainer/ActionAttackDamageLabel");
+            phaseLabel = GetNode<Label>("MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/PhaseRoundContainer/PhaseLabel");
+            roundLabel = GetNode<Label>("MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/PhaseRoundContainer/RoundLabel");
+            actionLabel = GetNode<Label>("MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/ActionDetailContainer/VBoxContainer/ActionLabel");
+            actionRaceLabel = GetNode<Label>("MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/ActionDetailContainer/VBoxContainer/ActionRaceLabel");
+            actionDesignLabel = GetNode<Label>("MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/ActionDetailContainer/VBoxContainer/ActionDesignLabel");
+            actionMoveLabel = GetNode<Label>("MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/ActionDetailContainer/VBoxContainer/ActionMoveLabel");
+            actionAttackLabelContainer = GetNode<Container>("MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/ActionDetailContainer/VBoxContainer/ActionAttackLabelContainer");
+            actionAttackLabel = GetNode<Label>("MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/ActionDetailContainer/VBoxContainer/ActionAttackLabelContainer/ActionAttackLabel");
+            actionAttackTargetLabel = GetNode<Label>("MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/ActionDetailContainer/VBoxContainer/ActionAttackLabelContainer/ActionAttackTargetLabel");
+            actionAttackLocationLabel = GetNode<Label>("MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/ActionDetailContainer/VBoxContainer/ActionAttackLabelContainer/ActionAttackLocationLabel");
+            actionAttackDamageLabel = GetNode<Label>("MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/ActionDetailContainer/VBoxContainer/ActionAttackLabelContainer/ActionAttackDamageLabel");
 
-            selectionLabel = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/SelectedDetailContainer/VBoxContainer/SelectionLabel");
-            selectionRaceLabel = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/SelectedDetailContainer/VBoxContainer/SelectionRaceLabel");
-            selectionDesignLabel = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/SelectedDetailContainer/VBoxContainer/SelectionDesignLabel");
-            selectionInitiative = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/SelectedDetailContainer/VBoxContainer/GridContainer/SelectionInitiative");
-            selectionMovement = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/SelectedDetailContainer/VBoxContainer/GridContainer/SelectionMovement");
-            selectionArmor = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/SelectedDetailContainer/VBoxContainer/GridContainer/SelectionArmor");
-            selectionDamage = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/SelectedDetailContainer/VBoxContainer/GridContainer/SelectionDamage");
-            selectionShields = GetNode<Label>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/SelectedDetailContainer/VBoxContainer/GridContainer/SelectionShields");
-            designDetailsButton = GetNode<Button>("MarginContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/SelectedDetailContainer/VBoxContainer/DesignDetailsButton");
+            selectionLabel = GetNode<Label>("MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/SelectedDetailContainer/VBoxContainer/SelectionLabel");
+            selectionRaceLabel = GetNode<Label>("MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/SelectedDetailContainer/VBoxContainer/SelectionRaceLabel");
+            selectionDesignLabel = GetNode<Label>("MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/SelectedDetailContainer/VBoxContainer/SelectionDesignLabel");
+            selectionInitiative = GetNode<Label>("MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/SelectedDetailContainer/VBoxContainer/GridContainer/SelectionInitiative");
+            selectionMovement = GetNode<Label>("MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/SelectedDetailContainer/VBoxContainer/GridContainer/SelectionMovement");
+            selectionArmor = GetNode<Label>("MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/SelectedDetailContainer/VBoxContainer/GridContainer/SelectionArmor");
+            selectionDamage = GetNode<Label>("MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/SelectedDetailContainer/VBoxContainer/GridContainer/SelectionDamage");
+            selectionShields = GetNode<Label>("MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/SelectedDetailContainer/VBoxContainer/GridContainer/SelectionShields");
+            designDetailsButton = GetNode<Button>("MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/BattleContainer/MarginContainer/VBoxContainer/SelectedDetailContainer/VBoxContainer/DesignDetailsButton");
 
-            nextActionButton = GetNode<Button>("MarginContainer/VBoxContainer/HBoxContainerButtons/NextActionButton");
-            resetBoardButton = GetNode<Button>("MarginContainer/VBoxContainer/HBoxContainerButtons/ResetBoardButton");
-            prevActionButton = GetNode<Button>("MarginContainer/VBoxContainer/HBoxContainerButtons/PrevActionButton");
-            nextAttackActionButton = GetNode<Button>("MarginContainer/VBoxContainer/HBoxContainerButtons/NextAttackActionButton");
+            nextActionButton = GetNode<Button>("MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/HBoxContainerButtons/NextActionButton");
+            resetBoardButton = GetNode<Button>("MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/HBoxContainerButtons/ResetBoardButton");
+            prevActionButton = GetNode<Button>("MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/HBoxContainerButtons/PrevActionButton");
+            nextAttackActionButton = GetNode<Button>("MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/HBoxContainerButtons/NextAttackActionButton");
 
             designDetailsButton.Connect("button_down", this, nameof(OnDesignDetailsButtonDown));
             designDetailsButton.Connect("button_up", this, nameof(OnDesignDetailsButtonUp));
@@ -114,12 +111,14 @@ namespace CraigStars.Client
             SetAsMinsize();
 
             // Uncomment this to debug JUSt the battle editor. This generates a test battle with a couple players
-            // if (useTestBattle)
-            // {
-            //     BattleRecord = GenerateTestBattle();
-            //     Show();
-            // }
+            // BattleRecord = GenerateTestBattle();
+            // CallDeferred(nameof(TestShow));
         }
+
+        // void TestShow()
+        // {
+        //     Show();
+        // }
 
         /// <summary>
         /// When the dialog becomes visible, this will setup the board with whatever information we have in the BattleRecord
@@ -551,6 +550,7 @@ namespace CraigStars.Client
         {
             var players = PlayersManager.CreatePlayersForNewGame();
             var player1 = players[0];
+            PlayersManager.Me = player1;
             // level up our players so they will have designs
             player1.TechLevels = new TechLevel(10, 10, 10, 10, 10, 10);
 

@@ -32,7 +32,6 @@ namespace CraigStars.Client
         RacePointsCalculator racePointsCalculator = new RacePointsCalculator();
 
         TabContainer tabContainer;
-        Button okButton;
 
         Label advantagePoints;
 
@@ -163,8 +162,6 @@ namespace CraigStars.Client
             biotechnologyResearchCost = (ResearchCostEditor)FindNode("BiotechnologyResearchCost");
             techsStartHighCheckBox = (CheckBox)FindNode("TechsStartHighCheckBox");
 
-            okButton = (Button)FindNode("OKButton");
-
             raceName.Connect("text_changed", this, nameof(OnRaceNameTextChanged));
 
             heCheckBox.Connect("pressed", this, nameof(OnPRTCheckBoxPressed), new Godot.Collections.Array() { PRT.HE });
@@ -214,8 +211,6 @@ namespace CraigStars.Client
             electronicsResearchCost.ResearchCostLevelChangedEvent += OnResearchCostChanged;
             biotechnologyResearchCost.ResearchCostLevelChangedEvent += OnResearchCostChanged;
             techsStartHighCheckBox.Connect("toggled", this, nameof(OnTechsStartHighCheckBoxToggled));
-
-            okButton.Connect("pressed", this, nameof(OnOk));
 
             SetAsMinsize();
             // Show();
@@ -367,7 +362,7 @@ namespace CraigStars.Client
             }
         }
 
-        void OnOk()
+        protected override void OnOk()
         {
             if (Editable)
             {

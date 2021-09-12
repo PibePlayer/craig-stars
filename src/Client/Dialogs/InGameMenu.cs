@@ -4,8 +4,11 @@ using System;
 
 namespace CraigStars.Client
 {
-    public class InGameMenu : GameViewDialog
+    public class InGameMenu : WindowDialog
     {
+        Player Me { get => PlayersManager.Me; }
+        PublicGameInfo GameInfo { get => PlayersManager.GameInfo; }
+
         Button saveTurnButton;
         Button exitGameButton;
         Button exitToMainMenuButton;
@@ -23,6 +26,7 @@ namespace CraigStars.Client
 
             Connect("about_to_show", this, nameof(OnAboutToShow));
             Connect("popup_hide", this, nameof(OnPopupHide));
+            Connect("visibility_changed", this, nameof(OnVisibilityChanged));
             DialogManager.DialogRefCount = 0;
 
             EventManager.PlayerDirtyChangedEvent += OnPlayerDirtyChanged;
@@ -36,6 +40,26 @@ namespace CraigStars.Client
                 DialogManager.DialogRefCount = 0;
                 EventManager.PlayerDirtyChangedEvent -= OnPlayerDirtyChanged;
             }
+        }
+
+        /// <summary>
+        /// When the dialog becomes visible, update the controls for this player
+        /// </summary>
+        void OnVisibilityChanged()
+        {
+            if (IsVisibleInTree())
+            {
+                DialogManager.DialogRefCount++;
+            }
+            else
+            {
+                CallDeferred(nameof(DecrementDialogRefCount));
+            }
+        }
+
+        void DecrementDialogRefCount()
+        {
+            DialogManager.DialogRefCount--;
         }
 
         void OnPlayerDirtyChanged()

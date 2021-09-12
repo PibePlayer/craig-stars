@@ -12,8 +12,6 @@ namespace CraigStars.Client
 
         public FleetSprite SourceFleet { get; set; }
 
-        Button okButton;
-        Button cancelButton;
         Button selectAllButton;
         Button unselectAllButton;
 
@@ -23,15 +21,11 @@ namespace CraigStars.Client
         public override void _Ready()
         {
             base._Ready();
-            okButton = (Button)FindNode("OKButton");
-            cancelButton = (Button)FindNode("CancelButton");
             selectAllButton = (Button)FindNode("SelectAllButton");
             unselectAllButton = (Button)FindNode("UnselectAllButton");
 
             fleetsItemList = (ItemList)FindNode("FleetsItemList");
 
-            okButton.Connect("pressed", this, nameof(OnOK));
-            cancelButton.Connect("pressed", this, nameof(OnCancel));
             selectAllButton.Connect("pressed", this, nameof(OnSelectAll));
             unselectAllButton.Connect("pressed", this, nameof(OnUnselectAll));
         }
@@ -80,11 +74,6 @@ namespace CraigStars.Client
                 fleetSpritesToMerge.ForEach(f => EventManager.PublishFleetDeletedEvent(f.Fleet));
             }
 
-            Hide();
-        }
-
-        void OnCancel()
-        {
             Hide();
         }
 

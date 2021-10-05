@@ -344,6 +344,60 @@ namespace CraigStars.Tests
             planet.ContributesOnlyLeftoverToResearch = true;
             Assert.AreEqual(35, service.GetResourcesPerYearAvailable(planet, player));
             Assert.AreEqual(0, service.GetResourcesPerYearResearch(planet, player));
-        }        
+        }
+
+        [Test]
+        public void TestApplyProductionPlan()
+        {
+            var player = new Player()
+            {
+                ProductionPlans = new List<ProductionPlan>() {
+                    new() {
+                        Name = "Default",
+                        Items = new() {
+                            new ProductionQueueItem(QueueItemType.AutoFactories, 10),
+                            new ProductionQueueItem(QueueItemType.AutoMines, 5)
+                        }
+                    }
+                }
+            };
+            var planet = new Planet()
+            {
+                ProductionQueue = new()
+            };
+
+            // add a couple items
+            service.ApplyProductionPlan(planet.ProductionQueue.Items, player, player.ProductionPlans[0]);
+            Assert.AreEqual(2, planet.ProductionQueue.Items.Count);
+            Assert.AreEqual(new ProductionQueueItem(QueueItemType.AutoFactories, 10), planet.ProductionQueue.Items[0]);
+            Assert.AreEqual(new ProductionQueueItem(QueueItemType.AutoMines, 5), planet.ProductionQueue.Items[1]);
+
+            // make sure existing auto items are removed
+            planet.ProductionQueue.Items = new()
+            {
+                new ProductionQueueItem(QueueItemType.AutoDefenses, 1)
+            };
+
+            service.ApplyProductionPlan(planet.ProductionQueue.Items, player, player.ProductionPlans[0]);
+            Assert.AreEqual(2, planet.ProductionQueue.Items.Count);
+            Assert.AreEqual(new ProductionQueueItem(QueueItemType.AutoFactories, 10), planet.ProductionQueue.Items[0]);
+            Assert.AreEqual(new ProductionQueueItem(QueueItemType.AutoMines, 5), planet.ProductionQueue.Items[1]);
+
+            // make sure existing manul items items are not removed
+            planet.ProductionQueue.Items = new()
+            {
+                // this should be gone
+                new ProductionQueueItem(QueueItemType.AutoDefenses, 1),
+                // this should remain
+                new ProductionQueueItem(QueueItemType.Mine, 1)
+            };
+
+            service.ApplyProductionPlan(planet.ProductionQueue.Items, player, player.ProductionPlans[0]);
+            Assert.AreEqual(3, planet.ProductionQueue.Items.Count);
+            Assert.AreEqual(new ProductionQueueItem(QueueItemType.Mine, 1), planet.ProductionQueue.Items[0]);
+            Assert.AreEqual(new ProductionQueueItem(QueueItemType.AutoFactories, 10), planet.ProductionQueue.Items[1]);
+            Assert.AreEqual(new ProductionQueueItem(QueueItemType.AutoMines, 5), planet.ProductionQueue.Items[2]);
+
+        }
     }
 }

@@ -15,6 +15,8 @@ namespace CraigStars.UniverseGeneration
     {
         static CSLog log = LogProvider.GetLogger(typeof(PlayerHomeworldGenerationStep));
 
+        PlanetService planetService = new();
+
         public PlayerHomeworldGenerationStep(Game game) : base(game, UniverseGenerationState.Homeworlds) { }
 
         PlanetDiscoverer planetDiscoverer = new PlanetDiscoverer();
@@ -112,6 +114,8 @@ namespace CraigStars.UniverseGeneration
             var design = Game.DesignsByGuid[player.GetLatestDesign(ShipDesignPurpose.Starbase).Guid];
             CreateStarbaseOnPlanet(player, planet, design);
 
+            planetService.ApplyProductionPlan(planet.ProductionQueue.Items, player, player.ProductionPlans[0]);
+
             Message.HomePlanet(player, planet);
         }
 
@@ -154,6 +158,7 @@ namespace CraigStars.UniverseGeneration
             var design = Game.DesignsByGuid[player.GetLatestDesign(ShipDesignPurpose.Fort).Guid];
             CreateStarbaseOnPlanet(player, planet, design);
 
+            planetService.ApplyProductionPlan(planet.ProductionQueue.Items, player, player.ProductionPlans[0]);
         }
 
         /// <summary>

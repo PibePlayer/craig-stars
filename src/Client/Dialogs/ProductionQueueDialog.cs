@@ -7,6 +7,8 @@ namespace CraigStars.Client
     {
         static CSLog log = LogProvider.GetLogger(typeof(ProductionQueueDialog));
 
+        PlanetService planetService = new();
+
         // the planet to use in this dialog
         public Planet Planet { get; set; } = new Planet();
 
@@ -21,6 +23,10 @@ namespace CraigStars.Client
         Button prevButton;
         Button nextButton;
         CheckBox contributesOnlyLeftoverToResearchCheckbox;
+
+        Button applyProductionPlanButton;
+        Button editProductionPlanButton;
+        OptionButton productionPlansOptionButton;
 
         CostGrid availableItemCostGrid;
         CostGrid queuedItemCostGrid;
@@ -45,6 +51,10 @@ namespace CraigStars.Client
             nextButton = (Button)FindNode("NextButton");
             contributesOnlyLeftoverToResearchCheckbox = (CheckBox)FindNode("ContributesOnlyLeftoverToResearchCheckbox");
 
+            applyProductionPlanButton = (Button)FindNode("ApplyProductionPlanButton");
+            editProductionPlanButton = (Button)FindNode("EditProductionPlanButton");
+            productionPlansOptionButton = (OptionButton)FindNode("ProductionPlansOptionButton");
+
             availableItemCostGrid = (CostGrid)FindNode("AvailableItemCostGrid");
             queuedItemCostGrid = (CostGrid)FindNode("QueuedItemCostGrid");
             completionEstimateLabel = (Label)FindNode("CompletionEstimateLabel");
@@ -57,6 +67,9 @@ namespace CraigStars.Client
             itemUpButton.Connect("pressed", this, nameof(OnItemUp));
             itemDownButton.Connect("pressed", this, nameof(OnItemDown));
             contributesOnlyLeftoverToResearchCheckbox.Connect("pressed", this, nameof(OnContributesOnlyLeftoverToResearchCheckboxPressed));
+
+            applyProductionPlanButton.Connect("pressed", this, nameof(OnApplyProductionPlanButtonPressed));
+            editProductionPlanButton.Connect("pressed", this, nameof(OnEditProductionPlanButtonPressed));
 
             nextButton.Connect("pressed", this, nameof(OnNextButtonPressed));
             prevButton.Connect("pressed", this, nameof(OnPrevButtonPressed));
@@ -95,6 +108,14 @@ namespace CraigStars.Client
             availableItems.Planet = Planet;
             queuedItems.Planet = Planet;
 
+            productionPlansOptionButton.Clear();
+            Me.ProductionPlans.Each((plan, index) =>
+            {
+                productionPlansOptionButton.AddItem(plan.Name);
+            });
+
+            productionPlansOptionButton.Select(0);
+
             contributesOnlyLeftoverToResearchCheckbox.Pressed = Planet.ContributesOnlyLeftoverToResearch;
             queuedItems.ContributesOnlyLeftoverToResearch = contributesOnlyLeftoverToResearchCheckbox.Pressed;
         }
@@ -112,6 +133,7 @@ namespace CraigStars.Client
             if (IsVisibleInTree() && mapObject is PlanetSprite planet)
             {
                 Planet = planet.Planet;
+
                 OnAboutToShow();
             }
         }
@@ -181,6 +203,19 @@ namespace CraigStars.Client
             Planet.ContributesOnlyLeftoverToResearch = contributesOnlyLeftoverToResearchCheckbox.Pressed;
 
             EventManager.PublishProductionQueueChangedEvent(Planet);
+        }
+
+        async void OnApplyProductionPlanButtonPressed()
+        {
+            var plan = Me.ProductionPlans[productionPlansOptionButton.Selected];
+            planetService.ApplyProductionPlan(queuedItems.Items, Me, plan);
+            queuedItems.SelectedItemIndex = 0;
+            await queuedItems.UpdateItems();
+        }
+
+        void OnEditProductionPlanButtonPressed()
+        {
+            EventManager.PublishProductionPlansDialogRequestedEvent();
         }
 
         void OnNextButtonPressed()

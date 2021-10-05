@@ -147,6 +147,7 @@ namespace CraigStars
 
         [JsonIgnore] public Dictionary<Guid, BattlePlan> BattlePlansByGuid = new Dictionary<Guid, BattlePlan>();
         [JsonIgnore] public Dictionary<Guid, TransportPlan> TransportPlansByGuid = new Dictionary<Guid, TransportPlan>();
+        [JsonIgnore] public Dictionary<Guid, ProductionPlan> ProductionPlansByGuid = new Dictionary<Guid, ProductionPlan>();
 
         /// <summary>
         /// These fleets have been merged into other fleets and no longer exist
@@ -173,6 +174,7 @@ namespace CraigStars
         /// </summary>
         public List<BattlePlan> BattlePlans { get; set; } = new List<BattlePlan>();
         public List<TransportPlan> TransportPlans { get; set; } = new List<TransportPlan>();
+        public List<ProductionPlan> ProductionPlans { get; set; } = new List<ProductionPlan>();
         public List<FleetComposition> FleetCompositions { get; set; } = new List<FleetComposition>();
         public List<CargoTransferOrder> CargoTransferOrders { get; set; } = new List<CargoTransferOrder>();
         public List<MergeFleetOrder> MergeFleetOrders { get; set; } = new List<MergeFleetOrder>();
@@ -223,6 +225,7 @@ namespace CraigStars
 
             BattlePlans.Clear();
             TransportPlans.Clear();
+            ProductionPlans.Clear();
             FleetCompositions.Clear();
             CargoTransferOrders.Clear();
             MergeFleetOrders.Clear();
@@ -256,6 +259,7 @@ namespace CraigStars
             MysteryTraderIntel.SetupItemsByGuid();
             BattlePlansByGuid = BattlePlans.ToLookup(plan => plan.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
             TransportPlansByGuid = TransportPlans.ToLookup(plan => plan.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
+            ProductionPlansByGuid = ProductionPlans.ToLookup(plan => plan.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
             BattlesByGuid = Battles.ToLookup(battle => battle.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
 
 

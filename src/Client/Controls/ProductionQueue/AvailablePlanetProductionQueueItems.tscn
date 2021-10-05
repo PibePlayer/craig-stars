@@ -1,10 +1,14 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://addons/CraigStarsComponents/src/ProductionQueueItemsTable.cs" type="Script" id=1]
 [ext_resource path="res://src/Client/Controls/ProductionQueue/AvailablePlanetProductionQueueItems.cs" type="Script" id=2]
-[ext_resource path="res://src/Client/GUIColors.tres" type="Resource" id=3]
 
-[node name="Control" type="ScrollContainer"]
+[sub_resource type="CSharpScript" id=1]
+
+[sub_resource type="Resource" id=2]
+script = SubResource( 1 )
+
+[node name="AvailablePlanetProductionQueueItems" type="ScrollContainer"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_right = -1229.0
@@ -16,7 +20,7 @@ script = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
-GUIColors = ExtResource( 3 )
+GUIColors = SubResource( 2 )
 
 [node name="ProductionQueueItemsTable" type="MarginContainer" parent="."]
 margin_right = 211.0

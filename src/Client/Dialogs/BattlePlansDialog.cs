@@ -58,13 +58,13 @@ namespace CraigStars.Client
 
         protected override List<BattlePlan> SourcePlans { get => Me.BattlePlans; }
 
-        protected override void OnPlanSelected()
+        protected override void OnPlanSelected(BattlePlan newPlan, BattlePlan previousPlan)
         {
-            primaryTargetOptionButton.Select((int)selectedPlan.PrimaryTarget);
-            secondaryTargetOptionButton.Select((int)selectedPlan.SecondaryTarget);
-            tacticOptionButton.Select((int)selectedPlan.Tactic);
-            attackWhoOptionButton.Select((int)selectedPlan.AttackWho);
-            dumpCargoCheckBox.Pressed = selectedPlan.DumpCargo;
+            primaryTargetOptionButton.Select((int)newPlan.PrimaryTarget);
+            secondaryTargetOptionButton.Select((int)newPlan.SecondaryTarget);
+            tacticOptionButton.Select((int)newPlan.Tactic);
+            attackWhoOptionButton.Select((int)newPlan.AttackWho);
+            dumpCargoCheckBox.Pressed = newPlan.DumpCargo;
         }
 
         void OnOptionButtonItemSelected(int index)

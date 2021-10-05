@@ -10,7 +10,7 @@ namespace CraigStars
     public class TransportPlanDetail : VBoxContainer
     {
         public event Action<string> NameChangedEvent;
-        
+
         public TransportPlan Plan
         {
             get => plan;
@@ -24,6 +24,20 @@ namespace CraigStars
 
         [Export]
         public bool ShowName { get; set; } = true;
+
+        public bool NameEditable
+        {
+            get => nameEditable;
+            set
+            {
+                nameEditable = value;
+                if (nameLineEdit != null)
+                {
+                    nameLineEdit.Editable = nameEditable;
+                }
+            }
+        }
+        bool nameEditable = true;
 
         Control nameContainer;
         LineEdit nameLineEdit;
@@ -89,6 +103,7 @@ namespace CraigStars
             if (Plan != null)
             {
                 nameLineEdit.Text = Plan.Name;
+                nameLineEdit.Editable = nameEditable;
 
                 ironiumTransportTask.Action = Plan.Tasks.Ironium.action;
                 boraniumTransportTask.Action = Plan.Tasks.Boranium.action;

@@ -14,7 +14,6 @@ namespace CraigStars.Client
     [Tool]
     public class AvailablePlanetProductionQueueItems : PlanetProductionQueueItems
     {
-
         public override void _Ready()
         {
             base._Ready();

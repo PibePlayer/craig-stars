@@ -166,6 +166,7 @@ namespace CraigStarsTable
 
             if (Engine.EditorHint)
             {
+                Data.Clear();
                 // add two columns
                 Data.AddColumn("Item");
                 Data.AddColumn("Quantity", align: Label.AlignEnum.Right);

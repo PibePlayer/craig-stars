@@ -5,6 +5,7 @@ using System.Linq;
 using CraigStars.Singletons;
 using CraigStars.Client;
 using System.Threading.Tasks;
+using System;
 
 namespace CraigStars
 {
@@ -23,6 +24,7 @@ namespace CraigStars
         ResearchDialog researchDialog;
         BattlePlansDialog battlePlansDialog;
         TransportPlansDialog transportPlansDialog;
+        ProductionPlansDialog productionPlansDialog;
         ReportsDialog reportsDialog;
         TechBrowserDialog techBrowserDialog;
         RaceDesignerDialog raceDesignerDialog;
@@ -40,6 +42,7 @@ namespace CraigStars
             researchDialog = GetNode<ResearchDialog>("CanvasLayer/ResearchDialog");
             battlePlansDialog = GetNode<BattlePlansDialog>("CanvasLayer/BattlePlansDialog");
             transportPlansDialog = GetNode<TransportPlansDialog>("CanvasLayer/TransportPlansDialog");
+            productionPlansDialog = GetNode<ProductionPlansDialog>("CanvasLayer/ProductionPlansDialog");
             reportsDialog = GetNode<ReportsDialog>("CanvasLayer/ReportsDialog");
             techBrowserDialog = GetNode<TechBrowserDialog>("CanvasLayer/TechBrowserDialog");
             raceDesignerDialog = GetNode<RaceDesignerDialog>("CanvasLayer/RaceDesignerDialog");
@@ -53,6 +56,7 @@ namespace CraigStars
             Client.EventManager.ResearchDialogRequestedEvent += OnResearchDialogRequested;
             Client.EventManager.BattlePlansDialogRequestedEvent += OnBattlePlansDialogRequested;
             Client.EventManager.TransportPlansDialogRequestedEvent += OnTransportPlansDialogRequested;
+            Client.EventManager.ProductionPlansDialogRequestedEvent += OnProductionPlansDialogRequested;
             Client.EventManager.ReportsDialogRequestedEvent += OnReportsDialogRequested;
             Client.EventManager.ShipDesignerDialogRequestedEvent += OnShipDesignerDialogRequested;
             Client.EventManager.PlayerStatusDialogRequestedEvent += OnPlayerStatusDialogRequested;
@@ -160,6 +164,11 @@ namespace CraigStars
         void OnTransportPlansDialogRequested()
         {
             transportPlansDialog.PopupCentered();
+        }
+
+        void OnProductionPlansDialogRequested()
+        {
+            productionPlansDialog.PopupCentered();
         }
 
         void OnCargoTransferRequested(ICargoHolder source, ICargoHolder dest)

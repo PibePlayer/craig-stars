@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://src/Client/CommandPane/Tile.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/Client/CommandPane/PlanetProductionTile.cs" type="Script" id=2]
+[ext_resource path="res://src/Client/GUIColors.tres" type="Resource" id=3]
 [ext_resource path="res://src/Client/Controls/ProductionQueue/QueuedPlanetProductionQueueItems.tscn" type="PackedScene" id=4]
 
 [node name="PlanetProductionTile" instance=ExtResource( 1 )]
@@ -38,6 +39,7 @@ anchor_right = 0.0
 anchor_bottom = 0.0
 margin_right = 180.0
 margin_bottom = 80.0
+GUIColors = ExtResource( 3 )
 
 [node name="RouteToContainer" type="HBoxContainer" parent="VBoxContainer/Controls" index="1"]
 margin_top = 84.0

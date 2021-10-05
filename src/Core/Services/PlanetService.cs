@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Godot;
 using static CraigStars.Utils.Utils;
 
@@ -153,8 +155,8 @@ namespace CraigStars
         /// Determine the number of resources this planet generates in a year
         /// </summary>
         /// <value>The number of resources this planet will contribute per year</value>
-        public int GetResourcesPerYearAvailable(Planet planet, Player player) => planet.ContributesOnlyLeftoverToResearch ? 
-            GetResourcesPerYear(planet, player) 
+        public int GetResourcesPerYearAvailable(Planet planet, Player player) => planet.ContributesOnlyLeftoverToResearch ?
+            GetResourcesPerYear(planet, player)
             : (int)(GetResourcesPerYear(planet, player) * (1 - player.ResearchAmount / 100.0) + .5f);
 
         /// <summary>
@@ -220,6 +222,19 @@ namespace CraigStars
         #endregion
 
         #region Production
+
+        public void ApplyProductionPlan(List<ProductionQueueItem> items, Player player, ProductionPlan plan)
+        {
+            // remove all auto items
+            items.RemoveAll(item => item.IsAuto);
+
+            // append any auto items to the end of the list
+            // manually created items go first
+            foreach (var item in plan.Items.Where(item => item.IsAuto))
+            {
+                items.Add(item.Clone());
+            }
+        }
 
         /// <summary>
         /// Return true if this is a planet that the current player can build

@@ -12,21 +12,9 @@ namespace CraigStars.Client
     /// <summary>
     /// This component is used for 
     /// </summary>
-    public abstract class PlanetProductionQueueItems : ScrollContainer
+    public abstract class PlanetProductionQueueItems : ProductionQueueItems
     {
         protected PlanetService planetService = new();
-
-        public const int NoItemSelected = -1;
-        public delegate void ItemAction(ProductionQueueItem item);
-        public event ItemAction ItemSelectedEvent;
-        public event ItemAction ItemActivatedEvent;
-        protected void PublishItemSelectedEvent(ProductionQueueItem item) => ItemSelectedEvent?.Invoke(item);
-        protected void PublishItemActivatedEvent(ProductionQueueItem item) => ItemActivatedEvent?.Invoke(item);
-
-        [Export]
-        public GUIColors GUIColors { get; set; } = new GUIColors();
-
-        protected Player Me { get => PlayersManager.Me; }
 
         public Planet Planet
         {
@@ -42,38 +30,8 @@ namespace CraigStars.Client
 
         public bool ContributesOnlyLeftoverToResearch { get; set; }
 
-        public List<ProductionQueueItem> Items { get; set; } = new List<ProductionQueueItem>();
-        public int SelectedItemIndex = NoItemSelected;
-
-        protected ProductionQueueItemsTable table;
-
         protected Cost availableCost = Cost.Zero;
         protected Cost yearlyAvailableCost = Cost.Zero;
-
-        public override void _Ready()
-        {
-            base._Ready();
-
-            table = GetNode<ProductionQueueItemsTable>("ProductionQueueItemsTable");
-
-            table.RowSelectedEvent += OnSelectItem;
-            table.RowActivatedEvent += OnActivateItem;
-
-            Connect("visibility_changed", this, nameof(OnVisibilityChanged));
-        }
-
-        public override void _Notification(int what)
-        {
-            base._Notification(what);
-            if (what == NotificationPredelete)
-            {
-                if (table != null)
-                {
-                    table.RowSelectedEvent -= OnSelectItem;
-                    table.RowActivatedEvent -= OnActivateItem;
-                }
-            }
-        }
 
         /// <summary>
         /// When a planet is updated, reset our internal Items list to whatever is currently in the planet queue
@@ -85,55 +43,6 @@ namespace CraigStars.Client
             {
                 ComputeAvailableResources();
             }
-        }
-
-        protected virtual void OnActivateItem(int rowIndex, int colIndex, Cell cell, ProductionQueueItem metadata)
-        {
-            ItemActivatedEvent?.Invoke(metadata);
-        }
-
-        protected virtual void OnSelectItem(int rowIndex, int colIndex, Cell cell, ProductionQueueItem metadata)
-        {
-            SelectedItemIndex = rowIndex;
-            if (metadata != null)
-            {
-                ItemSelectedEvent?.Invoke(metadata);
-            }
-        }
-
-        /// <summary>
-        /// When the dialog becomes visible, update the controls for this player
-        /// </summary>
-        protected async virtual void OnVisibilityChanged()
-        {
-            if (IsVisibleInTree() && table != null)
-            {
-                await UpdateItems();
-                if (table.Data.SourceRows.Count > 0)
-                {
-                    table.SelectedRow = 0;
-                }
-            }
-        }
-
-        public virtual void Clear()
-        {
-            table.Data.ClearRows();
-        }
-
-        public virtual Task UpdateItems() => Task.CompletedTask;
-
-        /// <summary>
-        /// Get the currently selected item, or null if the top of the queue is selected
-        /// </summary>
-        /// <returns></returns>
-        public ProductionQueueItem GetSelectedItem()
-        {
-            if (SelectedItemIndex >= 0 && SelectedItemIndex < Items.Count)
-            {
-                return Items[SelectedItemIndex];
-            }
-            return null;
         }
 
         /// <summary>

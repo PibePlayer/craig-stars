@@ -90,9 +90,11 @@ namespace CraigStars.Client
         }
 
 
-        protected override void OnPlanSelected()
+        protected override void OnPlanSelected(TransportPlan newPlan, TransportPlan previousPlan)
         {
-            transportPlanDetail.Plan = selectedPlan;
+            transportPlanDetail.Plan = newPlan;
+            // the default plan cannot change names
+            transportPlanDetail.NameEditable = newPlan.Guid != Me.TransportPlans[0].Guid;
         }
     }
 }

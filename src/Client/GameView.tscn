@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=2]
+[gd_scene load_steps=35 format=2]
 
 [ext_resource path="res://src/Client/Scanner/Scanner.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/Client/Scanner/ScannerSelectedStats.tscn" type="PackedScene" id=2]
@@ -32,6 +32,7 @@
 [ext_resource path="res://src/Client/Dialogs/BattlePlansDialog.tscn" type="PackedScene" id=30]
 [ext_resource path="res://src/Client/Dialogs/TransportPlansDialog.tscn" type="PackedScene" id=31]
 [ext_resource path="res://src/Client/Scanner/OtherObjectsPopupMenu.tscn" type="PackedScene" id=32]
+[ext_resource path="res://src/Client/Dialogs/ProductionPlansDialog.tscn" type="PackedScene" id=33]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.145098, 0.145098, 0.168627, 1 )
@@ -241,7 +242,6 @@ margin_top = 848.0
 [node name="ProductionQueueDialog" parent="CanvasLayer" instance=ExtResource( 13 )]
 
 [node name="ShipDesignerDialog" parent="CanvasLayer" instance=ExtResource( 18 )]
-visible = false
 
 [node name="PlayerStatusDialog" parent="CanvasLayer" instance=ExtResource( 5 )]
 
@@ -249,16 +249,20 @@ visible = false
 
 [node name="CargoTransferDialog" parent="CanvasLayer" instance=ExtResource( 14 )]
 
-[node name="TechBrowserDialog" parent="CanvasLayer" instance=ExtResource( 17 )]
+[node name="ProductionPlansDialog" parent="CanvasLayer" instance=ExtResource( 33 )]
 visible = false
+
+[node name="TechBrowserDialog" parent="CanvasLayer" instance=ExtResource( 17 )]
 
 [node name="MergeFleetsDialog" parent="CanvasLayer" instance=ExtResource( 26 )]
 
 [node name="InGameMenu" parent="CanvasLayer" instance=ExtResource( 29 )]
 
 [node name="TransportPlansDialog" parent="CanvasLayer" instance=ExtResource( 31 )]
+visible = false
 
 [node name="BattlePlansDialog" parent="CanvasLayer" instance=ExtResource( 30 )]
+visible = false
 
 [node name="BattleViewerDialog" parent="CanvasLayer" instance=ExtResource( 28 )]
 

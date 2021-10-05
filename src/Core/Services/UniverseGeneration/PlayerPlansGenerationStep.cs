@@ -12,6 +12,8 @@ namespace CraigStars.UniverseGeneration
     /// </summary>
     public class PlayerPlansGenerationStep : UniverseGenerationStep
     {
+        PlanetService planetService = new();
+
         public PlayerPlansGenerationStep(Game game) : base(game, UniverseGenerationState.Plans) { }
 
         public override void Process()
@@ -20,6 +22,7 @@ namespace CraigStars.UniverseGeneration
             {
                 player.BattlePlans = GetBattlePlans();
                 player.TransportPlans = GetTransportPlans();
+                player.ProductionPlans = GetProductionPlans();
                 player.SetupMapObjectMappings();
             });
         }
@@ -63,5 +66,21 @@ namespace CraigStars.UniverseGeneration
                 },
             };
         }
+
+        internal List<ProductionPlan> GetProductionPlans()
+        {
+            return new()
+            {
+                new ProductionPlan("Default")
+                {
+                    Items = {
+                        new ProductionQueueItem(QueueItemType.AutoMaxTerraform, 1),
+                        new ProductionQueueItem(QueueItemType.AutoFactories, 5),
+                        new ProductionQueueItem(QueueItemType.AutoMines, 5),
+                    }
+                }
+            };
+        }
+
     }
 }

@@ -508,8 +508,14 @@ namespace CraigStars
                     // we own this planet now, yay!
                     planet.Player = fleet.Player;
                     planet.ProductionQueue = new ProductionQueue();
+                    if (planet.Player.ProductionPlans.Count > 0)
+                    {
+                        // apply the default production plan
+                        planetService.ApplyProductionPlan(planet.ProductionQueue.Items, planet.Player, planet.Player.ProductionPlans[0]);
+                    }
                     planet.Population = fleet.Cargo.Colonists * 100;
                     fleet.Cargo = fleet.Cargo.WithColonists(0);
+
                     Message.PlanetColonized(fleet.Player, planet);
                     ProcessScrapFleetTask(fleetWaypoint);
                 }

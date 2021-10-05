@@ -20,7 +20,7 @@ namespace CraigStars.Client
         /// <summary>
         /// Override to update fields when a new plan is selected
         /// </summary>
-        protected abstract void OnPlanSelected();
+        protected abstract void OnPlanSelected(T newPlan, T previousPlan);
 
         protected ItemList itemList;
         protected LineEdit nameLineEdit;
@@ -71,7 +71,9 @@ namespace CraigStars.Client
 
         void OnNewButtonPressed()
         {
-            plans.Add(new T() { Name = $"Battle Plan {plans.Count + 1}" });
+            // dirty string manipulation...
+            // TODO: fix this for localization
+            plans.Add(new T() { Name = $"{typeof(T).Name.Replace("Plan", " Plan")} {plans.Count + 1}" });
             UpdateBattlePlansItemList();
         }
 
@@ -122,10 +124,14 @@ namespace CraigStars.Client
                 {
                     deleteButton.Disabled = false;
                 }
-                selectedPlan = plans[index];
+                var newPlan = plans[index];
+                var previousPlan = selectedPlan;
+                selectedPlan = newPlan;
                 detailPlanNameLabel.Text = selectedPlan.Name;
                 nameLineEdit.Text = selectedPlan.Name;
-                OnPlanSelected();
+                nameLineEdit.Editable = index != 0;
+                
+                OnPlanSelected(newPlan, previousPlan);
             }
         }
 

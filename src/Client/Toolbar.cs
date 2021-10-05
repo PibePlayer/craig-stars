@@ -113,6 +113,7 @@ namespace CraigStars.Client
                     EventManager.PublishTransportPlansDialogRequestedEvent();
                     break;
                 case MenuItem.ProductionPlans:
+                    EventManager.PublishProductionPlansDialogRequestedEvent();
                     break;
                 case MenuItem.Race:
                     EventManager.PublishRaceDesignerDialogRequestedEvent();

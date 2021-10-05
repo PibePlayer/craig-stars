@@ -3,7 +3,7 @@
 [ext_resource path="res://src/Client/Dialogs/GameViewDialog.tscn" type="PackedScene" id=1]
 
 [node name="PlayerPlansDialog" instance=ExtResource( 1 )]
-script = null
+visible = true
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer" index="0"]
 margin_right = 675.0
@@ -12,15 +12,15 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="VBoxContainerList" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/HBoxContainer" index="0"]
-margin_right = 335.0
+margin_right = 300.0
 margin_bottom = 369.0
-size_flags_horizontal = 3
+rect_min_size = Vector2( 300, 0 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/HBoxContainer/VBoxContainerList" index="0"]
-margin_right = 335.0
+margin_right = 300.0
 margin_bottom = 14.0
 text = "Plans"
 __meta__ = {
@@ -29,24 +29,24 @@ __meta__ = {
 
 [node name="ItemList" type="ItemList" parent="MarginContainer/VBoxContainer/ContentContainer/HBoxContainer/VBoxContainerList" index="1"]
 margin_top = 18.0
-margin_right = 335.0
+margin_right = 300.0
 margin_bottom = 369.0
 size_flags_vertical = 3
 
 [node name="VBoxContainerDetail" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/HBoxContainer" index="1"]
-margin_left = 339.0
+margin_left = 304.0
 margin_right = 675.0
 margin_bottom = 369.0
 size_flags_horizontal = 3
 
 [node name="DetailPlanNameLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/HBoxContainer/VBoxContainerDetail" index="0"]
-margin_right = 336.0
+margin_right = 371.0
 margin_bottom = 14.0
 text = "Default"
 
 [node name="GridContainer" type="GridContainer" parent="MarginContainer/VBoxContainer/ContentContainer/HBoxContainer/VBoxContainerDetail" index="1"]
 margin_top = 18.0
-margin_right = 336.0
+margin_right = 371.0
 margin_bottom = 42.0
 columns = 2
 __meta__ = {
@@ -55,41 +55,41 @@ __meta__ = {
 
 [node name="NameLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/HBoxContainer/VBoxContainerDetail/GridContainer" index="0"]
 margin_top = 5.0
-margin_right = 166.0
+margin_right = 183.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
 text = "Name:"
 align = 2
 
 [node name="NameLineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/ContentContainer/HBoxContainer/VBoxContainerDetail/GridContainer" index="1"]
-margin_left = 170.0
-margin_right = 336.0
+margin_left = 187.0
+margin_right = 370.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 
 [node name="PlansButtonsContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainerButtons" index="0"]
-margin_right = 335.0
+margin_right = 300.0
 margin_bottom = 20.0
-size_flags_horizontal = 3
+rect_min_size = Vector2( 300, 0 )
 alignment = 2
 
 [node name="NewButton" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainerButtons/PlansButtonsContainer" index="0"]
-margin_left = 171.0
-margin_right = 251.0
+margin_left = 136.0
+margin_right = 216.0
 margin_bottom = 20.0
 rect_min_size = Vector2( 80, 0 )
 text = "New"
 
 [node name="DeleteButton" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainerButtons/PlansButtonsContainer" index="1"]
-margin_left = 255.0
-margin_right = 335.0
+margin_left = 220.0
+margin_right = 300.0
 margin_bottom = 20.0
 rect_min_size = Vector2( 80, 0 )
 text = "Delete"
 
 [node name="HBoxContainerOKButton" parent="MarginContainer/VBoxContainer/HBoxContainerButtons" index="1"]
-margin_left = 339.0
+margin_left = 304.0
 
 [node name="OKButton" parent="MarginContainer/VBoxContainer/HBoxContainerButtons/HBoxContainerOKButton" index="0"]
-margin_left = 256.0
-margin_right = 336.0
+margin_left = 291.0
+margin_right = 371.0

@@ -187,6 +187,13 @@ namespace CraigStars
                 Players[player.Num] = player;
                 Players[player.Num].SubmittedTurn = true;
                 GameInfo.Players[player.Num].SubmittedTurn = true;
+                foreach (var mo in MapObjectsByGuid.Values.Where(mo => mo.Player == player))
+                {
+                    // make sure our mapobjects have an updated player object
+                    // TODO: remove this if (when) we remove the Player object from MapObjects
+                    // and replace it with a number
+                    mo.Player = player;
+                }
             }
             else
             {

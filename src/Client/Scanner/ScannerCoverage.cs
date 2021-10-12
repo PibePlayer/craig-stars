@@ -28,9 +28,6 @@ namespace CraigStars.Client
         /// <value></value>
         public bool Pen { get; set; }
 
-        [Export]
-        public GUIColors GUIColors { get; set; } = new GUIColors();
-
         public override void _Ready()
         {
             base._Ready();
@@ -65,14 +62,14 @@ namespace CraigStars.Client
             {
                 if (scaledRange > 0)
                 {
-                    DrawCircle(Vector2.Zero, scaledRange, GUIColors.ScannerPenColor);
+                    DrawCircle(Vector2.Zero, scaledRange, GUIColorsProvider.Colors.ScannerPenColor);
                 }
             }
             else
             {
                 if (scaledRange > 0)
                 {
-                    DrawCircle(Vector2.Zero, scaledRange, GUIColors.ScannerColor);
+                    DrawCircle(Vector2.Zero, scaledRange, GUIColorsProvider.Colors.ScannerColor);
                 }
             }
         }

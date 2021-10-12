@@ -1,3 +1,4 @@
+using CraigStars.Singletons;
 using CraigStars.Utils;
 using Godot;
 using System;
@@ -10,10 +11,6 @@ namespace CraigStars
         public delegate void HabChanged(HabType type, int low, int high, bool immune);
         public event HabChanged HabChangedEvent;
         public void PublishHabChangedEvent() => HabChangedEvent?.Invoke(Type, Low, High, Immune);
-
-
-        [Export]
-        public GUIColors GUIColors { get; set; } = new GUIColors();
 
         [Export]
         public HabType Type
@@ -195,15 +192,15 @@ namespace CraigStars
                 {
                     case HabType.Gravity:
                         habValueLabel.Text = $"{TextUtils.GetGravString(Low)}\nto\n{TextUtils.GetGravString(High)}";
-                        hab.BarColor = GUIColors.GravColor;
+                        hab.BarColor = GUIColorsProvider.Colors.GravColor;
                         break;
                     case HabType.Temperature:
                         habValueLabel.Text = $"{TextUtils.GetTempString(Low)}\nto\n{TextUtils.GetTempString(High)}";
-                        hab.BarColor = GUIColors.TempColor;
+                        hab.BarColor = GUIColorsProvider.Colors.TempColor;
                         break;
                     case HabType.Radiation:
                         habValueLabel.Text = $"{TextUtils.GetRadString(Low)}\nto\n{TextUtils.GetRadString(High)}";
-                        hab.BarColor = GUIColors.RadColor;
+                        hab.BarColor = GUIColorsProvider.Colors.RadColor;
                         break;
                 }
             }

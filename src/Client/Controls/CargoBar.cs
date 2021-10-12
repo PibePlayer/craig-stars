@@ -1,3 +1,4 @@
+using CraigStars.Singletons;
 using Godot;
 using System;
 
@@ -17,9 +18,6 @@ namespace CraigStars.Client
         /// Event fired when the value of the bar is updated by user input
         /// </summary>
         public event ValueUpdated ValueUpdatedEvent;
-
-        [Export]
-        public GUIColors GUIColors { get; set; } = new GUIColors();
 
         [Export]
         public bool IsFuel
@@ -148,7 +146,7 @@ namespace CraigStars.Client
                         DrawRect(new Rect2(
                             new Vector2(panel.RectPosition.x + borderWidth / 2, panel.RectPosition.y + borderHeight / 2),
                             new Vector2(width - borderWidth, panel.RectSize.y - (borderHeight))),
-                            GUIColors.FuelColor
+                            GUIColorsProvider.Colors.FuelColor
                         );
                     }
                 }
@@ -166,7 +164,7 @@ namespace CraigStars.Client
                         DrawRect(new Rect2(
                             new Vector2(panel.RectPosition.x + borderWidth / 2, panel.RectPosition.y + borderHeight / 2),
                             new Vector2(ironiumWidth, panel.RectSize.y - borderHeight)),
-                            GUIColors.IroniumBarColor
+                            GUIColorsProvider.Colors.IroniumBarColor
                         );
                     }
                     if (Cargo.Boranium > 0)
@@ -175,7 +173,7 @@ namespace CraigStars.Client
                         DrawRect(new Rect2(
                             new Vector2(panel.RectPosition.x + borderWidth / 2 + ironiumWidth, panel.RectPosition.y + borderHeight / 2),
                             new Vector2(boraniumWidth, panel.RectSize.y - borderHeight)),
-                            GUIColors.BoraniumBarColor
+                            GUIColorsProvider.Colors.BoraniumBarColor
                         );
                     }
                     if (Cargo.Germanium > 0)
@@ -184,7 +182,7 @@ namespace CraigStars.Client
                         DrawRect(new Rect2(
                             new Vector2(panel.RectPosition.x + borderWidth / 2 + ironiumWidth + boraniumWidth, panel.RectPosition.y + borderHeight / 2),
                             new Vector2(germaniumWidth, panel.RectSize.y - borderHeight)),
-                            GUIColors.GermaniumBarColor
+                            GUIColorsProvider.Colors.GermaniumBarColor
                         );
                     }
                     if (Cargo.Colonists > 0)

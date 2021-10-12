@@ -13,9 +13,6 @@ namespace CraigStars
         public event Action<CargoType, WaypointTaskTransportAction, int> TransportTaskUpdatedEvent;
 
         [Export]
-        public GUIColors GUIColors { get; set; } = new GUIColors();
-
-        [Export]
         public CargoType CargoType { get; set; }
 
         public WaypointTaskTransportAction Action { get; set; }
@@ -35,12 +32,6 @@ namespace CraigStars
 
             waypointTaskTransportActionOptionButton.Connect("item_selected", this, nameof(OnWaypointTaskTransportActionOptionButtonItemSelected));
             amountSpinBox.Connect("value_changed", this, nameof(OnAmountSpinBoxValueChanged));
-
-            if (GUIColors == null)
-            {
-                // for in the editor
-                GUIColors = new GUIColors();
-            }
 
             cargoTypeLabel.Text = CargoType.ToString();
             switch (CargoType)

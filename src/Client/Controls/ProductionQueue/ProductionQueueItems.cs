@@ -24,9 +24,6 @@ namespace CraigStars.Client
 
         protected Player Me { get => PlayersManager.Me; }
 
-        [Export]
-        public GUIColors GUIColors { get; set; } = new GUIColors();
-
         public List<ProductionQueueItem> Items { get; set; } = new List<ProductionQueueItem>();
         public int SelectedItemIndex = NoItemSelected;
 

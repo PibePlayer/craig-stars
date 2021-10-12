@@ -5,9 +5,6 @@ namespace CraigStars.Client
 {
     public class SalvageSprite : MapObjectSprite
     {
-        [Export]
-        public GUIColors GUIColors { get; set; } = new GUIColors();
-
         /// <summary>
         /// Convenience method so the code looks like Fleet.Something instead of MapObject.Something
         /// </summary>

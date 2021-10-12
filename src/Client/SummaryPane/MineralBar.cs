@@ -1,3 +1,4 @@
+using CraigStars.Singletons;
 using Godot;
 using System;
 
@@ -6,9 +7,6 @@ namespace CraigStars
     [Tool]
     public class MineralBar : Control
     {
-        [Export]
-        public GUIColors GUIColors { get; set; } = new GUIColors();
-
         [Export]
         public MineralType Type
         {
@@ -74,16 +72,16 @@ namespace CraigStars
             switch (Type)
             {
                 case MineralType.Ironium:
-                    concentrationColor = GUIColors.IroniumConcentrationColor;
-                    barColor = GUIColors.IroniumBarColor;
+                    concentrationColor = GUIColorsProvider.Colors.IroniumConcentrationColor;
+                    barColor = GUIColorsProvider.Colors.IroniumBarColor;
                     break;
                 case MineralType.Boranium:
-                    concentrationColor = GUIColors.BoraniumConcentrationColor;
-                    barColor = GUIColors.BoraniumBarColor;
+                    concentrationColor = GUIColorsProvider.Colors.BoraniumConcentrationColor;
+                    barColor = GUIColorsProvider.Colors.BoraniumBarColor;
                     break;
                 case MineralType.Germanium:
-                    concentrationColor = GUIColors.GermaniumConcentrationColor;
-                    barColor = GUIColors.GermaniumBarColor;
+                    concentrationColor = GUIColorsProvider.Colors.GermaniumConcentrationColor;
+                    barColor = GUIColorsProvider.Colors.GermaniumBarColor;
                     break;
             }
 

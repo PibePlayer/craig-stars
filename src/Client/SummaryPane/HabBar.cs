@@ -1,3 +1,4 @@
+using CraigStars.Singletons;
 using CraigStars.Utils;
 using Godot;
 using System;
@@ -7,9 +8,6 @@ namespace CraigStars
     [Tool]
     public class HabBar : HBoxContainer
     {
-        [Export]
-        public GUIColors GUIColors { get; set; } = new GUIColors();
-
         [Export]
         public HabType Type
         {
@@ -99,7 +97,7 @@ namespace CraigStars
 
         public override void _Draw()
         {
-            if (hab == null || GUIColors == null)
+            if (hab == null)
             {
                 // these are null when the scene is initialized
                 // GD.PrintErr("Hab controls are null");
@@ -111,16 +109,16 @@ namespace CraigStars
             switch (type)
             {
                 case HabType.Gravity:
-                    barColor = GUIColors.GravColor;
-                    valueColor = GUIColors.GravValueColor;
+                    barColor = GUIColorsProvider.Colors.GravColor;
+                    valueColor = GUIColorsProvider.Colors.GravValueColor;
                     break;
                 case HabType.Temperature:
-                    barColor = GUIColors.TempColor;
-                    valueColor = GUIColors.TempValueColor;
+                    barColor = GUIColorsProvider.Colors.TempColor;
+                    valueColor = GUIColorsProvider.Colors.TempValueColor;
                     break;
                 case HabType.Radiation:
-                    barColor = GUIColors.RadColor;
-                    valueColor = GUIColors.RadValueColor;
+                    barColor = GUIColorsProvider.Colors.RadColor;
+                    valueColor = GUIColorsProvider.Colors.RadValueColor;
                     break;
             }
             Rect2 rect = new Rect2(

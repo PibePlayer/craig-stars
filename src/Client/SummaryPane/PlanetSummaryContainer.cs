@@ -8,9 +8,6 @@ namespace CraigStars.Client
     {
         PlanetService planetService = new();
 
-        [Export]
-        public GUIColors GUIColors { get; set; } = new GUIColors();
-
         Player Me { get => PlayersManager.Me; }
 
         public PlanetSprite Planet
@@ -140,11 +137,11 @@ namespace CraigStars.Client
                     valueLabel.Text = $"{habValue}%";
                     if (habValue >= 0)
                     {
-                        valueLabel.Modulate = GUIColors.HabitablePlanetTextColor;
+                        valueLabel.Modulate = GUIColorsProvider.Colors.HabitablePlanetTextColor;
                     }
                     else
                     {
-                        valueLabel.Modulate = GUIColors.UninhabitablePlanetTextColor;
+                        valueLabel.Modulate = GUIColorsProvider.Colors.UninhabitablePlanetTextColor;
                     }
                     if (terraformHabValue != habValue)
                     {
@@ -152,11 +149,11 @@ namespace CraigStars.Client
                         valueTerraformedLabel.Text = $"({terraformHabValue}%)";
                         if (terraformHabValue >= 0)
                         {
-                            valueTerraformedLabel.Modulate = GUIColors.HabitablePlanetTextColor;
+                            valueTerraformedLabel.Modulate = GUIColorsProvider.Colors.HabitablePlanetTextColor;
                         }
                         else
                         {
-                            valueTerraformedLabel.Modulate = GUIColors.UninhabitablePlanetTextColor;
+                            valueTerraformedLabel.Modulate = GUIColorsProvider.Colors.UninhabitablePlanetTextColor;
                         }
                     }
                     else

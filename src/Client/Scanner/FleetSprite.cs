@@ -11,9 +11,6 @@ namespace CraigStars.Client
     {
         FleetService fleetService = new();
 
-        [Export]
-        public GUIColors GUIColors { get; set; } = new GUIColors();
-
         /// <summary>
         /// Convenience method so the code looks like Fleet.Something instead of MapObject.Something
         /// </summary>
@@ -247,13 +244,13 @@ namespace CraigStars.Client
             // update the waypoints line 
             if (State == ScannerState.Commanded)
             {
-                waypointsLine.DefaultColor = GUIColors.CommandedWaypointLineColor;
+                waypointsLine.DefaultColor = GUIColorsProvider.Colors.CommandedWaypointLineColor;
                 waypointsLine.ZAsRelative = false;
                 waypointsLine.ZIndex = 10;
             }
             else
             {
-                waypointsLine.DefaultColor = GUIColors.WaypointLineColor;
+                waypointsLine.DefaultColor = GUIColorsProvider.Colors.WaypointLineColor;
                 waypointsLine.ZAsRelative = true;
                 waypointsLine.ZIndex = 0;
             }

@@ -1,3 +1,4 @@
+using CraigStars.Singletons;
 using Godot;
 using System;
 
@@ -8,9 +9,6 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(WarpFactor));
         public event Action<int> WarpSpeedChangedEvent;
-
-        [Export]
-        public GUIColors GUIColors { get; set; } = new GUIColors();
 
         /// <summary>
         /// Max warp factor with 0 being stopped and 11 being use stargate
@@ -89,14 +87,14 @@ namespace CraigStars
         {
             if (panel != null)
             {
-                var color = GUIColors.WarpColor;
+                var color = GUIColorsProvider.Colors.WarpColor;
                 if (WarpSpeed > 0 && WarpSpeed < MaxWarpFactor)
                 {
                     label.Text = $"Warp {WarpSpeed}";
                     if (WarpSpeed == 10)
                     {
                         // TODO: Don't hardcode this damage
-                        color = GUIColors.WarpDamageColor;
+                        color = GUIColorsProvider.Colors.WarpDamageColor;
                     }
                 }
                 else if (WarpSpeed == 0)
@@ -106,7 +104,7 @@ namespace CraigStars
                 else if (WarpSpeed == MaxWarpFactor)
                 {
                     label.Text = $"Use Stargate";
-                    color = GUIColors.StargateColor;
+                    color = GUIColorsProvider.Colors.StargateColor;
                 }
                 // get the width of our rectangle
                 // it's a percentage of the speed, minus the line widths

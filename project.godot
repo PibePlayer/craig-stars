@@ -49,6 +49,7 @@ config/icon="res://icon.png"
 
 CsResourceLoader="*res://src/Client/Singletons/CSResourceLoader.tscn"
 RulesManager="*res://src/Client/Singletons/RulesManager.tscn"
+GuiColorsProvider="*res://src/Client/Singletons/GUIColorsProvider.tscn"
 RacesManager="*res://src/Client/Singletons/RacesManager.tscn"
 GamesManager="*res://src/Client/Singletons/GamesManager.tscn"
 TechStore="*res://src/Client/Singletons/TechStore.tscn"

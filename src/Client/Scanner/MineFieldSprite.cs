@@ -1,3 +1,4 @@
+using CraigStars.Singletons;
 using Godot;
 using System;
 
@@ -5,9 +6,6 @@ namespace CraigStars.Client
 {
     public class MineFieldSprite : MapObjectSprite
     {
-
-        [Export]
-        public GUIColors GUIColors { get; set; } = new GUIColors();
 
         [Export]
         int CirclePoints
@@ -93,7 +91,7 @@ namespace CraigStars.Client
             // TODO: change color on select?
             if (OwnedByMe)
             {
-                Modulate = GUIColors.OwnedMineFieldColor;
+                Modulate = GUIColorsProvider.Colors.OwnedMineFieldColor;
             }
             else
             {

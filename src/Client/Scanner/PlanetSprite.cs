@@ -14,9 +14,6 @@ namespace CraigStars.Client
 
         PlanetService planetService = new();
 
-        [Export]
-        public GUIColors GUIColors { get; set; } = new GUIColors();
-
         public enum Orbiting
         {
             None,
@@ -111,10 +108,10 @@ namespace CraigStars.Client
                 case PlanetViewState.Normal:
                     if (Planet.HasStarbase)
                     {
-                        var color = GUIColors.StarbaseWithoutDock;
+                        var color = GUIColorsProvider.Colors.StarbaseWithoutDock;
                         if (Planet.Starbase.DockCapacity > 0)
                         {
-                            color = GUIColors.StarbaseWithDock;
+                            color = GUIColorsProvider.Colors.StarbaseWithDock;
                         }
                         if (isCommanded)
                         {
@@ -129,22 +126,22 @@ namespace CraigStars.Client
                     {
                         if (isCommanded)
                         {
-                            DrawCircle(new Vector2(0f, -9f), 2.5f, GUIColors.MassDriverColor);
+                            DrawCircle(new Vector2(0f, -9f), 2.5f, GUIColorsProvider.Colors.MassDriverColor);
                         }
                         else
                         {
-                            DrawRect(new Rect2(-1.5f, -7, 3, 3), GUIColors.MassDriverColor, true);
+                            DrawRect(new Rect2(-1.5f, -7, 3, 3), GUIColorsProvider.Colors.MassDriverColor, true);
                         }
                     }
                     if (Planet.HasStargate)
                     {
                         if (isCommanded)
                         {
-                            DrawCircle(new Vector2(-7f, -4f), 2.5f, GUIColors.StargateColor);
+                            DrawCircle(new Vector2(-7f, -4f), 2.5f, GUIColorsProvider.Colors.StargateColor);
                         }
                         else
                         {
-                            DrawRect(new Rect2(-7f, -5, 3, 3), GUIColors.StargateColor, true);
+                            DrawRect(new Rect2(-7f, -5, 3, 3), GUIColorsProvider.Colors.StargateColor, true);
                         }
                     }
                     break;
@@ -152,8 +149,8 @@ namespace CraigStars.Client
                     if (Planet.Explored)
                     {
                         var hab = Me.Race.GetPlanetHabitability(Planet.Hab.Value);
-                        var circleColor = GUIColors.HabitableColor;
-                        var outlineColor = GUIColors.HabitableOutlineColor;
+                        var circleColor = GUIColorsProvider.Colors.HabitableColor;
+                        var outlineColor = GUIColorsProvider.Colors.HabitableOutlineColor;
 
                         // don't go smaller than 25% of a circle
                         var radius = Mathf.Clamp(MaxPlanetValueRadius * (hab / 100.0f), 2.5f, 10);
@@ -169,21 +166,21 @@ namespace CraigStars.Client
                                 if (terraformHabValue > 0)
                                 {
                                     radius = Mathf.Clamp(MaxPlanetValueRadius * (terraformHabValue / 100.0f), 2.5f, 10);
-                                    circleColor = GUIColors.TerraformableColor;
-                                    outlineColor = GUIColors.TerraformableOutlineColor;
+                                    circleColor = GUIColorsProvider.Colors.TerraformableColor;
+                                    outlineColor = GUIColorsProvider.Colors.TerraformableOutlineColor;
                                 }
                                 else
                                 {
                                     radius = Mathf.Clamp(MaxPlanetValueRadius * (-hab / 45.0f), 2.5f, 10);
-                                    circleColor = GUIColors.UninhabitableColor;
-                                    outlineColor = GUIColors.UninhabitableOutlineColor;
+                                    circleColor = GUIColorsProvider.Colors.UninhabitableColor;
+                                    outlineColor = GUIColorsProvider.Colors.UninhabitableOutlineColor;
                                 }
                             }
                             else
                             {
                                 radius = Mathf.Clamp(MaxPlanetValueRadius * (-hab / 45.0f), 2.5f, 10);
-                                circleColor = GUIColors.UninhabitableColor;
-                                outlineColor = GUIColors.UninhabitableOutlineColor;
+                                circleColor = GUIColorsProvider.Colors.UninhabitableColor;
+                                outlineColor = GUIColorsProvider.Colors.UninhabitableOutlineColor;
                             }
                         }
 
@@ -205,7 +202,7 @@ namespace CraigStars.Client
                     if (Planet.Owner != null && Planet.Population > 0)
                     {
                         var radius = Math.Max(2, Planet.Population / 1_350_000f * MaxPopulationRadius);
-                        var color = OwnedByMe ? GUIColors.HabitableColor : Planet.Owner.Color;
+                        var color = OwnedByMe ? GUIColorsProvider.Colors.HabitableColor : Planet.Owner.Color;
                         DrawCircle(Vector2.Zero, radius, color);
                     }
                     else
@@ -326,12 +323,12 @@ namespace CraigStars.Client
                     if (isCommanded)
                     {
                         inhabitedCommanded.Visible = true;
-                        inhabitedCommanded.Modulate = GUIColors.OwnedColor;
+                        inhabitedCommanded.Modulate = GUIColorsProvider.Colors.OwnedColor;
                     }
                     else
                     {
                         inhabited.Visible = true;
-                        inhabited.Modulate = GUIColors.OwnedColor;
+                        inhabited.Modulate = GUIColorsProvider.Colors.OwnedColor;
                     }
                     break;
                 case ScannerOwnerAlly.Friend:
@@ -368,12 +365,12 @@ namespace CraigStars.Client
                     orbiting.Modulate = Colors.White;
                     break;
                 case Orbiting.OrbitingEnemies:
-                    orbitingCommanded.Modulate = GUIColors.EnemyColor;
-                    orbiting.Modulate = GUIColors.EnemyColor;
+                    orbitingCommanded.Modulate = GUIColorsProvider.Colors.EnemyColor;
+                    orbiting.Modulate = GUIColorsProvider.Colors.EnemyColor;
                     break;
                 case Orbiting.OrbitingAlliesAndEnemies:
-                    orbitingCommanded.Modulate = GUIColors.FriendAndEnemyColor;
-                    orbiting.Modulate = GUIColors.FriendAndEnemyColor;
+                    orbitingCommanded.Modulate = GUIColorsProvider.Colors.FriendAndEnemyColor;
+                    orbiting.Modulate = GUIColorsProvider.Colors.FriendAndEnemyColor;
                     break;
             }
 

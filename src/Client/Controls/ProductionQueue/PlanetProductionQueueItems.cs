@@ -55,22 +55,22 @@ namespace CraigStars.Client
         {
             if (skipped)
             {
-                return GUIColors.ProductionQueueSkippedColor;
+                return GUIColorsProvider.Colors.ProductionQueueSkippedColor;
             }
             if (yearsToBuildAll <= 1)
             {
                 // if we can build them all in one year, color it gree
-                return GUIColors.ProductionQueueItemOneYearColor;
+                return GUIColorsProvider.Colors.ProductionQueueItemOneYearColor;
             }
             else if (yearsToBuildOne <= 1)
             {
                 // if we can build at least one in a year, color it blue
-                return GUIColors.ProductionQueueMoreThanOneYearColor;
+                return GUIColorsProvider.Colors.ProductionQueueMoreThanOneYearColor;
             }
             else if (yearsToBuildOne >= 100)
             {
                 // if it will take more than 100 years to build them all, color it red
-                return GUIColors.ProductionQueueNeverBuildColor;
+                return GUIColorsProvider.Colors.ProductionQueueNeverBuildColor;
             }
 
             return Colors.White;

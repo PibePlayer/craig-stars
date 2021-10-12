@@ -10,17 +10,10 @@ namespace CraigStars.Client
     {
         protected Player Me { get => PlayersManager.Me; }
 
-        [Export]
-        public GUIColors GUIColors { get; set; }
-
         Container techsContainer;
         public override void _Ready()
         {
             techsContainer = GetNode<Container>("ScrollContainer/TechsContainer");
-            if (GUIColors == null)
-            {
-                GUIColors = new GUIColors();
-            }
         }
 
         /// <summary>
@@ -66,11 +59,11 @@ namespace CraigStars.Client
                 var color = Colors.White;
                 if (futureTech.Distance > 1 && futureTech.Distance < 5)
                 {
-                    color = GUIColors.ProductionQueueMoreThanOneYearColor;
+                    color = GUIColorsProvider.Colors.ProductionQueueMoreThanOneYearColor;
                 }
                 else if (futureTech.Distance <= 1)
                 {
-                    color = GUIColors.ProductionQueueItemOneYearColor;
+                    color = GUIColorsProvider.Colors.ProductionQueueItemOneYearColor;
                 }
 
                 techsContainer.AddChild(new TechLabel()

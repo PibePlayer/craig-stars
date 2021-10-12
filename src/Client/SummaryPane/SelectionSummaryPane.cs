@@ -8,9 +8,6 @@ namespace CraigStars.Client
 {
     public class SelectionSummaryPane : MarginContainer
     {
-        [Export]
-        public GUIColors GUIColors { get; set; } = new GUIColors();
-
         Player Me { get => PlayersManager.Me; }
 
         public MapObjectSprite MapObject

@@ -141,7 +141,7 @@ namespace CraigStars.Client
         void OnGameExiting(PublicGameInfo obj)
         {
             // give these objects back to the NodePool
-            mapObjects.ForEach(mo => ReturnNode(mo));
+            mapObjects.ForEach(mo => { if (IsInstanceValid(mo)) ReturnNode(mo); });
             Scanners.ForEach(s => NodePool.Return(s));
             PenScanners.ForEach(s => NodePool.Return(s));
 

@@ -45,7 +45,7 @@ namespace CraigStars.Client
             }
         }
 
-        void OnOK()
+        protected override void OnOk()
         {
             var fleetsToMerge = new List<Fleet>();
             var fleetSpritesToMerge = new List<FleetSprite>();

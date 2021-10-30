@@ -1,31 +1,20 @@
-using System;
-using System.Collections.Generic;
-using Godot;
 
-namespace CraigStars.Singletons
+using System.Collections.Generic;
+
+namespace CraigStars.Tests
 {
-    /// <summary>
-    /// The TurnProcessorManager for the game
-    /// </summary>
-    public class TurnProcessorManager : Node, ITurnProcessorManager
+    public class TestTurnProcessorManager : ITurnProcessorManager
     {
-        static CSLog log = LogProvider.GetLogger(typeof(RulesManager));
+        public IEnumerable<TurnProcessor> TurnProcessors { get => turnProcessors; }
+        List<TurnProcessor> turnProcessors = new List<TurnProcessor>();
 
         /// <summary>
-        /// PlayersManager is a singleton
+        /// Dictionary to key turn processors by name
         /// </summary>
-        private static TurnProcessorManager instance = new TurnProcessorManager();
-        public static TurnProcessorManager Instance
-        {
-            get
-            {
-                return instance;
-            }
-        }
+        Dictionary<string, TurnProcessor> TurnProcessorsByName { get; set; } = new Dictionary<string, TurnProcessor>();
 
-        TurnProcessorManager()
+        public TestTurnProcessorManager()
         {
-            instance = this;
 
             // Register default turn processors
             RegisterTurnProcessor<ShipDesignerTurnProcessor>();
@@ -37,17 +26,6 @@ namespace CraigStars.Singletons
             RegisterTurnProcessor<MineLayerTurnProcessor>();
             RegisterTurnProcessor<PopulationRebalancerTurnProcessor>();
         }
-
-        /// <summary>
-        /// A list of all turn processors being managed
-        /// </summary>
-        public IEnumerable<TurnProcessor> TurnProcessors { get => turnProcessors; }
-        List<TurnProcessor> turnProcessors = new List<TurnProcessor>();
-
-        /// <summary>
-        /// Dictionary to key turn processors by name
-        /// </summary>
-        Dictionary<string, TurnProcessor> TurnProcessorsByName { get; set; } = new Dictionary<string, TurnProcessor>();
 
         public void RegisterTurnProcessor<T>() where T : TurnProcessor, new()
         {
@@ -62,4 +40,5 @@ namespace CraigStars.Singletons
             return processor;
         }
     }
+
 }

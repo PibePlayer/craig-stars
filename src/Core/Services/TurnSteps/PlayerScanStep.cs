@@ -60,14 +60,14 @@ namespace CraigStars
                 // I think I might be hitting some threadpool starvation issues
                 // scanTasks.Add(Task.Run(() =>
                 // {
-                    try
-                    {
+                    // try
+                    // {
                         Scan(player);
-                    }
-                    catch (Exception e)
-                    {
-                        log.Error($"Encountered error during PlayerScanStep for {player}.", e);
-                    }
+                    // }
+                    // catch (Exception e)
+                    // {
+                    //     log.Error($"Encountered error during PlayerScanStep for {player}.", e);
+                    // }
                 // }));
             }
 

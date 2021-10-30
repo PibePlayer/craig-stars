@@ -67,8 +67,8 @@ namespace CraigStars.Tests
                 Density = Density.Packed,
             };
             game.GameInfo.QuickStartTurns = 0;
-            var player = new Player();
-            var aiPlayer = new Player() { AIControlled = true };
+            var player = new Player() { Num = 0 };
+            var aiPlayer = new Player() { Num = 1, AIControlled = true };
             var rules = new Rules(0);
             game.Init(new List<Player>() { player, aiPlayer }, rules, StaticTechStore.Instance);
             game.GenerateUniverse();
@@ -82,9 +82,13 @@ namespace CraigStars.Tests
             stopwatch.Start();
             int numTurns = 10; //1000;
 
+            var aiTurnSubmitter = new AITurnSubmitter(new TestTurnProcessorManager());
+
             // generate a bunch of turns
             for (int i = 0; i < numTurns; i++)
             {
+                aiTurnSubmitter.SubmitAITurns(game);
+
                 // submit the player
                 game.SubmitTurn(player);
 

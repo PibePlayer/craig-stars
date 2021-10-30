@@ -45,7 +45,7 @@ namespace CraigStars.Server
         /// <value></value>
         protected Game Game { get; set; }
 
-        protected AITurnSubmitter aiTurnSubmitter;
+        public AITurnSubmitter AITurnSubmitter { get; set; }
 
         protected IClientEventPublisher clientEventPublisher;
 
@@ -56,7 +56,7 @@ namespace CraigStars.Server
             base._Ready();
 
             clientEventPublisher = CreateClientEventPublisher();
-            aiTurnSubmitter.TurnSubmitRequestedEvent += OnAITurnSubmitRequested;
+            AITurnSubmitter.TurnSubmitRequestedEvent += OnAITurnSubmitRequested;
 
             clientEventPublisher.PlayerDataRequestedEvent += OnPlayerDataRequested;
             clientEventPublisher.StartNewGameRequestedEvent += OnStartNewGameRequested;
@@ -70,7 +70,7 @@ namespace CraigStars.Server
         {
             GamesManager = gamesManager;
             GodotTaskFactory = godotTaskFactory;
-            aiTurnSubmitter = new AITurnSubmitter(turnProcessorManager);
+            AITurnSubmitter = new AITurnSubmitter(turnProcessorManager);
         }
 
         public override void _Notification(int what)
@@ -78,7 +78,7 @@ namespace CraigStars.Server
             base._Notification(what);
             if (what == NotificationPredelete)
             {
-                aiTurnSubmitter.TurnSubmitRequestedEvent -= OnAITurnSubmitRequested;
+                AITurnSubmitter.TurnSubmitRequestedEvent -= OnAITurnSubmitRequested;
                 clientEventPublisher.PlayerDataRequestedEvent -= OnPlayerDataRequested;
                 clientEventPublisher.StartNewGameRequestedEvent -= OnStartNewGameRequested;
                 clientEventPublisher.ContinueGameRequestedEvent -= OnContinueGameRequested;
@@ -149,7 +149,7 @@ namespace CraigStars.Server
             await GodotTaskFactory.StartNew(() => PublishGameStartedEvent());
 
             // submit the AI player turns
-            aiTurnSubmitter.SubmitAITurns(Game);
+            AITurnSubmitter.SubmitAITurns(Game);
         }
 
         public async Task ContinueGame(string gameName, int year)
@@ -175,7 +175,7 @@ namespace CraigStars.Server
             await GodotTaskFactory.StartNew(() => PublishGameContinuedEvent());
 
             // submit the AI player turns
-            aiTurnSubmitter.SubmitAITurns(Game);
+            AITurnSubmitter.SubmitAITurns(Game);
         }
 
         protected async void OnContinueGameRequested(string gameName, int year)
@@ -287,7 +287,7 @@ namespace CraigStars.Server
             await GodotTaskFactory.StartNew(() => PublishTurnPassedEvent());
 
             SaveGame(Game);
-            aiTurnSubmitter.SubmitAITurns(Game);
+            AITurnSubmitter.SubmitAITurns(Game);
         }
 
         void OnTurnGeneratorAdvanced(TurnGenerationState state)

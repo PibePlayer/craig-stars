@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CraigStars.Server
+namespace CraigStars
 {
     /// <summary>
     /// Submit turns for each AI player
@@ -46,7 +46,7 @@ namespace CraigStars.Server
                         log.Error($"Failed to submit AI turn {player}", e);
                     }
                 }
-            });
+            }).Wait();
         }
     }
 }

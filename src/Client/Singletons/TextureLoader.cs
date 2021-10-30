@@ -75,7 +75,7 @@ namespace CraigStars.Singletons
         {
             // use a unique planet image based on id
             // we have 9 planet images currently
-            int num = (planet.Id % (NumPlanetImages - 1)) + 1;
+            long num = (planet.Id % (NumPlanetImages - 1)) + 1;
             var planetTextureAssetPath = $"res://assets/gui/planet/Planet0{num}.jpg";
             return ResourceLoader.Load<Texture>(planetTextureAssetPath);
         }

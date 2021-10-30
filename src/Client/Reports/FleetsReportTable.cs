@@ -96,7 +96,7 @@ namespace CraigStars.Client
             return new List<Cell>() {
                 new Cell(item.Name),
                 new Cell(owner, color: ownerColor),
-                new Cell(item.Id),
+                new Cell(item.Id.ToString()),
                 new Cell(location),
                 new Cell(destination),
                 new Cell(etaText, eta),

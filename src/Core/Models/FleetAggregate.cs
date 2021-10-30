@@ -32,5 +32,18 @@ namespace CraigStars
         /// The amount of base cloaked cargo this fleet has (i.e. the mass of all uncloaked ships)
         /// </summary>
         public int BaseCloakedCargo { get; set; }
+
+        /// <summary>
+        /// Whether this Fleet's composition is complete, or if it needs more tokens
+        /// </summary>
+        /// <value></value>
+        public bool FleetCompositionComplete { get; set; }
+
+        /// <summary>
+        /// The tokens this fleet requires to have a complete FleetComposition
+        /// </summary>
+        /// <value></value>
+        public List<FleetCompositionToken> FleetCompositionTokensRequired { get; set; }
+
     }
 }

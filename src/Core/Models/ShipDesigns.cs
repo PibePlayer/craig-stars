@@ -105,5 +105,17 @@ namespace CraigStars
             }
         };
 
+        public static ShipDesign MiniBomber = new ShipDesign()
+        {
+            Name = "Mini Bomber",
+            Hull = Techs.MiniBomber,
+            HullSetNumber = 1,
+            Slots = new List<ShipDesignSlot>()
+            {
+                new ShipDesignSlot(Techs.QuickJump5, 1, 1),
+                new ShipDesignSlot(Techs.LadyFingerBomb, 2, 2),
+            }
+        };        
+
     }
 }

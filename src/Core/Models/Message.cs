@@ -227,6 +227,20 @@ namespace CraigStars
             player.Messages.Add(new Message(MessageType.BuiltShip, text, fleet));
         }
 
+        public static void FleetBuiltForComposition(Player player, ShipDesign design, Fleet fleet, int numBuilt)
+        {
+            string text;
+            if (numBuilt == 1)
+            {
+                text = $"Your starbase at {fleet.Orbiting.Name} has built a new {design.Name}. It has been added to {fleet.Name}.";
+            }
+            else
+            {
+                text = $"Your starbase at {fleet.Orbiting.Name} has built {numBuilt} new {design.Name}s. They have been added to {fleet.Name}.";
+            }
+            player.Messages.Add(new Message(MessageType.BuiltShip, text, fleet));
+        }
+
         public static void FleetStargateInvalidSource(Player player, Fleet fleet, Waypoint wp0)
         {
             player.Messages.Add(new Message(MessageType.Invalid,

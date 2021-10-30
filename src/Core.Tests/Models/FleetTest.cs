@@ -145,6 +145,43 @@ namespace CraigStars.Tests
 
         }
 
+        [Test]
+        public void TestComputeFleetComposition()
+        {
+            // make a simple bomber fleet
+            Fleet fleet = new()
+            {
+                Tokens = new()
+                {
+                    new ShipToken(ShipDesigns.MiniBomber, 1)
+                }
+            };
+
+            // empty fleet is already complete
+            fleet.ComputeFleetComposition();
+            Assert.IsTrue(fleet.Aggregate.FleetCompositionComplete);
+            Assert.AreEqual(0, fleet.Aggregate.FleetCompositionTokensRequired.Count);
+
+            // make a new fleet composition that requires 2 bombers and a fuel frieghter
+            FleetComposition fleetComposition = new()
+            {
+                Type = FleetCompositionType.Bomber,
+                Tokens = new()
+                {
+                    new FleetCompositionToken(ShipDesignPurpose.Bomber, 2),
+                    new FleetCompositionToken(ShipDesignPurpose.FuelFreighter, 1),
+                }
+            };
+
+            fleet.FleetComposition = fleetComposition;
+            fleet.ComputeFleetComposition();
+            Assert.IsFalse(fleet.Aggregate.FleetCompositionComplete);
+            Assert.AreEqual(2, fleet.Aggregate.FleetCompositionTokensRequired.Count);
+            Assert.AreEqual(ShipDesignPurpose.Bomber, fleet.Aggregate.FleetCompositionTokensRequired[0].Purpose);
+            Assert.AreEqual(ShipDesignPurpose.Bomber, fleet.Aggregate.FleetCompositionTokensRequired[0].Purpose);
+
+        }
+
 
     }
 

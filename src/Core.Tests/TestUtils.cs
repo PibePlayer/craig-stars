@@ -21,10 +21,12 @@ namespace CraigStars.Tests
             };
             var player = new Player()
             {
-                BattlePlans = new List<BattlePlan>() {
+                BattlePlans = new()
+                {
                     new BattlePlan("Default")
                 }
             };
+            
             game.Players.Add(player);
 
             // create an empty planet and make the player aware of it
@@ -46,9 +48,9 @@ namespace CraigStars.Tests
             planet.Player = player;
             planet.Population = 25000;
 
-            var design = ShipDesigns.LongRangeScount.Clone();
-            design.Player = player;
+            var design = ShipDesigns.LongRangeScount.Clone(player);
             game.Designs.Add(design);
+            player.Designs.Add(design);
 
             var fleet = new Fleet()
             {

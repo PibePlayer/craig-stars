@@ -369,5 +369,77 @@ namespace CraigStars.Tests
             var result = step.AllocatePartialBuild(costPerItem, allocated);
             Assert.AreEqual(new Cost(5, 10, 15, 20), result);
         }
+
+        [Test]
+        public void TestBuildFleet()
+        {
+            var planet = game.Planets[0];
+            var player = game.Players[0];
+
+            var originalOrbitingFleets = planet.OrbitingFleets.Count;
+
+            ProductionQueueItem item = new(QueueItemType.ShipToken, 1, player.Designs[0]);
+
+            Fleet builtFleet = null;
+
+            Action<MapObject> onFleetBuilt = (MapObject mo) =>
+            {
+                builtFleet = (Fleet)mo;
+            };
+
+            EventManager.MapObjectCreatedEvent += onFleetBuilt;
+            step.BuildFleet(planet, item, 1);
+            EventManager.MapObjectCreatedEvent -= onFleetBuilt;
+
+            Assert.AreEqual(originalOrbitingFleets + 1, planet.OrbitingFleets.Count);
+            Assert.NotNull(builtFleet);
+            Assert.Contains(builtFleet, planet.OrbitingFleets);
+        }
+
+        [Test]
+        public void TestBuildFleetWithComposition()
+        {
+            var planet = game.Planets[0];
+            var player = game.Players[0];
+            var fleet = game.Fleets[0];
+
+            // add a new minibomber design to the player's designs
+            game.Designs.Add(ShipDesigns.MiniBomber.Clone(player));
+
+            // add a FleetComposition to the existing Fleet so the PlanetProductionStep
+            // will add the newly built token to this fleet
+            fleet.FleetComposition = new()
+            {
+                Type = FleetCompositionType.Bomber,
+                Tokens = new()
+                {
+                    new FleetCompositionToken(ShipDesignPurpose.Scout, 1),
+                    new FleetCompositionToken(ShipDesignPurpose.Bomber, 1)
+                }
+            };
+            fleet.ComputeAggregate(true);
+
+
+            ProductionQueueItem item = new(QueueItemType.ShipToken, 1, game.Designs[1]);
+
+            Fleet builtFleet = null;
+
+            Action<MapObject> onFleetBuilt = (MapObject mo) =>
+            {
+                builtFleet = (Fleet)mo;
+            };
+
+            EventManager.MapObjectCreatedEvent += onFleetBuilt;
+            step.BuildFleet(planet, item, 1);
+            EventManager.MapObjectCreatedEvent -= onFleetBuilt;
+
+            // we shouldn't get a new notification
+            Assert.IsNull(builtFleet);
+
+            // our existing fleet should be updated
+            Assert.AreEqual(2, fleet.Tokens.Count);
+            Assert.AreEqual(game.Designs[1], fleet.Tokens[1].Design);
+            Assert.AreEqual(1, fleet.Tokens[1].Quantity);
+        }
     }
 }

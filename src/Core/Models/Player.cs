@@ -54,13 +54,13 @@ namespace CraigStars
         /// Each player has a certain level of each tech.
         /// </summary>
         /// <returns></returns>
-        public TechLevel TechLevels { get; set; } = new TechLevel();
+        public TechLevel TechLevels { get; set; } = new();
 
         /// <summary>
         /// The amount spent on each tech level
         /// </summary>
         /// <returns></returns>
-        public TechLevel TechLevelsSpent { get; set; } = new TechLevel();
+        public TechLevel TechLevelsSpent { get; set; } = new();
 
         /// <summary>
         /// The percentage of resources to spend on research
@@ -75,15 +75,15 @@ namespace CraigStars
 
         #region Intel
 
-        public Intel<ShipDesign> DesignIntel { get; set; } = new Intel<ShipDesign>();
-        public Intel<Planet> PlanetIntel { get; set; } = new Intel<Planet>();
-        public Intel<MineField> MineFieldIntel { get; set; } = new Intel<MineField>();
-        public Intel<MineralPacket> MineralPacketIntel { get; set; } = new Intel<MineralPacket>();
-        public Intel<Salvage> SalvageIntel { get; set; } = new Intel<Salvage>();
-        public Intel<Wormhole> WormholeIntel { get; set; } = new Intel<Wormhole>();
-        public Intel<MysteryTrader> MysteryTraderIntel { get; set; } = new Intel<MysteryTrader>();
-        public Intel<Fleet> FleetIntel { get; set; } = new Intel<Fleet>();
-        public List<BattleRecord> Battles { get; set; } = new List<BattleRecord>();
+        public Intel<ShipDesign> DesignIntel { get; set; } = new();
+        public Intel<Planet> PlanetIntel { get; set; } = new();
+        public Intel<MineField> MineFieldIntel { get; set; } = new();
+        public Intel<MineralPacket> MineralPacketIntel { get; set; } = new();
+        public Intel<Salvage> SalvageIntel { get; set; } = new();
+        public Intel<Wormhole> WormholeIntel { get; set; } = new();
+        public Intel<MysteryTrader> MysteryTraderIntel { get; set; } = new();
+        public Intel<Fleet> FleetIntel { get; set; } = new();
+        public List<BattleRecord> Battles { get; set; } = new();
 
         #endregion
 
@@ -95,16 +95,16 @@ namespace CraigStars
         [JsonIgnore] public Dictionary<Guid, ShipDesign> DesignsByGuid { get => DesignIntel.ItemsByGuid; }
 
         [JsonProperty(ItemIsReference = true)]
-        public List<ShipDesign> DeletedDesigns { get; set; } = new List<ShipDesign>();
+        public List<ShipDesign> DeletedDesigns { get; set; } = new();
 
         #endregion
 
         #region Universe Data
 
-        public PlayerUISettings UISettings { get; set; } = new PlayerUISettings();
-        public PlayerSettings Settings { get; set; } = new PlayerSettings();
+        public PlayerUISettings UISettings { get; set; } = new();
+        public PlayerSettings Settings { get; set; } = new();
 
-        [JsonIgnore] public Dictionary<Vector2, List<MapObject>> MapObjectsByLocation = new Dictionary<Vector2, List<MapObject>>();
+        [JsonIgnore] public Dictionary<Vector2, List<MapObject>> MapObjectsByLocation = new();
 
         [JsonIgnore] public List<Planet> Planets { get => PlanetIntel.Owned; }
         [JsonIgnore] public List<Planet> ForeignPlanets { get => PlanetIntel.Foriegn; }
@@ -138,16 +138,22 @@ namespace CraigStars
         /// <summary>
         /// All map objects by their guid, for lookups
         /// </summary>
-        [JsonIgnore] public Dictionary<Guid, MapObject> MapObjectsByGuid { get; set; } = new Dictionary<Guid, MapObject>();
+        [JsonIgnore] public Dictionary<Guid, MapObject> MapObjectsByGuid { get; set; } = new();
 
         /// <summary>
         /// All battles by their guid, for lookups
         /// </summary>
         [JsonIgnore] public Dictionary<Guid, BattleRecord> BattlesByGuid { get; set; }
 
-        [JsonIgnore] public Dictionary<Guid, BattlePlan> BattlePlansByGuid = new Dictionary<Guid, BattlePlan>();
-        [JsonIgnore] public Dictionary<Guid, TransportPlan> TransportPlansByGuid = new Dictionary<Guid, TransportPlan>();
-        [JsonIgnore] public Dictionary<Guid, ProductionPlan> ProductionPlansByGuid = new Dictionary<Guid, ProductionPlan>();
+        [JsonIgnore] public Dictionary<Guid, BattlePlan> BattlePlansByGuid = new();
+        [JsonIgnore] public Dictionary<Guid, TransportPlan> TransportPlansByGuid = new();
+        [JsonIgnore] public Dictionary<Guid, ProductionPlan> ProductionPlansByGuid = new();
+
+        /// <summary>
+        /// FleetCompositions
+        /// </summary>
+        [JsonIgnore] public Dictionary<Guid, FleetComposition> FleetCompositionsByGuid = new();
+        [JsonIgnore] public Dictionary<FleetCompositionType, FleetComposition> FleetCompositionsByType = new();
 
         /// <summary>
         /// These fleets have been merged into other fleets and no longer exist
@@ -157,10 +163,10 @@ namespace CraigStars
         /// <typeparam name="Fleet"></typeparam>
         /// <returns></returns>
         [JsonProperty(ItemIsReference = true)]
-        public List<Fleet> MergedFleets { get; set; } = new List<Fleet>();
+        public List<Fleet> MergedFleets { get; set; } = new();
 
         [JsonProperty(ItemIsReference = true)]
-        public List<Message> Messages { get; set; } = new List<Message>();
+        public List<Message> Messages { get; set; } = new();
         [JsonIgnore] public IEnumerable<Message> FilteredMessages { get => Messages.Where(m => ((ulong)m.Type & UISettings.MessageTypeFilter) > 0); }
 
         [JsonProperty(IsReference = true)]
@@ -261,6 +267,9 @@ namespace CraigStars
             TransportPlansByGuid = TransportPlans.ToLookup(plan => plan.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
             ProductionPlansByGuid = ProductionPlans.ToLookup(plan => plan.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
             BattlesByGuid = Battles.ToLookup(battle => battle.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
+            
+            FleetCompositionsByGuid = FleetCompositions.ToLookup(fc => fc.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
+            FleetCompositionsByType = FleetCompositions.ToLookup(fc => fc.Type).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
 
 
             List<MapObject> mapObjects = new List<MapObject>();
@@ -396,7 +405,7 @@ namespace CraigStars
         /// TODO: with 30k fleets this will take a while...
         /// </summary>
         /// <returns></returns>
-        public int GetNextFleetId()
+        public long GetNextFleetId()
         {
             return Fleets.Select(f => f.Id).Max() + 1;
         }

@@ -249,7 +249,7 @@ namespace CraigStars
             return new Cost(numBuilt, numBuilt, numBuilt, 0);
         }
 
-        void BuildPacket(Planet planet, Cargo cargo, int numBuilt)
+        internal void BuildPacket(Planet planet, Cargo cargo, int numBuilt)
         {
             MineralPacket packet = new MineralPacket()
             {
@@ -272,32 +272,63 @@ namespace CraigStars
         /// <param name="item"></param>
         /// <param name="numBuilt"></param>
         /// <param name="rules"></param>
-        void BuildFleet(Planet planet, ProductionQueueItem item, int numBuilt)
+        internal void BuildFleet(Planet planet, ProductionQueueItem item, int numBuilt)
         {
             planet.Player.Stats.NumFleetsBuilt++;
             planet.Player.Stats.NumTokensBuilt += numBuilt;
             var id = planet.Player.Stats.NumFleetsBuilt;
             string name = item.FleetName != null ? item.FleetName : item.Design.Name;
-            var existingFleet = planet.OrbitingFleets.Where(f => f.Name == name);
+            var existingFleetByName = planet.OrbitingFleets.Where(f => f.Name == name);
+            var existingFleetsRequiringTokens = planet.OrbitingFleets.Where(f => !f.Aggregate.FleetCompositionComplete).ToList();
 
-            Fleet fleet = new Fleet()
+            bool foundFleet = false;
+            if (existingFleetsRequiringTokens.Count > 0)
             {
-                BaseName = name,
-                Name = $"{name} #{id}",
-                Player = planet.Player,
-                Orbiting = planet,
-                Position = planet.Position,
-                Id = id,
-                BattlePlan = planet.Player.BattlePlans[0]
-            };
-            fleet.Tokens.Add(new ShipToken(item.Design, item.Quantity));
-            fleet.ComputeAggregate();
-            fleet.Fuel = fleet.Aggregate.FuelCapacity;
-            fleet.Waypoints.Add(Waypoint.TargetWaypoint(planet));
-            planet.OrbitingFleets.Add(fleet);
+                foreach (Fleet fleet in existingFleetsRequiringTokens)
+                {
+                    if (fleet.FleetComposition.GetQuantityByPurpose().ContainsKey(item.Design.Purpose))
+                    {
+                        var existingToken = fleet.Tokens.Find(token => token.Design == item.Design);
+                        if (existingToken != null)
+                        {
+                            existingToken.Quantity += numBuilt;
+                        }
+                        else
+                        {
+                            // this fleet composition requires a ShipDesign like this, so add it to the fleet
+                            fleet.Tokens.Add(new ShipToken(item.Design, item.Quantity));
+                        }
 
-            Message.FleetBuilt(planet.Player, item.Design, fleet, numBuilt);
-            EventManager.PublishMapObjectCreatedEvent(fleet);
+                        fleet.ComputeAggregate(true);
+                        Message.FleetBuiltForComposition(planet.Player, item.Design, fleet, numBuilt);
+                        foundFleet = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!foundFleet)
+            {
+                Fleet fleet = new Fleet()
+                {
+                    BaseName = name,
+                    Name = $"{name} #{id}",
+                    Player = planet.Player,
+                    Orbiting = planet,
+                    Position = planet.Position,
+                    Id = id,
+                    BattlePlan = planet.Player.BattlePlans[0]
+                };
+                fleet.Tokens.Add(new ShipToken(item.Design, item.Quantity));
+                fleet.ComputeAggregate();
+                fleet.Fuel = fleet.Aggregate.FuelCapacity;
+                fleet.Waypoints.Add(Waypoint.TargetWaypoint(planet));
+                planet.OrbitingFleets.Add(fleet);
+
+                Message.FleetBuilt(planet.Player, item.Design, fleet, numBuilt);
+                EventManager.PublishMapObjectCreatedEvent(fleet);
+            }
+
         }
 
         /// <summary>
@@ -305,7 +336,7 @@ namespace CraigStars
         /// </summary>
         /// <param name="planet"></param>
         /// <param name="item"></param>
-        void BuildStarbase(Planet planet, ProductionQueueItem item)
+        internal void BuildStarbase(Planet planet, ProductionQueueItem item)
         {
             if (planet.Starbase != null)
             {

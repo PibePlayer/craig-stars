@@ -49,6 +49,9 @@ namespace CraigStars
         [JsonProperty(IsReference = true)]
         public BattlePlan BattlePlan { get; set; } = new BattlePlan();
 
+        [JsonProperty(IsReference = true)]
+        public FleetComposition FleetComposition { get; set; } = new FleetComposition();
+
         // These are all publicly viewable when a fleet is scanned
         public List<ShipToken> Tokens { get; set; } = new List<ShipToken>();
         public Vector2 Heading { get; set; }
@@ -225,6 +228,9 @@ namespace CraigStars
             // compute the cloaking based on the cloak units and cargo
             ComputeCloaking();
 
+            // cmopute things about the FleetComposition
+            ComputeFleetComposition();
+
             Aggregate.Computed = true;
         }
 
@@ -237,6 +243,39 @@ namespace CraigStars
             var cloakedCargo = Aggregate.BaseCloakedCargo + (Player.FreeCargoCloaking ? 0 : Cargo.Total);
             int cloakUnitsWithCargo = (int)Math.Round(Aggregate.CloakUnits * (float)Aggregate.MassEmpty / (Aggregate.MassEmpty + cloakedCargo));
             Aggregate.CloakPercent = CloakUtils.GetCloakPercentForCloakUnits(cloakUnitsWithCargo);
+        }
+
+        public void ComputeFleetComposition()
+        {
+            // default is we are complete if we have no fleet composition
+            Aggregate.FleetCompositionComplete = true;
+            Aggregate.FleetCompositionTokensRequired = new();
+
+            if (FleetComposition != null && FleetComposition.Type != FleetCompositionType.None)
+            {
+                var fleetCompositionByPurpose = FleetComposition.GetQuantityByPurpose();
+                // check if we have the tokens we need
+                foreach (var token in Tokens)
+                {
+                    if (fleetCompositionByPurpose.TryGetValue(token.Design.Purpose, out var fleetCompositionToken))
+                    {
+                        int quantityRequired = token.Quantity - fleetCompositionToken.Quantity;
+                        if (quantityRequired > 0)
+                        {
+                            // we still need some of this ShipDesignPurpose
+                            fleetCompositionByPurpose[token.Design.Purpose].Quantity = quantityRequired;
+                        }
+                        else
+                        {
+                            fleetCompositionByPurpose.Remove(token.Design.Purpose);
+                        }
+                    }
+                }
+
+                // add all the remaining FleetCompositionTokens we need
+                Aggregate.FleetCompositionTokensRequired.AddRange(fleetCompositionByPurpose.Values);
+                Aggregate.FleetCompositionComplete = Aggregate.FleetCompositionTokensRequired.Count == 0;
+            }
         }
 
 

@@ -16,5 +16,13 @@ namespace CraigStars
         /// How many of this token we want
         /// </summary>
         public int Quantity { get; set; }
+
+        public FleetCompositionToken() { }
+
+        public FleetCompositionToken(ShipDesignPurpose purpose, int quantity)
+        {
+            Purpose = purpose;
+            Quantity = quantity;
+        }
     }
 }

@@ -2,7 +2,7 @@ namespace CraigStars
 {
     public class PlayerStats
     {
-        public int NumFleetsBuilt { get; set; }
-        public int NumTokensBuilt { get; set; }
+        public long NumFleetsBuilt { get; set; }
+        public long NumTokensBuilt { get; set; }
     }
 }

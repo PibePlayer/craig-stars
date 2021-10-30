@@ -15,7 +15,7 @@ namespace CraigStars
         /// </summary>
         public const int Unexplored = -1;
 
-        public int Id { get; set; }
+        public long Id { get; set; }
         public Guid Guid { get; set; } = Guid.NewGuid();
         public Vector2 Position { get; set; }
         public string Name { get; set; } = "";

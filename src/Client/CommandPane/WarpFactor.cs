@@ -93,7 +93,6 @@ namespace CraigStars
                     label.Text = $"Warp {WarpSpeed}";
                     if (WarpSpeed == 10)
                     {
-                        // TODO: Don't hardcode this damage
                         color = GUIColorsProvider.Colors.WarpDamageColor;
                     }
                 }

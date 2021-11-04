@@ -313,8 +313,7 @@ namespace CraigStars.Client
 
                     if (design.Aggregate.HasWeapons)
                     {
-                        // todo, add initiative to aggregate..
-                        selectionInitiative.Text = $"Initiative: {design.Aggregate.WeaponSlots[0].HullComponent.Initiative}";
+                        selectionInitiative.Text = $"Initiative: {design.Aggregate.Initiative}";
                     }
                     else
                     {

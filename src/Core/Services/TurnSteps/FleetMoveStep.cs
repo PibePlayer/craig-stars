@@ -13,7 +13,7 @@ namespace CraigStars
         MineFieldDamager mineFieldDamager = new();
         ShipDesignDiscoverer designDiscoverer = new();
         FleetService fleetService = new();
-        
+
         public FleetMoveStep(Game game) : base(game, TurnGenerationState.MoveFleets) { }
 
         public override void Process()
@@ -262,7 +262,11 @@ namespace CraigStars
                 // if we are supposed to repeat orders, 
                 fleet.Waypoints.Add(wpToRepeat);
             }
-            fleet.Waypoints.RemoveAt(0);
+
+            if (wp0.TaskComplete)
+            {
+                fleet.Waypoints.RemoveAt(0);
+            }
 
             // we arrived, process the current task (the previous waypoint)
             if (fleet.Waypoints.Count == 1)

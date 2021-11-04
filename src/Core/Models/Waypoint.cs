@@ -47,6 +47,8 @@ namespace CraigStars
 
         public WaypointTransportTasks TransportTasks { get; set; }
 
+        public bool TaskComplete { get; set; }
+
         public Waypoint() { }
 
         public Waypoint(MapObject target, Vector2 position, int warpFactor = 5, WaypointTask task = WaypointTask.None, WaypointTransportTasks transportTasks = new WaypointTransportTasks())

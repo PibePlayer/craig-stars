@@ -53,7 +53,7 @@ namespace GodotUtils.IO
             get
             {
                 CheckFileState();
-                return file.GetLen();
+                return (long)file.GetLen();
             }
         }
 
@@ -63,7 +63,7 @@ namespace GodotUtils.IO
             get
             {
                 CheckFileState();
-                return file.GetPosition();
+                return (long)file.GetPosition();
             }
             set
             {
@@ -140,7 +140,7 @@ namespace GodotUtils.IO
                     break;
 
                 case SeekOrigin.Current:
-                    file.Seek(file.GetPosition() + (int)offset);
+                    file.Seek((long)file.GetPosition() + (int)offset);
                     break;
 
                 case SeekOrigin.End:
@@ -153,7 +153,7 @@ namespace GodotUtils.IO
 
             CheckErrorState();
 
-            return file.GetPosition();
+            return (long)file.GetPosition();
         }
 
         /// <inheritdoc/>

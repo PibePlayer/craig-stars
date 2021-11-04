@@ -129,6 +129,10 @@ namespace CraigStars
 
                 log.Debug($"{Game.Year}: {fleet.Player} Building waypoint task for {fleet.Name} at {wp.TargetName} -> {wp.Task}");
 
+                // by default, any processed tasks are complete. Some tasks need more time during processing
+                // and will set this to false.
+                wp.TaskComplete = true;
+
                 switch (wp.Task)
                 {
                     case WaypointTask.Colonize:
@@ -149,6 +153,7 @@ namespace CraigStars
                             var task = wp.TransportTasks[type];
                             switch (task.action)
                             {
+                                case WaypointTaskTransportAction.LoadOptimal:
                                 case WaypointTaskTransportAction.LoadAll:
                                 case WaypointTaskTransportAction.LoadAmount:
                                 case WaypointTaskTransportAction.FillPercent:
@@ -163,11 +168,10 @@ namespace CraigStars
                                     loadDunnage.AddTask(task, type);
                                     break;
                                 case WaypointTaskTransportAction.SetAmountTo:
-                                case WaypointTaskTransportAction.SetWaypointTo:
-                                    // these could be load or unload, we won't know until we process
-                                    // them, so assume they could be either
-                                    unload.AddTask(task, type);
                                     load.AddTask(task, type);
+                                    break;
+                                case WaypointTaskTransportAction.SetWaypointTo:
+                                    unload.AddTask(task, type);
                                     break;
                             }
                         }
@@ -214,20 +218,36 @@ namespace CraigStars
                 Cargo cargoToUnload;
                 foreach (var task in fleetWaypoint.Tasks)
                 {
+                    int availableToUnload = task.cargoType == CargoType.Fuel ? fleet.Fuel : fleet.Cargo[task.cargoType];
                     int transferAmount = 0;
                     switch (task.action)
                     {
                         case WaypointTaskTransportAction.UnloadAll:
-                            // load all available, based on our constraints
-                            var availableToUnload = fleet.Cargo[task.cargoType];
+                            // unload all available, based on our constraints
                             transferAmount = Math.Min(availableToUnload, cargoDestination.AvailableCapacity);
                             break;
                         case WaypointTaskTransportAction.UnloadAmount:
-                            // TODO: Fill In
+                            // don't unload more than the task says
+                            transferAmount = Math.Min(Math.Min(availableToUnload, task.amount), cargoDestination.AvailableCapacity);
                             break;
-                        case WaypointTaskTransportAction.SetAmountTo:
                         case WaypointTaskTransportAction.SetWaypointTo:
-                            // TODO: Fill In
+                            // Make sure the waypoint has at least whatever we specified
+                            var currentAmount = cargoDestination.Cargo[task.cargoType];
+
+                            if (currentAmount >= task.amount)
+                            {
+                                // no need to transfer any, move on
+                                break;
+                            }
+                            else
+                            {
+                                // only transfer the min of what we have, vs what we need, vs the capacity
+                                transferAmount = Math.Min(Math.Min(availableToUnload, task.amount - currentAmount), cargoDestination.AvailableCapacity);
+                                if (transferAmount < task.amount)
+                                {
+                                    wp.TaskComplete = false;
+                                }
+                            }
                             break;
                         default:
                             log.Error($"{Game.Year}: {fleet.Player} {fleet.Name} Trying to process an unsupported unload task action: {task.action}");
@@ -316,22 +336,46 @@ namespace CraigStars
                 {
                     var capacity = fleet.Aggregate.CargoCapacity - fleet.Cargo.Total;
                     int transferAmount = 0;
+                    int availableToLoad = task.cargoType == CargoType.Fuel ? cargoSource.Fuel : cargoSource.Cargo[task.cargoType];
+
                     switch (task.action)
                     {
+                        case WaypointTaskTransportAction.LoadOptimal:
+                            // fuel only
+                            // TODO: Fill in
+                            break;
                         case WaypointTaskTransportAction.LoadAll:
                             // load all available, based on our constraints
-                            var availableToLoad = cargoSource.Cargo[task.cargoType];
                             transferAmount = Math.Min(availableToLoad, capacity);
                             break;
                         case WaypointTaskTransportAction.LoadAmount:
-                            // TODO: Fill In
+                            transferAmount = Math.Min(Math.Min(availableToLoad, task.amount), capacity);
                             break;
-                        case WaypointTaskTransportAction.LoadDunnage:
-                            // TODO: Fill In
+                        case WaypointTaskTransportAction.WaitForPercent:
+                            // TODO: Fill in
                             break;
+                        case WaypointTaskTransportAction.FillPercent:
+                            // TODO: Fill in
+                            break;
+
                         case WaypointTaskTransportAction.SetAmountTo:
-                        case WaypointTaskTransportAction.SetWaypointTo:
-                            // TODO: Fill In
+                            // Make sure the waypoint has at least whatever we specified
+                            var currentAmount = fleet.Cargo[task.cargoType];
+
+                            if (currentAmount >= task.amount)
+                            {
+                                // no need to transfer any, move on
+                                break;
+                            }
+                            else
+                            {
+                                // only transfer the min of what we have, vs what we need, vs the capacity
+                                transferAmount = Math.Min(Math.Min(availableToLoad, task.amount - currentAmount), capacity);
+                                if (transferAmount < task.amount)
+                                {
+                                    wp.TaskComplete = false;
+                                }
+                            }
                             break;
                         default:
                             log.Error($"{Game.Year}: {fleet.Player} {fleet.Name} Trying to process an unsupported unload task action: {task.action}");

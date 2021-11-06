@@ -48,6 +48,14 @@ namespace CraigStars
         public PlayerScore Score { get; set; } = new();
         public List<PlayerScore> ScoreHistory { get; set; } = new();
 
+        #region Diplomacy
+
+        public HashSet<int> Allies { get; set; } = new();
+        public HashSet<int> Neutrals { get; set; } = new();
+        public HashSet<int> Enemies { get; set; } = new();
+
+        #endregion
+
         #region Research
 
         /// <summary>
@@ -70,6 +78,19 @@ namespace CraigStars
         public int ResearchSpentLastYear { get; set; } = 0;
         public TechField Researching { get; set; } = TechField.Energy;
         public NextResearchField NextResearchField { get; set; } = NextResearchField.LowestField;
+
+        #endregion
+
+        #region Plans
+
+        /// <summary>
+        /// Each player has a list of battle plans. Each fleet has a battle plan assigned
+        /// Each player automatically has the Default battle plan
+        /// </summary>
+        [JsonProperty(ItemIsReference = true)]
+        public List<BattlePlan> BattlePlans { get; set; } = new() { new BattlePlan("Default") };
+        public List<TransportPlan> TransportPlans { get; set; } = new();
+        public List<ProductionPlan> ProductionPlans { get; set; } = new();
 
         #endregion
 
@@ -174,13 +195,6 @@ namespace CraigStars
 
         #region Turn Actions
 
-        /// <summary>
-        /// Each player has a list of battle plans. Each fleet has a battle plan assigned
-        /// Each player automatically has the Default battle plan
-        /// </summary>
-        public List<BattlePlan> BattlePlans { get; set; } = new List<BattlePlan>();
-        public List<TransportPlan> TransportPlans { get; set; } = new List<TransportPlan>();
-        public List<ProductionPlan> ProductionPlans { get; set; } = new List<ProductionPlan>();
         public List<FleetComposition> FleetCompositions { get; set; } = new List<FleetComposition>();
         public List<CargoTransferOrder> CargoTransferOrders { get; set; } = new List<CargoTransferOrder>();
         public List<MergeFleetOrder> MergeFleetOrders { get; set; } = new List<MergeFleetOrder>();
@@ -267,7 +281,7 @@ namespace CraigStars
             TransportPlansByGuid = TransportPlans.ToLookup(plan => plan.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
             ProductionPlansByGuid = ProductionPlans.ToLookup(plan => plan.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
             BattlesByGuid = Battles.ToLookup(battle => battle.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
-            
+
             FleetCompositionsByGuid = FleetCompositions.ToLookup(fc => fc.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
             FleetCompositionsByType = FleetCompositions.ToLookup(fc => fc.Type).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
 
@@ -301,8 +315,8 @@ namespace CraigStars
         public void ComputeAggregates()
         {
             Designs.ForEach(d => d.ComputeAggregate(this));
-            Fleets.ForEach(f => f.ComputeAggregate());
-            Planets.ForEach(p => p.Starbase?.ComputeAggregate());
+            Fleets.ForEach(f => f.ComputeAggregate(this));
+            Planets.ForEach(p => p.Starbase?.ComputeAggregate(this));
 
             ComputeDesignsInUse();
         }
@@ -349,38 +363,32 @@ namespace CraigStars
         /// <summary>
         /// Return true if this other player is our enemy
         /// </summary>
-        /// <param name="otherPlayer"></param>
+        /// <param name="playerNum"></param>
         /// <returns></returns>
-        public bool IsEnemy(PublicPlayerInfo otherPlayer)
+        public bool IsEnemy(int playerNum)
         {
-            if (otherPlayer == null)
-            {
-                return false;
-            }
-            return this.Num != otherPlayer.Num;
+            // either they are explicit enemies or not friends
+            return Enemies.Contains(playerNum) || (!IsFriend(playerNum) && !IsNeutral(playerNum));
         }
 
         /// <summary>
         /// Are we neutral to this player
         /// </summary>
-        /// <param name="otherPlayer"></param>
+        /// <param name="playerNum"></param>
         /// <returns></returns>
-        public bool IsNeutral(PublicPlayerInfo otherPlayer)
+        public bool IsNeutral(int playerNum)
         {
-            // TODO: add some player relations...
-            return false;
+            return Neutrals.Contains(playerNum);
         }
 
         /// <summary>
         /// Are we friends?
         /// </summary>
-        /// <param name="otherPlayer"></param>
+        /// <param name="playerNum"></param>
         /// <returns></returns>
-        public bool IsFriend(PublicPlayerInfo otherPlayer)
+        public bool IsFriend(int playerNum)
         {
-            // TODO: add some player relations...
-            // WE HAVE NO FRIENDS
-            return Num == otherPlayer.Num;
+            return Num == playerNum || Allies.Contains(playerNum);
         }
 
         /// <summary>
@@ -839,7 +847,7 @@ namespace CraigStars
         /// Do this player's minefields act like scanners?
         /// </summary>
         /// <value></value>
-        public bool FleetReproduce { get => Race.PRT == PRT.IS; }
+        public bool FleetsReproduce { get => Race.PRT == PRT.IS; }
 
         #endregion
 

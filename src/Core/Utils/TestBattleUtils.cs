@@ -13,7 +13,7 @@ namespace CraigStars
         /// Build a simple battle between two players, one with a Stalwart Defender, one with a Long Range Scout
         /// </summary>
         /// <returns></returns>
-        public static List<Fleet> GetFleetsForSimpleBattle(Player player1 = null, Player player2 = null)
+        public static Game GetGameWithSimpleBattle(Player player1 = null, Player player2 = null)
         {
             if (player1 == null)
             {
@@ -36,11 +36,11 @@ namespace CraigStars
             player2.Race.PluralName = "Rabbitoids";
 
             var design1 = ShipDesigns.StalwartDefender.Clone();
-            design1.Player = player1;
+            design1.PlayerNum = player1.Num;
             player1.Designs.Add(design1);
             player1.Fleets.Add(new Fleet()
             {
-                Player = player1,
+                PlayerNum = player1.Num,
                 Name = "Attacker",
                 Tokens = new List<ShipToken>() {
                         new ShipToken(design1, 1)
@@ -55,11 +55,11 @@ namespace CraigStars
             });
 
             var design2 = ShipDesigns.LongRangeScount.Clone();
-            design2.Player = player2;
+            design2.PlayerNum = player2.Num;
             player2.Designs.Add(design2);
             player2.Fleets.Add(new Fleet()
             {
-                Player = player2,
+                PlayerNum = player2.Num,
                 Name = "Defender",
                 Tokens = new List<ShipToken>() {
                         new ShipToken(design2, 1)
@@ -73,17 +73,16 @@ namespace CraigStars
                 }
             });
 
-
-            var fleets = new List<Fleet>()
-            {
-                player1.Fleets[0],
-                player2.Fleets[0]
-            };
-
             player1.ComputeAggregates();
             player2.ComputeAggregates();
 
-            return fleets;
+            var game = new Game()
+            {
+                Players = new() { player1, player2 },
+                Fleets = new() { player1.Fleets[0], player2.Fleets[0] }
+            };
+
+            return game;
         }
 
         /// <summary>
@@ -117,7 +116,7 @@ namespace CraigStars
 
             player1.Fleets.Add(new Fleet()
             {
-                Player = player1,
+                PlayerNum = player1.Num,
                 Name = "Attacker",
                 Tokens = player1.Designs.SelectMany(design => new List<ShipToken>() {
                         new ShipToken(design, 1)
@@ -129,7 +128,7 @@ namespace CraigStars
 
             player2.Fleets.Add(new Fleet()
             {
-                Player = player2,
+                PlayerNum = player2.Num,
                 Name = "Defender",
                 Tokens = player1.Designs.SelectMany(design => new List<ShipToken>() {
                         new ShipToken(design, 1)
@@ -153,44 +152,48 @@ namespace CraigStars
         /// Build a simple battle between two players, one with a Stalwart Defender, one with a Long Range Scout
         /// </summary>
         /// <returns></returns>
-        public static List<Fleet> GetFleetsForDesignsBattle(
-            PublicGameInfo gameInfo,
+        public static Game GetGameWithBattle(
             Player player1,
             Player player2,
             HashSet<string> player1DesignNames,
             HashSet<string> player2DesignNames
             )
         {
+            Game game = new Game()
+            {
+                Players = new() { player1, player2 }
+            };
 
             player2.Race.Name = "Rabbitoid";
             player2.Race.PluralName = "Rabbitoids";
 
             ShipDesignerTurnProcessor designerTurnProcessor = new ShipDesignerTurnProcessor();
-            designerTurnProcessor.Process(gameInfo, player1);
+            designerTurnProcessor.Process(game.GameInfo, player1);
 
             player1.Fleets.Add(new Fleet()
             {
-                Player = player1,
+                PlayerNum = player1.Num,
                 Name = "Attacker",
                 Tokens = player1.Designs.Where(design => player1DesignNames.Contains(design.Name)).SelectMany(design => new List<ShipToken>() {
                         new ShipToken(design, 1)
                     }).ToList(),
+                BattlePlan = player1.BattlePlans[0]
             });
 
             designerTurnProcessor = new ShipDesignerTurnProcessor();
-            designerTurnProcessor.Process(gameInfo, player2);
+            designerTurnProcessor.Process(game.GameInfo, player2);
 
             player2.Fleets.Add(new Fleet()
             {
-                Player = player2,
+                PlayerNum = player2.Num,
                 Name = "Defender",
                 Tokens = player2.Designs.Where(design => player2DesignNames.Contains(design.Name)).SelectMany(design => new List<ShipToken>() {
                         new ShipToken(design, 1)
                     }).ToList(),
+                BattlePlan = player2.BattlePlans[0]
             });
 
-
-            var fleets = new List<Fleet>()
+            game.Fleets = new()
             {
                 player1.Fleets[0],
                 player2.Fleets[0]
@@ -199,7 +202,7 @@ namespace CraigStars
             player1.ComputeAggregates();
             player2.ComputeAggregates();
 
-            return fleets;
+            return game;
         }
 
         /// <summary>
@@ -210,8 +213,9 @@ namespace CraigStars
         /// <returns></returns>
         public static BattleRecord GetSimpleBattleRecord(Player player1 = null, Player player2 = null)
         {
-            BattleEngine battleEngine = new BattleEngine(new Rules(0));
-            var battle = battleEngine.BuildBattle(GetFleetsForSimpleBattle());
+            var game = TestBattleUtils.GetGameWithSimpleBattle(player1, player2);
+            BattleEngine battleEngine = new BattleEngine(game);
+            var battle = battleEngine.BuildBattle(game.Fleets);
             battleEngine.RunBattle(battle);
 
             return battle.PlayerRecords.First().Value;
@@ -225,8 +229,9 @@ namespace CraigStars
         /// <returns></returns>
         public static BattleRecord GetDesignsBattleRecord(PublicGameInfo gameInfo, Player player1, Player player2, HashSet<string> player1DesignNames, HashSet<string> player2DesignNames)
         {
-            BattleEngine battleEngine = new BattleEngine(new Rules(0));
-            var battle = battleEngine.BuildBattle(GetFleetsForDesignsBattle(gameInfo, player1, player2, player1DesignNames, player2DesignNames));
+            Game game = GetGameWithBattle(player1, player2, player1DesignNames, player2DesignNames);
+            BattleEngine battleEngine = new BattleEngine(game);
+            var battle = battleEngine.BuildBattle(game.Fleets);
             battleEngine.RunBattle(battle);
 
             return battle.PlayerRecords.First().Value;

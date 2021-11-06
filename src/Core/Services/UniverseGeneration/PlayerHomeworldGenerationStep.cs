@@ -43,7 +43,7 @@ namespace CraigStars.UniverseGeneration
                 player.Homeworld.Population = Game.Rules.StartingPopulationWithExtraPlanet;
                 // extra planet! woo!
                 var planet = Game.Planets.FirstOrDefault(
-                    p => p.Player == null &&
+                    p => !p.Owned &&
                     p.Position.DistanceTo(player.Homeworld.Position) <= Game.Rules.MaxExtraWorldDistance &&
                     p.Position.DistanceTo(player.Homeworld.Position) >= Game.Rules.MinExtraWorldDistance);
                 if (planet != null)
@@ -67,7 +67,7 @@ namespace CraigStars.UniverseGeneration
         internal Planet FindHomeworld()
         {
             var area = Game.Rules.GetArea(Game.Size);
-            return Game.Planets.Find(p => p.Player == null && (ownedPlanets.Count == 0 || ShortestDistanceToPlanets(p, ownedPlanets) > area / Game.Players.Count));
+            return Game.Planets.Find(p => !p.Owned && (ownedPlanets.Count == 0 || ShortestDistanceToPlanets(p, ownedPlanets) > area / Game.Players.Count));
         }
 
         void InitHomeworld(Player player, Planet planet)
@@ -78,7 +78,7 @@ namespace CraigStars.UniverseGeneration
             var random = Game.Rules.Random;
 
             // own this planet
-            planet.Player = player;
+            planet.PlayerNum = player.Num;
             planet.ProductionQueue = new ProductionQueue();
             planet.ReportAge = 0;
 
@@ -126,7 +126,7 @@ namespace CraigStars.UniverseGeneration
             var race = player.Race;
 
             // own this planet
-            planet.Player = player;
+            planet.PlayerNum = player.Num;
             planet.ProductionQueue = new ProductionQueue();
             planet.ReportAge = 0;
 
@@ -171,7 +171,7 @@ namespace CraigStars.UniverseGeneration
         {
             planet.Starbase = new Starbase()
             {
-                Player = player,
+                PlayerNum = player.Num,
                 Name = design.Name,
                 Position = planet.Position,
                 Orbiting = planet,
@@ -188,7 +188,7 @@ namespace CraigStars.UniverseGeneration
                 }
             }
             };
-            planet.Starbase.ComputeAggregate();
+            planet.Starbase.ComputeAggregate(player);
         }
 
         /// <summary>

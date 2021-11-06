@@ -18,7 +18,7 @@ namespace CraigStars
         {
             if (Planet != null)
             {
-                if (Planet.Player == Me)
+                if (Planet.OwnedBy(Me))
                 {
                     var hab = Me.Race.GetPlanetHabitability(Planet.Hab.Value);
                     var growthAmount = planetService.GetGrowthAmount(Planet, Me, RulesManager.Rules);
@@ -46,7 +46,7 @@ namespace CraigStars
                         tipRichTextLabel.BbcodeText += $"Approximately {Math.Abs(growthAmount):n0} of your colonists will die next year.";
                     }
                 }
-                else if (Planet.Uninhabited && Planet.Explored)
+                else if (!Planet.Owned && Planet.Explored)
                 {
                     var hab = Me.Race.GetPlanetHabitability(Planet.Hab.Value);
                     tipRichTextLabel.BbcodeText = $"[b]{Planet.Name}[/b] is uninhabited.\n";
@@ -60,9 +60,9 @@ namespace CraigStars
                         tipRichTextLabel.BbcodeText += $"[b]{Planet.Name}[/b] will kill off approximately [b]{Math.Abs(hab) / 10f:.#}%[/b] of all colonists you settle on it every turn.";
                     }
                 }
-                else if (!Planet.Uninhabited && Planet.Explored)
+                else if (Planet.Owned && Planet.Explored)
                 {
-                    tipRichTextLabel.BbcodeText = $"[b]{Planet.Name}[/b] is currently occupied by the [b]{Planet.Owner.RacePluralName}[/b].\n";
+                    tipRichTextLabel.BbcodeText = $"[b]{Planet.Name}[/b] is currently occupied by the [b]{Planet.RacePluralName}[/b].\n";
 
                     var hab = Me.Race.GetPlanetHabitability(Planet.Hab.Value);
                     tipRichTextLabel.BbcodeText = $"[b]{Planet.Name}[/b] is uninhabited.\n";

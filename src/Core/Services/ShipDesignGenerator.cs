@@ -20,7 +20,7 @@ namespace CraigStars
             var design = new ShipDesign()
             {
                 Name = name,
-                Player = player,
+                PlayerNum = player.Num,
                 Hull = hull,
                 HullSetNumber = hullSetNumber,
                 Purpose = purpose

@@ -7,10 +7,11 @@ namespace CraigStars
     /// all unloads, then all colonizations, etc. The FleetWaypoint
     /// is used in processing
     /// </summary>
-    public class FleetWaypoint
+    internal class FleetWaypoint
     {
         public Fleet Fleet { get; set; }
         public Waypoint Waypoint { get; set; }
+        public Player Player { get; set; }
 
         /// <summary>
         /// For transport tasks, this contains all the minerals that are loaded or unloaded, depending
@@ -20,10 +21,11 @@ namespace CraigStars
         /// <returns></returns>
         public List<FleetWaypointTransportTask> Tasks { get; set; } = new List<FleetWaypointTransportTask>();
 
-        public FleetWaypoint(Fleet fleet, Waypoint waypoint)
+        public FleetWaypoint(Fleet fleet, Waypoint waypoint, Player player)
         {
             Fleet = fleet;
             Waypoint = waypoint;
+            Player = player;
         }
 
         public FleetWaypoint(Fleet fleet, Waypoint waypoint, List<FleetWaypointTransportTask> tasks)

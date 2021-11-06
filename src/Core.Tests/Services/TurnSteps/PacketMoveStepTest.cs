@@ -24,12 +24,12 @@ namespace CraigStars.Tests
         {
             var game = TestUtils.GetSingleUnitGame();
             PacketMoveStep step = new PacketMoveStep(game, 1);
-            var player1 = game.Players[0];
+            var player = game.Players[0];
 
             // create a starbase with a warp5 receiver
             var catchingStarbase = new ShipDesign()
             {
-                Player = player1,
+                PlayerNum = player.Num,
                 Name = "Starbase",
                 Hull = Techs.SpaceStation,
                 HullSetNumber = 0,
@@ -40,12 +40,12 @@ namespace CraigStars.Tests
             };
             var planet2 = new Planet()
             {
-                Player = player1,
+                PlayerNum = player.Num,
                 Population = 250000,
                 Defenses = 50,
                 Starbase = new Starbase()
                 {
-                    Player = player1,
+                    PlayerNum = player.Num,
                     Tokens = new List<ShipToken>() {
                         new ShipToken(catchingStarbase, 1)
                     }
@@ -53,12 +53,12 @@ namespace CraigStars.Tests
             };
 
             // compute aggregate for this starbase so the receiver is up to date
-            planet2.Starbase.ComputeAggregate();
+            planet2.Starbase.ComputeAggregate(player);
 
             // create a 1000kT packet
             MineralPacket packet = new MineralPacket()
             {
-                Player = player1,
+                PlayerNum = player.Num,
                 SafeWarpSpeed = 10,
                 WarpFactor = 10,
                 Cargo = new Cargo(1000),
@@ -66,7 +66,7 @@ namespace CraigStars.Tests
             };
 
             // make landfall
-            step.CompleteMove(packet);
+            step.CompleteMove(packet, player);
 
             // starbase can accept this packet, should have same defenses/pop, and 1000kT more minerals
             Assert.AreEqual(250000, planet2.Population);
@@ -79,13 +79,13 @@ namespace CraigStars.Tests
         {
             var game = TestUtils.GetSingleUnitGame();
             PacketMoveStep step = new PacketMoveStep(game, 1);
-            var player1 = game.Players[0];
-            player1.TechLevels = new TechLevel(energy: 5);
+            var player = game.Players[0];
+            player.TechLevels = new TechLevel(energy: 5);
 
             // create a starbase with a warp5 receiver
             var catchingStarbase = new ShipDesign()
             {
-                Player = player1,
+                PlayerNum = player.Num,
                 Name = "Starbase",
                 Hull = Techs.SpaceStation,
                 HullSetNumber = 0,
@@ -96,12 +96,12 @@ namespace CraigStars.Tests
             };
             var planet2 = new Planet()
             {
-                Player = player1,
+                PlayerNum = player.Num,
                 Population = 250000,
                 Defenses = 50,
                 Starbase = new Starbase()
                 {
-                    Player = player1,
+                    PlayerNum = player.Num,
                     Tokens = new List<ShipToken>() {
                         new ShipToken(catchingStarbase, 1)
                     }
@@ -109,12 +109,12 @@ namespace CraigStars.Tests
             };
 
             // compute aggregate for this starbase so the receiver is up to date
-            planet2.Starbase.ComputeAggregate();
+            planet2.Starbase.ComputeAggregate(player);
 
             // create a 1000kT packet
             MineralPacket packet = new MineralPacket()
             {
-                Player = player1,
+                PlayerNum = player.Num,
                 SafeWarpSpeed = 10,
                 WarpFactor = 10,
                 Cargo = new Cargo(1000),
@@ -122,7 +122,7 @@ namespace CraigStars.Tests
             };
 
             // make landfall
-            step.CompleteMove(packet);
+            step.CompleteMove(packet, player);
 
             // 42900 colonists destroyed, 8 defenses destroyed
             Assert.AreEqual(250000 - 42900, planet2.Population);
@@ -139,7 +139,7 @@ namespace CraigStars.Tests
 
             var planet2 = new Planet()
             {
-                Player = player,
+                PlayerNum = player.Num,
                 Population = 250000,
                 Defenses = 0,
             };
@@ -147,7 +147,7 @@ namespace CraigStars.Tests
             // create a 1000kT packet
             MineralPacket packet = new MineralPacket()
             {
-                Player = player,
+                PlayerNum = player.Num,
                 SafeWarpSpeed = 13,
                 WarpFactor = 13,
                 Cargo = new Cargo(1000),
@@ -155,7 +155,7 @@ namespace CraigStars.Tests
             };
 
             // make landfall
-            step.CompleteMove(packet);
+            step.CompleteMove(packet, player);
 
             // planet is destroyed
             Assert.AreEqual(0, planet2.Population);

@@ -45,11 +45,9 @@ namespace CraigStars.Tests
         [Test]
         public void TestCheckExceedSecondPlaceScore()
         {
-            var game = TestUtils.GetSingleUnitGame();
+            var game = TestUtils.GetTwoPlayerGame();
             var player1 = game.Players[0];
-            var player2 = new Player();
-            game.Players.Add(player2);
-
+            var player2 = game.Players[1];
 
             player1.Score.Score = 201;
             player2.Score.Score = 100;

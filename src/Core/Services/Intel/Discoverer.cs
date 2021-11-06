@@ -7,7 +7,7 @@ namespace CraigStars
     /// This generic base class is used for various "Discoverers" used for player's discovering fleets, design, planets, etc
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class Discoverer<T> where T : Discoverable
+    public abstract class Discoverer<T> where T : IDiscoverable
     {
         /// <summary>
         /// Discover a new item and add it to player intel
@@ -19,7 +19,7 @@ namespace CraigStars
         public void Discover(Player player, T item, bool penScanned = false)
         {
             var report = GetOrCreateReport(player, item);
-            if (item.Player == player)
+            if (item.PlayerNum == player.Num)
             {
                 DiscoverOwn(player, item, report);
             }
@@ -101,7 +101,7 @@ namespace CraigStars
                 report = CreateEmptyReport(item);
                 itemsByGuid[item.Guid] = report;
 
-                if (item.Player == player)
+                if (item.PlayerNum == player.Num)
                 {
                     GetOwnedItemReports(player).Add(report);
                 }

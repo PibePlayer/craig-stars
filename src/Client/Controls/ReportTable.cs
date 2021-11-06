@@ -14,6 +14,9 @@ namespace CraigStars.Client
     public abstract class ReportTable<T> : VBoxContainer where T : class
     {
         static CSLog log = LogProvider.GetLogger(typeof(ReportTable<T>));
+
+        protected PublicGameInfo GameInfo { get => PlayersManager.GameInfo; }
+
         protected CSTable table;
         protected LineEdit searchLineEdit;
 

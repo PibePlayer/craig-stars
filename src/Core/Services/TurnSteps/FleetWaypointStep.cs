@@ -127,27 +127,29 @@ namespace CraigStars
                     return;
                 }
 
-                log.Debug($"{Game.Year}: {fleet.Player} Building waypoint task for {fleet.Name} at {wp.TargetName} -> {wp.Task}");
+                log.Debug($"{Game.Year}: {fleet.PlayerNum} Building waypoint task for {fleet.Name} at {wp.TargetName} -> {wp.Task}");
 
                 // by default, any processed tasks are complete. Some tasks need more time during processing
                 // and will set this to false.
                 wp.TaskComplete = true;
 
+                var player = Game.Players[fleet.PlayerNum];
+
                 switch (wp.Task)
                 {
                     case WaypointTask.Colonize:
-                        colonizeTasks.Add(new FleetWaypoint(fleet, wp));
+                        colonizeTasks.Add(new FleetWaypoint(fleet, wp, player));
                         break;
                     case WaypointTask.RemoteMining:
-                        remoteMiningTasks.Add(new FleetWaypoint(fleet, wp));
+                        remoteMiningTasks.Add(new FleetWaypoint(fleet, wp, player));
                         break;
                     case WaypointTask.ScrapFleet:
-                        scrapFleetTasks.Add(new FleetWaypoint(fleet, wp));
+                        scrapFleetTasks.Add(new FleetWaypoint(fleet, wp, player));
                         break;
                     case WaypointTask.Transport:
-                        var unload = new FleetWaypoint(fleet, wp);
-                        var load = new FleetWaypoint(fleet, wp);
-                        var loadDunnage = new FleetWaypoint(fleet, wp);
+                        var unload = new FleetWaypoint(fleet, wp, player);
+                        var load = new FleetWaypoint(fleet, wp, player);
+                        var loadDunnage = new FleetWaypoint(fleet, wp, player);
                         foreach (CargoType type in Enum.GetValues(typeof(CargoType)))
                         {
                             var task = wp.TransportTasks[type];
@@ -195,13 +197,13 @@ namespace CraigStars
                     case WaypointTask.Route:
                     case WaypointTask.TransferFleet:
                     default:
-                        otherTasks.Add(new FleetWaypoint(fleet, wp));
+                        otherTasks.Add(new FleetWaypoint(fleet, wp, player));
                         break;
                 }
             }
             else
             {
-                log.Error($"{Game.Year}: {fleet.Player} {fleet.Name} has 0 waypoints.");
+                log.Error($"{Game.Year}: {fleet.PlayerNum} {fleet.Name} has 0 waypoints.");
             }
         }
 
@@ -250,7 +252,7 @@ namespace CraigStars
                             }
                             break;
                         default:
-                            log.Error($"{Game.Year}: {fleet.Player} {fleet.Name} Trying to process an unsupported unload task action: {task.action}");
+                            log.Error($"{Game.Year}: {fleet.PlayerNum} {fleet.Name} Trying to process an unsupported unload task action: {task.action}");
                             cargoToUnload = Cargo.Empty;
                             break;
                     }
@@ -258,7 +260,7 @@ namespace CraigStars
                     if (transferAmount > 0)
                     {
                         // we are unloading so add cargo to the destination
-                        Message.FleetTransportedCargo(fleet.Player, fleet, task.cargoType, cargoDestination, transferAmount);
+                        Message.FleetTransportedCargo(fleetWaypoint.Player, fleet, task.cargoType, cargoDestination, transferAmount);
                         Transfer(fleet, cargoDestination, task.cargoType, transferAmount);
                     }
                 }
@@ -279,7 +281,7 @@ namespace CraigStars
             {
                 // remote mine!
                 planet.Cargo += planetService.GetMineralOutput(planet, fleet.Aggregate.MiningRate);
-                planetDiscoverer.DiscoverRemoteMined(fleet.Player, planet);
+                planetDiscoverer.DiscoverRemoteMined(fleetWaypoint.Player, planet);
             }
             else
             {
@@ -299,23 +301,23 @@ namespace CraigStars
         {
             if (planet == null)
             {
-                Message.RemoteMineDeepSpace(fleet.Player, fleet);
+                Message.RemoteMineDeepSpace(Game.Players[fleet.PlayerNum], fleet);
                 return false;
             }
 
-            if (planet.Owner != null)
+            if (planet.Owned)
             {
                 // AR races can remote mine their own planets
-                if (!(fleet.Player.Race.PRT == PRT.AR && planet.Owner == fleet.Player))
+                if (!(Game.Players[fleet.PlayerNum].Race.PRT == PRT.AR && planet.PlayerNum == fleet.PlayerNum))
                 {
-                    Message.RemoteMineInhabited(fleet.Player, fleet, planet);
+                    Message.RemoteMineInhabited(Game.Players[fleet.PlayerNum], fleet, planet);
                     return false;
                 }
             }
 
             if (fleet.Aggregate.MiningRate == 0)
             {
-                Message.RemoteMineNoMiners(fleet.Player, fleet, planet);
+                Message.RemoteMineNoMiners(Game.Players[fleet.PlayerNum], fleet, planet);
                 return false;
             }
 
@@ -378,14 +380,14 @@ namespace CraigStars
                             }
                             break;
                         default:
-                            log.Error($"{Game.Year}: {fleet.Player} {fleet.Name} Trying to process an unsupported unload task action: {task.action}");
+                            log.Error($"{Game.Year}: {fleet.PlayerNum} {fleet.Name} Trying to process an unsupported unload task action: {task.action}");
                             break;
                     }
 
                     if (transferAmount > 0)
                     {
                         // we are loading, so take cargo away from the source and add it to us
-                        Message.FleetTransportedCargo(fleet.Player, fleet, task.cargoType, cargoSource, -transferAmount);
+                        Message.FleetTransportedCargo(fleetWaypoint.Player, fleet, task.cargoType, cargoSource, -transferAmount);
                         Transfer(fleet, cargoSource, task.cargoType, -transferAmount);
                     }
                 }
@@ -412,7 +414,7 @@ namespace CraigStars
             else if (cargoType == CargoType.Colonists)
             {
                 // invasion?
-                if (cargoHolderTarget is Planet planet && planet.Player != fleet.Player)
+                if (cargoHolderTarget is Planet planet && planet.PlayerNum != fleet.PlayerNum)
                 {
                     if (transferAmount > 0)
                     {
@@ -429,14 +431,14 @@ namespace CraigStars
                     {
                         // can't beam enemy colonists onto your ship...
                         // TODO: send a message
-                        log.Warn($"{Game.Year}: {fleet.Player} {fleet.Name} tried to beam colonists up from: {cargoHolderTarget}");
+                        log.Warn($"{Game.Year}: {fleet.PlayerNum} {fleet.Name} tried to beam colonists up from: {cargoHolderTarget}");
                     }
                 }
-                else if (cargoHolderTarget is Fleet otherFleet && otherFleet.Player != fleet.Player)
+                else if (cargoHolderTarget is Fleet otherFleet && otherFleet.PlayerNum != fleet.PlayerNum)
                 {
                     // ignore this, but send a message
                     // TODO: send a message
-                    log.Warn($"{Game.Year}: {fleet.Player} {fleet.Name} tried to transfer colonists to/from a fleet they don't own: {otherFleet}");
+                    log.Warn($"{Game.Year}: {fleet.PlayerNum} {fleet.Name} tried to transfer colonists to/from a fleet they don't own: {otherFleet}");
 
                 }
                 else
@@ -444,7 +446,7 @@ namespace CraigStars
                     // this is just a regular transfer
                     fleet.AttemptTransfer(Cargo.OfAmount(cargoType, -transferAmount));
                     cargoHolderTarget.AttemptTransfer(Cargo.OfAmount(cargoType, transferAmount), 0);
-                    log.Debug($"{Game.Year}: {fleet.Player} {fleet.Name} transferred {transferAmount} of {cargoType} to {cargoHolderTarget.Name}");
+                    log.Debug($"{Game.Year}: {fleet.PlayerNum} {fleet.Name} transferred {transferAmount} of {cargoType} to {cargoHolderTarget.Name}");
                 }
             }
             else
@@ -459,7 +461,7 @@ namespace CraigStars
         /// </summary>
         void ProcessInvasionTask(PlanetInvasion task)
         {
-            invasionProcessor.InvadePlanet(task.Planet, task.Planet.Player, task.Fleet.Player, task.Fleet, task.ColonistsToDrop);
+            invasionProcessor.InvadePlanet(task.Planet, Game.Players[task.Planet.PlayerNum], Game.Players[task.Fleet.PlayerNum], task.Fleet, task.ColonistsToDrop);
         }
 
 
@@ -484,11 +486,12 @@ namespace CraigStars
         {
             var fleet = fleetWaypoint.Fleet;
             var wp = fleetWaypoint.Waypoint;
+            var player = fleetWaypoint.Player;
 
             // create a new cargo instance out of our fleet cost
             Cargo cargo = fleet.Aggregate.Cost;
 
-            if (fleet.Player.Race.HasLRT(LRT.UR))
+            if (player.Race.HasLRT(LRT.UR))
             {
                 // we only recover 40% of our minerals on scrapping
                 cargo *= .45f;
@@ -514,8 +517,7 @@ namespace CraigStars
             {
                 var salvage = new Salvage()
                 {
-                    // todo does owned scrap make sense?
-                    // Player = fleet.Player,
+                    PlayerNum = fleet.PlayerNum,
                     Name = "Salvage",
                     Position = wp.Position,
                     Cargo = cargo
@@ -532,41 +534,42 @@ namespace CraigStars
         {
             var fleet = fleetWaypoint.Fleet;
             var wp = fleetWaypoint.Waypoint;
+            var player = fleetWaypoint.Player;
 
             if (wp.Target is Planet planet)
             {
-                if (planet.Player != null)
+                if (planet.Owned)
                 {
-                    Message.ColonizeOwnedPlanet(fleet.Player, fleet);
+                    Message.ColonizeOwnedPlanet(player, fleet);
                 }
                 else if (!fleet.Aggregate.Colonizer)
                 {
-                    Message.ColonizeWithNoModule(fleet.Player, fleet);
+                    Message.ColonizeWithNoModule(player, fleet);
                 }
                 else if (fleet.Cargo.Colonists <= 0)
                 {
-                    Message.ColonizeWithNoColonists(fleet.Player, fleet);
+                    Message.ColonizeWithNoColonists(player, fleet);
                 }
                 else
                 {
                     // we own this planet now, yay!
-                    planet.Player = fleet.Player;
+                    planet.PlayerNum = fleet.PlayerNum;
                     planet.ProductionQueue = new ProductionQueue();
-                    if (planet.Player.ProductionPlans.Count > 0)
+                    if (fleetWaypoint.Player.ProductionPlans.Count > 0)
                     {
                         // apply the default production plan
-                        planetService.ApplyProductionPlan(planet.ProductionQueue.Items, planet.Player, planet.Player.ProductionPlans[0]);
+                        planetService.ApplyProductionPlan(planet.ProductionQueue.Items, fleetWaypoint.Player, fleetWaypoint.Player.ProductionPlans[0]);
                     }
                     planet.Population = fleet.Cargo.Colonists * 100;
                     fleet.Cargo = fleet.Cargo.WithColonists(0);
 
-                    Message.PlanetColonized(fleet.Player, planet);
+                    Message.PlanetColonized(player, planet);
                     ProcessScrapFleetTask(fleetWaypoint);
                 }
             }
             else
             {
-                Message.ColonizeNonPlanet(fleet.Player, fleet);
+                Message.ColonizeNonPlanet(player, fleet);
             }
         }
 
@@ -582,6 +585,7 @@ namespace CraigStars
         {
             var fleet = fleetWaypoint.Fleet;
             var wp = fleetWaypoint.Waypoint;
+            var player = fleetWaypoint.Player;
 
             // TODO: figure out dunnage...
         }
@@ -594,6 +598,7 @@ namespace CraigStars
         {
             var fleet = fleetWaypoint.Fleet;
             var wp = fleetWaypoint.Waypoint;
+            var player = fleetWaypoint.Player;
 
             switch (wp.Task)
             {
@@ -601,7 +606,7 @@ namespace CraigStars
                     if (!fleet.Aggregate.CanLayMines)
                     {
                         wp.Task = WaypointTask.None;
-                        Message.MinesLaidFailed(fleet.Player, fleet);
+                        Message.MinesLaidFailed(player, fleet);
                     }
                     break;
                 case WaypointTask.MergeWithFleet:
@@ -639,7 +644,7 @@ namespace CraigStars
                 {
                     if (fleet.IdleTurns == 0)
                     {
-                        Message.FleetCompletedAssignedOrders(fleet.Player, fleet);
+                        Message.FleetCompletedAssignedOrders(Game.Players[fleet.PlayerNum], fleet);
                     }
                     fleet.IdleTurns++;
                 }

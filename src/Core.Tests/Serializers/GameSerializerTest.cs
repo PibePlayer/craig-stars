@@ -27,7 +27,7 @@ namespace CraigStars.Tests
             player.Designs.Add(
                 new ShipDesign()
                 {
-                    Player = player,
+                    PlayerNum = player.Num,
                     Name = "Design 1",
                     Hull = Techs.Scout,
                     Slots = new List<ShipDesignSlot>() {
@@ -50,7 +50,7 @@ namespace CraigStars.Tests
             var planet1 = new Planet()
             {
                 Name = "Planet 1",
-                Player = player,
+                PlayerNum = player.Num,
                 Homeworld = true,
             };
             planet1.InitEmptyPlanet();
@@ -60,7 +60,7 @@ namespace CraigStars.Tests
             var planet2 = new Planet()
             {
                 Name = "Planet 2",
-                Player = otherPlayer,
+                PlayerNum = otherPlayer.Num,
             };
 
             player.Planets.Add(planet1);
@@ -71,7 +71,7 @@ namespace CraigStars.Tests
             {
                 Name = "Fleet 1",
                 Orbiting = planet1,
-                Player = player,
+                PlayerNum = player.Num,
                 Tokens = new List<ShipToken>() {
                     new ShipToken(player.Designs[0], 1)
                 },
@@ -82,7 +82,7 @@ namespace CraigStars.Tests
             var fleet2 = new Fleet()
             {
                 Name = "Fleet 2",
-                Player = otherPlayer,
+                PlayerNum = otherPlayer.Num,
             };
             player.Fleets.Add(fleet1);
             player.Fleets.Add(fleet2);
@@ -101,16 +101,16 @@ namespace CraigStars.Tests
                 Fleets = new List<Fleet>() { fleet1, fleet2 }
             };
 
-            var json = Serializers.SerializeGame(game, Serializers.CreateGameSettings(game));
+            var json = Serializers.SerializeGame(game, Serializers.CreateGameSettings(game.TechStore));
             log.Info($"\n{json}");
 
-            Game loaded = new Game() { TechStore = StaticTechStore.Instance };
-            Serializers.PopulateGame(json, loaded, Serializers.CreateGameSettings(loaded));
+            Game loaded = Serializers.DeserializeObject<Game>(json, Serializers.CreateGameSettings(StaticTechStore.Instance));
+            loaded.TechStore = StaticTechStore.Instance;
 
             Assert.AreEqual(game.Players.Count, loaded.Players.Count);
             Assert.AreEqual(game.Players[0].Name, loaded.Players[0].Name);
             Assert.AreEqual(game.Fleets.Count, loaded.Fleets.Count);
-            Assert.AreEqual(loaded.Players[0], loaded.Fleets[0].Player);
+            Assert.AreEqual(loaded.Players[0].Num, loaded.Fleets[0].PlayerNum);
         }
 
         [Test]
@@ -133,9 +133,9 @@ namespace CraigStars.Tests
             game.Init(new List<Player>() { player1, player2 }, new Rules(0), StaticTechStore.Instance);
             game.GenerateUniverse();
 
-            var gameSettings = Serializers.CreateGameSettings(game);
+            var gameSettings = Serializers.CreateGameSettings(game.TechStore);
             var gameJson = Serializers.SerializeGame(game, gameSettings);
-            var playerSettings = Serializers.CreatePlayerSettings(game.Players.Cast<PublicPlayerInfo>().ToList(), game.TechStore);
+            var playerSettings = Serializers.CreatePlayerSettings(game.TechStore);
 
             var player1Json = Serializers.Serialize(player1, playerSettings);
             var player2Json = Serializers.Serialize(player2, playerSettings);
@@ -144,11 +144,12 @@ namespace CraigStars.Tests
             // log.Info($"Player2: \n{player2Json}");
 
             // reload the game
-            Game loaded = new Game() { TechStore = StaticTechStore.Instance };
-            Serializers.PopulateGame(gameJson, loaded, Serializers.CreateGameSettings(loaded));
-            var loadSettings = Serializers.CreatePlayerSettings(loaded.Players.Cast<PublicPlayerInfo>().ToList(), loaded.TechStore);
-            Serializers.PopulatePlayer(player1Json, loaded.Players[0], loadSettings);
-            Serializers.PopulatePlayer(player2Json, loaded.Players[1], loadSettings);
+            Game loaded = Serializers.DeserializeObject<Game>(gameJson, Serializers.CreateGameSettings(StaticTechStore.Instance));
+            loaded.TechStore = StaticTechStore.Instance;
+            
+            var loadSettings = Serializers.CreatePlayerSettings(loaded.TechStore);
+            loaded.Players[0] = Serializers.DeserializeObject<Player>(player1Json, loadSettings);
+            loaded.Players[1] = Serializers.DeserializeObject<Player>(player2Json, loadSettings);
 
             Assert.AreEqual(game.Players.Count, loaded.Players.Count);
             Assert.AreEqual(game.Players[0].Name, loaded.Players[0].Name);
@@ -158,7 +159,7 @@ namespace CraigStars.Tests
             Assert.AreEqual(game.Players[0].Name, loaded.Players[0].Name);
             Assert.AreEqual(game.Fleets.Count, loaded.Fleets.Count);
             Assert.AreEqual(game.Planets.Count, loaded.Planets.Count);
-            Assert.AreEqual(loaded.Players[0], loaded.Fleets[0].Player);
+            Assert.AreEqual(loaded.Players[0].Num, loaded.Fleets[0].PlayerNum);
         }
     }
 

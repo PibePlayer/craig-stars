@@ -44,16 +44,13 @@ namespace CraigStars
         /// </summary>
         /// <param name="planets">A list of planets in the universe (minefields decay when around planets)</param>
         /// <returns></returns>
-        public long GetDecayRate(IEnumerable<Planet> planets = null, Rules rules = null)
+        public long GetDecayRate(Player player, IEnumerable<Planet> planets, Rules rules)
         {
-            if (Player == null)
+            if (!Owned)
             {
                 // we can't determine decay rate for minefields we don't own
                 return -1;
             }
-            // default to using player intel and rules (for UI)
-            rules = rules ?? Player.Rules;
-            planets = planets ?? Player.AllPlanets;
 
             var numPlanets = UniverseUtils.GetPlanetsWithin(planets, Position, Radius).Count();
             var decayRate = rules.MineFieldBaseDecayRate;
@@ -64,7 +61,7 @@ namespace CraigStars
             }
 
             // Space Demolition mines decay slower
-            var decayFactor = Player.Race.PRT == PRT.SD ? rules.SDMinDecayFactor : 1;
+            var decayFactor = player.Race.PRT == PRT.SD ? rules.SDMinDecayFactor : 1;
             decayRate *= decayFactor;
             decayRate = Math.Min(decayRate, rules.MineFieldMaxDecayRate);
 

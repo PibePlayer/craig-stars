@@ -16,9 +16,9 @@ namespace CraigStars
             // for any IS fleets that have colonists and cargo space, grow colonists
             foreach (Fleet fleet in Game.Fleets.Where(
                 fleet => fleet.Cargo.Colonists > 0 &&
-                fleet.Player.FleetReproduce))
+                Game.Players[fleet.PlayerNum].FleetsReproduce))
             {
-                Reproduce(fleet);
+                Reproduce(fleet, Game.Players[fleet.PlayerNum]);
             }
         }
 
@@ -26,16 +26,16 @@ namespace CraigStars
         /// Reproducce colonists on this fleet
         /// </summary>
         /// <param name="fleet"></param>
-        internal void Reproduce(Fleet fleet)
+        internal void Reproduce(Fleet fleet, Player player)
         {
-            var growth = (int)(Game.Rules.ISFreighterGrowthFactor * fleet.Player.Race.GrowthRate / 100f * fleet.Cargo.Colonists);
+            var growth = (int)(Game.Rules.ISFreighterGrowthFactor * player.Race.GrowthRate / 100f * fleet.Cargo.Colonists);
             fleet.Cargo = fleet.Cargo.WithColonists(fleet.Cargo.Colonists + growth);
             var over = fleet.Cargo.Total - fleet.Aggregate.CargoCapacity;
             if (over > 0)
             {
                 // remove excess colonists
                 fleet.Cargo = fleet.Cargo.WithColonists(fleet.Cargo.Colonists - over);
-                if (fleet.Orbiting != null && fleet.Orbiting.OwnedBy(fleet.Player))
+                if (fleet.Orbiting != null && fleet.Orbiting.OwnedBy(fleet.PlayerNum))
                 {
                     // add colonists to the planet this fleet is orbiting
                     fleet.Orbiting.Population += over * 100;
@@ -43,7 +43,7 @@ namespace CraigStars
             }
 
             // Message the player
-            Message.FleetReproduce(fleet.Player, fleet, growth, fleet.Orbiting, over);
+            Message.FleetReproduce(player, fleet, growth, fleet.Orbiting, over);
         }
     }
 }

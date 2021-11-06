@@ -14,7 +14,7 @@ namespace CraigStars
         {
             OwnedPlanets.ForEach(p =>
             {
-                p.Cargo += planetService.GetMineralOutput(p, p.Player);
+                p.Cargo += planetService.GetMineralOutput(p, p.PlayerNum);
                 p.MineYears += p.Mines;
                 int mineralDecayFactor = Game.Rules.MineralDecayFactor;
                 int minMineralConcentration = p.Homeworld ? Game.Rules.MinHomeworldMineralConcentration : Game.Rules.MinMineralConcentration;

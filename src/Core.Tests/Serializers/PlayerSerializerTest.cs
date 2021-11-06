@@ -26,18 +26,6 @@ namespace CraigStars.Tests
                 BattlePlans = new List<BattlePlan>() { new BattlePlan("Default") }
             };
 
-            player.Designs.Add(
-                new ShipDesign()
-                {
-                    Player = player,
-                    Name = "Design 1",
-                    Hull = Techs.Scout,
-                    Slots = new List<ShipDesignSlot>() {
-                        new ShipDesignSlot(Techs.QuickJump5, 1, 1)
-                    }
-                }
-            );
-
             var otherPlayer = new PublicPlayerInfo()
             {
                 Name = "Other Player",
@@ -48,11 +36,23 @@ namespace CraigStars.Tests
                 Color = Colors.Red
             };
 
+            player.Designs.Add(
+                new ShipDesign()
+                {
+                    PlayerNum = player.Num,
+                    Name = "Design 1",
+                    Hull = Techs.Scout,
+                    Slots = new List<ShipDesignSlot>() {
+                        new ShipDesignSlot(Techs.QuickJump5, 1, 1)
+                    }
+                }
+            );
+
             // create an empty planet we own
             var planet1 = new Planet()
             {
                 Name = "Planet 1",
-                Player = player,
+                PlayerNum = player.Num,
                 Homeworld = true,
             };
             planet1.InitEmptyPlanet();
@@ -62,7 +62,7 @@ namespace CraigStars.Tests
             var planet2 = new Planet()
             {
                 Name = "Planet 2",
-                Owner = otherPlayer,
+                PlayerNum = otherPlayer.Num,
             };
 
             player.Planets.Add(planet1);
@@ -73,7 +73,7 @@ namespace CraigStars.Tests
             {
                 Name = "Fleet 1",
                 Orbiting = planet1,
-                Player = player,
+                PlayerNum = player.Num,
                 Tokens = new List<ShipToken>() {
                     new ShipToken(player.Designs[0], 1)
                 },
@@ -84,7 +84,7 @@ namespace CraigStars.Tests
             var fleet2 = new Fleet()
             {
                 Name = "Fleet 2",
-                Owner = otherPlayer,
+                PlayerNum = otherPlayer.Num,
             };
             player.Fleets.Add(fleet1);
             player.ForeignFleets.Add(fleet2);
@@ -95,16 +95,17 @@ namespace CraigStars.Tests
             // add a message about our homeworld
             Message.HomePlanet(player, planet1);
 
-            var settings = Serializers.CreatePlayerSettings(new List<PublicPlayerInfo>() { player, otherPlayer }, StaticTechStore.Instance, player);
+            var settings = Serializers.CreatePlayerSettings(StaticTechStore.Instance);
             var json = Serializers.Serialize(player, settings);
+            log.Info(json);
 
             // populate this player object
             var loadedPlayer = new Player()
             {
                 TechStore = StaticTechStore.Instance,
             };
-            var loadSettings = Serializers.CreatePlayerSettings(new List<PublicPlayerInfo>() { loadedPlayer, otherPlayer }, StaticTechStore.Instance, loadedPlayer);
-            Serializers.PopulatePlayer(json, loadedPlayer, loadSettings);
+            var loadSettings = Serializers.CreatePlayerSettings(StaticTechStore.Instance);
+            loadedPlayer = Serializers.DeserializeObject<Player>(json, loadSettings);
 
             // make sure we have some basic stats
             Assert.AreEqual(player.Name, loadedPlayer.Name);
@@ -112,9 +113,9 @@ namespace CraigStars.Tests
             Assert.AreEqual(player.Fleets.Count, loadedPlayer.Fleets.Count);
 
             // make sure our players were re-constituted as fleet owners
-            Assert.AreEqual(loadedPlayer, loadedPlayer.Fleets[0].Player);
+            Assert.AreEqual(loadedPlayer.Num, loadedPlayer.Fleets[0].PlayerNum);
             Assert.AreEqual(player.Fleets[0].Tokens.Count, loadedPlayer.Fleets[0].Tokens.Count);
-            Assert.AreEqual(otherPlayer, loadedPlayer.ForeignFleets[0].Owner);
+            Assert.AreEqual(otherPlayer.Num, loadedPlayer.ForeignFleets[0].PlayerNum);
 
             // make sure our planet we loaded is also the one our first fleet is orbiting
             Assert.AreEqual(loadedPlayer.Planets[0], loadedPlayer.Fleets[0].Orbiting);
@@ -128,7 +129,7 @@ namespace CraigStars.Tests
             Assert.AreEqual(player.Designs.Count, loadedPlayer.Designs.Count);
             Assert.AreEqual(player.Designs.Count, loadedPlayer.Designs.Count);
             Assert.AreEqual(player.Designs[0].Slots.Count, loadedPlayer.Designs[0].Slots.Count);
-            Assert.AreEqual(loadedPlayer, loadedPlayer.Designs[0].Player);
+            Assert.AreEqual(loadedPlayer.Num, loadedPlayer.Designs[0].PlayerNum);
 
         }
 

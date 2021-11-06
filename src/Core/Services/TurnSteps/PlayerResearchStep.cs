@@ -16,20 +16,21 @@ namespace CraigStars
 
         public override void Process()
         {
-            var planetsByPlayer = OwnedPlanets.GroupBy(p => p.Player);
+            var planetsByPlayer = OwnedPlanets.GroupBy(p => p.PlayerNum);
             foreach (var playerPlanets in planetsByPlayer)
             {
                 // figure out how many resoruces each planet has
                 var resourcesToSpend = 0;
                 foreach (var planet in playerPlanets)
                 {
-                    resourcesToSpend += playerPlanets.Sum(p => planetService.GetResourcesPerYearResearch(p, p.Player));
+                    var player = Game.Players[planet.PlayerNum];
+                    resourcesToSpend += playerPlanets.Sum(p => planetService.GetResourcesPerYearResearch(p, player));
                 }
 
                 // research for this player
-                var player = playerPlanets.Key;
-                player.ResearchSpentLastYear = resourcesToSpend;
-                researcher.ResearchNextLevel(player, resourcesToSpend);
+                var playerNum = playerPlanets.Key;
+                Game.Players[playerNum].ResearchSpentLastYear = resourcesToSpend;
+                researcher.ResearchNextLevel(Game.Players[playerNum], resourcesToSpend);
             }
 
         }

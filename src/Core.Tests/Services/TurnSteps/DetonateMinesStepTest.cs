@@ -25,7 +25,7 @@ namespace CraigStars.Tests
             var player1 = game.Players[0];
             var mineField = new MineField()
             {
-                Player = player1,
+                PlayerNum = player1.Num,
                 Type = MineFieldType.Standard,
                 Position = new Vector2(0, 0),
             };
@@ -54,7 +54,7 @@ namespace CraigStars.Tests
             var player1 = game.Players[0];
             var mineField = new MineField()
             {
-                Player = player1,
+                PlayerNum = player1.Num,
                 Type = MineFieldType.Standard,
                 Position = new Vector2(0, 0),
             };

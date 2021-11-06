@@ -20,7 +20,7 @@ namespace CraigStars.Tests
 
             var starbase = new ShipDesign()
             {
-                Player = game.Players[0],
+                PlayerNum = game.Players[0].Num,
                 Hull = Techs.SpaceStation
             };
 

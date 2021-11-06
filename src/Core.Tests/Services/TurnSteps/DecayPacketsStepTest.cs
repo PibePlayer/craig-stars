@@ -25,7 +25,7 @@ namespace CraigStars.Tests
             var player1 = game.Players[0];
             var packet = new MineralPacket()
             {
-                Player = player1,
+                PlayerNum = player1.Num,
                 WarpFactor = 7,
                 SafeWarpSpeed = 7,
                 DistanceTravelled = 7 * 7

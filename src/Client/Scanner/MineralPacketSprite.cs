@@ -27,7 +27,7 @@ namespace CraigStars.Client
             var color = Colors.Green;
             if (!OwnedByMe)
             {
-                color = MineralPacket.Owner.Color;
+                color = PlayerColor;
             }
             DrawRect(new Rect2(-5.5f, -5.5f, 11, 11), Colors.Green, false, 1, true);
 

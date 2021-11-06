@@ -407,9 +407,9 @@ namespace CraigStars
         {
             long habValue = player.Race.GetPlanetHabitability(planet.BaseHab.Value);
             string text;
-            if (planet.Owner != null && planet.Owner != player)
+            if (planet.Owned && planet.PlayerNum != player.Num)
             {
-                text = $"You have found a planet occupied by someone else. {planet.Name} is currently owned by the {planet.Owner.RacePluralName}";
+                text = $"You have found a planet occupied by someone else. {planet.Name} is currently owned by the {planet.RacePluralName}";
             }
             else
             {
@@ -467,7 +467,7 @@ namespace CraigStars
         {
             string text;
 
-            if (player == fleet.Player)
+            if (player.Num == fleet.PlayerNum)
             {
                 if (planet.Population == 0)
                 {
@@ -499,7 +499,7 @@ namespace CraigStars
         {
             string text;
 
-            if (player == fleet.Player)
+            if (player.Num == fleet.PlayerNum)
             {
                 if (planet.Population == 0)
                 {
@@ -537,9 +537,9 @@ namespace CraigStars
         {
             string text;
 
-            if (player == fleet.Player)
+            if (player.Num == fleet.PlayerNum)
             {
-                if (planet.Player == fleet.Player)
+                if (planet.PlayerNum == fleet.PlayerNum)
                 {
                     // we invaded and won
                     text = $"Your {fleet.Name} has successfully invaded {planet.RaceName} planet {planet.Name} killing off all colonists";
@@ -553,7 +553,7 @@ namespace CraigStars
             }
             else
             {
-                if (planet.Player == fleet.Player)
+                if (planet.PlayerNum == fleet.PlayerNum)
                 {
                     // we were invaded, and lost
                     text = $"{fleet.RaceName} {fleet.Name} has successfully invaded your planet {planet.Name}, killing off all of your colonists";
@@ -583,7 +583,7 @@ namespace CraigStars
         {
             string text = "";
             MapObject messageTarget = mineField;
-            if (fleet.Player == player)
+            if (fleet.PlayerNum == player.Num)
             {
                 // it's our fleet, it must be someone else's minefield
                 if (fleet.Aggregate.TotalShips <= shipsDestroyed)
@@ -667,7 +667,7 @@ namespace CraigStars
         {
             string text = "";
             MapObject target = mineField;
-            if (fleet.Player == player)
+            if (fleet.PlayerNum == player.Num)
             {
                 text = $"{fleet.Name} has swept {numMinesSwept} from a mineField at {TextUtils.GetPositionString(mineField.Position)}";
             }
@@ -677,7 +677,7 @@ namespace CraigStars
             }
             if (mineField.NumMines <= 10)
             {
-                if (fleet.Player == player)
+                if (fleet.PlayerNum == player.Num)
                 {
                     // target the fleet if the mineField is gone
                     target = fleet;

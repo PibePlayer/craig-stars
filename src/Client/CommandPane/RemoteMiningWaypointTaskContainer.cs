@@ -51,7 +51,7 @@ namespace CraigStars
             remoteMiningLabel.Modulate = Colors.Red;
 
             // update our mining stats
-            if (Fleet != null && Planet != null && fleet.Aggregate.MiningRate > 0 && Planet.Explored && Planet.Owner == null)
+            if (Fleet != null && Planet != null && fleet.Aggregate.MiningRate > 0 && Planet.Explored && !Planet.Owned)
             {
                 remoteMiningSummaryContainer.Visible = true;
 
@@ -64,7 +64,7 @@ namespace CraigStars
             }
             else
             {
-                if (Planet != null && Planet.Owner != null)
+                if (Planet != null && Planet.Owned)
                 {
                     remoteMiningLabel.Text = "Note: You can only remote mine unoccupied planets.";
                 }

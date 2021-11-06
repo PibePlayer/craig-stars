@@ -33,7 +33,7 @@ namespace CraigStars.Client
                 var race = Me.Race;
                 var mineralpacket = MapObject.MineralPacket;
 
-                mineralpacketRaceLabel.Text = $"{mineralpacket.Owner.RacePluralName}";
+                mineralpacketRaceLabel.Text = $"{mineralpacket.RacePluralName}";
 
                 if (MapObject.OwnedByMe)
                 {

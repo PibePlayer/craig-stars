@@ -21,7 +21,8 @@ namespace CraigStars
         {
 
             foreach (var mineField in Game.MineFields.Where(mf =>
-                mf.Player.Race.PRT == PRT.SD &&
+                
+                Game.Players[mf.PlayerNum].Race.PRT == PRT.SD &&
                 mf.Detonate &&
                 Game.Rules.MineFieldStatsByType[mf.Type].CanDetonate))
             {
@@ -38,9 +39,11 @@ namespace CraigStars
         {
             List<Fleet> fleetsWithin = GetFleetsWithin(mineField.Position, mineField.Radius);
             var stats = Game.Rules.MineFieldStatsByType[mineField.Type];
+            var mineFieldPlayer = Game.Players[mineField.PlayerNum];
             foreach (var fleet in fleetsWithin)
             {
-                mineFieldDamager.TakeMineFieldDamage(fleet, mineField, stats, detonating: true);
+                var fleetPlayer = Game.Players[fleet.PlayerNum];
+                mineFieldDamager.TakeMineFieldDamage(fleet, fleetPlayer, mineField, mineFieldPlayer, stats, detonating: true);
             }
         }
 

@@ -48,7 +48,7 @@ namespace CraigStars.Client
 
                 // TODO: Whether something is Commandable is part of MapObjectSprite, but we are using regular MapObjects...
                 // this isn't terrible, but it'd be nice if it weren't in two places
-                if (selectedObject.Player == Me && (selectedObject is Planet || selectedObject is Fleet))
+                if (selectedObject.OwnedBy(Me) && (selectedObject is Planet || selectedObject is Fleet))
                 {
                     log.Debug($"Commanding {selectedObject}");
                     EventManager.PublishCommandMapObjectEvent(selectedObject);

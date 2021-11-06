@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using Godot;
 using log4net;
@@ -10,36 +11,15 @@ namespace CraigStars
     /// <summary>
     /// A recording of a single battle
     /// </summary>
-    public class BattleRecord : Discoverable
+    public class BattleRecord : IDiscoverable
     {
         static CSLog log = LogProvider.GetLogger(typeof(BattleRecord));
 
 
         public Guid Guid { get; set; } = Guid.NewGuid();
 
-        public PublicPlayerInfo Owner
-        {
-            get
-            {
-                if (Player != null)
-                {
-                    owner = Player;
-                }
-                return owner;
-            }
-            set
-            {
-                owner = value;
-            }
-        }
-        PublicPlayerInfo owner;
-
-        /// <summary>
-        /// For fleets we own, the Player field is populated
-        /// Otherwise, the Owner field is populated
-        /// </summary>
-        [JsonIgnore]
-        public Player Player { get; set; }
+        [DefaultValue(MapObject.Unowned)]
+        public int PlayerNum { get; set; } = MapObject.Unowned;
 
         /// <summary>
         /// The tokens for this battle
@@ -71,17 +51,17 @@ namespace CraigStars
         /// <summary>
         /// Populate a lookup table of items by guid
         /// </summary>
-        public void SetupRecord(int numRounds)
+        public void SetupRecord(List<Player> players)
         {
             TokensByGuid = Tokens.ToLookup(token => token.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
 
             foreach (var token in Tokens)
             {
-                if (token.Owner.Num == Owner.Num)
+                if (token.PlayerNum == PlayerNum)
                 {
                     MyShipCount++;
                 }
-                else if (Player.IsFriend(token.Owner))
+                else if (players[PlayerNum].IsFriend(token.PlayerNum))
                 {
                     FriendShipCount++;
                 }
@@ -112,7 +92,7 @@ namespace CraigStars
         internal void RecordMove(int round, BattleRecordToken token, Vector2 from, Vector2 to)
         {
             ActionsPerRound[ActionsPerRound.Count - 1].Add(new BattleRecordTokenMove(TokensByGuid[token.Guid], from, to));
-            if (Owner.Num == 0)
+            if (PlayerNum == 0)
             {
                 log.Debug($"Round: {round} {ActionsPerRound[round][ActionsPerRound[round].Count - 1]}");
             }
@@ -127,7 +107,7 @@ namespace CraigStars
         internal void RecordRunAway(int round, BattleRecordToken token)
         {
             ActionsPerRound[ActionsPerRound.Count - 1].Add(new BattleRecordTokenRanAway(TokensByGuid[token.Guid]));
-            if (Owner.Num == 0)
+            if (PlayerNum == 0)
             {
                 log.Debug($"Round: {round} {ActionsPerRound[round][ActionsPerRound[round].Count - 1]}");
             }
@@ -141,20 +121,8 @@ namespace CraigStars
         /// <param name="to"></param>
         internal void RecordBeamFire(int round, BattleRecordToken token, Vector2 from, Vector2 to, int slot, BattleRecordToken target, int damageDoneShields, int damageDoneArmor, int tokensDestroyed)
         {
-            if (target.Owner.Num == Owner.Num)
-            {
-                MyShipCount++;
-            }
-            else if (Player.IsFriend(target.Owner))
-            {
-                FriendShipCount++;
-            }
-            else
-            {
-                EnemyShipCount++;
-            }
             ActionsPerRound[ActionsPerRound.Count - 1].Add(new BattleRecordTokenBeamFire(TokensByGuid[token.Guid], from, to, slot, TokensByGuid[target.Guid], damageDoneShields, damageDoneArmor, tokensDestroyed));
-            if (Owner.Num == 0)
+            if (PlayerNum == 0)
             {
                 log.Debug($"Round: {round} {ActionsPerRound[round][ActionsPerRound[round].Count - 1]}");
             }
@@ -168,20 +136,8 @@ namespace CraigStars
         /// <param name="to"></param>
         internal void RecordTorpedoFire(int round, BattleRecordToken token, Vector2 from, Vector2 to, int slot, BattleRecordToken target, int damageDoneShields, int damageDoneArmor, int tokensDestroyed, int hits, int misses)
         {
-            if (target.Owner.Num == Owner.Num)
-            {
-                MyShipCount++;
-            }
-            else if (Player.IsFriend(target.Owner))
-            {
-                FriendShipCount++;
-            }
-            else
-            {
-                EnemyShipCount++;
-            }
             ActionsPerRound[ActionsPerRound.Count - 1].Add(new BattleRecordTokenTorpedoFire(TokensByGuid[token.Guid], from, to, slot, TokensByGuid[target.Guid], damageDoneShields, damageDoneArmor, tokensDestroyed, hits, misses));
-            if (Owner.Num == 0)
+            if (PlayerNum == 0)
             {
                 log.Debug($"Round: {round} {ActionsPerRound[round][ActionsPerRound[round].Count - 1]}");
             }

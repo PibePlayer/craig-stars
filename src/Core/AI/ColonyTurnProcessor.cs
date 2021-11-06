@@ -34,7 +34,7 @@ namespace CraigStars
             ShipDesign colonyShip = shipDesignerTurnProcessor.DesignColonizer(player);
 
             var colonizablePlanets = player.AllPlanets
-            .Where(planet => planet.Explored && planet.Uninhabited && player.Race.GetPlanetHabitability(planet.BaseHab.Value) > 0)
+            .Where(planet => planet.Explored && !planet.Owned && player.Race.GetPlanetHabitability(planet.BaseHab.Value) > 0)
             .OrderByDescending(planet => player.Race.GetPlanetHabitability(planet.BaseHab.Value))
             .ToList();
             var buildablePlanets = player.Planets
@@ -54,7 +54,7 @@ namespace CraigStars
             // go through each unassigned colonizer fleet and find it a new planet to colonize
             foreach (var fleet in colonizerFleets.Where(
                 f => f.Waypoints.Count == 1 &&
-                f.Orbiting?.Player == player &&
+                f.Orbiting?.PlayerNum == player.Num &&
                 planetService.GetPopulationDensity(f.Orbiting, player, gameInfo.Rules, f.Orbiting.Population - f.AvailableCapacity) >= PopulationDensityRequired)
             )
             {
@@ -66,7 +66,7 @@ namespace CraigStars
 
                     if (sourcePlanet.AttemptTransfer(-colonists) && fleet.AttemptTransfer(colonists))
                     {
-                        CargoTransferUtils.CreateCargoTransferOrder(fleet.Player, colonists, fleet, sourcePlanet);
+                        CargoTransferUtils.CreateCargoTransferOrder(player, colonists, fleet, sourcePlanet);
 
                         fleet.Waypoints.Add(Waypoint.TargetWaypoint(planetToColonize, fleetService.GetDefaultWarpFactor(fleet, player), WaypointTask.Colonize));
                         fleet.Waypoints[1].WarpFactor = fleetService.GetBestWarpFactor(fleet, player, fleet.Waypoints[0], fleet.Waypoints[1]);

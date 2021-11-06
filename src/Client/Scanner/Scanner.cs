@@ -49,7 +49,7 @@ namespace CraigStars.Client
 
         public List<PlanetSprite> Planets { get; } = new List<PlanetSprite>();
         public List<FleetSprite> Fleets { get; } = new List<FleetSprite>();
-        public Dictionary<Guid, MapObjectSprite> MapObjectsByGuid { get; set; } = new Dictionary<Guid, MapObjectSprite>();
+        public Dictionary<Guid, MapObjectSprite> MapObjectsByGuid { get; set; } = new();
         public List<WaypointArea> waypointAreas = new List<WaypointArea>();
         public List<ScannerCoverage> Scanners { get; set; } = new List<ScannerCoverage>();
         public List<ScannerCoverage> PenScanners { get; set; } = new List<ScannerCoverage>();
@@ -379,10 +379,10 @@ namespace CraigStars.Client
         /// <returns></returns>
         PlanetSprite GetHomeWorldOrDefault()
         {
-            var homeworld = Planets.Where(p => p.Planet.Homeworld && p.Planet.Player == Me).FirstOrDefault();
+            var homeworld = Planets.Where(p => p.Planet.Homeworld && p.Planet.OwnedBy(Me)).FirstOrDefault();
             if (homeworld == null)
             {
-                homeworld = Planets.Where(p => p.Planet.Player == Me).FirstOrDefault();
+                homeworld = Planets.Where(p => p.Planet.OwnedBy(Me)).FirstOrDefault();
             }
             return homeworld;
         }
@@ -457,7 +457,7 @@ namespace CraigStars.Client
                     rangePen = Me.PlanetaryScanner.ScanRangePen;
                 }
 
-                foreach (var fleet in planet.OrbitingFleets.Where(f => f.Fleet.Player == Me))
+                foreach (var fleet in planet.OrbitingFleets.Where(f => f.Fleet.OwnedBy(Me)))
                 {
                     range = Math.Max(range, fleet.Fleet.Aggregate.ScanRange);
                     rangePen = Math.Max(rangePen, fleet.Fleet.Aggregate.ScanRangePen);
@@ -619,11 +619,11 @@ namespace CraigStars.Client
             MapObjectSprite mapObjectToActivate = null;
             if (CommandedPlanet != null)
             {
-                mapObjectToActivate = FindNextObject(Planets.Where(p => p.Planet.Player == Me), CommandedPlanet);
+                mapObjectToActivate = FindNextObject(Planets.Where(p => p.Planet.OwnedBy(Me)), CommandedPlanet);
             }
             else if (CommandedFleet != null)
             {
-                mapObjectToActivate = FindNextObject(Fleets.Where(f => f.Fleet.Player == Me), CommandedFleet);
+                mapObjectToActivate = FindNextObject(Fleets.Where(f => f.Fleet.OwnedBy(Me)), CommandedFleet);
             }
 
             // activate this object
@@ -638,11 +638,11 @@ namespace CraigStars.Client
             MapObjectSprite mapObjectToActivate = null;
             if (CommandedPlanet != null)
             {
-                mapObjectToActivate = FindNextObject(Planets.Where(p => p.Planet.Player == Me).Reverse(), CommandedPlanet);
+                mapObjectToActivate = FindNextObject(Planets.Where(p => p.Planet.OwnedBy(Me)).Reverse(), CommandedPlanet);
             }
             else if (CommandedFleet != null)
             {
-                mapObjectToActivate = FindNextObject(Fleets.Where(f => f.Fleet.Player == Me).Reverse(), CommandedFleet);
+                mapObjectToActivate = FindNextObject(Fleets.Where(f => f.Fleet.OwnedBy(Me)).Reverse(), CommandedFleet);
             }
 
             // activate this object

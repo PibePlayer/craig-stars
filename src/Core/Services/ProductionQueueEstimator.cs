@@ -57,7 +57,7 @@ namespace CraigStars
             {
                 previousItemsCost = previousItemsCost - item.Allocated;
                 // figure out how much this item costs
-                var costOfOne = item.GetCostOfOne(planet.Player);
+                var costOfOne = item.GetCostOfOne(player);
                 if (item.Type == QueueItemType.Starbase && planet.HasStarbase)
                 {
                     costOfOne = planet.Starbase.GetUpgradeCost(item.Design);

@@ -45,7 +45,7 @@ namespace CraigStars.Tests
             // take ownership of this planet
             planet.ProductionQueue = new ProductionQueue();
             planet.Scanner = true;
-            planet.Player = player;
+            planet.PlayerNum = player.Num;
             planet.Population = 25000;
 
             var design = ShipDesigns.LongRangeScount.Clone(player);
@@ -54,7 +54,7 @@ namespace CraigStars.Tests
 
             var fleet = new Fleet()
             {
-                Player = player,
+                PlayerNum = player.Num,
                 Name = "Fleet 1",
                 Tokens = new List<ShipToken>(new ShipToken[] {
                     new ShipToken()
@@ -141,12 +141,12 @@ namespace CraigStars.Tests
             // take ownership of this planet
             planet1.ProductionQueue = new ProductionQueue();
             planet1.Scanner = true;
-            planet1.Player = player1;
+            planet1.PlayerNum = player1.Num;
             planet1.Population = 25000;
 
             planet2.ProductionQueue = new ProductionQueue();
             planet2.Scanner = true;
-            planet2.Player = player2;
+            planet2.PlayerNum = player2.Num;
             planet2.Population = 25000;
 
             var design1 = ShipDesigns.LongRangeScount.Clone(player1);
@@ -156,7 +156,7 @@ namespace CraigStars.Tests
 
             var fleet1 = new Fleet()
             {
-                Player = player1,
+                PlayerNum = player1.Num,
                 Name = "Fleet 1",
                 Position = planet1.Position,
                 Tokens = new List<ShipToken>(new ShipToken[] {
@@ -174,7 +174,7 @@ namespace CraigStars.Tests
             };
             var fleet2 = new Fleet()
             {
-                Player = player2,
+                PlayerNum = player2.Num,
                 Name = "Fleet 2",
                 Position = planet2.Position,
                 Tokens = new List<ShipToken>(new ShipToken[] {
@@ -210,17 +210,18 @@ namespace CraigStars.Tests
         internal static Fleet GetLongRangeScout(Player player)
         {
             var design = ShipDesigns.LongRangeScount.Clone();
-            design.Player = new Player();
+            design.PlayerNum = player.Num;
 
             var fleet = new Fleet()
             {
-                Player = design.Player,
+                PlayerNum = design.PlayerNum,
                 Tokens = new List<ShipToken>() {
                   new ShipToken(design, 1)
-                }
+                },
+                BattlePlan = player.BattlePlans[0]
             };
 
-            fleet.ComputeAggregate();
+            fleet.ComputeAggregate(player);
             fleet.Fuel = fleet.FuelCapacity;
             return fleet;
         }
@@ -232,17 +233,18 @@ namespace CraigStars.Tests
         internal static Fleet GetStalwartDefender(Player player)
         {
             var design = ShipDesigns.StalwartDefender.Clone();
-            design.Player = new Player();
+            design.PlayerNum = player.Num;
 
             var fleet = new Fleet()
             {
-                Player = design.Player,
+                PlayerNum = design.PlayerNum,
                 Tokens = new List<ShipToken>() {
                   new ShipToken(design, 1)
-                }
+                },
+                BattlePlan = player.BattlePlans[0]
             };
 
-            fleet.ComputeAggregate();
+            fleet.ComputeAggregate(player);
             fleet.Fuel = fleet.FuelCapacity;
             return fleet;
         }

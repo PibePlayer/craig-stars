@@ -17,14 +17,14 @@ namespace CraigStars
         static CSLog log = LogProvider.GetLogger(typeof(GameSerializer));
 
         JsonSerializerSettings gameSerializerSettings;
-        PlayerJsonSerializerSettings playerSerializerSettings;
+        JsonSerializerSettings playerSerializerSettings;
         Game game;
 
         public GameSerializer(Game game)
         {
             this.game = game;
-            playerSerializerSettings = Serializers.CreatePlayerSettings(game.Players.Cast<PublicPlayerInfo>().ToList(), game.TechStore);
-            gameSerializerSettings = Serializers.CreateGameSettings(game);
+            playerSerializerSettings = Serializers.CreatePlayerSettings(game.TechStore);
+            gameSerializerSettings = Serializers.CreateGameSettings(game.TechStore);
         }
 
         /// <summary>

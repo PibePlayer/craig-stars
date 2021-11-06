@@ -43,7 +43,7 @@ namespace CraigStars.Client
                 var fleet = MapObject.Fleet;
 
                 icon.Texture = TextureLoader.Instance.FindTexture(fleet.GetPrimaryToken().Design);
-                fleetRaceLabel.Text = $"{fleet.Owner.RacePluralName}";
+                fleetRaceLabel.Text = $"{fleet.RacePluralName}";
             }
         }
     }

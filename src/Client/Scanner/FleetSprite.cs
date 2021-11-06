@@ -84,7 +84,7 @@ namespace CraigStars.Client
             if (State == ScannerState.Selected && !Fleet.OwnedBy(Me) && Fleet.WarpSpeed > 0)
             {
                 var distancePerYear = Fleet.WarpSpeed * Fleet.WarpSpeed;
-                var color = Fleet.Owner.Color;
+                var color = PlayerColor;
                 var perpendicular = Fleet.Heading.Perpendicular();
                 for (var i = 0; i < 5; i++)
                 {
@@ -292,7 +292,7 @@ namespace CraigStars.Client
                     break;
                 case ScannerOwnerAlly.Friend:
                 case ScannerOwnerAlly.Enemy:
-                    shipSprite.Modulate = Fleet.Owner.Color;
+                    shipSprite.Modulate = PlayerColor;
                     break;
                 default:
                     shipSprite.Modulate = Colors.Gray;

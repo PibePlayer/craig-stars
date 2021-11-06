@@ -176,13 +176,15 @@ namespace CraigStars
             {3, 2, 3, 2},
         };
 
-        public Rules Rules { get; set; } = new Rules(0);
+        public Game Game { get; private set; }
+        public Rules Rules { get; private set; } = new Rules(0);
         public ShipDesignDiscoverer designDiscoverer = new();
         public FleetService fleetService = new();
 
-        public BattleEngine(Rules rules)
+        public BattleEngine(Game game)
         {
-            Rules = rules;
+            Game = game;
+            Rules = Game.Rules;
         }
 
         /// <summary>
@@ -209,15 +211,15 @@ namespace CraigStars
 
 
             // add recordings for each player
-            HashSet<Player> players = fleets.Select(fleet => fleet.Player).ToHashSet();
-            foreach (var player in players)
+            HashSet<int> players = fleets.Select(fleet => fleet.PlayerNum).ToHashSet();
+            foreach (var playerNum in players)
             {
-                battle.PlayerRecords[player] = new BattleRecord() { Player = player };
+                battle.PlayerRecords[playerNum] = new BattleRecord() { PlayerNum = playerNum };
 
                 // every player should discover all designs in a battle as if they were penscanned.
                 foreach (var design in fleets.SelectMany(fleet => fleet.Tokens).Select(token => token.Design))
                 {
-                    designDiscoverer.Discover(player, design, true);
+                    designDiscoverer.Discover(Game.Players[playerNum], design, true);
                 }
             }
 
@@ -226,16 +228,19 @@ namespace CraigStars
                 fleet.Tokens.ForEach(token =>
                     battle.AddToken(new BattleToken()
                     {
-                        Player = fleet.Player,
+                        PlayerNum = fleet.PlayerNum,
                         Fleet = fleet,
                         Token = token,
                         Shields = token.Quantity * token.Design.Aggregate.Shield,
                         Attributes = GetTokenAttributes(token)
-                    })
+                    }, Game)
                 )
             );
 
-            battle.SetupPlayerRecords(Rules.NumBattleRounds);
+            foreach (var record in battle.PlayerRecords.Values)
+            {
+                record.SetupRecord(Game.Players);
+            }
 
             return battle;
         }
@@ -294,7 +299,7 @@ namespace CraigStars
             var secondaryTargets = new List<BattleToken>();
 
             // Find all enemy tokens
-            foreach (var token in battle.RemainingTokens.Where(token => fleetService.WillAttack(attacker.Fleet, attacker.Player, token.Player)))
+            foreach (var token in battle.RemainingTokens.Where(token => fleetService.WillAttack(attacker.Fleet, Game.Players[attacker.PlayerNum], token.PlayerNum)))
             {
                 // if we will target this
                 if (WillTarget(primaryTarget, token) && weapon.IsInRange(token))
@@ -387,9 +392,9 @@ namespace CraigStars
             }
 
             // tell players about the battle
-            foreach (var playerEntry in battle.PlayerRecords)
+            foreach (var playerRecordEntry in battle.PlayerRecords)
             {
-                Message.Battle(playerEntry.Key, battle.Planet, battle.Position, playerEntry.Value);
+                Message.Battle(Game.Players[playerRecordEntry.Key], battle.Planet, battle.Position, playerRecordEntry.Value);
             }
         }
 
@@ -399,7 +404,7 @@ namespace CraigStars
         /// <param name="battle"></param>
         internal void PlaceTokensOnBoard(Battle battle)
         {
-            var tokensByPlayer = battle.Tokens.ToLookup(token => token.Player).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray());
+            var tokensByPlayer = battle.Tokens.ToLookup(token => token.PlayerNum).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray());
             int playerIndex = 0;
             foreach (var entry in tokensByPlayer)
             {
@@ -895,7 +900,7 @@ namespace CraigStars
             BattleTargetType secondaryTargetOrder = attacker.Fleet.BattlePlan.SecondaryTarget;
 
             // TODO: We need to account for the fact that if a fleet targets us, we will target them back
-            foreach (var defender in defenders.Where(defender => !(defender.Destroyed || defender.RanAway) && fleetService.WillAttack(attacker.Fleet, attacker.Player, defender.Player)))
+            foreach (var defender in defenders.Where(defender => !(defender.Destroyed || defender.RanAway) && fleetService.WillAttack(attacker.Fleet, Game.Players[attacker.PlayerNum], defender.PlayerNum)))
             {
                 // if we would target this defender with our primary target and it's more attactive than our current primaryTarget, pick it
                 if (WillTarget(primaryTargetOrder, defender))

@@ -188,7 +188,7 @@ namespace CraigStars.Client
                         DrawCircle(Vector2.Zero, (float)(radius), outlineColor);
                         DrawCircle(Vector2.Zero, (float)(radius * .9f), circleColor);
 
-                        if (Planet.Owner != null)
+                        if (Planet.Owned)
                         {
                             // draw a blue flag for our planet, red for other player's planet
                             var color = Planet.OwnedBy(Me) ? Colors.Blue : Colors.Red;
@@ -199,10 +199,10 @@ namespace CraigStars.Client
                     }
                     break;
                 case PlanetViewState.Population:
-                    if (Planet.Owner != null && Planet.Population > 0)
+                    if (Planet.Owned && Planet.Population > 0)
                     {
                         var radius = Math.Max(2, Planet.Population / 1_350_000f * MaxPopulationRadius);
-                        var color = OwnedByMe ? GUIColorsProvider.Colors.HabitableColor : Planet.Owner.Color;
+                        var color = OwnedByMe ? GUIColorsProvider.Colors.HabitableColor : PlayerColor;
                         DrawCircle(Vector2.Zero, radius, color);
                     }
                     else
@@ -271,9 +271,9 @@ namespace CraigStars.Client
                 }
             }
 
-            if (Planet.Owner != null)
+            if (Planet.Owned)
             {
-                if (Planet.Owner == PlayersManager.Me)
+                if (Planet.OwnedBy(PlayersManager.Me))
                 {
                     ownerAllyState = ScannerOwnerAlly.Owned;
                 }
@@ -335,24 +335,24 @@ namespace CraigStars.Client
                     if (isCommanded)
                     {
                         inhabitedCommanded.Visible = true;
-                        inhabitedCommanded.Modulate = Planet.Owner.Color;
+                        inhabitedCommanded.Modulate = PlayerColor;
                     }
                     else
                     {
                         inhabited.Visible = true;
-                        inhabited.Modulate = Planet.Owner.Color;
+                        inhabited.Modulate = PlayerColor;
                     }
                     break;
                 case ScannerOwnerAlly.Enemy:
                     if (isCommanded)
                     {
                         inhabitedCommanded.Visible = true;
-                        inhabitedCommanded.Modulate = Planet.Owner.Color;
+                        inhabitedCommanded.Modulate = PlayerColor;
                     }
                     else
                     {
                         inhabited.Visible = true;
-                        inhabited.Modulate = Planet.Owner.Color;
+                        inhabited.Modulate = PlayerColor;
                     }
                     break;
             }

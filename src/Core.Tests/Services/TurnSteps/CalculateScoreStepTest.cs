@@ -42,14 +42,14 @@ namespace CraigStars.Tests
             player.Planets[0].Factories = 10; // should be one point for 30 resources
             player.Planets[0].Starbase = new Starbase()
             {
-                Player = player,
+                PlayerNum = player.Num,
                 Tokens = new List<ShipToken>() {
                 new ShipToken() { Quantity = 1, Design = starbaseDesign }
             }
             }; // should be 3 points for a starbase
             player.Planets.Add(new Planet()
             {
-                Player = player,
+                PlayerNum = player.Num,
                 Population = 210000,  // should be 2 points for population, 210 resources for 7 more points
             });
             player.Fleets.Add(game.Fleets[0]);
@@ -58,14 +58,14 @@ namespace CraigStars.Tests
             // add a capital ship for 5 points (with 2 planets) (8 * 2 / 3)
             player.Fleets.Add(new Fleet()
             {
-                Player = player,
+                PlayerNum = player.Num,
                 Tokens = new List<ShipToken>() {
                     new ShipToken()
                     {
                         Quantity = 1,
                         Design = new ShipDesign()
                         {
-                            Player = player,
+                            PlayerNum = player.Num,
                             Hull = Techs.Battleship,
                             Slots = new List<ShipDesignSlot>()
                             {

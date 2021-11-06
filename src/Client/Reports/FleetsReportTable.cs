@@ -64,9 +64,9 @@ namespace CraigStars.Client
             var task = "(no task here)";
             var location = "--";
 
-            if (item.Owner != null)
+            if (item.Owned)
             {
-                owner = $"{item.Owner.RacePluralName}";
+                owner = $"{item.RacePluralName}";
                 if (item.OwnedBy(PlayersManager.Me))
                 {
                     ownerColor = Colors.White;
@@ -74,7 +74,7 @@ namespace CraigStars.Client
                 }
                 else
                 {
-                    ownerColor = item.Owner.Color;
+                    ownerColor = GameInfo.Players[item.PlayerNum].Color;
                     location = (item.Orbiting != null) ? item.Orbiting.Name : Utils.TextUtils.GetPositionString(item.Position);
                 }
             }

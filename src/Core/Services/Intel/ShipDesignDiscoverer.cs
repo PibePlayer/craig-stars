@@ -20,7 +20,7 @@ namespace CraigStars
 
         protected override void OnNewReportCreated(Player player, ShipDesign item, ShipDesign itemReport)
         {
-            if (item.Player != player)
+            if (item.PlayerNum != player.Num)
             {
                 // by default, we don't know about design slots unless we pen scan
                 itemReport.Slots.Clear();
@@ -30,7 +30,7 @@ namespace CraigStars
         protected override void DiscoverForeign(Player player, ShipDesign item, ShipDesign itemReport, bool penScanned)
         {
             itemReport.Name = item.Name;
-            itemReport.Owner = item.Owner;
+            itemReport.PlayerNum = item.PlayerNum;
             itemReport.Hull = item.Hull;
             itemReport.HullSetNumber = item.HullSetNumber;
 
@@ -47,7 +47,7 @@ namespace CraigStars
         protected override void DiscoverOwn(Player player, ShipDesign item, ShipDesign itemReport)
         {
             itemReport.Name = item.Name;
-            itemReport.Owner = item.Owner;
+            itemReport.PlayerNum = item.PlayerNum;
             itemReport.Hull = item.Hull;
             itemReport.HullSetNumber = item.HullSetNumber;
             itemReport.Purpose = item.Purpose;

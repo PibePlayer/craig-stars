@@ -228,7 +228,7 @@ namespace CraigStars.Singletons
         public void SendPlayerData(PublicGameInfo gameInfo, Player player, int networkId)
         {
             var players = gameInfo != null ? gameInfo.Players : new List<PublicPlayerInfo>() { player };
-            var settings = Serializers.CreatePlayerSettings(players, TechStore.Instance);
+            var settings = Serializers.CreatePlayerSettings(TechStore.Instance);
 
             log.Info($"Server: Sending {player} updated player data");
             string json = Serializers.Serialize(player, settings);
@@ -242,10 +242,8 @@ namespace CraigStars.Singletons
         {
             log.Info("Client: Server sent player data");
             PublicGameInfo gameInfo = gameInfoJson != null ? Serializers.DeserializeObject<PublicGameInfo>(gameInfoJson) : null;
-            var player = new Player() { Num = playerNum };
-            var players = gameInfo != null ? gameInfo.Players : new List<PublicPlayerInfo>() { player };
 
-            Serializers.PopulatePlayer(playerJson, player, Serializers.CreatePlayerSettings(players, TechStore.Instance, gameInfo != null ? player : null));
+            var player = Serializers.DeserializeObject<Player>(playerJson, Serializers.CreatePlayerSettings(TechStore.Instance));
             log.Info("Client: Done recieving updated player data");
 
             // notify any listeners that we have new data for this player
@@ -277,7 +275,7 @@ namespace CraigStars.Singletons
         public void SendGameStarted(Game game)
         {
             string gameInfoJson = Serializers.Serialize(game.GameInfo);
-            var playerSerializationSettings = Serializers.CreatePlayerSettings(game.GameInfo.Players, game.TechStore);
+            var playerSerializationSettings = Serializers.CreatePlayerSettings(game.TechStore);
             foreach (var player in game.Players.Where(player => !player.AIControlled && player.NetworkId != 0))
             {
                 string playerJson = Serializers.Serialize(player, playerSerializationSettings);
@@ -292,8 +290,7 @@ namespace CraigStars.Singletons
             PublicGameInfo gameInfo = Serializers.DeserializeObject<PublicGameInfo>(gameInfoJson);
 
             // make sure our deserializer maps up our player correctly
-            var player = new Player() { Num = playerNum };
-            Serializers.PopulatePlayer(playerJson, player, Serializers.CreatePlayerSettings(gameInfo.Players, TechStore.Instance, player));
+            var player = Serializers.DeserializeObject<Player>(playerJson, Serializers.CreatePlayerSettings(TechStore.Instance));
 
             // notify any clients that we have a new game
             Client.EventManager.PublishGameStartedEvent(gameInfo, player);
@@ -357,7 +354,7 @@ namespace CraigStars.Singletons
         public void SendTurnPassed(Game game)
         {
             string gameInfoJson = Serializers.Serialize(game.GameInfo);
-            var playerSerializationSettings = Serializers.CreatePlayerSettings(game.GameInfo.Players, game.TechStore);
+            var playerSerializationSettings = Serializers.CreatePlayerSettings(game.TechStore);
             foreach (var player in game.Players.Where(player => !player.AIControlled && player.NetworkId != 0))
             {
                 string playerJson = Serializers.Serialize(player, playerSerializationSettings);
@@ -372,8 +369,7 @@ namespace CraigStars.Singletons
             PublicGameInfo gameInfo = Serializers.DeserializeObject<PublicGameInfo>(gameInfoJson);
 
             // make sure our deserializer maps up our player correctly
-            var player = new Player() { Num = playerNum };
-            Serializers.PopulatePlayer(playerJson, player, Serializers.CreatePlayerSettings(gameInfo.Players, TechStore.Instance, player));
+            var player = Serializers.DeserializeObject<Player>(playerJson, Serializers.CreatePlayerSettings(TechStore.Instance));
 
             Client.EventManager.PublishTurnPassedEvent(gameInfo, player);
             log.Info($"{player} Received TurnPassed");

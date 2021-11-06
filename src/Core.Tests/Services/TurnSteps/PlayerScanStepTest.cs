@@ -86,7 +86,7 @@ namespace CraigStars.Tests
                 design1.Name = "Design " + i;
                 var fleet1 = new Fleet()
                 {
-                    Player = player1,
+                    PlayerNum = player1.Num,
                     Name = "New Fleet " + i,
                     Position = position1,
                     Tokens = new List<ShipToken>() {
@@ -106,7 +106,7 @@ namespace CraigStars.Tests
                 design2.Name = "Design " + i;
                 var fleet2 = new Fleet()
                 {
-                    Player = player2,
+                    PlayerNum = player2.Num,
                     Name = "New Fleet " + i,
                     Position = position2,
                     Tokens = new List<ShipToken>() {

@@ -50,11 +50,11 @@ namespace CraigStars
             // process any packets we haven't processed yet.
             foreach (var packet in Game.MineralPackets.Where(p => !processedMineralPackets.Contains(p)))
             {
-                MovePacket(packet);
+                MovePacket(packet, Game.Players[packet.PlayerNum]);
             }
         }
 
-        private void MovePacket(MineralPacket packet)
+        private void MovePacket(MineralPacket packet, Player player)
         {
             float dist = packet.WarpFactor * packet.WarpFactor;
             float totalDist = packet.Position.DistanceTo(packet.Target.Position);
@@ -74,7 +74,7 @@ namespace CraigStars
 
             if (totalDist == dist)
             {
-                CompleteMove(packet);
+                CompleteMove(packet, player);
             }
             else
             {
@@ -113,7 +113,7 @@ namespace CraigStars
         /// = Max.of( 264,000, 105600) destroying the colony
         /// </summary>
         /// <param name="packet"></param>
-        internal void CompleteMove(MineralPacket packet)
+        internal void CompleteMove(MineralPacket packet, Player player)
         {
             // deposit minerals onto the planet
             var cargo = packet.Cargo;
@@ -125,14 +125,15 @@ namespace CraigStars
             {
                 // caught packet successfully, transfer cargo
                 packet.Target.AttemptTransfer(cargo);
-                Message.MineralPacketCaught(packet.Target.Player, packet.Target, packet);
+                Message.MineralPacketCaught(Game.Players[packet.Target.PlayerNum], packet.Target, packet);
             }
-            else if (planet.Player == null)
+            else if (!planet.Owned)
             {
                 packet.Target.AttemptTransfer(cargo);
             }
-            else if (planet.Player != null)
+            else if (planet.Owned)
             {
+                var planetPlayer = Game.Players[planet.PlayerNum];
                 // uh oh, this packet is going to fast and we'll take damage
                 var receiverDriverSpeed = planet.HasStarbase ? planet.Starbase.Aggregate.SafePacketSpeed : 0;
 
@@ -141,7 +142,7 @@ namespace CraigStars
                 var percentCaughtSafely = (float)speedOfReceiver / speedOfPacket;
                 var mineralsRecovered = weight * percentCaughtSafely + weight * (1 / 3f) * (1 - percentCaughtSafely);
                 var rawDamage = (speedOfPacket - speedOfReceiver) * weight / 160f;
-                var damageWithDefenses = rawDamage * (1 - planetService.GetDefenseCoverage(planet, planet.Player));
+                var damageWithDefenses = rawDamage * (1 - planetService.GetDefenseCoverage(planet, planetPlayer));
                 var colonistsKilled = RoundToNearest(Math.Max(damageWithDefenses * planet.Population / 1000f, damageWithDefenses * 100));
                 var defensesDestroyed = (int)Math.Max(planet.Defenses * damageWithDefenses / 1000, damageWithDefenses / 20);
 
@@ -149,7 +150,7 @@ namespace CraigStars
                 planet.Population = RoundToNearest(Mathf.Clamp(planet.Population - colonistsKilled, 0, planet.Population));
                 planet.Defenses = Mathf.Clamp(planet.Defenses - (int)defensesDestroyed, 0, planet.Defenses);
 
-                Message.MineralPacketDamage(planet.Player, planet, packet, colonistsKilled, defensesDestroyed);
+                Message.MineralPacketDamage(planetPlayer, planet, packet, colonistsKilled, defensesDestroyed);
                 if (planet.Population == 0)
                 {
                     EventManager.PublishPlanetPopulationEmptiedEvent(planet);
@@ -157,9 +158,9 @@ namespace CraigStars
             }
 
             // if we didn't recieve this planet, notify the sender
-            if (planet.Player != packet.Player)
+            if (planet.PlayerNum != packet.PlayerNum)
             {
-                Message.MineralPacketArrived(packet.Player, planet, packet);
+                Message.MineralPacketArrived(player, planet, packet);
             }
 
             // delete the packet

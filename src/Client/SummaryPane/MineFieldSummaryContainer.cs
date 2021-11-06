@@ -1,14 +1,14 @@
 using Godot;
 using System;
 using CraigStars.Utils;
+using CraigStars.Singletons;
 
 namespace CraigStars.Client
 {
-    public class MineFieldSummaryContainer : Container
+    public class MineFieldSummaryContainer : MapObjectSummary<MineFieldSprite>
     {
         static CSLog log = LogProvider.GetLogger(typeof(MineFieldSummaryContainer));
 
-        MineFieldSprite mineField;
         TextureRect icon;
         Label location;
         Label fieldType;
@@ -25,42 +25,25 @@ namespace CraigStars.Client
             decayRate = GetNode<Label>("HBoxContainer/GridContainer/DecayRate");
             decayRateLabel = GetNode<Label>("HBoxContainer/GridContainer/DecayRateLabel");
             icon = GetNode<TextureRect>("HBoxContainer/Panel/Icon");
-
-            EventManager.MapObjectSelectedEvent += OnMapObjectSelected;
         }
 
-        public override void _Notification(int what)
-        {
-            base._Notification(what);
-            if (what == NotificationPredelete)
-            {
-                EventManager.MapObjectSelectedEvent -= OnMapObjectSelected;
-            }
-        }
-
-        void OnMapObjectSelected(MapObjectSprite mapObject)
-        {
-            mineField = mapObject as MineFieldSprite;
-            UpdateControls();
-        }
-
-        void UpdateControls()
+        protected override void UpdateControls()
         {
             decayRate.Visible = false;
             decayRateLabel.Visible = false;
-            if (mineField != null)
+            if (MapObject != null)
             {
-                location.Text = $"{TextUtils.GetPositionString(mineField.MineField.Position)}";
-                fieldType.Text = $"{EnumUtils.GetLabelForMineFieldType(mineField.MineField.Type)}";
-                fieldRadius.Text = $"{mineField.MineField.Radius:.} l.y. ({mineField.MineField.NumMines} mines)";
-                if (mineField.OwnedByMe)
+                location.Text = $"{TextUtils.GetPositionString(MapObject.MineField.Position)}";
+                fieldType.Text = $"{EnumUtils.GetLabelForMineFieldType(MapObject.MineField.Type)}";
+                fieldRadius.Text = $"{MapObject.MineField.Radius:.} l.y. ({MapObject.MineField.NumMines} mines)";
+                if (MapObject.OwnedByMe)
                 {
                     decayRate.Visible = true;
                     decayRateLabel.Visible = true;
-                    decayRate.Text = $"{mineField.MineField.GetDecayRate()} mines / year";
+                    decayRate.Text = $"{MapObject.MineField.GetDecayRate(Me, Me.AllPlanets, GameInfo.Rules)} mines / year";
                 }
 
-                switch (mineField.MineField.Type)
+                switch (MapObject.MineField.Type)
                 {
                     case MineFieldType.Standard:
                         icon.Texture = ResourceLoader.Load<Texture>("res://assets/gui/minefields/StandardMineField.png");

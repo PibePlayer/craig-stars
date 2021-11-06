@@ -24,14 +24,15 @@ namespace CraigStars.UniverseGeneration
             // each player should discover their designs
             Game.Designs.ForEach(design =>
             {
+                var player = Game.Players[design.PlayerNum];
                 // setup the game design by guid dictionary
                 Game.DesignsByGuid[design.Guid] = design;
 
                 // compute aggeregates about the design
-                design.ComputeAggregate(design.Player);
+                design.ComputeAggregate(player);
 
                 // let the player know about their new design
-                playerIntel.Discover(design.Player, design, true);
+                playerIntel.Discover(player, design, true);
             });
         }
 
@@ -78,7 +79,7 @@ namespace CraigStars.UniverseGeneration
             List<ShipDesign> designs = new List<ShipDesign>();
             var starbase = new ShipDesign()
             {
-                Player = player,
+                PlayerNum = player.Num,
                 Name = "Starbase",
                 Purpose = ShipDesignPurpose.Starbase,
                 Hull = Techs.SpaceStation,
@@ -94,7 +95,7 @@ namespace CraigStars.UniverseGeneration
                 case PRT.PP:
                     var fort = new ShipDesign()
                     {
-                        Player = player,
+                        PlayerNum = player.Num,
                         Name = "Accelerator Platform",
                         Purpose = ShipDesignPurpose.Fort,
                         Hull = Techs.OrbitalFort,

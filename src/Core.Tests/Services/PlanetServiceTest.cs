@@ -40,7 +40,7 @@ namespace CraigStars.Tests
             planet.InitEmptyPlanet();
 
             var player = new Player();
-            planet.Player = player;
+            planet.PlayerNum = player.Num;
             planet.Population = 10000;
             Assert.AreEqual(100, service.GetMaxDefenses(planet, player));
         }
@@ -73,7 +73,7 @@ namespace CraigStars.Tests
             planet.Hab = new Hab(50, 50, 50);
             var player = new Player();
             player.Race.GrowthRate = 10;
-            planet.Player = player;
+            planet.PlayerNum = player.Num;
             planet.Population = 100_000;
 
             // less than 25% cap, grows at full 10% growth rate
@@ -115,7 +115,7 @@ namespace CraigStars.Tests
             var planet = new Planet();
             planet.InitEmptyPlanet();
             planet.Hab = new Hab(50, 50, 50);
-            planet.Player = player;
+            planet.PlayerNum = player.Num;
             planet.Population = 100000;
 
             Assert.AreEqual(.1f, service.GetPopulationDensity(planet, player, rules));
@@ -148,7 +148,7 @@ namespace CraigStars.Tests
 
             Planet planet = new Planet()
             {
-                Player = player,
+                PlayerNum = player.Num,
                 Population = 100000, // 100k people
                 BaseHab = new Hab(50, 50, 50),
                 Hab = new Hab(50, 50, 50), // perfect planet
@@ -186,7 +186,7 @@ namespace CraigStars.Tests
             // create a perfect planet
             var planet = new Planet()
             {
-                Player = player,
+                PlayerNum = player.Num,
                 Hab = new Hab(50, 50, 50),
                 BaseHab = new Hab(50, 50, 50),
             };
@@ -233,7 +233,7 @@ namespace CraigStars.Tests
             // create a perfect planet
             var planet = new Planet()
             {
-                Player = player,
+                PlayerNum = player.Num,
                 Hab = new Hab(50, 50, 50),
                 BaseHab = new Hab(50, 50, 50),
             };
@@ -284,7 +284,7 @@ namespace CraigStars.Tests
             {
                 Hab = new Hab(50, 50, 50),
                 BaseHab = new Hab(50, 50, 50),
-                Player = player
+                PlayerNum = player.Num
             };
 
             // can't terraform a perfect planet

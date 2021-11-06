@@ -72,7 +72,7 @@ namespace CraigStars.Client
                     }
 
                     var mapObject = mapObjectsHere[mapObjectIndex];
-                    if (mapObject.Player == Me)
+                    if (mapObject.OwnedBy(Me))
                     {
                         // select the first orbiting fleet
                         EventManager.PublishCommandMapObjectEvent(mapObject);

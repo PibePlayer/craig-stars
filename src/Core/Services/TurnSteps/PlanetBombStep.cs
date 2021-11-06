@@ -52,7 +52,7 @@ namespace CraigStars
 
         internal void BombPlanet(Planet planet)
         {
-            if (planet.Uninhabited || planet.Population == 0)
+            if (!planet.Owned || planet.Population == 0)
             {
                 // can't bomb uninhabited planets
                 return;
@@ -61,13 +61,13 @@ namespace CraigStars
             // get a list of all players orbiting the planet
 
             // find any enemy bombers orbiting this planet
-            var enemyBombers = planet.OrbitingFleets.Where(fleet => fleet.Aggregate.Bomber && fleet.Player.IsEnemy(planet.Owner));
+            var enemyBombers = planet.OrbitingFleets.Where(fleet => fleet.Aggregate.Bomber && Game.Players[fleet.PlayerNum].IsEnemy(planet.PlayerNum));
 
-            var orbitingPlayers = enemyBombers.Select(fleet => fleet.Player).ToHashSet();
+            var orbitingPlayers = enemyBombers.Select(fleet => fleet.PlayerNum).ToHashSet();
 
             foreach (var player in orbitingPlayers)
             {
-                BombPlanet(planet, player, enemyBombers.Where(fleet => fleet.Player == player));
+                BombPlanet(planet, Game.Players[planet.PlayerNum], Game.Players[player], enemyBombers.Where(fleet => fleet.PlayerNum == player));
                 // stop bombing if everyone is dead
                 if (planet.Population == 0)
                 {
@@ -79,7 +79,7 @@ namespace CraigStars
             {
                 foreach (var player in orbitingPlayers)
                 {
-                    SmartBombPlanet(planet, player, enemyBombers.Where(fleet => fleet.Player == player));
+                    SmartBombPlanet(planet, Game.Players[planet.PlayerNum], Game.Players[player], enemyBombers.Where(fleet => fleet.PlayerNum == player));
                     // stop bombing if everyone is dead
                     if (planet.Population == 0)
                     {
@@ -95,7 +95,7 @@ namespace CraigStars
         /// <param name="planet"></param>
         /// <param name="attacker"></param>
         /// <param name="bombers"></param>
-        void BombPlanet(Planet planet, Player attacker, IEnumerable<Fleet> bombers)
+        void BombPlanet(Planet planet, Player defender, Player attacker, IEnumerable<Fleet> bombers)
         {
 
             // do all normal bombs
@@ -104,7 +104,7 @@ namespace CraigStars
                 if (fleet.Aggregate.Bombs.Count > 0)
                 {
                     // figure out the killRate and minKill for this fleet's bombs
-                    var defenseCoverage = planetService.GetDefenseCoverage(planet, planet.Player);
+                    var defenseCoverage = planetService.GetDefenseCoverage(planet, defender);
                     var killRateColonistsKilled = RoundToNearest(GetColonistsKilled(planet.Population, defenseCoverage, fleet.Aggregate.Bombs));
                     var minColonistsKilled = RoundToNearest(GetMinColonistsKilled(planet.Population, defenseCoverage, fleet.Aggregate.Bombs));
 
@@ -137,7 +137,7 @@ namespace CraigStars
 
                     // let each player know a bombing happened
                     Message.PlanetBombed(attacker, planet, fleet, actualKilled, minesDestroyed, factoriesDestroyed, defensesDestroyed);
-                    Message.PlanetBombed(planet.Player, planet, fleet, actualKilled, minesDestroyed, factoriesDestroyed, defensesDestroyed);
+                    Message.PlanetBombed(defender, planet, fleet, actualKilled, minesDestroyed, factoriesDestroyed, defensesDestroyed);
                 }
             }
 
@@ -149,9 +149,9 @@ namespace CraigStars
         /// <param name="planet"></param>
         /// <param name="attacker"></param>
         /// <param name="bombers"></param>
-        void SmartBombPlanet(Planet planet, Player attacker, IEnumerable<Fleet> bombers)
+        void SmartBombPlanet(Planet planet, Player defender, Player attacker, IEnumerable<Fleet> bombers)
         {
-            var smartDefenseCoverage = planetService.GetDefenseCoverageSmart(planet, planet.Player, Game.Rules);
+            var smartDefenseCoverage = planetService.GetDefenseCoverageSmart(planet, defender, Game.Rules);
             // now do all smart bombs
             foreach (var fleet in bombers)
             {
@@ -166,7 +166,7 @@ namespace CraigStars
 
                     // let each player know a bombing happened
                     Message.PlanetSmartBombed(attacker, planet, fleet, actualKilled);
-                    Message.PlanetSmartBombed(planet.Player, planet, fleet, actualKilled);
+                    Message.PlanetSmartBombed(defender, planet, fleet, actualKilled);
                 }
             }
 

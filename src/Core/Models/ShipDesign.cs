@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using Godot;
 using Newtonsoft.Json;
@@ -7,32 +8,15 @@ using Newtonsoft.Json;
 namespace CraigStars
 {
     [JsonObject(IsReference = true)]
-    public class ShipDesign : Discoverable
+    public class ShipDesign : IDiscoverable
     {
         static CSLog log = LogProvider.GetLogger(typeof(ShipDesign));
         public string Name { get; set; }
         public int Version { get; set; } = 1;
         public Guid Guid { get; set; } = Guid.NewGuid();
-
-        public PublicPlayerInfo Owner
-        {
-            get
-            {
-                if (Player != null)
-                {
-                    owner = Player;
-                }
-                return owner;
-            }
-            set
-            {
-                owner = value;
-            }
-        }
-        PublicPlayerInfo owner;
-
-        [JsonProperty(IsReference = true)]
-        public Player Player { get; set; }
+        
+        [DefaultValue(MapObject.Unowned)]
+        public int PlayerNum { get; set; } = MapObject.Unowned;
 
         public ShipDesignPurpose Purpose { get; set; }
         public TechHull Hull { get; set; } = new TechHull();
@@ -67,7 +51,7 @@ namespace CraigStars
 
         public override string ToString()
         {
-            return $"{Player?.Name} {Name}";
+            return $"Player {PlayerNum} {Name}";
         }
 
         /// <summary>
@@ -77,10 +61,9 @@ namespace CraigStars
         public ShipDesign Clone(Player player = null)
         {
             var design = Copy();
-            design.Owner = Owner;
             design.Name = Name;
             design.Guid = Guid;
-            design.Player = player != null ? player : Player;
+            design.PlayerNum = player != null ? player.Num : PlayerNum;
             return design;
         }
 
@@ -92,7 +75,7 @@ namespace CraigStars
         {
             var clone = new ShipDesign()
             {
-                Player = Player,
+                PlayerNum = PlayerNum,
                 Hull = Hull,
                 HullSetNumber = HullSetNumber,
                 Purpose = Purpose,
@@ -150,7 +133,7 @@ namespace CraigStars
             Aggregate.SpaceDock = 0;
             Aggregate.CargoCapacity += Hull.CargoCapacity;
             Aggregate.MineSweep = 0;
-            Aggregate.CloakUnits = Player.BuiltInCloaking;
+            Aggregate.CloakUnits = player.BuiltInCloaking;
             Aggregate.ReduceCloaking = 0;
             Aggregate.Bomber = false;
             Aggregate.Bombs.Clear();
@@ -305,7 +288,7 @@ namespace CraigStars
             {
                 if (slot.HullComponent != null)
                 {
-                    Cost cost = slot.HullComponent.GetPlayerCost(Player) * slot.Quantity;
+                    Cost cost = slot.HullComponent.GetPlayerCost(player) * slot.Quantity;
                     Aggregate.Cost += cost;
                 }
             }
@@ -389,9 +372,9 @@ namespace CraigStars
         /// <param name="level"></param>
         void OnPlayerResearchLevelIncreased(Player player, TechField field, int level)
         {
-            if (player != Player) return;
+            if (player.Num != PlayerNum) return;
 
-            if (Player.Race.PRT == PRT.JoaT && Hull != null && Hull.BuiltInScannerForJoaT && field == TechField.Electronics)
+            if (player.Race.PRT == PRT.JoaT && Hull != null && Hull.BuiltInScannerForJoaT && field == TechField.Electronics)
             {
                 // update our scanner aggregate
                 ComputeScanRanges(player);

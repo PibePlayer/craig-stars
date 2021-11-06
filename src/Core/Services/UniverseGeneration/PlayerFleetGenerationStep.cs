@@ -68,10 +68,10 @@ namespace CraigStars.UniverseGeneration
             fleet.Orbiting = planet;
             fleet.Waypoints.Add(Waypoint.TargetWaypoint(fleet.Orbiting));
             planet.OrbitingFleets.Add(fleet);
-            fleet.Player = player;
+            fleet.PlayerNum = player.Num;
 
             // aggregate all the design data
-            fleet.ComputeAggregate();
+            fleet.ComputeAggregate(player);
             fleet.Fuel = fleet.Aggregate.FuelCapacity;
 
             return fleet;

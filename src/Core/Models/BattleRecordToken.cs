@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using Godot;
 using Newtonsoft.Json;
@@ -13,25 +14,8 @@ namespace CraigStars
     {
         public Guid Guid { get; set; } = Guid.NewGuid();
 
-        public PublicPlayerInfo Owner
-        {
-            get
-            {
-                if (Player != null)
-                {
-                    owner = Player;
-                }
-                return owner;
-            }
-            set
-            {
-                owner = value;
-            }
-        }
-        PublicPlayerInfo owner;
-
-        [JsonIgnore]
-        public Player Player { get; set; }
+        [DefaultValue(MapObject.Unowned)]
+        public int PlayerNum { get; set; } = MapObject.Unowned;
 
         /// <summary>
         /// The token 
@@ -45,7 +29,7 @@ namespace CraigStars
 
         public override string ToString()
         {
-            return $"{Owner.RaceName} {Token.Design.Name} ({Token.Quantity})";
+            return $"Player {PlayerNum} {Token.Design.Name} ({Token.Quantity})";
         }
 
     }

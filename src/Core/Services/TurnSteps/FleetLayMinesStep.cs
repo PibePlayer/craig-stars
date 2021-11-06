@@ -23,22 +23,22 @@ namespace CraigStars
                 fleet.Waypoints.Count > 0 &&
                 fleet.Waypoints[0].Task == WaypointTask.LayMineField))
             {
-                LayMineField(fleet);
+                LayMineField(fleet, Game.Players[fleet.PlayerNum]);
             }
         }
 
-        internal void LayMineField(Fleet fleet)
+        internal void LayMineField(Fleet fleet, Player player)
         {
             foreach (var entry in fleet.Aggregate.MineLayingRateByMineType)
             {
                 // see if we are adding to an existing minefield
-                var mineField = LocateExistingMineField(fleet.Player, fleet.Position, entry.Key);
+                var mineField = LocateExistingMineField(player, fleet.Position, entry.Key);
                 if (mineField == null)
                 {
                     mineField = new MineField()
                     {
-                        Name = $"{fleet.RaceName} {EnumUtils.GetLabelForMineFieldType(entry.Key)} Mine Field",
-                        Player = fleet.Player,
+                        Name = $"{player.RaceName} {EnumUtils.GetLabelForMineFieldType(entry.Key)} Mine Field",
+                        PlayerNum = player.Num,
                         Position = fleet.Position,
                         Type = entry.Key
                     };
@@ -49,7 +49,7 @@ namespace CraigStars
                 long currentMines = mineField.NumMines;
                 int minesLaid = entry.Value;
                 mineField.NumMines += minesLaid;
-                Message.MinesLaid(fleet.Player, fleet, mineField, minesLaid);
+                Message.MinesLaid(player, fleet, mineField, minesLaid);
 
                 if (mineField.Position != fleet.Position)
                 {
@@ -72,7 +72,7 @@ namespace CraigStars
         /// <returns></returns>
         MineField LocateExistingMineField(Player player, Vector2 position, MineFieldType type)
         {
-            foreach (var mineField in Game.MineFields.Where(mf => mf.Player == player && mf.Type == type))
+            foreach (var mineField in Game.MineFields.Where(mf => mf.PlayerNum == player.Num && mf.Type == type))
             {
                 if (IsPointInCircle(position, mineField.Position, mineField.Radius))
                 {

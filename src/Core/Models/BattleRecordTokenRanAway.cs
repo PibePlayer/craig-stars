@@ -12,7 +12,7 @@ namespace CraigStars
         {
         }
 
-        public BattleRecordTokenRanAway(BattleRecordToken token) : base(token, Vector2.NegOne) { }
+        public BattleRecordTokenRanAway(BattleRecordToken token) : base(token, -Vector2.One) { }
 
         public override string ToString()
         {

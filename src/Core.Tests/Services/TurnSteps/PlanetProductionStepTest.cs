@@ -173,7 +173,7 @@ namespace CraigStars.Tests
 
             var planet = new Planet()
             {
-                Player = player,
+                PlayerNum = player.Num,
                 Hab = new Hab(47, 50, 50),
                 BaseHab = new Hab(47, 50, 50),
             };
@@ -279,7 +279,7 @@ namespace CraigStars.Tests
             planet.Mines = 10;
             planet.ContributesOnlyLeftoverToResearch = true;
             var design = ShipDesigns.LongRangeScount.Clone();
-            design.Player = player;
+            design.PlayerNum = player.Num;
             design.ComputeAggregate(player);
             player.Designs.Add(design);
 
@@ -324,9 +324,9 @@ namespace CraigStars.Tests
             // we are going to auto build some stuff and add a couple ship builds at the end
             var design1 = ShipDesigns.LongRangeScount.Clone();
             var design2 = ShipDesigns.SantaMaria.Clone();
-            design1.Player = player;
+            design1.PlayerNum = player.Num;
             design1.ComputeAggregate(player);
-            design2.Player = player;
+            design2.PlayerNum = player.Num;
             design2.ComputeAggregate(player);
             player.Designs.Add(design1);
             player.Designs.Add(design2);
@@ -388,7 +388,7 @@ namespace CraigStars.Tests
             };
 
             EventManager.MapObjectCreatedEvent += onFleetBuilt;
-            step.BuildFleet(planet, item, 1);
+            step.BuildFleet(planet, player, item, 1);
             EventManager.MapObjectCreatedEvent -= onFleetBuilt;
 
             Assert.AreEqual(originalOrbitingFleets + 1, planet.OrbitingFleets.Count);
@@ -417,7 +417,7 @@ namespace CraigStars.Tests
                     new FleetCompositionToken(ShipDesignPurpose.Bomber, 1)
                 }
             };
-            fleet.ComputeAggregate(true);
+            fleet.ComputeAggregate(player, true);
 
 
             ProductionQueueItem item = new(QueueItemType.ShipToken, 1, game.Designs[1]);
@@ -430,7 +430,7 @@ namespace CraigStars.Tests
             };
 
             EventManager.MapObjectCreatedEvent += onFleetBuilt;
-            step.BuildFleet(planet, item, 1);
+            step.BuildFleet(planet, player, item, 1);
             EventManager.MapObjectCreatedEvent -= onFleetBuilt;
 
             // we shouldn't get a new notification

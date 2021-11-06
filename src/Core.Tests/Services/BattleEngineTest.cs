@@ -11,7 +11,10 @@ namespace CraigStars.Tests
     [TestFixture]
     public class BattleEngineTest
     {
-        BattleEngine battleEngine = new BattleEngine(new Rules(0));
+        BattleEngine battleEngine = new BattleEngine(new Game()
+        {
+            Players = new() { new Player() }
+        });
 
         [Test]
         public void TestWillTarget()
@@ -38,7 +41,9 @@ namespace CraigStars.Tests
         public void TestFindTargets()
         {
             // create a new battle from two test fleets
-            var battle = battleEngine.BuildBattle(TestBattleUtils.GetFleetsForSimpleBattle());
+            var game = TestBattleUtils.GetGameWithSimpleBattle();
+            battleEngine = new BattleEngine(game);
+            var battle = battleEngine.BuildBattle(game.Fleets);
 
             // find some targets!
             battleEngine.FindMoveTargets(battle);
@@ -55,7 +60,9 @@ namespace CraigStars.Tests
         public void TestPlaceTokensOnBoard()
         {
             // create a new battle from two test fleets
-            var battle = battleEngine.BuildBattle(TestBattleUtils.GetFleetsForSimpleBattle());
+            var game = TestBattleUtils.GetGameWithSimpleBattle();
+            battleEngine = new BattleEngine(game);
+            var battle = battleEngine.BuildBattle(game.Fleets);
 
             // find some targets!
             battleEngine.PlaceTokensOnBoard(battle);
@@ -71,7 +78,9 @@ namespace CraigStars.Tests
         public void TestBuildMovement()
         {
             // create a new battle from two test fleets
-            var battle = battleEngine.BuildBattle(TestBattleUtils.GetFleetsForSimpleBattle());
+            var game = TestBattleUtils.GetGameWithSimpleBattle();
+            battleEngine = new BattleEngine(game);
+            var battle = battleEngine.BuildBattle(game.Fleets);
             var token1 = battle.Tokens[0];
             var token2 = battle.Tokens[1];
 
@@ -95,10 +104,12 @@ namespace CraigStars.Tests
         public void TestRunAway()
         {
             // create a new battle from two test fleets
-            var battle = battleEngine.BuildBattle(TestBattleUtils.GetFleetsForSimpleBattle());
+            var game = TestBattleUtils.GetGameWithSimpleBattle();
+            battleEngine = new BattleEngine(game);
+            var battle = battleEngine.BuildBattle(game.Fleets);
             var attacker = battle.Tokens[0];
             var defender = battle.Tokens[1];
-            var player1 = attacker.Fleet.Player;
+            var player1 = attacker.Fleet.PlayerNum;
 
             battle.BuildSortedWeaponSlots();
 
@@ -122,10 +133,12 @@ namespace CraigStars.Tests
         public void TestMaximizeDamage()
         {
             // create a new battle from two test fleets
-            var battle = battleEngine.BuildBattle(TestBattleUtils.GetFleetsForSimpleBattle());
+            var game = TestBattleUtils.GetGameWithSimpleBattle();
+            battleEngine = new BattleEngine(game);
+            var battle = battleEngine.BuildBattle(game.Fleets);
             var attacker = battle.Tokens[0];
             var defender = battle.Tokens[1];
-            var player1 = attacker.Fleet.Player;
+            var player1 = attacker.Fleet.PlayerNum;
 
             battleEngine.FindMoveTargets(battle);
             battle.BuildSortedWeaponSlots();
@@ -151,10 +164,12 @@ namespace CraigStars.Tests
         public void TestFireWeaponSlot()
         {
             // create a new battle from two test fleets
-            var battle = battleEngine.BuildBattle(TestBattleUtils.GetFleetsForSimpleBattle());
+            var game = TestBattleUtils.GetGameWithSimpleBattle();
+            battleEngine = new BattleEngine(game);
+            var battle = battleEngine.BuildBattle(game.Fleets);
             var attacker = battle.Tokens[0];
             var defender = battle.Tokens[1];
-            var player1 = attacker.Fleet.Player;
+            var player1 = attacker.Fleet.PlayerNum;
 
             battleEngine.FindMoveTargets(battle);
             battle.BuildSortedWeaponSlots();
@@ -179,10 +194,12 @@ namespace CraigStars.Tests
         public void TestRunBattle1()
         {
             // create a new battle from two test fleets
-            var battle = battleEngine.BuildBattle(TestBattleUtils.GetFleetsForSimpleBattle());
+            var game = TestBattleUtils.GetGameWithSimpleBattle();
+            battleEngine = new BattleEngine(game);
+            var battle = battleEngine.BuildBattle(game.Fleets);
             var attacker = battle.Tokens[0];
             var defender = battle.Tokens[1];
-            var player1 = attacker.Fleet.Player;
+            var player1 = attacker.Fleet.PlayerNum;
 
             battleEngine.RunBattle(battle);
 
@@ -195,13 +212,15 @@ namespace CraigStars.Tests
         public void TestRunBattle2()
         {
             // create a new battle from two test fleets
-            var battle = battleEngine.BuildBattle(TestBattleUtils.GetFleetsForSimpleBattle());
+            var game = TestBattleUtils.GetGameWithSimpleBattle();
+            battleEngine = new BattleEngine(game);
+            var battle = battleEngine.BuildBattle(game.Fleets);
             var attacker = battle.Tokens[0];
             var defender = battle.Tokens[1];
 
             // make the attacker move faster
             attacker.Token.Design.Slots[0].HullComponent = Techs.TransStar10;
-            attacker.Token.Design.ComputeAggregate(attacker.Fleet.Player, true);
+            attacker.Token.Design.ComputeAggregate(game.Players[0], true);
 
             battleEngine.RunBattle(battle);
         }
@@ -217,15 +236,15 @@ namespace CraigStars.Tests
             var player2 = new Player() { Num = 1, Name = "Ted" };
             player2.TechLevels = new TechLevel(6, 6, 6, 6, 6, 6);
 
-            var gameInfo = new PublicGameInfo() { Players = new() { player1, player2 } };
-
-            var battle = battleEngine.BuildBattle(TestBattleUtils.GetFleetsForDesignsBattle(
-                gameInfo,
+            var game = TestBattleUtils.GetGameWithBattle(
                 player1,
                 player2,
                 new HashSet<string>() { "Destroyer", "Space Station" },
                 new HashSet<string>() { "Destroyer", "Scout", "Fuel Transport" }
-            ));
+            );
+            battleEngine = new BattleEngine(game);
+            var battle = battleEngine.BuildBattle(game.Fleets);
+
             battleEngine.RunBattle(battle);
         }
     }

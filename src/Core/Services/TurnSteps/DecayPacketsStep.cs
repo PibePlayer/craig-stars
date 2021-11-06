@@ -25,7 +25,8 @@ namespace CraigStars
         /// <param name="packet"></param>
         internal void Decay(MineralPacket packet)
         {
-            var decayRate = 1f - packet.Player.GetPacketDecayRate(packet) * (packet.DistanceTravelled / (packet.WarpFactor * packet.WarpFactor));
+            var player = Game.Players[packet.PlayerNum];
+            var decayRate = 1f - player.GetPacketDecayRate(packet) * (packet.DistanceTravelled / (packet.WarpFactor * packet.WarpFactor));
             packet.Cargo *= decayRate;
         }
 

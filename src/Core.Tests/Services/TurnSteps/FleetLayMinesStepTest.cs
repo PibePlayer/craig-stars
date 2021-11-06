@@ -22,12 +22,13 @@ namespace CraigStars.Tests
         public void LayMineFieldTest()
         {
             var game = TestUtils.GetSingleUnitGame();
+            var player = game.Players[0];
             var fleet = game.Fleets[0];
 
             // make the fleet have a simple scout design with a mine dispenser 50
             fleet.Tokens[0].Design = new ShipDesign()
             {
-                Player = fleet.Player,
+                PlayerNum = fleet.PlayerNum,
                 Name = "Mine Laying Scout",
                 Hull = Techs.Scout,
                 Slots = new List<ShipDesignSlot>() {
@@ -36,17 +37,17 @@ namespace CraigStars.Tests
                 }
             };
 
-            fleet.ComputeAggregate();
+            fleet.ComputeAggregate(player);
 
             FleetLayMinesStep step = new FleetLayMinesStep(game);
 
-            step.LayMineField(fleet);
+            step.LayMineField(fleet, player);
             Assert.AreEqual(1, game.MineFields.Count);
             Assert.AreEqual(50, game.MineFields[0].NumMines);
             Assert.AreEqual(MineFieldType.Standard, game.MineFields[0].Type);
 
             // lay a second time and it should add to the existing MineField
-            step.LayMineField(fleet);
+            step.LayMineField(fleet, player);
             Assert.AreEqual(1, game.MineFields.Count);
             Assert.AreEqual(100, game.MineFields[0].NumMines);
             Assert.AreEqual(MineFieldType.Standard, game.MineFields[0].Type);

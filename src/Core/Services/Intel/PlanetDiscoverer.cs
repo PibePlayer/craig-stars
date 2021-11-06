@@ -61,7 +61,9 @@ namespace CraigStars
                 itemReport.Hab = item.Hab;
                 itemReport.BaseHab = item.BaseHab;
                 itemReport.ReportAge = 0;
-                itemReport.Owner = item.Owner;
+                itemReport.PlayerNum = item.PlayerNum;
+                itemReport.RaceName = item.RaceName;
+                itemReport.RacePluralName = item.RacePluralName;
 
                 // discover this starbase
                 if (item.Starbase != null)
@@ -72,9 +74,9 @@ namespace CraigStars
                         Guid = item.Starbase.Guid,
                         Id = item.Starbase.Id,
                         Name = item.Starbase.Name,
-                        RaceName = item.Starbase.Player.Race.Name,
-                        RacePluralName = item.Starbase.Player.Race.PluralName,
-                        Owner = item.Starbase.Owner,
+                        RaceName = item.RaceName,
+                        RacePluralName = item.RacePluralName,
+                        PlayerNum = item.Starbase.PlayerNum,
                     };
 
                     foreach (var token in item.Starbase.Tokens)
@@ -97,21 +99,20 @@ namespace CraigStars
 
         protected override void DiscoverOwn(Player player, Planet item, Planet itemReport)
         {
-            if (itemReport.Player != item.Player)
+            if (itemReport.PlayerNum != item.PlayerNum)
             {
                 // this planet wasn't owned by us last turn, switch which list it belongs to
                 player.ForeignPlanets.Remove(itemReport);
                 player.Planets.Add(itemReport);
             }
 
-            itemReport.Player = item.Player;
+            itemReport.PlayerNum = item.PlayerNum;
             itemReport.Cargo = item.Cargo;
             itemReport.Population = item.Population;
             itemReport.MineralConcentration = item.MineralConcentration;
             itemReport.Hab = item.Hab;
             itemReport.BaseHab = item.BaseHab;
             itemReport.ReportAge = 0;
-            itemReport.Owner = item.Owner;
             itemReport.MineYears = item.MineYears;
             itemReport.Mines = item.Mines;
             itemReport.Factories = item.Factories;
@@ -155,14 +156,14 @@ namespace CraigStars
                     Guid = item.Starbase.Guid,
                     Position = item.Starbase.Position,
                     Name = item.Starbase.Name,
-                    RaceName = item.Starbase.Player.Race.Name,
-                    RacePluralName = item.Starbase.Player.Race.PluralName,
-                    Player = player,
+                    RaceName = player.Race.Name,
+                    RacePluralName = player.Race.PluralName,
+                    PlayerNum = player.Num,
                     BattlePlan = player.BattlePlansByGuid[item.Starbase.BattlePlan.Guid]
                 };
 
                 itemReport.Starbase.Tokens.Add(new ShipToken(player.DesignsByGuid[item.Starbase.Design.Guid], 1));
-                itemReport.Starbase.ComputeAggregate(true);
+                itemReport.Starbase.ComputeAggregate(player, true);
             }
         }
     }

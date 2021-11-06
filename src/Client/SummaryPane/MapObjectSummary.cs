@@ -8,6 +8,7 @@ namespace CraigStars.Client
     public abstract class MapObjectSummary<T> : Control where T : MapObjectSprite
     {
         protected Player Me { get => PlayersManager.Me; }
+        protected PublicGameInfo GameInfo { get => PlayersManager.GameInfo; }
 
         protected T MapObject
         {

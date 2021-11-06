@@ -77,7 +77,6 @@ namespace CraigStars
         // true if the player has remote mined this planet
         public bool RemoteMined { get; set; } = false;
         public bool Explored { get => ReportAge != Unexplored; }
-        public bool Uninhabited { get => Owner == null; }
 
         #endregion
 

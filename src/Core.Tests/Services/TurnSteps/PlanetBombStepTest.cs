@@ -85,10 +85,12 @@ namespace CraigStars.Tests
                 Num = 1
             };
 
+            planetBomber.Game.Players = new() { planetOwner, fleetOwner };
+
             var planet = new Planet()
             {
                 Name = "Brin",
-                Player = planetOwner,
+                PlayerNum = planetOwner.Num,
                 Population = 10000,
                 Mines = 100,
                 Factories = 100,
@@ -98,12 +100,12 @@ namespace CraigStars.Tests
             // one mini-bomber
             var fleet = new Fleet()
             {
-                Player = fleetOwner,
+                PlayerNum = fleetOwner.Num,
                 Name = "Mini-Bomber #1",
                 Tokens = new List<ShipToken>() {
                     new ShipToken() {
                         Design = new ShipDesign() {
-                            Player = fleetOwner,
+                            PlayerNum = fleetOwner.Num,
                             Hull = Techs.MiniBomber,
                             Slots = new List<ShipDesignSlot>() {
                                 new ShipDesignSlot(Techs.QuickJump5, 1, 1),
@@ -115,7 +117,7 @@ namespace CraigStars.Tests
                 }
             };
 
-            fleet.ComputeAggregate();
+            fleet.ComputeAggregate(fleetOwner);
 
             fleet.Orbiting = planet;
             planet.OrbitingFleets.Add(fleet);
@@ -142,10 +144,12 @@ namespace CraigStars.Tests
                 Num = 1
             };
 
+            planetBomber.Game.Players = new() { planetOwner, fleetOwner };
+
             var planet = new Planet()
             {
                 Name = "Brin",
-                Player = planetOwner,
+                PlayerNum = planetOwner.Num,
                 Population = 10000,
                 Mines = 100,
                 Factories = 100,
@@ -155,12 +159,12 @@ namespace CraigStars.Tests
             // one mini-bomber
             var fleet1 = new Fleet()
             {
-                Player = fleetOwner,
+                PlayerNum = fleetOwner.Num,
                 Name = "Mini-Bomber #1",
                 Tokens = new List<ShipToken>() {
                     new ShipToken() {
                         Design = new ShipDesign() {
-                            Player = fleetOwner,
+                            PlayerNum = fleetOwner.Num,
                             Hull = Techs.MiniBomber,
                             Slots = new List<ShipDesignSlot>() {
                                 new ShipDesignSlot(Techs.QuickJump5, 1, 1),
@@ -175,12 +179,12 @@ namespace CraigStars.Tests
             // one mini-bomber with smart bombs
             var fleet2 = new Fleet()
             {
-                Player = fleetOwner,
+                PlayerNum = fleetOwner.Num,
                 Name = "Mini-Bomber #2",
                 Tokens = new List<ShipToken>() {
                     new ShipToken() {
                         Design = new ShipDesign() {
-                            Player = fleetOwner,
+                            PlayerNum = fleetOwner.Num,
                             Hull = Techs.MiniBomber,
                             Slots = new List<ShipDesignSlot>() {
                                 new ShipDesignSlot(Techs.QuickJump5, 1, 1),
@@ -192,8 +196,8 @@ namespace CraigStars.Tests
                 }
             };
 
-            fleet1.ComputeAggregate();
-            fleet2.ComputeAggregate();
+            fleet1.ComputeAggregate(fleetOwner);
+            fleet2.ComputeAggregate(fleetOwner);
 
             fleet1.Orbiting = planet;
             fleet2.Orbiting = planet;

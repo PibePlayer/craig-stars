@@ -47,7 +47,7 @@ namespace CraigStars
         public bool RepeatOrders { get; set; }
 
         [JsonProperty(IsReference = true)]
-        public BattlePlan BattlePlan { get; set; } = new BattlePlan();
+        public BattlePlan BattlePlan { get; set; }
 
         [JsonProperty(IsReference = true)]
         public FleetComposition FleetComposition { get; set; } = new FleetComposition();
@@ -95,7 +95,7 @@ namespace CraigStars
             return Tokens.FirstOrDefault();
         }
 
-        public virtual void ComputeAggregate(bool recompute = false)
+        public virtual void ComputeAggregate(Player player, bool recompute = false)
         {
             if (Aggregate.Computed && !recompute)
             {
@@ -120,7 +120,7 @@ namespace CraigStars
 
             // Some races cloak cargo for free, otherwise
             // cloaking cargo comes at a penalty
-            bool freeCargoCloaking = Player.FreeCargoCloaking;
+            bool freeCargoCloaking = player.FreeCargoCloaking;
             Aggregate.CloakUnits = 0;
             Aggregate.BaseCloakedCargo = 0;
             Aggregate.ReduceCloaking = 0;
@@ -137,7 +137,7 @@ namespace CraigStars
             // compute each token's 
             Tokens.ForEach(token =>
             {
-                token.Design.ComputeAggregate(Player);
+                token.Design.ComputeAggregate(player);
 
                 // update our total ship count
                 Aggregate.TotalShips += token.Quantity;
@@ -226,7 +226,7 @@ namespace CraigStars
             });
 
             // compute the cloaking based on the cloak units and cargo
-            ComputeCloaking();
+            ComputeCloaking(player);
 
             // cmopute things about the FleetComposition
             ComputeFleetComposition();
@@ -237,10 +237,10 @@ namespace CraigStars
         /// <summary>
         /// Compute the ship's aggregate cloaking
         /// </summary>
-        public void ComputeCloaking()
+        public void ComputeCloaking(Player player)
         {
             // figure out how much cargo we are cloaking
-            var cloakedCargo = Aggregate.BaseCloakedCargo + (Player.FreeCargoCloaking ? 0 : Cargo.Total);
+            var cloakedCargo = Aggregate.BaseCloakedCargo + (player.FreeCargoCloaking ? 0 : Cargo.Total);
             int cloakUnitsWithCargo = (int)Math.Round(Aggregate.CloakUnits * (float)Aggregate.MassEmpty / (Aggregate.MassEmpty + cloakedCargo));
             Aggregate.CloakPercent = CloakUtils.GetCloakPercentForCloakUnits(cloakUnitsWithCargo);
         }
@@ -287,7 +287,7 @@ namespace CraigStars
         /// <param name="level"></param>
         void OnPlayerResearchLevelIncreased(Player player, TechField field, int level)
         {
-            if (player != Player) return;
+            if (player.Num != PlayerNum) return;
 
             if (player.Race != null &&
                 player.Race.PRT == PRT.JoaT &&
@@ -295,7 +295,7 @@ namespace CraigStars
                 Tokens.Any(token => token.Design.Hull.BuiltInScannerForJoaT))
             {
                 // update any fleets with JoaT hulls
-                ComputeAggregate(recompute: true);
+                ComputeAggregate(player, recompute: true);
             }
         }
 

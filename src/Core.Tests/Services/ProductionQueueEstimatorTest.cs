@@ -27,7 +27,7 @@ namespace CraigStars.Tests
             var player = new Player();
             Planet planet = new Planet()
             {
-                Player = player,
+                PlayerNum = player.Num,
                 Hab = new Hab(50, 50, 50),
                 Population = 25000,
                 Mines = 10,
@@ -61,7 +61,7 @@ namespace CraigStars.Tests
             var player = new Player();
             Planet planet = new Planet()
             {
-                Player = player,
+                PlayerNum = player.Num,
                 Hab = new Hab(50, 50, 50),
                 Population = 90000,
                 Factories = 10,

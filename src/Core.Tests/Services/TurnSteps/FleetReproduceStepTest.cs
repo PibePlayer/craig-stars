@@ -23,26 +23,27 @@ namespace CraigStars.Tests
         {
             var game = TestUtils.GetSingleUnitGame();
             var fleet = game.Fleets[0];
+            var player = game.Players[0];
 
             // make the fleet have a simple scout design with a mine dispenser 50
             fleet.Tokens[0].Design = new ShipDesign()
             {
-                Player = fleet.Player,
+                PlayerNum = fleet.PlayerNum,
                 Name = "Medium Freighter",
                 Hull = Techs.MediumFreighter,
                 Slots = new List<ShipDesignSlot>() {
                     new ShipDesignSlot(Techs.QuickJump5, 1, 1),
                 }
             };
-            fleet.Player.Race.PRT = PRT.IS;
-            fleet.Player.Race.GrowthRate = 10;
+            player.Race.PRT = PRT.IS;
+            player.Race.GrowthRate = 10;
             fleet.Cargo = fleet.Cargo.WithColonists(100);
 
-            fleet.ComputeAggregate();
+            fleet.ComputeAggregate(player);
 
             FleetReproduceStep step = new FleetReproduceStep(game);
 
-            step.Reproduce(fleet);
+            step.Reproduce(fleet, player);
             Assert.AreEqual(105, fleet.Cargo.Colonists);
 
         }
@@ -52,21 +53,22 @@ namespace CraigStars.Tests
         {
             var game = TestUtils.GetSingleUnitGame();
             var fleet = game.Fleets[0];
+            var player = game.Players[0];
 
             // make the fleet have a simple scout design with a mine dispenser 50
             fleet.Tokens[0].Design = new ShipDesign()
             {
-                Player = fleet.Player,
+                PlayerNum = fleet.PlayerNum,
                 Name = "Medium Freighter",
                 Hull = Techs.MediumFreighter,
                 Slots = new List<ShipDesignSlot>() {
                     new ShipDesignSlot(Techs.QuickJump5, 1, 1),
                 }
             };
-            fleet.Player.Race.PRT = PRT.IS;
-            fleet.Player.Race.GrowthRate = 10;
+            player.Race.PRT = PRT.IS;
+            player.Race.GrowthRate = 10;
 
-            fleet.ComputeAggregate();
+            fleet.ComputeAggregate(player);
 
             // leave space for 1kT of colonists
             fleet.Cargo = fleet.Cargo.WithColonists(fleet.Aggregate.CargoCapacity - 1);
@@ -74,14 +76,14 @@ namespace CraigStars.Tests
             FleetReproduceStep step = new FleetReproduceStep(game);
 
             // should fill cargo, but no more
-            step.Reproduce(fleet);
+            step.Reproduce(fleet, player);
             Assert.AreEqual(fleet.Aggregate.CargoCapacity, fleet.Cargo.Colonists);
 
             fleet.Orbiting = game.Planets[0];
             var planetStartingPop = game.Planets[0].Population;
             
             // should overflow to planet
-            step.Reproduce(fleet);
+            step.Reproduce(fleet, player);
             Assert.AreEqual(fleet.Aggregate.CargoCapacity, fleet.Cargo.Colonists);
             Assert.AreEqual(planetStartingPop + Utils.Utils.RoundToNearest((int)(21 * 100 * .5)), game.Planets[0].Population);
 
@@ -92,29 +94,30 @@ namespace CraigStars.Tests
         {
             var game = TestUtils.GetSingleUnitGame();
             var fleet = game.Fleets[0];
+            var player = game.Players[0];
 
             // make the fleet have a simple scout design with a mine dispenser 50
             fleet.Tokens[0].Design = new ShipDesign()
             {
-                Player = fleet.Player,
+                PlayerNum = fleet.PlayerNum,
                 Name = "Medium Freighter",
                 Hull = Techs.MediumFreighter,
                 Slots = new List<ShipDesignSlot>() {
                     new ShipDesignSlot(Techs.QuickJump5, 1, 1),
                 }
             };
-            fleet.Player.Race.PRT = PRT.IS;
-            fleet.Player.Race.GrowthRate = 10;
+            player.Race.PRT = PRT.IS;
+            player.Race.GrowthRate = 10;
             fleet.Cargo = fleet.Cargo.WithColonists(100);
 
-            fleet.ComputeAggregate();
+            fleet.ComputeAggregate(player);
 
             FleetReproduceStep step = new FleetReproduceStep(game);
 
             step.Process();
             Assert.AreEqual(105, fleet.Cargo.Colonists);
 
-            fleet.Player.Race.PRT = PRT.JoaT;
+            player.Race.PRT = PRT.JoaT;
 
             // shouldn't grow at all
             step.Process();

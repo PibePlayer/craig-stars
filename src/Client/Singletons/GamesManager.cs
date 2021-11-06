@@ -390,7 +390,6 @@ namespace CraigStars.Singletons
 
         public Game LoadGame(ITechStore techStore, string name, int year = -1)
         {
-            var game = new Game() { TechStore = techStore, Name = name };
 
             using (var saveGame = new File())
             {
@@ -403,25 +402,28 @@ namespace CraigStars.Singletons
                 var gameJson = saveGame.GetAsText();
                 saveGame.Close();
 
-                var gameSerializerSettings = Serializers.CreateGameSettings(game);
-                Serializers.PopulateGame(gameJson, game, gameSerializerSettings);
-                var settings = Serializers.CreatePlayerSettings(game.GameInfo.Players, game.TechStore);
-                foreach (var player in game.Players)
+                var gameSerializerSettings = Serializers.CreateGameSettings(techStore);
+                var game = Serializers.DeserializeObject<Game>(gameJson, gameSerializerSettings);
+                game.TechStore = techStore;
+
+                var settings = Serializers.CreatePlayerSettings(game.TechStore);
+                for (int playerNum = 0; playerNum < game.Players.Count; playerNum++)
                 {
                     using (var playerSave = new File())
                     {
-                        playerSave.Open(GetSaveGamePlayerPath(name, year, player.Num), File.ModeFlags.Read).ThrowOnError();
+                        playerSave.Open(GetSaveGamePlayerPath(name, year, playerNum), File.ModeFlags.Read).ThrowOnError();
                         var json = playerSave.GetAsText();
                         playerSave.Close();
-                        Serializers.PopulatePlayer(json, player, settings);
+                        game.Players[playerNum] = Serializers.DeserializeObject<Player>(json, settings);
                     }
                 }
+
+                // after we are fully loaded, update our design and fleet aggregates
+                game.ComputeAggregates();
+
+                return game;
             }
 
-            // after we are fully loaded, update our design and fleet aggregates
-            game.ComputeAggregates();
-
-            return game;
         }
 
         public GameJson SerializeGame(Game game)
@@ -523,7 +525,7 @@ namespace CraigStars.Singletons
 
         public string SerializePlayer(PublicGameInfo gameInfo, Player player)
         {
-            return Serializers.Serialize(player, Serializers.CreatePlayerSettings(gameInfo.Players, TechStore.Instance, player));
+            return Serializers.Serialize(player, Serializers.CreatePlayerSettings(TechStore.Instance));
         }
 
         /// <summary>
@@ -605,9 +607,7 @@ namespace CraigStars.Singletons
                 var json = playerSave.GetAsText();
                 playerSave.Close();
 
-                var player = new Player();
-                Serializers.PopulatePlayer(json, player, Serializers.CreatePlayerSettings(gameInfo.Players, TechStore.Instance, player));
-                return player;
+                return Serializers.DeserializeObject<Player>(json, Serializers.CreatePlayerSettings(TechStore.Instance));
             }
 
             throw new System.IO.InvalidDataException($"Failed to load player {playerNum} for game: {gameInfo?.Name}");

@@ -17,14 +17,14 @@ namespace CraigStars.Tests
         {
             var player = new Player();
             var design = ShipDesigns.LongRangeScount.Clone();
-            design.Player = player;
+            design.PlayerNum = player.Num;
 
             var fleet = new Fleet()
             {
                 Id = 1,
                 BaseName = "Long Range Scout",
                 Name = "Long Range Scout #1",
-                Player = player,
+                PlayerNum = player.Num,
                 Tokens = new List<ShipToken>() {
                   new ShipToken(design, 3)
                 }
@@ -77,13 +77,13 @@ namespace CraigStars.Tests
             var fleetScout = TestUtils.GetLongRangeScout(attacker);
 
             // won't attack self
-            Assert.AreEqual(false, service.WillAttack(fleet, attacker, attacker));
+            Assert.AreEqual(false, service.WillAttack(fleet, attacker, attacker.Num));
 
             // will attack other player
-            Assert.AreEqual(true, service.WillAttack(fleet, attacker, defender));
+            Assert.AreEqual(true, service.WillAttack(fleet, attacker, defender.Num));
 
             // won't attack without weapons
-            Assert.AreEqual(false, service.WillAttack(fleetScout, attacker, defender));
+            Assert.AreEqual(false, service.WillAttack(fleetScout, attacker, defender.Num));
 
         }
     }

@@ -13,7 +13,7 @@ namespace CraigStars
 
         public FleetBattleStep(Game game) : base(game, TurnGenerationState.Battle)
         {
-            battleEngine = new BattleEngine(Game.Rules);
+            battleEngine = new BattleEngine(Game);
         }
 
         public override void PreProcess(List<Planet> ownedPlanets)
@@ -32,18 +32,18 @@ namespace CraigStars
             foreach (var entry in Game.MapObjectsByLocation)
             {
                 var fleetsAndStarbases = new List<Fleet>();
-                var players = new HashSet<Player>();
+                var players = new HashSet<int>();
                 foreach (var mapObject in entry.Value)
                 {
                     if (mapObject is Planet planet && planet.Starbase != null)
                     {
                         fleetsAndStarbases.Add(planet.Starbase);
-                        players.Add(planet.Player);
+                        players.Add(planet.PlayerNum);
                     }
                     else if (mapObject is Fleet fleet)
                     {
                         fleetsAndStarbases.Add(fleet);
-                        players.Add(fleet.Player);
+                        players.Add(fleet.PlayerNum);
                     }
                 }
 
@@ -78,14 +78,17 @@ namespace CraigStars
                             else
                             {
                                 // update aggregates after battle
-                                fleet.ComputeAggregate(true);
+                                fleet.ComputeAggregate(Game.Players[fleet.PlayerNum], true);
                             }
                         }
 
-                        foreach (var playerEntry in battle.PlayerRecords)
+                        // records are keyed by player num
+                        // for each record, let the involved players know about this record
+                        foreach (var recordEntry in battle.PlayerRecords)
                         {
+                            var player = Game.Players[recordEntry.Key];
                             // let each player know about this battle
-                            playerEntry.Key.Battles.Add(playerEntry.Value);
+                            player.Battles.Add(recordEntry.Value);
                         }
 
                         EventManager.PublishBattleRunEvent(battle);

@@ -34,7 +34,7 @@ namespace CraigStars
 
             var bombablePlanets = player.AllPlanets.Where(planet =>
                 planet.Explored &&
-                planet.Owner != null &&
+                planet.Owned &&
                 !planet.OwnedBy(player)
             ).ToList();
             var buildablePlanets = player.Planets.Where(planet => planetService.CanBuild(planet, player, bomber.Aggregate.Mass)).ToList();

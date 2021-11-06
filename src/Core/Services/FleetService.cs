@@ -61,7 +61,7 @@ namespace CraigStars
                 mergedFleet.OtherFleets.ForEach(otherFleet => otherFleet.OtherFleets.Remove(mergedFleet));
             }
 
-            fleet.ComputeAggregate(recompute: true);
+            fleet.ComputeAggregate(player, recompute: true);
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace CraigStars
                         var newFleet = new Fleet()
                         {
                             Id = id,
-                            Player = player,
+                            PlayerNum = player.Num,
                             BaseName = fleet.BaseName,
                             Name = $"{fleet.BaseName} #{id}",
                             Orbiting = fleet.Orbiting,
@@ -111,7 +111,7 @@ namespace CraigStars
                             }},
                             BattlePlan = fleet.BattlePlan
                         };
-                        newFleet.ComputeAggregate();
+                        newFleet.ComputeAggregate(player);
                         newFleet.OtherFleets.AddRange(fleet.OtherFleets);
                         newFleet.OtherFleets.Add(fleet);
 
@@ -160,7 +160,7 @@ namespace CraigStars
             fleet.Tokens.Add(remainingToken);
 
             // update our remaining fuel and cargo
-            fleet.ComputeAggregate(recompute: true);
+            fleet.ComputeAggregate(player, recompute: true);
 
             // TODO: make sure we account for any fractional leftovers
             if (fleet.Aggregate.CargoCapacity > 0)
@@ -367,20 +367,20 @@ namespace CraigStars
         /// </summary>
         /// <param name="otherFleet"></param>
         /// <returns></returns>
-        public bool WillAttack(Fleet fleet, Player player, PublicPlayerInfo otherPlayer)
+        public bool WillAttack(Fleet fleet, Player player, int otherPlayerNum)
         {
             bool willAttack = false;
             // if we have weapons and we don't own this other fleet, see if we
             // would target it
-            if (fleet.Aggregate.HasWeapons && fleet.BattlePlan.Tactic != BattleTactic.Disengage && otherPlayer.Num != player.Num)
+            if (fleet.Aggregate.HasWeapons && fleet.BattlePlan.Tactic != BattleTactic.Disengage && otherPlayerNum != player.Num)
             {
                 switch (fleet.BattlePlan.AttackWho)
                 {
                     case BattleAttackWho.Enemies:
-                        willAttack = player.IsEnemy(otherPlayer);
+                        willAttack = player.IsEnemy(otherPlayerNum);
                         break;
                     case BattleAttackWho.EnemiesAndNeutrals:
-                        willAttack = player.IsEnemy(otherPlayer) || player.IsNeutral(otherPlayer);
+                        willAttack = player.IsEnemy(otherPlayerNum) || player.IsNeutral(otherPlayerNum);
                         break;
                     case BattleAttackWho.Everyone:
                         willAttack = true;

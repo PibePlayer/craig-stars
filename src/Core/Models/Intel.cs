@@ -8,7 +8,7 @@ namespace CraigStars
     /// <summary>
     /// Stores PlayerIntel about a set of Discoverable items
     /// </summary>
-    public class Intel<T> where T : Discoverable
+    public class Intel<T> where T : IDiscoverable
     {
 
         [JsonProperty(ItemIsReference = true)]

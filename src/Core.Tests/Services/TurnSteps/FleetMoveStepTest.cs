@@ -21,21 +21,16 @@ namespace CraigStars.Tests
         [Test]
         public void TestCheckForMineFieldHitSpeed()
         {
-            var game = TestUtils.GetSingleUnitGame();
+            var game = TestUtils.GetTwoPlayerGame();
             var player1 = game.Players[0];
-
-            var player2 = new Player()
-            {
-                Num = 1,
-            };
-            game.Players.Add(player2);
+            var player2 = game.Players[1];
 
             // test a 10 ly radius field at 0, 0
             var radius = 10;
 
             game.MineFields.Add(new MineField()
             {
-                Player = player2,
+                PlayerNum = player2.Num,
                 Type = MineFieldType.SpeedBump,
                 Position = new Vector2(0, 0),
                 NumMines = radius * radius,
@@ -43,16 +38,16 @@ namespace CraigStars.Tests
 
             // make a new fleet at -15x, and move it through the field
             var design = ShipDesigns.LongRangeScount.Clone();
-            design.Player = player1;
+            design.PlayerNum = player1.Num;
             var fleet = new Fleet()
             {
-                Player = player1,
+                PlayerNum = player1.Num,
                 Tokens = new List<ShipToken>() {
                     new ShipToken(design, 1)
                 },
                 Position = new Vector2(-15, 0)
             };
-            fleet.ComputeAggregate();
+            fleet.ComputeAggregate(player1);
 
             FleetMoveStep step = new FleetMoveStep(game);
 
@@ -89,37 +84,32 @@ namespace CraigStars.Tests
         [Test]
         public void TestCheckForMineFieldMiss()
         {
-            var game = TestUtils.GetSingleUnitGame();
+            var game = TestUtils.GetTwoPlayerGame();
             var player1 = game.Players[0];
-
-            var player2 = new Player()
-            {
-                Num = 1,
-            };
-            game.Players.Add(player2);
+            var player2 = game.Players[1];
 
             // test a 10 ly radius field at 0, 0
             var radius = 10;
 
             game.MineFields.Add(new MineField()
             {
-                Player = player2,
+                PlayerNum = player2.Num,
                 Position = new Vector2(0, 0),
                 NumMines = radius * radius,
             });
 
             // make a new fleet at -15x, and move it through the field
             var design = ShipDesigns.LongRangeScount.Clone();
-            design.Player = player1;
+            design.PlayerNum = player1.Num;
             var fleet = new Fleet()
             {
-                Player = player1,
+                PlayerNum = player1.Num,
                 Tokens = new List<ShipToken>() {
                     new ShipToken(design, 1)
                 },
                 Position = new Vector2(-15, 0)
             };
-            fleet.ComputeAggregate();
+            fleet.ComputeAggregate(player1);
 
             // make the normal minefield allow speed 5, 25% hit chance per warp
             // we'll go warp 9 to guarantee a hit (if we were to fly through it)

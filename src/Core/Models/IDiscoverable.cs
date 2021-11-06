@@ -5,10 +5,9 @@ namespace CraigStars
     /// <summary>
     /// Represents a discoverable item like a Fleet, Planet, Design, etc
     /// </summary>
-    public interface Discoverable
+    public interface IDiscoverable
     {
-        Player Player { get; }
-        PublicPlayerInfo Owner { get; }
+        int PlayerNum { get; }
         Guid Guid { get; }
     }
 }

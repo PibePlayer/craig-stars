@@ -95,7 +95,7 @@ namespace CraigStars.Client
             }
             else
             {
-                Modulate = MineField.Owner.Color;
+                Modulate = PlayerColor;
             }
 
             if (State == ScannerState.Selected)

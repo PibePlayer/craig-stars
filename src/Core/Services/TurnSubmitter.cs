@@ -43,9 +43,9 @@ namespace CraigStars
             {
                 if (Game.DesignsByGuid.TryGetValue(playerDesign.Guid, out var design))
                 {
-                    if (design.Player != player)
+                    if (design.PlayerNum != player.Num)
                     {
-                        log.Error($"{Game.Year}: Player {player} is trying to update design {design.Name}, owned by {design.Player}");
+                        log.Error($"{Game.Year}: Player {player} is trying to update design {design.Name}, owned by {design.PlayerNum}");
                         continue;
                     }
                     // see if this design can be updated
@@ -70,7 +70,7 @@ namespace CraigStars
                     Game.DesignsByGuid[newDesign.Guid] = newDesign;
                 }
             }
-            foreach (var design in Game.Designs.Where(d => d.Player == player).ToList())
+            foreach (var design in Game.Designs.Where(d => d.PlayerNum == player.Num).ToList())
             {
                 if (!player.DesignsByGuid.ContainsKey(design.Guid))
                 {
@@ -89,8 +89,8 @@ namespace CraigStars
         {
             foreach (var playerFleet in player.Fleets)
             {
-                log.Debug($"{Game.Year}: Updating Fleet Actions for {playerFleet.Player} - {playerFleet.Name}");
-                if (Game.FleetsByGuid.TryGetValue(playerFleet.Guid, out var fleet) && fleet.Player == player)
+                log.Debug($"{Game.Year}: Updating Fleet Actions for {playerFleet.PlayerNum} - {playerFleet.Name}");
+                if (Game.FleetsByGuid.TryGetValue(playerFleet.Guid, out var fleet) && fleet.PlayerNum == player.Num)
                 {
                     fleet.BattlePlan = playerFleet.BattlePlan.Clone();
                     fleet.RepeatOrders = playerFleet.RepeatOrders;
@@ -174,7 +174,7 @@ namespace CraigStars
         {
             foreach (var playerPlanet in player.Planets)
             {
-                if (Game.PlanetsByGuid.TryGetValue(playerPlanet.Guid, out var planet) && planet.Player == player)
+                if (Game.PlanetsByGuid.TryGetValue(playerPlanet.Guid, out var planet) && planet.PlayerNum == player.Num)
                 {
                     planet.ContributesOnlyLeftoverToResearch = playerPlanet.ContributesOnlyLeftoverToResearch;
                     // copy each production queue item from the player planet

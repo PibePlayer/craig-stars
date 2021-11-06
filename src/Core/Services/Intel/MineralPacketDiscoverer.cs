@@ -22,9 +22,9 @@ namespace CraigStars
             Guid = item.Guid,
             Id = item.Id,
             Name = item.Name,
-            RaceName = item.Player.Race.Name,
-            RacePluralName = item.Player.Race.PluralName,
-            Owner = item.Owner,
+            RaceName = item.RaceName,
+            RacePluralName = item.RacePluralName,
+            PlayerNum = item.PlayerNum,
             WarpFactor = item.WarpFactor,
             Heading = item.Heading,
         };
@@ -38,7 +38,6 @@ namespace CraigStars
 
         protected override void DiscoverOwn(Player player, MineralPacket item, MineralPacket itemReport)
         {
-            itemReport.Player = player;
             itemReport.WarpFactor = item.WarpFactor;
             itemReport.Heading = item.Heading;
             itemReport.Cargo = item.Cargo;

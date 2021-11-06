@@ -19,13 +19,14 @@ namespace CraigStars
             // Separate our waypoint tasks into groups
             foreach (var fleet in Game.Fleets.Where(fleet => fleet.Aggregate.MineSweep > 0))
             {
+                var fleetPlayer = Game.Players[fleet.PlayerNum];
                 // sweep mines from any minefields we would attack that we are contained by
                 foreach (var mineField in Game.MineFields.Where(mineField =>
-                    fleetService.WillAttack(fleet, fleet.Player, mineField.Player) &&
+                    fleetService.WillAttack(fleet, fleetPlayer, mineField.PlayerNum) &&
                     IsPointInCircle(fleet.Position, mineField.Position, mineField.Radius)))
                 {
                     // only sweep one fleet per fleet
-                    Sweep(fleet, mineField);
+                    Sweep(fleet, fleetPlayer, mineField, Game.Players[mineField.PlayerNum]);
                     break;
                 }
             }
@@ -33,13 +34,14 @@ namespace CraigStars
             // starbases also sweep
             foreach (var planet in Game.Planets.Where(planet => planet.HasStarbase && planet.Starbase.Aggregate.MineSweep > 0))
             {
+                var planetPlayer = Game.Players[planet.PlayerNum];
                 // sweep mines from any minefields we would attack that we are contained by
                 foreach (var mineField in Game.MineFields.Where(mineField =>
-                    fleetService.WillAttack(planet.Starbase, planet.Player, mineField.Player) &&
+                    fleetService.WillAttack(planet.Starbase, planetPlayer, mineField.PlayerNum) &&
                     IsPointInCircle(planet.Starbase.Position, mineField.Position, mineField.Radius)))
                 {
                     // only sweep one fleet per fleet
-                    Sweep(planet.Starbase, mineField);
+                    Sweep(planet.Starbase, planetPlayer, mineField, Game.Players[mineField.PlayerNum]);
                     break;
                 }
             }
@@ -50,15 +52,15 @@ namespace CraigStars
         /// </summary>
         /// <param name="fleet"></param>
         /// <param name="mineField"></param>
-        internal void Sweep(Fleet fleet, MineField mineField)
+        internal void Sweep(Fleet fleet, Player fleetPlayer, MineField mineField, Player mineFieldPlayer)
         {
             long old = mineField.NumMines;
             mineField.NumMines -= (long)(fleet.Aggregate.MineSweep * Game.Rules.MineFieldStatsByType[mineField.Type].SweepFactor);
             mineField.NumMines = Math.Max(mineField.NumMines, 0);
 
             long numSwept = old - mineField.NumMines;
-            Message.MineFieldSwept(fleet.Player, fleet, mineField, numSwept);
-            Message.MineFieldSwept(mineField.Player, fleet, mineField, numSwept);
+            Message.MineFieldSwept(fleetPlayer, fleet, mineField, numSwept);
+            Message.MineFieldSwept(mineFieldPlayer, fleet, mineField, numSwept);
 
             if (mineField.NumMines <= 10)
             {

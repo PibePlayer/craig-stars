@@ -41,31 +41,27 @@ namespace CraigStars
         /// </summary>
         /// <param name="players"></param>
         /// <returns></returns>
-        public static PlayerJsonSerializerSettings CreatePlayerSettings(List<PublicPlayerInfo> players, ITechStore techStore, Player player = null)
+        public static JsonSerializerSettings CreatePlayerSettings(ITechStore techStore)
         {
-            var settings = new PlayerJsonSerializerSettings(players, techStore);
-            if (player != null)
+            return new()
             {
-                // use this player reference in our settings
-                // this will mean any player references with this player num will use
-                // this player object instead of the one from the players list
-                settings.UpdatePlayer(player);
-            }
+                Formatting = Formatting.Indented,
+                NullValueHandling = NullValueHandling.Ignore,
+                ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+                DefaultValueHandling = DefaultValueHandling.Ignore,
+                ObjectCreationHandling = ObjectCreationHandling.Replace,
+                TraceWriter = traceWriter,
+                ContractResolver = new TechContractResolver(techStore),
 
-            return settings;
+                Converters = new JsonConverter[] {
+                    new ColorJsonConverter(),
+                    new StringEnumConverter(),
+                    new BattleRecordTokenActionConverter()
+            },
+            };
         }
 
-        /// <summary>
-        /// Create a new JsonSerializerSettings for Game objects
-        /// </summary>
-        /// <param name="game">The game to create a serializer for</param>
-        /// <returns></returns>
-        public static JsonSerializerSettings CreateGameSettings(Game game)
-        {
-            return CreateGameSettings(game.Players, game.TechStore);
-        }
-
-        public static JsonSerializerSettings CreateGameSettings(List<Player> players, ITechStore techStore)
+        public static JsonSerializerSettings CreateGameSettings(ITechStore techStore)
         {
             return new JsonSerializerSettings()
             {
@@ -74,7 +70,7 @@ namespace CraigStars
                 ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
                 DefaultValueHandling = DefaultValueHandling.Ignore,
                 TraceWriter = traceWriter,
-                ContractResolver = new PlayerContractResolver<Player>(players, techStore),
+                ContractResolver = new TechContractResolver(techStore),
 
                 Converters = new JsonConverter[] {
                     new ColorJsonConverter(),
@@ -100,9 +96,9 @@ namespace CraigStars
         /// <param name="player"></param>
         /// <param name="players"></param>
         /// <returns></returns>
-        static public string Serialize<T>(T item, List<PublicPlayerInfo> players, ITechStore techStore)
+        static public string Serialize<T>(T item, ITechStore techStore)
         {
-            var json = JsonConvert.SerializeObject(item, CreatePlayerSettings(players, techStore));
+            var json = JsonConvert.SerializeObject(item, CreatePlayerSettings(techStore));
             log.Debug($"Serializing {item.GetType().Name}: \n{json}");
             return json;
         }
@@ -113,13 +109,13 @@ namespace CraigStars
         /// <param name="json"></param>
         /// <param name="players"></param>
         /// <returns></returns>
-        static public Nullable<T> Deserialize<T>(string json, List<PublicPlayerInfo> players, ITechStore techStore) where T : struct
+        static public Nullable<T> Deserialize<T>(string json, ITechStore techStore) where T : struct
         {
             if (json != null)
             {
                 try
                 {
-                    return JsonConvert.DeserializeObject<T>(json, CreatePlayerSettings(players, techStore));
+                    return JsonConvert.DeserializeObject<T>(json, CreatePlayerSettings(techStore));
                 }
                 catch (Exception e)
                 {
@@ -163,51 +159,6 @@ namespace CraigStars
         }
 
         /// <summary>
-        /// Load a player from JSON
-        /// </summary>
-        /// <param name="json"></param>
-        /// <param name="players"></param>
-        /// <returns></returns>
-        static public Game PopulateGame(string json, Game game, JsonSerializerSettings settings)
-        {
-            if (json != null)
-            {
-                try
-                {
-                    JsonConvert.PopulateObject(json, game, settings);
-                    return game;
-                }
-                catch (Exception e)
-                {
-                    log.Error($"Failed to deserialize json: {json} into type: {typeof(Game)}", e);
-                }
-
-            }
-            return null;
-
-        }
-
-        /// <summary>
-        /// Load a player from JSON
-        /// </summary>
-        /// <param name="json"></param>
-        /// <param name="players"></param>
-        /// <returns></returns>
-        static public void PopulatePlayer(string json, Player player, JsonSerializerSettings settings)
-        {
-            try
-            {
-                JsonConvert.PopulateObject(json, player, settings);
-            }
-            catch (Exception e)
-            {
-                log.Error($"Failed to PopulatePlayer from json: \n{json}", e);
-                log.Info($"TraceWriter: \n{traceWriter.ToString()}");
-                throw e;
-            }
-        }
-
-        /// <summary>
         /// Load a struct from a json string. If the json fails to parse, return null
         /// </summary>
         static public Nullable<T> Deserialize<T>(string json) where T : struct
@@ -230,13 +181,14 @@ namespace CraigStars
         /// <summary>
         /// Load an object from a json string. If the json fails to parse, return null
         /// </summary>
-        static public T DeserializeObject<T>(string json) where T : class
+        static public T DeserializeObject<T>(string json, JsonSerializerSettings settings = null) where T : class
         {
+            settings ??= simpleSettings;
             if (json != null)
             {
                 try
                 {
-                    return JsonConvert.DeserializeObject<T>(json, simpleSettings);
+                    return JsonConvert.DeserializeObject<T>(json, settings);
                 }
                 catch (Exception e)
                 {

@@ -22,9 +22,9 @@ namespace CraigStars
             Guid = item.Guid,
             Id = item.Id,
             Name = item.Name,
-            RaceName = item.Player.Race.Name,
-            RacePluralName = item.Player.Race.PluralName,
-            Owner = item.Owner,
+            RaceName = item.RaceName,
+            RacePluralName = item.RacePluralName,
+            PlayerNum = item.PlayerNum,
             ReportAge = 0,
             NumMines = item.NumMines,
             Type = item.Type
@@ -39,7 +39,6 @@ namespace CraigStars
 
         protected override void DiscoverOwn(Player player, MineField item, MineField itemReport)
         {
-            itemReport.Player = player;
             itemReport.NumMines = item.NumMines;
             itemReport.Type = item.Type;
             itemReport.ReportAge = 0;

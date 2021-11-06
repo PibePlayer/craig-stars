@@ -201,12 +201,12 @@ namespace CraigStars.Client
                 me.FleetOrders.Add(order);
 
                 // update the aggregate for the source fleet
-                source.ComputeAggregate(true);
+                source.ComputeAggregate(me, true);
 
                 if (dest is Fleet fleet)
                 {
                     // if the dest is also a fleet, update its aggregate with a new mass
-                    fleet.ComputeAggregate(true);
+                    fleet.ComputeAggregate(me, true);
                 }
                 log.Info($"{me.Name} made immediate transfer from {source.Name} to {dest.Name} for {netCargoDiff} cargo and {netFuelDiff} fuel");
 

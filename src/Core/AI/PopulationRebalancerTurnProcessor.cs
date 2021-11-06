@@ -52,7 +52,7 @@ namespace CraigStars
             // go through each unassigned colonizer fleet and find it a new planet to colonize
             foreach (var fleet in fleets.Where(
                 f => f.Waypoints.Count == 1 &&
-                f.Orbiting?.Player == player &&
+                f.Orbiting?.PlayerNum == player.Num &&
                 planetService.GetPopulationDensity(f.Orbiting, player, gameInfo.Rules, f.Orbiting.Population - f.AvailableCapacity) >= PopulationDensityRequired)
             )
             {
@@ -64,7 +64,7 @@ namespace CraigStars
 
                     if (sourcePlanet.AttemptTransfer(-colonists) && fleet.AttemptTransfer(colonists))
                     {
-                        CargoTransferUtils.CreateCargoTransferOrder(fleet.Player, colonists, fleet, sourcePlanet);
+                        CargoTransferUtils.CreateCargoTransferOrder(player, colonists, fleet, sourcePlanet);
 
                         // drop off colonists
                         var wp1 = Waypoint.TargetWaypoint(

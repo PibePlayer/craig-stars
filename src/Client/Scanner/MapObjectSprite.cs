@@ -11,10 +11,18 @@ namespace CraigStars.Client
     {
         public MapObject MapObject { get; set; }
         public string ObjectName { get => MapObject != null ? MapObject.Name : "Unknown"; }
-
+        
         protected Player Me { get => PlayersManager.Me; }
+        protected PublicGameInfo GameInfo { get => PlayersManager.GameInfo; }
 
         public virtual bool Commandable { get => false; }
+
+        /// <summary>
+        /// Get the color of this map object, based on who owns it
+        /// </summary>
+        /// <value></value>
+        public Color PlayerColor { get => MapObject?.PlayerNum != MapObject.Unowned ? GameInfo.Players[MapObject.PlayerNum].Color : Colors.White; }
+
 
         public ScannerState State
         {
@@ -41,7 +49,7 @@ namespace CraigStars.Client
         {
             get
             {
-                return MapObject?.Player != null && MapObject.Player == PlayersManager.Me;
+                return MapObject?.PlayerNum != null && MapObject.OwnedBy(PlayersManager.Me);
             }
         }
 

@@ -75,14 +75,14 @@ namespace CraigStars
         {
             if (Game.FleetsByGuid.TryGetValue(order.Source.Guid, out var source))
             {
-                if (source.Player == player)
+                if (source.PlayerNum == player.Num)
                 {
                     List<Fleet> mergingFleets = new List<Fleet>();
                     foreach (var playerFleet in order.MergingFleets)
                     {
                         if (Game.FleetsByGuid.TryGetValue(playerFleet.Guid, out var mergingFleet))
                         {
-                            if (mergingFleet.Player == player)
+                            if (mergingFleet.PlayerNum == player.Num)
                             {
                                 // finally, error checking done, we can merge this one
                                 mergingFleets.Add(mergingFleet);
@@ -101,7 +101,7 @@ namespace CraigStars
 
                     if (mergingFleets.Count > 0)
                     {
-                        fleetService.Merge(source, source.Player, new MergeFleetOrder()
+                        fleetService.Merge(source, player, new MergeFleetOrder()
                         {
                             Source = source,
                             MergingFleets = mergingFleets
@@ -125,9 +125,9 @@ namespace CraigStars
         {
             if (Game.FleetsByGuid.TryGetValue(order.Source.Guid, out var source))
             {
-                if (source.Player == player)
+                if (source.PlayerNum == player.Num)
                 {
-                    var newFleets = fleetService.Split(source, source.Player, new SplitAllFleetOrder { Source = source, NewFleetGuids = order.NewFleetGuids });
+                    var newFleets = fleetService.Split(source, player, new SplitAllFleetOrder { Source = source, NewFleetGuids = order.NewFleetGuids });
 
                     newFleets.ForEach(f => EventManager.PublishMapObjectCreatedEvent(f));
                     log.Debug($"Executing user SplitAllFleetOrder for {source.Name}");

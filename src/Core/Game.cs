@@ -73,7 +73,7 @@ namespace CraigStars
         [JsonIgnore] public Dictionary<Guid, Wormhole> WormholesByGuid { get; set; } = new Dictionary<Guid, Wormhole>();
         [JsonIgnore] public Dictionary<Guid, MysteryTrader> MysteryTradersByGuid { get; set; } = new Dictionary<Guid, MysteryTrader>();
         [JsonIgnore] public Dictionary<Guid, ICargoHolder> CargoHoldersByGuid { get; set; } = new Dictionary<Guid, ICargoHolder>();
-        [JsonIgnore] public IEnumerable<Planet> OwnedPlanets { get => Planets.Where(p => p.Player != null); }
+        [JsonIgnore] public IEnumerable<Planet> OwnedPlanets { get => Planets.Where(p => p.Owned); }
         [JsonIgnore] public Dictionary<Vector2, List<MapObject>> MapObjectsByLocation = new Dictionary<Vector2, List<MapObject>>();
 
         #endregion
@@ -118,11 +118,11 @@ namespace CraigStars
 
         public void ComputeAggregates()
         {
-            Designs.ForEach(d => d.ComputeAggregate(d.Player));
-            Fleets.ForEach(f => f.ComputeAggregate());
+            Designs.ForEach(d => d.ComputeAggregate(Players[d.PlayerNum]));
+            Fleets.ForEach(f => f.ComputeAggregate(Players[f.PlayerNum]));
             foreach (var planet in OwnedPlanets.Where(p => p.HasStarbase))
             {
-                planet.Starbase.ComputeAggregate();
+                planet.Starbase.ComputeAggregate(Players[planet.PlayerNum]);
             }
 
         }
@@ -187,13 +187,6 @@ namespace CraigStars
                 Players[player.Num] = player;
                 Players[player.Num].SubmittedTurn = true;
                 GameInfo.Players[player.Num].SubmittedTurn = true;
-                foreach (var mo in MapObjectsByGuid.Values.Where(mo => mo.Player == player))
-                {
-                    // make sure our mapobjects have an updated player object
-                    // TODO: remove this if (when) we remove the Player object from MapObjects
-                    // and replace it with a number
-                    mo.Player = player;
-                }
             }
             else
             {
@@ -427,8 +420,7 @@ namespace CraigStars
         void OnPlanetPopulationEmptied(Planet planet)
         {
             // empty this planet
-            planet.Player = null;
-            planet.Owner = null;
+            planet.PlayerNum = MapObject.Unowned;
             planet.Starbase = null;
             planet.Scanner = false;
             planet.Defenses = 0;

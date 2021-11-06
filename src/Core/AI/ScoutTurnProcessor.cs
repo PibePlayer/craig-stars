@@ -97,7 +97,7 @@ namespace CraigStars
                         {
                             isBuilding = true;
                             queuedToBeBuilt++;
-                            log.Debug($"{gameInfo.Year}: {planet.Player} planet {planet.Name} is already building a scout ship");
+                            log.Debug($"{gameInfo.Year}: {planet.PlayerNum} planet {planet.Name} is already building a scout ship");
                         }
                     }
 
@@ -117,7 +117,7 @@ namespace CraigStars
                         // put this at the top of the queue
                         // above any auto items
                         planet.ProductionQueue?.Items.Insert(0, new ProductionQueueItem(QueueItemType.ShipToken, 1, scoutShip));
-                        log.Debug($"{gameInfo.Year}: {planet.Player} Added scout ship to planet queue: {planet.Name}");
+                        log.Debug($"{gameInfo.Year}: {planet.PlayerNum} Added scout ship to planet queue: {planet.Name}");
                         queuedToBeBuilt++;
                     }
                 }

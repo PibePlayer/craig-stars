@@ -18,7 +18,7 @@ namespace CraigStars
 
         public override void Process()
         {
-            Game.Fleets.ForEach(fleet => Move(fleet, fleet.Player));
+            Game.Fleets.ForEach(fleet => Move(fleet, Game.Players[fleet.PlayerNum]));
         }
 
         /// <summary>
@@ -74,12 +74,16 @@ namespace CraigStars
                 Message.FleetStargateInvalidDest(player, fleet, wp0, wp1);
                 return;
             }
-            if (!sourcePlanet.Player.IsFriend(player))
+
+            var sourcePlanetPlayer = Game.Players[sourcePlanet.PlayerNum];
+            var destPlanetPlayer = Game.Players[destPlanet.PlayerNum];
+
+            if (!sourcePlanetPlayer.IsFriend(player.Num))
             {
                 Message.FleetStargateInvalidSourceOwner(player, fleet, wp0, wp1);
                 return;
             }
-            if (!destPlanet.Player.IsFriend(player))
+            if (!destPlanetPlayer.IsFriend(player.Num))
             {
                 Message.FleetStargateInvalidDestOwner(player, fleet, wp0, wp1);
                 return;
@@ -242,7 +246,7 @@ namespace CraigStars
             {
                 fleet.Orbiting = planet;
                 planet.OrbitingFleets.Add(fleet);
-                if (fleet.Player == planet.Player && planet.HasStarbase)
+                if (fleet.PlayerNum == planet.PlayerNum && planet.HasStarbase)
                 {
                     // refuel at starbases
                     fleet.Fuel = fleet.Aggregate.FuelCapacity;
@@ -380,7 +384,7 @@ namespace CraigStars
             }
 
             // see if we are colliding with any of these minefields
-            foreach (var mineField in Game.MineFields.Where(mf => mf.Player != fleet.Player))
+            foreach (var mineField in Game.MineFields.Where(mf => mf.PlayerNum != fleet.PlayerNum))
             {
                 // we only check if we are going faster than allowed by the minefield.
                 var stats = Game.Rules.MineFieldStatsByType[mineField.Type];
@@ -419,14 +423,17 @@ namespace CraigStars
                                 // we stop moving at the hit, so if we made it 8 checks out of 24 for our above example
                                 // we only travel 8 lightyears through the field (plus whatever distance we travelled to get to the field)
                                 var actualDistanceTravelled = lightYearsBeforeField + checkNum;
-                                mineFieldDamager.TakeMineFieldDamage(fleet, mineField, stats);
+                                var mineFieldPlayer = Game.Players[mineField.PlayerNum];
+                                var fleetPlayer = Game.Players[fleet.PlayerNum];
+
+                                mineFieldDamager.TakeMineFieldDamage(fleet, fleetPlayer, mineField, mineFieldPlayer, stats);
                                 mineFieldDamager.ReduceMineFieldOnImpact(mineField);
-                                if (mineField.Player.Race.PRT == PRT.SD)
+                                if (mineFieldPlayer.Race.PRT == PRT.SD)
                                 {
                                     // SD races discover the exact fleet makeup
                                     foreach (var token in fleet.Tokens)
                                     {
-                                        designDiscoverer.Discover(mineField.Player, token.Design, true);
+                                        designDiscoverer.Discover(mineFieldPlayer, token.Design, true);
                                     }
                                 }
                                 return actualDistanceTravelled;

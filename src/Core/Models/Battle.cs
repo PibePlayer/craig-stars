@@ -38,7 +38,7 @@ namespace CraigStars
         /// Record for players
         /// </summary>
         /// <returns></returns>
-        public Dictionary<Player, BattleRecord> PlayerRecords { get; set; } = new Dictionary<Player, BattleRecord>();
+        public Dictionary<int, BattleRecord> PlayerRecords { get; set; } = new();
 
         /// <summary>
         /// The current round in battle
@@ -146,7 +146,7 @@ namespace CraigStars
         /// Add a token to the battle
         /// </summary>
         /// <param name="token"></param>
-        internal void AddToken(BattleToken token)
+        internal void AddToken(BattleToken token, Game game)
         {
             Tokens.Add(token);
 
@@ -154,21 +154,21 @@ namespace CraigStars
             var design = shipToken.Design;
 
             // also add this token to each player's battle record
-            foreach (var reportEntry in PlayerRecords)
+            foreach (var playerRecordEntry in PlayerRecords)
             {
                 // add a player specific version of this token
-                if (reportEntry.Key.DesignsByGuid.TryGetValue(design.Guid, out var playerDesign))
+                if (game.Players[playerRecordEntry.Key].DesignsByGuid.TryGetValue(design.Guid, out var playerDesign))
                 {
-                    reportEntry.Value.Tokens.Add(new BattleRecordToken()
+                    playerRecordEntry.Value.Tokens.Add(new BattleRecordToken()
                     {
                         Guid = token.Guid,
-                        Owner = token.Owner,
+                        PlayerNum = token.PlayerNum,
                         Token = new ShipToken(playerDesign, shipToken.Quantity, shipToken.Damage, shipToken.QuantityDamaged)
                     });
                 }
                 else
                 {
-                    log.Error($"Could not find Player Design for Battle: {Guid}, Player: {token.Player}, Design: {design.Name}");
+                    log.Error($"Could not find Player Design for Battle: {Guid}, Player: {token.PlayerNum}, Design: {design.Name}");
                 }
             }
         }
@@ -182,17 +182,6 @@ namespace CraigStars
                     token => token.Token.Design.Aggregate.WeaponSlots.Select(
                         slot => new BattleWeaponSlot(token, slot)))
                     .OrderBy(bws => bws.Slot.HullComponent.Initiative).ToList();
-        }
-
-        /// <summary>
-        /// Setup the player records by guid
-        /// </summary>
-        internal void SetupPlayerRecords(int numRounds)
-        {
-            foreach (var record in PlayerRecords.Values)
-            {
-                record.SetupRecord(numRounds);
-            }
         }
 
         internal void RecordStartingPosition(BattleToken token, Vector2 position)

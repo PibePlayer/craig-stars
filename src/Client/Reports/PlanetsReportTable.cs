@@ -71,14 +71,14 @@ namespace CraigStars.Client
             var foreign = false;
             if (explored)
             {
-                if (item.Owner != null)
+                if (item.Owned)
                 {
-                    owner = $"{item.Owner.RacePluralName}";
+                    owner = $"{item.RacePluralName}";
                     if (!owned)
                     {
                         // has an owner, but not owned by us
                         foreign = true;
-                        ownerColor = item.Owner.Color;
+                        ownerColor = GameInfo.Players[item.PlayerNum].Color;
                     }
                     else
                     {

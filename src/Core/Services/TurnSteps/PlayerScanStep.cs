@@ -44,10 +44,10 @@ namespace CraigStars
             base.PreProcess(ownedPlanets);
 
             log.Debug("Before we scan, make sure all of our aggregates are up to date");
-            Game.Fleets.ForEach(f => f.ComputeAggregate());
+            Game.Fleets.ForEach(f => f.ComputeAggregate(Game.Players[f.PlayerNum]));
             foreach (var planet in ownedPlanets)
             {
-                planet.Starbase?.ComputeAggregate();
+                planet.Starbase?.ComputeAggregate(Game.Players[planet.PlayerNum]);
             }
         }
 
@@ -97,11 +97,11 @@ namespace CraigStars
             var planetaryScanner = player.GetBestPlanetaryScanner();
 
             log.Debug($"{Game.Year}: {player} Building List of Planet Scanners");
-            foreach (var planet in Game.Planets.Where(p => p.Player == player && p.Scanner))
+            foreach (var planet in Game.Planets.Where(p => p.PlayerNum == player.Num && p.Scanner))
             {
                 // find the best scanner at this location, whether fleet or planet
                 var scanner = new Scanner(planet.Position, planetaryScanner.ScanRange, planetaryScanner.ScanRangePen);
-                foreach (var fleet in planet.OrbitingFleets.Where(f => f.Player == player && f.Aggregate.Scanner))
+                foreach (var fleet in planet.OrbitingFleets.Where(f => f.PlayerNum == player.Num && f.Aggregate.Scanner))
                 {
                     scanner.Range = Math.Max(scanner.Range, fleet.Aggregate.ScanRange);
                     scanner.RangePen = Math.Max(scanner.RangePen, fleet.Aggregate.ScanRangePen);
@@ -116,7 +116,7 @@ namespace CraigStars
 
             // find all our fleets that are out and about
             log.Debug($"{Game.Year}: {player} Building List of Fleet Scanners");
-            foreach (var fleet in Game.Fleets.Where(f => f.Player == player && f.Aggregate.Scanner && (f.Orbiting == null || f.Orbiting.Player != player)))
+            foreach (var fleet in Game.Fleets.Where(f => f.PlayerNum == player.Num && f.Aggregate.Scanner && (f.Orbiting == null || f.Orbiting.PlayerNum != player.Num)))
             {
                 scanners.Add(new Scanner(fleet.Position, fleet.Aggregate.ScanRange * fleet.Aggregate.ScanRange, fleet.Aggregate.ScanRangePen * fleet.Aggregate.ScanRangePen, fleet.Aggregate.ReduceCloaking));
             }
@@ -124,7 +124,7 @@ namespace CraigStars
             // Space demolition minefields act as scanners
             if (player.MineFieldsAreScanners)
             {
-                foreach (var mineField in Game.MineFields.Where(mf => mf.Player == player))
+                foreach (var mineField in Game.MineFields.Where(mf => mf.PlayerNum == player.Num))
                 {
                     scanners.Add(new Scanner(mineField.Position, (int)mineField.Radius, 0));
                 }
@@ -132,7 +132,7 @@ namespace CraigStars
 
             // discover our own designs
             log.Debug($"{Game.Year}: {player} Discovering player designs (from {Game.Designs.Count} total designs)");
-            foreach (var design in Game.Designs.Where(d => d.Player == player))
+            foreach (var design in Game.Designs.Where(d => d.PlayerNum == player.Num))
             {
                 playerIntel.Discover(player, design, true);
             }
@@ -143,7 +143,7 @@ namespace CraigStars
             foreach (var planet in Game.Planets)
             {
                 // we own this planet, update the report
-                if (planet.Player == player)
+                if (planet.PlayerNum == player.Num)
                 {
                     playerIntel.Discover(player, planet, true);
                     continue;
@@ -175,7 +175,7 @@ namespace CraigStars
             // salvage is only scanned by normal scanners
             foreach (var mineField in Game.MineFields)
             {
-                if (mineField.Player == player)
+                if (mineField.PlayerNum == player.Num)
                 {
                     // discover our own minefields
                     playerIntel.Discover(player, mineField, true);
@@ -228,7 +228,7 @@ namespace CraigStars
             // salvage is only scanned by normal scanners
             foreach (var packet in Game.MineralPackets)
             {
-                if (packet.Player == player)
+                if (packet.PlayerNum == player.Num)
                 {
                     playerIntel.Discover(player, packet, true);
                     continue;
@@ -306,7 +306,7 @@ namespace CraigStars
             foreach (var fleet in Game.Fleets)
             {
                 // we own this fleet, update the report
-                if (fleet.Player == player)
+                if (fleet.PlayerNum == player.Num)
                 {
                     playerIntel.Discover(player, fleet, true);
                     continue;

@@ -15,7 +15,7 @@ namespace CraigStars.Tests
             var player = new Player();
             var design = new ShipDesign()
             {
-                Player = player,
+                PlayerNum = player.Num,
                 Name = "Death Star",
                 Hull = Techs.DeathStar,
                 HullSetNumber = 0,
@@ -28,13 +28,13 @@ namespace CraigStars.Tests
 
             var starbase = new Starbase()
             {
-                Player = player,
+                PlayerNum = player.Num,
                 Tokens = new List<ShipToken>() {
                   new ShipToken(design, 1)
                 }
             };
 
-            starbase.ComputeAggregate();
+            starbase.ComputeAggregate(player);
 
             Assert.AreEqual(7, starbase.Aggregate.BasePacketSpeed);
             Assert.AreEqual(8, starbase.Aggregate.SafePacketSpeed);

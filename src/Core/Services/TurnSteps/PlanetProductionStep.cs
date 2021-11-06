@@ -34,7 +34,7 @@ namespace CraigStars
         {
             OwnedPlanets.ForEach(planet =>
             {
-                Build(planet, planet.Player);
+                Build(planet, Game.Players[planet.PlayerNum]);
             });
         }
 
@@ -106,18 +106,18 @@ namespace CraigStars
             if (item.IsPacket && !planet.HasMassDriver)
             {
                 // can't built, break out
-                Message.BuildMineralPacketNoMassDriver(planet.Player, planet);
+                Message.BuildMineralPacketNoMassDriver(player, planet);
                 return new ProcessItemResult(completed: true, allocated);
             }
             if (item.IsPacket && planet.PacketTarget == null)
             {
                 // can't built, break out
-                Message.BuildMineralPacketNoTarget(planet.Player, planet);
+                Message.BuildMineralPacketNoTarget(player, planet);
                 return new ProcessItemResult(completed: true, allocated);
             }
 
             // no need to build anymore of this, skip it.
-            int quantityDesired = planetService.GetQuantityToBuild(planet, planet.Player, item.Quantity, item.Type);
+            int quantityDesired = planetService.GetQuantityToBuild(planet, player, item.Quantity, item.Type);
             if (quantityDesired == 0)
             {
                 return new ProcessItemResult(completed: true, allocated);
@@ -126,7 +126,7 @@ namespace CraigStars
             // add anything we've already allocated to this item
             allocated += item.Allocated;
 
-            Cost costPer = item.GetCostOfOne(planet.Player);
+            Cost costPer = item.GetCostOfOne(player);
             if (item.Type == QueueItemType.Starbase && planet.HasStarbase)
             {
                 costPer = planet.Starbase.GetUpgradeCost(item.Design);
@@ -191,25 +191,25 @@ namespace CraigStars
         {
             if (item.Type == QueueItemType.Mine || item.Type == QueueItemType.AutoMines)
             {
-                log.Debug($"{Game.Year}: {planet.Player} built {numBuilt} mines on {planet.Name}");
+                log.Debug($"{Game.Year}: {planet.PlayerNum} built {numBuilt} mines on {planet.Name}");
                 planet.Mines += numBuilt;
                 // this should never need to clamp because we adjust quantity in Build(), but just in case
                 planet.Mines = Mathf.Clamp(planet.Mines, 0, planetService.GetMaxPossibleMines(planet, player));
-                Message.Mine(planet.Player, planet, numBuilt);
+                Message.Mine(player, planet, numBuilt);
             }
             else if (item.Type == QueueItemType.Factory || item.Type == QueueItemType.AutoFactories)
             {
-                log.Debug($"{Game.Year}: {planet.Player} built {numBuilt} factories on {planet.Name}");
+                log.Debug($"{Game.Year}: {player} built {numBuilt} factories on {planet.Name}");
                 planet.Factories += numBuilt;
                 planet.Factories = Mathf.Clamp(planet.Factories, 0, planetService.GetMaxPossibleFactories(planet, player));
-                Message.Factory(planet.Player, planet, numBuilt);
+                Message.Factory(player, planet, numBuilt);
             }
             else if (item.Type == QueueItemType.Defenses || item.Type == QueueItemType.AutoDefenses)
             {
-                log.Debug($"{Game.Year}: {planet.Player} built {numBuilt} defenses on {planet.Name}");
+                log.Debug($"{Game.Year}: {player} built {numBuilt} defenses on {planet.Name}");
                 planet.Defenses += numBuilt;
                 planet.Defenses = Mathf.Clamp(planet.Defenses, 0, planetService.GetMaxDefenses(planet, player));
-                Message.Defense(planet.Player, planet, numBuilt);
+                Message.Defense(player, planet, numBuilt);
             }
             else if (item.IsTerraform)
             {
@@ -221,15 +221,15 @@ namespace CraigStars
             }
             else if (item.IsPacket)
             {
-                BuildPacket(planet, item.GetCostOfOne(planet.Player), numBuilt);
+                BuildPacket(planet, player, item.GetCostOfOne(player), numBuilt);
             }
             else if (item.Type == QueueItemType.ShipToken)
             {
-                BuildFleet(planet, item, numBuilt);
+                BuildFleet(planet, player, item, numBuilt);
             }
             else if (item.Type == QueueItemType.Starbase)
             {
-                BuildStarbase(planet, item);
+                BuildStarbase(planet, player, item);
             }
 
         }
@@ -249,11 +249,11 @@ namespace CraigStars
             return new Cost(numBuilt, numBuilt, numBuilt, 0);
         }
 
-        internal void BuildPacket(Planet planet, Cargo cargo, int numBuilt)
+        internal void BuildPacket(Planet planet, Player player, Cargo cargo, int numBuilt)
         {
             MineralPacket packet = new MineralPacket()
             {
-                Player = planet.Player,
+                PlayerNum = planet.PlayerNum,
                 Position = planet.Position,
                 SafeWarpSpeed = planet.Starbase.Aggregate.SafePacketSpeed,
                 WarpFactor = planet.PacketSpeed,
@@ -261,7 +261,7 @@ namespace CraigStars
                 Cargo = cargo * numBuilt
             };
 
-            Message.MineralPacket(planet.Player, planet, packet);
+            Message.MineralPacket(player, planet, packet);
             EventManager.PublishMapObjectCreatedEvent(packet);
         }
 
@@ -272,11 +272,11 @@ namespace CraigStars
         /// <param name="item"></param>
         /// <param name="numBuilt"></param>
         /// <param name="rules"></param>
-        internal void BuildFleet(Planet planet, ProductionQueueItem item, int numBuilt)
+        internal void BuildFleet(Planet planet, Player player, ProductionQueueItem item, int numBuilt)
         {
-            planet.Player.Stats.NumFleetsBuilt++;
-            planet.Player.Stats.NumTokensBuilt += numBuilt;
-            var id = planet.Player.Stats.NumFleetsBuilt;
+            player.Stats.NumFleetsBuilt++;
+            player.Stats.NumTokensBuilt += numBuilt;
+            var id = player.Stats.NumFleetsBuilt;
             string name = item.FleetName != null ? item.FleetName : item.Design.Name;
             var existingFleetByName = planet.OrbitingFleets.Where(f => f.Name == name);
             var existingFleetsRequiringTokens = planet.OrbitingFleets.Where(f => !f.Aggregate.FleetCompositionComplete).ToList();
@@ -299,8 +299,8 @@ namespace CraigStars
                             fleet.Tokens.Add(new ShipToken(item.Design, item.Quantity));
                         }
 
-                        fleet.ComputeAggregate(true);
-                        Message.FleetBuiltForComposition(planet.Player, item.Design, fleet, numBuilt);
+                        fleet.ComputeAggregate(player, true);
+                        Message.FleetBuiltForComposition(player, item.Design, fleet, numBuilt);
                         foundFleet = true;
                         break;
                     }
@@ -313,19 +313,19 @@ namespace CraigStars
                 {
                     BaseName = name,
                     Name = $"{name} #{id}",
-                    Player = planet.Player,
+                    PlayerNum = planet.PlayerNum,
                     Orbiting = planet,
                     Position = planet.Position,
                     Id = id,
-                    BattlePlan = planet.Player.BattlePlans[0]
+                    BattlePlan = player.BattlePlans[0]
                 };
                 fleet.Tokens.Add(new ShipToken(item.Design, item.Quantity));
-                fleet.ComputeAggregate();
+                fleet.ComputeAggregate(player);
                 fleet.Fuel = fleet.Aggregate.FuelCapacity;
                 fleet.Waypoints.Add(Waypoint.TargetWaypoint(planet));
                 planet.OrbitingFleets.Add(fleet);
 
-                Message.FleetBuilt(planet.Player, item.Design, fleet, numBuilt);
+                Message.FleetBuilt(player, item.Design, fleet, numBuilt);
                 EventManager.PublishMapObjectCreatedEvent(fleet);
             }
 
@@ -336,7 +336,7 @@ namespace CraigStars
         /// </summary>
         /// <param name="planet"></param>
         /// <param name="item"></param>
-        internal void BuildStarbase(Planet planet, ProductionQueueItem item)
+        internal void BuildStarbase(Planet planet, Player player, ProductionQueueItem item)
         {
             if (planet.Starbase != null)
             {
@@ -347,17 +347,17 @@ namespace CraigStars
             {
                 planet.Starbase = new Starbase()
                 {
-                    Player = planet.Player,
+                    PlayerNum = planet.PlayerNum,
                     Orbiting = planet,
                     Position = planet.Position,
-                    BattlePlan = planet.Player.BattlePlans[0]
+                    BattlePlan = player.BattlePlans[0]
                 };
             }
             planet.Starbase.Name = item.Design.Name;
             planet.Starbase.Tokens.Add(new ShipToken(item.Design, 1));
-            planet.Starbase.ComputeAggregate(true);
+            planet.Starbase.ComputeAggregate(player, true);
             planet.PacketSpeed = planet.Starbase.Aggregate.SafePacketSpeed;
-            Message.FleetBuilt(planet.Player, item.Design, planet.Starbase, 1);
+            Message.FleetBuilt(player, item.Design, planet.Starbase, 1);
 
         }
 
@@ -408,18 +408,18 @@ namespace CraigStars
             if (bestHab.HasValue)
             {
                 var habType = bestHab.Value;
-                int fromIdeal = planet.Player.Race.HabCenter[habType] - planet.Hab.Value[habType];
+                int fromIdeal = player.Race.HabCenter[habType] - planet.Hab.Value[habType];
                 if (fromIdeal > 0)
                 {
                     // for example, the planet has Grav 49, but our player wants Grav 50 
                     planet.Hab = planet.Hab.Value.WithType(habType, planet.Hab.Value[habType] + 1);
-                    Message.Terraform(planet.Player, planet, habType, 1);
+                    Message.Terraform(player, planet, habType, 1);
                 }
                 else if (fromIdeal < 1)
                 {
                     // for example, the planet has Grav 51, but our player wants Grav 50 
                     planet.Hab = planet.Hab.Value.WithType(habType, planet.Hab.Value[habType] - 1);
-                    Message.Terraform(planet.Player, planet, habType, -1);
+                    Message.Terraform(player, planet, habType, -1);
                 }
             }
         }

@@ -14,28 +14,28 @@ namespace CraigStars.Tests
         {
             var design = ShipDesigns.LongRangeScount.Clone();
             var player = new Player();
-            design.Player = player;
+            design.PlayerNum = player.Num;
 
             var fleet = new Fleet()
             {
-                Player = design.Player,
+                PlayerNum = design.PlayerNum,
                 Tokens = new List<ShipToken>() {
                   new ShipToken(design, 1)
                 }
             };
 
-            fleet.ComputeAggregate();
+            fleet.ComputeAggregate(player);
 
             Assert.AreEqual(0, fleet.Aggregate.CloakPercent);
 
             design.Slots[2].HullComponent = Techs.StealthCloak;
             design.ComputeAggregate(player, recompute: true);
-            fleet.ComputeAggregate(recompute: true);
+            fleet.ComputeAggregate(player, recompute: true);
             Assert.AreEqual(35, fleet.Aggregate.CloakPercent);
 
             // should be the same for 2 identical tokens
             fleet.Tokens[0].Quantity = 2;
-            fleet.ComputeAggregate(recompute: true);
+            fleet.ComputeAggregate(player, recompute: true);
             Assert.AreEqual(35, fleet.Aggregate.CloakPercent);
 
         }
@@ -45,11 +45,11 @@ namespace CraigStars.Tests
         {
             var player = new Player();
             var scoutDesign = ShipDesigns.LongRangeScount.Clone();
-            scoutDesign.Player = player;
+            scoutDesign.PlayerNum = player.Num;
 
             var cloakedScoutDesign = new ShipDesign()
             {
-                Player = player,
+                PlayerNum = player.Num,
                 Hull = Techs.Scout,
                 Slots = new List<ShipDesignSlot>()
                 {
@@ -61,7 +61,7 @@ namespace CraigStars.Tests
 
             var fleet = new Fleet()
             {
-                Player = player,
+                PlayerNum = player.Num,
                 Tokens = new List<ShipToken>() {
                   new ShipToken(scoutDesign, 1),
                   new ShipToken(cloakedScoutDesign, 1),
@@ -69,7 +69,7 @@ namespace CraigStars.Tests
             };
 
             // cloak goes down because extra ship counts as cargo
-            fleet.ComputeAggregate(recompute: true);
+            fleet.ComputeAggregate(player, recompute: true);
             Assert.AreEqual(23, fleet.Aggregate.CloakPercent);
         }
 
@@ -80,7 +80,7 @@ namespace CraigStars.Tests
 
             var freighterDesign = new ShipDesign()
             {
-                Player = player,
+                PlayerNum = player.Num,
                 Hull = Techs.SmallFreighter,
                 Slots = new List<ShipDesignSlot>() {
                     new ShipDesignSlot(Techs.QuickJump5, 1, 1),
@@ -91,20 +91,20 @@ namespace CraigStars.Tests
 
             var fleet = new Fleet()
             {
-                Player = player,
+                PlayerNum = player.Num,
                 Tokens = new List<ShipToken>() {
                   new ShipToken(freighterDesign, 1)
                 }
             };
 
-            fleet.ComputeAggregate();
+            fleet.ComputeAggregate(player);
             Assert.AreEqual(35, fleet.Aggregate.CloakPercent);
 
             // fill it with cargo
             fleet.Cargo = Cargo.OfAmount(CargoType.Ironium, fleet.AvailableCapacity);
 
             freighterDesign.ComputeAggregate(player, recompute: true);
-            fleet.ComputeAggregate(recompute: true);
+            fleet.ComputeAggregate(player, recompute: true);
             Assert.AreEqual(20, fleet.Aggregate.CloakPercent);
 
         }
@@ -117,7 +117,7 @@ namespace CraigStars.Tests
 
             var freighterDesign = new ShipDesign()
             {
-                Player = player,
+                PlayerNum = player.Num,
                 Hull = Techs.SmallFreighter,
                 Slots = new List<ShipDesignSlot>() {
                     new ShipDesignSlot(Techs.QuickJump5, 1, 1),
@@ -127,20 +127,20 @@ namespace CraigStars.Tests
 
             var fleet = new Fleet()
             {
-                Player = player,
+                PlayerNum = player.Num,
                 Tokens = new List<ShipToken>() {
                   new ShipToken(freighterDesign, 1)
                 }
             };
 
-            fleet.ComputeAggregate();
+            fleet.ComputeAggregate(player);
             Assert.AreEqual(75, fleet.Aggregate.CloakPercent);
 
             // fill it with cargo, should be the same cloak
             fleet.Cargo = Cargo.OfAmount(CargoType.Ironium, fleet.AvailableCapacity);
 
             freighterDesign.ComputeAggregate(player, recompute: true);
-            fleet.ComputeAggregate(recompute: true);
+            fleet.ComputeAggregate(player, recompute: true);
             Assert.AreEqual(75, fleet.Aggregate.CloakPercent);
 
         }

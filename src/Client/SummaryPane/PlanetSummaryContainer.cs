@@ -9,6 +9,7 @@ namespace CraigStars.Client
         PlanetService planetService = new();
 
         Player Me { get => PlayersManager.Me; }
+        PublicGameInfo GameInfo { get => PlayersManager.GameInfo; }
 
         public PlanetSprite Planet
         {
@@ -194,10 +195,10 @@ namespace CraigStars.Client
                     {
                         ownerLabel.Text = "";
                     }
-                    else if (planet.Owner != null)
+                    else if (planet.Owned)
                     {
-                        ownerLabel.Text = planet.Owner.RacePluralName;
-                        ownerLabel.Modulate = planet.Owner.Color;
+                        ownerLabel.Text = planet.RacePluralName;
+                        ownerLabel.Modulate = GameInfo.Players[planet.PlayerNum].Color;
                     }
 
                     gravHabBar.HabValue = hab.grav;

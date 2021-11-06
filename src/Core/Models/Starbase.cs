@@ -17,14 +17,14 @@ namespace CraigStars
         [JsonIgnore]
         public ShipDesign Design { get => Tokens[0].Design; }
 
-        public override void ComputeAggregate(bool recompute = false)
+        public override void ComputeAggregate(Player player, bool recompute = false)
         {
             if (Aggregate.Computed && !recompute)
             {
                 return;
             }
 
-            base.ComputeAggregate(recompute);
+            base.ComputeAggregate(player, recompute);
 
             Aggregate.Stargate = null;
             Aggregate.BasePacketSpeed = 0;

@@ -25,9 +25,9 @@ namespace CraigStars
             Id = item.Id,
             Name = item.Name,
             BaseName = item.BaseName,
-            RaceName = item.Player.Race.Name,
-            RacePluralName = item.Player.Race.PluralName,
-            Owner = item.Owner,
+            RaceName = item.RaceName,
+            RacePluralName = item.RacePluralName,
+            PlayerNum = item.PlayerNum,
             WarpSpeed = item.WarpSpeed,
             Heading = item.Heading,
             Mass = item.Mass
@@ -58,7 +58,6 @@ namespace CraigStars
 
         protected override void DiscoverOwn(Player player, Fleet item, Fleet itemReport)
         {
-            itemReport.Player = player;
             itemReport.RepeatOrders = item.RepeatOrders;
             itemReport.IdleTurns = item.IdleTurns;
             itemReport.Waypoints.Clear();

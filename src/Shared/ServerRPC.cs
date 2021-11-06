@@ -272,7 +272,7 @@ namespace CraigStars.Singletons
         /// <param name="player">The player (probably PlayersManager.Me) submitting the turn</param>
         public void SendSubmitTurn(PublicGameInfo gameInfo, Player player)
         {
-            var settings = Serializers.CreatePlayerSettings(gameInfo.Players, player.TechStore, player);
+            var settings = Serializers.CreatePlayerSettings(player.TechStore);
             log.Info($"Client: Submitting turn to server");
             var playerJson = Serializers.Serialize(player, settings);
             RpcId(1, nameof(TurnSubmitRequested), player.Token, Serializers.Serialize(gameInfo), playerJson);
@@ -288,8 +288,7 @@ namespace CraigStars.Singletons
             {
                 // load the actual player from JSON
                 log.Info($"Server: {player} submitted turn");
-                player = new Player() { Num = player.Num };
-                Serializers.PopulatePlayer(playerJson, player, Serializers.CreatePlayerSettings(gameInfo.Players, TechStore.Instance, player));
+                player = Serializers.DeserializeObject<Player>(playerJson, Serializers.CreatePlayerSettings(TechStore.Instance));
 
                 // submit this player's turn to the server
                 SubmitTurnRequestedEvent?.Invoke(player);

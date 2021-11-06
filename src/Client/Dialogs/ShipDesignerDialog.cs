@@ -227,7 +227,7 @@ namespace CraigStars.Client
         {
             shipDesigner.EditingExisting = false;
             shipDesigner.Hull = hullHullSummary.Hull;
-            shipDesigner.SourceShipDesign = new ShipDesign() { Player = Me, Hull = shipDesigner.Hull };
+            shipDesigner.SourceShipDesign = new ShipDesign() { PlayerNum = Me.Num, Hull = shipDesigner.Hull };
 
             shipDesigner.Visible = true;
             shipDesignTabsContainer.Visible = false;

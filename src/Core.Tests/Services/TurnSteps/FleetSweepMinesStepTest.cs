@@ -21,17 +21,14 @@ namespace CraigStars.Tests
         [Test]
         public void ProcessTest()
         {
-            var game = TestUtils.GetSingleUnitGame();
+            var game = TestUtils.GetTwoPlayerGame();
+            var player1 = game.Players[0];
+            var player2 = game.Players[1];
             var fleet = game.Fleets[0];
 
-            // add an enemy minefield at 0, 0
-            var player2 = new Player()
-            {
-                Num = 1,
-            };
             var mineField = new MineField()
             {
-                Player = player2,
+                PlayerNum = player2.Num,
                 NumMines = 1000,
             };
             game.MineFields.Add(mineField);
@@ -39,7 +36,7 @@ namespace CraigStars.Tests
             // should ignore this mineField
             var playerMineField = new MineField()
             {
-                Player = fleet.Player,
+                PlayerNum = player1.Num,
                 NumMines = 1000
             };
             game.MineFields.Add(playerMineField);
@@ -47,7 +44,7 @@ namespace CraigStars.Tests
             // make the fleet have a simple scout design with a mine dispenser 50
             fleet.Tokens[0].Design = new ShipDesign()
             {
-                Player = fleet.Player,
+                PlayerNum = player1.Num,
                 Name = "Mine Sweeping Scout",
                 Hull = Techs.Scout,
                 Slots = new List<ShipDesignSlot>() {
@@ -55,7 +52,7 @@ namespace CraigStars.Tests
                     new ShipDesignSlot(Techs.MiniGun, 3, 1),
                 }
             };
-            fleet.ComputeAggregate();
+            fleet.ComputeAggregate(player1);
 
             FleetSweepMinesStep step = new FleetSweepMinesStep(game);
 
@@ -73,7 +70,7 @@ namespace CraigStars.Tests
             game.PurgeDeletedMapObjects();
             Assert.AreEqual(1, game.MineFields.Count);
             Assert.AreEqual(1000, game.MineFields[0].NumMines);
-            Assert.AreEqual(fleet.Player, game.MineFields[0].Player);
+            Assert.AreEqual(fleet.PlayerNum, game.MineFields[0].PlayerNum);
 
         }
     }

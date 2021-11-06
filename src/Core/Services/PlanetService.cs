@@ -243,7 +243,7 @@ namespace CraigStars
         /// <returns></returns>
         public bool CanBuild(Planet planet, Player player, int mass)
         {
-            if (planet.Player == player && planet.HasStarbase)
+            if (planet.PlayerNum == player.Num && planet.HasStarbase)
             {
                 var dockCapacity = planet.Starbase.DockCapacity;
                 return dockCapacity == TechHull.UnlimitedSpaceDock || dockCapacity >= mass;

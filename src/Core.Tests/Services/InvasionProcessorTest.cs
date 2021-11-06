@@ -28,7 +28,7 @@ namespace CraigStars.Tests
             var planet = new Planet()
             {
                 Name = "Brin",
-                Player = planetOwner,
+                PlayerNum = planetOwner.Num,
                 Population = 10000,
                 Mines = 100,
                 Factories = 100,
@@ -38,7 +38,7 @@ namespace CraigStars.Tests
             // one mini-bomber
             var fleet = new Fleet()
             {
-                Player = fleetOwner,
+                PlayerNum = fleetOwner.Num,
                 Name = "Teamster #1",
             };
 
@@ -53,7 +53,7 @@ namespace CraigStars.Tests
             Assert.AreEqual(1, fleetOwner.Messages.Count);
             Assert.AreEqual(900, planet.Population);
             Assert.AreEqual(0, planet.Defenses);
-            Assert.AreEqual(fleetOwner, planet.Player);
+            Assert.AreEqual(fleetOwner.Num, planet.PlayerNum);
 
             Assert.AreEqual(100, planet.Mines);
             Assert.AreEqual(100, planet.Factories);
@@ -74,7 +74,7 @@ namespace CraigStars.Tests
             var planet = new Planet()
             {
                 Name = "Brin",
-                Player = planetOwner,
+                PlayerNum = planetOwner.Num,
                 Population = 10000,
                 Mines = 100,
                 Factories = 100,
@@ -84,7 +84,7 @@ namespace CraigStars.Tests
             // one mini-bomber
             var fleet = new Fleet()
             {
-                Player = fleetOwner,
+                PlayerNum = fleetOwner.Num,
                 Name = "Teamster #1",
             };
 
@@ -98,7 +98,7 @@ namespace CraigStars.Tests
             Assert.AreEqual(1, planetOwner.Messages.Count);
             Assert.AreEqual(1, fleetOwner.Messages.Count);
             Assert.AreEqual(4500, planet.Population);
-            Assert.AreEqual(planetOwner, planet.Player);
+            Assert.AreEqual(planetOwner.Num, planet.PlayerNum);
 
             Assert.AreEqual(100, planet.Mines);
             Assert.AreEqual(100, planet.Factories);
@@ -119,7 +119,7 @@ namespace CraigStars.Tests
             var planet = new Planet()
             {
                 Name = "Brin",
-                Player = planetOwner,
+                PlayerNum = planetOwner.Num,
                 Population = 100000,
                 Mines = 100,
                 Factories = 100,
@@ -129,7 +129,7 @@ namespace CraigStars.Tests
             // one mini-bomber
             var fleet = new Fleet()
             {
-                Player = fleetOwner,
+                PlayerNum = fleetOwner.Num,
                 Name = "Teamster #1",
             };
 
@@ -142,7 +142,7 @@ namespace CraigStars.Tests
 
             Assert.AreEqual(1, planetOwner.Messages.Count);
             Assert.AreEqual(1, fleetOwner.Messages.Count);
-            Assert.AreEqual(planetOwner, planet.Player);
+            Assert.AreEqual(planetOwner.Num, planet.PlayerNum);
             Assert.AreEqual(42000, planet.Population);
 
             Assert.AreEqual(100, planet.Mines);

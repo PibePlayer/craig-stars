@@ -23,18 +23,13 @@ namespace CraigStars.Tests
         [Test]
         public void TestTakeMineFieldDamage()
         {
-            var game = TestUtils.GetSingleUnitGame();
+            var game = TestUtils.GetTwoPlayerGame();
             var player1 = game.Players[0];
-
-            var player2 = new Player()
-            {
-                Num = 1,
-            };
-            game.Players.Add(player2);
+            var player2 = game.Players[1];
 
             game.MineFields.Add(new MineField()
             {
-                Player = player2,
+                PlayerNum = player2.Num,
                 Type = MineFieldType.Standard,
                 Position = new Vector2(0, 0),
                 NumMines = 100,
@@ -42,15 +37,15 @@ namespace CraigStars.Tests
 
             // make a new fleet with 10 stalwart defenders (350 armor each)
             var design = ShipDesigns.StalwartDefender.Clone();
-            design.Player = player1;
+            design.PlayerNum = player1.Num;
             var fleet = new Fleet()
             {
-                Player = game.Players[0],
+                PlayerNum = player1.Num,
                 Tokens = new List<ShipToken>() {
                     new ShipToken(design, 10)
                 },
             };
-            fleet.ComputeAggregate();
+            fleet.ComputeAggregate(player1);
 
             FleetMoveStep step = new FleetMoveStep(game);
 
@@ -64,7 +59,7 @@ namespace CraigStars.Tests
 
             // should do 100 damage per engine (only 1 engine per ship)
             // 1000 damage will destroy 2 ships (350 armor each), and leave 300 damage for the rest
-            mineFieldDamager.TakeMineFieldDamage(fleet, game.MineFields[0], stats);
+            mineFieldDamager.TakeMineFieldDamage(fleet, player1, game.MineFields[0], player2, stats);
             Assert.AreEqual(8, fleet.Tokens[0].Quantity);
             Assert.AreEqual(8, fleet.Tokens[0].QuantityDamaged);
             Assert.AreEqual(300, fleet.Tokens[0].Damage);
@@ -76,11 +71,11 @@ namespace CraigStars.Tests
 
             // give it a ramscoop
             fleet.Tokens[0].Design.Slots[0].HullComponent = Techs.RadiatingHydroRamScoop;
-            fleet.Tokens[0].Design.ComputeAggregate(fleet.Player, true);
-            fleet.ComputeAggregate(true);
+            fleet.Tokens[0].Design.ComputeAggregate(player1, true);
+            fleet.ComputeAggregate(player1, true);
             // should do 125 damage per engine (only 1 engine per ship)
             // 1250 damage will destroy 3 ships (350 armor each), and leave 200 damage for the rest
-            mineFieldDamager.TakeMineFieldDamage(fleet, game.MineFields[0], stats);
+            mineFieldDamager.TakeMineFieldDamage(fleet, player1, game.MineFields[0], player2, stats);
             Assert.AreEqual(7, fleet.Tokens[0].Quantity);
             Assert.AreEqual(7, fleet.Tokens[0].QuantityDamaged);
             Assert.AreEqual(200, fleet.Tokens[0].Damage);
@@ -89,18 +84,13 @@ namespace CraigStars.Tests
         [Test]
         public void TestHitMineFieldMinDamage()
         {
-            var game = TestUtils.GetSingleUnitGame();
+            var game = TestUtils.GetTwoPlayerGame();
             var player1 = game.Players[0];
-
-            var player2 = new Player()
-            {
-                Num = 1,
-            };
-            game.Players.Add(player2);
+            var player2 = game.Players[1];
 
             game.MineFields.Add(new MineField()
             {
-                Player = player2,
+                PlayerNum = player2.Num,
                 Type = MineFieldType.Standard,
                 Position = new Vector2(0, 0),
                 NumMines = 100,
@@ -108,15 +98,15 @@ namespace CraigStars.Tests
 
             // make a new fleet with 10 stalwart defenders (350 armor each)
             var design = ShipDesigns.StalwartDefender.Clone();
-            design.Player = player1;
+            design.PlayerNum = player1.Num;
             var fleet = new Fleet()
             {
-                Player = game.Players[0],
+                PlayerNum = player1.Num,
                 Tokens = new List<ShipToken>() {
                     new ShipToken(design, 1)
                 },
             };
-            fleet.ComputeAggregate();
+            fleet.ComputeAggregate(player1);
 
             FleetMoveStep step = new FleetMoveStep(game);
 
@@ -127,7 +117,7 @@ namespace CraigStars.Tests
             };
 
             // should do 200 damage per engine per ship (only 1 engine per ship)
-            mineFieldDamager.TakeMineFieldDamage(fleet, game.MineFields[0], stats);
+            mineFieldDamager.TakeMineFieldDamage(fleet, player1, game.MineFields[0], player2, stats);
             Assert.AreEqual(1, fleet.Tokens[0].Quantity);
             Assert.AreEqual(1, fleet.Tokens[0].QuantityDamaged);
             Assert.AreEqual(200, fleet.Tokens[0].Damage);
@@ -136,18 +126,13 @@ namespace CraigStars.Tests
         [Test]
         public void TestHitMineFieldMinDamageDiverseFleet()
         {
-            var game = TestUtils.GetSingleUnitGame();
+            var game = TestUtils.GetTwoPlayerGame();
             var player1 = game.Players[0];
-
-            var player2 = new Player()
-            {
-                Num = 1,
-            };
-            game.Players.Add(player2);
+            var player2 = game.Players[1];
 
             game.MineFields.Add(new MineField()
             {
-                Player = player2,
+                PlayerNum = player2.Num,
                 Type = MineFieldType.Standard,
                 Position = new Vector2(0, 0),
                 NumMines = 100,
@@ -155,7 +140,7 @@ namespace CraigStars.Tests
 
             // make a new fleet with a scout and a large freighter (with 2 engines)
             var scout = ShipDesigns.LongRangeScount.Clone();
-            scout.Player = player1;
+            scout.PlayerNum = player1.Num;
             var largeFrieghter = new ShipDesign()
             {
                 Hull = Techs.LargeFreighter,
@@ -164,17 +149,17 @@ namespace CraigStars.Tests
                     new ShipDesignSlot(Techs.Crobmnium, 3, 2)
                 }
             };
-            largeFrieghter.Player = player1;
+            largeFrieghter.PlayerNum = player1.Num;
 
             var fleet = new Fleet()
             {
-                Player = game.Players[0],
+                PlayerNum = player1.Num,
                 Tokens = new List<ShipToken>() {
                     new ShipToken(scout, 1),
                     new ShipToken(largeFrieghter, 1)
                 },
             };
-            fleet.ComputeAggregate();
+            fleet.ComputeAggregate(player1);
 
             FleetMoveStep step = new FleetMoveStep(game);
 
@@ -186,7 +171,7 @@ namespace CraigStars.Tests
 
             // should do 200 damage to the scout, destroying it, and 100 damage to the large
             // freighter for the extra damager for an extra engine
-            mineFieldDamager.TakeMineFieldDamage(fleet, game.MineFields[0], stats);
+            mineFieldDamager.TakeMineFieldDamage(fleet, player1, game.MineFields[0], player2, stats);
             Assert.AreEqual(1, fleet.Tokens.Count);
             Assert.AreEqual(Techs.LargeFreighter, fleet.Tokens[0].Design.Hull);
             Assert.AreEqual(1, fleet.Tokens[0].Quantity);

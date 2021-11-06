@@ -246,7 +246,8 @@ namespace CraigStars.Client
                 actionLabel.Text = $"Action {currentAction + 1} of {BattleRecord.ActionsPerRound[currentRound].Count}";
 
                 var action = BattleRecord.ActionsPerRound[currentRound][currentAction];
-                actionRaceLabel.Text = action.Token.Owner.RacePluralName;
+                var tokenPlayer = GameInfo.Players[action.Token.PlayerNum];
+                actionRaceLabel.Text = tokenPlayer.RacePluralName;
                 actionDesignLabel.Text = action.Token.Token.Design.Name;
 
                 actionMoveLabel.Visible = false;
@@ -260,7 +261,8 @@ namespace CraigStars.Client
                 else if (action is BattleRecordTokenBeamFire beamFire)
                 {
                     actionAttackLabelContainer.Visible = true;
-                    actionAttackLabel.Text = $"attacks the {beamFire.Target.Owner.RacePluralName}";
+                    var targetPlayer = GameInfo.Players[beamFire.Target.PlayerNum];
+                    actionAttackLabel.Text = $"attacks the {targetPlayer.RacePluralName}";
                     actionAttackTargetLabel.Text = $"{beamFire.Target.Token.Design.Name} * {beamFire.Target.Token.Quantity - beamFire.TokensDestroyed}";
                     actionAttackLocationLabel.Text = $"at ({beamFire.To.x + 1}, {beamFire.To.y + 1}) doing";
                     if (beamFire.DamageDoneShields > 0 && beamFire.DamageDoneArmor > 0)
@@ -280,7 +282,8 @@ namespace CraigStars.Client
                 else if (action is BattleRecordTokenTorpedoFire torpedoFire)
                 {
                     actionAttackLabelContainer.Visible = true;
-                    actionAttackLabel.Text = $"attacks the {torpedoFire.Target.Owner.RacePluralName}";
+                    var targetPlayer = GameInfo.Players[torpedoFire.Target.PlayerNum];
+                    actionAttackLabel.Text = $"attacks the {targetPlayer.RacePluralName}";
                     actionAttackTargetLabel.Text = $"{torpedoFire.Target.Token.Design.Name} * {torpedoFire.Target.Token.Quantity - torpedoFire.TokensDestroyed}";
                     actionAttackLocationLabel.Text = $"at ({torpedoFire.To.x + 1}, {torpedoFire.To.y + 1}) doing";
                     if (torpedoFire.DamageDoneShields > 0 && torpedoFire.DamageDoneArmor > 0)
@@ -306,7 +309,8 @@ namespace CraigStars.Client
                 if (selectedGridToken != null)
                 {
                     var selectedToken = selectedGridToken.Token;
-                    selectionRaceLabel.Text = selectedToken.Owner.RacePluralName;
+                    var tokenPlayer = GameInfo.Players[selectedToken.PlayerNum];
+                    selectionRaceLabel.Text = tokenPlayer.RacePluralName;
 
                     var design = selectedToken.Token.Design;
                     selectionDesignLabel.Text = design.Name;
@@ -557,19 +561,18 @@ namespace CraigStars.Client
             Player player2 = players[1] as Player;
             player2.TechLevels = new TechLevel(6, 6, 6, 6, 6, 6);
 
-            var gameInfo = new PublicGameInfo() { Players = new List<PublicPlayerInfo>() { player1, player2 } };
-
-            var battleEngine = new BattleEngine(RulesManager.Rules);
-            var battle = battleEngine.BuildBattle(TestBattleUtils.GetFleetsForDesignsBattle(
-                gameInfo,
+            var game = TestBattleUtils.GetGameWithBattle(
                 player1,
                 player2,
                 new HashSet<string>() { "Destroyer", "Space Station" },
                 new HashSet<string>() { "Destroyer", "Scout", "Fuel Transport" }
-            ));
+            );
+
+            var battleEngine = new BattleEngine(game);
+            var battle = battleEngine.BuildBattle(game.Fleets);
             battleEngine.RunBattle(battle);
 
-            return battle.PlayerRecords[PlayersManager.Me];
+            return battle.PlayerRecords[Me.Num];
         }
 
         #endregion

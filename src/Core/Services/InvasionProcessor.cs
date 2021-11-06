@@ -32,7 +32,7 @@ namespace CraigStars
         /// <param name="colonistsDropped"></param>
         public void InvadePlanet(Planet planet, Player defender, Player attacker, Fleet fleet, int colonistsDropped)
         {
-            if (planet.Uninhabited || planet.Population == 0)
+            if (!planet.Owned || planet.Population == 0)
             {
                 // can't invade uninhabited planets
                 Message.InvadeEmptyPlanet(attacker, fleet, planet);
@@ -45,7 +45,7 @@ namespace CraigStars
 
             // determine bonuses for warmongers and inner strength
             float attackBonus = 1.1f * (attacker.Race.PRT == PRT.WM ? 1.5f : 1f);
-            float defenseBonus = (planet.Player.Race.PRT == PRT.IS ? 2f : 1f);
+            float defenseBonus = (defender.Race.PRT == PRT.IS ? 2f : 1f);
 
             if (attackers * attackBonus > defenders * defenseBonus)
             {
@@ -60,13 +60,14 @@ namespace CraigStars
                 var attackersKilled = colonistsDropped - remainingAttackers;
 
                 // notify each player of the invasion                
-                Message.PlanetInvaded(planet.Player, planet, fleet, attackersKilled, planet.Population);
-                Message.PlanetInvaded(fleet.Player, planet, fleet, attackersKilled, planet.Population);
+                Message.PlanetInvaded(defender, planet, fleet, attackersKilled, planet.Population);
+                Message.PlanetInvaded(attacker, planet, fleet, attackersKilled, planet.Population);
 
                 // take over the planet.
                 // empty this planet
-                planet.Owner = null;
-                planet.Player = fleet.Player;
+                planet.PlayerNum = attacker.Num;
+                planet.RaceName = attacker.RaceName;
+                planet.RacePluralName = attacker.RacePluralName;
                 planet.Starbase = null;
                 planet.Scanner = false;
                 planet.Defenses = 0; // defenses are destroyed during invasion
@@ -86,8 +87,8 @@ namespace CraigStars
                 int defendersKilled = planet.Population - remainingDefenders;
 
                 // notify each player of the invasion                
-                Message.PlanetInvaded(planet.Player, planet, fleet, colonistsDropped, defendersKilled);
-                Message.PlanetInvaded(fleet.Player, planet, fleet, colonistsDropped, defendersKilled);
+                Message.PlanetInvaded(defender, planet, fleet, colonistsDropped, defendersKilled);
+                Message.PlanetInvaded(attacker, planet, fleet, colonistsDropped, defendersKilled);
 
                 // reduce the population to however many colonists remain
                 planet.Population = remainingDefenders;

@@ -17,7 +17,7 @@ namespace CraigStars
         /// 
         /// </summary>
         /// <param name="fleet"></param>
-        public void TakeMineFieldDamage(Fleet fleet, MineField mineField, MineFieldStats stats, bool detonating = false)
+        public void TakeMineFieldDamage(Fleet fleet, Player fleetPlayer, MineField mineField, Player mineFieldPlayer, MineFieldStats stats, bool detonating = false)
         {
             // if any ship has ramscoops, everyone takes more damage
             var hasRamScoop = fleet.Tokens.Any(token => token.Design.Aggregate.Engine.FreeSpeed > 1);
@@ -79,8 +79,8 @@ namespace CraigStars
             }
 
             // send messages to players
-            Message.FleetHitMineField(fleet.Player, fleet, mineField, totalDamage, shipsDestroyed);
-            Message.FleetHitMineField(mineField.Player, fleet, mineField, totalDamage, shipsDestroyed);
+            Message.FleetHitMineField(fleetPlayer, fleet, mineField, totalDamage, shipsDestroyed);
+            Message.FleetHitMineField(mineFieldPlayer, fleet, mineField, totalDamage, shipsDestroyed);
 
             // remove any complete destroyed tokens.
             fleet.Tokens = fleet.Tokens.Where(token => token.Quantity > 0).ToList();

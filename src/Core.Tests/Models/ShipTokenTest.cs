@@ -12,8 +12,9 @@ namespace CraigStars.Tests
         [Test]
         public void TestApplyMineDamage()
         {
+            var player = new Player();
             ShipToken token = new ShipToken(ShipDesigns.LongRangeScount, 1);
-            token.Design.Player = new Player();
+            token.Design.PlayerNum = player.Num;
 
             var mass = 100;
             var armor = 100;
@@ -40,8 +41,9 @@ namespace CraigStars.Tests
         [Test]
         public void TestApplyMineDamageShields()
         {
+            var player = new Player();
             ShipToken token = new ShipToken(ShipDesigns.LongRangeScount, 1);
-            token.Design.Player = new Player();
+            token.Design.PlayerNum = player.Num;
 
             var mass = 100;
             var armor = 150;
@@ -70,8 +72,9 @@ namespace CraigStars.Tests
         [Test]
         public void TestApplyOvergateRangeDamage()
         {
+            var player = new Player();
             ShipToken token = new ShipToken(ShipDesigns.LongRangeScount, 1);
-            token.Design.Player = new Player();
+            token.Design.PlayerNum = player.Num;
 
             var mass = 100;
             var armor = 100;
@@ -93,8 +96,9 @@ namespace CraigStars.Tests
         [Test]
         public void TestApplyOvergateMassDamage()
         {
+            var player = new Player();
             ShipToken token = new ShipToken(ShipDesigns.LongRangeScount, 1);
-            token.Design.Player = new Player();
+            token.Design.PlayerNum = player.Num;
 
             // set the mass and armor
             var mass = 200;
@@ -127,8 +131,9 @@ namespace CraigStars.Tests
         [Test]
         public void TestApplyOvergateBothDamage()
         {
+            var player = new Player();
             ShipToken token = new ShipToken(ShipDesigns.LongRangeScount, 1);
-            token.Design.Player = new Player();
+            token.Design.PlayerNum = player.Num;
 
             // set the mass and armor
             var mass = 200;
@@ -151,9 +156,10 @@ namespace CraigStars.Tests
         [Test]
         public void TestApplyOvergateWithExistingDamage()
         {
+            var player = new Player();
             ShipToken token = new ShipToken(ShipDesigns.LongRangeScount, 2);
-            token.Design.Player = new Player();
-            token.Design.ComputeAggregate(token.Design.Player);
+            token.Design.PlayerNum = player.Num;
+            token.Design.ComputeAggregate(player);
 
             var mass = 100;
             var armor = 100;
@@ -175,8 +181,9 @@ namespace CraigStars.Tests
         [Test]
         public void TestGetStargateMassVanishingChance()
         {
+            var player = new Player();
             ShipToken token = new ShipToken(ShipDesigns.LongRangeScount, 1);
-            token.Design.Player = new Player();
+            token.Design.PlayerNum = player.Num;
 
             // set the mass and armor
             token.Design.Aggregate.Mass = 200;
@@ -203,8 +210,9 @@ namespace CraigStars.Tests
         [Test]
         public void TestGetStargateRangeVanishingChance()
         {
+            var player = new Player();
             ShipToken token = new ShipToken(ShipDesigns.LongRangeScount, 1);
-            token.Design.Player = new Player();
+            token.Design.PlayerNum = player.Num;
 
             // no vanishing chance
             Assert.AreEqual(0, token.GetStargateRangeVanishingChance(

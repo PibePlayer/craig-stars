@@ -25,7 +25,7 @@ namespace CraigStars
         /// <param name="mineField"></param>
         internal void Decay(MineField mineField)
         {
-            long decayedMines = mineField.GetDecayRate(Game.Planets, Game.Rules);
+            long decayedMines = mineField.GetDecayRate(Game.Players[mineField.PlayerNum], Game.Planets, Game.Rules);
             mineField.NumMines -= decayedMines;
 
             // 10 mines or less, minefield goes away

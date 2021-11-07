@@ -52,29 +52,11 @@ jobs:
     needs: build
     outputs:
       release_upload_url: ${{ steps.create_release.outputs.upload_url }}
+      release_id: ${{ steps.create_release.outputs.id }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-      - name: Delete latest release assets
-        uses: mknejp/delete-release-assets@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag: latest # This may also be of the form 'refs/tags/staging'
-          assets: "*.*"
-        continue-on-error: true
-      - name: Delete latest release
-        uses: dev-drprasad/delete-tag-and-release@v0.2.0
-        with:
-          delete_release: true
-          tag_name: latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        continue-on-error: true
       - name: Create latest Release
         id: create_release
-        uses: ncipollo/release-action@v1.8.8
+        uses: ncipollo/release-action@v1.8.10
         with:
           name: latest
           tag: latest
@@ -174,7 +156,8 @@ jobs:
         run: |
           rootBuildPath="${GITHUB_WORKSPACE}/build"
           formattedExportName="$( echo ${EXPORT_NAME} | sed 's/./\L&/g' | sed 's/ /-/g' )"
-          filename="${formattedExportName}-${EXPORT_PLATFORM}-v${VERSION}.zip"
+          filenameWithoutExtension="${formattedExportName}-${EXPORT_PLATFORM}-v${VERSION}"
+          filename="${filenameWithoutExtension}.zip"
           filePath="${rootBuildPath}/${filename}"
           if [ "${FILE_TYPE}" = "executable" ]
           then
@@ -184,6 +167,7 @@ jobs:
           fi
           echo "::set-output name=path::${filePath}"
           echo "::set-output name=filename::${filename}"
+          echo "::set-output name=filename_without_ext::${filenameWithoutExtension}"
       - name: Upload Release Assets
         id: upload-release-asset
         uses: WebFreak001/deploy-nightly@v1.1.0
@@ -193,5 +177,5 @@ jobs:
           upload_url: ${{ needs.release.outputs.release_upload_url }}
           release_id: ${{ needs.release.outputs.release_id }}
           asset_path: ${{ steps.archive.outputs.path }}
-          asset_name: ${{ steps.archive.outputs.filename }}
+          asset_name: ${{ steps.archive.outputs.filename_without_ext }}.$$.zip
           asset_content_type: application/zip

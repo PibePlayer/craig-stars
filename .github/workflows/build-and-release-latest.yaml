@@ -186,6 +186,12 @@ jobs:
           echo "::set-output name=filename::${filename}"
       - name: Upload Release Assets
         id: upload-release-asset
-        uses: softprops/action-gh-release@v1
+        uses: WebFreak001/deploy-nightly@v1.1.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # automatically provided by github actions
         with:
-          files: ${{ steps.archive.outputs.path }}/${{ steps.archive.outputs.filename }}
+          upload_url: ${{ needs.release.outputs.release_upload_url }}
+          release_id: ${{ needs.release.outputs.release_id }}
+          asset_path: ${{ steps.archive.outputs.path }}
+          asset_name: ${{ steps.archive.outputs.filename }}
+          asset_content_type: application/zip

@@ -127,7 +127,39 @@ namespace CraigStars.Utils
         {
             var minDistanceSquared = minDistance * minDistance;
             return !otherObjectLocations.Any(planetLoc => loc.DistanceSquaredTo(planetLoc) < minDistanceSquared);
+        }
 
+        /// <summary>
+        /// Returns the 2D point on the 2D segment (s1, s2) that is closest to point. The returned point will always be inside the specified segment.
+        /// </summary>
+        /// <param name="point">The point to check</param>
+        /// <param name="s1">The start of the segment</param>
+        /// <param name="s2">The end of the segment</param>
+        /// <returns></returns>
+        public static Vector2 GetClosestPointToSegment2D(Vector2 point, Vector2 s1, Vector2 s2)
+        {
+            Vector2 p = point - s1;
+            Vector2 n = s2 - s1;
+            float l2 = n.LengthSquared();
+            if (l2 < 1e-20)
+            {
+                return s1; // Both points are the same, just give any.
+            }
+
+            float d = n.Dot(p) / l2;
+
+            if (d <= 0.0)
+            {
+                return s1; // Before first point.
+            }
+            else if (d >= 1.0)
+            {
+                return s2; // After first point.
+            }
+            else
+            {
+                return s1 + n * d; // Inside.
+            }
         }
     }
 }

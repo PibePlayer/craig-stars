@@ -58,6 +58,13 @@ namespace CraigStars
         public int WarpSpeed { get; set; }
         public int IdleTurns { get; set; }
 
+        /// <summary>
+        /// During movement, we keep track of the starting position of each fleet so we can 
+        /// pen scan planets as we travel through
+        /// </summary>
+        /// <value></value>
+        [JsonIgnore] public Vector2? PreviousPosition { get; set; }
+
         [JsonIgnore]
         public int Mass { get => Aggregate.Mass; set => Aggregate.Mass = value; }
 

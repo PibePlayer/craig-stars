@@ -146,6 +146,7 @@ namespace CraigStars
         /// <param name="totalDist"></param>
         internal void MoveFleet(Fleet fleet, Player player, Waypoint wp0, Waypoint wp1, float totalDist)
         {
+            fleet.PreviousPosition = wp0.Position;
             float dist = wp1.WarpFactor * wp1.WarpFactor;
 
             // go with the lower

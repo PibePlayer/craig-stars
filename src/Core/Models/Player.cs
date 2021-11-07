@@ -312,11 +312,11 @@ namespace CraigStars
         /// <summary>
         /// Compute design and fleet aggregates so the UI will show correct values
         /// </summary>
-        public void ComputeAggregates()
+        public void ComputeAggregates(bool recompute = false)
         {
-            Designs.ForEach(d => d.ComputeAggregate(this));
-            Fleets.ForEach(f => f.ComputeAggregate(this));
-            Planets.ForEach(p => p.Starbase?.ComputeAggregate(this));
+            Designs.ForEach(d => d.ComputeAggregate(this, recompute));
+            Fleets.ForEach(f => f.ComputeAggregate(this, recompute));
+            Planets.ForEach(p => p.Starbase?.ComputeAggregate(this, recompute));
 
             ComputeDesignsInUse();
         }

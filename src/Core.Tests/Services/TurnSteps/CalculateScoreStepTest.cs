@@ -87,7 +87,7 @@ namespace CraigStars.Tests
             );
 
             // empty player, no score
-            player.ComputeAggregates();
+            player.ComputeAggregates(recompute: true);
             var step = new CalculateScoreStep(game);
             var score = step.CalculateScore(player);
 

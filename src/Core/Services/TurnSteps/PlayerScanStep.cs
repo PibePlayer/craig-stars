@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Godot;
+using static CraigStars.Utils.Utils;
+
 
 namespace CraigStars
 {
@@ -20,21 +22,35 @@ namespace CraigStars
         public class Scanner
         {
             public Vector2 Position { get; set; }
+            public Vector2 PreviousPosition { get; set; }
             public int Range { get; set; }
             public int RangePen { get; set; }
+
             /// <summary>
             /// the amount this scanner reduces enemy cloaking, as a percent
             /// i.e. if it reduces enemy cloaking by 81%, this would be .81
             /// </summary>
             /// <value></value>
             public float CloakReduction { get; set; }
+
             public Scanner(Vector2 position, int range = 0, int rangePen = 0, float cloadReduction = 0)
             {
                 Position = position;
+                PreviousPosition = position;
                 Range = range;
                 RangePen = rangePen;
                 CloakReduction = cloadReduction;
             }
+
+            public Scanner(Vector2 position, Vector2 previousPosition, int range = 0, int rangePen = 0, float cloadReduction = 0)
+            {
+                Position = position;
+                PreviousPosition = previousPosition;
+                Range = range;
+                RangePen = rangePen;
+                CloakReduction = cloadReduction;
+            }
+
         }
 
         PlayerIntel playerIntel = new PlayerIntel();
@@ -60,14 +76,14 @@ namespace CraigStars
                 // I think I might be hitting some threadpool starvation issues
                 // scanTasks.Add(Task.Run(() =>
                 // {
-                    // try
-                    // {
-                        Scan(player);
-                    // }
-                    // catch (Exception e)
-                    // {
-                    //     log.Error($"Encountered error during PlayerScanStep for {player}.", e);
-                    // }
+                // try
+                // {
+                Scan(player);
+                // }
+                // catch (Exception e)
+                // {
+                //     log.Error($"Encountered error during PlayerScanStep for {player}.", e);
+                // }
                 // }));
             }
 
@@ -116,9 +132,9 @@ namespace CraigStars
 
             // find all our fleets that are out and about
             log.Debug($"{Game.Year}: {player} Building List of Fleet Scanners");
-            foreach (var fleet in Game.Fleets.Where(f => f.PlayerNum == player.Num && f.Aggregate.Scanner && (f.Orbiting == null || f.Orbiting.PlayerNum != player.Num)))
+            foreach (var fleet in Game.Fleets.Where(f => f.PlayerNum == player.Num && f.Aggregate.Scanner))
             {
-                scanners.Add(new Scanner(fleet.Position, fleet.Aggregate.ScanRange * fleet.Aggregate.ScanRange, fleet.Aggregate.ScanRangePen * fleet.Aggregate.ScanRangePen, fleet.Aggregate.ReduceCloaking));
+                scanners.Add(new Scanner(fleet.Position, fleet.PreviousPosition.GetValueOrDefault(fleet.Position), fleet.Aggregate.ScanRange * fleet.Aggregate.ScanRange, fleet.Aggregate.ScanRangePen * fleet.Aggregate.ScanRangePen, fleet.Aggregate.ReduceCloaking));
             }
 
             // Space demolition minefields act as scanners
@@ -151,7 +167,20 @@ namespace CraigStars
 
                 foreach (var scanner in scanners)
                 {
-                    if (scanner.RangePen >= scanner.Position.DistanceSquaredTo(planet.Position))
+                    if (scanner.PreviousPosition != scanner.Position)
+                    {
+                        // this scanner moved, so make sure if we travelled past this planet it is still scanned
+                        // we do this by checking the closest point the planet came to the line the fleet moved on
+                        // if the distance from that point to the planet is less than that scan range, than it was in our
+                        // scanners as we went by
+                        var closestPointToScanCapsule = GetClosestPointToSegment2D(planet.Position, scanner.PreviousPosition, scanner.Position);
+                        if (scanner.RangePen >= closestPointToScanCapsule.DistanceSquaredTo(planet.Position))
+                        {
+                            playerIntel.Discover(player, planet, true);
+                            break;
+                        }
+                    }
+                    else if (scanner.RangePen >= scanner.Position.DistanceSquaredTo(planet.Position))
                     {
                         playerIntel.Discover(player, planet, true);
                         break;

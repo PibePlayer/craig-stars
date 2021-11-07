@@ -34,6 +34,94 @@ namespace CraigStars.Tests
         }
 
         [Test]
+        public void TestScanPlanets()
+        {
+            PlayerIntel playerIntel = new();
+            var game = TestUtils.GetSingleUnitGame();
+            var player = game.Players[0];
+            var fleet = game.Fleets[0];
+
+            player.TechLevels.Electronics = 3;
+            player.ComputeAggregates(recompute: true);
+
+            // our fleet should have a penscan range of
+            var scanRangePen = fleet.Aggregate.ScanRangePen;
+
+            var planet2 = new Planet()
+            {
+                Name = "Planet 2",
+                // move this planet just out of range along the x axis
+                Position = fleet.Position + new Vector2(scanRangePen - 1, 0),
+                Cargo = new Cargo(),
+                MineYears = new Mineral(),
+                BaseHab = new Hab(1, 2, 3),
+                Hab = new Hab(1, 2, 3),
+                MineralConcentration = new Mineral(4, 5, 6),
+            };
+
+            game.Planets.Add(planet2);
+
+            // discover the basics about this planet
+            playerIntel.Discover(player, planet2);
+
+            // we shouldn't know the hab yet
+            var playerPlanet = player.ForeignPlanets[1];
+            Assert.IsNull(playerPlanet.Hab);
+
+            var scanStep = new PlayerScanStep(game);
+            scanStep.Execute(new TurnGenerationContext(), game.OwnedPlanets.ToList());
+
+            // we should know the hab now
+            Assert.AreEqual(planet2.Hab, playerPlanet.Hab);
+        }
+
+        [Test]
+        public void TestScanPlanetsWithMovingFleet()
+        {
+            PlayerIntel playerIntel = new();
+            var game = TestUtils.GetSingleUnitGame();
+            var player = game.Players[0];
+            var fleet = game.Fleets[0];
+
+            player.TechLevels.Electronics = 3;
+            player.ComputeAggregates(recompute: true);
+
+            // our fleet should have a penscan range of
+            var scanRangePen = fleet.Aggregate.ScanRangePen;
+
+            var planet2 = new Planet()
+            {
+                Name = "Planet 2",
+                // move this planet just out of range along the x axis
+                Position = fleet.Position + new Vector2(scanRangePen + 1, 0),
+                Cargo = new Cargo(),
+                MineYears = new Mineral(),
+                BaseHab = new Hab(1, 2, 3),
+                Hab = new Hab(1, 2, 3),
+                MineralConcentration = new Mineral(4, 5, 6),
+            };
+
+            game.Planets.Add(planet2);
+
+            // discover the basics about this planet
+            playerIntel.Discover(player, planet2);
+
+            // we shouldn't know the hab yet
+            var playerPlanet = player.ForeignPlanets[1];
+            Assert.IsNull(playerPlanet.Hab);
+
+            // simulate this fleet moving past the planet and out of scan range
+            fleet.PreviousPosition = new Vector2();
+            fleet.Position = new Vector2(scanRangePen * 2 + 2, 0);
+
+            var scanStep = new PlayerScanStep(game);
+            scanStep.Execute(new TurnGenerationContext(), game.OwnedPlanets.ToList());
+
+            // we should know the hab now
+            Assert.AreEqual(planet2.Hab, playerPlanet.Hab);
+        }
+
+        [Test]
         public void TestScanFleets()
         {
             PlayerIntel playerIntel = new();

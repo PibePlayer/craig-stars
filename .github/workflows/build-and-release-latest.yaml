@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 env:
-  GODOT_VERSION: 3.3.3
+  GODOT_VERSION: 3.3.4
   GODOT_VERSION_MODIFIER: "stable.mono"
   EXPORT_NAME: craig-stars
   GAME_SUBDIRECTORY: project.godot
@@ -17,7 +17,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: barichello/godot-ci:mono-3.3.3
+      image: barichello/godot-ci:mono-3.3.4
 
     steps:
     - uses: actions/checkout@v2
@@ -104,7 +104,7 @@ jobs:
           #   extension: .html
           #   type: executable
     container:
-      image: barichello/godot-ci:mono-3.3.3
+      image: barichello/godot-ci:mono-3.3.4
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -184,13 +184,8 @@ jobs:
           fi
           echo "::set-output name=path::${filePath}"
           echo "::set-output name=filename::${filename}"
-      - name: Upload Release Asset
+      - name: Upload Release Assets
         id: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v1
         with:
-          upload_url: ${{ needs.release.outputs.release_upload_url }}
-          asset_path: ${{ steps.archive.outputs.path }}
-          asset_name: ${{ steps.archive.outputs.filename }}
-          asset_content_type: application/zip
+          files: ${{ steps.archive.outputs.path }}/${{ steps.archive.outputs.filename }}

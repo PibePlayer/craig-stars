@@ -693,7 +693,7 @@ namespace CraigStars
         public static void Victory(Player player, Player victor)
         {
             string text = "";
-            if (player == victor)
+            if (player.Num == victor.Num)
             {
                 text = $"You have been declared the winner of this game. You may continue to play though, if you wish to really rub everyone's nose in your grand victory.";
             }

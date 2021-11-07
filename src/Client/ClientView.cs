@@ -217,7 +217,7 @@ namespace CraigStars.Client
         void OnSubmitTurnRequested(Player player)
         {
             // we submitted our turn, switch to turn submitter view
-            if (player == PlayersManager.Me)
+            if (player.Num == PlayersManager.Me.Num)
             {
                 var gameInfo = PlayersManager.GameInfo;
                 player.SubmittedTurn = true;
@@ -252,7 +252,7 @@ namespace CraigStars.Client
                 await GamesManager.Instance.SavePlayerGameInfo(gameInfo, PlayersManager.Me.Num);
             }
 
-            if (player == PlayersManager.Me)
+            if (PlayersManager.Me != null && player.Num == PlayersManager.Me.Num)
             {
                 // we just submitted our turn, remove the game view and show this container
                 RemoveGameViewAndShowTurnGeneration();

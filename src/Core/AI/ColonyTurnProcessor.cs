@@ -54,7 +54,8 @@ namespace CraigStars
             // go through each unassigned colonizer fleet and find it a new planet to colonize
             foreach (var fleet in colonizerFleets.Where(
                 f => f.Waypoints.Count == 1 &&
-                f.Orbiting?.PlayerNum == player.Num &&
+                f.Orbiting != null && 
+                f.Orbiting.PlayerNum == player.Num &&
                 planetService.GetPopulationDensity(f.Orbiting, player, gameInfo.Rules, f.Orbiting.Population - f.AvailableCapacity) >= PopulationDensityRequired)
             )
             {

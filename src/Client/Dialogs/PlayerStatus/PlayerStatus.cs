@@ -72,9 +72,9 @@ namespace CraigStars.Client
                 var player = gameInfo.Players[i];
                 var index = i + 1;
 
-                if (player == Me || GameInfo.ScoresVisible)
+                if (player.Num == Me.Num || GameInfo.ScoresVisible)
                 {
-                    var playerScore = player == Me ? Me.Score : player.PublicScore;
+                    var playerScore = player.Num == Me.Num ? Me.Score : player.PublicScore;
                     planets[index] = playerScore.Planets;
                     starbases[index] = playerScore.Starbases;
                     unarmedShips[index] = playerScore.UnarmedShips;

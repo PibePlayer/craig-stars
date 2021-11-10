@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://src/Client/Controls/TechSummary.cs" type="Script" id=1]
 [ext_resource path="res://assets/gui/tech/Engine/Alpha Drive 8.png" type="Texture" id=2]
 [ext_resource path="res://src/Client/Controls/CostGrid.tscn" type="PackedScene" id=3]
 [ext_resource path="res://src/Client/Controls/EngineGraph.tscn" type="PackedScene" id=4]
+[ext_resource path="res://src/Client/Controls/DefenseGraph.tscn" type="PackedScene" id=5]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0, 0, 0, 1 )
@@ -306,13 +307,26 @@ text = "200"
 [node name="DescriptionContainer" type="VBoxContainer" parent="HBoxContainerStats/Panel/MarginContainer/VBoxContainerStatsLabels"]
 margin_top = 24.0
 margin_right = 336.0
-margin_bottom = 101.0
+margin_bottom = 245.0
 size_flags_vertical = 3
 
-[node name="EngineGraph" parent="HBoxContainerStats/Panel/MarginContainer/VBoxContainerStatsLabels" instance=ExtResource( 4 )]
+[node name="DefenseGraph" parent="HBoxContainerStats/Panel/MarginContainer/VBoxContainerStatsLabels" instance=ExtResource( 5 )]
+visible = false
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_top = 111.0
+margin_top = 34.0
+margin_right = 336.0
+margin_bottom = 191.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+Title = "Shield Coverage vs Defense Quantity"
+XAxisTitle = "Num"
+
+[node name="EngineGraph" parent="HBoxContainerStats/Panel/MarginContainer/VBoxContainerStatsLabels" instance=ExtResource( 4 )]
+visible = false
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 88.0
 margin_right = 336.0
 margin_bottom = 245.0
 size_flags_horizontal = 3

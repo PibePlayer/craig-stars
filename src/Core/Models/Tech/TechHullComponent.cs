@@ -8,6 +8,11 @@ namespace CraigStars
         public const int NoScanner = -1;
         public const int NoGate = -1;
         public const int InfinteGate = int.MaxValue;
+        
+        /// <summary>
+        /// This is for the Bat Scanner, which can't actually scan anywhere but on planets it orbits
+        /// </summary>
+        public const int ScanWithZeroRange = 1;
 
         public HullSlotType HullSlotType { get; set; }
         public int Mass { get; set; }
@@ -27,8 +32,8 @@ namespace CraigStars
         /// is 100 - ((100 - 75) x .7 * .7) = 88% accuracy
         /// </summary>
         public float TorpedoBonus { get; set; }
+        public float TorpedoJamming { get; set; }
         public int InitiativeBonus { get; set; }
-        public int TorpedoJamming { get; set; }
         public int ReduceMovement { get; set; }
         public bool ReduceCloaking { get; set; }
         public int FuelBonus { get; set; }
@@ -38,7 +43,7 @@ namespace CraigStars
         public int CargoBonus { get; set; }
         public int MovementBonus { get; set; }
         public int BeamDefense { get; set; }
-        public int BeamBonus { get; set; }
+        public float BeamBonus { get; set; }
         [DefaultValue(NoScanner)]
         public int ScanRange { get; set; } = NoScanner;
         [DefaultValue(NoScanner)]

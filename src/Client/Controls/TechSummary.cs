@@ -10,6 +10,7 @@ namespace CraigStars.Client
     public class TechSummary : Control
     {
         protected Player Me { get => PlayersManager.Me; }
+        protected PublicGameInfo GameInfo { get => PlayersManager.GameInfo; }
 
         public Tech Tech
         {
@@ -53,6 +54,7 @@ namespace CraigStars.Client
         Container descriptionContainer;
 
         EngineGraph engineGraph;
+        DefenseGraph defenseGraph;
 
         public override void _Ready()
         {
@@ -92,6 +94,9 @@ namespace CraigStars.Client
             // engines have a graph
             engineGraph = FindNode("EngineGraph") as EngineGraph;
 
+            // defenses have a graph
+            defenseGraph = FindNode("DefenseGraph") as DefenseGraph;
+
             iconTextureRect.Connect("gui_input", this, nameof(OnIconGUIInput));
 
         }
@@ -122,6 +127,7 @@ namespace CraigStars.Client
             {
                 descriptionContainer.Visible = true;
                 engineGraph.Visible = false;
+                defenseGraph.Visible = false;
                 nameLabel.Text = Tech.Name;
                 costGrid.Cost = Tech.Cost;
                 if (Tech is TechHull)
@@ -150,7 +156,10 @@ namespace CraigStars.Client
                 if (Tech is TechHull hull)
                 {
                     massLabel.Visible = massAmountLabel.Visible = false;
-                    AddStatsLabel("Fuel Capacity", $"{hull.FuelCapacity}mg");
+                    if (hull.FuelCapacity > 0)
+                    {
+                        AddStatsLabel("Fuel Capacity", $"{hull.FuelCapacity}mg");
+                    }
                     if (hull.CargoCapacity > 0)
                     {
                         AddStatsLabel("Cargo Capacity", $"{hull.CargoCapacity}kT");
@@ -193,10 +202,28 @@ namespace CraigStars.Client
                     engineGraph.Engine = engine;
                     engineGraph.UpdateControls();
                 }
+                else if (Tech is TechDefense defense)
+                {
+                    descriptionContainer.Visible = false;
+                    defenseGraph.Visible = true;
+                    defenseGraph.Defense = defense;
+                    defenseGraph.UpdateControls();
+                }
                 else if (Tech is TechHullComponent hullComponent)
                 {
                     massLabel.Visible = massAmountLabel.Visible = true;
                     massAmountLabel.Text = $"{hullComponent.Mass}kT";
+
+                    if (hullComponent.Category == TechCategory.MineLayer)
+                    {
+                        var mineFieldStats = GameInfo.Rules.MineFieldStatsByType[hullComponent.MineFieldType];
+                        AddStatsLabel("Mines laid per year", $"{hullComponent.MineLayingRate}");
+                        AddStatsLabel("Maximum safe speed", $"{mineFieldStats.MaxSpeed}");
+                        AddStatsLabel("Chance/l.y. of a hit", $"{mineFieldStats.ChanceOfHit * 100}%");
+                        AddStatsLabel("Dmg done to each ship", $"{mineFieldStats.DamagePerEngine} ({mineFieldStats.DamagePerEngineRS}) / engine");
+                        AddStatsLabel("Min damage done to fleet", $"{mineFieldStats.MinDamagePerFleet} ({mineFieldStats.MinDamagePerFleetRS})");
+                        AddDescription("Numbers in parenthesis are for fleets containing a ship with ram scoop engines. Note that the chance of hitting a mine goes up the % listed for EACH warp you exceed the safe speed.");
+                    }
 
                     if (hullComponent.Category == TechCategory.Shield && hullComponent.Armor > 0)
                     {
@@ -257,17 +284,32 @@ namespace CraigStars.Client
                         }
                     }
 
+                    if (hullComponent.MiningRate > 0)
+                    {
+                        AddDescription($"This module contains robots capable of mining up to {hullComponent.MiningRate}kT of each mineral (depending on concentration) from an uninhabited planet the ship is orbiting. The fleet must have orders set to 'Remote Mining'.");
+                    }
+
+                    if (hullComponent.TerraformRate > 0)
+                    {
+                        AddDescription($"This modified mining robot terraforms inhabited planets by {hullComponent.TerraformRate} per year. It has a positive effect on friendly planets, a negative effect on neutral and enemy planets.");
+
+                        if (hullComponent.CloakUnits > 0)
+                        {
+                            AddDescription($"It also provides {hullComponent.CloakUnits}% cloaking.");
+                        }
+                    }
+
                     if (hullComponent.StructureDestroyRate > 0)
                     {
                         AddDescription($"This bomb will destroy approximately {hullComponent.StructureDestroyRate} of a planet's mines, factories, and/or defenses each year.");
                     }
 
-                    if (hullComponent.TerraformRate > 0)
+                    if (hullComponent.UnterraformRate > 0)
                     {
                         AddDescription($"This bomb does not kill colonists or destroy installations. This bomb 'unterraforms' planets toward their original state up to {hullComponent.TerraformRate}% per variable per bombing run. Planetary defenses have no effect on this bomb.");
                     }
 
-                    if (hullComponent.CloakUnits > 0)
+                    if (hullComponent.CloakUnits > 0 && hullComponent.TerraformRate == 0)
                     {
                         if (hullComponent.CloakUnarmedOnly)
                         {
@@ -317,6 +359,101 @@ namespace CraigStars.Client
                     {
                         AddDescription($"The deflector decreases damage done by beam weapons to this ship by up to {hullComponent.BeamDefense}%");
                     }
+
+                    if (hullComponent.TorpedoBonus > 0 || hullComponent.InitiativeBonus > 0)
+                    {
+                        if (hullComponent.TorpedoBonus > 0 && hullComponent.InitiativeBonus > 0)
+                        {
+                            AddDescription($"This module increases the accuracy of your torpedos by {hullComponent.TorpedoBonus}% and increases your initiative by {hullComponent.InitiativeBonus}. If an enemy ship has jammers the computer acts to offset their effects.");
+                        }
+                        else if (hullComponent.InitiativeBonus > 0)
+                        {
+                            AddDescription($"This module increases your initiative by {hullComponent.InitiativeBonus}.");
+                        }
+                        else if (hullComponent.TorpedoBonus > 0)
+                        {
+                            AddDescription($"This module increases the accuracy of your torpedos by {hullComponent.TorpedoBonus}%. If an enemy ship has jammers the computer acts to offset their effects.");
+                        }
+                    }
+
+                    if (hullComponent.TorpedoJamming > 0)
+                    {
+                        AddDescription($"Has a {hullComponent.TorpedoJamming * 100}% chance of deflecting incoming torpedos. Deflected torpedoes will still reduce shields (in any by 1/8 the damage value).");
+                    }
+
+                    if (hullComponent.BeamBonus > 0)
+                    {
+                        AddDescription($"Increases the damage done by all beam weapons on their ship by {hullComponent.BeamBonus * 100}%.");
+                    }
+
+                    if (hullComponent.ReduceMovement > 0)
+                    {
+                        AddDescription($"Slows all ships in combat by {hullComponent.ReduceMovement} square of movement.");
+                    }
+
+                    if (hullComponent.ReduceCloaking)
+                    {
+                        AddDescription($"Reduces the effectiveness of other players cloaks by {GameInfo.Rules.TachyonCloakReduction}%.");
+                    }
+
+                    if (hullComponent.SafeRange > 0)
+                    {
+                        AddDescription($"Allows fleets without cargo to jump to any other planet with a Stargate in a single year.");
+                        AddStatsLabel("Safe hull mass", hullComponent.SafeHullMass == TechHullComponent.InfinteGate ? "Unlimited" : $"{hullComponent.SafeHullMass}kT");
+                        AddStatsLabel("Safe range", hullComponent.SafeRange == TechHullComponent.InfinteGate ? "Unlimited" : $"{hullComponent.SafeRange} light years");
+
+                        if (hullComponent.MaxHullMass != TechHullComponent.InfinteGate && hullComponent.MaxRange != TechHullComponent.InfinteGate)
+                        {
+                            AddWarning($"Warning: Ships up to {hullComponent.MaxHullMass}kT might be successfully gated up to {hullComponent.MaxRange} l.y. but exceeding the stated limits will cause damage to the fleet.");
+                        }
+                        else if (hullComponent.MaxHullMass != TechHullComponent.InfinteGate)
+                        {
+                            AddWarning($"Warning: Ships up to {hullComponent.MaxHullMass}kT can be successfully gated up but exceeding the stated limits will cause damage to the fleet.");
+                        }
+                        else if (hullComponent.MaxRange != TechHullComponent.InfinteGate)
+                        {
+                            AddWarning($"Warning: Ships can be successfully gated up to {hullComponent.MaxRange} l.y. but exceeding the stated limits will cause damage to the fleet.");
+                        }
+                    }
+
+                    if (hullComponent.PacketSpeed > 0)
+                    {
+                        AddStatsLabel("Warp", $"{hullComponent.PacketSpeed}");
+                        AddDescription("Allows planets to fling mineral packets at other planets.");
+                        AddWarning("Warning: The receiving planet must have a mass driver at least as capable or it will take damage.");
+                    }
+
+                    if (hullComponent.ScanRange > 0)
+                    {
+                        if (hullComponent.ScanRange > 0)
+                        {
+                            if (hullComponent.ScanRange == TechHullComponent.ScanWithZeroRange)
+                            {
+                                // special case for bat scanner
+                                AddDescription($"Enemy fleets cannot be detected boy this scanner unless they are at the same location as the scanner.");
+                            }
+                            else
+                            {
+                                AddDescription($"Enemy fleets not orbiting a planet can be detected up to {hullComponent.ScanRange} light years away.");
+                            }
+
+                            if (hullComponent.ScanRangePen == 0)
+                            {
+                                // we have no pen scan, but we are a normal scanner, we can still scan planets we orbit
+                                AddDescription($"This scanner is capable of determining a planet's environment and composition while in orbit of the planet.");
+                            }
+                        }
+
+                        if (hullComponent.ScanRangePen > 0)
+                        {
+                            AddDescription($"This scanner can determine a planet's basic stats from a distance up to {hullComponent.ScanRangePen} light years. The scanner will also spot enemy fleets attempting to hide behind planets within range.");
+                        }
+
+                        if (hullComponent.StealCargo)
+                        {
+                            AddDescription($"This scanner is capable of penetrating the defenses of enemy fleets and planets allowing you to steal their cargo.");
+                        }
+                    }
                 }
             }
         }
@@ -351,6 +488,20 @@ namespace CraigStars.Client
             {
                 Text = description,
                 Autowrap = true
+            });
+        }
+
+        /// <summary>
+        /// Add a descriptive label for this tech
+        /// </summary>
+        /// <param name="description"></param>
+        void AddWarning(string description)
+        {
+            descriptionContainer.AddChild(new Label()
+            {
+                Text = description,
+                Autowrap = true,
+                Modulate = Colors.Red
             });
         }
 

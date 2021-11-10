@@ -438,47 +438,48 @@ namespace CraigStars
         #endregion
         #region Miners
 
-        public static readonly TechHullComponent OrbitalAdjuster = new TechHullComponent("Orbital Adjuster", new Cost(25, 25, 25, 50), new TechRequirements(biotechnology: 6, prtRequired: PRT.CA), 0, TechCategory.MineRobot)
-        {
-            Mass = 80,
-            CloakUnits = 50,
-            TerraformRate = 1,
-            HullSlotType = HullSlotType.Mining,
-        };
         public static readonly TechHullComponent RoboMiner = new TechHullComponent("Robo-Miner", new Cost(30, 0, 7, 100), new TechRequirements(construction: 4, electronics: 2, lrtsDenied: LRT.OBRM), 0, TechCategory.MineRobot)
         {
             Mass = 240,
             MiningRate = 12,
             HullSlotType = HullSlotType.Mining,
         };
-        public static readonly TechHullComponent RoboMaxiMiner = new TechHullComponent("Robo-Maxi-Miner", new Cost(30, 0, 7, 100), new TechRequirements(construction: 7, electronics: 4, lrtsDenied: LRT.OBRM), 0, TechCategory.MineRobot)
+        public static readonly TechHullComponent RoboMaxiMiner = new TechHullComponent("Robo-Maxi-Miner", new Cost(30, 0, 7, 100), new TechRequirements(construction: 7, electronics: 4, lrtsDenied: LRT.OBRM), 10, TechCategory.MineRobot)
         {
             Mass = 240,
             MiningRate = 18,
             HullSlotType = HullSlotType.Mining,
         };
-        public static readonly TechHullComponent RoboMidgetMiner = new TechHullComponent("Robo-Midget-Miner", new Cost(12, 0, 4, 44), new TechRequirements(lrtsRequired: LRT.ARM), 0, TechCategory.MineRobot)
+        public static readonly TechHullComponent RoboMidgetMiner = new TechHullComponent("Robo-Midget-Miner", new Cost(12, 0, 4, 44), new TechRequirements(lrtsRequired: LRT.ARM), 20, TechCategory.MineRobot)
         {
             Mass = 80,
             MiningRate = 5,
             HullSlotType = HullSlotType.Mining,
         };
-        public static readonly TechHullComponent RoboMiniMiner = new TechHullComponent("Robo-Mini-Miner", new Cost(29, 0, 7, 96), new TechRequirements(construction: 2, electronics: 1), 0, TechCategory.MineRobot)
+        public static readonly TechHullComponent RoboMiniMiner = new TechHullComponent("Robo-Mini-Miner", new Cost(29, 0, 7, 96), new TechRequirements(construction: 2, electronics: 1), 30, TechCategory.MineRobot)
         {
             Mass = 240,
             MiningRate = 4,
             HullSlotType = HullSlotType.Mining,
         };
-        public static readonly TechHullComponent RoboSuperMiner = new TechHullComponent("Robo-Super-Miner", new Cost(30, 0, 7, 100), new TechRequirements(construction: 12, electronics: 6, lrtsDenied: LRT.OBRM), 0, TechCategory.MineRobot)
+        public static readonly TechHullComponent RoboSuperMiner = new TechHullComponent("Robo-Super-Miner", new Cost(30, 0, 7, 100), new TechRequirements(construction: 12, electronics: 6, lrtsDenied: LRT.OBRM), 40, TechCategory.MineRobot)
         {
             Mass = 240,
             MiningRate = 27,
             HullSlotType = HullSlotType.Mining,
         };
-        public static readonly TechHullComponent RoboUltraMiner = new TechHullComponent("Robo-Ultra-Miner", new Cost(14, 0, 4, 100), new TechRequirements(construction: 15, electronics: 8, lrtsRequired: LRT.ARM, lrtsDenied: LRT.OBRM), 0, TechCategory.MineRobot)
+        public static readonly TechHullComponent RoboUltraMiner = new TechHullComponent("Robo-Ultra-Miner", new Cost(14, 0, 4, 100), new TechRequirements(construction: 15, electronics: 8, lrtsRequired: LRT.ARM, lrtsDenied: LRT.OBRM), 50, TechCategory.MineRobot)
         {
             Mass = 80,
             MiningRate = 25,
+            HullSlotType = HullSlotType.Mining,
+        };
+
+        public static readonly TechHullComponent OrbitalAdjuster = new TechHullComponent("Orbital Adjuster", new Cost(25, 25, 25, 50), new TechRequirements(biotechnology: 6, prtRequired: PRT.CA), 60, TechCategory.MineRobot)
+        {
+            Mass = 80,
+            CloakUnits = 25,
+            TerraformRate = 1,
             HullSlotType = HullSlotType.Mining,
         };
 
@@ -596,7 +597,7 @@ namespace CraigStars
         {
             HullSlotType = HullSlotType.Scanner,
             Mass = 2,
-            ScanRange = 1
+            ScanRange = TechHullComponent.ScanWithZeroRange
         };
         public static readonly TechHullComponent RhinoScanner = new TechHullComponent("Rhino Scanner", new Cost(3, 0, 2, 3), new TechRequirements(electronics: 1), 20, TechCategory.Scanner)
         {
@@ -838,42 +839,42 @@ namespace CraigStars
         public static readonly TechHullComponent Jammer10 = new TechHullComponent("Jammer 10", new Cost(0, 0, 2, 6), new TechRequirements(energy: 2, electronics: 6, prtRequired: PRT.IS), 70, TechCategory.Electrical)
         {
             Mass = 1,
-            TorpedoJamming = 1,
+            TorpedoJamming = .1f,
             HullSlotType = HullSlotType.Electrical,
         };
 
         public static readonly TechHullComponent Jammer20 = new TechHullComponent("Jammer 20", new Cost(1, 0, 5, 20), new TechRequirements(energy: 4, electronics: 10), 80, TechCategory.Electrical)
         {
             Mass = 1,
-            TorpedoJamming = 2,
+            TorpedoJamming = .2f,
             HullSlotType = HullSlotType.Electrical,
         };
 
         public static readonly TechHullComponent Jammer30 = new TechHullComponent("Jammer 30", new Cost(1, 0, 6, 20), new TechRequirements(energy: 8, electronics: 16), 90, TechCategory.Electrical)
         {
             Mass = 1,
-            TorpedoJamming = 3,
+            TorpedoJamming = .3f,
             HullSlotType = HullSlotType.Electrical,
         };
 
         public static readonly TechHullComponent Jammer50 = new TechHullComponent("Jammer 50", new Cost(2, 0, 7, 20), new TechRequirements(energy: 16, electronics: 22), 100, TechCategory.Electrical)
         {
             Mass = 1,
-            TorpedoJamming = 5,
+            TorpedoJamming = .5f,
             HullSlotType = HullSlotType.Electrical,
         };
 
         public static readonly TechHullComponent EnergyCapacitor = new TechHullComponent("Energy Capacitor", new Cost(0, 0, 8, 5), new TechRequirements(energy: 7, electronics: 4), 110, TechCategory.Electrical)
         {
             Mass = 1,
-            BeamBonus = 1,
+            BeamBonus = .1f,
             HullSlotType = HullSlotType.Electrical,
         };
 
         public static readonly TechHullComponent FluxCapacitor = new TechHullComponent("Flux Capacitor", new Cost(0, 0, 8, 5), new TechRequirements(energy: 14, electronics: 8, prtRequired: PRT.HE), 120, TechCategory.Electrical)
         {
             Mass = 1,
-            BeamBonus = 1,
+            BeamBonus = .1f,
             HullSlotType = HullSlotType.Electrical,
         };
 
@@ -891,10 +892,6 @@ namespace CraigStars
             HullSlotType = HullSlotType.Electrical,
         };
 
-        #endregion
-
-        #region MysteryTrader
-
         public static readonly TechHullComponent AntiMatterGenerator = new TechHullComponent("Anti-Matter Generator", new Cost(8, 3, 3, 10), new TechRequirements(weapons: 12, biotechnology: 7, prtRequired: PRT.IT), 150, TechCategory.Electrical)
         {
             Mass = 10,
@@ -902,6 +899,10 @@ namespace CraigStars
             FuelBonus = 200,
             HullSlotType = HullSlotType.Electrical,
         };
+
+        #endregion
+
+        #region MysteryTrader
 
         #endregion
 

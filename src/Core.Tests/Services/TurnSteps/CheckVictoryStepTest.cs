@@ -38,7 +38,7 @@ namespace CraigStars.Tests
             // this player owns all planets
             // Discover this planet so our score calculation is aware of it
             playerIntel.Discover(player, game.Planets[0]);
-            var step = new CheckVictoryStep(gameRunner.GameProvider, new PlanetService(new PlayerTechService(new TestTechStoreProvider())));
+            var step = new CheckVictoryStep(gameRunner.GameProvider, planetService);
             step.CheckOwnPlanets(player);
 
             Assert.IsTrue(player.AchievedVictoryConditions.Contains(VictoryConditionType.OwnPlanets));

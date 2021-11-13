@@ -21,7 +21,7 @@ namespace CraigStars.Tests
         Game game;
         GameRunner gameRunner;
         PlanetProductionStep step;
-        PlanetService planetService = new PlanetService(new PlayerTechService(new TestTechStoreProvider()));
+        PlanetService planetService = TestUtils.TestContainer.GetInstance<PlanetService>();
 
         [SetUp]
         public void SetUp()

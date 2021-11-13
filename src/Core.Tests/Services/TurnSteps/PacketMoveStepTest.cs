@@ -18,7 +18,7 @@ namespace CraigStars.Tests
     {
         static CSLog log = LogProvider.GetLogger(typeof(PacketMoveStepTest));
 
-        PlanetService planetService = new PlanetService(new PlayerTechService(new TestTechStoreProvider()));
+        PlanetService planetService = TestUtils.TestContainer.GetInstance<PlanetService>();
 
         [Test]
         public void TestCompleteMoveCaught()

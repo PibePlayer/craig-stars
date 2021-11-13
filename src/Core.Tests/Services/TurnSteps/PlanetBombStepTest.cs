@@ -17,7 +17,7 @@ namespace CraigStars.Tests
         [SetUp]
         public void SetUp()
         {
-            PlanetService planetService = new PlanetService(new PlayerTechService(new TestTechStoreProvider()));
+            PlanetService planetService = TestUtils.TestContainer.GetInstance<PlanetService>();
             GameRunner gameRunner;
             (game, gameRunner) = TestUtils.GetSingleUnitGame();
             planetBomber = new PlanetBombStep(gameRunner.GameProvider, planetService);

@@ -138,16 +138,23 @@ namespace CraigStars
                         }
                         break;
                     case HullSlotType.Mining:
-                        slot.HullComponent = playerTechService.GetBestMineRobot(player);
+                        if (design.Purpose == ShipDesignPurpose.Terraformer)
+                        {
+                            slot.HullComponent = playerTechService.GetBestTerraformer(player);
+                        }
+                        else
+                        {
+                            slot.HullComponent = playerTechService.GetBestMineRobot(player);
+                        }
                         break;
                     case HullSlotType.MineLayer:
                         if (design.Purpose == ShipDesignPurpose.SpeedMineLayer)
                         {
-                            slot.HullComponent = playerTechService.GetBestMineLayer(player);
+                            slot.HullComponent = playerTechService.GetBestSpeedTrapLayer(player);
                         }
                         else
                         {
-                            slot.HullComponent = playerTechService.GetBestSpeedTrapLayer(player);
+                            slot.HullComponent = playerTechService.GetBestMineLayer(player);
                         }
                         break;
                     case HullSlotType.Orbital:

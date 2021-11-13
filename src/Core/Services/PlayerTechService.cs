@@ -179,7 +179,26 @@ namespace CraigStars
         /// <returns></returns>
         public TechHullComponent GetBestMineRobot(Player player)
         {
-            return GetBestTech<TechHullComponent>(player, TechCategory.MineRobot);
+            var techs = TechStore.GetTechsByCategory(TechCategory.MineRobot)
+                .Where(t => t is TechHullComponent hc && HasTech(player, hc) && hc.TerraformRate != 0)
+                .OrderByDescending(t => t.Ranking);
+
+
+            return techs.FirstOrDefault() as TechHullComponent;
+        }
+
+        /// <summary>
+        /// Get the best mine layer this player has access to
+        /// </summary>
+        /// <returns></returns>
+        public TechHullComponent GetBestTerraformer(Player player)
+        {
+            var techs = TechStore.GetTechsByCategory(TechCategory.MineRobot)
+                .Where(t => t is TechHullComponent hc && HasTech(player, hc) && hc.TerraformRate > 0)
+                .OrderByDescending(t => t.Ranking);
+
+
+            return techs.FirstOrDefault() as TechHullComponent;
         }
 
         /// <summary>

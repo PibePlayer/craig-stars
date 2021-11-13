@@ -56,6 +56,20 @@ namespace CraigStars.UniverseGeneration
                 case PRT.HE:
                     designs.Add(designer.DesignShip(Techs.MiniColonyShip, "Spore Cloud", player, player.DefaultHullSet, ShipDesignPurpose.Colonizer));
                 break;
+                case PRT.SS:
+                    designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player, player.DefaultHullSet, ShipDesignPurpose.Colonizer));
+                break;
+                case PRT.WM:
+                    designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player, player.DefaultHullSet, ShipDesignPurpose.Colonizer));
+                    designs.Add(designer.DesignShip(Techs.Scout, "Armed Probe", player, player.DefaultHullSet, ShipDesignPurpose.ArmedScout));
+                    break;
+                case PRT.CA:
+                    designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player, player.DefaultHullSet, ShipDesignPurpose.Colonizer));
+                    designs.Add(designer.DesignShip(Techs.MiniMiner, "Change of Heart", player, player.DefaultHullSet, ShipDesignPurpose.Terraformer));
+                    break;
+                case PRT.IS:
+                    designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player, player.DefaultHullSet, ShipDesignPurpose.Colonizer));
+                    break;
                 case PRT.SD:
                     designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player, player.DefaultHullSet, ShipDesignPurpose.Colonizer));
                     designs.Add(designer.DesignShip(Techs.MiniMineLayer, "Little Hen", player, player.DefaultHullSet, ShipDesignPurpose.DamageMineLayer));
@@ -65,6 +79,9 @@ namespace CraigStars.UniverseGeneration
                     designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player, player.DefaultHullSet, ShipDesignPurpose.Colonizer));
                     designs.Add(designer.DesignShip(Techs.Privateer, "Swashbuckler", player, player.DefaultHullSet, ShipDesignPurpose.ArmedFreighter));
                     designs.Add(designer.DesignShip(Techs.Destroyer, "Stalwart Defender", player, player.DefaultHullSet, ShipDesignPurpose.FighterScout));
+                    break;
+                case PRT.AR:
+                    designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player, player.DefaultHullSet, ShipDesignPurpose.Colonizer));
                     break;
                 case PRT.JoaT:
                     designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player, player.DefaultHullSet, ShipDesignPurpose.Colonizer));

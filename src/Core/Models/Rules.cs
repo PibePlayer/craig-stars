@@ -147,6 +147,9 @@ namespace CraigStars
         [DefaultValue(.5f)]
         public float ISFreighterGrowthFactor = .5f;
 
+        [DefaultValue(2f)]
+        public float HEGrowthFactor = 2f;
+
         /// <summary>
         /// SS races have 300 cloak units built in (or 75% cloaking)
         /// </summary>

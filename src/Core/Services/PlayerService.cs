@@ -21,6 +21,22 @@ namespace CraigStars
         #region PRT and LRT logic
 
         /// <summary>
+        /// Any population growth bonus this race gets, i.e. HE gets 2x growth
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="rules"></param>
+        /// <returns></returns>
+        public float GetGrowthFactor(Player player) => player.Race.PRT == PRT.HE ? Rules.HEGrowthFactor : 1.0f;
+        
+        /// <summary>
+        /// The rate this player's colonists grow on freighters, defaults to 0, but IS grows .5 * their growth rate
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="rules"></param>
+        /// <returns></returns>
+        public float GetFreighterGrowthFactor(Player player) => player.Race.PRT == PRT.IS ? Rules.ISFreighterGrowthFactor : 0.0f;
+
+        /// <summary>
         /// Does this race discover a ShipDesign's components on scan?
         /// </summary>
         /// <value></value>

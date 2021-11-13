@@ -47,22 +47,27 @@ namespace CraigStars.UniverseGeneration
         {
             List<ShipDesign> designs = new List<ShipDesign>();
 
-            // every player gets scouts and colony ships
+            // every player gets a long range scout
             designs.Add(designer.DesignShip(Techs.Scout, "Long Range Scout", player, player.DefaultHullSet, ShipDesignPurpose.Scout));
-            designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player, player.DefaultHullSet, ShipDesignPurpose.Colonizer));
 
             // PRT specific starting designs
             switch (player.Race.PRT)
             {
+                case PRT.HE:
+                    designs.Add(designer.DesignShip(Techs.MiniColonyShip, "Spore Cloud", player, player.DefaultHullSet, ShipDesignPurpose.Colonizer));
+                break;
                 case PRT.SD:
+                    designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player, player.DefaultHullSet, ShipDesignPurpose.Colonizer));
                     designs.Add(designer.DesignShip(Techs.MiniMineLayer, "Little Hen", player, player.DefaultHullSet, ShipDesignPurpose.DamageMineLayer));
                     designs.Add(designer.DesignShip(Techs.MiniMineLayer, "Speed Turtle", player, player.DefaultHullSet, ShipDesignPurpose.SpeedMineLayer));
                     break;
                 case PRT.IT:
+                    designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player, player.DefaultHullSet, ShipDesignPurpose.Colonizer));
                     designs.Add(designer.DesignShip(Techs.Privateer, "Swashbuckler", player, player.DefaultHullSet, ShipDesignPurpose.ArmedFreighter));
                     designs.Add(designer.DesignShip(Techs.Destroyer, "Stalwart Defender", player, player.DefaultHullSet, ShipDesignPurpose.FighterScout));
                     break;
                 case PRT.JoaT:
+                    designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player, player.DefaultHullSet, ShipDesignPurpose.Colonizer));
                     designs.Add(designer.DesignShip(Techs.Scout, "Armed Probe", player, player.DefaultHullSet, ShipDesignPurpose.ArmedScout));
                     designs.Add(designer.DesignShip(Techs.MediumFreighter, "Teamster", player, player.DefaultHullSet, ShipDesignPurpose.Freighter));
                     designs.Add(designer.DesignShip(Techs.MiniMiner, "Cotton Picker", player, player.DefaultHullSet, ShipDesignPurpose.Miner));

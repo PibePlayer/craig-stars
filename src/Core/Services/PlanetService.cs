@@ -11,10 +11,12 @@ namespace CraigStars
     /// </summary>
     public class PlanetService
     {
+        private readonly PlayerService playerService;
         private readonly PlayerTechService playerTechService;
 
-        public PlanetService(PlayerTechService playerTechService)
+        public PlanetService(PlayerService playerService, PlayerTechService playerTechService)
         {
+            this.playerService = playerService;
             this.playerTechService = playerTechService;
         }
 
@@ -90,13 +92,14 @@ namespace CraigStars
         public int GetGrowthAmount(Planet planet, Player player, Rules rules)
         {
             var race = player.Race;
+            var growthFactor = playerService.GetGrowthFactor(player);
             if (planet.Hab is Hab hab)
             {
                 double capacity = ((double)planet.Population / GetMaxPopulation(planet, player, rules));
                 var habValue = race.GetPlanetHabitability(hab);
                 if (habValue > 0)
                 {
-                    int popGrowth = (int)(planet.Population * (race.GrowthRate / 100.0) * (habValue / 100.0));
+                    int popGrowth = (int)(planet.Population * (race.GrowthRate * growthFactor / 100.0) * (habValue / 100.0));
 
                     if (capacity > .25)
                     {
@@ -117,6 +120,7 @@ namespace CraigStars
             }
             return 0;
         }
+
 
         #endregion
 

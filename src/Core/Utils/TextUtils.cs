@@ -12,7 +12,11 @@ namespace CraigStars.Utils
             switch (prt)
             {
                 case PRT.HE:
-                    return prt.ToString();
+                    return @"You must expand to survive. You are given a small and cheap colony hull
+and an engine which travels at Warp 6 using no fuel. Your race will grow
+at twice the growth rate you select in step four; however, the maximum
+population for a given planet is cut in half. The completely flexible Meta
+Morph hull will be available only to your race.".Replace("\n", "");;
                 case PRT.SS:
                     return prt.ToString();
                 case PRT.WM:

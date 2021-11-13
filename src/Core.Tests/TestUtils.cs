@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Godot;
+using SimpleInjector;
 
 namespace CraigStars.Tests
 {
@@ -8,17 +9,59 @@ namespace CraigStars.Tests
     /// </summary>
     public static class TestUtils
     {
+        public static SimpleInjector.Container TestContainer { get; set; } = new();
+
+        /// <summary>
+        /// Most of the services are just ways to logically separate functionality 
+        /// so we don't have multi-thousand line Planet, Game, Player, and Fleet
+        /// classes. We provide a SimpleInjector to wire up these dependencies
+        /// so it's easier to get an instance of things like the PlayerIntel, which has a big tree
+        /// when doing a test.
+        /// 
+        /// I know they *should* be mocked and you should test single bits only, but none
+        /// of this code talks to an external system, it's just game logic so I don't see
+        /// harm in it running during tests
+        /// </summary>
+        static TestUtils()
+        {
+            TestContainer.RegisterInstance<IProvider<ITechStore>>(new Provider<ITechStore>(StaticTechStore.Instance));
+            TestContainer.RegisterInstance<ITechStore>(StaticTechStore.Instance);
+            TestContainer.Register<IRulesProvider, TestRulesProvider>(Lifestyle.Singleton);
+
+            TestContainer.Register<PlanetService>(Lifestyle.Singleton);
+            TestContainer.Register<PlayerService>(Lifestyle.Singleton);
+            TestContainer.Register<FleetService>(Lifestyle.Singleton);
+            TestContainer.Register<Researcher>(Lifestyle.Singleton);
+            TestContainer.Register<PlayerTechService>(Lifestyle.Singleton);
+            TestContainer.Register<ShipDesignGenerator>(Lifestyle.Singleton);
+            TestContainer.Register<InvasionProcessor>(Lifestyle.Singleton);
+            TestContainer.Register<MineFieldDamager>(Lifestyle.Singleton);
+            TestContainer.Register<ProductionQueueEstimator>(Lifestyle.Singleton);
+
+            // register player intel and all discoverers
+            TestContainer.Register<PlayerIntel>(Lifestyle.Singleton);
+
+            TestContainer.Register<PlanetDiscoverer>(Lifestyle.Singleton);
+            TestContainer.Register<FleetDiscoverer>(Lifestyle.Singleton);
+            TestContainer.Register<ShipDesignDiscoverer>(Lifestyle.Singleton);
+            TestContainer.Register<MineFieldDiscoverer>(Lifestyle.Singleton);
+            TestContainer.Register<MineralPacketDiscoverer>(Lifestyle.Singleton);
+            TestContainer.Register<SalvageDiscoverer>(Lifestyle.Singleton);
+            TestContainer.Register<WormholeDiscoverer>(Lifestyle.Singleton);
+            TestContainer.Register<MysteryTraderDiscoverer>(Lifestyle.Singleton);
+
+            TestContainer.Verify();
+
+        }
+
         /// <summary>
         /// Test helper method to return a simple game
         /// </summary>
         /// <returns>A game with one planet, one player, one fleet</returns>
-        internal static Game GetSingleUnitGame()
+        internal static (Game, GameRunner) GetSingleUnitGame()
         {
-            PlayerIntel playerIntel = new();
-            Game game = new()
-            {
-                TechStore = StaticTechStore.Instance
-            };
+            GameRunner gameRunner = GameRunnerContainer.CreateGameRunner(new Game(), StaticTechStore.Instance);
+            var game = gameRunner.Game;
             var player = new Player()
             {
                 BattlePlans = new()
@@ -26,7 +69,7 @@ namespace CraigStars.Tests
                     new BattlePlan("Default")
                 }
             };
-            
+
             game.Players.Add(player);
 
             // create an empty planet and make the player aware of it
@@ -40,6 +83,8 @@ namespace CraigStars.Tests
                 MineralConcentration = new Mineral(100, 100, 100),
             };
             game.Planets.Add(planet);
+
+            var playerIntel = TestContainer.GetInstance<PlayerIntel>();
             playerIntel.Discover(player, planet);
 
             // take ownership of this planet
@@ -74,22 +119,19 @@ namespace CraigStars.Tests
 
             player.SetupMapObjectMappings();
             game.UpdateInternalDictionaries();
-            game.AfterTurnGeneration();
+            gameRunner.AfterTurnGeneration();
 
-            return game;
+            return (game, gameRunner);
         }
 
         /// <summary>
         /// Test helper method to return a game with 2 players, 2 planets, and 2 fleets
         /// </summary>
         /// <returns>A game with 2 players, 2 planets, and 2 fleets</returns>
-        internal static Game GetTwoPlayerGame()
+        internal static (Game, GameRunner) GetTwoPlayerGame()
         {
-            PlayerIntel playerIntel = new();
-            Game game = new()
-            {
-                TechStore = StaticTechStore.Instance
-            };
+            GameRunner gameRunner = GameRunnerContainer.CreateGameRunner(new Game(), StaticTechStore.Instance);
+            var game = gameRunner.Game;
             var player1 = new Player()
             {
                 Name = "Player 1",
@@ -132,6 +174,8 @@ namespace CraigStars.Tests
             };
             game.Planets.Add(planet1);
             game.Planets.Add(planet2);
+
+            var playerIntel = TestContainer.GetInstance<PlayerIntel>();
             game.Planets.ForEach(planet =>
             {
                 playerIntel.Discover(player1, planet);
@@ -198,9 +242,9 @@ namespace CraigStars.Tests
             player1.SetupMapObjectMappings();
             player2.SetupMapObjectMappings();
             game.UpdateInternalDictionaries();
-            game.AfterTurnGeneration();
+            gameRunner.AfterTurnGeneration();
 
-            return game;
+            return (game, gameRunner);
         }
 
         /// <summary>

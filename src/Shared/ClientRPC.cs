@@ -275,7 +275,7 @@ namespace CraigStars.Singletons
         public void SendGameStarted(Game game)
         {
             string gameInfoJson = Serializers.Serialize(game.GameInfo);
-            var playerSerializationSettings = Serializers.CreatePlayerSettings(game.TechStore);
+            var playerSerializationSettings = Serializers.CreatePlayerSettings(TechStore.Instance);
             foreach (var player in game.Players.Where(player => !player.AIControlled && player.NetworkId != 0))
             {
                 string playerJson = Serializers.Serialize(player, playerSerializationSettings);
@@ -354,7 +354,7 @@ namespace CraigStars.Singletons
         public void SendTurnPassed(Game game)
         {
             string gameInfoJson = Serializers.Serialize(game.GameInfo);
-            var playerSerializationSettings = Serializers.CreatePlayerSettings(game.TechStore);
+            var playerSerializationSettings = Serializers.CreatePlayerSettings(TechStore.Instance);
             foreach (var player in game.Players.Where(player => !player.AIControlled && player.NetworkId != 0))
             {
                 string playerJson = Serializers.Serialize(player, playerSerializationSettings);

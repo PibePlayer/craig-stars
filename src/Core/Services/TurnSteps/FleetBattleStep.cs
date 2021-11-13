@@ -9,11 +9,11 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(FleetBattleStep));
 
-        BattleEngine battleEngine;
+        private readonly BattleEngine battleEngine;
 
-        public FleetBattleStep(Game game) : base(game, TurnGenerationState.Battle)
+        public FleetBattleStep(IProvider<Game> gameProvider, BattleEngine battleEngine) : base(gameProvider, TurnGenerationState.Battle)
         {
-            battleEngine = new BattleEngine(Game);
+            this.battleEngine = battleEngine;
         }
 
         public override void PreProcess(List<Planet> ownedPlanets)

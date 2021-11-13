@@ -12,9 +12,16 @@ namespace CraigStars.UniverseGeneration
     /// </summary>
     public class GameStartModeModifierStep : UniverseGenerationStep
     {
-        PlanetService planetService = new();
+        private readonly PlanetService planetService;
+        private readonly PlanetGrowStep planetGrowStep;
+        private readonly Researcher researcher;
 
-        public GameStartModeModifierStep(Game game) : base(game, UniverseGenerationState.GameStartMode) { }
+        public GameStartModeModifierStep(IProvider<Game> gameProvider, PlanetService planetService, PlanetGrowStep planetGrowStep, Researcher researcher) : base(gameProvider, UniverseGenerationState.GameStartMode)
+        {
+            this.planetService = planetService;
+            this.planetGrowStep = planetGrowStep;
+            this.researcher = researcher;
+        }
 
         public override void Process()
         {
@@ -36,13 +43,11 @@ namespace CraigStars.UniverseGeneration
             int defenseBonus = 90;
             var ownedPlanets = game.OwnedPlanets.ToList();
 
-            Researcher playerResearcher = new();
             game.Players.ForEach(player =>
             {
-                playerResearcher.ResearchNextLevel(player, techBonus);
+                researcher.ResearchNextLevel(player, techBonus);
             });
 
-            PlanetGrowStep planetGrowStep = new PlanetGrowStep(game);
             planetGrowStep.PreProcess(ownedPlanets);
             for (int i = 0; i < growthYears; i++)
             {

@@ -1,12 +1,13 @@
 using Godot;
 using System;
 using CraigStars.Singletons;
+using CraigStars.Utils;
 
 namespace CraigStars.Client
 {
     public class PlanetSummaryContainer : VBoxContainer
     {
-        PlanetService planetService = new();
+        [Inject] protected PlanetService planetService;
 
         Player Me { get => PlayersManager.Me; }
         PublicGameInfo GameInfo { get => PlayersManager.GameInfo; }
@@ -41,6 +42,7 @@ namespace CraigStars.Client
 
         public override void _Ready()
         {
+            this.ResolveDependencies();
             valueLabel = (Label)FindNode("Value");
             valueTerraformedLabel = (Label)FindNode("ValueTerraformed");
             reportAgeLabel = (Label)FindNode("ReportAge");

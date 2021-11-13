@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CraigStars
+namespace CraigStars.Singletons
 {
     /// <summary>
     /// We may want game specific tech stores. For now we
@@ -44,11 +44,6 @@ namespace CraigStars
             instance = this;
         }
 
-
-        public IEnumerable<Tech> GetAvailableTechs(Player player)
-        {
-            return techStore.GetAvailableTechs(player);
-        }
 
         public IEnumerable<TechCategory> GetCategoriesForTechs(IEnumerable<Tech> techs)
         {

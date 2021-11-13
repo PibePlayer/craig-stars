@@ -9,13 +9,14 @@ namespace CraigStars
     public class FleetOrderExecutor
     {
         static CSLog log = LogProvider.GetLogger(typeof(FleetOrderExecutor));
-        FleetService fleetService = new();
 
-        public Game Game { get; }
+        private readonly Game game;
+        private readonly FleetService fleetService;
 
-        public FleetOrderExecutor(Game game)
+        public FleetOrderExecutor(Game game, FleetService fleetService)
         {
-            Game = game;
+            this.game = game;
+            this.fleetService = fleetService;
         }
 
         /// <summary>
@@ -48,8 +49,8 @@ namespace CraigStars
 
         void ExecuteCargoTransferOrder(Player player, CargoTransferOrder order)
         {
-            if (Game.CargoHoldersByGuid.TryGetValue(order.Source.Guid, out var source) &&
-            Game.CargoHoldersByGuid.TryGetValue(order.Dest.Guid, out var dest))
+            if (game.CargoHoldersByGuid.TryGetValue(order.Source.Guid, out var source) &&
+            game.CargoHoldersByGuid.TryGetValue(order.Dest.Guid, out var dest))
             {
                 // make sure our source can lose the cargo
                 var result = source.AttemptTransfer(order.Transfer, order.FuelTransfer);
@@ -73,14 +74,14 @@ namespace CraigStars
 
         void ExecuteMergeFleetOrder(Player player, MergeFleetOrder order)
         {
-            if (Game.FleetsByGuid.TryGetValue(order.Source.Guid, out var source))
+            if (game.FleetsByGuid.TryGetValue(order.Source.Guid, out var source))
             {
                 if (source.PlayerNum == player.Num)
                 {
                     List<Fleet> mergingFleets = new List<Fleet>();
                     foreach (var playerFleet in order.MergingFleets)
                     {
-                        if (Game.FleetsByGuid.TryGetValue(playerFleet.Guid, out var mergingFleet))
+                        if (game.FleetsByGuid.TryGetValue(playerFleet.Guid, out var mergingFleet))
                         {
                             if (mergingFleet.PlayerNum == player.Num)
                             {
@@ -123,7 +124,7 @@ namespace CraigStars
 
         void ExecuteSplitAllFleetOrder(Player player, SplitAllFleetOrder order)
         {
-            if (Game.FleetsByGuid.TryGetValue(order.Source.Guid, out var source))
+            if (game.FleetsByGuid.TryGetValue(order.Source.Guid, out var source))
             {
                 if (source.PlayerNum == player.Num)
                 {

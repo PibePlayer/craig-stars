@@ -23,6 +23,7 @@ namespace CraigStars.Client
         protected void PublishItemActivatedEvent(ProductionQueueItem item) => ItemActivatedEvent?.Invoke(item);
 
         protected Player Me { get => PlayersManager.Me; }
+        protected PublicGameInfo GameInfo { get => PlayersManager.GameInfo; }
 
         public List<ProductionQueueItem> Items { get; set; } = new List<ProductionQueueItem>();
         public int SelectedItemIndex = NoItemSelected;

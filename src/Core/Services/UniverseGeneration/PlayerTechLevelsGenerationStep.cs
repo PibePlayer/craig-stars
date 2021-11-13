@@ -12,7 +12,7 @@ namespace CraigStars.UniverseGeneration
     /// </summary>
     public class PlayerTechLevelsGenerationStep : UniverseGenerationStep
     {
-        public PlayerTechLevelsGenerationStep(Game game) : base(game, UniverseGenerationState.TechLevels) { }
+        public PlayerTechLevelsGenerationStep(IProvider<Game> gameProvider) : base(gameProvider, UniverseGenerationState.TechLevels) { }
 
         public override void Process()
         {

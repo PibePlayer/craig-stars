@@ -9,6 +9,8 @@ namespace CraigStars.Client
 {
     public class TechSummary : Control
     {
+        [Inject] protected PlayerTechService playerTechService;
+
         protected Player Me { get => PlayersManager.Me; }
         protected PublicGameInfo GameInfo { get => PlayersManager.GameInfo; }
 
@@ -58,6 +60,7 @@ namespace CraigStars.Client
 
         public override void _Ready()
         {
+            this.ResolveDependencies();
             base._Ready();
             costGrid = FindNode("CostGrid") as CostGrid;
             nameLabel = FindNode("NameLabel") as Label;
@@ -512,7 +515,7 @@ namespace CraigStars.Client
         void UpdateRequirements(Tech tech)
         {
             // if this tech is never learnable by us, make it invisible
-            unavailableLabel.Visible = !Me.CanLearnTech(tech);
+            unavailableLabel.Visible = !playerTechService.CanLearnTech(Me, tech);
 
             var reqs = tech.Requirements;
             // We only show things > 0

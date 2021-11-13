@@ -16,6 +16,21 @@ namespace CraigStars
     using System;
     using System.Reflection;
 
+    public class GodotAppender : AppenderSkeleton
+    {
+        protected override void Append(LoggingEvent loggingEvent)
+        {
+            if (loggingEvent.Level == Level.Error)
+            {
+                GD.PrintErr(loggingEvent.RenderedMessage);
+            }
+            else
+            {
+                GD.Print(loggingEvent.RenderedMessage);
+            }
+        }
+    }
+
     /// <summary>
     /// Detect if we are running as part of a nUnit unit test.
     /// This is DIRTY and should only be used if absolutely necessary 
@@ -113,6 +128,11 @@ namespace CraigStars
                 };
 
                 logger.Hierarchy.Root.AddAppender(consoleAppender);
+                // logger.Hierarchy.Root.AddAppender(new GodotAppender()
+                // {
+                //     Name = "GodotAppender",
+                //     Layout = new PatternLayout(logLayoutPattern)
+                // });
                 logger.Hierarchy.Configured = true;
 
                 log.Info("log4net Configured");

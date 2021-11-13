@@ -136,16 +136,6 @@ namespace CraigStars
         }
 
         /// <summary>
-        /// Get a list of all techs available to the player
-        /// </summary>
-        /// <param name="player"></param>
-        /// <returns></returns>
-        public IEnumerable<Tech> GetAvailableTechs(Player player)
-        {
-            return Techs.Where(tech => player.HasTech(tech)).ToList();
-        }
-
-        /// <summary>
         /// Get a list of categories, sorted, for a set of techs.
         /// </summary>
         /// <param name="techs">The techs to get categories for</param>

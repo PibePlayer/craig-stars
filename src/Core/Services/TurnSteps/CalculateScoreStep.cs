@@ -26,9 +26,12 @@ namespace CraigStars
     /// </summary>
     public class CalculateScoreStep : TurnGenerationStep
     {
-        PlanetService planetService = new();
+        private readonly PlanetService planetService;
 
-        public CalculateScoreStep(Game game) : base(game, TurnGenerationState.CalculatingScore) { }
+        public CalculateScoreStep(IProvider<Game> gameProvider, PlanetService planetService) : base(gameProvider, TurnGenerationState.CalculatingScore)
+        {
+            this.planetService = planetService;
+        }
 
         public override void Process()
         {

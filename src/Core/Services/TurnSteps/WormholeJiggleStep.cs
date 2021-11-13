@@ -16,17 +16,18 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(WormholeJiggleStep));
 
-        WormholeGenerationStep wormholeGenerator;
+        private readonly WormholeGenerationStep wormholeGenerator;
         HashSet<Vector2> planetPositions;
         HashSet<Vector2> wormholePositions;
         List<Wormhole> newWormholes;
 
-        public WormholeJiggleStep(Game game) : base(game, TurnGenerationState.WormholeJiggle) { }
+        public WormholeJiggleStep(IProvider<Game> gameProvider, WormholeGenerationStep wormholeGenerator) : base(gameProvider, TurnGenerationState.WormholeJiggle)
+        {
+            this.wormholeGenerator = wormholeGenerator;
+        }
 
         public override void Process()
         {
-            wormholeGenerator = new WormholeGenerationStep(Game);
-
             planetPositions = Game.Planets.Select(planet => planet.Position).ToHashSet();
             wormholePositions = Game.Wormholes.Select(wh => wh.Position).ToHashSet();
 

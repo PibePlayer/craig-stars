@@ -13,6 +13,13 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(ShipDesignGenerator));
 
+        private readonly PlayerTechService playerTechService;
+
+        public ShipDesignGenerator(PlayerTechService playerTechService)
+        {
+            this.playerTechService = playerTechService;
+        }
+
         public delegate TechHullComponent FillGeneralSlotCallback(int index);
 
         public ShipDesign DesignShip(TechHull hull, string name, Player player, int hullSetNumber, ShipDesignPurpose purpose)
@@ -37,10 +44,10 @@ namespace CraigStars
             int numCargoPods = 0;
 
 
-            var bestStargate = player.GetBestStargate();
-            var bestMassDriver = player.GetBestMassDriver();
-            var bestFuelTank = player.GetBestFuelTank();
-            var bestCargoPod = player.GetBestCargoPod();
+            var bestStargate = playerTechService.GetBestStargate(player);
+            var bestMassDriver = playerTechService.GetBestMassDriver(player);
+            var bestFuelTank = playerTechService.GetBestFuelTank(player);
+            var bestCargoPod = playerTechService.GetBestCargoPod(player);
 
             // if we have no stargate available, that's the same as already assigning one
             bool stargate = !(bestStargate != null);
@@ -59,14 +66,14 @@ namespace CraigStars
                 switch (hullSlot.Type)
                 {
                     case HullSlotType.Engine:
-                        slot.HullComponent = player.GetBestEngine();
+                        slot.HullComponent = playerTechService.GetBestEngine(player);
                         break;
                     case HullSlotType.Electrical:
                         // TODO: use GetBestBattleComputer()/GetBestJammer()
                         slot.HullComponent = Techs.BattleComputer;
                         break;
                     case HullSlotType.Scanner:
-                        slot.HullComponent = player.GetBestScanner();
+                        slot.HullComponent = playerTechService.GetBestScanner(player);
                         numScanners++;
                         break;
                     case HullSlotType.Mechanical:
@@ -74,13 +81,13 @@ namespace CraigStars
                         switch (purpose)
                         {
                             case ShipDesignPurpose.Colonizer:
-                                slot.HullComponent = player.GetBestColonizationModule();
+                                slot.HullComponent = playerTechService.GetBestColonizationModule(player);
                                 slot.Quantity = 1; // we only need 1 colonization module
                                 break;
                             default:
                                 if (hullSlot.Type.HasFlag(HullSlotType.Scanner) && numScanners == 0)
                                 {
-                                    slot.HullComponent = player.GetBestScanner();
+                                    slot.HullComponent = playerTechService.GetBestScanner(player);
                                     numScanners++;
                                 }
                                 else if (numFuelTanks == 0 || hull.CargoCapacity == 0)
@@ -98,49 +105,49 @@ namespace CraigStars
                         }
                         break;
                     case HullSlotType.Shield:
-                        slot.HullComponent = player.GetBestShield();
+                        slot.HullComponent = playerTechService.GetBestShield(player);
                         numShields++;
                         break;
                     case HullSlotType.Armor:
                         numArmor++;
-                        slot.HullComponent = player.GetBestArmor();
+                        slot.HullComponent = playerTechService.GetBestArmor(player);
                         break;
                     case HullSlotType.ShieldArmor:
                         // balance armor and shields, but if equal, do armor
                         // armor is heavy though, so don't use it on freighters.
                         if (numShields >= numArmor && purpose != ShipDesignPurpose.Colonizer && purpose != ShipDesignPurpose.Freighter && purpose != ShipDesignPurpose.FuelFreighter)
                         {
-                            slot.HullComponent = player.GetBestArmor();
+                            slot.HullComponent = playerTechService.GetBestArmor(player);
                         }
                         else
                         {
-                            slot.HullComponent = player.GetBestShield();
+                            slot.HullComponent = playerTechService.GetBestShield(player);
                         }
                         break;
                     case HullSlotType.Weapon:
                         // balance beams and torpedos, but if equal, do beams
                         if (torpedoSlots >= beamSlots)
                         {
-                            slot.HullComponent = player.GetBestBeamWeapon();
+                            slot.HullComponent = playerTechService.GetBestBeamWeapon(player);
                             beamSlots++;
                         }
                         else
                         {
-                            slot.HullComponent = player.GetBestTorpedo();
+                            slot.HullComponent = playerTechService.GetBestTorpedo(player);
                             torpedoSlots++;
                         }
                         break;
                     case HullSlotType.Mining:
-                        slot.HullComponent = player.GetBestMineRobot();
+                        slot.HullComponent = playerTechService.GetBestMineRobot(player);
                         break;
                     case HullSlotType.MineLayer:
                         if (design.Purpose == ShipDesignPurpose.SpeedMineLayer)
                         {
-                            slot.HullComponent = player.GetBestMineLayer();
+                            slot.HullComponent = playerTechService.GetBestMineLayer(player);
                         }
                         else
                         {
-                            slot.HullComponent = player.GetBestSpeedTrapLayer();
+                            slot.HullComponent = playerTechService.GetBestSpeedTrapLayer(player);
                         }
                         break;
                     case HullSlotType.Orbital:
@@ -158,17 +165,17 @@ namespace CraigStars
                         else if (hullSlot.Type == HullSlotType.OrbitalElectrical)
                         {
                             // TODO: write GetBestJammer()
-                            // slot.HullComponent = player.GetBestJammer();
+                            // slot.HullComponent = playerTechService.GetBestJammer(player);
                         }
                         break;
                     case HullSlotType.Bomb:
-                        slot.HullComponent = player.GetBestBomb();
+                        slot.HullComponent = playerTechService.GetBestBomb(player);
                         break;
                     case HullSlotType.General:
                         switch (purpose)
                         {
                             case ShipDesignPurpose.ArmedScout:
-                                slot.HullComponent = player.GetBestBeamWeapon();
+                                slot.HullComponent = playerTechService.GetBestBeamWeapon(player);
                                 break;
                             case ShipDesignPurpose.Freighter:
                                 slot.HullComponent = bestCargoPod;
@@ -179,10 +186,10 @@ namespace CraigStars
                                 numFuelTanks++;
                                 break;
                             case ShipDesignPurpose.FighterScout:
-                                slot.HullComponent = player.GetBestScanner();
+                                slot.HullComponent = playerTechService.GetBestScanner(player);
                                 break;
                             case ShipDesignPurpose.DamageMineLayer:
-                                slot.HullComponent = player.GetBestMineLayer();
+                                slot.HullComponent = playerTechService.GetBestMineLayer(player);
                                 break;
                             default:
                                 slot.HullComponent = bestFuelTank;

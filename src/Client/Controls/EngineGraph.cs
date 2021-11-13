@@ -35,7 +35,7 @@ namespace CraigStars.Client
 
         protected override List<Vector2> GetPoints()
         {
-            List<Vector2> points = new();
+            var points = new List<Vector2>();
 
             for (int warp = 0; warp < Engine.FuelUsage.Length; warp++)
             {

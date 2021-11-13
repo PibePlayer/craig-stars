@@ -176,15 +176,15 @@ namespace CraigStars
             {3, 2, 3, 2},
         };
 
-        public Game Game { get; private set; }
-        public Rules Rules { get; private set; } = new Rules(0);
-        public ShipDesignDiscoverer designDiscoverer = new();
-        public FleetService fleetService = new();
+        private readonly Game game;
+        private readonly FleetService fleetService;
+        private readonly ShipDesignDiscoverer designDiscoverer;
 
-        public BattleEngine(Game game)
+        public BattleEngine(Game game, FleetService fleetService, ShipDesignDiscoverer designDiscoverer)
         {
-            Game = game;
-            Rules = Game.Rules;
+            this.game = game;
+            this.fleetService = fleetService;
+            this.designDiscoverer = designDiscoverer;
         }
 
         /// <summary>
@@ -219,7 +219,7 @@ namespace CraigStars
                 // every player should discover all designs in a battle as if they were penscanned.
                 foreach (var design in fleets.SelectMany(fleet => fleet.Tokens).Select(token => token.Design))
                 {
-                    designDiscoverer.Discover(Game.Players[playerNum], design, true);
+                    designDiscoverer.Discover(game.Players[playerNum], design, true);
                 }
             }
 
@@ -233,13 +233,13 @@ namespace CraigStars
                         Token = token,
                         Shields = token.Quantity * token.Design.Aggregate.Shield,
                         Attributes = GetTokenAttributes(token)
-                    }, Game)
+                    }, game)
                 )
             );
 
             foreach (var record in battle.PlayerRecords.Values)
             {
-                record.SetupRecord(Game.Players);
+                record.SetupRecord(game.Players);
             }
 
             return battle;
@@ -299,7 +299,7 @@ namespace CraigStars
             var secondaryTargets = new List<BattleToken>();
 
             // Find all enemy tokens
-            foreach (var token in battle.RemainingTokens.Where(token => fleetService.WillAttack(attacker.Fleet, Game.Players[attacker.PlayerNum], token.PlayerNum)))
+            foreach (var token in battle.RemainingTokens.Where(token => fleetService.WillAttack(attacker.Fleet, game.Players[attacker.PlayerNum], token.PlayerNum)))
             {
                 // if we will target this
                 if (WillTarget(primaryTarget, token) && weapon.IsInRange(token))
@@ -353,7 +353,7 @@ namespace CraigStars
 
             PlaceTokensOnBoard(battle);
             BuildMovementOrder(battle);
-            for (battle.Round = 0; battle.Round < Rules.NumBattleRounds; battle.Round++)
+            for (battle.Round = 0; battle.Round < game.Rules.NumBattleRounds; battle.Round++)
             {
                 battle.RecordNewRound();
 
@@ -394,7 +394,7 @@ namespace CraigStars
             // tell players about the battle
             foreach (var playerRecordEntry in battle.PlayerRecords)
             {
-                Message.Battle(Game.Players[playerRecordEntry.Key], battle.Planet, battle.Position, playerRecordEntry.Value);
+                Message.Battle(game.Players[playerRecordEntry.Key], battle.Planet, battle.Position, playerRecordEntry.Value);
             }
         }
 
@@ -515,7 +515,7 @@ namespace CraigStars
 
                 // if a target of a beam weapon is 3 spaces away and the beam has a range of 4
                 // we do 3/4 * 10% less damage
-                var rangedDamage = (int)(remainingDamage * (1 - Rules.BeamRangeDropoff * distance / weapon.Range));
+                var rangedDamage = (int)(remainingDamage * (1 - game.Rules.BeamRangeDropoff * distance / weapon.Range));
 
                 log.Debug($"{weapon.Token} fired {weapon.Slot.Quantity} {weapon.Slot.HullComponent.Name}(s) at {target} (shields: {shields}, armor: {armor}, distance: {distance}, {targetShipToken.Quantity}@{targetShipToken.Damage} damage) for {remainingDamage} (range adjusted to {rangedDamage})");
 
@@ -634,7 +634,7 @@ namespace CraigStars
                     // fire a torpedo
                     torpedoNum++;
                     remainingTorpedos--;
-                    bool hit = accuracy > Rules.Random.NextDouble();
+                    bool hit = accuracy > game.Rules.Random.NextDouble();
 
                     if (hit)
                     {
@@ -697,7 +697,7 @@ namespace CraigStars
                         misses++;
                         // damage shields by 1/8th
                         // round up, do a minimum of 1 damage
-                        int shieldDamage = (int)Math.Min(1, Math.Round(Rules.TorpedoSplashDamage * damage));
+                        int shieldDamage = (int)Math.Min(1, Math.Round(game.Rules.TorpedoSplashDamage * damage));
                         int actualShieldDamage = shieldDamage;
                         if (shieldDamage > target.Shields)
                         {
@@ -736,7 +736,7 @@ namespace CraigStars
             {
                 case BattleTactic.Disengage:
                     RunAway(battle, token);
-                    if (token.MovesMade >= Rules.MovesToRunAway)
+                    if (token.MovesMade >= game.Rules.MovesToRunAway)
                     {
                         token.RanAway = true;
                         battle.RecordRunAway(token);
@@ -831,7 +831,7 @@ namespace CraigStars
             if (weaponsInRange.Count > 0)
             {
                 // default to move to a random position
-                var newPosition = possiblePositions[Rules.Random.Next(0, possiblePositions.Length)];
+                var newPosition = possiblePositions[game.Rules.Random.Next(0, possiblePositions.Length)];
 
                 // move to a position that is out of range, or to the greatest distance away we can get
                 int maxNumWeaponsInRange = int.MinValue;
@@ -878,7 +878,7 @@ namespace CraigStars
             else
             {
                 // move at random
-                var newPosition = possiblePositions[Rules.Random.Next(0, possiblePositions.Length)];
+                var newPosition = possiblePositions[game.Rules.Random.Next(0, possiblePositions.Length)];
                 battle.RecordMove(token, token.Position, newPosition);
                 token.Position = newPosition;
             }
@@ -900,7 +900,7 @@ namespace CraigStars
             BattleTargetType secondaryTargetOrder = attacker.Fleet.BattlePlan.SecondaryTarget;
 
             // TODO: We need to account for the fact that if a fleet targets us, we will target them back
-            foreach (var defender in defenders.Where(defender => !(defender.Destroyed || defender.RanAway) && fleetService.WillAttack(attacker.Fleet, Game.Players[attacker.PlayerNum], defender.PlayerNum)))
+            foreach (var defender in defenders.Where(defender => !(defender.Destroyed || defender.RanAway) && fleetService.WillAttack(attacker.Fleet, game.Players[attacker.PlayerNum], defender.PlayerNum)))
             {
                 // if we would target this defender with our primary target and it's more attactive than our current primaryTarget, pick it
                 if (WillTarget(primaryTargetOrder, defender))

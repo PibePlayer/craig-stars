@@ -9,10 +9,14 @@ namespace CraigStars
     /// </summary>
     public class PlayerResearchStep : TurnGenerationStep
     {
-        PlanetService planetService = new();
-        Researcher researcher = new();
+        private readonly PlanetService planetService;
+        private readonly Researcher researcher;
 
-        public PlayerResearchStep(Game game) : base(game, TurnGenerationState.Research) { }
+        public PlayerResearchStep(IProvider<Game> gameProvider, PlanetService planetService, Researcher researcher) : base(gameProvider, TurnGenerationState.Research)
+        {
+            this.planetService = planetService;
+            this.researcher = researcher;
+        }
 
         public override void Process()
         {

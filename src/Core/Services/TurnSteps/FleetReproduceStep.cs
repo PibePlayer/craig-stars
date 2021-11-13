@@ -9,14 +9,19 @@ namespace CraigStars
     /// </summary>
     public class FleetReproduceStep : TurnGenerationStep
     {
-        public FleetReproduceStep(Game game) : base(game, TurnGenerationState.Grow) { }
+        private readonly PlayerService playerService;
+
+        public FleetReproduceStep(IProvider<Game> gameProvider, PlayerService playerService) : base(gameProvider, TurnGenerationState.Grow)
+        {
+            this.playerService = playerService;
+        }
 
         public override void Process()
         {
             // for any IS fleets that have colonists and cargo space, grow colonists
             foreach (Fleet fleet in Game.Fleets.Where(
                 fleet => fleet.Cargo.Colonists > 0 &&
-                Game.Players[fleet.PlayerNum].FleetsReproduce))
+                playerService.FleetsReproduce(Game.Players[fleet.PlayerNum].Race)))
             {
                 Reproduce(fleet, Game.Players[fleet.PlayerNum]);
             }

@@ -12,17 +12,18 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(TurnGenerationStep));
 
-        public Game Game { get; private set; }
-        public TurnGenerationState State { get; private set; }
-        public TurnGenerationContext Context { get; private set; }
+        protected readonly IProvider<Game> gameProvider;
 
+        protected Game Game { get => gameProvider.Item; }
+        public TurnGenerationState State { get; }
+        protected TurnGenerationContext Context { get; private set; }
         public List<Planet> OwnedPlanets { get; private set; }
 
         Stopwatch stopwatch = new Stopwatch();
 
-        protected TurnGenerationStep(Game game, TurnGenerationState state)
+        protected TurnGenerationStep(IProvider<Game> gameProvider, TurnGenerationState state)
         {
-            Game = game;
+            this.gameProvider = gameProvider;
             State = state;
         }
 
@@ -41,7 +42,7 @@ namespace CraigStars
             PostProcess();
 
             stopwatch.Stop();
-            
+
             log.Debug($"{Game.Year}: Completed {this.GetType().ToString()} ({TimeSpan.FromMilliseconds(stopwatch.ElapsedMilliseconds):c}ms)");
             // log.Debug($"{Game.Year}: Completed {this.GetType().ToString()})");
         }

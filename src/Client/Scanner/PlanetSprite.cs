@@ -4,6 +4,7 @@ using System.Linq;
 
 using CraigStars.Singletons;
 using System;
+using CraigStars.Utils;
 
 namespace CraigStars.Client
 {
@@ -12,7 +13,7 @@ namespace CraigStars.Client
         const int MaxPlanetValueRadius = 10;
         const int MaxPopulationRadius = 20;
 
-        PlanetService planetService = new();
+        [Inject] protected PlanetService planetService;
 
         public enum Orbiting
         {
@@ -62,6 +63,7 @@ namespace CraigStars.Client
 
         public override void _Ready()
         {
+            this.ResolveDependencies();
             base._Ready();
 
             known = GetNode<Sprite>("Sprite/Known");

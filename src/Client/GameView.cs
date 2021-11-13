@@ -6,12 +6,15 @@ using CraigStars.Singletons;
 using CraigStars.Client;
 using System.Threading.Tasks;
 using System;
+using CraigStars.Utils;
 
 namespace CraigStars
 {
     public class GameView : Control
     {
         static CSLog log = LogProvider.GetLogger(typeof(GameView));
+
+        [Inject] TurnProcessorRunner turnProcessorRunner;
 
         /// <summary>
         /// This is the main view into the universe
@@ -35,6 +38,7 @@ namespace CraigStars
 
         public override void _Ready()
         {
+            this.ResolveDependencies();
             gui = FindNode("GUI") as Control;
             scanner = FindNode("Scanner") as Scanner;
             productionQueueDialog = GetNode<ProductionQueueDialog>("CanvasLayer/ProductionQueueDialog");
@@ -75,7 +79,7 @@ namespace CraigStars
             if (IsVisibleInTree())
             {
                 log.Debug("Resetting scanner");
-                PlayersManager.Me.RunTurnProcessors(PlayersManager.GameInfo, TurnProcessorManager.Instance);
+                turnProcessorRunner.RunTurnProcessors(PlayersManager.GameInfo, PlayersManager.Me, TurnProcessorManager.Instance);
                 // add the universe to the viewport
                 gui.Visible = true;
                 RemoveChild(scanner);

@@ -11,7 +11,7 @@ namespace CraigStars.Tests
     [TestFixture]
     public class InvasionProcessorTest
     {
-        InvasionProcessor invasionProcessor = new InvasionProcessor();
+        InvasionProcessor invasionProcessor = new InvasionProcessor(TestUtils.TestContainer.GetInstance<PlanetService>());
 
         [Test]
         public void TestInvadePlanetNoDefenses()

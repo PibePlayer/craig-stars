@@ -27,10 +27,12 @@ Display=8
 
 config/name="craig-stars"
 run/main_scene="res://src/Client/MainMenu.tscn"
+run/flush_stdout_on_print=true
 config/icon="res://icon.png"
 
 [autoload]
 
+DependencyInjectionSystem="*res://src/Client/Singletons/DependencyInjectionSystem.tscn"
 CsResourceLoader="*res://src/Client/Singletons/CSResourceLoader.tscn"
 RulesManager="*res://src/Client/Singletons/RulesManager.tscn"
 GuiColorsProvider="*res://src/Client/Singletons/GUIColorsProvider.tscn"
@@ -48,6 +50,7 @@ HullSummaryPopup="*res://src/Client/Singletons/HullSummaryPopup.tscn"
 TechSummaryPopup="*res://src/Client/Singletons/TechSummaryPopup.tscn"
 CsConfirmDialog="*res://src/Client/Singletons/CSConfirmDialog.tscn"
 CSTableResourceLoader="*res://addons/CSTable/src/Table/CSTableResourceLoader.tscn"
+TurnProcessorManager="*res://src/Client/Singletons/TurnProcessorManager.tscn"
 
 [debug]
 
@@ -65,6 +68,7 @@ enabled=PoolStringArray( "res://addons/CSTable/plugin.cfg", "res://addons/CraigS
 [global]
 
 max_size_kb=false
+mono=false
 
 [input]
 

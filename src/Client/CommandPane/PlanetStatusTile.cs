@@ -1,10 +1,13 @@
 using CraigStars.Singletons;
+using CraigStars.Utils;
 using Godot;
 
 namespace CraigStars.Client
 {
     public class PlanetStatusTile : PlanetTile
     {
+        [Inject] protected PlayerTechService playerTechService;
+        
         Label population;
         Label resources;
         Label scannerType;
@@ -18,6 +21,7 @@ namespace CraigStars.Client
 
         public override void _Ready()
         {
+            this.ResolveDependencies();
             base._Ready();
             population = FindNode("Population") as Label;
             resources = FindNode("Resources") as Label;
@@ -53,12 +57,12 @@ namespace CraigStars.Client
                 population.Text = $"{CommandedPlanet.Planet.Population:n0}";
                 resources.Text = $"{planetService.GetResourcesPerYearAvailable(CommandedPlanet.Planet, Me):n0} of {planetService.GetResourcesPerYear(CommandedPlanet.Planet, Me):n0}";
                 defenses.Text = $"{CommandedPlanet.Planet.Defenses:n0} of {planetService.GetMaxDefenses(CommandedPlanet.Planet, Me):n0}";
-                var defense = Me.GetBestDefense();
+                var defense = playerTechService.GetBestDefense(Me);
                 defenseType.Text = defense?.Name;
                 defenseCoverage.Text = $"{planetService.GetDefenseCoverage(CommandedPlanet.Planet, Me):P1}";
                 if (CommandedPlanet.Planet.Scanner)
                 {
-                    var scanner = Me.GetBestPlanetaryScanner();
+                    var scanner = playerTechService.GetBestPlanetaryScanner(Me);
                     scannerType.Text = $"{scanner.Name}";
                     if (scanner.ScanRangePen > 0)
                     {

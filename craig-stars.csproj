@@ -34,5 +34,6 @@
         <PackageReference Include="log4net" Version="2.0.12" />
         <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
         <PackageReference Include="Ensure.That" Version="10.1.0" />
+        <PackageReference Include="SimpleInjector" Version="5.3.2" />
     </ItemGroup>
 </Project>

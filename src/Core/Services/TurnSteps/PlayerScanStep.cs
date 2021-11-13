@@ -14,7 +14,17 @@ namespace CraigStars
     public class PlayerScanStep : TurnGenerationStep
     {
         static CSLog log = LogProvider.GetLogger(typeof(PlayerScanStep));
-        public PlayerScanStep(Game game) : base(game, TurnGenerationState.Scan) { }
+
+        private readonly PlayerService playerService;
+        private readonly PlayerIntel playerIntel;
+        private readonly PlayerTechService playerTechService;
+
+        public PlayerScanStep(IProvider<Game> gameProvider, PlayerService playerService, PlayerIntel playerIntel, PlayerTechService playerTechService) : base(gameProvider, TurnGenerationState.Scan)
+        {
+            this.playerService = playerService;
+            this.playerIntel = playerIntel;
+            this.playerTechService = playerTechService;
+        }
 
         /// <summary>
         /// Helper class for sorting scanners
@@ -53,7 +63,6 @@ namespace CraigStars
 
         }
 
-        PlayerIntel playerIntel = new PlayerIntel();
 
         public override void PreProcess(List<Planet> ownedPlanets)
         {
@@ -110,7 +119,7 @@ namespace CraigStars
 
             // build a list of scanners for this player
             var scanners = new List<Scanner>();
-            var planetaryScanner = player.GetBestPlanetaryScanner();
+            var planetaryScanner = playerTechService.GetBestPlanetaryScanner(player);
 
             log.Debug($"{Game.Year}: {player} Building List of Planet Scanners");
             foreach (var planet in Game.Planets.Where(p => p.PlayerNum == player.Num && p.Scanner))
@@ -138,7 +147,7 @@ namespace CraigStars
             }
 
             // Space demolition minefields act as scanners
-            if (player.MineFieldsAreScanners)
+            if (playerService.MineFieldsAreScanners(player.Race))
             {
                 foreach (var mineField in Game.MineFields.Where(mf => mf.PlayerNum == player.Num))
                 {
@@ -365,7 +374,7 @@ namespace CraigStars
 
             }
             log.Debug($"{Game.Year}: {player} Discovering {fleetsToDiscover.Count} foreign fleets.");
-            fleetsToDiscover.ForEach(fleet => playerIntel.Discover(player, fleet, player.DiscoverDesignOnScan));
+            fleetsToDiscover.ForEach(fleet => playerIntel.Discover(player, fleet, playerService.DiscoverDesignOnScan(player.Race)));
         }
 
     }

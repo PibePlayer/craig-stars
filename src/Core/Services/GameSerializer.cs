@@ -20,11 +20,11 @@ namespace CraigStars
         JsonSerializerSettings playerSerializerSettings;
         Game game;
 
-        public GameSerializer(Game game)
+        public GameSerializer(Game game, ITechStore techStore)
         {
             this.game = game;
-            playerSerializerSettings = Serializers.CreatePlayerSettings(game.TechStore);
-            gameSerializerSettings = Serializers.CreateGameSettings(game.TechStore);
+            playerSerializerSettings = Serializers.CreatePlayerSettings(techStore);
+            gameSerializerSettings = Serializers.CreateGameSettings(techStore);
         }
 
         /// <summary>

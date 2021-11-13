@@ -11,10 +11,14 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(BomberTurnProcessor));
 
-        PlanetService planetService = new();
-        FleetService fleetService = new();
+        private readonly PlanetService planetService;
+        private readonly FleetService fleetService;
 
-        public BomberTurnProcessor() : base("Bomber") { }
+        public BomberTurnProcessor(PlanetService planetService, FleetService fleetService) : base("Bomber")
+        {
+            this.planetService = planetService;
+            this.fleetService = fleetService;
+        }
 
         /// <summary>
         /// a new turn! build some ships

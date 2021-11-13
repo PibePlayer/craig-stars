@@ -18,10 +18,22 @@ namespace CraigStars.Tests
     {
         static CSLog log = LogProvider.GetLogger(typeof(FleetWaypointStepTest));
 
+        PlanetService planetService;
+        InvasionProcessor invasionProcessor;
+        PlanetDiscoverer planetDiscover;
+
+        [SetUp]
+        public void SetUp()
+        {
+            planetService = TestUtils.TestContainer.GetInstance<PlanetService>();
+            invasionProcessor = TestUtils.TestContainer.GetInstance<InvasionProcessor>();
+            planetDiscover = TestUtils.TestContainer.GetInstance<PlanetDiscoverer>();
+        }
+
         [Test]
         public void TestProcessLoadAll()
         {
-            var game = TestUtils.GetSingleUnitGame();
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
             var planet = game.Planets[0];
             var fleet = game.Fleets[0];
             var player = game.Players[0];
@@ -32,10 +44,10 @@ namespace CraigStars.Tests
             var waypoint = fleet.Waypoints[0];
             waypoint.Task = WaypointTask.Transport;
             waypoint.TransportTasks = new WaypointTransportTasks(ironium: new WaypointTransportTask(WaypointTaskTransportAction.LoadAll));
-            fleet.Cargo = new();
-            planet.Cargo = new(ironium: 100);
+            fleet.Cargo = new Cargo();
+            planet.Cargo = new Cargo(ironium: 100);
 
-            FleetWaypointStep step = new(game, 0);
+            var step = new FleetWaypoint0Step(gameRunner.GameProvider, planetService, invasionProcessor, planetDiscover);
             step.Process();
 
             Assert.AreEqual(0, planet.Cargo.Ironium);
@@ -45,7 +57,7 @@ namespace CraigStars.Tests
         [Test]
         public void TestProcessLoadAmount()
         {
-            var game = TestUtils.GetSingleUnitGame();
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
             var planet = game.Planets[0];
             var fleet = game.Fleets[0];
             var player = game.Players[0];
@@ -56,10 +68,10 @@ namespace CraigStars.Tests
             var waypoint = fleet.Waypoints[0];
             waypoint.Task = WaypointTask.Transport;
             waypoint.TransportTasks = new WaypointTransportTasks(ironium: new WaypointTransportTask(WaypointTaskTransportAction.LoadAmount, 25));
-            fleet.Cargo = new();
-            planet.Cargo = new(ironium: 100);
+            fleet.Cargo = new Cargo();
+            planet.Cargo = new Cargo(ironium: 100);
 
-            FleetWaypointStep step = new(game, 0);
+            var step = new FleetWaypoint0Step(gameRunner.GameProvider, planetService, invasionProcessor, planetDiscover);
             step.Process();
 
             // should load 25 onto the fleet, leaving 75 on the planet
@@ -69,10 +81,10 @@ namespace CraigStars.Tests
             // try to unload more than we have
             waypoint.Task = WaypointTask.Transport;
             waypoint.TransportTasks = new WaypointTransportTasks(ironium: new WaypointTransportTask(WaypointTaskTransportAction.LoadAmount, 25));
-            fleet.Cargo = new();
-            planet.Cargo = new(ironium: 20);
+            fleet.Cargo = new Cargo();
+            planet.Cargo = new Cargo(ironium: 20);
 
-            step = new(game, 0);
+            step = new FleetWaypoint0Step(gameRunner.GameProvider, planetService, invasionProcessor, planetDiscover);
             step.Process();
 
             // should load 20 into the fleet leaving 0 on the planet
@@ -84,7 +96,7 @@ namespace CraigStars.Tests
         [Test]
         public void TestProcessLoadSetAmountTo()
         {
-            var game = TestUtils.GetSingleUnitGame();
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
             var planet = game.Planets[0];
             var fleet = game.Fleets[0];
             var player = game.Players[0];
@@ -95,10 +107,10 @@ namespace CraigStars.Tests
             var waypoint = fleet.Waypoints[0];
             waypoint.Task = WaypointTask.Transport;
             waypoint.TransportTasks = new WaypointTransportTasks(ironium: new WaypointTransportTask(WaypointTaskTransportAction.SetAmountTo, 25));
-            fleet.Cargo = new();
-            planet.Cargo = new(ironium: 100);
+            fleet.Cargo = new Cargo();
+            planet.Cargo = new Cargo(ironium: 100);
 
-            FleetWaypointStep step = new(game, 0);
+            var step = new FleetWaypoint0Step(gameRunner.GameProvider, planetService, invasionProcessor, planetDiscover);
             step.Process();
 
             // should unload 25 onto the planet, leaving 75 on the ship
@@ -109,10 +121,10 @@ namespace CraigStars.Tests
             // try to unload more than we have
             waypoint.Task = WaypointTask.Transport;
             waypoint.TransportTasks = new WaypointTransportTasks(ironium: new WaypointTransportTask(WaypointTaskTransportAction.SetAmountTo, 25));
-            fleet.Cargo = new();
-            planet.Cargo = new(ironium: 20);
+            fleet.Cargo = new Cargo();
+            planet.Cargo = new Cargo(ironium: 20);
 
-            step = new(game, 0);
+            step = new FleetWaypoint0Step(gameRunner.GameProvider, planetService, invasionProcessor, planetDiscover);
             step.Process();
 
             // should load 20 the ship, leaving 0 on the planet and not completing the task
@@ -120,12 +132,12 @@ namespace CraigStars.Tests
             Assert.AreEqual(20, fleet.Cargo.Ironium);
             Assert.IsFalse(waypoint.TaskComplete);
 
-        }        
+        }
 
         [Test]
         public void TestProcessUnloadAll()
         {
-            var game = TestUtils.GetSingleUnitGame();
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
             var planet = game.Planets[0];
             var fleet = game.Fleets[0];
             var player = game.Players[0];
@@ -137,9 +149,9 @@ namespace CraigStars.Tests
             waypoint.Task = WaypointTask.Transport;
             waypoint.TransportTasks = new WaypointTransportTasks(ironium: new WaypointTransportTask(WaypointTaskTransportAction.UnloadAll));
             fleet.Cargo = fleet.Cargo.WithIronium(100);
-            planet.Cargo = new();
+            planet.Cargo = new Cargo();
 
-            FleetWaypointStep step = new(game, 0);
+            var step = new FleetWaypoint0Step(gameRunner.GameProvider, planetService, invasionProcessor, planetDiscover);
             step.Process();
 
             Assert.AreEqual(100, planet.Cargo.Ironium);
@@ -149,7 +161,7 @@ namespace CraigStars.Tests
         [Test]
         public void TestProcessUnloadAmount()
         {
-            var game = TestUtils.GetSingleUnitGame();
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
             var planet = game.Planets[0];
             var fleet = game.Fleets[0];
             var player = game.Players[0];
@@ -161,9 +173,9 @@ namespace CraigStars.Tests
             waypoint.Task = WaypointTask.Transport;
             waypoint.TransportTasks = new WaypointTransportTasks(ironium: new WaypointTransportTask(WaypointTaskTransportAction.UnloadAmount, 25));
             fleet.Cargo = fleet.Cargo.WithIronium(100);
-            planet.Cargo = new();
+            planet.Cargo = new Cargo();
 
-            FleetWaypointStep step = new(game, 0);
+            var step = new FleetWaypoint0Step(gameRunner.GameProvider, planetService, invasionProcessor, planetDiscover);
             step.Process();
 
             // should unload 25 onto the planet, leaving 75 on the ship
@@ -174,9 +186,9 @@ namespace CraigStars.Tests
             waypoint.Task = WaypointTask.Transport;
             waypoint.TransportTasks = new WaypointTransportTasks(ironium: new WaypointTransportTask(WaypointTaskTransportAction.UnloadAmount, 25));
             fleet.Cargo = fleet.Cargo.WithIronium(20);
-            planet.Cargo = new();
+            planet.Cargo = new Cargo();
 
-            step = new(game, 0);
+            step = new FleetWaypoint0Step(gameRunner.GameProvider, planetService, invasionProcessor, planetDiscover);
             step.Process();
 
             // should unload 25 onto the planet, leaving 75 on the ship
@@ -188,7 +200,7 @@ namespace CraigStars.Tests
         [Test]
         public void TestProcessUnloadSetAmountTo()
         {
-            var game = TestUtils.GetSingleUnitGame();
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
             var planet = game.Planets[0];
             var fleet = game.Fleets[0];
             var player = game.Players[0];
@@ -200,9 +212,9 @@ namespace CraigStars.Tests
             waypoint.Task = WaypointTask.Transport;
             waypoint.TransportTasks = new WaypointTransportTasks(ironium: new WaypointTransportTask(WaypointTaskTransportAction.SetWaypointTo, 25));
             fleet.Cargo = fleet.Cargo.WithIronium(100);
-            planet.Cargo = new();
+            planet.Cargo = new Cargo();
 
-            FleetWaypointStep step = new(game, 0);
+            var step = new FleetWaypoint0Step(gameRunner.GameProvider, planetService, invasionProcessor, planetDiscover);
             step.Process();
 
             // should unload 25 onto the planet, leaving 75 on the ship
@@ -214,9 +226,9 @@ namespace CraigStars.Tests
             waypoint.Task = WaypointTask.Transport;
             waypoint.TransportTasks = new WaypointTransportTasks(ironium: new WaypointTransportTask(WaypointTaskTransportAction.SetWaypointTo, 25));
             fleet.Cargo = fleet.Cargo.WithIronium(20);
-            planet.Cargo = new();
+            planet.Cargo = new Cargo();
 
-            step = new(game, 0);
+            step = new FleetWaypoint0Step(gameRunner.GameProvider, planetService, invasionProcessor, planetDiscover);
             step.Process();
 
             // should unload 25 onto the planet, leaving 75 on the ship
@@ -224,7 +236,7 @@ namespace CraigStars.Tests
             Assert.AreEqual(0, fleet.Cargo.Ironium);
             Assert.IsFalse(fleet.Waypoints[0].TaskComplete);
 
-        }        
+        }
 
 
     }

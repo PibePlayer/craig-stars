@@ -11,7 +11,17 @@ namespace CraigStars.Tests
     [TestFixture]
     public class PlanetBombStepTest
     {
-        PlanetBombStep planetBomber = new PlanetBombStep(TestUtils.GetSingleUnitGame());
+        PlanetBombStep planetBomber;
+        Game game;
+
+        [SetUp]
+        public void SetUp()
+        {
+            PlanetService planetService = new PlanetService(new PlayerTechService(new TestTechStoreProvider()));
+            GameRunner gameRunner;
+            (game, gameRunner) = TestUtils.GetSingleUnitGame();
+            planetBomber = new PlanetBombStep(gameRunner.GameProvider, planetService);
+        }
 
         [Test]
         public void TestGetColonistsKilled()
@@ -85,7 +95,7 @@ namespace CraigStars.Tests
                 Num = 1
             };
 
-            planetBomber.Game.Players = new() { planetOwner, fleetOwner };
+            game.Players = new() { planetOwner, fleetOwner };
 
             var planet = new Planet()
             {
@@ -144,7 +154,7 @@ namespace CraigStars.Tests
                 Num = 1
             };
 
-            planetBomber.Game.Players = new() { planetOwner, fleetOwner };
+            game.Players = new() { planetOwner, fleetOwner };
 
             var planet = new Planet()
             {

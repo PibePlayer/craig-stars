@@ -41,7 +41,6 @@ namespace CraigStars
         /// <param name="techs">The techs to get categories for</param>
         /// <returns>A list of categories, sorted by name</returns>
         IEnumerable<TechCategory> GetCategoriesForTechs(IEnumerable<Tech> techs);
-        IEnumerable<Tech> GetAvailableTechs(Player player);
 
     }
 }

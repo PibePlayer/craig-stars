@@ -34,9 +34,12 @@ namespace CraigStars
     /// </summary>
     public class PlanetBombStep : TurnGenerationStep
     {
-        PlanetService planetService = new();
+        private readonly PlanetService planetService;
 
-        public PlanetBombStep(Game game) : base(game, TurnGenerationState.Bomb) { }
+        public PlanetBombStep(IProvider<Game> gameProvider, PlanetService planetService) : base(gameProvider, TurnGenerationState.Bomb)
+        {
+            this.planetService = planetService;
+        }
 
         public override void Process()
         {

@@ -12,15 +12,19 @@ namespace CraigStars
     public class PlanetProductionTurnProcessor : TurnProcessor
     {
         static CSLog log = LogProvider.GetLogger(typeof(PlanetProductionTurnProcessor));
-        PlanetService planetService = new();
-        ProductionQueueEstimator estimator = new ProductionQueueEstimator();
+        private readonly PlanetService planetService;
+        private readonly ProductionQueueEstimator estimator;
 
         // the required population density required of a planet in order to suck people off of it
         // setting this to .33 because we don't want to suck people off a planet until it's reached the
         // max of its growth rate (over 1/3rd crowded)
         private const float PopulationDensityRequired = .33f;
 
-        public PlanetProductionTurnProcessor() : base("Planet Production Manager") { }
+        public PlanetProductionTurnProcessor(PlanetService planetService, ProductionQueueEstimator estimator) : base("Planet Production Manager")
+        {
+            this.planetService = planetService;
+            this.estimator = estimator;
+        }
 
         /// <summary>
         /// a new turn! build some ships

@@ -1,11 +1,12 @@
 using CraigStars.Singletons;
+using CraigStars.Utils;
 using Godot;
 
 namespace CraigStars.Client
 {
     public class PlanetTile : Control
     {
-        protected PlanetService planetService = new();
+        [Inject] protected PlanetService planetService;
         public PlanetSprite CommandedPlanet { get; set; }
         public Player Me { get => PlayersManager.Me; }
 
@@ -13,7 +14,11 @@ namespace CraigStars.Client
 
         public override void _Ready()
         {
+            this.ResolveDependencies();
+            base._Ready();
+
             titleLabel = (Label)FindNode("TitleLabel");
+
             EventManager.MapObjectCommandedEvent += OnMapObjectCommanded;
         }
 

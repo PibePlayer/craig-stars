@@ -12,7 +12,7 @@ namespace CraigStars.UniverseGeneration
     /// </summary>
     public class WormholeGenerationStep : UniverseGenerationStep
     {
-        public WormholeGenerationStep(Game game) : base(game, UniverseGenerationState.Wormholes) { }
+        public WormholeGenerationStep(IProvider<Game> gameProvider) : base(gameProvider, UniverseGenerationState.Wormholes) { }
 
         public override void Process()
         {

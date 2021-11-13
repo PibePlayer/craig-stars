@@ -11,17 +11,17 @@ namespace CraigStars.UniverseGeneration
     {
         static CSLog log = LogProvider.GetLogger(typeof(UniverseGenerationStep));
 
-        public Game Game { get; private set; }
-        public UniverseGenerationState State { get; private set; }
-        public Dictionary<string, object> Context { get; set; } = new Dictionary<string, object>();
+        protected readonly IProvider<Game> gameProvider;
 
-        public List<Planet> OwnedPlanets { get; private set; }
+        protected Game Game { get => gameProvider.Item; }
+        public UniverseGenerationState State { get; private set; }
+        protected Dictionary<string, object> Context { get; set; } = new();
 
         Stopwatch stopwatch = new Stopwatch();
 
-        protected UniverseGenerationStep(Game game, UniverseGenerationState state)
+        protected UniverseGenerationStep(IProvider<Game> gameProvider, UniverseGenerationState state)
         {
-            Game = game;
+            this.gameProvider = gameProvider;
             State = state;
         }
 

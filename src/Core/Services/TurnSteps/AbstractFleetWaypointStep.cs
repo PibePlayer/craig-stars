@@ -17,9 +17,9 @@ namespace CraigStars
     /// TODO: If we leave wp0 and head towards another waypoint, some actions only run at half capacity, If we remote mine or lay mines
     /// it needs to only do half that if we are leaving to a new waypoint
     /// </summary>
-    public class FleetWaypointStep : TurnGenerationStep
+    public abstract class AbstractFleetWaypointStep : TurnGenerationStep
     {
-        static CSLog log = LogProvider.GetLogger(typeof(FleetWaypointStep));
+        static CSLog log = LogProvider.GetLogger(typeof(FleetWaypoint0Step));
         public const string ProcessedWaypointsContextKey = "ProcessedWaypoints";
 
         HashSet<Waypoint> processedWaypoints = new HashSet<Waypoint>();
@@ -34,15 +34,23 @@ namespace CraigStars
         List<FleetWaypoint> otherTasks = new List<FleetWaypoint>();
         List<PlanetInvasion> invasions = new List<PlanetInvasion>();
 
-        PlanetService planetService = new();
-        InvasionProcessor invasionProcessor;
-        PlanetDiscoverer planetDiscoverer;
+        private readonly PlanetService planetService;
+        private readonly InvasionProcessor invasionProcessor;
+        private readonly PlanetDiscoverer planetDiscoverer;
 
         // some things (like remote mining) only happen on wp1
         int waypointIndex = 0;
 
-        public FleetWaypointStep(Game game, int waypointIndex) : base(game, TurnGenerationState.Waypoint)
+        public AbstractFleetWaypointStep(
+            IProvider<Game> gameProvider,
+            PlanetService planetService,
+            InvasionProcessor invasionProcessor,
+            PlanetDiscoverer planetDiscoverer,
+            int waypointIndex) : base(gameProvider, TurnGenerationState.Waypoint)
         {
+            this.planetService = planetService;
+            this.invasionProcessor = invasionProcessor;
+            this.planetDiscoverer = planetDiscoverer;
             this.waypointIndex = waypointIndex;
         }
 
@@ -53,8 +61,6 @@ namespace CraigStars
         {
             base.PreProcess(ownedPlanets);
 
-            invasionProcessor = new InvasionProcessor();
-            planetDiscoverer = new PlanetDiscoverer();
             processedWaypoints.Clear();
             scrappedFleets.Clear();
             remoteMiningTasks.Clear();

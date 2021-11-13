@@ -13,16 +13,21 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(ShipDesignerTurnProcessor));
 
-        ShipDesignGenerator shipDesignGenerator = new ShipDesignGenerator();
+        private readonly ShipDesignGenerator shipDesignGenerator;
+        private readonly PlayerTechService playerTechService;
 
-        public ShipDesignerTurnProcessor() : base("Ship Designer") { }
+        public ShipDesignerTurnProcessor(ShipDesignGenerator shipDesignGenerator, PlayerTechService playerTechService) : base("Ship Designer")
+        {
+            this.shipDesignGenerator = shipDesignGenerator;
+            this.playerTechService = playerTechService;
+        }
 
         /// <summary>
         /// a new turn! build some ships
         /// </summary>
         public override void Process(PublicGameInfo gameInfo, Player player)
         {
-            var hulls = player.TechStore.Hulls.Where(tech => player.HasTech(tech)).ToList();
+            var hulls = player.TechStore.Hulls.Where(tech => playerTechService.HasTech(player, tech)).ToList();
             var designsByHull = player.Designs.ToLookup(design => design.Hull).ToDictionary(lookup => lookup.Key, lookup => lookup.ToList());
             var latestVersionByHull = player.Designs.ToLookup(design => design.Hull).ToDictionary(lookup => lookup.Key, lookup => lookup.Max(design => design.Version));
 
@@ -83,9 +88,9 @@ namespace CraigStars
         /// <returns></returns>
         internal ShipDesign DesignColonizer(Player player, string name = null)
         {
-            var colonizer = player.GetBestColonizationModule();
+            var colonizer = playerTechService.GetBestColonizationModule(player);
             var hull = player.TechStore.Hulls
-                .Where(hull => player.HasTech(hull) && hull.CanUse(colonizer))
+                .Where(hull => playerTechService.HasTech(player, hull) && hull.CanUse(colonizer))
                 .OrderByDescending(hull => hull.CargoCapacity)
                 .First();
             var latestVersionDesignByHull = player.Designs

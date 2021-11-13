@@ -3,16 +3,19 @@ using System;
 using CraigStars.Singletons;
 using CraigStars;
 using System.Collections.Generic;
+using CraigStars.Utils;
 
 namespace CraigStars.Client
 {
     public class FleetTile : AbstractCommandedFleetControl
     {
-        protected FleetService fleetService = new();
+        [Inject] protected FleetService fleetService;
         Label titleLabel;
 
         public override void _Ready()
         {
+            this.ResolveDependencies();
+            
             base._Ready();
             titleLabel = (Label)FindNode("TitleLabel");
         }

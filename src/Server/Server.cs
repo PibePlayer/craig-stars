@@ -40,10 +40,12 @@ namespace CraigStars.Server
         public TaskFactory GodotTaskFactory { get; set; }
 
         /// <summary>
-        /// The game that is being created/loaded
+        /// The game that is being run by the server
         /// </summary>
         /// <value></value>
-        protected Game Game { get; set; }
+        protected Game Game { get => GameRunner.Game; }
+
+        protected GameRunner GameRunner { get; set; }
 
         public AITurnSubmitter AITurnSubmitter { get; set; }
 
@@ -134,7 +136,7 @@ namespace CraigStars.Server
                 try
                 {
                     GodotTaskFactory.StartNew(() => PublishGameStartingEvent(settings));
-                    Game = CreateNewGame(settings, multithreaded: true, saveToDisk: true);
+                    GameRunner = CreateNewGame(settings, multithreaded: true, saveToDisk: true);
 
                     // notify each player of a game start event
                     Game.GameInfo.State = GameState.WaitingForPlayers;
@@ -160,7 +162,8 @@ namespace CraigStars.Server
                 {
                     PublicGameInfo gameInfo = GamesManager.LoadServerGameInfo(gameName, year);
                     GodotTaskFactory.StartNew(() => PublishGameStartingEvent(gameInfo));
-                    Game = LoadGame(gameInfo.Name, gameInfo.Year, multithreaded: true, saveToDisk: true);
+                    var game = LoadGame(gameInfo.Name, gameInfo.Year, multithreaded: true, saveToDisk: true);
+                    GameRunner = GameRunnerContainer.CreateGameRunner(game, TechStore.Instance);
 
                     // notify each player of a game start event
                     Game.GameInfo.State = GameState.WaitingForPlayers;
@@ -211,7 +214,7 @@ namespace CraigStars.Server
                 try
                 {
                     log.Debug($"{Game.Year}: Submitting turn for {player}");
-                    Game.SubmitTurn(player);
+                    GameRunner.SubmitTurn(player);
                     await GodotTaskFactory.StartNew(() => PublishTurnSubmittedEvent(Game.GameInfo, player));
 
                     SaveGame(Game);
@@ -243,7 +246,7 @@ namespace CraigStars.Server
             {
                 try
                 {
-                    Game.UnsubmitTurn(player);
+                    GameRunner.UnsubmitTurn(player);
                     SaveGame(Game);
                 }
                 catch (Exception e)
@@ -266,13 +269,13 @@ namespace CraigStars.Server
         /// <returns></returns>
         public async void GenerateNewTurn()
         {
-            Game.TurnGeneratorAdvancedEvent += OnTurnGeneratorAdvanced;
+            GameRunner.TurnGeneratorAdvancedEvent += OnTurnGeneratorAdvanced;
 
             await Task.Run(() =>
             {
                 try
                 {
-                    Game.GenerateTurn();
+                    GameRunner.GenerateTurn();
                     Game.GameInfo.State = GameState.WaitingForPlayers;
                 }
                 catch (Exception e)
@@ -282,7 +285,7 @@ namespace CraigStars.Server
                 }
             });
 
-            Game.TurnGeneratorAdvancedEvent -= OnTurnGeneratorAdvanced;
+            GameRunner.TurnGeneratorAdvancedEvent -= OnTurnGeneratorAdvanced;
 
             await GodotTaskFactory.StartNew(() => PublishTurnPassedEvent());
 
@@ -300,7 +303,7 @@ namespace CraigStars.Server
         /// <summary>
         /// Create a new game and generate the universe
         /// </summary>
-        public Game CreateNewGame(GameSettings<Player> settings, bool multithreaded, bool saveToDisk)
+        public GameRunner CreateNewGame(GameSettings<Player> settings, bool multithreaded, bool saveToDisk)
         {
             var game = new Game()
             {
@@ -311,18 +314,21 @@ namespace CraigStars.Server
             {
                 GamesManager.DeleteGame(game.Name);
             }
+
+            var gameRunner = GameRunnerContainer.CreateGameRunner(game, TechStore.Instance);
+
             // PlayersManager.Instance.NumPlayers = PlayersManager.Instance.Players.Count;
-            game.Init(settings.Players, RulesManager.Rules, TechStore.Instance);
-            game.GenerateUniverse();
+            game.Init(settings.Players, RulesManager.Rules);
+            gameRunner.GenerateUniverse();
 
             // TODO: remove this turn process stuff later
-            // game.Players.ForEach(player => player.Settings.TurnProcessors.AddRange(TurnProcessorManager.Instance.TurnProcessors.Select(p => p.Name)));
+            game.Players.ForEach(player => player.Settings.TurnProcessors.AddRange(TurnProcessorManager.Instance.TurnProcessors.Select(p => p.Name)));
 
             SaveToDisk = saveToDisk;
 
             SaveGame(game);
 
-            return game;
+            return gameRunner;
         }
 
         /// <summary>
@@ -363,7 +369,7 @@ namespace CraigStars.Server
                     log.Debug($"{game.Year}: Saving game {game.Name} to disk.");
                     // serialize the game to JSON. This must complete before we can
                     // modify any state
-                    var gameJson = GamesManager.SerializeGame(game);
+                    var gameJson = GamesManager.SerializeGame(game, TechStore.Instance);
 
                     GamesManager.SaveGame(gameJson);
                     log.Debug($"{game.Year}: Finished saving game {game.Name} to disk.");

@@ -1,11 +1,52 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using CraigStars.Client;
+using CraigStars.Singletons;
 using Godot;
 
 namespace CraigStars.Utils
 {
     public static class NodeExtensions
     {
+        static CSLog log = LogProvider.GetLogger(typeof(NodeExtensions));
+
+        static Dictionary<Type, IEnumerable<FieldInfo>> fieldsForType = new();
+
+        /// <summary>
+        /// Resolve dependencies using DependencyInjection
+        /// ref: https://playdivinary.com/posts/di-in-godot/
+        /// </summary>
+        /// <param name="node"></param>
+        public static void ResolveDependencies(this Node node)
+        {
+            var injectionSystem = node.GetNode<DependencyInjectionSystem>("/root/DependencyInjectionSystem");
+            var attribute = typeof(InjectAttribute);
+            var type = node.GetType();
+
+            if (!fieldsForType.TryGetValue(type, out var fields))
+            {
+                fields = type
+                    .GetRuntimeFields()
+                    .Where(f => f.GetCustomAttributes(attribute, true).Any());
+            }
+
+            foreach (var field in fields)
+            {
+                var obj = injectionSystem.Resolve(field.FieldType);
+                try
+                {
+                    field.SetValue(node, obj);
+                }
+                catch (InvalidCastException)
+                {
+                    log.Error($"Error converting value {obj} ({obj.GetType()}) to {field.FieldType}");
+                    throw;
+                }
+            }
+        }
+
         /// <summary>
         /// Change to a new scene with an initialization callback for initializing an instanced node.
         /// </summary>

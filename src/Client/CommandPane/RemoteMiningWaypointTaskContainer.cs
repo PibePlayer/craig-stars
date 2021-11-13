@@ -1,11 +1,14 @@
+using CraigStars.Client;
+using CraigStars.Utils;
 using Godot;
 using System;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class RemoteMiningWaypointTaskContainer : VBoxContainer
     {
-        PlanetService planetService = new();
+        [Inject] PlanetService planetService;
+
         Label remoteMiningLabel;
 
         Container remoteMiningSummaryContainer;
@@ -37,6 +40,8 @@ namespace CraigStars
 
         public override void _Ready()
         {
+            this.ResolveDependencies();
+
             remoteMiningLabel = GetNode<Label>("RemoteMiningLabel");
 
             remoteMiningSummaryContainer = GetNode<Container>("RemoteMiningSummaryContainer");

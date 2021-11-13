@@ -9,6 +9,9 @@ namespace CraigStars
     /// </summary>
     public static class TestBattleUtils
     {
+        static PlayerTechService playerTechService = new PlayerTechService(new Provider<ITechStore>(StaticTechStore.Instance));
+        static ShipDesignerTurnProcessor designerTurnProcessor = new ShipDesignerTurnProcessor(new ShipDesignGenerator(playerTechService), playerTechService);
+
         /// <summary>
         /// Build a simple battle between two players, one with a Stalwart Defender, one with a Long Range Scout
         /// </summary>
@@ -111,7 +114,6 @@ namespace CraigStars
             player2.Race.Name = "Rabbitoid";
             player2.Race.PluralName = "Rabbitoids";
 
-            ShipDesignerTurnProcessor designerTurnProcessor = new ShipDesignerTurnProcessor();
             designerTurnProcessor.Process(gameInfo, player1);
 
             player1.Fleets.Add(new Fleet()
@@ -123,7 +125,6 @@ namespace CraigStars
                     }).ToList(),
             });
 
-            designerTurnProcessor = new ShipDesignerTurnProcessor();
             designerTurnProcessor.Process(gameInfo, player2);
 
             player2.Fleets.Add(new Fleet()
@@ -167,7 +168,6 @@ namespace CraigStars
             player2.Race.Name = "Rabbitoid";
             player2.Race.PluralName = "Rabbitoids";
 
-            ShipDesignerTurnProcessor designerTurnProcessor = new ShipDesignerTurnProcessor();
             designerTurnProcessor.Process(game.GameInfo, player1);
 
             player1.Fleets.Add(new Fleet()
@@ -180,7 +180,6 @@ namespace CraigStars
                 BattlePlan = player1.BattlePlans[0]
             });
 
-            designerTurnProcessor = new ShipDesignerTurnProcessor();
             designerTurnProcessor.Process(game.GameInfo, player2);
 
             player2.Fleets.Add(new Fleet()
@@ -214,7 +213,7 @@ namespace CraigStars
         public static BattleRecord GetSimpleBattleRecord(Player player1 = null, Player player2 = null)
         {
             var game = TestBattleUtils.GetGameWithSimpleBattle(player1, player2);
-            BattleEngine battleEngine = new BattleEngine(game);
+            BattleEngine battleEngine = new BattleEngine(game, new(), new());
             var battle = battleEngine.BuildBattle(game.Fleets);
             battleEngine.RunBattle(battle);
 
@@ -230,7 +229,7 @@ namespace CraigStars
         public static BattleRecord GetDesignsBattleRecord(PublicGameInfo gameInfo, Player player1, Player player2, HashSet<string> player1DesignNames, HashSet<string> player2DesignNames)
         {
             Game game = GetGameWithBattle(player1, player2, player1DesignNames, player2DesignNames);
-            BattleEngine battleEngine = new BattleEngine(game);
+            BattleEngine battleEngine = new BattleEngine(game, new(), new());
             var battle = battleEngine.BuildBattle(game.Fleets);
             battleEngine.RunBattle(battle);
 

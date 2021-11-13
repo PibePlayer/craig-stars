@@ -18,12 +18,13 @@ namespace CraigStars.Tests
     {
         static CSLog log = LogProvider.GetLogger(typeof(PacketMoveStepTest));
 
+        PlanetService planetService = new PlanetService(new PlayerTechService(new TestTechStoreProvider()));
 
         [Test]
         public void TestCompleteMoveCaught()
         {
-            var game = TestUtils.GetSingleUnitGame();
-            PacketMoveStep step = new PacketMoveStep(game, 1);
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
+            PacketMove1Step step = new PacketMove1Step(gameRunner.GameProvider, planetService);
             var player = game.Players[0];
 
             // create a starbase with a warp5 receiver
@@ -77,8 +78,8 @@ namespace CraigStars.Tests
         [Test]
         public void TestCompleteMoveOverspeed()
         {
-            var game = TestUtils.GetSingleUnitGame();
-            PacketMoveStep step = new PacketMoveStep(game, 1);
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
+            PacketMove1Step step = new PacketMove1Step(gameRunner.GameProvider, planetService);
             var player = game.Players[0];
             player.TechLevels = new TechLevel(energy: 5);
 
@@ -133,8 +134,8 @@ namespace CraigStars.Tests
         [Test]
         public void TestCompleteMoveKillPlanet()
         {
-            var game = TestUtils.GetSingleUnitGame();
-            PacketMoveStep step = new PacketMoveStep(game, 1);
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
+            PacketMove1Step step = new PacketMove1Step(gameRunner.GameProvider, planetService);
             var player = game.Players[0];
 
             var planet2 = new Planet()

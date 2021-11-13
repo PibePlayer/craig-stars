@@ -18,15 +18,14 @@ namespace CraigStars.Tests
     {
         static CSLog log = LogProvider.GetLogger(typeof(GameTest));
 
-
-
         [Test]
         public void TestGenerateUniverse()
         {
-            var game = new Game();
+            var gameRunner = GameRunnerContainer.CreateGameRunner(new Game(), StaticTechStore.Instance);
+            var game = gameRunner.Game;
             var rules = new Rules(0);
-            game.Init(new List<Player>() { new Player() }, rules, StaticTechStore.Instance);
-            game.GenerateUniverse();
+            game.Init(new List<Player>() { new Player() }, rules);
+            gameRunner.GenerateUniverse();
 
             Assert.AreEqual(rules.GetNumPlanets(game.Size, game.Density), game.Planets.Count);
             Assert.AreEqual(rules.GetNumPlanets(game.Size, game.Density), game.Players[0].AllPlanets.ToList().Count);
@@ -37,17 +36,18 @@ namespace CraigStars.Tests
         public void TestGenerateTurn()
         {
             // create a new game with universe
-            var game = new Game();
+            var gameRunner = GameRunnerContainer.CreateGameRunner(new Game(), StaticTechStore.Instance);
+            var game = gameRunner.Game;
             var player = new Player();
             var rules = new Rules(0);
-            game.Init(new List<Player>() { player }, rules, StaticTechStore.Instance);
-            game.GenerateUniverse();
+            game.Init(new List<Player>() { player }, rules);
+            gameRunner.GenerateUniverse();
 
             // submit the player
-            game.SubmitTurn(player);
+            gameRunner.SubmitTurn(player);
 
             // generate the turn
-            game.GenerateTurn();
+            gameRunner.GenerateTurn();
 
             // make sure our turn was generated and the player's report was updated
             Assert.Greater(player.Homeworld.Population, rules.StartingPopulation);
@@ -61,17 +61,18 @@ namespace CraigStars.Tests
         public void TestGenerateManyTurns()
         {
             // create a new game with universe
-            var game = new Game()
+            var gameRunner = GameRunnerContainer.CreateGameRunner(new Game()
             {
                 Size = Size.Huge,
                 Density = Density.Packed,
-            };
+            }, StaticTechStore.Instance);
+            var game = gameRunner.Game;
             game.GameInfo.QuickStartTurns = 0;
             var player = new Player() { Num = 0 };
             var aiPlayer = new Player() { Num = 1, AIControlled = true };
             var rules = new Rules(0);
-            game.Init(new List<Player>() { player, aiPlayer }, rules, StaticTechStore.Instance);
-            game.GenerateUniverse();
+            game.Init(new List<Player>() { player, aiPlayer }, rules);
+            gameRunner.GenerateUniverse();
 
             // // turn off logging but for errors
             // var logger = (Logger)log.Logger;
@@ -90,10 +91,10 @@ namespace CraigStars.Tests
                 aiTurnSubmitter.SubmitAITurns(game);
 
                 // submit the player
-                game.SubmitTurn(player);
+                gameRunner.SubmitTurn(player);
 
                 // generate the turn
-                game.GenerateTurn();
+                gameRunner.GenerateTurn();
             }
             stopwatch.Stop();
 

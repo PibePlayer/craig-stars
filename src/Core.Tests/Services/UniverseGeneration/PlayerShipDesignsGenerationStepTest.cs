@@ -10,13 +10,27 @@ namespace CraigStars.Tests
     public class PlayerShipDesignsGenerationStepTest
     {
 
+        PlayerTechService playerTechService;
+        PlayerService playerService;
+        PlayerIntel playerIntel;
+        ShipDesignGenerator designGenerator;
+
+        [SetUp]
+        public void SetUp()
+        {
+            playerTechService = TestUtils.TestContainer.GetInstance<PlayerTechService>();
+            playerService = TestUtils.TestContainer.GetInstance<PlayerService>();
+            playerIntel = TestUtils.TestContainer.GetInstance<PlayerIntel>();
+            designGenerator = TestUtils.TestContainer.GetInstance<ShipDesignGenerator>();
+        }
+
         [Test]
         public void TestFillStarbaseSlots()
         {
             var game = new Game() { StartMode = GameStartMode.Normal };
-            game.Init(new List<Player>() { new Player() { AIControlled = true } }, new Rules(0), StaticTechStore.Instance);
+            game.Init(new List<Player>() { new Player() { AIControlled = true } }, new Rules(0));
 
-            PlayerShipDesignsGenerationStep step = new PlayerShipDesignsGenerationStep(game);
+            PlayerShipDesignsGenerationStep step = new PlayerShipDesignsGenerationStep(new Provider<Game>(game), StaticTechStore.Instance, playerIntel, designGenerator);
 
             var starbase = new ShipDesign()
             {

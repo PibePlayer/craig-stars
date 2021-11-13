@@ -1,4 +1,5 @@
 using CraigStars.Singletons;
+using CraigStars.Utils;
 using Godot;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace CraigStars.Client
         protected Player Me { get => PlayersManager.Me; }
         protected PublicGameInfo GameInfo { get => PlayersManager.GameInfo; }
 
-        PlanetService planetService = new();
+        [Inject] PlanetService planetService;
 
         public TechDefense Defense { get; set; } = Techs.MissileBattery;
 
@@ -30,11 +31,12 @@ namespace CraigStars.Client
 
         public override void _Ready()
         {
+            this.ResolveDependencies();
+
             // for running the scene locally
             // PlayersManager.Me = new();
             // PlayersManager.GameInfo = new();
             base._Ready();
-
         }
 
         protected override List<Vector2> GetPoints()

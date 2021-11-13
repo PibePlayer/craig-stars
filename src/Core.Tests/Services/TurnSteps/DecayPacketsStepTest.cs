@@ -21,7 +21,7 @@ namespace CraigStars.Tests
         [Test]
         public void DecayTest()
         {
-            var game = TestUtils.GetSingleUnitGame();
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
             var player1 = game.Players[0];
             var packet = new MineralPacket()
             {
@@ -32,7 +32,7 @@ namespace CraigStars.Tests
             };
             game.MineralPackets.Add(packet);
 
-            DecayPacketsStep step = new DecayPacketsStep(game);
+            DecayPacketsStep step = new DecayPacketsStep(gameRunner.GameProvider, new PlayerService(game));
 
             // no decay for safe speed
             packet.Cargo = new Cargo(100, 100, 100);

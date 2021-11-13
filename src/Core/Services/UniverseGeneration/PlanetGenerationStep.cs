@@ -12,7 +12,7 @@ namespace CraigStars.UniverseGeneration
     /// </summary>
     public class PlanetGenerationStep : UniverseGenerationStep
     {
-        public PlanetGenerationStep(Game game) : base(game, UniverseGenerationState.Planets) { }
+        public PlanetGenerationStep(IProvider<Game> gameProvider) : base(gameProvider, UniverseGenerationState.Planets) { }
 
         public override void Process()
         {

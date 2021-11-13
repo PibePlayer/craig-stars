@@ -3,13 +3,14 @@ using Godot;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using CraigStars.Utils;
 
 namespace CraigStars.Client
 {
 
     public class FleetSprite : MapObjectSprite
     {
-        FleetService fleetService = new();
+        [Inject] protected FleetService fleetService;
 
         /// <summary>
         /// Convenience method so the code looks like Fleet.Something instead of MapObject.Something
@@ -57,6 +58,7 @@ namespace CraigStars.Client
 
         public override void _Ready()
         {
+            this.ResolveDependencies();
             base._Ready();
             selected = GetNode<Sprite>("Sprite/Selected");
             active = GetNode<Sprite>("Sprite/Active");

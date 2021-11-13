@@ -12,8 +12,8 @@ namespace CraigStars.Client
     {
         static CSLog log = LogProvider.GetLogger(typeof(ResearchDialog));
 
-        PlanetService planetService = new();
-        Researcher researcher = new();
+        [Inject] protected PlanetService planetService;
+        [Inject] protected Researcher researcher;
 
         CheckBox energyCheckBox;
         CheckBox weaponsCheckBox;
@@ -45,6 +45,8 @@ namespace CraigStars.Client
 
         public override void _Ready()
         {
+            this.ResolveDependencies();
+
             base._Ready();
             energyCheckBox = FindNode("EnergyCheckBox") as CheckBox;
             weaponsCheckBox = FindNode("WeaponsCheckBox") as CheckBox;

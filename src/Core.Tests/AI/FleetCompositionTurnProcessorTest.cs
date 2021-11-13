@@ -16,7 +16,7 @@ namespace CraigStars.Tests
         [Test]
         public void TestProcess()
         {
-            Player player = new();
+            var player = new Player();
             PublicGameInfo gameInfo = new() { Players = new() { player } };
             processor.Process(gameInfo, player);
 

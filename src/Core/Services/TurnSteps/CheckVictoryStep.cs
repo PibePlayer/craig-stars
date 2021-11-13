@@ -11,9 +11,12 @@ namespace CraigStars
     /// </summary>
     public class CheckVictoryStep : TurnGenerationStep
     {
-        PlanetService planetService = new();
+        private readonly PlanetService planetService;
 
-        public CheckVictoryStep(Game game) : base(game, TurnGenerationState.VictoryCheck) { }
+        public CheckVictoryStep(IProvider<Game> gameProvider, PlanetService planetService) : base(gameProvider, TurnGenerationState.VictoryCheck)
+        {
+            this.planetService = planetService;
+        }
 
         public override void Process()
         {

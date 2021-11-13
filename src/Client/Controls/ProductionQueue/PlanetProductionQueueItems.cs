@@ -14,7 +14,8 @@ namespace CraigStars.Client
     /// </summary>
     public abstract class PlanetProductionQueueItems : ProductionQueueItems
     {
-        protected PlanetService planetService = new();
+        [Inject] protected PlanetService planetService;
+        [Inject] protected PlayerService playerService;
 
         public Planet Planet
         {
@@ -32,6 +33,12 @@ namespace CraigStars.Client
 
         protected Cost availableCost = Cost.Zero;
         protected Cost yearlyAvailableCost = Cost.Zero;
+
+        public override void _Ready()
+        {
+            this.ResolveDependencies();
+            base._Ready();
+        }
 
         /// <summary>
         /// When a planet is updated, reset our internal Items list to whatever is currently in the planet queue

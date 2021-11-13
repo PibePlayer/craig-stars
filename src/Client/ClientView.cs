@@ -12,6 +12,8 @@ namespace CraigStars.Client
     {
         static CSLog log = LogProvider.GetLogger(typeof(ClientView));
 
+        [Inject] TurnProcessorRunner turnProcessorRunner;
+
         /// <summary>
         /// The GameInfo passed in when we're created
         /// </summary>
@@ -45,6 +47,7 @@ namespace CraigStars.Client
 
         public override void _Ready()
         {
+            this.ResolveDependencies();
             base._Ready();
             container = GetNode<Container>("CanvasLayer/Container");
             progressBar = GetNode<ProgressBar>("CanvasLayer/Container/PanelContainer/VBoxContainer/ProgressBar");
@@ -352,7 +355,7 @@ namespace CraigStars.Client
             {
                 PlayersManager.GameInfo = GameInfo = gameInfo;
                 PlayersManager.Me = player;
-                PlayersManager.Me.RunTurnProcessors(PlayersManager.GameInfo, TurnProcessorManager.Instance);
+                turnProcessorRunner.RunTurnProcessors(PlayersManager.GameInfo, PlayersManager.Me, TurnProcessorManager.Instance);
                 OS.SetWindowTitle($"{projectName} - {gameInfo.Name}: Year {gameInfo.Year}");
                 LoadGameView();
             }
@@ -388,7 +391,7 @@ namespace CraigStars.Client
                 GameInfo = gameInfo;
                 PlayersManager.GameInfo = GameInfo = gameInfo;
                 PlayersManager.Me = player;
-                PlayersManager.Me.RunTurnProcessors(PlayersManager.GameInfo, TurnProcessorManager.Instance);
+                turnProcessorRunner.RunTurnProcessors(PlayersManager.GameInfo, PlayersManager.Me, TurnProcessorManager.Instance);
                 OS.SetWindowTitle($"{projectName} - {gameInfo.Name}: Year {gameInfo.Year}");
                 LoadGameView();
             }

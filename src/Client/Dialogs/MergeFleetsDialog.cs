@@ -1,4 +1,5 @@
 using CraigStars.Singletons;
+using CraigStars.Utils;
 using Godot;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ namespace CraigStars.Client
 {
     public class MergeFleetsDialog : GameViewDialog
     {
-        FleetService fleetService = new();
+        [Inject] protected FleetService fleetService;
 
         public FleetSprite SourceFleet { get; set; }
 
@@ -20,6 +21,7 @@ namespace CraigStars.Client
 
         public override void _Ready()
         {
+            this.ResolveDependencies();
             base._Ready();
             selectAllButton = (Button)FindNode("SelectAllButton");
             unselectAllButton = (Button)FindNode("UnselectAllButton");

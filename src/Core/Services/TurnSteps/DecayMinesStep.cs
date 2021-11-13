@@ -8,7 +8,7 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(DecayMinesStep));
 
-        public DecayMinesStep(Game game) : base(game, TurnGenerationState.MineLaying) { }
+        public DecayMinesStep(IProvider<Game> gameProvider) : base(gameProvider, TurnGenerationState.MineLaying) { }
 
         public override void Process()
         {

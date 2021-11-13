@@ -8,7 +8,12 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(DecayPacketsStep));
 
-        public DecayPacketsStep(Game game) : base(game, TurnGenerationState.DecayMineralPackets) { }
+        private readonly PlayerService playerService;
+
+        public DecayPacketsStep(IProvider<Game> gameProvider, PlayerService playerService) : base(gameProvider, TurnGenerationState.DecayMineralPackets)
+        {
+            this.playerService = playerService;
+        }
 
         public override void Process()
         {
@@ -26,7 +31,7 @@ namespace CraigStars
         internal void Decay(MineralPacket packet)
         {
             var player = Game.Players[packet.PlayerNum];
-            var decayRate = 1f - player.GetPacketDecayRate(packet) * (packet.DistanceTravelled / (packet.WarpFactor * packet.WarpFactor));
+            var decayRate = 1f - playerService.GetPacketDecayRate(player.Race, packet) * (packet.DistanceTravelled / (packet.WarpFactor * packet.WarpFactor));
             packet.Cargo *= decayRate;
         }
 

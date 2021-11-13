@@ -12,9 +12,12 @@ namespace CraigStars.UniverseGeneration
     /// </summary>
     public class PlayerPlansGenerationStep : UniverseGenerationStep
     {
-        PlanetService planetService = new();
+        readonly PlanetService planetService;
 
-        public PlayerPlansGenerationStep(Game game) : base(game, UniverseGenerationState.Plans) { }
+        public PlayerPlansGenerationStep(IProvider<Game> gameProvider, PlanetService planetService) : base(gameProvider, UniverseGenerationState.Plans)
+        {
+            this.planetService = planetService;
+        }
 
         public override void Process()
         {

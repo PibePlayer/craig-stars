@@ -95,17 +95,15 @@ namespace CraigStars.Tests
 
             Game game = new Game()
             {
-                TechStore = StaticTechStore.Instance,
                 Players = new List<Player>() { player, otherPlayer },
                 Planets = new List<Planet>() { planet1, planet2 },
                 Fleets = new List<Fleet>() { fleet1, fleet2 }
             };
 
-            var json = Serializers.SerializeGame(game, Serializers.CreateGameSettings(game.TechStore));
+            var json = Serializers.SerializeGame(game, Serializers.CreateGameSettings(StaticTechStore.Instance));
             log.Info($"\n{json}");
 
             Game loaded = Serializers.DeserializeObject<Game>(json, Serializers.CreateGameSettings(StaticTechStore.Instance));
-            loaded.TechStore = StaticTechStore.Instance;
 
             Assert.AreEqual(game.Players.Count, loaded.Players.Count);
             Assert.AreEqual(game.Players[0].Name, loaded.Players[0].Name);
@@ -130,12 +128,13 @@ namespace CraigStars.Tests
 
             // generate a tiny universe
             Game game = new Game() { Size = Size.Tiny, Density = Density.Sparse };
-            game.Init(new List<Player>() { player1, player2 }, new Rules(0), StaticTechStore.Instance);
-            game.GenerateUniverse();
+            game.Init(new List<Player>() { player1, player2 }, new Rules(0));
+            var gameRunner = GameRunnerContainer.CreateGameRunner(game, StaticTechStore.Instance);
+            gameRunner.GenerateUniverse();
 
-            var gameSettings = Serializers.CreateGameSettings(game.TechStore);
+            var gameSettings = Serializers.CreateGameSettings(StaticTechStore.Instance);
             var gameJson = Serializers.SerializeGame(game, gameSettings);
-            var playerSettings = Serializers.CreatePlayerSettings(game.TechStore);
+            var playerSettings = Serializers.CreatePlayerSettings(StaticTechStore.Instance);
 
             var player1Json = Serializers.Serialize(player1, playerSettings);
             var player2Json = Serializers.Serialize(player2, playerSettings);
@@ -145,9 +144,8 @@ namespace CraigStars.Tests
 
             // reload the game
             Game loaded = Serializers.DeserializeObject<Game>(gameJson, Serializers.CreateGameSettings(StaticTechStore.Instance));
-            loaded.TechStore = StaticTechStore.Instance;
             
-            var loadSettings = Serializers.CreatePlayerSettings(loaded.TechStore);
+            var loadSettings = Serializers.CreatePlayerSettings(StaticTechStore.Instance);
             loaded.Players[0] = Serializers.DeserializeObject<Player>(player1Json, loadSettings);
             loaded.Players[1] = Serializers.DeserializeObject<Player>(player2Json, loadSettings);
 

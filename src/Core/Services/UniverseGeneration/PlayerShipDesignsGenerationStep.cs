@@ -12,10 +12,17 @@ namespace CraigStars.UniverseGeneration
     /// </summary>
     public class PlayerShipDesignsGenerationStep : UniverseGenerationStep
     {
-        public PlayerShipDesignsGenerationStep(Game game) : base(game, UniverseGenerationState.ShipDesigns) { }
+        private readonly ITechStore techStore;
+        private readonly PlayerIntel playerIntel;
+        private readonly ShipDesignGenerator designer;
 
-        ShipDesignGenerator designer = new ShipDesignGenerator();
-        PlayerIntel playerIntel = new PlayerIntel();
+        public PlayerShipDesignsGenerationStep(IProvider<Game> gameProvider, ITechStore techStore, PlayerIntel playerIntel, ShipDesignGenerator designer) : base(gameProvider, UniverseGenerationState.ShipDesigns)
+        {
+            this.techStore = techStore;
+            this.playerIntel = playerIntel;
+            this.designer = designer;
+        }
+
 
         public override void Process()
         {
@@ -117,14 +124,14 @@ namespace CraigStars.UniverseGeneration
         /// <param name="starbase"></param>
         internal void FillStarbaseSlots(ShipDesign starbase, Race race)
         {
-            var beamWeapon = Game.TechStore.GetTechsByCategory(TechCategory.BeamWeapon).First() as TechHullComponent;
-            var shield = Game.TechStore.GetTechsByCategory(TechCategory.Shield).First() as TechHullComponent;
-            var massDriver = Game.TechStore.GetTechsByCategory(TechCategory.Orbital)
+            var beamWeapon = techStore.GetTechsByCategory(TechCategory.BeamWeapon).First() as TechHullComponent;
+            var shield = techStore.GetTechsByCategory(TechCategory.Shield).First() as TechHullComponent;
+            var massDriver = techStore.GetTechsByCategory(TechCategory.Orbital)
                 .Cast<TechHullComponent>()
                 .Where(tech => tech.PacketSpeed > 0)
                 .ToArray()[0] as TechHullComponent;
 
-            var stargate = Game.TechStore.GetTechsByCategory(TechCategory.Orbital)
+            var stargate = techStore.GetTechsByCategory(TechCategory.Orbital)
                 .Cast<TechHullComponent>()
                 .Where(tech => tech.SafeRange > 0)
                 .ToArray()[0] as TechHullComponent;

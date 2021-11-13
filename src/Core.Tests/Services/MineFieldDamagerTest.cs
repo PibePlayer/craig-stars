@@ -18,12 +18,14 @@ namespace CraigStars.Tests
     {
         static CSLog log = LogProvider.GetLogger(typeof(MineFieldDamagerTest));
 
-        MineFieldDamager mineFieldDamager = new MineFieldDamager();
+        MineFieldDamager mineFieldDamager = new();
+        ShipDesignDiscoverer designDiscoverer = new();
+        FleetService fleetService = new();
 
         [Test]
         public void TestTakeMineFieldDamage()
         {
-            var game = TestUtils.GetTwoPlayerGame();
+            var (game, gameRunner) = TestUtils.GetTwoPlayerGame();
             var player1 = game.Players[0];
             var player2 = game.Players[1];
 
@@ -47,7 +49,7 @@ namespace CraigStars.Tests
             };
             fleet.ComputeAggregate(player1);
 
-            FleetMoveStep step = new FleetMoveStep(game);
+            FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, mineFieldDamager, designDiscoverer, fleetService);
 
             MineFieldStats stats = new MineFieldStats()
             {
@@ -84,7 +86,7 @@ namespace CraigStars.Tests
         [Test]
         public void TestHitMineFieldMinDamage()
         {
-            var game = TestUtils.GetTwoPlayerGame();
+            var (game, gameRunner) = TestUtils.GetTwoPlayerGame();
             var player1 = game.Players[0];
             var player2 = game.Players[1];
 
@@ -108,7 +110,7 @@ namespace CraigStars.Tests
             };
             fleet.ComputeAggregate(player1);
 
-            FleetMoveStep step = new FleetMoveStep(game);
+            FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, mineFieldDamager, designDiscoverer, fleetService);
 
             MineFieldStats stats = new MineFieldStats()
             {
@@ -126,7 +128,7 @@ namespace CraigStars.Tests
         [Test]
         public void TestHitMineFieldMinDamageDiverseFleet()
         {
-            var game = TestUtils.GetTwoPlayerGame();
+            var (game, gameRunner) = TestUtils.GetTwoPlayerGame();
             var player1 = game.Players[0];
             var player2 = game.Players[1];
 
@@ -161,7 +163,7 @@ namespace CraigStars.Tests
             };
             fleet.ComputeAggregate(player1);
 
-            FleetMoveStep step = new FleetMoveStep(game);
+            FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, mineFieldDamager, designDiscoverer, fleetService);
 
             MineFieldStats stats = new MineFieldStats()
             {

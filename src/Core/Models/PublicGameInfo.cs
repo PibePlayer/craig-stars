@@ -9,7 +9,7 @@ namespace CraigStars
     /// By default, public game info has PublicPlayerInfo objects, but when setting
     /// up a new game, we use the full Player
     /// </summary>
-    public class PublicGameInfo : GameSettings<PublicPlayerInfo>
+    public class PublicGameInfo : GameSettings<PublicPlayerInfo>, IRulesProvider
     {
         public PublicGameInfo() { }
         public PublicGameInfo(PublicGameInfo gameInfo)

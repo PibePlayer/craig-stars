@@ -1,3 +1,4 @@
+using CraigStars.Utils;
 using Godot;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ namespace CraigStars.Client
 {
     public class ShipDesignerDialog : GameViewDialog
     {
+        [Inject] protected PlayerTechService playerTechService;
 
         TabContainer tabContainer;
 
@@ -31,6 +33,7 @@ namespace CraigStars.Client
 
         public override void _Ready()
         {
+            this.ResolveDependencies();
             base._Ready();
 
             shipDesignTabsContainer = FindNode("ShipDesignTabsContainer") as Container;
@@ -134,7 +137,7 @@ namespace CraigStars.Client
             {
                 hullHullSummary.Hull = hull;
                 hullHullSummary.UpdateControls();
-                createShipDesignButton.Disabled = !Me.HasTech(tech);
+                createShipDesignButton.Disabled = !playerTechService.HasTech(Me, tech);
             }
         }
 

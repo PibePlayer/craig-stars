@@ -10,9 +10,12 @@ namespace CraigStars
     public class FleetSweepMinesStep : TurnGenerationStep
     {
         static CSLog log = LogProvider.GetLogger(typeof(DecayMinesStep));
-        FleetService fleetService = new();
+        private readonly FleetService fleetService;
 
-        public FleetSweepMinesStep(Game game) : base(game, TurnGenerationState.MineSweeping) { }
+        public FleetSweepMinesStep(IProvider<Game> gameProvider, FleetService fleetService) : base(gameProvider, TurnGenerationState.MineSweeping)
+        {
+            this.fleetService = fleetService;
+        }
 
         public override void Process()
         {

@@ -11,10 +11,9 @@ namespace CraigStars.Tests
     [TestFixture]
     public class BattleEngineTest
     {
-        BattleEngine battleEngine = new BattleEngine(new Game()
-        {
-            Players = new() { new Player() }
-        });
+
+        FleetService fleetService = new FleetService();
+        ShipDesignDiscoverer designDiscover = new ShipDesignDiscoverer();
 
         [Test]
         public void TestWillTarget()
@@ -23,6 +22,11 @@ namespace CraigStars.Tests
             {
                 Attributes = BattleTokenAttribute.Armed | BattleTokenAttribute.Starbase
             };
+
+            var battleEngine = new BattleEngine(new Game()
+            {
+                Players = new() { new Player() }
+            }, fleetService, designDiscover);
 
             // Armed starbases are targeted by Any, Starbase, and ArmedShip
             Assert.IsTrue(battleEngine.WillTarget(BattleTargetType.Any, token));
@@ -42,7 +46,7 @@ namespace CraigStars.Tests
         {
             // create a new battle from two test fleets
             var game = TestBattleUtils.GetGameWithSimpleBattle();
-            battleEngine = new BattleEngine(game);
+            var battleEngine = new BattleEngine(game, fleetService, designDiscover);
             var battle = battleEngine.BuildBattle(game.Fleets);
 
             // find some targets!
@@ -61,7 +65,7 @@ namespace CraigStars.Tests
         {
             // create a new battle from two test fleets
             var game = TestBattleUtils.GetGameWithSimpleBattle();
-            battleEngine = new BattleEngine(game);
+            var battleEngine = new BattleEngine(game, fleetService, designDiscover);
             var battle = battleEngine.BuildBattle(game.Fleets);
 
             // find some targets!
@@ -79,7 +83,7 @@ namespace CraigStars.Tests
         {
             // create a new battle from two test fleets
             var game = TestBattleUtils.GetGameWithSimpleBattle();
-            battleEngine = new BattleEngine(game);
+            var battleEngine = new BattleEngine(game, fleetService, designDiscover);
             var battle = battleEngine.BuildBattle(game.Fleets);
             var token1 = battle.Tokens[0];
             var token2 = battle.Tokens[1];
@@ -105,7 +109,7 @@ namespace CraigStars.Tests
         {
             // create a new battle from two test fleets
             var game = TestBattleUtils.GetGameWithSimpleBattle();
-            battleEngine = new BattleEngine(game);
+            var battleEngine = new BattleEngine(game, fleetService, designDiscover);
             var battle = battleEngine.BuildBattle(game.Fleets);
             var attacker = battle.Tokens[0];
             var defender = battle.Tokens[1];
@@ -134,7 +138,7 @@ namespace CraigStars.Tests
         {
             // create a new battle from two test fleets
             var game = TestBattleUtils.GetGameWithSimpleBattle();
-            battleEngine = new BattleEngine(game);
+            var battleEngine = new BattleEngine(game, fleetService, designDiscover);
             var battle = battleEngine.BuildBattle(game.Fleets);
             var attacker = battle.Tokens[0];
             var defender = battle.Tokens[1];
@@ -165,7 +169,7 @@ namespace CraigStars.Tests
         {
             // create a new battle from two test fleets
             var game = TestBattleUtils.GetGameWithSimpleBattle();
-            battleEngine = new BattleEngine(game);
+            var battleEngine = new BattleEngine(game, fleetService, designDiscover);
             var battle = battleEngine.BuildBattle(game.Fleets);
             var attacker = battle.Tokens[0];
             var defender = battle.Tokens[1];
@@ -195,7 +199,7 @@ namespace CraigStars.Tests
         {
             // create a new battle from two test fleets
             var game = TestBattleUtils.GetGameWithSimpleBattle();
-            battleEngine = new BattleEngine(game);
+            var battleEngine = new BattleEngine(game, fleetService, designDiscover);
             var battle = battleEngine.BuildBattle(game.Fleets);
             var attacker = battle.Tokens[0];
             var defender = battle.Tokens[1];
@@ -213,7 +217,7 @@ namespace CraigStars.Tests
         {
             // create a new battle from two test fleets
             var game = TestBattleUtils.GetGameWithSimpleBattle();
-            battleEngine = new BattleEngine(game);
+            var battleEngine = new BattleEngine(game, fleetService, designDiscover);
             var battle = battleEngine.BuildBattle(game.Fleets);
             var attacker = battle.Tokens[0];
             var defender = battle.Tokens[1];
@@ -242,7 +246,7 @@ namespace CraigStars.Tests
                 new HashSet<string>() { "Destroyer", "Space Station" },
                 new HashSet<string>() { "Destroyer", "Scout", "Fuel Transport" }
             );
-            battleEngine = new BattleEngine(game);
+            var battleEngine = new BattleEngine(game, fleetService, designDiscover);
             var battle = battleEngine.BuildBattle(game.Fleets);
 
             battleEngine.RunBattle(battle);

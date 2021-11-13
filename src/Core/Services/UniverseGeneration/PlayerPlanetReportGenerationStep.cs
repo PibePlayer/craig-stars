@@ -12,9 +12,12 @@ namespace CraigStars.UniverseGeneration
     /// </summary>
     public class PlayerPlanetReportGenerationStep : UniverseGenerationStep
     {
-        public PlayerPlanetReportGenerationStep(Game game) : base(game, UniverseGenerationState.PlanetReports) { }
+        private readonly PlayerIntel playerIntel;
 
-        PlayerIntel playerIntel = new PlayerIntel();
+        public PlayerPlanetReportGenerationStep(IProvider<Game> gameProvider, PlayerIntel playerIntel) : base(gameProvider, UniverseGenerationState.PlanetReports)
+        {
+            this.playerIntel = playerIntel;
+        }
 
         public override void Process()
         {

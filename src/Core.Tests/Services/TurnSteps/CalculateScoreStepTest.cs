@@ -16,15 +16,16 @@ namespace CraigStars.Tests
     [TestFixture]
     public class CalculateScoreStepTest
     {
+        PlanetService planetService = TestUtils.TestContainer.GetInstance<PlanetService>();
 
         [Test]
         public void TestCalculateScoreSinglePlanet()
         {
-            var game = TestUtils.GetSingleUnitGame();
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
             var player = game.Players[0];
 
             // single planet and fleet, 3 points
-            var step = new CalculateScoreStep(game);
+            var step = new CalculateScoreStep(gameRunner.GameProvider, planetService);
             var score = step.CalculateScore(player);
 
             Assert.AreEqual(0, score.Score);
@@ -33,7 +34,7 @@ namespace CraigStars.Tests
         [Test]
         public void TestCalculateScoreSimple()
         {
-            var game = TestUtils.GetSingleUnitGame();
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
             var player = game.Players[0];
             var starbaseDesign = ShipDesigns.Starbase.Clone(player);
 
@@ -88,7 +89,7 @@ namespace CraigStars.Tests
 
             // empty player, no score
             player.ComputeAggregates(recompute: true);
-            var step = new CalculateScoreStep(game);
+            var step = new CalculateScoreStep(gameRunner.GameProvider, planetService);
             var score = step.CalculateScore(player);
 
             Assert.AreEqual(30, score.Score);

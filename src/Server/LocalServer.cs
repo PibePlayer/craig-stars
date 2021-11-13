@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using CraigStars.Client;
+using CraigStars.Singletons;
 using Newtonsoft.Json;
 
 namespace CraigStars.Server
@@ -70,7 +71,7 @@ namespace CraigStars.Server
 
         protected override void PublishGameStartedEvent()
         {
-            playerSerializerSettings = Serializers.CreatePlayerSettings(Game.TechStore);
+            playerSerializerSettings = Serializers.CreatePlayerSettings(TechStore.Instance);
 
             // send a signal per non ai player in the game
             // For hotseat games, the ClientView will store all players that can play
@@ -88,7 +89,7 @@ namespace CraigStars.Server
 
         protected override void PublishGameContinuedEvent()
         {
-            playerSerializerSettings = Serializers.CreatePlayerSettings(Game.TechStore);
+            playerSerializerSettings = Serializers.CreatePlayerSettings(TechStore.Instance);
             // we have a new game, so create the player serializer settings
             PublicGameInfo gameInfoClone = new PublicGameInfo(Game.GameInfo);
 

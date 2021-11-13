@@ -18,10 +18,12 @@ namespace CraigStars.Tests
     {
         static CSLog log = LogProvider.GetLogger(typeof(DetonateMinesStepTest));
 
+        MineFieldDamager mineFieldDamager = new();
+
         [Test]
         public void DetonateTest()
         {
-            var game = TestUtils.GetSingleUnitGame();
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
             var player1 = game.Players[0];
             var mineField = new MineField()
             {
@@ -32,7 +34,7 @@ namespace CraigStars.Tests
             game.MineFields.Add(mineField);
             game.ComputeAggregates();
 
-            DetonateMinesStep step = new DetonateMinesStep(game);
+            DetonateMinesStep step = new DetonateMinesStep(gameRunner.GameProvider, mineFieldDamager);
 
             Assert.AreEqual(1, game.Fleets.Count);
 
@@ -41,7 +43,7 @@ namespace CraigStars.Tests
             step.Detonate(mineField);
 
             // bye bye scout
-            game.PurgeDeletedMapObjects();
+            gameRunner.OnPurgeDeletedMapObjects();
             Assert.AreEqual(0, game.Fleets.Count);
 
         }
@@ -49,7 +51,7 @@ namespace CraigStars.Tests
         [Test]
         public void DetonateSafeFleetTest()
         {
-            var game = TestUtils.GetSingleUnitGame();
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
             game.Fleets[0].Position = new Vector2(100, 100); // out of the blast radius
             var player1 = game.Players[0];
             var mineField = new MineField()
@@ -61,7 +63,7 @@ namespace CraigStars.Tests
             game.MineFields.Add(mineField);
             game.ComputeAggregates();
 
-            DetonateMinesStep step = new DetonateMinesStep(game);
+            DetonateMinesStep step = new DetonateMinesStep(gameRunner.GameProvider, mineFieldDamager);
 
             Assert.AreEqual(1, game.Fleets.Count);
 

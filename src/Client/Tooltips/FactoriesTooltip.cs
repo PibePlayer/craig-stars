@@ -1,16 +1,19 @@
 using CraigStars.Singletons;
+using CraigStars.Utils;
 using Godot;
 using System;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class FactoriesTooltip : CSTooltip
     {
-        PlanetService planetService = new();
+        [Inject] protected PlanetService planetService;
+        
         RichTextLabel tipRichTextLabel;
 
         public override void _Ready()
         {
+            this.ResolveDependencies();
             tipRichTextLabel = GetNode<RichTextLabel>("MarginContainer/VBoxContainer/TipRichTextLabel");
         }
 

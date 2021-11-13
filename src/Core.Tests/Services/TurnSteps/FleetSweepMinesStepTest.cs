@@ -18,10 +18,12 @@ namespace CraigStars.Tests
     {
         static CSLog log = LogProvider.GetLogger(typeof(FleetSweepMinesStepTest));
 
+        FleetService fleetService = new();
+
         [Test]
         public void ProcessTest()
         {
-            var game = TestUtils.GetTwoPlayerGame();
+            var (game, gameRunner) = TestUtils.GetTwoPlayerGame();
             var player1 = game.Players[0];
             var player2 = game.Players[1];
             var fleet = game.Fleets[0];
@@ -54,7 +56,7 @@ namespace CraigStars.Tests
             };
             fleet.ComputeAggregate(player1);
 
-            FleetSweepMinesStep step = new FleetSweepMinesStep(game);
+            FleetSweepMinesStep step = new FleetSweepMinesStep(gameRunner.GameProvider, fleetService);
 
             // minigun sweeps 256 enemy mines
             step.Process();
@@ -67,7 +69,7 @@ namespace CraigStars.Tests
             // make sure it destroys a minefield that is low
             mineField.NumMines = 250;
             step.Process();
-            game.PurgeDeletedMapObjects();
+            gameRunner.OnPurgeDeletedMapObjects();
             Assert.AreEqual(1, game.MineFields.Count);
             Assert.AreEqual(1000, game.MineFields[0].NumMines);
             Assert.AreEqual(fleet.PlayerNum, game.MineFields[0].PlayerNum);

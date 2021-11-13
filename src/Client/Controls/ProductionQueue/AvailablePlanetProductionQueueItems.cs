@@ -95,7 +95,7 @@ namespace CraigStars.Client
                 // TODO: figure out skipping builds
                 bool skipped = false;
 
-                var cost = item.GetCostOfOne(Me);
+                var cost = playerService.GetCostOfOne(Me, item);
 
                 // Get the total cost of this item plus any previous items in the queue
                 // and subtract what we have on hand (that will be applied this year)

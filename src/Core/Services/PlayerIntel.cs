@@ -11,14 +11,36 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(PlayerIntel));
 
-        PlanetDiscoverer planetDiscoverer = new PlanetDiscoverer();
-        FleetDiscoverer fleetDiscoverer = new FleetDiscoverer();
-        ShipDesignDiscoverer designDiscoverer = new ShipDesignDiscoverer();
-        MineFieldDiscoverer mineFieldDiscoverer = new MineFieldDiscoverer();
-        MineralPacketDiscoverer mineralPacketDiscoverer = new MineralPacketDiscoverer();
-        SalvageDiscoverer salvageDiscoverer = new SalvageDiscoverer();
-        WormholeDiscoverer wormholeDiscoverer = new WormholeDiscoverer();
-        MysteryTraderDiscoverer mysterytraderDiscoverer = new MysteryTraderDiscoverer();
+        private readonly PlanetDiscoverer planetDiscoverer;
+        private readonly FleetDiscoverer fleetDiscoverer;
+        private readonly ShipDesignDiscoverer designDiscoverer;
+        private readonly MineFieldDiscoverer mineFieldDiscoverer;
+        private readonly MineralPacketDiscoverer mineralPacketDiscoverer;
+        private readonly SalvageDiscoverer salvageDiscoverer;
+        private readonly WormholeDiscoverer wormholeDiscoverer;
+        private readonly MysteryTraderDiscoverer mysterytraderDiscoverer;
+
+        public PlayerIntel(
+            PlanetDiscoverer planetDiscoverer,
+            FleetDiscoverer fleetDiscoverer,
+            ShipDesignDiscoverer designDiscoverer,
+            MineFieldDiscoverer mineFieldDiscoverer,
+            MineralPacketDiscoverer mineralPacketDiscoverer,
+            SalvageDiscoverer salvageDiscoverer,
+            WormholeDiscoverer wormholeDiscoverer,
+            MysteryTraderDiscoverer mysterytraderDiscoverer
+        )
+        {
+            this.planetDiscoverer = planetDiscoverer;
+            this.fleetDiscoverer = fleetDiscoverer;
+            this.designDiscoverer = designDiscoverer;
+            this.mineFieldDiscoverer = mineFieldDiscoverer;
+            this.mineralPacketDiscoverer = mineralPacketDiscoverer;
+            this.salvageDiscoverer = salvageDiscoverer;
+            this.wormholeDiscoverer = wormholeDiscoverer;
+            this.mysterytraderDiscoverer = mysterytraderDiscoverer;
+        }
+
 
         /// <summary>
         /// Discover a new planet. This is called when the universe is being setup with penScanned = false

@@ -1,4 +1,5 @@
 using CraigStars.Singletons;
+using CraigStars.Utils;
 using Godot;
 using System;
 using System.Collections.Generic;
@@ -8,11 +9,14 @@ namespace CraigStars.Client
 {
     public class FutureTechs : MarginContainer
     {
+        [Inject] protected PlayerTechService playerTechService;
+
         protected Player Me { get => PlayersManager.Me; }
 
         Container techsContainer;
         public override void _Ready()
         {
+            this.ResolveDependencies();
             techsContainer = GetNode<Container>("ScrollContainer/TechsContainer");
         }
 
@@ -26,7 +30,7 @@ namespace CraigStars.Client
             var futureTechs = new List<FutureTech>();
 
             // for all techs we don't have (but can get), see how far away we will get it with some future level
-            foreach (var tech in TechStore.Instance.Techs.Where(t => !Me.HasTech(t) && Me.CanLearnTech(t)))
+            foreach (var tech in TechStore.Instance.Techs.Where(t => !playerTechService.HasTech(Me, t) && playerTechService.CanLearnTech(Me, t)))
             {
                 var distanceToLearn = tech.Requirements - Me.TechLevels;
                 // zero out any level differences we have already achieved

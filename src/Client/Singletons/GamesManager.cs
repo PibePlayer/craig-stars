@@ -404,9 +404,8 @@ namespace CraigStars.Singletons
 
                 var gameSerializerSettings = Serializers.CreateGameSettings(techStore);
                 var game = Serializers.DeserializeObject<Game>(gameJson, gameSerializerSettings);
-                game.TechStore = techStore;
 
-                var settings = Serializers.CreatePlayerSettings(game.TechStore);
+                var settings = Serializers.CreatePlayerSettings(techStore);
                 for (int playerNum = 0; playerNum < game.Players.Count; playerNum++)
                 {
                     using (var playerSave = new File())
@@ -426,13 +425,13 @@ namespace CraigStars.Singletons
 
         }
 
-        public GameJson SerializeGame(Game game)
+        public GameJson SerializeGame(Game game, ITechStore techStore)
         {
             // serializers are expensive to create, so store them for later
             GameSerializer gameSerializer;
             if (!GameSerializerByGame.TryGetValue(game, out gameSerializer))
             {
-                gameSerializer = new GameSerializer(game);
+                gameSerializer = new GameSerializer(game, techStore);
                 GameSerializerByGame[game] = gameSerializer;
             }
             return gameSerializer.SerializeGame(game);
@@ -442,9 +441,9 @@ namespace CraigStars.Singletons
         /// Save a game to disk
         /// </summary>
         /// <param name="game"></param>
-        public void SaveGame(Game game)
+        public void SaveGame(Game game, ITechStore techStore)
         {
-            SaveGame(SerializeGame(game));
+            SaveGame(SerializeGame(game, techStore));
         }
 
         /// <summary>

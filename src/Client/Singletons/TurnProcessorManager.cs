@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using CraigStars.Client;
+using CraigStars.Utils;
 using Godot;
 
 namespace CraigStars.Singletons
@@ -10,6 +12,15 @@ namespace CraigStars.Singletons
     public class TurnProcessorManager : Node, ITurnProcessorManager
     {
         static CSLog log = LogProvider.GetLogger(typeof(RulesManager));
+
+        [Inject] private ShipDesignerTurnProcessor shipDesignerTurnProcessor;
+        [Inject] private FleetCompositionTurnProcessor fleetCompositionTurnProcessor;
+        [Inject] private PlanetProductionTurnProcessor planetProductionTurnProcessor;
+        [Inject] private ScoutTurnProcessor scoutTurnProcessor;
+        [Inject] private ColonyTurnProcessor colonyTurnProcessor;
+        [Inject] private BomberTurnProcessor bomberTurnProcessor;
+        [Inject] private MineLayerTurnProcessor mineLayerTurnProcessor;
+        [Inject] private PopulationRebalancerTurnProcessor populationRebalancerTurnProcessor;
 
         /// <summary>
         /// PlayersManager is a singleton
@@ -26,16 +37,23 @@ namespace CraigStars.Singletons
         TurnProcessorManager()
         {
             instance = this;
+        }
+
+        public override void _Ready()
+        {
+            instance = this;
+            this.ResolveDependencies();
+            base._Ready();
 
             // Register default turn processors
-            RegisterTurnProcessor<ShipDesignerTurnProcessor>();
-            RegisterTurnProcessor<FleetCompositionTurnProcessor>();
-            RegisterTurnProcessor<PlanetProductionTurnProcessor>();
-            RegisterTurnProcessor<ScoutTurnProcessor>();
-            RegisterTurnProcessor<ColonyTurnProcessor>();
-            RegisterTurnProcessor<BomberTurnProcessor>();
-            RegisterTurnProcessor<MineLayerTurnProcessor>();
-            RegisterTurnProcessor<PopulationRebalancerTurnProcessor>();
+            RegisterTurnProcessor(shipDesignerTurnProcessor);
+            RegisterTurnProcessor(fleetCompositionTurnProcessor);
+            RegisterTurnProcessor(planetProductionTurnProcessor);
+            RegisterTurnProcessor(scoutTurnProcessor);
+            RegisterTurnProcessor(colonyTurnProcessor);
+            RegisterTurnProcessor(bomberTurnProcessor);
+            RegisterTurnProcessor(mineLayerTurnProcessor);
+            RegisterTurnProcessor(populationRebalancerTurnProcessor);
         }
 
         /// <summary>
@@ -49,9 +67,8 @@ namespace CraigStars.Singletons
         /// </summary>
         Dictionary<string, TurnProcessor> TurnProcessorsByName { get; set; } = new Dictionary<string, TurnProcessor>();
 
-        public void RegisterTurnProcessor<T>() where T : TurnProcessor, new()
+        public void RegisterTurnProcessor(TurnProcessor processor)
         {
-            var processor = new T();
             turnProcessors.Add(processor);
             TurnProcessorsByName.Add(processor.Name, processor);
         }
@@ -61,5 +78,6 @@ namespace CraigStars.Singletons
             TurnProcessorsByName.TryGetValue(name, out var processor);
             return processor;
         }
+
     }
 }

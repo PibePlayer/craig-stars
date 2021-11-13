@@ -21,7 +21,7 @@ namespace CraigStars.Tests
         [Test]
         public void FleetReproduceTest()
         {
-            var game = TestUtils.GetSingleUnitGame();
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
             var fleet = game.Fleets[0];
             var player = game.Players[0];
 
@@ -41,7 +41,7 @@ namespace CraigStars.Tests
 
             fleet.ComputeAggregate(player);
 
-            FleetReproduceStep step = new FleetReproduceStep(game);
+            FleetReproduceStep step = new FleetReproduceStep(gameRunner.GameProvider, new PlayerService(game));
 
             step.Reproduce(fleet, player);
             Assert.AreEqual(105, fleet.Cargo.Colonists);
@@ -51,7 +51,7 @@ namespace CraigStars.Tests
         [Test]
         public void FleetReproduceOverTest()
         {
-            var game = TestUtils.GetSingleUnitGame();
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
             var fleet = game.Fleets[0];
             var player = game.Players[0];
 
@@ -73,7 +73,7 @@ namespace CraigStars.Tests
             // leave space for 1kT of colonists
             fleet.Cargo = fleet.Cargo.WithColonists(fleet.Aggregate.CargoCapacity - 1);
 
-            FleetReproduceStep step = new FleetReproduceStep(game);
+            FleetReproduceStep step = new FleetReproduceStep(gameRunner.GameProvider, new PlayerService(game));
 
             // should fill cargo, but no more
             step.Reproduce(fleet, player);
@@ -81,7 +81,7 @@ namespace CraigStars.Tests
 
             fleet.Orbiting = game.Planets[0];
             var planetStartingPop = game.Planets[0].Population;
-            
+
             // should overflow to planet
             step.Reproduce(fleet, player);
             Assert.AreEqual(fleet.Aggregate.CargoCapacity, fleet.Cargo.Colonists);
@@ -92,7 +92,7 @@ namespace CraigStars.Tests
         [Test]
         public void StepTest()
         {
-            var game = TestUtils.GetSingleUnitGame();
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
             var fleet = game.Fleets[0];
             var player = game.Players[0];
 
@@ -112,7 +112,7 @@ namespace CraigStars.Tests
 
             fleet.ComputeAggregate(player);
 
-            FleetReproduceStep step = new FleetReproduceStep(game);
+            FleetReproduceStep step = new FleetReproduceStep(gameRunner.GameProvider, new PlayerService(game));
 
             step.Process();
             Assert.AreEqual(105, fleet.Cargo.Colonists);

@@ -11,13 +11,38 @@ namespace CraigStars
     /// </summary>
     public class PlanetService
     {
+        private readonly PlayerTechService playerTechService;
+
+        public PlanetService(PlayerTechService playerTechService)
+        {
+            this.playerTechService = playerTechService;
+        }
+
         public int GetMaxMines(Planet planet, Player player) => planet.Population * player.Race.NumMines / 10000;
         public int GetMaxPossibleMines(Planet planet, Player player) => GetMaxPopulation(planet, player, player.Rules) * player.Race.NumMines / 10000;
         public int GetMaxFactories(Planet planet, Player player) => planet.Population * player.Race.NumFactories / 10000;
         public int GetMaxPossibleFactories(Planet planet, Player player) => GetMaxPopulation(planet, player, player.Rules) * player.Race.NumFactories / 10000;
         public int GetMaxDefenses(Planet planet, Player player) => 100;
 
-        # region Population & Growth
+        #region Ownership
+
+        /// <summary>
+        /// Empty a planet of all colonists and remove any player specific stuff
+        /// </summary>
+        /// <param name="planet"></param>
+        public void EmptyPlanet(Planet planet)
+        {
+            // empty this planet
+            planet.PlayerNum = MapObject.Unowned;
+            planet.Starbase = null;
+            planet.Scanner = false;
+            planet.Defenses = 0;
+            planet.ProductionQueue = new ProductionQueue();
+        }
+
+        #endregion
+
+        #region Population & Growth
 
         public float GetPopulationDensity(Planet planet, Player player, Rules rules) => GetPopulationDensity(planet, player, rules, planet.Population);
         public float GetPopulationDensity(Planet planet, Player player, Rules rules, int population) => population > 0 ? (float)population / GetMaxPopulation(planet, player, rules) : 0;
@@ -182,7 +207,7 @@ namespace CraigStars
         /// </summary>
         /// <param name="techStore"></param>
         /// <returns></returns>
-        public float GetDefenseCoverage(Planet planet, Player player) => GetDefenseCoverage(planet, player, player.GetBestDefense());
+        public float GetDefenseCoverage(Planet planet, Player player) => GetDefenseCoverage(planet, player, playerTechService.GetBestDefense(player));
 
         /// <summary>
         /// Get the defense coverage for this planet for a given defense type
@@ -203,7 +228,7 @@ namespace CraigStars
         /// </summary>
         /// <param name="techStore"></param>
         /// <returns></returns>
-        public float GetDefenseCoverageSmart(Planet planet, Player player, Rules rules) => GetDefenseCoverageSmart(planet, player, rules, player.GetBestDefense());
+        public float GetDefenseCoverageSmart(Planet planet, Player player, Rules rules) => GetDefenseCoverageSmart(planet, player, rules, playerTechService.GetBestDefense(player));
 
         /// <summary>
         /// Get the defense coverage for this planet for a given defense type
@@ -319,13 +344,13 @@ namespace CraigStars
                 return terraformAmount;
             }
 
-            var bestTotalTerraform = player.GetBestTerraform(TerraformHabType.All);
+            var bestTotalTerraform = playerTechService.GetBestTerraform(player, TerraformHabType.All);
             var totalTerraformAbility = bestTotalTerraform == null ? 0 : bestTotalTerraform.Ability;
 
             foreach (HabType habType in Enum.GetValues(typeof(HabType)))
             {
                 // get the two ways we can terraform
-                var bestHabTerraform = player.GetBestTerraform((TerraformHabType)habType);
+                var bestHabTerraform = playerTechService.GetBestTerraform(player, (TerraformHabType)habType);
 
                 // find out which terraform tech has the greater terraform ability
                 var ability = 0;
@@ -381,13 +406,13 @@ namespace CraigStars
                 return terraformAmount;
             }
 
-            var bestTotalTerraform = player.GetBestTerraform(TerraformHabType.All);
+            var bestTotalTerraform = playerTechService.GetBestTerraform(player, TerraformHabType.All);
             var totalTerraformAbility = bestTotalTerraform == null ? 0 : bestTotalTerraform.Ability;
 
             foreach (HabType habType in Enum.GetValues(typeof(HabType)))
             {
                 // get the two ways we can terraform
-                var bestHabTerraform = player.GetBestTerraform((TerraformHabType)habType);
+                var bestHabTerraform = playerTechService.GetBestTerraform(player, (TerraformHabType)habType);
 
                 // find out which terraform tech has the greater terraform ability
                 var ability = totalTerraformAbility;
@@ -465,13 +490,13 @@ namespace CraigStars
             var largestDistance = 0;
             HabType? bestHabType = null;
 
-            var bestTotalTerraform = player.GetBestTerraform(TerraformHabType.All);
+            var bestTotalTerraform = playerTechService.GetBestTerraform(player, TerraformHabType.All);
             var totalTerraformAbility = bestTotalTerraform == null ? 0 : bestTotalTerraform.Ability;
 
             foreach (HabType habType in Enum.GetValues(typeof(HabType)))
             {
                 // get the two ways we can terraform
-                var bestHabTerraform = player.GetBestTerraform((TerraformHabType)habType);
+                var bestHabTerraform = playerTechService.GetBestTerraform(player, (TerraformHabType)habType);
 
                 // find out which terraform tech has the greater terraform ability
                 var ability = totalTerraformAbility;

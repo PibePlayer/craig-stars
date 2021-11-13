@@ -1,11 +1,12 @@
+using CraigStars.Utils;
 using Godot;
 using System;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class MineralTooltip : CSTooltip
     {
-        PlanetService planetService = new();
+        [Inject] protected PlanetService planetService;
         public MineralType Type { get; set; } = MineralType.Ironium;
 
         Label typeLabel;
@@ -15,6 +16,7 @@ namespace CraigStars
 
         public override void _Ready()
         {
+            this.ResolveDependencies();
             typeLabel = GetNode<Label>("MarginContainer/VBoxContainer/TypeLabel");
             onSurfaceValueLabel = GetNode<Label>("MarginContainer/VBoxContainer/GridContainer/OnSurfaceValueLabel");
             mineralConcentrationValueLabel = GetNode<Label>("MarginContainer/VBoxContainer/GridContainer/MineralConcentrationValueLabel");

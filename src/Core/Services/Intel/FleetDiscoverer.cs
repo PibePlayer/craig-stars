@@ -12,7 +12,12 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(FleetDiscoverer));
 
-        ShipDesignDiscoverer designDiscoverer = new ShipDesignDiscoverer();
+        private readonly ShipDesignDiscoverer designDiscoverer;
+
+        public FleetDiscoverer(ShipDesignDiscoverer designDiscoverer)
+        {
+            this.designDiscoverer = designDiscoverer;
+        }
 
         protected override List<Fleet> GetOwnedItemReports(Player player) => player.Fleets;
         protected override List<Fleet> GetForeignItemReports(Player player) => player.ForeignFleets;

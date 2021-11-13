@@ -127,7 +127,8 @@ namespace CraigStars
 
             // Some races cloak cargo for free, otherwise
             // cloaking cargo comes at a penalty
-            bool freeCargoCloaking = player.FreeCargoCloaking;
+            // TODO: use playerService when ComputeAggregate is moved to it's own service
+            bool freeCargoCloaking = player.Race.PRT == PRT.SS;
             Aggregate.CloakUnits = 0;
             Aggregate.BaseCloakedCargo = 0;
             Aggregate.ReduceCloaking = 0;
@@ -247,7 +248,8 @@ namespace CraigStars
         public void ComputeCloaking(Player player)
         {
             // figure out how much cargo we are cloaking
-            var cloakedCargo = Aggregate.BaseCloakedCargo + (player.FreeCargoCloaking ? 0 : Cargo.Total);
+            // TODO: use playerService when computeAggregate is migrated to its own service
+            var cloakedCargo = Aggregate.BaseCloakedCargo + (player.Race.PRT == PRT.SS ? 0 : Cargo.Total);
             int cloakUnitsWithCargo = (int)Math.Round(Aggregate.CloakUnits * (float)Aggregate.MassEmpty / (Aggregate.MassEmpty + cloakedCargo));
             Aggregate.CloakPercent = CloakUtils.GetCloakPercentForCloakUnits(cloakUnitsWithCargo);
         }
@@ -256,7 +258,7 @@ namespace CraigStars
         {
             // default is we are complete if we have no fleet composition
             Aggregate.FleetCompositionComplete = true;
-            Aggregate.FleetCompositionTokensRequired = new();
+            Aggregate.FleetCompositionTokensRequired = new List<FleetCompositionToken>();
 
             if (FleetComposition != null && FleetComposition.Type != FleetCompositionType.None)
             {

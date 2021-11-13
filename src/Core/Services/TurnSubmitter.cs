@@ -11,13 +11,13 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(TurnSubmitter));
 
-        public Game Game { get; }
-        FleetOrderExecutor fleetOrderExecutor;
+        private readonly Game game;
+        private readonly FleetOrderExecutor fleetOrderExecutor;
 
-        public TurnSubmitter(Game game)
+        public TurnSubmitter(Game game, FleetOrderExecutor fleetOrderExecutor)
         {
-            Game = game;
-            fleetOrderExecutor = new FleetOrderExecutor(game);
+            this.game = game;
+            this.fleetOrderExecutor = fleetOrderExecutor;
         }
 
         public void SubmitTurn(Player player)
@@ -29,7 +29,7 @@ namespace CraigStars
             UpdateShipDesigns(player);
             UpdateProductionQueues(player);
 
-            Game.Players[player.Num].SubmittedTurn = true;
+            game.Players[player.Num].SubmittedTurn = true;
             player.SubmittedTurn = true;
         }
 
@@ -41,41 +41,41 @@ namespace CraigStars
         {
             foreach (var playerDesign in player.Designs)
             {
-                if (Game.DesignsByGuid.TryGetValue(playerDesign.Guid, out var design))
+                if (game.DesignsByGuid.TryGetValue(playerDesign.Guid, out var design))
                 {
                     if (design.PlayerNum != player.Num)
                     {
-                        log.Error($"{Game.Year}: Player {player} is trying to update design {design.Name}, owned by {design.PlayerNum}");
+                        log.Error($"{game.Year}: Player {player} is trying to update design {design.Name}, owned by {design.PlayerNum}");
                         continue;
                     }
                     // see if this design can be updated
                     if (design.InUse)
                     {
-                        log.Debug($"{Game.Year}: Not updating Player Design: {player} - {design.Name}. It is in use");
+                        log.Debug($"{game.Year}: Not updating Player Design: {player} - {design.Name}. It is in use");
                     }
                     else
                     {
-                        log.Debug($"{Game.Year}: Updating Game design from Player Design: {player} - {design.Name}.");
+                        log.Debug($"{game.Year}: Updating Game design from Player Design: {player} - {design.Name}.");
                     }
                     // TODO: update design name, slots, etc
                 }
                 else
                 {
                     // this is a new design
-                    log.Debug($"{Game.Year}: Adding new Player Design: {player} - {playerDesign.Name}.");
+                    log.Debug($"{game.Year}: Adding new Player Design: {player} - {playerDesign.Name}.");
                     var newDesign = playerDesign.Copy();
                     newDesign.Name = playerDesign.Name;
                     newDesign.Guid = playerDesign.Guid;
-                    Game.Designs.Add(newDesign);
-                    Game.DesignsByGuid[newDesign.Guid] = newDesign;
+                    game.Designs.Add(newDesign);
+                    game.DesignsByGuid[newDesign.Guid] = newDesign;
                 }
             }
-            foreach (var design in Game.Designs.Where(d => d.PlayerNum == player.Num).ToList())
+            foreach (var design in game.Designs.Where(d => d.PlayerNum == player.Num).ToList())
             {
                 if (!player.DesignsByGuid.ContainsKey(design.Guid))
                 {
                     // the player doesn't have this design
-                    log.Warn($"{Game.Year}: Player {player} no longer has design that is present in Game designs {design.Name}");
+                    log.Warn($"{game.Year}: Player {player} no longer has design that is present in Game designs {design.Name}");
                 }
             }
         }
@@ -89,8 +89,8 @@ namespace CraigStars
         {
             foreach (var playerFleet in player.Fleets)
             {
-                log.Debug($"{Game.Year}: Updating Fleet Actions for {playerFleet.PlayerNum} - {playerFleet.Name}");
-                if (Game.FleetsByGuid.TryGetValue(playerFleet.Guid, out var fleet) && fleet.PlayerNum == player.Num)
+                log.Debug($"{game.Year}: Updating Fleet Actions for {playerFleet.PlayerNum} - {playerFleet.Name}");
+                if (game.FleetsByGuid.TryGetValue(playerFleet.Guid, out var fleet) && fleet.PlayerNum == player.Num)
                 {
                     fleet.BattlePlan = playerFleet.BattlePlan.Clone();
                     fleet.RepeatOrders = playerFleet.RepeatOrders;
@@ -111,7 +111,7 @@ namespace CraigStars
                         var playerWp0 = playerFleet.Waypoints[0];
                         if (wp0.Task != playerWp0.Task)
                         {
-                            log.Debug($"{Game.Year}: Updating waypoint task for {fleet.Name} to {playerWp0.TargetName} -> {playerWp0.Task}");
+                            log.Debug($"{game.Year}: Updating waypoint task for {fleet.Name} to {playerWp0.TargetName} -> {playerWp0.Task}");
                         }
                         wp0.Task = playerWp0.Task;
                         wp0.WarpFactor = playerWp0.WarpFactor;
@@ -124,20 +124,20 @@ namespace CraigStars
                             if (playerWaypoint.Target != null && playerWaypoint.Target == playerFleet.Waypoints[index - 1].Target)
                             {
                                 // don't let the client submit multiple waypoints to the same location in a row
-                                log.Error($"{Game.Year}: Player fleet {playerFleet.Name} tried to create two waypoints (wp{index - 1} and wp{index}) in a row targetting {playerWaypoint.Target}.");
+                                log.Error($"{game.Year}: Player fleet {playerFleet.Name} tried to create two waypoints (wp{index - 1} and wp{index}) in a row targetting {playerWaypoint.Target}.");
                                 continue;
                             }
                             if (playerWaypoint.Target is MapObject mapObject)
                             {
-                                if (Game.MapObjectsByGuid.TryGetValue(mapObject.Guid, out var gameMapObject))
+                                if (game.MapObjectsByGuid.TryGetValue(mapObject.Guid, out var gameMapObject))
                                 {
-                                    log.Debug($"{Game.Year}: Adding player defined waypoint for {fleet.Name} to {playerWaypoint.TargetName} -> Task: {playerWaypoint.Task}");
+                                    log.Debug($"{game.Year}: Adding player defined waypoint for {fleet.Name} to {playerWaypoint.TargetName} -> Task: {playerWaypoint.Task}");
                                     // add the server side version of this planet as a waypoint
                                     fleet.Waypoints.Add(Waypoint.TargetWaypoint(gameMapObject, playerWaypoint.WarpFactor, playerWaypoint.Task, playerWaypoint.TransportTasks));
                                 }
                                 else
                                 {
-                                    log.Error($"{Game.Year}: Player waypoint Target {mapObject} was not found in Game MapObjects.");
+                                    log.Error($"{game.Year}: Player waypoint Target {mapObject} was not found in Game MapObjects.");
                                 }
                             }
                             else
@@ -148,13 +148,13 @@ namespace CraigStars
                             // make sure the original target maps to a game object
                             if (playerWaypoint.OriginalTarget is MapObject originalTarget)
                             {
-                                if (Game.MapObjectsByGuid.TryGetValue(originalTarget.Guid, out var gameOriginalTarget))
+                                if (game.MapObjectsByGuid.TryGetValue(originalTarget.Guid, out var gameOriginalTarget))
                                 {
                                     fleet.Waypoints[fleet.Waypoints.Count - 1].OriginalTarget = gameOriginalTarget;
                                 }
                                 else
                                 {
-                                    log.Error($"{Game.Year}: Player waypoint OriginalTarget {originalTarget} was not found in Game MapObjects.");
+                                    log.Error($"{game.Year}: Player waypoint OriginalTarget {originalTarget} was not found in Game MapObjects.");
                                 }
                             }
                             fleet.Waypoints[fleet.Waypoints.Count - 1].OriginalPosition = playerWaypoint.OriginalPosition;
@@ -164,7 +164,7 @@ namespace CraigStars
                 }
                 else
                 {
-                    log.Error($"{Game.Year}: Could not find Game Fleet for Player Fleet: {playerFleet.Name}, Guid: {playerFleet.Guid}");
+                    log.Error($"{game.Year}: Could not find Game Fleet for Player Fleet: {playerFleet.Name}, Guid: {playerFleet.Guid}");
                 }
             }
 
@@ -174,7 +174,7 @@ namespace CraigStars
         {
             foreach (var playerPlanet in player.Planets)
             {
-                if (Game.PlanetsByGuid.TryGetValue(playerPlanet.Guid, out var planet) && planet.PlayerNum == player.Num)
+                if (game.PlanetsByGuid.TryGetValue(playerPlanet.Guid, out var planet) && planet.PlayerNum == player.Num)
                 {
                     planet.ContributesOnlyLeftoverToResearch = playerPlanet.ContributesOnlyLeftoverToResearch;
                     // copy each production queue item from the player planet
@@ -185,14 +185,14 @@ namespace CraigStars
                     {
                         if (item.Design != null)
                         {
-                            if (Game.DesignsByGuid.TryGetValue(item.Design.Guid, out var design))
+                            if (game.DesignsByGuid.TryGetValue(item.Design.Guid, out var design))
                             {
                                 // use the Game design, not the player one
                                 item.Design = design;
                             }
                             else
                             {
-                                log.Error($"{Game.Year}: Player ProductionQueueItem has unknown design: {player} - {design.Name}");
+                                log.Error($"{game.Year}: Player ProductionQueueItem has unknown design: {player} - {design.Name}");
                             }
                         }
                         return item;
@@ -207,7 +207,7 @@ namespace CraigStars
                     // update packet target
                     planet.PacketSpeed = playerPlanet.PacketSpeed;
                     planet.PacketTarget = null;
-                    if (playerPlanet.PacketTarget != null && Game.PlanetsByGuid.TryGetValue(playerPlanet.PacketTarget.Guid, out var target))
+                    if (playerPlanet.PacketTarget != null && game.PlanetsByGuid.TryGetValue(playerPlanet.PacketTarget.Guid, out var target))
                     {
                         planet.PacketTarget = target;
                     }

@@ -9,7 +9,7 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(DecaySalvageStep));
 
-        public DecaySalvageStep(Game game) : base(game, TurnGenerationState.DecaySalvage) { }
+        public DecaySalvageStep(IProvider<Game> gameProvider) : base(gameProvider, TurnGenerationState.DecaySalvage) { }
 
         public override void Process()
         {

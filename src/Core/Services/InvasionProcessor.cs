@@ -20,8 +20,12 @@ namespace CraigStars
     /// </summary>
     public class InvasionProcessor
     {
+        private readonly PlanetService planetService;
 
-        PlanetService planetService = new();
+        public InvasionProcessor(PlanetService planetService)
+        {
+            this.planetService = planetService;
+        }
 
         /// <summary>
         /// An attacker is invading a planet

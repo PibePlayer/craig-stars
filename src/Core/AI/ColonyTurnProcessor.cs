@@ -13,17 +13,21 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(ColonyTurnProcessor));
 
-        PlanetService planetService = new();
-        FleetService fleetService = new();
+        private readonly PlanetService planetService;
+        private readonly FleetService fleetService;
+        private readonly ShipDesignerTurnProcessor shipDesignerTurnProcessor;
 
         // the required population density required of a planet in order to suck people off of it
         // setting this to .25 because we don't want to suck people off a planet until it's reached the
         // max of its growth rate (over 1/4 crowded)
         private const float PopulationDensityRequired = .25f;
 
-        ShipDesignerTurnProcessor shipDesignerTurnProcessor = new ShipDesignerTurnProcessor();
-
-        public ColonyTurnProcessor() : base("Colonizer") { }
+        public ColonyTurnProcessor(PlanetService planetService, FleetService fleetService, ShipDesignerTurnProcessor shipDesignerTurnProcessor) : base("Colonizer")
+        {
+            this.planetService = planetService;
+            this.fleetService = fleetService;
+            this.shipDesignerTurnProcessor = shipDesignerTurnProcessor;
+        }
 
         /// <summary>
         /// a new turn! build some ships
@@ -54,7 +58,7 @@ namespace CraigStars
             // go through each unassigned colonizer fleet and find it a new planet to colonize
             foreach (var fleet in colonizerFleets.Where(
                 f => f.Waypoints.Count == 1 &&
-                f.Orbiting != null && 
+                f.Orbiting != null &&
                 f.Orbiting.PlayerNum == player.Num &&
                 planetService.GetPopulationDensity(f.Orbiting, player, gameInfo.Rules, f.Orbiting.Population - f.AvailableCapacity) >= PopulationDensityRequired)
             )

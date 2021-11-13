@@ -7,7 +7,8 @@ namespace CraigStars.Client
     {
         static CSLog log = LogProvider.GetLogger(typeof(ProductionQueueDialog));
 
-        PlanetService planetService = new();
+        [Inject] protected PlanetService planetService;
+        [Inject] protected PlayerService playerService;
 
         // the planet to use in this dialog
         public Planet Planet { get; set; } = new Planet();
@@ -37,7 +38,10 @@ namespace CraigStars.Client
 
         public override void _Ready()
         {
+            this.ResolveDependencies();
             base._Ready();
+
+            playerService = new PlayerService(GameInfo);
 
             queuedItems = (QueuedPlanetProductionQueueItems)FindNode("QueuedItems");
             availableItems = (AvailablePlanetProductionQueueItems)FindNode("AvailableItems");
@@ -150,7 +154,7 @@ namespace CraigStars.Client
                 queuedItemCostGrid.Visible = true;
 
                 // figure out how much this queue item costs
-                var cost = item.GetCostOfOne(Me) * item.Quantity;
+                var cost = playerService.GetCostOfOne(Me, item) * item.Quantity;
                 if (item.Type == QueueItemType.Starbase && Planet.HasStarbase)
                 {
                     cost = Planet.Starbase.GetUpgradeCost(item.Design);
@@ -243,7 +247,7 @@ namespace CraigStars.Client
 
         void OnSelectAvailableItem(ProductionQueueItem item)
         {
-            var cost = item.GetCostOfOne(Me);
+            var cost = playerService.GetCostOfOne(Me, item);
             if (item.Type == QueueItemType.Starbase && Planet.HasStarbase)
             {
                 cost = Planet.Starbase.GetUpgradeCost(item.Design);

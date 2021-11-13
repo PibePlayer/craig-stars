@@ -6,7 +6,7 @@ namespace CraigStars
     /// </summary>
     public class FleetAgeStep : TurnGenerationStep
     {
-        public FleetAgeStep(Game game) : base(game, TurnGenerationState.FleetAge) { }
+        public FleetAgeStep(IProvider<Game> gameProvider) : base(gameProvider, TurnGenerationState.FleetAge) { }
 
         public override void Process()
         {

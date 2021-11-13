@@ -1,4 +1,5 @@
 using CraigStars.Singletons;
+using CraigStars.Utils;
 using CraigStarsTable;
 using Godot;
 using System;
@@ -11,11 +12,17 @@ namespace CraigStars.Client
     {
         static CSLog log = LogProvider.GetLogger(typeof(PlanetsReportTable));
 
-        PlanetService planetService = new();
+        [Inject] protected PlanetService planetService;
 
         public bool ShowAll { get; set; }
 
         public Column ownerColumn;
+
+        public override void _Ready()
+        {
+            this.ResolveDependencies();
+            base._Ready();
+        }
 
         protected override void OnShowOwnedPressed() { ShowAll = false; ownerColumn.Hidden = !ShowAll; base.OnShowOwnedPressed(); }
         protected override void OnShowAllPressed() { ShowAll = true; ownerColumn.Hidden = !ShowAll; base.OnShowAllPressed(); }

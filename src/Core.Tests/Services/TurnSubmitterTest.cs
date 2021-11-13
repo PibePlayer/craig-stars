@@ -12,11 +12,24 @@ namespace CraigStars.Tests
     [TestFixture]
     public class TurnSubmitterTest
     {
+        FleetService fleetService;
+        PlayerTechService playerTechService;
+        PlayerService playerService;
+        PlayerIntel playerIntel;
+
+        [SetUp]
+        public void SetUp()
+        {
+            fleetService = TestUtils.TestContainer.GetInstance<FleetService>();
+            playerTechService = TestUtils.TestContainer.GetInstance<PlayerTechService>();
+            playerService = TestUtils.TestContainer.GetInstance<PlayerService>();
+            playerIntel = TestUtils.TestContainer.GetInstance<PlayerIntel>();
+        }
 
         [Test]
         public void TestUpdateFleetActions()
         {
-            var game = TestUtils.GetSingleUnitGame();
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
             var player = game.Players[0];
 
             // make a second planet we can make a waypoint to
@@ -30,11 +43,11 @@ namespace CraigStars.Tests
             game.UpdateInternalDictionaries();
 
             // make our player aware of the planets and their fleets
-            PlayerPlanetReportGenerationStep playerPlanetReportGenerationStep = new(game);
+            var playerPlanetReportGenerationStep = new PlayerPlanetReportGenerationStep(new Provider<Game>(game), playerIntel);
             playerPlanetReportGenerationStep.Process();
             player.SetupMapObjectMappings();
 
-            PlayerScanStep scanStep = new(game);
+            var scanStep = new PlayerScanStep(gameRunner.GameProvider, playerService, playerIntel, playerTechService);
 
             scanStep.PreProcess(game.OwnedPlanets.ToList());
             scanStep.Process();
@@ -48,7 +61,7 @@ namespace CraigStars.Tests
 
             player.SetupMapObjectMappings();
 
-            TurnSubmitter turnSubmitter = new(game);
+            var turnSubmitter = new TurnSubmitter(game, new FleetOrderExecutor(game, fleetService));
             turnSubmitter.UpdateFleetActions(player);
 
             var gameFleet = game.Fleets[0];

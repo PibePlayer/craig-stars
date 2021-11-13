@@ -11,7 +11,7 @@ namespace CraigStars
         /// <typeparam name="T"></typeparam>
         /// <param name="gameInfo"></param>
         /// <returns></returns>
-        void RegisterTurnProcessor<T>() where T : TurnProcessor, new();
+        void RegisterTurnProcessor(TurnProcessor processor);
 
         /// <summary>
         /// 

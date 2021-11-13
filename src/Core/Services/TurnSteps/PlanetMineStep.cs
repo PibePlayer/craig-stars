@@ -7,8 +7,12 @@ namespace CraigStars
     /// </summary>
     public class PlanetMineStep : TurnGenerationStep
     {
-        PlanetService planetService = new();
-        public PlanetMineStep(Game game) : base(game, TurnGenerationState.Mining) { }
+        private readonly PlanetService planetService;
+
+        public PlanetMineStep(IProvider<Game> gameProvider, PlanetService planetService) : base(gameProvider, TurnGenerationState.Mining)
+        {
+            this.planetService = planetService;
+        }
 
         public override void Process()
         {

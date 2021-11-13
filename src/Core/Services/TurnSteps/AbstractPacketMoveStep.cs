@@ -11,20 +11,21 @@ namespace CraigStars
     /// Note: this will be called twice, once at the beginning of a turn, and once after planets grow (for packets that were just launched)
     ///
     /// </summary>
-    public class PacketMoveStep : TurnGenerationStep
+    public abstract class AbstractPacketMoveStep : TurnGenerationStep
     {
-        static CSLog log = LogProvider.GetLogger(typeof(PacketMoveStep));
+        static CSLog log = LogProvider.GetLogger(typeof(AbstractPacketMoveStep));
         public const string ProcessedPacketsContextKey = "ProcessedPackets";
 
-        PlanetService planetService = new();
+        private readonly PlanetService planetService;
 
         HashSet<MineralPacket> processedMineralPackets = new HashSet<MineralPacket>();
 
         // some things (like remote mining) only happen on wp1
-        int processIndex = 0;
+        private readonly int processIndex;
 
-        public PacketMoveStep(Game game, int waypointIndex) : base(game, TurnGenerationState.Waypoint)
+        public AbstractPacketMoveStep(IProvider<Game> gameProvider, PlanetService planetService, int waypointIndex) : base(gameProvider, TurnGenerationState.Waypoint)
         {
+            this.planetService = planetService;
             this.processIndex = waypointIndex;
         }
 

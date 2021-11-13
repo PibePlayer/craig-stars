@@ -6,8 +6,12 @@ namespace CraigStars
     /// </summary>
     public class PlanetGrowStep : TurnGenerationStep
     {
-        PlanetService planetService = new();
-        public PlanetGrowStep(Game game) : base(game, TurnGenerationState.Grow) { }
+        private readonly PlanetService planetService;
+
+        public PlanetGrowStep(IProvider<Game> gameProvider, PlanetService planetService) : base(gameProvider, TurnGenerationState.Grow)
+        {
+            this.planetService = planetService;
+        }
 
         public override void Process()
         {

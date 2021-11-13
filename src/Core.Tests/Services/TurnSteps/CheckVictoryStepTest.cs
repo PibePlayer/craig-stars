@@ -16,12 +16,20 @@ namespace CraigStars.Tests
     [TestFixture]
     public class CheckVictoryStepTest
     {
+        PlanetService planetService;
+        PlayerIntel playerIntel;
+
+        [SetUp]
+        public void SetUp()
+        {
+            planetService = TestUtils.TestContainer.GetInstance<PlanetService>();
+            playerIntel = TestUtils.TestContainer.GetInstance<PlayerIntel>();
+        }
 
         [Test]
         public void TestCheckOwnPlanets()
         {
-            PlayerIntel playerIntel = new();
-            var game = TestUtils.GetSingleUnitGame();
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
             var player = game.Players[0];
 
             // we must own >= 51% of the planets
@@ -30,7 +38,7 @@ namespace CraigStars.Tests
             // this player owns all planets
             // Discover this planet so our score calculation is aware of it
             playerIntel.Discover(player, game.Planets[0]);
-            var step = new CheckVictoryStep(game);
+            var step = new CheckVictoryStep(gameRunner.GameProvider, new PlanetService(new PlayerTechService(new TestTechStoreProvider())));
             step.CheckOwnPlanets(player);
 
             Assert.IsTrue(player.AchievedVictoryConditions.Contains(VictoryConditionType.OwnPlanets));
@@ -45,7 +53,7 @@ namespace CraigStars.Tests
         [Test]
         public void TestCheckExceedSecondPlaceScore()
         {
-            var game = TestUtils.GetTwoPlayerGame();
+            var (game, gameRunner) = TestUtils.GetTwoPlayerGame();
             var player1 = game.Players[0];
             var player2 = game.Players[1];
 
@@ -56,7 +64,7 @@ namespace CraigStars.Tests
             game.VictoryConditions.ExceedScore = 100;
 
             // this player owns all planets
-            var step = new CheckVictoryStep(game);
+            var step = new CheckVictoryStep(gameRunner.GameProvider, planetService);
             step.CheckExceedSecondPlaceScore(player1);
 
             Assert.IsTrue(player1.AchievedVictoryConditions.Contains(VictoryConditionType.ExceedSecondPlaceScore));

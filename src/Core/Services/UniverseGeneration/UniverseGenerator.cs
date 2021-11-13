@@ -11,25 +11,12 @@ namespace CraigStars.UniverseGeneration
     {
         Game Game { get; }
 
-        List<UniverseGenerationStep> steps = new List<UniverseGenerationStep>();
+        IList<UniverseGenerationStep> steps;
 
-        PlayerIntel playerIntel = new PlayerIntel();
-
-        public UniverseGenerator(Game game)
+        public UniverseGenerator(Game game, IList<UniverseGenerationStep> steps)
         {
             Game = game;
-            steps.AddRange(new List<UniverseGenerationStep>()
-            {
-                new PlanetGenerationStep(Game),
-                new WormholeGenerationStep(Game),
-                new PlayerTechLevelsGenerationStep(Game),
-                new PlayerPlansGenerationStep(Game),
-                new PlayerShipDesignsGenerationStep(Game),
-                new PlayerPlanetReportGenerationStep(Game),
-                new PlayerHomeworldGenerationStep(Game),
-                new PlayerFleetGenerationStep(Game),
-                new GameStartModeModifierStep(Game),
-        });
+            this.steps = steps;
         }
 
         public void Generate()
@@ -40,12 +27,7 @@ namespace CraigStars.UniverseGeneration
             }
 
             Game.Players.ForEach(player => player.SetupMapObjectMappings());
-
         }
-
-
-
-
 
     }
 }

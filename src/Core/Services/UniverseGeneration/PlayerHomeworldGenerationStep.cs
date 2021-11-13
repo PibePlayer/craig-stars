@@ -15,12 +15,16 @@ namespace CraigStars.UniverseGeneration
     {
         static CSLog log = LogProvider.GetLogger(typeof(PlayerHomeworldGenerationStep));
 
-        PlanetService planetService = new();
+        readonly PlanetService planetService;
+        readonly PlanetDiscoverer planetDiscoverer;
 
-        public PlayerHomeworldGenerationStep(Game game) : base(game, UniverseGenerationState.Homeworlds) { }
-
-        PlanetDiscoverer planetDiscoverer = new PlanetDiscoverer();
         List<Planet> ownedPlanets = new List<Planet>();
+
+        public PlayerHomeworldGenerationStep(IProvider<Game> gameProvider, PlanetService planetService, PlanetDiscoverer planetDiscoverer) : base(gameProvider, UniverseGenerationState.Homeworlds)
+        {
+            this.planetService = planetService;
+            this.planetDiscoverer = planetDiscoverer;
+        }
 
         public override void Process()
         {

@@ -14,7 +14,7 @@ namespace CraigStars
         public string Name { get; set; }
         public int Version { get; set; } = 1;
         public Guid Guid { get; set; } = Guid.NewGuid();
-        
+
         [DefaultValue(MapObject.Unowned)]
         public int PlayerNum { get; set; } = MapObject.Unowned;
 
@@ -133,7 +133,9 @@ namespace CraigStars
             Aggregate.SpaceDock = 0;
             Aggregate.CargoCapacity += Hull.CargoCapacity;
             Aggregate.MineSweep = 0;
-            Aggregate.CloakUnits = player.BuiltInCloaking;
+
+            // TODO: move to playerService when aggregate computation is moved to its own service
+            Aggregate.CloakUnits = player.Race.PRT == PRT.SS ? player.Rules.BuiltInSSCloakUnits : 0;
             Aggregate.ReduceCloaking = 0;
             Aggregate.Bomber = false;
             Aggregate.Bombs.Clear();

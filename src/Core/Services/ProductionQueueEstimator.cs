@@ -9,7 +9,14 @@ namespace CraigStars
     /// </summary>
     public class ProductionQueueEstimator
     {
-        PlanetService planetService = new();
+        private readonly PlanetService planetService;
+        private readonly PlayerService playerService;
+
+        public ProductionQueueEstimator(PlanetService planetService, PlayerService playerService)
+        {
+            this.planetService = planetService;
+            this.playerService = playerService;
+        }
 
         /// <summary>
         /// Completion estimate internal structure
@@ -57,7 +64,7 @@ namespace CraigStars
             {
                 previousItemsCost = previousItemsCost - item.Allocated;
                 // figure out how much this item costs
-                var costOfOne = item.GetCostOfOne(player);
+                var costOfOne = playerService.GetCostOfOne(player, item);
                 if (item.Type == QueueItemType.Starbase && planet.HasStarbase)
                 {
                     costOfOne = planet.Starbase.GetUpgradeCost(item.Design);

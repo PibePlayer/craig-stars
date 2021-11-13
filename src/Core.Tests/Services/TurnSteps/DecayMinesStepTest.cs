@@ -21,7 +21,7 @@ namespace CraigStars.Tests
         [Test]
         public void DecayTest()
         {
-            var game = TestUtils.GetSingleUnitGame();
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
             var player1 = game.Players[0];
             var mineField = new MineField()
             {
@@ -31,7 +31,7 @@ namespace CraigStars.Tests
             };
             game.MineFields.Add(mineField);
 
-            DecayMinesStep step = new DecayMinesStep(game);
+            DecayMinesStep step = new DecayMinesStep(gameRunner.GameProvider);
 
             // regular decay is 2%
             mineField.NumMines = 1000;
@@ -55,7 +55,7 @@ namespace CraigStars.Tests
             // minefield goes away
             mineField.NumMines = 20;
             step.Decay(mineField);
-            game.PurgeDeletedMapObjects();
+            gameRunner.OnPurgeDeletedMapObjects();
             Assert.AreEqual(10, mineField.NumMines);
             Assert.AreEqual(0, game.MineFields.Count);
 

@@ -11,6 +11,10 @@ namespace CraigStars.Client
     {
         static CSLog log = LogProvider.GetLogger(typeof(TechTree));
 
+        [Inject] protected PlayerTechService playerTechService;
+
+        protected Player Me { get => PlayersManager.Me; }
+
         /// <summary>
         /// Fired when the selected tech changes
         /// </summary>
@@ -43,6 +47,8 @@ namespace CraigStars.Client
 
         public override void _Ready()
         {
+            this.ResolveDependencies();
+
             techTree = FindNode("Tree") as DraggableTree;
             searchLineEdit = FindNode("SearchLineEdit") as LineEdit;
             onlyAvailableCheckButton = FindNode("OnlyAvailableCheckButton") as CheckButton;
@@ -111,7 +117,7 @@ namespace CraigStars.Client
 
             if (OnlyAvailable)
             {
-                techsToShow = techsToShow.Where(tech => PlayersManager.Me.HasTech(tech)).ToList();
+                techsToShow = techsToShow.Where(tech => playerTechService.HasTech(Me, tech)).ToList();
             }
 
             ClearTree();

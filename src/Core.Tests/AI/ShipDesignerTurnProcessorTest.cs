@@ -11,7 +11,15 @@ namespace CraigStars.Tests
     [TestFixture]
     public class ShipDesignerTurnProcessorTest
     {
-        ShipDesignerTurnProcessor shipDesignerTurnProcessor = new();
+        PlayerTechService playerTechService;
+        ShipDesignerTurnProcessor shipDesignerTurnProcessor;
+
+        [SetUp]
+        public void SetUp()
+        {
+            playerTechService = new PlayerTechService(new TestTechStoreProvider());
+            shipDesignerTurnProcessor = new ShipDesignerTurnProcessor(new ShipDesignGenerator(playerTechService), playerTechService);
+        }
 
         [Test]
         public void TestDesignColonyShip()

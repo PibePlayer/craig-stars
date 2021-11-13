@@ -17,13 +17,15 @@ namespace CraigStars.Client
     {
         static CSLog log = LogProvider.GetLogger(typeof(QueuedPlanetProductionQueueItems));
 
-        ProductionQueueEstimator estimator = new ProductionQueueEstimator();
+        [Inject] ProductionQueueEstimator estimator;
 
         [Export]
         public bool ShowTopOfQueue { get; set; }
 
         public override void _Ready()
         {
+            this.ResolveDependencies();
+            
             base._Ready();
 
             table.Data.AddColumn("Item");

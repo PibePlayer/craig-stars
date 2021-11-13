@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CraigStars.UniverseGeneration;
 using Godot;
 using Newtonsoft.Json;
+using SimpleInjector;
 
 namespace CraigStars
 {
@@ -13,19 +14,9 @@ namespace CraigStars
     /// The Game manages generating a universe, submitting turns, and storing the source of
     /// truth for all planets, fleets, designs, etc
     /// </summary>
-    public class Game
+    public class Game : IRulesProvider
     {
         static CSLog log = LogProvider.GetLogger(typeof(Game));
-
-        /// <summary>
-        /// This event is triggered when turn events happen
-        /// </summary>
-        public event Action<TurnGenerationState> TurnGeneratorAdvancedEvent;
-
-        /// <summary>
-        /// The TechStore is set by the client on load (or the StaticTechStore for tests )
-        /// </summary>
-        [JsonIgnore] public ITechStore TechStore { get; set; }
 
         #region PublicGameInfo
 
@@ -78,34 +69,6 @@ namespace CraigStars
 
         #endregion
 
-        /// <summary>
-        /// We purge deleted map objects after every turn step
-        /// </summary>
-        [JsonIgnore]
-        List<MapObject> deletedMapObjects = new List<MapObject>();
-
-        TurnGenerator turnGenerator;
-        TurnSubmitter turnSubmitter;
-
-        public Game()
-        {
-            turnGenerator = new TurnGenerator(this);
-            turnSubmitter = new TurnSubmitter(this);
-
-            turnGenerator.TurnGeneratorAdvancedEvent += OnTurnGeneratorAdvanced;
-            EventManager.PlanetPopulationEmptiedEvent += OnPlanetPopulationEmptied;
-            EventManager.MapObjectCreatedEvent += OnMapObjectCreated;
-            EventManager.MapObjectDeletedEvent += OnMapObjectDeleted;
-        }
-
-        ~Game()
-        {
-            turnGenerator.TurnGeneratorAdvancedEvent -= OnTurnGeneratorAdvanced;
-            EventManager.PlanetPopulationEmptiedEvent -= OnPlanetPopulationEmptied;
-            EventManager.MapObjectCreatedEvent -= OnMapObjectCreated;
-            EventManager.MapObjectDeletedEvent -= OnMapObjectDeleted;
-        }
-
         [OnDeserialized]
         internal void OnDeserialized(StreamingContext context)
         {
@@ -144,7 +107,7 @@ namespace CraigStars
             MapObjectsByLocation = mapObjects.ToLookup(mo => mo.Position).ToDictionary(lookup => lookup.Key, lookup => lookup.ToList());
         }
 
-        public void Init(List<Player> players, Rules rules, ITechStore techStore)
+        public void Init(List<Player> players, Rules rules)
         {
             Players.Clear();
             Players.AddRange(players);
@@ -155,120 +118,11 @@ namespace CraigStars
             Players.ForEach(player => player.Rules = Rules);
 
             Rules = rules;
-            TechStore = techStore;
-        }
-
-        /// <summary>
-        /// Generate a new Universe and update all players with turn 0 scan knowledge
-        /// </summary>
-        public void GenerateUniverse()
-        {
-            // generate a new univers
-            UniverseGenerator generator = new UniverseGenerator(this);
-            generator.Generate();
-
-            ComputeAggregates();
-
-            UpdateInternalDictionaries();
-
-            // update player intel with new universe
-            var scanStep = new PlayerScanStep(this);
-            scanStep.Execute(new TurnGenerationContext(), OwnedPlanets.ToList());
-
-            AfterTurnGeneration();
-
-        }
-
-        public void SubmitTurn(Player player)
-        {
-            if (player.Num >= 0 && player.Num < Players.Count)
-            {
-                log.Info($"{Year}: {player} submitted turn");
-                Players[player.Num] = player;
-                Players[player.Num].SubmittedTurn = true;
-                GameInfo.Players[player.Num].SubmittedTurn = true;
-            }
-            else
-            {
-                log.Error($"{player} not found in game.");
-            }
-        }
-
-        public void UnsubmitTurn(PublicPlayerInfo player)
-        {
-            if (player.Num >= 0 && player.Num < Players.Count)
-            {
-                Players[player.Num].SubmittedTurn = false;
-                GameInfo.Players[player.Num].SubmittedTurn = false;
-            }
-            else
-            {
-                log.Error($"{player} not found in game.");
-            }
         }
 
         public Boolean AllPlayersSubmitted()
         {
             return Players.All(p => p.SubmittedTurn);
-        }
-
-        /// <summary>
-        /// Propogate turn generator events up to clients
-        /// </summary>
-        /// <param name="state"></param>
-        void OnTurnGeneratorAdvanced(TurnGenerationState state)
-        {
-            TurnGeneratorAdvancedEvent?.Invoke(state);
-        }
-
-        /// <summary>
-        /// Generate a new turn
-        /// </summary>
-        public void GenerateTurn()
-        {
-            GameInfo.State = GameState.GeneratingTurn;
-            log.Info($"{Year} Generating new turn");
-
-            // submit these actions to the actual game objects
-            Players.ForEach(player => turnSubmitter.SubmitTurn(player));
-
-            // after new player actions and designs are submitted, we need
-            // to compute aggregates for fleets and designs
-            // for turn generation
-            ComputeAggregates();
-
-            turnGenerator.GenerateTurn();
-
-            // do any post-turn generation steps
-            AfterTurnGeneration();
-
-            TurnGeneratorAdvancedEvent?.Invoke(TurnGenerationState.Finished);
-
-            log.Info($"{Year} Generating turn complete");
-        }
-
-
-        /// <summary>
-        /// Method for updating player reports and doing any other stuff required after a turn (or universe)
-        /// is generated
-        /// </summary>
-        internal void AfterTurnGeneration()
-        {
-            log.Debug($"{Year} Updating internal dictionaries and player dictionaries");
-            TurnGeneratorAdvancedEvent?.Invoke(TurnGenerationState.UpdatingPlayers);
-
-            // Update the Game dictionaries used for lookups, like PlanetsByGuid, FleetsByGuid, etc.
-            UpdateInternalDictionaries();
-
-            // After a turn is generated, update some data on each player 
-            // (like their current best planetary scanner)
-            Players.ForEach(p =>
-            {
-                p.PlanetaryScanner = p.GetBestPlanetaryScanner();
-                p.ComputeAggregates();
-                p.SetupMapObjectMappings();
-                p.UpdateMessageTargets();
-            });
         }
 
         /// <summary>
@@ -299,12 +153,9 @@ namespace CraigStars
             Fleets.ForEach(f => CargoHoldersByGuid[f.Guid] = f);
             MineralPackets.ForEach(mp => CargoHoldersByGuid[mp.Guid] = mp);
             Salvage.ForEach(s => CargoHoldersByGuid[s.Guid] = s);
-
         }
 
-        #region Event Handlers
-
-        void OnMapObjectCreated<T>(T mapObject, List<T> items, Dictionary<Guid, T> itemsByGuid) where T : MapObject
+        void CreateMapObject<T>(T mapObject, List<T> items, Dictionary<Guid, T> itemsByGuid) where T : MapObject
         {
             items.Add(mapObject);
             itemsByGuid[mapObject.Guid] = mapObject;
@@ -315,6 +166,35 @@ namespace CraigStars
             }
 
             log.Debug($"Created new {typeof(T)} {mapObject.Name} - {mapObject.Guid}");
+        }
+
+
+        public void CreateMapObject(MapObject mapObject)
+        {
+            if (mapObject is Fleet fleet)
+            {
+                CreateMapObject(fleet, Fleets, FleetsByGuid);
+            }
+            else if (mapObject is MineField mineField)
+            {
+                CreateMapObject(mineField, MineFields, MineFieldsByGuid);
+            }
+            else if (mapObject is MineralPacket mineralPacket)
+            {
+                CreateMapObject(mineralPacket, MineralPackets, MineralPacketsByGuid);
+            }
+            else if (mapObject is Salvage salvage)
+            {
+                CreateMapObject(salvage, Salvage, SalvageByGuid);
+            }
+            else if (mapObject is Wormhole wormhole)
+            {
+                CreateMapObject(wormhole, Wormholes, WormholesByGuid);
+            }
+            else if (mapObject is MysteryTrader mysteryTrader)
+            {
+                CreateMapObject(mysteryTrader, MysteryTraders, MysteryTradersByGuid);
+            }
         }
 
         void DeleteMapObject<T>(T mapObject, List<T> items, Dictionary<Guid, T> itemsByGuid) where T : MapObject
@@ -331,103 +211,50 @@ namespace CraigStars
             log.Debug($"Deleted {typeof(T)} {mapObject.Name} - {mapObject.Guid}");
         }
 
-        /// <summary>
-        /// Remove all deleted map objects from the ame
-        /// </summary>
-        public void PurgeDeletedMapObjects()
-        {
-            deletedMapObjects.ForEach(mapObject =>
-            {
-                if (mapObject is Fleet fleet)
-                {
-                    if (fleet.Orbiting != null)
-                    {
-                        fleet.Orbiting.OrbitingFleets.Remove(fleet);
-                    }
-
-                    DeleteMapObject(fleet, Fleets, FleetsByGuid);
-                }
-                else if (mapObject is MineField mineField)
-                {
-                    DeleteMapObject(mineField, MineFields, MineFieldsByGuid);
-                }
-                else if (mapObject is Salvage salvage)
-                {
-                    DeleteMapObject(salvage, Salvage, SalvageByGuid);
-                }
-                else if (mapObject is MineralPacket packet)
-                {
-                    DeleteMapObject(packet, MineralPackets, MineralPacketsByGuid);
-                }
-                else if (mapObject is Wormhole wormhole)
-                {
-                    DeleteMapObject(wormhole, Wormholes, WormholesByGuid);
-                    Players.ForEach(player =>
-                    {
-                        if (player.WormholesByGuid.TryGetValue(wormhole.Guid, out var playerWormhole))
-                        {
-                            if (playerWormhole.Destination != null)
-                            {
-                                // make the other wormhole forget about this one
-                                playerWormhole.Destination.Destination = null;
-                            }
-                            player.Wormholes.Remove(playerWormhole);
-                        }
-                    });
-                }
-                else if (mapObject is MysteryTrader mysteryTrader)
-                {
-                    DeleteMapObject(mysteryTrader, MysteryTraders, MysteryTradersByGuid);
-                }
-            });
-            deletedMapObjects.Clear();
-        }
-
-        void OnMapObjectCreated(MapObject mapObject)
+        public void DeleteMapObject(MapObject mapObject)
         {
             if (mapObject is Fleet fleet)
             {
-                OnMapObjectCreated(fleet, Fleets, FleetsByGuid);
+                if (fleet.Orbiting != null)
+                {
+                    fleet.Orbiting.OrbitingFleets.Remove(fleet);
+                }
+
+                DeleteMapObject(fleet, Fleets, FleetsByGuid);
             }
             else if (mapObject is MineField mineField)
             {
-                OnMapObjectCreated(mineField, MineFields, MineFieldsByGuid);
-            }
-            else if (mapObject is MineralPacket mineralPacket)
-            {
-                OnMapObjectCreated(mineralPacket, MineralPackets, MineralPacketsByGuid);
+                DeleteMapObject(mineField, MineFields, MineFieldsByGuid);
             }
             else if (mapObject is Salvage salvage)
             {
-                OnMapObjectCreated(salvage, Salvage, SalvageByGuid);
+                DeleteMapObject(salvage, Salvage, SalvageByGuid);
+            }
+            else if (mapObject is MineralPacket packet)
+            {
+                DeleteMapObject(packet, MineralPackets, MineralPacketsByGuid);
             }
             else if (mapObject is Wormhole wormhole)
             {
-                OnMapObjectCreated(wormhole, Wormholes, WormholesByGuid);
+                DeleteMapObject(wormhole, Wormholes, WormholesByGuid);
+                Players.ForEach(player =>
+                {
+                    if (player.WormholesByGuid.TryGetValue(wormhole.Guid, out var playerWormhole))
+                    {
+                        if (playerWormhole.Destination != null)
+                        {
+                            // make the other wormhole forget about this one
+                            playerWormhole.Destination.Destination = null;
+                        }
+                        player.Wormholes.Remove(playerWormhole);
+                    }
+                });
             }
             else if (mapObject is MysteryTrader mysteryTrader)
             {
-                OnMapObjectCreated(mysteryTrader, MysteryTraders, MysteryTradersByGuid);
+                DeleteMapObject(mysteryTrader, MysteryTraders, MysteryTradersByGuid);
             }
         }
-
-        void OnMapObjectDeleted(MapObject mapObject)
-        {
-            // add these to the deletedMapObjects list for future deletion
-            deletedMapObjects.Add(mapObject);
-        }
-
-        void OnPlanetPopulationEmptied(Planet planet)
-        {
-            // empty this planet
-            planet.PlayerNum = MapObject.Unowned;
-            planet.Starbase = null;
-            planet.Scanner = false;
-            planet.Defenses = 0;
-            planet.ProductionQueue = new ProductionQueue();
-        }
-
-        #endregion
 
     }
 }

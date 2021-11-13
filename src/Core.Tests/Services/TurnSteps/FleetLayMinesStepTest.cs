@@ -21,7 +21,7 @@ namespace CraigStars.Tests
         [Test]
         public void LayMineFieldTest()
         {
-            var game = TestUtils.GetSingleUnitGame();
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
             var player = game.Players[0];
             var fleet = game.Fleets[0];
 
@@ -39,7 +39,7 @@ namespace CraigStars.Tests
 
             fleet.ComputeAggregate(player);
 
-            FleetLayMinesStep step = new FleetLayMinesStep(game);
+            FleetLayMinesStep step = new FleetLayMinesStep(gameRunner.GameProvider);
 
             step.LayMineField(fleet, player);
             Assert.AreEqual(1, game.MineFields.Count);

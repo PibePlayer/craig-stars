@@ -13,15 +13,18 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(DecayMinesStep));
 
-        MineFieldDamager mineFieldDamager = new MineFieldDamager();
+        private readonly MineFieldDamager mineFieldDamager;
 
-        public DetonateMinesStep(Game game) : base(game, TurnGenerationState.DetonateMines) { }
+        public DetonateMinesStep(IProvider<Game> gameProvider, MineFieldDamager mineFieldDamager) : base(gameProvider, TurnGenerationState.DetonateMines)
+        {
+            this.mineFieldDamager = mineFieldDamager;
+        }
 
         public override void Process()
         {
 
             foreach (var mineField in Game.MineFields.Where(mf =>
-                
+
                 Game.Players[mf.PlayerNum].Race.PRT == PRT.SD &&
                 mf.Detonate &&
                 Game.Rules.MineFieldStatsByType[mf.Type].CanDetonate))

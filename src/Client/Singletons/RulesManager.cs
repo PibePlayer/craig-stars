@@ -10,11 +10,12 @@ namespace CraigStars.Singletons
         static CSLog log = LogProvider.GetLogger(typeof(RulesManager));
 
         private Rules rules = new Rules();
+        
         public static Rules Rules
         {
             get
             {
-                return Instance.rules;
+                return Instance?.rules;
             }
         }
 

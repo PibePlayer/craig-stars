@@ -11,9 +11,14 @@ namespace CraigStars
     public class PlanetProductionStep : TurnGenerationStep
     {
         static CSLog log = LogProvider.GetLogger(typeof(PlanetProductionStep));
-        PlanetService planetService = new();
+        private readonly PlanetService planetService;
+        private readonly PlayerService playerService;
 
-        public PlanetProductionStep(Game game) : base(game, TurnGenerationState.Production) { }
+        public PlanetProductionStep(IProvider<Game> gameProvider, PlanetService planetService, PlayerService playerService) : base(gameProvider, TurnGenerationState.Production)
+        {
+            this.planetService = planetService;
+            this.playerService = playerService;
+        }
 
         /// <summary>
         /// The result of processing a QueueItem during production
@@ -126,7 +131,7 @@ namespace CraigStars
             // add anything we've already allocated to this item
             allocated += item.Allocated;
 
-            Cost costPer = item.GetCostOfOne(player);
+            Cost costPer = playerService.GetCostOfOne(player, item);
             if (item.Type == QueueItemType.Starbase && planet.HasStarbase)
             {
                 costPer = planet.Starbase.GetUpgradeCost(item.Design);
@@ -221,7 +226,7 @@ namespace CraigStars
             }
             else if (item.IsPacket)
             {
-                BuildPacket(planet, player, item.GetCostOfOne(player), numBuilt);
+                BuildPacket(planet, player, playerService.GetCostOfOne(player, item), numBuilt);
             }
             else if (item.Type == QueueItemType.ShipToken)
             {

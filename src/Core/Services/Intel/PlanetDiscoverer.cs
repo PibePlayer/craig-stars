@@ -11,9 +11,13 @@ namespace CraigStars
     public class PlanetDiscoverer : Discoverer<Planet>
     {
         static CSLog log = LogProvider.GetLogger(typeof(PlanetDiscoverer));
-        PlanetService planetService = new();
-
+        private readonly PlanetService planetService;
         ShipDesignDiscoverer designDiscoverer = new ShipDesignDiscoverer();
+
+        public PlanetDiscoverer(PlanetService planetService)
+        {
+            this.planetService = planetService;
+        }
 
         protected override List<Planet> GetOwnedItemReports(Player player) => player.Planets;
         protected override List<Planet> GetForeignItemReports(Player player) => player.ForeignPlanets;

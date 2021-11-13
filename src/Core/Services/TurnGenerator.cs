@@ -9,12 +9,14 @@ namespace CraigStars
         static CSLog log = LogProvider.GetLogger(typeof(TurnGenerator));
 
         public event Action<TurnGenerationState> TurnGeneratorAdvancedEvent;
+        public event Action PurgeDeletedMapObjectsEvent;
         public void PublishTurnGeneratorAdvancedEvent(TurnGenerationState state) => TurnGeneratorAdvancedEvent?.Invoke(state);
+        public void PublishPurgeDeletedMapObjectsEvent() => PurgeDeletedMapObjectsEvent?.Invoke();
 
         Game Game { get; }
 
         // the steps executed by the TurnGenerator
-        List<TurnGenerationStep> steps;
+        IList<TurnGenerationStep> steps;
 
         /// <summary>
         /// Stars! Order of Events
@@ -56,36 +58,11 @@ namespace CraigStars
         /// </c>
         /// </summary>
         /// <param name="game"></param>
-        public TurnGenerator(Game game)
+        public TurnGenerator(Game game, IList<TurnGenerationStep> steps)
         {
             Game = game;
-            steps = new List<TurnGenerationStep>() {
-                new FleetAgeStep(game), // wp0
-                new FleetWaypointStep(game, 0), // wp0
-                new PacketMoveStep(game, 0),
-                new FleetMoveStep(game),
-                new FleetReproduceStep(game),
-                new DecaySalvageStep(game),
-                new DecayPacketsStep(game),
-                new WormholeJiggleStep(game),
-                new DetonateMinesStep(game),
-                new PlanetMineStep(game),
-                new PlanetProductionStep(game),
-                new PlayerResearchStep(game),
-                new PlanetGrowStep(game),
-                new PacketMoveStep(game, 1),
-                new FleetBattleStep(game),
-                new PlanetBombStep(game),
-                new FleetWaypointStep(game, 1), // wp1
-                new DecayMinesStep(game),
-                new FleetLayMinesStep(game),
-                new FleetSweepMinesStep(game),
-                new PlayerScanStep(game),
-                new CalculateScoreStep(game),
-                new CheckVictoryStep(game),
-            };
+            this.steps = steps;
         }
-
 
         /// <summary>
         /// Generate a turn
@@ -109,7 +86,7 @@ namespace CraigStars
             var ownedPlanets = Game.OwnedPlanets.ToList();
             foreach (var step in steps)
             {
-                Game.PurgeDeletedMapObjects();
+                PublishPurgeDeletedMapObjectsEvent();
                 PublishTurnGeneratorAdvancedEvent(step.State);
                 step.Execute(context, ownedPlanets);
             }

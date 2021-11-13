@@ -11,6 +11,18 @@
         "request": "launch"
     },
     {
+        "name": "Build & Launch",
+        "type": "godot-mono",
+        "request": "launch",
+        "mode": "executable",
+        "executable": "/Applications/Godot_mono.app/Contents/MacOS/Godot", 
+        "executableArguments": [
+            "--path",
+            "${workspaceRoot}"
+        ],
+        "preLaunchTask": "build",
+    },
+    {
         "name": "Launch Unit Tests",
         "type": "coreclr",
         "request": "launch",

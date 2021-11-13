@@ -19,13 +19,15 @@ namespace CraigStars.Tests
         static CSLog log = LogProvider.GetLogger(typeof(PlanetProductionStepTest));
 
         Game game;
+        GameRunner gameRunner;
         PlanetProductionStep step;
+        PlanetService planetService = new PlanetService(new PlayerTechService(new TestTechStoreProvider()));
 
         [SetUp]
         public void SetUp()
         {
-            game = TestUtils.GetSingleUnitGame();
-            step = new PlanetProductionStep(game);
+            (game, gameRunner) = TestUtils.GetSingleUnitGame();
+            step = new PlanetProductionStep(gameRunner.GameProvider, planetService, new PlayerService(game));
         }
 
         [Test]
@@ -88,7 +90,6 @@ namespace CraigStars.Tests
         {
             var player = game.Players[0];
             var planet = game.Planets[0];
-            PlanetService planetService = new();
             var maxMines = planetService.GetMaxMines(planet, player);
             var maxPossibleMines = planetService.GetMaxPossibleMines(planet, player);
 

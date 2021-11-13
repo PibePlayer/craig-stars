@@ -10,11 +10,16 @@ namespace CraigStars
     /// </summary>
     public class FleetMoveStep : TurnGenerationStep
     {
-        MineFieldDamager mineFieldDamager = new();
-        ShipDesignDiscoverer designDiscoverer = new();
-        FleetService fleetService = new();
+        private readonly MineFieldDamager mineFieldDamager;
+        private readonly ShipDesignDiscoverer designDiscoverer;
+        private readonly FleetService fleetService;
 
-        public FleetMoveStep(Game game) : base(game, TurnGenerationState.MoveFleets) { }
+        public FleetMoveStep(IProvider<Game> gameProvider, MineFieldDamager mineFieldDamager, ShipDesignDiscoverer designDiscoverer, FleetService fleetService) : base(gameProvider, TurnGenerationState.MoveFleets)
+        {
+            this.mineFieldDamager = mineFieldDamager;
+            this.designDiscoverer = designDiscoverer;
+            this.fleetService = fleetService;
+        }
 
         public override void Process()
         {

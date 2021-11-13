@@ -18,7 +18,10 @@ namespace CraigStars.Tests
     {
         static CSLog log = LogProvider.GetLogger(typeof(ProductionQueueEstimatorTest));
 
-        ProductionQueueEstimator estimator = new ProductionQueueEstimator();
+        ProductionQueueEstimator estimator = new ProductionQueueEstimator(
+            TestUtils.TestContainer.GetInstance<PlanetService>(),
+            TestUtils.TestContainer.GetInstance<PlayerService>()
+        );
 
         [Test]
         public void TestCalculateCompletionEstimatesSingleItem()

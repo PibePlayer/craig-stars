@@ -135,7 +135,7 @@ namespace CraigStars
             Aggregate.MineSweep = 0;
 
             // TODO: move to playerService when aggregate computation is moved to its own service
-            Aggregate.CloakUnits = player.Race.PRT == PRT.SS ? player.Rules.BuiltInSSCloakUnits : 0;
+            Aggregate.CloakUnits = player.Race.PRT == PRT.SS ? 300 : 0;
             Aggregate.ReduceCloaking = 0;
             Aggregate.Bomber = false;
             Aggregate.Bombs.Clear();
@@ -308,9 +308,10 @@ namespace CraigStars
             long scanRangePen = TechHullComponent.NoScanner;
 
             // compu thecanner as a built in JoaT scanner if it's build in
-            if (player.Race.PRT == PRT.JoaT && Hull.BuiltInScannerForJoaT)
+            var builtInScannerMultiplier = player.Rules.PRTSpecs[player.Race.PRT].BuiltInScannerMultiplier;
+            if (builtInScannerMultiplier > 0 && Hull.BuiltInScanner)
             {
-                scanRange = (long)(player.TechLevels.Electronics * player.Rules.BuiltInScannerJoaTMultiplier);
+                scanRange = (long)(player.TechLevels.Electronics * builtInScannerMultiplier);
                 if (!player.Race.HasLRT(LRT.NAS))
                 {
                     scanRangePen = (long)Math.Pow(scanRange / 2, 4);
@@ -376,7 +377,7 @@ namespace CraigStars
         {
             if (player.Num != PlayerNum) return;
 
-            if (player.Race.PRT == PRT.JoaT && Hull != null && Hull.BuiltInScannerForJoaT && field == TechField.Electronics)
+            if (player.Race.PRT == PRT.JoaT && Hull != null && Hull.BuiltInScanner && field == TechField.Electronics)
             {
                 // update our scanner aggregate
                 ComputeScanRanges(player);

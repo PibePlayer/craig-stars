@@ -1608,7 +1608,7 @@ namespace CraigStars
         {
             Type = TechHullType.Scout,
             Mass = 8,
-            BuiltInScannerForJoaT = true,
+            BuiltInScanner = true,
             Armor = 20,
             Initiative = 1,
             FuelCapacity = 50,
@@ -1623,7 +1623,7 @@ namespace CraigStars
         {
             Type = TechHullType.Fighter,
             Mass = 8,
-            BuiltInScannerForJoaT = true,
+            BuiltInScanner = true,
             Armor = 45,
             Initiative = 4,
             FuelCapacity = 125,
@@ -1640,7 +1640,7 @@ namespace CraigStars
         {
             Type = TechHullType.Fighter,
             Mass = 30,
-            BuiltInScannerForJoaT = true,
+            BuiltInScanner = true,
             Armor = 200,
             Initiative = 3,
             FuelCapacity = 280,

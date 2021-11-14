@@ -15,13 +15,15 @@ namespace CraigStars.UniverseGeneration
     {
         static CSLog log = LogProvider.GetLogger(typeof(PlayerHomeworldGenerationStep));
 
+        readonly PlayerService playerService;
         readonly PlanetService planetService;
         readonly PlanetDiscoverer planetDiscoverer;
 
         List<Planet> ownedPlanets = new List<Planet>();
 
-        public PlayerHomeworldGenerationStep(IProvider<Game> gameProvider, PlanetService planetService, PlanetDiscoverer planetDiscoverer) : base(gameProvider, UniverseGenerationState.Homeworlds)
+        public PlayerHomeworldGenerationStep(IProvider<Game> gameProvider, PlayerService playerService, PlanetService planetService, PlanetDiscoverer planetDiscoverer) : base(gameProvider, UniverseGenerationState.Homeworlds)
         {
+            this.playerService = playerService;
             this.planetService = planetService;
             this.planetDiscoverer = planetDiscoverer;
         }
@@ -42,26 +44,30 @@ namespace CraigStars.UniverseGeneration
             InitHomeworld(player, homeworld);
             planetDiscoverer.Discover(player, homeworld);
 
-            if (player.Race.PRT == PRT.IT || player.Race.PRT == PRT.PP && Game.Size > Size.Tiny)
+            if (Game.Size > Size.Tiny)
             {
-                player.Homeworld.Population = Game.Rules.StartingPopulationWithExtraPlanet;
-                // extra planet! woo!
-                var planet = Game.Planets.FirstOrDefault(
-                    p => !p.Owned &&
-                    p.Position.DistanceTo(player.Homeworld.Position) <= Game.Rules.MaxExtraWorldDistance &&
-                    p.Position.DistanceTo(player.Homeworld.Position) >= Game.Rules.MinExtraWorldDistance);
-                if (planet != null)
+                for (int i = 1; i < playerService.GetStartingPlanets(player.Race).Count; i++)
                 {
-                    InitExtraWorld(player, planet);
-                    planetDiscoverer.Discover(player, planet);
-                    ownedPlanets.Add(planet);
-                }
-                else
-                {
-                    // TODO: maybe we should place a planet where we want it? like a random angle but always
-                    // about the same distance?
-                    // or maybe we should place homeworlds first, then randomly place all the other planets?
-                    log.Error("Failed to find valid planet in range of homeworld");
+                    var extraPlanet = playerService.GetStartingPlanets(player.Race)[i];
+
+                    // extra planet! woo!
+                    var planet = Game.Planets.FirstOrDefault(
+                        p => !p.Owned &&
+                        p.Position.DistanceTo(player.Homeworld.Position) <= Game.Rules.MaxExtraWorldDistance &&
+                        p.Position.DistanceTo(player.Homeworld.Position) >= Game.Rules.MinExtraWorldDistance);
+                    if (planet != null)
+                    {
+                        InitExtraWorld(player, planet, extraPlanet);
+                        planetDiscoverer.Discover(player, planet);
+                        ownedPlanets.Add(planet);
+                    }
+                    else
+                    {
+                        // TODO: maybe we should place a planet where we want it? like a random angle but always
+                        // about the same distance?
+                        // or maybe we should place homeworlds first, then randomly place all the other planets?
+                        log.Error("Failed to find valid planet in range of homeworld");
+                    }
                 }
             }
 
@@ -97,7 +103,7 @@ namespace CraigStars.UniverseGeneration
             );
             planet.BaseHab = planet.Hab;
 
-            planet.Population = rules.StartingPopulation;
+            planet.Population = playerService.GetStartingPlanets(player.Race)[0].Population;
 
             if (race.LRTs.Contains(LRT.LSP))
             {
@@ -123,7 +129,7 @@ namespace CraigStars.UniverseGeneration
             Message.HomePlanet(player, planet);
         }
 
-        void InitExtraWorld(Player player, Planet planet)
+        void InitExtraWorld(Player player, Planet planet, StartingPlanet startingPlanet)
         {
             var rules = Game.Rules;
             var random = rules.Random;
@@ -138,14 +144,16 @@ namespace CraigStars.UniverseGeneration
             planet.MineralConcentration = HomeWorldMineralConcentration;
             planet.Cargo = ExtraWorldSurfaceMinerals;
 
+            var habPenalty = startingPlanet.HabPenaltyFactor;
+
             planet.Hab = new Hab(
-                race.HabCenter.grav + (race.HabWidth.grav - random.Next(race.HabWidth.grav - 1)) / 2,
-                race.HabCenter.temp + (race.HabWidth.temp - random.Next(race.HabWidth.temp - 1)) / 2,
-                race.HabCenter.rad + (race.HabWidth.rad - random.Next(race.HabWidth.rad - 1)) / 2
+                (int)(race.HabCenter.grav + (race.HabWidth.grav - random.Next(race.HabWidth.grav - 1)) / 2 * habPenalty),
+                (int)(race.HabCenter.temp + (race.HabWidth.temp - random.Next(race.HabWidth.temp - 1)) / 2 * habPenalty),
+                (int)(race.HabCenter.rad + (race.HabWidth.rad - random.Next(race.HabWidth.rad - 1)) / 2 * habPenalty)
             );
             planet.BaseHab = planet.Hab;
 
-            planet.Population = rules.StartingPopulationExtraPlanet;
+            planet.Population = startingPlanet.Population;
 
             if (race.LRTs.Contains(LRT.LSP))
             {

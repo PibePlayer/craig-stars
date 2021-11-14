@@ -13,8 +13,6 @@ namespace CraigStars
         public int Electronics { get; set; }
         public int Biotechnology { get; set; }
 
-        public TechLevel() { }
-
         [JsonConstructor]
         public TechLevel(int energy = 0, int weapons = 0, int propulsion = 0, int construction = 0, int electronics = 0, int biotechnology = 0)
         {
@@ -24,6 +22,11 @@ namespace CraigStars
             Construction = construction;
             Electronics = electronics;
             Biotechnology = biotechnology;
+        }
+
+        public TechLevel Clone()
+        {
+            return (TechLevel)MemberwiseClone();
         }
 
         public int this[TechField index]

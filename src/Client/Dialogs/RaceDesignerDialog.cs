@@ -30,6 +30,7 @@ namespace CraigStars.Client
         /// </summary>
         Race updatedRace;
         RacePointsCalculator racePointsCalculator = new RacePointsCalculator();
+        [Inject] PlayerService playerService;
 
         TabContainer tabContainer;
 
@@ -95,6 +96,7 @@ namespace CraigStars.Client
 
         public override void _Ready()
         {
+            this.ResolveDependencies();
             base._Ready();
             advantagePoints = (Label)FindNode("AdvantagePoints");
 
@@ -448,14 +450,7 @@ namespace CraigStars.Client
 
         void UpdateTechsStartHighLabel(Race race)
         {
-            if (race.PRT == PRT.JoaT)
-            {
-                techsStartHighCheckBox.Text = "All 'Costs 75% extra' research fields start at Tech 4";
-            }
-            else
-            {
-                techsStartHighCheckBox.Text = "All 'Costs 75% extra' research fields start at Tech 3";
-            }
+            techsStartHighCheckBox.Text = $"All 'Costs 75% extra' research fields start at Tech {playerService.GetTechsCostExtraLevel(race)}";
         }
 
         void UpdateAdvantagePoints()

@@ -14,7 +14,7 @@ namespace CraigStars
         public int FuelGenerationPerYear { get; set; }
         public int FleetHealBonus { get; set; }
         public bool DoubleMineEfficiency { get; set; }
-        public bool BuiltInScannerForJoaT { get; set; }
+        public bool BuiltInScanner { get; set; }
         public int CargoCapacity { get; set; }
 
         /// <summary>

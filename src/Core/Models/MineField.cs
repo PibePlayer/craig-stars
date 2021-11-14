@@ -34,40 +34,6 @@ namespace CraigStars
         public float Radius { get => radius; }
         float radius;
 
-        /// <summary>
-        /// * The base rate for minefield decay is 2% per year.
-        /// * Minefields will decay an additional 4% per planet that is within the field, or 1% per planet for SD races.
-        /// * A detonating SD minefield has an additional 25% decay each year.
-        /// * Normal and Heavy Minefields have a minimum total decay rate of 10 mines per year
-        /// * Speed Bump Minefields have a minimum total decay rate of 2 mines per year
-        /// * There is a maximum total decay rate of 50% per year.
-        /// </summary>
-        /// <param name="planets">A list of planets in the universe (minefields decay when around planets)</param>
-        /// <returns></returns>
-        public long GetDecayRate(Player player, IEnumerable<Planet> planets, Rules rules)
-        {
-            if (!Owned)
-            {
-                // we can't determine decay rate for minefields we don't own
-                return -1;
-            }
 
-            var numPlanets = UniverseUtils.GetPlanetsWithin(planets, Position, Radius).Count();
-            var decayRate = rules.MineFieldBaseDecayRate;
-            decayRate += rules.MineFieldPlanetDecayRate * numPlanets;
-            if (Detonate)
-            {
-                decayRate += rules.MineFieldDetonateDecayRate;
-            }
-
-            // Space Demolition mines decay slower
-            var decayFactor = player.Race.PRT == PRT.SD ? rules.SDMinDecayFactor : 1;
-            decayRate *= decayFactor;
-            decayRate = Math.Min(decayRate, rules.MineFieldMaxDecayRate);
-
-            // we decay at least 10 mines a year for normal and standar mines
-            long decayedMines = Math.Max(rules.MineFieldStatsByType[Type].MinDecay, (long)(NumMines * decayRate + .5));
-            return decayedMines;
-        }
     }
 }

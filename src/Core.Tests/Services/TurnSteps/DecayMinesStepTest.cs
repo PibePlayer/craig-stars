@@ -31,7 +31,7 @@ namespace CraigStars.Tests
             };
             game.MineFields.Add(mineField);
 
-            DecayMinesStep step = new DecayMinesStep(gameRunner.GameProvider);
+            DecayMinesStep step = new DecayMinesStep(gameRunner.GameProvider, TestUtils.TestContainer.GetInstance<MineFieldDecayer>());
 
             // regular decay is 2%
             mineField.NumMines = 1000;

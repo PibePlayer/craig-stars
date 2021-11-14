@@ -30,7 +30,7 @@ namespace CraigStars.Tests
             var game = new Game() { StartMode = GameStartMode.Normal };
             game.Init(new List<Player>() { new Player() { AIControlled = true } }, new Rules(0));
 
-            PlayerShipDesignsGenerationStep step = new PlayerShipDesignsGenerationStep(new Provider<Game>(game), StaticTechStore.Instance, playerIntel, designGenerator);
+            PlayerShipDesignsGenerationStep step = new PlayerShipDesignsGenerationStep(new Provider<Game>(game), StaticTechStore.Instance, playerIntel, designGenerator, playerService);
 
             var starbase = new ShipDesign()
             {
@@ -38,7 +38,7 @@ namespace CraigStars.Tests
                 Hull = Techs.SpaceStation
             };
 
-            step.FillStarbaseSlots(starbase, new Race());
+            step.FillStarbaseSlots(starbase, new Race(), new StartingPlanet(0, 0));
 
             // slot 1 is an orbital, should be empty for Humanoids
 

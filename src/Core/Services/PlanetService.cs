@@ -59,25 +59,11 @@ namespace CraigStars
             var race = player.Race;
             if (planet.Hab is Hab planetHab)
             {
-                var factor = 1f;
-
-                if (race.PRT == PRT.JoaT)
-                {
-                    factor += .2f;
-                }
-                else if (race.PRT == PRT.HE)
-                {
-                    factor = .5f;
-                }
-
-                if (race.HasLRT(LRT.OBRM))
-                {
-                    factor += .1f;
-                }
+                var maxPopulationFactor = playerService.GetMaxPopulationFactor(player.Race);
 
                 // get this player's planet habitability
                 var hab = race.GetPlanetHabitability(planetHab);
-                return (int)(rules.MaxPopulation * factor * hab / 100);
+                return (int)(rules.MaxPopulation * maxPopulationFactor * hab / 100);
             }
             else
             {
@@ -92,7 +78,7 @@ namespace CraigStars
         public int GetGrowthAmount(Planet planet, Player player, Rules rules)
         {
             var race = player.Race;
-            var growthFactor = playerService.GetGrowthFactor(player);
+            var growthFactor = playerService.GetGrowthFactor(player.Race);
             if (planet.Hab is Hab hab)
             {
                 double capacity = ((double)planet.Population / GetMaxPopulation(planet, player, rules));

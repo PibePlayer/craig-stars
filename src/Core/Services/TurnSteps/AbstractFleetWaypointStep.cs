@@ -34,6 +34,7 @@ namespace CraigStars
         List<FleetWaypoint> otherTasks = new List<FleetWaypoint>();
         List<PlanetInvasion> invasions = new List<PlanetInvasion>();
 
+        private readonly PlayerService playerService;
         private readonly PlanetService planetService;
         private readonly InvasionProcessor invasionProcessor;
         private readonly PlanetDiscoverer planetDiscoverer;
@@ -43,11 +44,13 @@ namespace CraigStars
 
         public AbstractFleetWaypointStep(
             IProvider<Game> gameProvider,
+            PlayerService playerService,
             PlanetService planetService,
             InvasionProcessor invasionProcessor,
             PlanetDiscoverer planetDiscoverer,
             int waypointIndex) : base(gameProvider, TurnGenerationState.Waypoint)
         {
+            this.playerService = playerService;
             this.planetService = planetService;
             this.invasionProcessor = invasionProcessor;
             this.planetDiscoverer = planetDiscoverer;
@@ -314,7 +317,7 @@ namespace CraigStars
             if (planet.Owned)
             {
                 // AR races can remote mine their own planets
-                if (!(Game.Players[fleet.PlayerNum].Race.PRT == PRT.AR && planet.PlayerNum == fleet.PlayerNum))
+                if (!(playerService.CanRemoteMineOwnPlanets(Game.Players[fleet.PlayerNum].Race) && planet.PlayerNum == fleet.PlayerNum))
                 {
                     Message.RemoteMineInhabited(Game.Players[fleet.PlayerNum], fleet, planet);
                     return false;

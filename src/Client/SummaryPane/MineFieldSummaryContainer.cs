@@ -9,6 +9,8 @@ namespace CraigStars.Client
     {
         static CSLog log = LogProvider.GetLogger(typeof(MineFieldSummaryContainer));
 
+        [Inject] private MineFieldDecayer mineFieldDecayer;
+
         TextureRect icon;
         Label location;
         Label fieldType;
@@ -18,6 +20,7 @@ namespace CraigStars.Client
 
         public override void _Ready()
         {
+            this.ResolveDependencies();
             base._Ready();
             location = GetNode<Label>("HBoxContainer/GridContainer/Location");
             fieldType = GetNode<Label>("HBoxContainer/GridContainer/FieldType");
@@ -40,7 +43,7 @@ namespace CraigStars.Client
                 {
                     decayRate.Visible = true;
                     decayRateLabel.Visible = true;
-                    decayRate.Text = $"{MapObject.MineField.GetDecayRate(Me, Me.AllPlanets, GameInfo.Rules)} mines / year";
+                    decayRate.Text = $"{mineFieldDecayer.GetDecayRate(MapObject.MineField, Me, Me.AllPlanets)} mines / year";
                 }
 
                 switch (MapObject.MineField.Type)

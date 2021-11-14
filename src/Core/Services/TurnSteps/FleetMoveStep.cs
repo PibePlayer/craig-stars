@@ -13,12 +13,14 @@ namespace CraigStars
         private readonly MineFieldDamager mineFieldDamager;
         private readonly ShipDesignDiscoverer designDiscoverer;
         private readonly FleetService fleetService;
+        private readonly PlayerService playerService;
 
-        public FleetMoveStep(IProvider<Game> gameProvider, MineFieldDamager mineFieldDamager, ShipDesignDiscoverer designDiscoverer, FleetService fleetService) : base(gameProvider, TurnGenerationState.MoveFleets)
+        public FleetMoveStep(IProvider<Game> gameProvider, MineFieldDamager mineFieldDamager, ShipDesignDiscoverer designDiscoverer, FleetService fleetService, PlayerService playerService) : base(gameProvider, TurnGenerationState.MoveFleets)
         {
             this.mineFieldDamager = mineFieldDamager;
             this.designDiscoverer = designDiscoverer;
             this.fleetService = fleetService;
+            this.playerService = playerService;
         }
 
         public override void Process()
@@ -124,7 +126,7 @@ namespace CraigStars
             }
 
             // dump cargo if we aren't IT
-            if (fleet.Cargo.Total > 0 && player.Race.PRT != PRT.IT)
+            if (fleet.Cargo.Total > 0 && !playerService.CanGateCargo(player.Race))
             {
                 Message.FleetStargateDumpedCargo(player, fleet, wp0, wp1, fleet.Cargo);
                 fleet.AttemptTransfer(-fleet.Cargo);
@@ -307,8 +309,8 @@ namespace CraigStars
             foreach (var token in fleet.Tokens)
             {
                 startingShips += token.Quantity;
-                // Inner stellar travellers never lose ships to the void
-                if (player.Race.PRT != PRT.IT)
+                // Inner stellar travellers never lose ships to the void, but everyone else does
+                if (playerService.ShipsVanishInVoid(player.Race))
                 {
                     var rangeVanishChance = token.GetStargateRangeVanishingChance(distance, sourceStargate.SafeRange);
                     var massVanishingChance = token.GetStargateMassVanishingChance(sourceStargate.SafeHullMass, Game.Rules.StargateMaxHullMassFactor);
@@ -383,11 +385,7 @@ namespace CraigStars
         /// <returns>The actual distance travelled, if stopped by a minefield</returns>
         internal float CheckForMineFields(Fleet fleet, Player player, Waypoint dest, float distance)
         {
-            int safeWarpBonus = 0;
-            if (player.Race.PRT == PRT.SD)
-            {
-                safeWarpBonus = Game.Rules.SDSafeWarpBonus;
-            }
+            int safeWarpBonus = playerService.GetMineFieldSafeWarpBonus(player.Race);
 
             // see if we are colliding with any of these minefields
             foreach (var mineField in Game.MineFields.Where(mf => mf.PlayerNum != fleet.PlayerNum))
@@ -434,7 +432,7 @@ namespace CraigStars
 
                                 mineFieldDamager.TakeMineFieldDamage(fleet, fleetPlayer, mineField, mineFieldPlayer, stats);
                                 mineFieldDamager.ReduceMineFieldOnImpact(mineField);
-                                if (mineFieldPlayer.Race.PRT == PRT.SD)
+                                if (playerService.MineFieldsAreScanners(mineFieldPlayer.Race))
                                 {
                                     // SD races discover the exact fleet makeup
                                     foreach (var token in fleet.Tokens)

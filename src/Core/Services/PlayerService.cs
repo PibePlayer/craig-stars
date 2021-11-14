@@ -18,7 +18,46 @@ namespace CraigStars
             this.rulesProvider = rulesProvider;
         }
 
+
         #region PRT and LRT logic
+
+        public TechLevel GetStartingTechLevels(Race race)
+        {
+            TechLevel techLevels = Rules.PRTSpecs[race.PRT].StartingTechLevels.Clone();
+
+            // if a race has Techs costing exra start high, set the start level to 3
+            // for any TechField that is set to research costs extra
+            if (race.TechsStartHigh)
+            {
+                // Jack of All Trades start at 4
+                var costsExtraLevel = GetTechsCostExtraLevel(race);
+                foreach (TechField field in Enum.GetValues(typeof(TechField)))
+                {
+                    var level = techLevels[field];
+                    if (race.ResearchCost[field] == ResearchCostLevel.Extra && level < costsExtraLevel)
+                    {
+                        techLevels[field] = costsExtraLevel;
+                    }
+                }
+            }
+
+            if (race.HasLRT(LRT.IFE) || race.HasLRT(LRT.CE))
+            {
+                // Improved Fuel Efficiency and Cheap Engines increases propulsion by 1
+                techLevels.Propulsion++;
+            }
+
+            return techLevels;
+        }
+
+        public List<StartingPlanet> GetStartingPlanets(Race race) => Rules.PRTSpecs[race.PRT].StartingPlanets;
+
+        /// <summary>
+        /// Get the starting fleets for a player
+        /// </summary>
+        /// <param name="race"></param>
+        /// <returns></returns>
+        public List<StartingFleet> GetStartingFleets(Race race) => Rules.PRTSpecs[race.PRT].StartingFleets;
 
         /// <summary>
         /// Any population growth bonus this race gets, i.e. HE gets 2x growth
@@ -26,21 +65,28 @@ namespace CraigStars
         /// <param name="player"></param>
         /// <param name="rules"></param>
         /// <returns></returns>
-        public float GetGrowthFactor(Player player) => player.Race.PRT == PRT.HE ? Rules.HEGrowthFactor : 1.0f;
-        
+        public float GetGrowthFactor(Race race) => Rules.PRTSpecs[race.PRT].GrowthFactor;
+
+        /// <summary>
+        /// The max population factor for this race
+        /// </summary>
+        /// <param name="race"></param>
+        /// <returns></returns>
+        public float GetMaxPopulationFactor(Race race) => Rules.PRTSpecs[race.PRT].MaxPopulationFactor + (race.HasLRT(LRT.OBRM) ? .1f : 0f);
+
         /// <summary>
         /// The rate this player's colonists grow on freighters, defaults to 0, but IS grows .5 * their growth rate
         /// </summary>
         /// <param name="player"></param>
         /// <param name="rules"></param>
         /// <returns></returns>
-        public float GetFreighterGrowthFactor(Player player) => player.Race.PRT == PRT.IS ? Rules.ISFreighterGrowthFactor : 0.0f;
+        public float GetFreighterGrowthFactor(Race race) => Rules.PRTSpecs[race.PRT].FreighterGrowthFactor;
 
         /// <summary>
         /// Does this race discover a ShipDesign's components on scan?
         /// </summary>
         /// <value></value>
-        public bool DiscoverDesignOnScan(Race race) => race.PRT == PRT.WM;
+        public bool DiscoverDesignOnScan(Race race) => Rules.PRTSpecs[race.PRT].DiscoverDesignOnScan;
 
         public Cost GetTerraformCost(Race race) => race.HasLRT(LRT.TT) ? Rules.TotalTerraformCost : Rules.TerraformCost;
 
@@ -51,11 +97,8 @@ namespace CraigStars
         {
             int overSafeWarp = packet.WarpFactor - packet.SafeWarpSpeed;
 
-            if (race.PRT == PRT.IT)
-            {
-                // IT is always count as being at least 1 over the safe warp
-                overSafeWarp++;
-            }
+            // IT is always count as being at least 1 over the safe warp
+            overSafeWarp += Rules.PRTSpecs[race.PRT].PacketOverSafeWarpPenalty;
 
             // we only care about packets thrown up to 3 warp over the limit 
             overSafeWarp = Mathf.Clamp(packet.WarpFactor - packet.SafeWarpSpeed, 0, 3);
@@ -66,11 +109,8 @@ namespace CraigStars
                 packetDecayRate = Rules.PacketDecayRate[overSafeWarp];
             }
 
-            if (race.PRT == PRT.PP)
-            {
-                // PP have half the decay rate
-                packetDecayRate *= .5f;
-            }
+            // PP have half the decay rate
+            packetDecayRate *= Rules.PRTSpecs[race.PRT].PacketDecayFactor;
 
             return packetDecayRate;
         }
@@ -80,68 +120,85 @@ namespace CraigStars
         /// Races with the Interstellar trait are only 1/2 as effective at catching packets. To calculate the damage taken, divide receiverSpeed by two.
         /// </summary>
         /// <value></value>
-        public float GetPacketReceiverFactor(Race race) => race.PRT == PRT.IT ? .5f : 1f;
+        public float GetPacketReceiverFactor(Race race) => Rules.PRTSpecs[race.PRT].PacketReceiverFactor;
 
         /// <summary>
         /// Get the cost to construct a single or mixed mineral packet 
         /// </summary>
-        public int GetPacketResourceCost(Race race) => race.PRT switch
-        {
-            PRT.PP => Rules.PacketResourceCostPP,
-            _ => Rules.PacketResourceCost
-        };
+        public int GetPacketResourceCost(Race race) => Rules.PRTSpecs[race.PRT].PacketResourceCost;
 
         /// <summary>
         /// Get the premium this race pays for packets. PP races are perfectly efficient, but
         /// other races use minerals building the packet.
         /// </summary>
-        public float GetPacketCostFactor(Race race) => race.PRT switch
-        {
-            PRT.PP => Rules.PacketMineralCostFactorPP,
-            PRT.IT => Rules.PacketMineralCostFactorIT,
-            _ => Rules.PacketMineralCostFactor
-        };
+        public float GetPacketCostFactor(Race race) => Rules.PRTSpecs[race.PRT].PacketMineralCostFactor;
 
         /// <summary>
         /// The number of minerals contained in each mixed mineral packet
         /// </summary>
-        public int GetMineralsPerMixedMineralPacket(Race race) => race.PRT switch
-        {
-            PRT.PP => Rules.MineralsPerMixedMineralPacketPP,
-            _ => Rules.MineralsPerMixedMineralPacket
-        };
+        public int GetMineralsPerMixedMineralPacket(Race race) => Rules.PRTSpecs[race.PRT].MineralsPerMixedMineralPacket;
 
         /// <summary>
         /// The number of minerals contained in each mixed mineral packet
         /// </summary>
-        public int GetMineralsPerSingleMineralPacket(Race race) => race.PRT switch
-        {
-            PRT.PP => Rules.MineralsPerSingleMineralPacketPP,
-            _ => Rules.MineralsPerSingleMineralPacket
-        };
+        public int GetMineralsPerSingleMineralPacket(Race race) => Rules.PRTSpecs[race.PRT].MineralsPerSingleMineralPacket;
+
+        /// <summary>
+        /// Can this player send cargo through Stargates
+        /// </summary>
+        /// <param name="race"></param>
+        /// <returns></returns>
+        public bool CanGateCargo(Race race) => Rules.PRTSpecs[race.PRT].CanGateCargo;
+
+        /// <summary>
+        /// True if ships have a chance to vanish into the void when stargating
+        /// </summary>
+        /// <param name="race"></param>
+        /// <returns></returns>
+        public bool ShipsVanishInVoid(Race race) => Rules.PRTSpecs[race.PRT].ShipsVanishInVoid;
 
         /// <summary>
         /// Does this player cloak ships with cargo without reducing the cloak percentage?
         /// </summary>
-        public bool FreeCargoCloaking(Race race) => race.PRT == PRT.SS;
+        public bool FreeCargoCloaking(Race race) => Rules.PRTSpecs[race.PRT].FreeCargoCloaking;
 
         /// <summary>
         /// The player's built in cloaking percentage
         /// </summary>
-        public int BuiltInCloaking(Race race) => race.PRT == PRT.SS ? Rules.BuiltInSSCloakUnits : 0;
+        public int BuiltInCloaking(Race race) => Rules.PRTSpecs[race.PRT].BuiltInCloakUnits;
+
+        public int GetTechsCostExtraLevel(Race race) => Rules.PRTSpecs[race.PRT].TechsCostExtraLevel;
 
         /// <summary>
         /// Do this player's minefields act like scanners?
         /// </summary>
         /// <value></value>
-        public bool MineFieldsAreScanners(Race race) => race.PRT == PRT.SD;
+        public bool MineFieldsAreScanners(Race race) => Rules.PRTSpecs[race.PRT].MineFieldsAreScanners;
+
+        public int GetMineFieldSafeWarpBonus(Race race) => Rules.PRTSpecs[race.PRT].MineFieldSafeWarpBonus;
+
+        public float GetMineFieldMinDecayFactor(Race race) => Rules.PRTSpecs[race.PRT].MineFieldMinDecayFactor;
+
+        public float GetMineFieldBaseDecayRate(Race race) => Rules.PRTSpecs[race.PRT].MineFieldBaseDecayRate;
+
+        public float GetMineFieldPlanetDecayRate(Race race) => Rules.PRTSpecs[race.PRT].MineFieldPlanetDecayRate;
+
+        public bool CanDetonateMineFields(Race race) => Rules.PRTSpecs[race.PRT].CanDetonateMineFields;
+
+        public float GetMineFieldDetonateDecayRate(Race race) => Rules.PRTSpecs[race.PRT].MineFieldDetonateDecayRate;
+
+        public float GetMineFieldMaxDecayRate(Race race) => Rules.PRTSpecs[race.PRT].MineFieldMaxDecayRate;
 
         /// <summary>
         /// Do this player's minefields act like scanners?
         /// </summary>
         /// <value></value>
-        public bool FleetsReproduce(Race race) => race.PRT == PRT.IS;
+        public bool FleetsReproduce(Race race) => Rules.PRTSpecs[race.PRT].FreighterGrowthFactor > 0;
 
+        public bool CanRemoteMineOwnPlanets(Race race) => Rules.PRTSpecs[race.PRT].CanRemoteMineOwnPlanets;
+
+        public float GetInvasionAttackBonus(Race race) => Rules.PRTSpecs[race.PRT].InvasionAttackBonus;
+        public float GetInvasionDefendBonus(Race race) => Rules.PRTSpecs[race.PRT].InvasionDefendBonus;
 
         #endregion
 

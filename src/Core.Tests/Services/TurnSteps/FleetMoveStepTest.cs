@@ -18,6 +18,7 @@ namespace CraigStars.Tests
     {
         static CSLog log = LogProvider.GetLogger(typeof(FleetMoveStepTest));
 
+        PlayerService playerService = new PlayerService(new TestRulesProvider());
         MineFieldDamager mineFieldDamager = new();
         ShipDesignDiscoverer designDiscoverer = new();
         FleetService fleetService = new();
@@ -53,7 +54,7 @@ namespace CraigStars.Tests
             };
             fleet.ComputeAggregate(player1);
 
-            FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, mineFieldDamager, designDiscoverer, fleetService);
+            FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
 
             // make the speed minefield allow speed 5, 25% hit chance per warp
             // we'll go warp 9 to guarantee a hit
@@ -120,7 +121,7 @@ namespace CraigStars.Tests
             game.Rules.MineFieldStatsByType[MineFieldType.Standard].MaxSpeed = 5;
             game.Rules.MineFieldStatsByType[MineFieldType.Standard].ChanceOfHit = .25f;
 
-            FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, mineFieldDamager, designDiscoverer, fleetService);
+            FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
 
             // send the fleet at warp 9, straight up, should miss minefield
             var dest = new Waypoint() { Position = new Vector2(-15, 20), WarpFactor = 9 };

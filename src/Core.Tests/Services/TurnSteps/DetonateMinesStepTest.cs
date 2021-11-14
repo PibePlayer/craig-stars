@@ -18,6 +18,7 @@ namespace CraigStars.Tests
     {
         static CSLog log = LogProvider.GetLogger(typeof(DetonateMinesStepTest));
 
+        PlayerService playerService = TestUtils.TestContainer.GetInstance<PlayerService>();
         MineFieldDamager mineFieldDamager = new();
 
         [Test]
@@ -34,7 +35,7 @@ namespace CraigStars.Tests
             game.MineFields.Add(mineField);
             game.ComputeAggregates();
 
-            DetonateMinesStep step = new DetonateMinesStep(gameRunner.GameProvider, mineFieldDamager);
+            DetonateMinesStep step = new DetonateMinesStep(gameRunner.GameProvider, playerService, mineFieldDamager);
 
             Assert.AreEqual(1, game.Fleets.Count);
 
@@ -63,7 +64,7 @@ namespace CraigStars.Tests
             game.MineFields.Add(mineField);
             game.ComputeAggregates();
 
-            DetonateMinesStep step = new DetonateMinesStep(gameRunner.GameProvider, mineFieldDamager);
+            DetonateMinesStep step = new DetonateMinesStep(gameRunner.GameProvider, playerService, mineFieldDamager);
 
             Assert.AreEqual(1, game.Fleets.Count);
 

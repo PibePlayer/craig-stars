@@ -40,6 +40,7 @@ namespace CraigStars.Singletons
             container.Register<PlayerService>(Lifestyle.Singleton);
             container.Register<PlanetService>(Lifestyle.Singleton);
             container.Register<FleetService>(Lifestyle.Singleton);
+            container.Register<MineFieldDecayer>(Lifestyle.Singleton);
             container.Register<ProductionQueueEstimator>(Lifestyle.Singleton);
             container.Register<Researcher>(Lifestyle.Singleton);
             container.Register<PlayerTechService>(Lifestyle.Singleton);

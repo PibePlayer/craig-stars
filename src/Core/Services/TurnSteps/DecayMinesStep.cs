@@ -8,7 +8,12 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(DecayMinesStep));
 
-        public DecayMinesStep(IProvider<Game> gameProvider) : base(gameProvider, TurnGenerationState.MineLaying) { }
+        private readonly MineFieldDecayer mineFieldDecayer;
+
+        public DecayMinesStep(IProvider<Game> gameProvider, MineFieldDecayer mineFieldDecayer) : base(gameProvider, TurnGenerationState.MineLaying)
+        {
+            this.mineFieldDecayer = mineFieldDecayer;
+        }
 
         public override void Process()
         {
@@ -25,7 +30,7 @@ namespace CraigStars
         /// <param name="mineField"></param>
         internal void Decay(MineField mineField)
         {
-            long decayedMines = mineField.GetDecayRate(Game.Players[mineField.PlayerNum], Game.Planets, Game.Rules);
+            long decayedMines = mineFieldDecayer.GetDecayRate(mineField, Game.Players[mineField.PlayerNum], Game.Planets);
             mineField.NumMines -= decayedMines;
 
             // 10 mines or less, minefield goes away

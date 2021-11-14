@@ -34,6 +34,7 @@ namespace CraigStars
             container.Register<ShipDesignGenerator>(Lifestyle.Singleton);
             container.Register<InvasionProcessor>(Lifestyle.Singleton);
             container.Register<MineFieldDamager>(Lifestyle.Singleton);
+            container.Register<MineFieldDecayer>(Lifestyle.Singleton);
             container.Register<FleetOrderExecutor>(Lifestyle.Singleton);
             container.Register<BattleEngine>(Lifestyle.Singleton);
             container.Register<ProductionQueueEstimator>(Lifestyle.Singleton);

@@ -14,7 +14,14 @@ namespace CraigStars.UniverseGeneration
     /// </summary>
     public class PlayerFleetGenerationStep : UniverseGenerationStep
     {
-        public PlayerFleetGenerationStep(IProvider<Game> gameProvider) : base(gameProvider, UniverseGenerationState.Fleets) { }
+        private readonly ITechStore techStore;
+        private readonly PlayerService playerService;
+
+        public PlayerFleetGenerationStep(IProvider<Game> gameProvider, ITechStore techStore, PlayerService playerService) : base(gameProvider, UniverseGenerationState.Fleets)
+        {
+            this.techStore = techStore;
+            this.playerService = playerService;
+        }
 
         public override void Process()
         {
@@ -28,26 +35,32 @@ namespace CraigStars.UniverseGeneration
         {
             var fleets = new List<Fleet>();
             var id = 1;
-            foreach (var design in player.Designs.Where(d => !d.Hull.Starbase))
+
+            foreach (StartingFleet startingFleet in playerService.GetStartingFleets(player.Race))
             {
+                var hull = techStore.GetTechByName<TechHull>(startingFleet.HullName);
+                var design = player.GetDesign(startingFleet.Name);
                 fleets.Add(CreateFleet(design, player, id++, homeworld));
             }
-            switch (player.Race.PRT)
+
+            // add fleets to any extra planets, as defined in the PRTSpec
+            var startingPlanets = playerService.GetStartingPlanets(player.Race);
+            if (startingPlanets.Count > 0)
             {
-                // HE gets 2 extra mini colonizers
-                case PRT.HE:
-                    fleets.Add(CreateFleet(player.GetLatestDesign(ShipDesignPurpose.Colonizer), player, id++, homeworld));
-                    fleets.Add(CreateFleet(player.GetLatestDesign(ShipDesignPurpose.Colonizer), player, id++, homeworld));
-                    break;
-                // races with second planets get a scout
-                case PRT.PP:
-                case PRT.IT:
-                    if (player.Planets.Count > 1)
+                for (int i = 1; i < startingPlanets.Count; i++)
+                {
+                    var planet = player.Planets[i];
+                    var startingPlanet = startingPlanets[i];
+                    if (startingPlanet.StartingFleets != null)
                     {
-                        // add a scout to the second world
-                        fleets.Add(CreateFleet(player.GetLatestDesign(ShipDesignPurpose.Scout), player, id++, player.Planets[1]));
+                        foreach (StartingFleet startingFleet in startingPlanet.StartingFleets)
+                        {
+                            var hull = techStore.GetTechByName<TechHull>(startingFleet.HullName);
+                            var design = player.GetDesign(startingFleet.Name);
+                            fleets.Add(CreateFleet(design, player, id++, planet));
+                        }
                     }
-                    break;
+                }
             }
 
             return fleets;

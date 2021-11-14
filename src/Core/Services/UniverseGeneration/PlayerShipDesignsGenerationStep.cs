@@ -15,12 +15,14 @@ namespace CraigStars.UniverseGeneration
         private readonly ITechStore techStore;
         private readonly PlayerIntel playerIntel;
         private readonly ShipDesignGenerator designer;
+        private readonly PlayerService playerService;
 
-        public PlayerShipDesignsGenerationStep(IProvider<Game> gameProvider, ITechStore techStore, PlayerIntel playerIntel, ShipDesignGenerator designer) : base(gameProvider, UniverseGenerationState.ShipDesigns)
+        public PlayerShipDesignsGenerationStep(IProvider<Game> gameProvider, ITechStore techStore, PlayerIntel playerIntel, ShipDesignGenerator designer, PlayerService playerService) : base(gameProvider, UniverseGenerationState.ShipDesigns)
         {
             this.techStore = techStore;
             this.playerIntel = playerIntel;
             this.designer = designer;
+            this.playerService = playerService;
         }
 
 
@@ -47,49 +49,10 @@ namespace CraigStars.UniverseGeneration
         {
             List<ShipDesign> designs = new List<ShipDesign>();
 
-            // every player gets a long range scout
-            designs.Add(designer.DesignShip(Techs.Scout, "Long Range Scout", player, player.DefaultHullSet, ShipDesignPurpose.Scout));
-
-            // PRT specific starting designs
-            switch (player.Race.PRT)
+            foreach (StartingFleet startingFleet in playerService.GetStartingFleets(player.Race))
             {
-                case PRT.HE:
-                    designs.Add(designer.DesignShip(Techs.MiniColonyShip, "Spore Cloud", player, player.DefaultHullSet, ShipDesignPurpose.Colonizer));
-                break;
-                case PRT.SS:
-                    designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player, player.DefaultHullSet, ShipDesignPurpose.Colonizer));
-                break;
-                case PRT.WM:
-                    designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player, player.DefaultHullSet, ShipDesignPurpose.Colonizer));
-                    designs.Add(designer.DesignShip(Techs.Scout, "Armed Probe", player, player.DefaultHullSet, ShipDesignPurpose.ArmedScout));
-                    break;
-                case PRT.CA:
-                    designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player, player.DefaultHullSet, ShipDesignPurpose.Colonizer));
-                    designs.Add(designer.DesignShip(Techs.MiniMiner, "Change of Heart", player, player.DefaultHullSet, ShipDesignPurpose.Terraformer));
-                    break;
-                case PRT.IS:
-                    designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player, player.DefaultHullSet, ShipDesignPurpose.Colonizer));
-                    break;
-                case PRT.SD:
-                    designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player, player.DefaultHullSet, ShipDesignPurpose.Colonizer));
-                    designs.Add(designer.DesignShip(Techs.MiniMineLayer, "Little Hen", player, player.DefaultHullSet, ShipDesignPurpose.DamageMineLayer));
-                    designs.Add(designer.DesignShip(Techs.MiniMineLayer, "Speed Turtle", player, player.DefaultHullSet, ShipDesignPurpose.SpeedMineLayer));
-                    break;
-                case PRT.IT:
-                    designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player, player.DefaultHullSet, ShipDesignPurpose.Colonizer));
-                    designs.Add(designer.DesignShip(Techs.Privateer, "Swashbuckler", player, player.DefaultHullSet, ShipDesignPurpose.ArmedFreighter));
-                    designs.Add(designer.DesignShip(Techs.Destroyer, "Stalwart Defender", player, player.DefaultHullSet, ShipDesignPurpose.FighterScout));
-                    break;
-                case PRT.AR:
-                    designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player, player.DefaultHullSet, ShipDesignPurpose.Colonizer));
-                    break;
-                case PRT.JoaT:
-                    designs.Add(designer.DesignShip(Techs.ColonyShip, "Santa Maria", player, player.DefaultHullSet, ShipDesignPurpose.Colonizer));
-                    designs.Add(designer.DesignShip(Techs.Scout, "Armed Probe", player, player.DefaultHullSet, ShipDesignPurpose.ArmedScout));
-                    designs.Add(designer.DesignShip(Techs.MediumFreighter, "Teamster", player, player.DefaultHullSet, ShipDesignPurpose.Freighter));
-                    designs.Add(designer.DesignShip(Techs.MiniMiner, "Cotton Picker", player, player.DefaultHullSet, ShipDesignPurpose.Miner));
-                    designs.Add(designer.DesignShip(Techs.Destroyer, "Stalwart Defender", player, player.DefaultHullSet, ShipDesignPurpose.FighterScout));
-                    break;
+                var hull = techStore.GetTechByName<TechHull>(startingFleet.HullName);
+                designs.Add(designer.DesignShip(hull, startingFleet.Name, player, player.DefaultHullSet, startingFleet.Purpose));
             }
 
             // starbases are special, they have a specific design that each player gets
@@ -115,25 +78,27 @@ namespace CraigStars.UniverseGeneration
                 HullSetNumber = player.DefaultHullSet,
             };
 
-            FillStarbaseSlots(starbase, player.Race);
+            var startingPlanets = playerService.GetStartingPlanets(player.Race);
+
+            FillStarbaseSlots(starbase, player.Race, startingPlanets[0]);
             designs.Add(starbase);
 
-            switch (player.Race.PRT)
+            // add an orbital fort for players that start with extra planets
+            if (startingPlanets.Count > 1)
             {
-                case PRT.IT:
-                case PRT.PP:
-                    var fort = new ShipDesign()
-                    {
-                        PlayerNum = player.Num,
-                        Name = "Accelerator Platform",
-                        Purpose = ShipDesignPurpose.Fort,
-                        Hull = Techs.OrbitalFort,
-                        HullSetNumber = player.DefaultHullSet,
+                var fort = new ShipDesign()
+                {
+                    PlayerNum = player.Num,
+                    Name = "Accelerator Platform",
+                    Purpose = ShipDesignPurpose.Fort,
+                    Hull = Techs.OrbitalFort,
+                    HullSetNumber = player.DefaultHullSet,
 
-                    };
-                    FillStarbaseSlots(fort, player.Race);
-                    designs.Add(fort);
-                    break;
+                };
+                // TODO: Do we want to support a PRT that includes more than 2 planets but only some of them with
+                // stargates?
+                FillStarbaseSlots(fort, player.Race, startingPlanets[1]);
+                designs.Add(fort);
             }
 
             return designs;
@@ -144,7 +109,7 @@ namespace CraigStars.UniverseGeneration
         /// They get half filled with the starter beam, shield, and armor
         /// </summary>
         /// <param name="starbase"></param>
-        internal void FillStarbaseSlots(ShipDesign starbase, Race race)
+        internal void FillStarbaseSlots(ShipDesign starbase, Race race, StartingPlanet startingPlanet)
         {
             var beamWeapon = techStore.GetTechsByCategory(TechCategory.BeamWeapon).First() as TechHullComponent;
             var shield = techStore.GetTechsByCategory(TechCategory.Shield).First() as TechHullComponent;
@@ -189,12 +154,12 @@ namespace CraigStars.UniverseGeneration
                         break;
                     case HullSlotType.Orbital:
                     case HullSlotType.OrbitalElectrical:
-                        if (race.PRT == PRT.IT && !placedStargate)
+                        if (startingPlanet.HasStargate && !placedStargate)
                         {
                             starbase.Slots.Add(new ShipDesignSlot(stargate, index + 1, 1));
                             placedStargate = true;
                         }
-                        else if (race.PRT == PRT.PP && !placedMassDriver)
+                        else if (startingPlanet.HasMassDriver && !placedMassDriver)
                         {
                             starbase.Slots.Add(new ShipDesignSlot(massDriver, index + 1, 1));
                             placedMassDriver = true;

@@ -13,10 +13,12 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(DecayMinesStep));
 
+        private readonly PlayerService playerService;
         private readonly MineFieldDamager mineFieldDamager;
 
-        public DetonateMinesStep(IProvider<Game> gameProvider, MineFieldDamager mineFieldDamager) : base(gameProvider, TurnGenerationState.DetonateMines)
+        public DetonateMinesStep(IProvider<Game> gameProvider, PlayerService playerService, MineFieldDamager mineFieldDamager) : base(gameProvider, TurnGenerationState.DetonateMines)
         {
+            this.playerService = playerService;
             this.mineFieldDamager = mineFieldDamager;
         }
 
@@ -25,7 +27,7 @@ namespace CraigStars
 
             foreach (var mineField in Game.MineFields.Where(mf =>
 
-                Game.Players[mf.PlayerNum].Race.PRT == PRT.SD &&
+                playerService.CanDetonateMineFields(Game.Players[mf.PlayerNum].Race) &&
                 mf.Detonate &&
                 Game.Rules.MineFieldStatsByType[mf.Type].CanDetonate))
             {

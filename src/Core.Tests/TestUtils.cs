@@ -36,6 +36,7 @@ namespace CraigStars.Tests
             TestContainer.Register<ShipDesignGenerator>(Lifestyle.Singleton);
             TestContainer.Register<InvasionProcessor>(Lifestyle.Singleton);
             TestContainer.Register<MineFieldDamager>(Lifestyle.Singleton);
+            TestContainer.Register<MineFieldDecayer>(Lifestyle.Singleton);
             TestContainer.Register<ProductionQueueEstimator>(Lifestyle.Singleton);
 
             // register player intel and all discoverers

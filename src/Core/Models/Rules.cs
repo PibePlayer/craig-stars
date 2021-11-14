@@ -1,4 +1,4 @@
- using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Newtonsoft.Json;
@@ -100,18 +100,6 @@ namespace CraigStars
         public Cost TerraformCost { get; set; } = new Cost(0, 0, 0, 100);
         public Cost TotalTerraformCost { get; set; } = new Cost(0, 0, 0, 70);
 
-        [DefaultValue(10)]
-        public int PacketResourceCost { get; set; } = 10;
-        [DefaultValue(5)]
-        public int PacketResourceCostPP { get; set; } = 5;
-
-        [DefaultValue(1.1f)]
-        public float PacketMineralCostFactor { get; set; } = 1.1f;
-        [DefaultValue(1f)]
-        public float PacketMineralCostFactorPP { get; set; } = 1f;
-        [DefaultValue(1.2f)]
-        public float PacketMineralCostFactorIT { get; set; } = 1.2f;
-
         /// <summary>
         /// The decay rate for packets for the amount over the safe warp speed
         /// </summary>
@@ -120,41 +108,6 @@ namespace CraigStars
             { 2, .25f },
             { 3, .5f },
         };
-
-        /// <summary>
-        /// The amount of minerals in a single ironium, boranium, or germanium packet
-        /// </summary>
-        /// <value></value>
-        [DefaultValue(100)]
-        public int MineralsPerSingleMineralPacket { get; set; } = 100;
-        [DefaultValue(70)]
-        public int MineralsPerSingleMineralPacketPP { get; set; } = 70;
-
-
-        /// <summary>
-        /// The amount of minerals in a mixed (all minerals at once) packet
-        /// </summary>
-        /// <value></value>
-        [DefaultValue(40)]
-        public int MineralsPerMixedMineralPacket { get; set; } = 40;
-        [DefaultValue(25)]
-        public int MineralsPerMixedMineralPacketPP { get; set; } = 25;
-
-
-        [DefaultValue(20)]
-        public int BuiltInScannerJoaTMultiplier = 20;
-
-        [DefaultValue(.5f)]
-        public float ISFreighterGrowthFactor = .5f;
-
-        [DefaultValue(2f)]
-        public float HEGrowthFactor = 2f;
-
-        /// <summary>
-        /// SS races have 300 cloak units built in (or 75% cloaking)
-        /// </summary>
-        [DefaultValue(300)]
-        public int BuiltInSSCloakUnits = 300;
 
         [DefaultValue(5)]
         public int TachyonCloakReduction = 5;
@@ -207,31 +160,15 @@ namespace CraigStars
 
         [DefaultValue(.1f)]
         public float SalvageDecayRate = .1f;
+
         [DefaultValue(10)]
         public int SalvageDecayMin = 10;
-
 
         /// <summary>
         /// MineFields are cloaked to 75% until spotted
         /// </summary>
         [DefaultValue(75)]
         public int MineFieldCloak = 75;
-
-        /// <summary>
-        /// Space Demolition fleets can travel 2 warp speeds faster through minefields
-        /// </summary>
-        [DefaultValue(2)]
-        public int SDSafeWarpBonus = 2;
-        [DefaultValue(.25f)]
-        public float SDMinDecayFactor = .25f;
-        [DefaultValue(.02f)]
-        public float MineFieldBaseDecayRate = .02f;
-        [DefaultValue(.04f)]
-        public float MineFieldPlanetDecayRate = .04f;
-        [DefaultValue(.25f)]
-        public float MineFieldDetonateDecayRate = .25f;
-        [DefaultValue(.5f)]
-        public float MineFieldMaxDecayRate = .5f;
 
         /// <summary>
         /// The maximum factor for safe range, i.e. 5x safe range
@@ -422,6 +359,9 @@ namespace CraigStars
             77990,
             84700
         };
+
+        public PRTSpecs PRTSpecs { get; set; } = new();
+
 
         public Rules() { }
 

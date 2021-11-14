@@ -301,7 +301,7 @@ namespace CraigStars
             if (player.Race != null &&
                 player.Race.PRT == PRT.JoaT &&
                 field == TechField.Electronics &&
-                Tokens.Any(token => token.Design.Hull.BuiltInScannerForJoaT))
+                Tokens.Any(token => token.Design.Hull.BuiltInScanner))
             {
                 // update any fleets with JoaT hulls
                 ComputeAggregate(player, recompute: true);

@@ -72,18 +72,11 @@ namespace CraigStars
                 lowestRequiredDiff = player.TechLevels.Min();
             }
 
+            // BET costs twice as much for new tech
+            // but it can give you up to 80% off
             double factor = 1;
-            if (player.Race.HasLRT(LRT.BET))
-            {
-                // BET costs twice as much for new tech
-                // but it can give you up to 80% off
-                factor = (lowestRequiredDiff == 0 ? 2 : (1 - Math.Min(.8, .05 * lowestRequiredDiff)));
-            }
-            else
-            {
-                factor = (1 - Math.Min(.75, .04 * lowestRequiredDiff));
-            }
-            
+            factor = (lowestRequiredDiff == 0 ? player.Race.Spec.NewTechCostFactor : 1) - Math.Min(player.Race.Spec.TechCostReductionPercent, player.Race.Spec.TechCostReductionPerLevel * lowestRequiredDiff);
+
             return new Cost(
                 (int)Math.Ceiling(cost.Ironium * factor),
                 (int)Math.Ceiling(cost.Boranium * factor),

@@ -28,6 +28,7 @@ namespace CraigStars.Tests
             TestContainer.RegisterInstance<ITechStore>(StaticTechStore.Instance);
             TestContainer.Register<IRulesProvider, TestRulesProvider>(Lifestyle.Singleton);
 
+            TestContainer.Register<RaceService>(Lifestyle.Singleton);
             TestContainer.Register<PlanetService>(Lifestyle.Singleton);
             TestContainer.Register<PlayerService>(Lifestyle.Singleton);
             TestContainer.Register<FleetService>(Lifestyle.Singleton);

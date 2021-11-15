@@ -65,16 +65,6 @@ namespace CraigStars
         [DefaultValue(1500000)]
         public int MineralDecayFactor { get; set; } = 1500000;
 
-        // Population rules
-        [DefaultValue(25000)]
-        public int StartingPopulation { get; set; } = 25000;
-        [DefaultValue(20000)]
-        public int StartingPopulationWithExtraPlanet { get; set; } = 20000;
-        [DefaultValue(10000)]
-        public int StartingPopulationExtraPlanet { get; set; } = 10000;
-        [DefaultValue(.7f)]
-        public float LowStartingPopulationFactor { get; set; } = .7f;
-
         // Bulding rules
         [DefaultValue(10)]
         public int StartingMines { get; set; } = 10;
@@ -87,6 +77,9 @@ namespace CraigStars
         [DefaultValue(1650)]
         public int RaceStartingPoints { get; set; } = 1650;
 
+        [DefaultValue(1 / 3f)]
+        public float ScrapMineralAmount { get; set; } = 1 / 3f;
+
         [DefaultValue(4)]
         public int FactoryCostGermanium { get; set; } = 4;
         public Cost DefenseCost { get; set; } = new Cost(5, 5, 5, 15);
@@ -94,11 +87,7 @@ namespace CraigStars
         [DefaultValue(100)]
         public int MineralAlchemyCost { get; set; } = 100;
 
-        [DefaultValue(25)]
-        public int MineralAlchemyLRTCost { get; set; } = 25;
-
         public Cost TerraformCost { get; set; } = new Cost(0, 0, 0, 100);
-        public Cost TotalTerraformCost { get; set; } = new Cost(0, 0, 0, 70);
 
         /// <summary>
         /// The decay rate for packets for the amount over the safe warp speed
@@ -328,7 +317,6 @@ namespace CraigStars
         [DefaultValue(26)]
         public int MaxTechLevel { get; set; } = 26;
 
-
         // The base cost for each tech level
         public int[] TechBaseCost { get; set; } = {
             0, // everyone starts on level 0
@@ -361,7 +349,7 @@ namespace CraigStars
         };
 
         public PRTSpecs PRTSpecs { get; set; } = new();
-
+        public LRTSpecs LRTSpecs { get; set; } = new();
 
         public Rules() { }
 

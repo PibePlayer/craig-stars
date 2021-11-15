@@ -16,14 +16,16 @@ namespace CraigStars
         private readonly ShipDesignGenerator shipDesignGenerator;
         private readonly PlayerTechService playerTechService;
         private readonly FleetAggregator fleetAggregator;
-        private readonly ITechStore techStore;
+        private readonly IProvider<ITechStore> techStoreProvider;
 
-        public ShipDesignerTurnProcessor(ShipDesignGenerator shipDesignGenerator, PlayerTechService playerTechService, FleetAggregator fleetAggregator, ITechStore techStore) : base("Ship Designer")
+        ITechStore techStore { get => techStoreProvider.Item; }
+
+        public ShipDesignerTurnProcessor(ShipDesignGenerator shipDesignGenerator, PlayerTechService playerTechService, FleetAggregator fleetAggregator, IProvider<ITechStore> techStoreProvider) : base("Ship Designer")
         {
             this.shipDesignGenerator = shipDesignGenerator;
             this.playerTechService = playerTechService;
             this.fleetAggregator = fleetAggregator;
-            this.techStore = techStore;
+            this.techStoreProvider = techStoreProvider;
         }
 
         /// <summary>

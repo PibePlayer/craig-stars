@@ -29,6 +29,11 @@ namespace CraigStars
             return (TechLevel)MemberwiseClone();
         }
 
+        public override string ToString()
+        {
+            return $"Energy: {Energy}, Weapons: {Weapons}, Propulsion: {Propulsion}, Construction: {Construction}, Electronics: {Electronics}, Biotechnology: {Biotechnology},";
+        }
+
         public int this[TechField index]
         {
             get
@@ -182,5 +187,18 @@ namespace CraigStars
             }
             return total;
         }
+
+        public static TechLevel operator +(TechLevel a, TechLevel b)
+        {
+            return new TechLevel(
+                a.Energy + b.Energy,
+                a.Weapons + b.Weapons,
+                a.Propulsion + b.Propulsion,
+                a.Construction + b.Construction,
+                a.Electronics + b.Electronics,
+                a.Biotechnology + b.Biotechnology
+            );
+        }
+
     }
 }

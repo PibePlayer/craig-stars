@@ -21,35 +21,6 @@ namespace CraigStars
 
         #region PRT and LRT logic
 
-        public TechLevel GetStartingTechLevels(Race race)
-        {
-            TechLevel techLevels = Rules.PRTSpecs[race.PRT].StartingTechLevels.Clone();
-
-            // if a race has Techs costing exra start high, set the start level to 3
-            // for any TechField that is set to research costs extra
-            if (race.TechsStartHigh)
-            {
-                // Jack of All Trades start at 4
-                var costsExtraLevel = GetTechsCostExtraLevel(race);
-                foreach (TechField field in Enum.GetValues(typeof(TechField)))
-                {
-                    var level = techLevels[field];
-                    if (race.ResearchCost[field] == ResearchCostLevel.Extra && level < costsExtraLevel)
-                    {
-                        techLevels[field] = costsExtraLevel;
-                    }
-                }
-            }
-
-            if (race.HasLRT(LRT.IFE) || race.HasLRT(LRT.CE))
-            {
-                // Improved Fuel Efficiency and Cheap Engines increases propulsion by 1
-                techLevels.Propulsion++;
-            }
-
-            return techLevels;
-        }
-
         public List<StartingPlanet> GetStartingPlanets(Race race) => Rules.PRTSpecs[race.PRT].StartingPlanets;
 
         /// <summary>
@@ -68,13 +39,6 @@ namespace CraigStars
         public float GetGrowthFactor(Race race) => Rules.PRTSpecs[race.PRT].GrowthFactor;
 
         /// <summary>
-        /// The max population factor for this race
-        /// </summary>
-        /// <param name="race"></param>
-        /// <returns></returns>
-        public float GetMaxPopulationFactor(Race race) => Rules.PRTSpecs[race.PRT].MaxPopulationFactor + (race.HasLRT(LRT.OBRM) ? .1f : 0f);
-
-        /// <summary>
         /// The rate this player's colonists grow on freighters, defaults to 0, but IS grows .5 * their growth rate
         /// </summary>
         /// <param name="player"></param>
@@ -87,8 +51,6 @@ namespace CraigStars
         /// </summary>
         /// <value></value>
         public bool DiscoverDesignOnScan(Race race) => Rules.PRTSpecs[race.PRT].DiscoverDesignOnScan;
-
-        public Cost GetTerraformCost(Race race) => race.HasLRT(LRT.TT) ? Rules.TotalTerraformCost : Rules.TerraformCost;
 
         /// <summary>
         /// PP races can fling packets 1 warp faster without decaying.
@@ -231,14 +193,7 @@ namespace CraigStars
             }
             else if (item.Type == QueueItemType.MineralAlchemy || item.Type == QueueItemType.AutoMineralAlchemy)
             {
-                if (race.HasLRT(LRT.MA))
-                {
-                    resources = Rules.MineralAlchemyLRTCost;
-                }
-                else
-                {
-                    resources = Rules.MineralAlchemyCost;
-                }
+                resources = Rules.MineralAlchemyCost + player.Race.Spec.MineralAlchemyCostOffset;
             }
             else if (item.Type == QueueItemType.Defenses || item.Type == QueueItemType.AutoDefenses)
             {
@@ -246,7 +201,7 @@ namespace CraigStars
             }
             else if (item.Type == QueueItemType.TerraformEnvironment || item.Type == QueueItemType.AutoMaxTerraform || item.Type == QueueItemType.AutoMinTerraform)
             {
-                return GetTerraformCost(player.Race);
+                return Rules.TerraformCost + player.Race.Spec.TerraformCostOffset;
             }
             else if (item.Type == QueueItemType.IroniumMineralPacket)
             {

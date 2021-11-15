@@ -34,22 +34,27 @@ namespace CraigStars
         List<FleetWaypoint> otherTasks = new List<FleetWaypoint>();
         List<PlanetInvasion> invasions = new List<PlanetInvasion>();
 
+        private readonly IRulesProvider rulesProvider;
         private readonly PlayerService playerService;
         private readonly PlanetService planetService;
         private readonly InvasionProcessor invasionProcessor;
         private readonly PlanetDiscoverer planetDiscoverer;
+
+        private Rules Rules => rulesProvider.Rules;
 
         // some things (like remote mining) only happen on wp1
         int waypointIndex = 0;
 
         public AbstractFleetWaypointStep(
             IProvider<Game> gameProvider,
+            IRulesProvider rulesProvider,
             PlayerService playerService,
             PlanetService planetService,
             InvasionProcessor invasionProcessor,
             PlanetDiscoverer planetDiscoverer,
             int waypointIndex) : base(gameProvider, TurnGenerationState.Waypoint)
         {
+            this.rulesProvider = rulesProvider;
             this.playerService = playerService;
             this.planetService = planetService;
             this.invasionProcessor = invasionProcessor;
@@ -500,18 +505,9 @@ namespace CraigStars
             // create a new cargo instance out of our fleet cost
             Cargo cargo = fleet.Aggregate.Cost;
 
-            if (player.Race.HasLRT(LRT.UR))
-            {
-                // we only recover 40% of our minerals on scrapping
-                cargo *= .45f;
-
-                // TODO: handle resource gain for an occupied planet
-            }
-            else
-            {
-                // we only recover 1/3rd of our minerals on scrapping
-                cargo /= 3;
-            }
+            // TODO: handle starbases and better recycling
+            // this is 1/3rd for normal races, but UR is more efficient and scraps 45%
+            cargo *= Rules.ScrapMineralAmount + player.Race.Spec.ScrapMineralOffset;
 
             // add in any cargo the fleet was holding
             cargo += fleet.Cargo;

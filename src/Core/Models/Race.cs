@@ -11,7 +11,7 @@ namespace CraigStars
         public string Name { get; set; } = "Humanoid";
         public string PluralName { get; set; } = "Humanoids";
         public SpendLeftoverPointsOn SpendLeftoverPointsOn { get; set; }
-        
+
         [DefaultValue(PRT.JoaT)]
         public PRT PRT { get; set; } = PRT.JoaT;
         public HashSet<LRT> LRTs { get; set; } = new HashSet<LRT>();
@@ -64,6 +64,13 @@ namespace CraigStars
         public bool ImmuneRad { get; set; } = false;
         public ResearchCost ResearchCost { get; set; } = new ResearchCost();
         public bool TechsStartHigh { get; set; } = false;
+
+        #region Computed Fields
+
+        // These fields are all computed by the RaceService from a race's makeup
+        public RaceSpec Spec { get; set; } = new();
+
+        #endregion
 
         public bool HasLRT(LRT lrt)
         {

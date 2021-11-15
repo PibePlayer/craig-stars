@@ -240,7 +240,7 @@ namespace CraigStars
         public int GetFuelCost(Fleet fleet, Player player, int warpFactor, double distance)
         {
             // figure out how much fuel we're going to use
-            double ifeFactor = player.Race.HasLRT(LRT.IFE) ? .85 : 1.0;
+            double efficiencyFactor = 1 - player.Race.Spec.FuelEfficiencyOffset;
 
             int fuelCost = 0;
 
@@ -257,7 +257,7 @@ namespace CraigStars
                 {
                     mass += (int)((float)fleetCargo * ((float)stackCapacity / (float)fleetCapacity));
                 }
-                fuelCost += GetFuelCost(warpFactor, mass, distance, ifeFactor, token.Design.Aggregate.Engine);
+                fuelCost += GetFuelCost(warpFactor, mass, distance, efficiencyFactor, token.Design.Aggregate.Engine);
             }
 
             return fuelCost;

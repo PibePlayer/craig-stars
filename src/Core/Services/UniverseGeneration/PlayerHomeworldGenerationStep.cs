@@ -93,6 +93,7 @@ namespace CraigStars.UniverseGeneration
             var race = player.Race;
             var rules = Game.Rules;
             var random = Game.Rules.Random;
+            var startingPlanet = playerService.GetStartingPlanets(player.Race)[0];
 
             // own this planet
             planet.PlayerNum = player.Num;
@@ -110,12 +111,7 @@ namespace CraigStars.UniverseGeneration
             );
             planet.BaseHab = planet.Hab;
 
-            planet.Population = playerService.GetStartingPlanets(player.Race)[0].Population;
-
-            if (race.LRTs.Contains(LRT.LSP))
-            {
-                planet.Population = (int)(planet.Population * rules.LowStartingPopulationFactor);
-            }
+            planet.Population = (int)(startingPlanet.Population * race.Spec.StartingPopulationFactor);
 
             // homeworlds start with mines and factories
             planet.Mines = rules.StartingMines;
@@ -160,12 +156,7 @@ namespace CraigStars.UniverseGeneration
             );
             planet.BaseHab = planet.Hab;
 
-            planet.Population = startingPlanet.Population;
-
-            if (race.LRTs.Contains(LRT.LSP))
-            {
-                planet.Population = (int)(planet.Population * rules.LowStartingPopulationFactor);
-            }
+            planet.Population = (int)(startingPlanet.Population * race.Spec.StartingPopulationFactor);
 
             // extra worlds start with mines and factories
             planet.Mines = rules.StartingMines;

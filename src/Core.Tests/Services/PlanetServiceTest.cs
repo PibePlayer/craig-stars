@@ -15,6 +15,8 @@ namespace CraigStars.Tests
             TestUtils.TestContainer.GetInstance<IRulesProvider>()
         );
 
+        RaceService raceService = new RaceService(new TestRulesProvider());
+
         [Test]
         public void TestGetMaxMines()
         {
@@ -59,12 +61,15 @@ namespace CraigStars.Tests
             var player = new Player();
 
             player.Race.PRT = PRT.IS;
+            player.Race.Spec = raceService.ComputeRaceSpecs(player.Race);
             Assert.AreEqual(1000000, service.GetMaxPopulation(planet, player, rules));
 
             player.Race.PRT = PRT.JoaT;
+            player.Race.Spec = raceService.ComputeRaceSpecs(player.Race);
             Assert.AreEqual(1200000, service.GetMaxPopulation(planet, player, rules));
 
             player.Race.PRT = PRT.HE;
+            player.Race.Spec = raceService.ComputeRaceSpecs(player.Race);
             Assert.AreEqual(500000, service.GetMaxPopulation(planet, player, rules));
 
         }
@@ -79,6 +84,8 @@ namespace CraigStars.Tests
             player.Race.GrowthRate = 10;
             planet.PlayerNum = player.Num;
             planet.Population = 100_000;
+
+            player.Race.Spec = raceService.ComputeRaceSpecs(player.Race);
 
             // less than 25% cap, grows at full 10% growth rate
             Assert.AreEqual(10_000, service.GetGrowthAmount(planet, player, rules));
@@ -149,6 +156,7 @@ namespace CraigStars.Tests
                 // we have grav3 terraforming ability
                 TechLevels = new TechLevel(propulsion: 1, biotechnology: 1),
             };
+            player.Race.Spec = raceService.ComputeRaceSpecs(player.Race);
 
             Planet planet = new Planet()
             {

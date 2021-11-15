@@ -20,7 +20,7 @@ namespace CraigStars.Tests
                 TestUtils.TestContainer.GetInstance<ShipDesignGenerator>(),
                 TestUtils.TestContainer.GetInstance<PlayerTechService>(),
                 TestUtils.TestContainer.GetInstance<FleetAggregator>(),
-                TestUtils.TestContainer.GetInstance<ITechStore>()
+                TestUtils.TestContainer.GetInstance<IProvider<ITechStore>>()
                 );
         }
 

@@ -89,10 +89,12 @@ namespace CraigStars.Tests
             // bleeding edge tech costs double at lowest level
             player.Race.LRTs.Add(LRT.BET);
             player.TechLevels.Energy = 1;
+            RaceService raceService = new RaceService(new TestRulesProvider());
+            player.Race.Spec = raceService.ComputeRaceSpecs(player.Race);
+
             Assert.AreEqual(200, tech.GetPlayerCost(player).Ironium);
 
             // bleeding edge tech costs 5% less per level
-            player.Race.LRTs.Add(LRT.BET);
             player.TechLevels.Energy = 2;
             Assert.AreEqual(95, tech.GetPlayerCost(player).Ironium);
 

@@ -29,6 +29,7 @@ namespace CraigStars
         List<MapObject> deletedMapObjects = new List<MapObject>();
 
         private readonly IProvider<Game> gameProvider;
+        private readonly RaceService raceService;
         private readonly UniverseGenerator universeGenerator;
         private readonly TurnGenerator turnGenerator;
         private readonly TurnSubmitter turnSubmitter;
@@ -43,6 +44,7 @@ namespace CraigStars
 
         public GameRunner(
             IProvider<Game> gameProvider,
+            RaceService raceService,
             UniverseGenerator universeGenerator,
             TurnSubmitter turnSubmitter,
             TurnGenerator turnGenerator,
@@ -53,6 +55,7 @@ namespace CraigStars
             FleetAggregator fleetAggregator)
         {
             this.gameProvider = gameProvider;
+            this.raceService = raceService;
             this.universeGenerator = universeGenerator;
             this.turnGenerator = turnGenerator;
             this.turnSubmitter = turnSubmitter;
@@ -88,6 +91,9 @@ namespace CraigStars
         /// </summary>
         public void GenerateUniverse()
         {
+            // update all of our player race specs before we generate.
+            Game.Players.ForEach(player => player.Race.Spec = raceService.ComputeRaceSpecs(player.Race));
+            
             // generate a new univers
             universeGenerator.Generate();
 
@@ -199,6 +205,8 @@ namespace CraigStars
         /// </summary>
         public void ComputeAggregates(bool recompute = false)
         {
+            // No cheating, make sure only the server updates the race spec!
+            Game.Players.ForEach(player => player.Race.Spec = raceService.ComputeRaceSpecs(player.Race));
             Game.Designs.ForEach(design => fleetAggregator.ComputeDesignAggregate(Game.Players[design.PlayerNum], design, recompute));
             Game.Fleets.ForEach(fleet => fleetAggregator.ComputeAggregate(Game.Players[fleet.PlayerNum], fleet, recompute));
             foreach (var planet in Game.OwnedPlanets.Where(p => p.HasStarbase))

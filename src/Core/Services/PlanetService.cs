@@ -62,7 +62,7 @@ namespace CraigStars
             var race = player.Race;
             if (planet.Hab is Hab planetHab)
             {
-                var maxPopulationFactor = playerService.GetMaxPopulationFactor(player.Race);
+                var maxPopulationFactor = 1 + race.Spec.MaxPopulationOffset;
 
                 // get this player's planet habitability
                 var hab = race.GetPlanetHabitability(planetHab);

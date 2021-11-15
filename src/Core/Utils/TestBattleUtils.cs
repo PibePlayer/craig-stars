@@ -19,7 +19,7 @@ namespace CraigStars
             new ShipDesignGenerator(playerTechService, fleetAggregator),
             playerTechService,
             fleetAggregator,
-            StaticTechStore.Instance
+            new Provider<ITechStore>(StaticTechStore.Instance)
             );
 
         /// <summary>

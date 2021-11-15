@@ -39,7 +39,7 @@ namespace CraigStars
                 new StartingFleet("Spore Cloud", Techs.MiniColonyShip.Name, ShipDesignPurpose.Colonizer)
             },
             GrowthFactor = 2f,
-            MaxPopulationFactor = .5f,
+            MaxPopulationOffset = -.5f,
         };
 
         public static PRTSpec SS = new PRTSpec(PRT.SS, -95)
@@ -179,7 +179,7 @@ namespace CraigStars
                 new StartingFleet("Armed Probe", Techs.Scout.Name, ShipDesignPurpose.FighterScout),
                 new StartingFleet("Stalwart Defender", Techs.Destroyer.Name, ShipDesignPurpose.FighterScout),
             },
-            MaxPopulationFactor = 1.2f,
+            MaxPopulationOffset = .2f,
             BuiltInScannerMultiplier = 20,
             TechsCostExtraLevel = 4,
         };

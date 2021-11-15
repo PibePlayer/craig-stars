@@ -216,7 +216,7 @@ namespace CraigStars
             if (builtInScannerMultiplier > 0 && hull.BuiltInScanner)
             {
                 scanRange = (long)(player.TechLevels.Electronics * builtInScannerMultiplier);
-                if (!player.Race.HasLRT(LRT.NAS))
+                if (!player.Race.Spec.NoAdvancedScanners)
                 {
                     scanRangePen = (long)Math.Pow(scanRange / 2, 4);
                 }

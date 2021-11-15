@@ -37,6 +37,7 @@ namespace CraigStars.Singletons
             // register services
             container.Register<IProvider<ITechStore>, ClientTechStoreProvider>(Lifestyle.Singleton);
             container.Register<IRulesProvider, ClientRulesProvider>(Lifestyle.Singleton);
+            container.Register<RaceService>(Lifestyle.Singleton);
             container.Register<PlayerService>(Lifestyle.Singleton);
             container.Register<PlanetService>(Lifestyle.Singleton);
             container.Register<FleetService>(Lifestyle.Singleton);

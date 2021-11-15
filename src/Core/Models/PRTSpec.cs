@@ -97,7 +97,7 @@ namespace CraigStars
         public float GrowthFactor { get; set; } = 1f;
 
         [DefaultValue(1f)]
-        public float MaxPopulationFactor { get; set; } = 1f;
+        public float MaxPopulationOffset { get; set; } = 0f;
 
         /// <summary>
         /// SS races have 300 cloak units built in (or 75% cloaking)

@@ -23,6 +23,7 @@ namespace CraigStars
             container.RegisterInstance<Game>(game);
 
             container.Register<GameRunner>(Lifestyle.Singleton);
+            container.Register<RaceService>(Lifestyle.Singleton);
             container.Register<UniverseGenerator>(Lifestyle.Singleton);
             container.Register<TurnGenerator>(Lifestyle.Singleton);
             container.Register<TurnSubmitter>(Lifestyle.Singleton);

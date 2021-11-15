@@ -7,10 +7,11 @@ namespace CraigStars
     {
         public FleetWaypoint1Step(
             IProvider<Game> gameProvider,
+            IRulesProvider rulesProvider,
             PlayerService playerService,
             PlanetService planetService,
             InvasionProcessor invasionProcessor,
             PlanetDiscoverer planetDiscoverer
-        ) : base(gameProvider, playerService, planetService, invasionProcessor, planetDiscoverer, 1) { }
+        ) : base(gameProvider, rulesProvider, playerService, planetService, invasionProcessor, planetDiscoverer, 1) { }
     }
 }

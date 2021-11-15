@@ -20,7 +20,7 @@ namespace CraigStars.UniverseGeneration
 
         public override void Process()
         {
-            Game.Players.ForEach(player => player.TechLevels = playerService.GetStartingTechLevels(player.Race));
+            Game.Players.ForEach(player => player.TechLevels = player.Race.Spec.StartingTechLevels.Clone());
         }
 
     }

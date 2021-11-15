@@ -12,11 +12,17 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(PlanetDiscoverer));
         private readonly PlanetService planetService;
-        ShipDesignDiscoverer designDiscoverer = new ShipDesignDiscoverer();
+        private readonly ShipDesignDiscoverer designDiscoverer;
+        private readonly FleetAggregator fleetAggregator;
+        private readonly IRulesProvider rulesProvider;
+        private Rules Rules => rulesProvider.Rules;
 
-        public PlanetDiscoverer(PlanetService planetService)
+        public PlanetDiscoverer(PlanetService planetService, ShipDesignDiscoverer designDiscoverer, FleetAggregator fleetAggregator, IRulesProvider rulesProvider)
         {
             this.planetService = planetService;
+            this.designDiscoverer = designDiscoverer;
+            this.fleetAggregator = fleetAggregator;
+            this.rulesProvider = rulesProvider;
         }
 
         protected override List<Planet> GetOwnedItemReports(Player player) => player.Planets;
@@ -53,7 +59,7 @@ namespace CraigStars
             {
                 var reportAge = itemReport.ReportAge;
                 // our scanned population is ± 20%
-                var randomPopulationError = player.Rules.Random.NextDouble() * (player.Rules.PopulationScannerError - (-player.Rules.PopulationScannerError)) - player.Rules.PopulationScannerError;
+                var randomPopulationError = Rules.Random.NextDouble() * (Rules.PopulationScannerError - (-Rules.PopulationScannerError)) - Rules.PopulationScannerError;
 
                 // if we remote mine a planet, we discover its surface minerals, otherwise we don't know
                 if (!itemReport.RemoteMined)
@@ -167,7 +173,7 @@ namespace CraigStars
                 };
 
                 itemReport.Starbase.Tokens.Add(new ShipToken(player.DesignsByGuid[item.Starbase.Design.Guid], 1));
-                itemReport.Starbase.ComputeAggregate(player, true);
+                fleetAggregator.ComputeStarbaseAggregate(player, itemReport.Starbase, recompute: true);
             }
         }
     }

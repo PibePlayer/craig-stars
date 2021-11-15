@@ -9,6 +9,8 @@ namespace CraigStars.Client
     {
         static CSLog log = LogProvider.GetLogger(typeof(CargoTransferDialog));
 
+        [Inject] FleetAggregator fleetAggregator;
+
         public ICargoHolder Source { get; set; }
         public ICargoHolder Dest { get; set; }
         ICargoTransferControl sourceCargoTransfer;
@@ -41,6 +43,7 @@ namespace CraigStars.Client
 
         public override void _Ready()
         {
+            this.ResolveDependencies();
             base._Ready();
             sourceFleetCargoTransfer = FindNode("SourceFleetCargoTransfer") as FleetCargoTransfer;
             sourcePlanetCargoTransfer = FindNode("SourcePlanetCargoTransfer") as PlanetCargoTransfer;
@@ -201,12 +204,12 @@ namespace CraigStars.Client
                 me.FleetOrders.Add(order);
 
                 // update the aggregate for the source fleet
-                source.ComputeAggregate(me, true);
+                fleetAggregator.ComputeAggregate(me, source, recompute: true);
 
                 if (dest is Fleet fleet)
                 {
                     // if the dest is also a fleet, update its aggregate with a new mass
-                    fleet.ComputeAggregate(me, true);
+                    fleetAggregator.ComputeAggregate(me, fleet, recompute: true);
                 }
                 log.Info($"{me.Name} made immediate transfer from {source.Name} to {dest.Name} for {netCargoDiff} cargo and {netFuelDiff} fuel");
 

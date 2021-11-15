@@ -17,45 +17,6 @@ namespace CraigStars
         [JsonIgnore]
         public ShipDesign Design { get => Tokens[0].Design; }
 
-        public override void ComputeAggregate(Player player, bool recompute = false)
-        {
-            if (Aggregate.Computed && !recompute)
-            {
-                return;
-            }
-
-            base.ComputeAggregate(player, recompute);
-
-            Aggregate.Stargate = null;
-            Aggregate.BasePacketSpeed = 0;
-            Aggregate.SafePacketSpeed = 0;
-            int numAdditionalMassDrivers = 0;
-
-            foreach (var slot in Design.Slots)
-            {
-                if (slot.HullComponent != null)
-                {
-                    // find the first massdriver and stargate
-                    if (slot.HullComponent.PacketSpeed > 0)
-                    {
-                        // if we already have a massdriver at this speed, add an additional mass driver to up
-                        // our speed
-                        if (Aggregate.BasePacketSpeed == slot.HullComponent.PacketSpeed)
-                        {
-                            numAdditionalMassDrivers++;
-                        }
-                        Aggregate.BasePacketSpeed = Math.Max(Aggregate.BasePacketSpeed, slot.HullComponent.PacketSpeed);
-                    }
-                    if (Aggregate.Stargate == null && slot.HullComponent.SafeHullMass > 0)
-                    {
-                        Aggregate.Stargate = slot.HullComponent;
-                    }
-                }
-            }
-
-            Aggregate.SafePacketSpeed = Aggregate.BasePacketSpeed + numAdditionalMassDrivers;
-        }
-
         /// <summary>
         /// Calculate the cost to upgrade an existing starbase to a new design
         /// </summary>

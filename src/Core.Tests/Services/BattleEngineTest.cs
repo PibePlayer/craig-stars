@@ -12,8 +12,9 @@ namespace CraigStars.Tests
     public class BattleEngineTest
     {
 
-        FleetService fleetService = new FleetService();
-        ShipDesignDiscoverer designDiscover = new ShipDesignDiscoverer();
+        FleetService fleetService = TestUtils.TestContainer.GetInstance<FleetService>();
+        ShipDesignDiscoverer designDiscover = TestUtils.TestContainer.GetInstance<ShipDesignDiscoverer>();
+        FleetAggregator fleetAggregator = TestUtils.TestContainer.GetInstance<FleetAggregator>();
 
         [Test]
         public void TestWillTarget()
@@ -224,7 +225,7 @@ namespace CraigStars.Tests
 
             // make the attacker move faster
             attacker.Token.Design.Slots[0].HullComponent = Techs.TransStar10;
-            attacker.Token.Design.ComputeAggregate(game.Players[0], true);
+            fleetAggregator.ComputeDesignAggregate(game.Players[0], attacker.Token.Design, true);
 
             battleEngine.RunBattle(battle);
         }

@@ -164,6 +164,7 @@ namespace CraigStars.Server
                     GodotTaskFactory.StartNew(() => PublishGameStartingEvent(gameInfo));
                     var game = LoadGame(gameInfo.Name, gameInfo.Year, multithreaded: true, saveToDisk: true);
                     GameRunner = GameRunnerContainer.CreateGameRunner(game, TechStore.Instance);
+                    GameRunner.ComputeAggregates();
 
                     // notify each player of a game start event
                     Game.GameInfo.State = GameState.WaitingForPlayers;

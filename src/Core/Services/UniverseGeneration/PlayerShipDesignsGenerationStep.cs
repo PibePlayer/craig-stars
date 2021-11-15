@@ -16,13 +16,15 @@ namespace CraigStars.UniverseGeneration
         private readonly PlayerIntel playerIntel;
         private readonly ShipDesignGenerator designer;
         private readonly PlayerService playerService;
+        private readonly FleetAggregator fleetAggregator;
 
-        public PlayerShipDesignsGenerationStep(IProvider<Game> gameProvider, ITechStore techStore, PlayerIntel playerIntel, ShipDesignGenerator designer, PlayerService playerService) : base(gameProvider, UniverseGenerationState.ShipDesigns)
+        public PlayerShipDesignsGenerationStep(IProvider<Game> gameProvider, ITechStore techStore, PlayerIntel playerIntel, ShipDesignGenerator designer, PlayerService playerService, FleetAggregator fleetAggregator) : base(gameProvider, UniverseGenerationState.ShipDesigns)
         {
             this.techStore = techStore;
             this.playerIntel = playerIntel;
             this.designer = designer;
             this.playerService = playerService;
+            this.fleetAggregator = fleetAggregator;
         }
 
 
@@ -38,7 +40,7 @@ namespace CraigStars.UniverseGeneration
                 Game.DesignsByGuid[design.Guid] = design;
 
                 // compute aggeregates about the design
-                design.ComputeAggregate(player);
+                fleetAggregator.ComputeDesignAggregate(player, design);
 
                 // let the player know about their new design
                 playerIntel.Discover(player, design, true);

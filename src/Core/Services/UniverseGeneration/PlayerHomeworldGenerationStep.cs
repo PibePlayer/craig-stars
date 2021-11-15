@@ -18,14 +18,21 @@ namespace CraigStars.UniverseGeneration
         readonly PlayerService playerService;
         readonly PlanetService planetService;
         readonly PlanetDiscoverer planetDiscoverer;
+        readonly FleetAggregator fleetAggregator;
 
         List<Planet> ownedPlanets = new List<Planet>();
 
-        public PlayerHomeworldGenerationStep(IProvider<Game> gameProvider, PlayerService playerService, PlanetService planetService, PlanetDiscoverer planetDiscoverer) : base(gameProvider, UniverseGenerationState.Homeworlds)
+        public PlayerHomeworldGenerationStep(
+            IProvider<Game> gameProvider,
+            PlayerService playerService,
+            PlanetService planetService,
+            PlanetDiscoverer planetDiscoverer,
+            FleetAggregator fleetAggregator) : base(gameProvider, UniverseGenerationState.Homeworlds)
         {
             this.playerService = playerService;
             this.planetService = planetService;
             this.planetDiscoverer = planetDiscoverer;
+            this.fleetAggregator = fleetAggregator;
         }
 
         public override void Process()
@@ -200,7 +207,7 @@ namespace CraigStars.UniverseGeneration
                 }
             }
             };
-            planet.Starbase.ComputeAggregate(player);
+            fleetAggregator.ComputeAggregate(player, planet.Starbase);
         }
 
         /// <summary>

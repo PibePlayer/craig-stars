@@ -7,8 +7,6 @@ namespace CraigStars.Tests
     [TestFixture]
     public class ShipDesignTest
     {
-        Rules rules = new Rules(0);
-
         [Test]
         public void TestIsValid()
         {

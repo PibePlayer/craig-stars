@@ -13,17 +13,20 @@ namespace CraigStars
     {
         private readonly PlayerService playerService;
         private readonly PlayerTechService playerTechService;
+        private readonly IRulesProvider rulesProvider;
+        private Rules Rules => rulesProvider.Rules;
 
-        public PlanetService(PlayerService playerService, PlayerTechService playerTechService)
+        public PlanetService(PlayerService playerService, PlayerTechService playerTechService, IRulesProvider rulesProvider)
         {
             this.playerService = playerService;
             this.playerTechService = playerTechService;
+            this.rulesProvider = rulesProvider;
         }
 
         public int GetMaxMines(Planet planet, Player player) => planet.Population * player.Race.NumMines / 10000;
-        public int GetMaxPossibleMines(Planet planet, Player player) => GetMaxPopulation(planet, player, player.Rules) * player.Race.NumMines / 10000;
+        public int GetMaxPossibleMines(Planet planet, Player player) => GetMaxPopulation(planet, player, Rules) * player.Race.NumMines / 10000;
         public int GetMaxFactories(Planet planet, Player player) => planet.Population * player.Race.NumFactories / 10000;
-        public int GetMaxPossibleFactories(Planet planet, Player player) => GetMaxPopulation(planet, player, player.Rules) * player.Race.NumFactories / 10000;
+        public int GetMaxPossibleFactories(Planet planet, Player player) => GetMaxPopulation(planet, player, Rules) * player.Race.NumFactories / 10000;
         public int GetMaxDefenses(Planet planet, Player player) => 100;
 
         #region Ownership

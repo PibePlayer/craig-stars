@@ -79,17 +79,6 @@ namespace CraigStars
             UpdateInternalDictionaries();
         }
 
-        public void ComputeAggregates()
-        {
-            Designs.ForEach(d => d.ComputeAggregate(Players[d.PlayerNum]));
-            Fleets.ForEach(f => f.ComputeAggregate(Players[f.PlayerNum]));
-            foreach (var planet in OwnedPlanets.Where(p => p.HasStarbase))
-            {
-                planet.Starbase.ComputeAggregate(Players[planet.PlayerNum]);
-            }
-
-        }
-
         /// <summary>
         /// Update our dictionary of MapObjectsByLocation. This is used for combat
         /// </summary>
@@ -113,9 +102,6 @@ namespace CraigStars
             Players.AddRange(players);
             GameInfo.Players.Clear();
             GameInfo.Players.AddRange(Players.Cast<PublicPlayerInfo>());
-
-            // make sure each player knows about the game
-            Players.ForEach(player => player.Rules = Rules);
 
             Rules = rules;
         }

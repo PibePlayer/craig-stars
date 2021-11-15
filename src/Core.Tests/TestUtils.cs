@@ -31,6 +31,7 @@ namespace CraigStars.Tests
             TestContainer.Register<PlanetService>(Lifestyle.Singleton);
             TestContainer.Register<PlayerService>(Lifestyle.Singleton);
             TestContainer.Register<FleetService>(Lifestyle.Singleton);
+            TestContainer.Register<FleetAggregator>(Lifestyle.Singleton);
             TestContainer.Register<Researcher>(Lifestyle.Singleton);
             TestContainer.Register<PlayerTechService>(Lifestyle.Singleton);
             TestContainer.Register<ShipDesignGenerator>(Lifestyle.Singleton);
@@ -266,7 +267,9 @@ namespace CraigStars.Tests
                 BattlePlan = player.BattlePlans[0]
             };
 
-            fleet.ComputeAggregate(player);
+            var fleetAggregator = TestUtils.TestContainer.GetInstance<FleetAggregator>();
+            fleetAggregator.ComputeDesignAggregate(player, design);
+            fleetAggregator.ComputeAggregate(player, fleet);
             fleet.Fuel = fleet.FuelCapacity;
             return fleet;
         }
@@ -289,9 +292,27 @@ namespace CraigStars.Tests
                 BattlePlan = player.BattlePlans[0]
             };
 
-            fleet.ComputeAggregate(player);
+            var fleetAggregator = TestUtils.TestContainer.GetInstance<FleetAggregator>();
+            fleetAggregator.ComputeDesignAggregate(player, design);
+            fleetAggregator.ComputeAggregate(player, fleet);
             fleet.Fuel = fleet.FuelCapacity;
             return fleet;
+        }
+
+        /// <summary>
+        /// Helper to create a design and add it to the game
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="player"></param>
+        /// <param name="design"></param>
+        /// <returns></returns>
+        internal static ShipDesign CreateDesign(Game game, Player player, ShipDesign design)
+        {
+            design.PlayerNum = player.Num;
+            game.Designs.Add(design);
+            player.Designs.Add(design);
+
+            return design;
         }
     }
 }

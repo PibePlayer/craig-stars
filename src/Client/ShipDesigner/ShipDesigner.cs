@@ -1,4 +1,5 @@
 using CraigStars.Singletons;
+using CraigStars.Utils;
 using Godot;
 using System;
 using System.Linq;
@@ -7,6 +8,7 @@ namespace CraigStars.Client
 {
     public class ShipDesigner : HBoxContainer
     {
+        [Inject] FleetAggregator fleetAggregator;
         public event Action CancelledEvent;
         protected Player Me { get => PlayersManager.Me; }
 
@@ -33,6 +35,7 @@ namespace CraigStars.Client
 
         public override void _Ready()
         {
+            this.ResolveDependencies();
             hullComponentsTechTree = FindNode("HullComponentsTechTree") as TechTree;
             hullComponentCostGrid = FindNode("HullComponentCostGrid") as CostGrid;
             hullComponentCostLabel = FindNode("HullComponentCostLabel") as Label;
@@ -101,7 +104,7 @@ namespace CraigStars.Client
             if (SourceShipDesign != null)
             {
                 var design = SourceShipDesign.Copy();
-                design.ComputeAggregate(PlayersManager.Me);
+                fleetAggregator.ComputeDesignAggregate(PlayersManager.Me, design);
                 if (!EditingExisting)
                 {
                     design.Version++;
@@ -159,7 +162,7 @@ namespace CraigStars.Client
         {
             // TODO, support updates
             designerHullSummary.ShipDesign.Name = designNameLineEdit.Text;
-            designerHullSummary.ShipDesign.ComputeAggregate(PlayersManager.Me, true);
+            fleetAggregator.ComputeDesignAggregate(PlayersManager.Me, designerHullSummary.ShipDesign, true);
             if (EditingExisting)
             {
                 // remove the old design and add the new one

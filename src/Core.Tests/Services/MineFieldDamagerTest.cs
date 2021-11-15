@@ -18,10 +18,11 @@ namespace CraigStars.Tests
     {
         static CSLog log = LogProvider.GetLogger(typeof(MineFieldDamagerTest));
 
-        PlayerService playerService = new PlayerService(new TestRulesProvider());
-        MineFieldDamager mineFieldDamager = new();
-        ShipDesignDiscoverer designDiscoverer = new();
-        FleetService fleetService = new();
+        PlayerService playerService = TestUtils.TestContainer.GetInstance<PlayerService>();
+        MineFieldDamager mineFieldDamager = TestUtils.TestContainer.GetInstance<MineFieldDamager>();
+        ShipDesignDiscoverer designDiscoverer = TestUtils.TestContainer.GetInstance<ShipDesignDiscoverer>();
+        FleetService fleetService = TestUtils.TestContainer.GetInstance<FleetService>();
+        FleetAggregator fleetAggregator = TestUtils.TestContainer.GetInstance<FleetAggregator>();
 
         [Test]
         public void TestTakeMineFieldDamage()
@@ -41,6 +42,7 @@ namespace CraigStars.Tests
             // make a new fleet with 10 stalwart defenders (350 armor each)
             var design = ShipDesigns.StalwartDefender.Clone();
             design.PlayerNum = player1.Num;
+            game.Designs.Add(design);
             var fleet = new Fleet()
             {
                 PlayerNum = player1.Num,
@@ -48,7 +50,8 @@ namespace CraigStars.Tests
                     new ShipToken(design, 10)
                 },
             };
-            fleet.ComputeAggregate(player1);
+            game.Fleets.Add(fleet);
+            gameRunner.ComputeAggregates(recompute: true);
 
             FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
 
@@ -74,8 +77,8 @@ namespace CraigStars.Tests
 
             // give it a ramscoop
             fleet.Tokens[0].Design.Slots[0].HullComponent = Techs.RadiatingHydroRamScoop;
-            fleet.Tokens[0].Design.ComputeAggregate(player1, true);
-            fleet.ComputeAggregate(player1, true);
+            gameRunner.ComputeAggregates(recompute: true);
+            
             // should do 125 damage per engine (only 1 engine per ship)
             // 1250 damage will destroy 3 ships (350 armor each), and leave 200 damage for the rest
             mineFieldDamager.TakeMineFieldDamage(fleet, player1, game.MineFields[0], player2, stats);
@@ -102,6 +105,7 @@ namespace CraigStars.Tests
             // make a new fleet with 10 stalwart defenders (350 armor each)
             var design = ShipDesigns.StalwartDefender.Clone();
             design.PlayerNum = player1.Num;
+            game.Designs.Add(design);
             var fleet = new Fleet()
             {
                 PlayerNum = player1.Num,
@@ -109,7 +113,8 @@ namespace CraigStars.Tests
                     new ShipToken(design, 1)
                 },
             };
-            fleet.ComputeAggregate(player1);
+            game.Fleets.Add(fleet);
+            gameRunner.ComputeAggregates(recompute: true);
 
             FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
 
@@ -144,6 +149,7 @@ namespace CraigStars.Tests
             // make a new fleet with a scout and a large freighter (with 2 engines)
             var scout = ShipDesigns.LongRangeScount.Clone();
             scout.PlayerNum = player1.Num;
+            game.Designs.Add(scout);
             var largeFrieghter = new ShipDesign()
             {
                 Hull = Techs.LargeFreighter,
@@ -153,6 +159,7 @@ namespace CraigStars.Tests
                 }
             };
             largeFrieghter.PlayerNum = player1.Num;
+            game.Designs.Add(largeFrieghter);
 
             var fleet = new Fleet()
             {
@@ -162,7 +169,8 @@ namespace CraigStars.Tests
                     new ShipToken(largeFrieghter, 1)
                 },
             };
-            fleet.ComputeAggregate(player1);
+            game.Fleets.Add(fleet);
+            gameRunner.ComputeAggregates(recompute: true);
 
             FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
 

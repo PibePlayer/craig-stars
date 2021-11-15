@@ -1,11 +1,14 @@
 using Godot;
 using System;
 using CraigStars.Singletons;
+using CraigStars.Utils;
 
 namespace CraigStars.Client
 {
     public class HullSummary : Control
     {
+        [Inject] FleetAggregator fleetAggregator;
+
         // TODO: if we ever get more than 99 Hull sets, make this smarter.
         public static int MaxHullSets = 99;
         public event Action<ShipDesignSlot> SlotUpdatedEvent;
@@ -58,6 +61,8 @@ namespace CraigStars.Client
 
         public override void _Ready()
         {
+            this.ResolveDependencies();
+
             HullContainer = FindNode("HullContainer") as Control;
             noHullContainer = FindNode("NoHullContainer") as Control;
             nameLabel = FindNode("NameLabel") as Label;
@@ -143,7 +148,7 @@ namespace CraigStars.Client
         /// <param name="slot"></param>
         void OnSlotUpdated(ShipDesignSlot slot)
         {
-            ShipDesign.ComputeAggregate(PlayersManager.Me, true);
+            fleetAggregator.ComputeDesignAggregate(PlayersManager.Me, ShipDesign, true);
             SlotUpdatedEvent?.Invoke(slot);
         }
 
@@ -247,7 +252,6 @@ namespace CraigStars.Client
                     }
                     icon.Texture = TextureLoader.Instance.FindTexture(ShipDesign);
 
-                    ShipDesign.ComputeAggregate(PlayersManager.Me);
                     costTitleLabel.Text = ShipDesign.Name.Empty() ? "Cost of design" : $"Cost of one {ShipDesign.Name}";
                     costGrid.Cost = ShipDesign.Aggregate.Cost;
                     if (Hull.Starbase)

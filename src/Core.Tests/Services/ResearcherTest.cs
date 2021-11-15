@@ -18,7 +18,7 @@ namespace CraigStars.Tests
     {
         static CSLog log = LogProvider.GetLogger(typeof(ResearcherTest));
 
-        Researcher researcher = new Researcher();
+        Researcher researcher = new Researcher(new TestRulesProvider());
 
         [Test]
         public void TestResearchNextLevel()

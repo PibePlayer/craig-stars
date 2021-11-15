@@ -1,13 +1,52 @@
 using System.Collections.Generic;
-using Godot;
 using NUnit.Framework;
 
 namespace CraigStars.Tests
 {
     [TestFixture]
-    public class FleetTest
+    public class FleetAggregatorTest
     {
-        Rules rules = new Rules(0);
+        FleetAggregator fleetAggregator;
+
+        [SetUp]
+        public void SetUp()
+        {
+            IRulesProvider rulesProvider = TestUtils.TestContainer.GetInstance<IRulesProvider>();
+            PlayerService playerService = TestUtils.TestContainer.GetInstance<PlayerService>();
+            fleetAggregator = new FleetAggregator(rulesProvider, playerService);
+        }
+
+        [Test]
+        public void TestComputeStarbaseAggregate()
+        {
+            // make a starbase with two mass drivers
+            var player = new Player();
+            var design = new ShipDesign()
+            {
+                PlayerNum = player.Num,
+                Name = "Death Star",
+                Hull = Techs.DeathStar,
+                HullSetNumber = 0,
+                Slots = new List<ShipDesignSlot>()
+                {
+                    new ShipDesignSlot(Techs.MassDriver7, 1, 1),
+                    new ShipDesignSlot(Techs.MassDriver7, 11, 1),
+                }
+            };
+
+            var starbase = new Starbase()
+            {
+                PlayerNum = player.Num,
+                Tokens = new List<ShipToken>() {
+                  new ShipToken(design, 1)
+                }
+            };
+
+            fleetAggregator.ComputeStarbaseAggregate(player, starbase);
+
+            Assert.AreEqual(7, starbase.Aggregate.BasePacketSpeed);
+            Assert.AreEqual(8, starbase.Aggregate.SafePacketSpeed);
+        }
 
         [Test]
         public void TestComputeCloak()
@@ -24,18 +63,19 @@ namespace CraigStars.Tests
                 }
             };
 
-            fleet.ComputeAggregate(player);
+            fleetAggregator.ComputeDesignAggregate(player, design, recompute: true);
+            fleetAggregator.ComputeAggregate(player, fleet, recompute: true);
 
             Assert.AreEqual(0, fleet.Aggregate.CloakPercent);
 
             design.Slots[2].HullComponent = Techs.StealthCloak;
-            design.ComputeAggregate(player, recompute: true);
-            fleet.ComputeAggregate(player, recompute: true);
+            fleetAggregator.ComputeDesignAggregate(player, design, recompute: true);
+            fleetAggregator.ComputeAggregate(player, fleet, recompute: true);
             Assert.AreEqual(35, fleet.Aggregate.CloakPercent);
 
             // should be the same for 2 identical tokens
             fleet.Tokens[0].Quantity = 2;
-            fleet.ComputeAggregate(player, recompute: true);
+            fleetAggregator.ComputeAggregate(player, fleet, recompute: true);
             Assert.AreEqual(35, fleet.Aggregate.CloakPercent);
 
         }
@@ -69,7 +109,9 @@ namespace CraigStars.Tests
             };
 
             // cloak goes down because extra ship counts as cargo
-            fleet.ComputeAggregate(player, recompute: true);
+            fleetAggregator.ComputeDesignAggregate(player, scoutDesign, recompute: true);
+            fleetAggregator.ComputeDesignAggregate(player, cloakedScoutDesign, recompute: true);
+            fleetAggregator.ComputeAggregate(player, fleet, recompute: true);
             Assert.AreEqual(23, fleet.Aggregate.CloakPercent);
         }
 
@@ -97,14 +139,15 @@ namespace CraigStars.Tests
                 }
             };
 
-            fleet.ComputeAggregate(player);
+            fleetAggregator.ComputeDesignAggregate(player, freighterDesign, recompute: true);
+            fleetAggregator.ComputeAggregate(player, fleet, recompute: true);
             Assert.AreEqual(35, fleet.Aggregate.CloakPercent);
 
             // fill it with cargo
             fleet.Cargo = Cargo.OfAmount(CargoType.Ironium, fleet.AvailableCapacity);
 
-            freighterDesign.ComputeAggregate(player, recompute: true);
-            fleet.ComputeAggregate(player, recompute: true);
+            fleetAggregator.ComputeDesignAggregate(player, freighterDesign, recompute: true);
+            fleetAggregator.ComputeAggregate(player, fleet, recompute: true);
             Assert.AreEqual(20, fleet.Aggregate.CloakPercent);
 
         }
@@ -133,14 +176,15 @@ namespace CraigStars.Tests
                 }
             };
 
-            fleet.ComputeAggregate(player);
+            fleetAggregator.ComputeDesignAggregate(player, freighterDesign, recompute: true);
+            fleetAggregator.ComputeAggregate(player, fleet, recompute: true);
             Assert.AreEqual(75, fleet.Aggregate.CloakPercent);
 
             // fill it with cargo, should be the same cloak
             fleet.Cargo = Cargo.OfAmount(CargoType.Ironium, fleet.AvailableCapacity);
 
-            freighterDesign.ComputeAggregate(player, recompute: true);
-            fleet.ComputeAggregate(player, recompute: true);
+            fleetAggregator.ComputeDesignAggregate(player, freighterDesign, recompute: true);
+            fleetAggregator.ComputeAggregate(player, fleet, recompute: true);
             Assert.AreEqual(75, fleet.Aggregate.CloakPercent);
 
         }
@@ -158,7 +202,7 @@ namespace CraigStars.Tests
             };
 
             // empty fleet is already complete
-            fleet.ComputeFleetComposition();
+            fleetAggregator.ComputeFleetComposition(fleet);
             Assert.IsTrue(fleet.Aggregate.FleetCompositionComplete);
             Assert.AreEqual(0, fleet.Aggregate.FleetCompositionTokensRequired.Count);
 
@@ -174,15 +218,13 @@ namespace CraigStars.Tests
             };
 
             fleet.FleetComposition = fleetComposition;
-            fleet.ComputeFleetComposition();
+            fleetAggregator.ComputeFleetComposition(fleet);
             Assert.IsFalse(fleet.Aggregate.FleetCompositionComplete);
             Assert.AreEqual(2, fleet.Aggregate.FleetCompositionTokensRequired.Count);
             Assert.AreEqual(ShipDesignPurpose.Bomber, fleet.Aggregate.FleetCompositionTokensRequired[0].Purpose);
             Assert.AreEqual(ShipDesignPurpose.Bomber, fleet.Aggregate.FleetCompositionTokensRequired[0].Purpose);
 
         }
-
-
     }
 
 }

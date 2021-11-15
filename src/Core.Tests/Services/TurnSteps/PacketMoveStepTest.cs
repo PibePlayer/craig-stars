@@ -54,7 +54,8 @@ namespace CraigStars.Tests
             };
 
             // compute aggregate for this starbase so the receiver is up to date
-            planet2.Starbase.ComputeAggregate(player);
+            game.Planets.Add(planet2);
+            gameRunner.ComputeAggregates();
 
             // create a 1000kT packet
             MineralPacket packet = new MineralPacket()
@@ -110,7 +111,8 @@ namespace CraigStars.Tests
             };
 
             // compute aggregate for this starbase so the receiver is up to date
-            planet2.Starbase.ComputeAggregate(player);
+            game.Planets.Add(planet2);
+            gameRunner.ComputeAggregates();
 
             // create a 1000kT packet
             MineralPacket packet = new MineralPacket()

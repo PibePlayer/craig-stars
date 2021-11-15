@@ -10,7 +10,17 @@ namespace CraigStars
     public static class TestBattleUtils
     {
         static PlayerTechService playerTechService = new PlayerTechService(new Provider<ITechStore>(StaticTechStore.Instance));
-        static ShipDesignerTurnProcessor designerTurnProcessor = new ShipDesignerTurnProcessor(new ShipDesignGenerator(playerTechService), playerTechService);
+        static IRulesProvider rulesProvider = new Game();
+        static PlayerService playerService = new PlayerService(rulesProvider);
+        static FleetAggregator fleetAggregator = new FleetAggregator(rulesProvider, playerService);
+        static FleetService fleetService = new FleetService(fleetAggregator);
+        static ShipDesignDiscoverer designDiscoverer = new ShipDesignDiscoverer();
+        static ShipDesignerTurnProcessor designerTurnProcessor = new ShipDesignerTurnProcessor(
+            new ShipDesignGenerator(playerTechService, fleetAggregator),
+            playerTechService,
+            fleetAggregator,
+            StaticTechStore.Instance
+            );
 
         /// <summary>
         /// Build a simple battle between two players, one with a Stalwart Defender, one with a Long Range Scout
@@ -76,8 +86,8 @@ namespace CraigStars
                 }
             });
 
-            player1.ComputeAggregates();
-            player2.ComputeAggregates();
+            fleetAggregator.ComputePlayerAggregates(player1);
+            fleetAggregator.ComputePlayerAggregates(player2);
 
             var game = new Game()
             {
@@ -143,8 +153,8 @@ namespace CraigStars
                 player2.Fleets[0]
             };
 
-            player1.ComputeAggregates();
-            player2.ComputeAggregates();
+            fleetAggregator.ComputePlayerAggregates(player1);
+            fleetAggregator.ComputePlayerAggregates(player2);
 
             return fleets;
         }
@@ -198,8 +208,8 @@ namespace CraigStars
                 player2.Fleets[0]
             };
 
-            player1.ComputeAggregates();
-            player2.ComputeAggregates();
+            fleetAggregator.ComputePlayerAggregates(player1);
+            fleetAggregator.ComputePlayerAggregates(player2);
 
             return game;
         }
@@ -213,7 +223,7 @@ namespace CraigStars
         public static BattleRecord GetSimpleBattleRecord(Player player1 = null, Player player2 = null)
         {
             var game = TestBattleUtils.GetGameWithSimpleBattle(player1, player2);
-            BattleEngine battleEngine = new BattleEngine(game, new(), new());
+            BattleEngine battleEngine = new BattleEngine(game, fleetService, designDiscoverer);
             var battle = battleEngine.BuildBattle(game.Fleets);
             battleEngine.RunBattle(battle);
 
@@ -229,7 +239,7 @@ namespace CraigStars
         public static BattleRecord GetDesignsBattleRecord(PublicGameInfo gameInfo, Player player1, Player player2, HashSet<string> player1DesignNames, HashSet<string> player2DesignNames)
         {
             Game game = GetGameWithBattle(player1, player2, player1DesignNames, player2DesignNames);
-            BattleEngine battleEngine = new BattleEngine(game, new(), new());
+            BattleEngine battleEngine = new BattleEngine(game, fleetService, designDiscoverer);
             var battle = battleEngine.BuildBattle(game.Fleets);
             battleEngine.RunBattle(battle);
 

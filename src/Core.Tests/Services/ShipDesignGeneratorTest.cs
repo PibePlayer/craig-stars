@@ -12,12 +12,15 @@ namespace CraigStars.Tests
     public class ShipDesignGeneratorTest
     {
 
-        PlayerTechService playerTechService;
+        ShipDesignGenerator designer;
 
         [SetUp]
         public void SetUp()
         {
-            playerTechService = TestUtils.TestContainer.GetInstance<PlayerTechService>();
+            designer = new ShipDesignGenerator(
+                TestUtils.TestContainer.GetInstance<PlayerTechService>(),
+                TestUtils.TestContainer.GetInstance<FleetAggregator>()
+            );
         }
 
         [Test]
@@ -27,7 +30,6 @@ namespace CraigStars.Tests
             var techStore = StaticTechStore.Instance;
 
             // design a simple scout
-            var designer = new ShipDesignGenerator(playerTechService);
             var design = designer.DesignShip(Techs.Scout, "Name", player, 0, ShipDesignPurpose.Scout);
             Assert.IsNotNull(design);
             Assert.AreEqual(Techs.QuickJump5, design.Slots[0].HullComponent);

@@ -33,7 +33,7 @@ namespace CraigStars.Tests
                 Position = new Vector2(0, 0),
             };
             game.MineFields.Add(mineField);
-            game.ComputeAggregates();
+            gameRunner.ComputeAggregates();
 
             DetonateMinesStep step = new DetonateMinesStep(gameRunner.GameProvider, playerService, mineFieldDamager);
 
@@ -62,7 +62,7 @@ namespace CraigStars.Tests
                 Position = new Vector2(0, 0),
             };
             game.MineFields.Add(mineField);
-            game.ComputeAggregates();
+            gameRunner.ComputeAggregates();
 
             DetonateMinesStep step = new DetonateMinesStep(gameRunner.GameProvider, playerService, mineFieldDamager);
 

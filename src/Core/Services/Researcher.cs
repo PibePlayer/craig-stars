@@ -12,6 +12,14 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(Researcher));
 
+        private readonly IRulesProvider rulesProvider;
+        private Rules Rules => rulesProvider.Rules;
+
+        public Researcher(IRulesProvider rulesProvider)
+        {
+            this.rulesProvider = rulesProvider;
+        }
+
         /// <summary>
         /// This function will be called recursively until no more levels are passed
         /// From starsfaq
@@ -86,6 +94,7 @@ namespace CraigStars
                 // notify our player (and any listeners) that we got a new level
                 var newLevel = player.TechLevels[player.Researching];
                 Message.TechLevel(player, player.Researching, newLevel, nextField);
+
                 EventManager.PublishPlayerResearchLevelIncreasedEvent(player, player.Researching, newLevel);
 
                 // setup the next level
@@ -107,7 +116,7 @@ namespace CraigStars
         /// <returns>true if this player can research at all, false if they are maxed out in levels</returns>
         internal bool CheckMaxLevels(Player player)
         {
-            var maxTechLevel = player.Rules.TechBaseCost.Length - 1;
+            var maxTechLevel = Rules.TechBaseCost.Length - 1;
             if (player.TechLevels[player.Researching] >= maxTechLevel)
             {
                 // determine the next field to research
@@ -152,7 +161,7 @@ namespace CraigStars
             var totalLevels = player.TechLevels.Sum();
 
             // figure out the cost to advance to the next level
-            var baseCost = player.Rules.TechBaseCost[level + 1];
+            var baseCost = Rules.TechBaseCost[level + 1];
             var researchCost = player.Race.ResearchCost[field];
             var costFactor = 1f;
             switch (researchCost)

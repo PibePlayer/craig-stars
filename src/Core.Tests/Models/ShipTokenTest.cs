@@ -8,6 +8,7 @@ namespace CraigStars.Tests
     [TestFixture]
     public class ShipTokenTest
     {
+        FleetAggregator fleetAggregator = TestUtils.TestContainer.GetInstance<FleetAggregator>();
 
         [Test]
         public void TestApplyMineDamage()
@@ -159,7 +160,7 @@ namespace CraigStars.Tests
             var player = new Player();
             ShipToken token = new ShipToken(ShipDesigns.LongRangeScount, 2);
             token.Design.PlayerNum = player.Num;
-            token.Design.ComputeAggregate(player);
+            fleetAggregator.ComputeDesignAggregate(player, token.Design);
 
             var mass = 100;
             var armor = 100;

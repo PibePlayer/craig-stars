@@ -14,10 +14,12 @@ namespace CraigStars
         static CSLog log = LogProvider.GetLogger(typeof(ShipDesignGenerator));
 
         private readonly PlayerTechService playerTechService;
+        private readonly FleetAggregator fleetAggregator;
 
-        public ShipDesignGenerator(PlayerTechService playerTechService)
+        public ShipDesignGenerator(PlayerTechService playerTechService, FleetAggregator fleetAggregator)
         {
             this.playerTechService = playerTechService;
+            this.fleetAggregator = fleetAggregator;
         }
 
         public delegate TechHullComponent FillGeneralSlotCallback(int index);
@@ -208,7 +210,8 @@ namespace CraigStars
                 design.Slots.Add(slot);
             });
 
-            design.ComputeAggregate(player);
+            // A new design needs new values
+            fleetAggregator.ComputeDesignAggregate(player, design);
             return design;
         }
     }

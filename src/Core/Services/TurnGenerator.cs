@@ -78,7 +78,6 @@ namespace CraigStars
             {
                 p.SubmittedTurn = false;
                 p.Messages.Clear();
-                p.ComputeAggregates();
             });
 
             // execute each turn step

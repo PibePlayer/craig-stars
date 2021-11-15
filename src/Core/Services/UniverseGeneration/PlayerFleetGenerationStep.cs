@@ -16,11 +16,13 @@ namespace CraigStars.UniverseGeneration
     {
         private readonly ITechStore techStore;
         private readonly PlayerService playerService;
+        private readonly FleetAggregator fleetAggregator;
 
-        public PlayerFleetGenerationStep(IProvider<Game> gameProvider, ITechStore techStore, PlayerService playerService) : base(gameProvider, UniverseGenerationState.Fleets)
+        public PlayerFleetGenerationStep(IProvider<Game> gameProvider, ITechStore techStore, PlayerService playerService, FleetAggregator fleetAggregator) : base(gameProvider, UniverseGenerationState.Fleets)
         {
             this.techStore = techStore;
             this.playerService = playerService;
+            this.fleetAggregator = fleetAggregator;
         }
 
         public override void Process()
@@ -91,7 +93,7 @@ namespace CraigStars.UniverseGeneration
             fleet.PlayerNum = player.Num;
 
             // aggregate all the design data
-            fleet.ComputeAggregate(player);
+            fleetAggregator.ComputeAggregate(player, fleet);
             fleet.Fuel = fleet.Aggregate.FuelCapacity;
 
             return fleet;

@@ -100,7 +100,6 @@ namespace CraigStars.Singletons
                 Color = num < PlayerColors.Length ? PlayerColors[num] : new Color((float)RulesManager.Rules.Random.NextDouble(), (float)RulesManager.Rules.Random.NextDouble(), (float)RulesManager.Rules.Random.NextDouble()),
                 AIControlled = num != 0,
                 Ready = true,
-                TechStore = TechStore.Instance,
                 DefaultHullSet = num % 2
             };
 

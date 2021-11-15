@@ -16,6 +16,7 @@ namespace CraigStars.Tests
         PlayerTechService playerTechService;
         PlayerService playerService;
         PlayerIntel playerIntel;
+        FleetAggregator fleetAggregator;
 
         [SetUp]
         public void SetUp()
@@ -24,6 +25,7 @@ namespace CraigStars.Tests
             playerTechService = TestUtils.TestContainer.GetInstance<PlayerTechService>();
             playerService = TestUtils.TestContainer.GetInstance<PlayerService>();
             playerIntel = TestUtils.TestContainer.GetInstance<PlayerIntel>();
+            fleetAggregator = TestUtils.TestContainer.GetInstance<FleetAggregator>();
         }
 
         [Test]
@@ -47,7 +49,7 @@ namespace CraigStars.Tests
             playerPlanetReportGenerationStep.Process();
             player.SetupMapObjectMappings();
 
-            var scanStep = new PlayerScanStep(gameRunner.GameProvider, playerService, playerIntel, playerTechService);
+            var scanStep = new PlayerScanStep(gameRunner.GameProvider, playerService, playerIntel, playerTechService, fleetAggregator);
 
             scanStep.PreProcess(game.OwnedPlanets.ToList());
             scanStep.Process();

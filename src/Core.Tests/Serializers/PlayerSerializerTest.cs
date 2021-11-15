@@ -44,7 +44,7 @@ namespace CraigStars.Tests
                     Hull = Techs.Scout,
                     Slots = new List<ShipDesignSlot>() {
                         new ShipDesignSlot(Techs.QuickJump5, 1, 1)
-                    }
+                    },
                 }
             );
 
@@ -100,10 +100,7 @@ namespace CraigStars.Tests
             log.Info(json);
 
             // populate this player object
-            var loadedPlayer = new Player()
-            {
-                TechStore = StaticTechStore.Instance,
-            };
+            var loadedPlayer = new Player();
             var loadSettings = Serializers.CreatePlayerSettings(StaticTechStore.Instance);
             loadedPlayer = Serializers.DeserializeObject<Player>(json, loadSettings);
 

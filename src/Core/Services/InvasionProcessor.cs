@@ -22,11 +22,14 @@ namespace CraigStars
     {
         private readonly PlayerService playerService;
         private readonly PlanetService planetService;
+        private readonly IRulesProvider rulesProvider;
+        private Rules Rules => rulesProvider.Rules;
 
-        public InvasionProcessor(PlayerService playerService, PlanetService planetService)
+        public InvasionProcessor(PlayerService playerService, PlanetService planetService, IRulesProvider rulesProvider)
         {
             this.playerService = playerService;
             this.planetService = planetService;
+            this.rulesProvider = rulesProvider;
         }
 
         /// <summary>
@@ -46,7 +49,7 @@ namespace CraigStars
             }
 
             // figure out how many attackers are stopped by defenses
-            int attackers = (int)(colonistsDropped * (1 - planetService.GetDefenseCoverage(planet, defender) * attacker.Rules.InvasionDefenseCoverageFactor));
+            int attackers = (int)(colonistsDropped * (1 - planetService.GetDefenseCoverage(planet, defender) * Rules.InvasionDefenseCoverageFactor));
             int defenders = planet.Population;
 
             // determine bonuses for warmongers and inner strength

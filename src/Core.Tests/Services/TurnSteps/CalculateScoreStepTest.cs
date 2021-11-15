@@ -24,47 +24,64 @@ namespace CraigStars.Tests
             var (game, gameRunner) = TestUtils.GetSingleUnitGame();
             var player = game.Players[0];
 
-            // single planet and fleet, 3 points
+            // single planet and fleet, 2 points (1 for planet, .5 rounded up for fleet)
             var step = new CalculateScoreStep(gameRunner.GameProvider, planetService);
             var score = step.CalculateScore(player);
 
-            Assert.AreEqual(0, score.Score);
+            Assert.AreEqual(2, score.Score);
         }
 
         [Test]
         public void TestCalculateScoreSimple()
         {
+            // Give the player the following points:
+            // planets = 2 * 1pt = 2pt
+            // resources (planet 1) = 25 (pop) + 10 (factories) = 3 pts
+            // resources (planet 2) = 210 (pop) = 7 pts
+            // population (planet 1) <100k = 1 pts
+            // population (planet 2) 100k to 200k = 2 pts
+            // population (planet 2) 100k to 200k = 2 pts
+            // starbases = 1 * 3pt = 3pts
+            // fleet1 = 1 pts
+            // fleet2 = 5 pts
+            // tech levels = 10 pts
+            // total 31 pts
             var (game, gameRunner) = TestUtils.GetSingleUnitGame();
             var player = game.Players[0];
+
+            game.Planets[0].Population = 25000; // 25 resources
+            game.Planets[0].Factories = 10; // 10 resources
+
+            // should be 3 points for a starbase
             var starbaseDesign = ShipDesigns.Starbase.Clone(player);
-
-
-            player.Planets.Add(game.Planets[0]); // should be one point
-            player.Planets[0].Factories = 10; // should be one point for 30 resources
-            player.Planets[0].Starbase = new Starbase()
+            game.Designs.Add(starbaseDesign);
+            game.Planets[0].Starbase = new Starbase()
             {
                 PlayerNum = player.Num,
                 Tokens = new List<ShipToken>() {
                 new ShipToken() { Quantity = 1, Design = starbaseDesign }
             }
-            }; // should be 3 points for a starbase
-            player.Planets.Add(new Planet()
+            };
+
+            // should be 1 more point for an extra planet, and this planet 
+            // generates 7 pts for 210 resources
+            game.Planets.Add(new Planet()
             {
                 PlayerNum = player.Num,
                 Population = 210000,  // should be 2 points for population, 210 resources for 7 more points
             });
-            player.Fleets.Add(game.Fleets[0]);
-            player.Fleets[0].Tokens[0].Quantity = 2; // should be one point
+            game.Fleets.Add(game.Fleets[0]);
+            game.Fleets[0].Tokens[0].Quantity = 2; // should be one point for 2 small tokens
 
             // add a capital ship for 5 points (with 2 planets) (8 * 2 / 3)
-            player.Fleets.Add(new Fleet()
+            game.Fleets.Add(new Fleet()
             {
                 PlayerNum = player.Num,
                 Tokens = new List<ShipToken>() {
                     new ShipToken()
                     {
                         Quantity = 1,
-                        Design = new ShipDesign()
+                        Design = TestUtils.CreateDesign(game, player, new ShipDesign()
                         {
                             PlayerNum = player.Num,
                             Hull = Techs.Battleship,
@@ -78,7 +95,7 @@ namespace CraigStars.Tests
                                 new ShipDesignSlot(Techs.UpsilonTorpedo, 8, 2),
                                 new ShipDesignSlot(Techs.UpsilonTorpedo, 8, 4)
                             },
-                        },
+                        }),
                     }
                 }
             });
@@ -87,12 +104,11 @@ namespace CraigStars.Tests
                 1, 4, 7, 10 // should be 1 + 2 + 3 + 4 = 10 points total
             );
 
-            // empty player, no score
-            player.ComputeAggregates(recompute: true);
+            gameRunner.ComputeAggregates(recompute: true);
             var step = new CalculateScoreStep(gameRunner.GameProvider, planetService);
             var score = step.CalculateScore(player);
 
-            Assert.AreEqual(30, score.Score);
+            Assert.AreEqual(31, score.Score);
         }
 
     }

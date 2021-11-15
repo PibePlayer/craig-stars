@@ -26,7 +26,7 @@ namespace CraigStars.Tests
             var fleet = game.Fleets[0];
 
             // make the fleet have a simple scout design with a mine dispenser 50
-            fleet.Tokens[0].Design = new ShipDesign()
+            fleet.Tokens[0].Design = TestUtils.CreateDesign(game, player, new ShipDesign()
             {
                 PlayerNum = fleet.PlayerNum,
                 Name = "Mine Laying Scout",
@@ -35,9 +35,9 @@ namespace CraigStars.Tests
                     new ShipDesignSlot(Techs.QuickJump5, 1, 1),
                     new ShipDesignSlot(Techs.MineDispenser50, 3, 1),
                 }
-            };
+            });
 
-            fleet.ComputeAggregate(player);
+            gameRunner.ComputeAggregates(recompute: true);
 
             FleetLayMinesStep step = new FleetLayMinesStep(gameRunner.GameProvider);
 

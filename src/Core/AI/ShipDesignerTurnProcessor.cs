@@ -15,11 +15,15 @@ namespace CraigStars
 
         private readonly ShipDesignGenerator shipDesignGenerator;
         private readonly PlayerTechService playerTechService;
+        private readonly FleetAggregator fleetAggregator;
+        private readonly ITechStore techStore;
 
-        public ShipDesignerTurnProcessor(ShipDesignGenerator shipDesignGenerator, PlayerTechService playerTechService) : base("Ship Designer")
+        public ShipDesignerTurnProcessor(ShipDesignGenerator shipDesignGenerator, PlayerTechService playerTechService, FleetAggregator fleetAggregator, ITechStore techStore) : base("Ship Designer")
         {
             this.shipDesignGenerator = shipDesignGenerator;
             this.playerTechService = playerTechService;
+            this.fleetAggregator = fleetAggregator;
+            this.techStore = techStore;
         }
 
         /// <summary>
@@ -27,7 +31,7 @@ namespace CraigStars
         /// </summary>
         public override void Process(PublicGameInfo gameInfo, Player player)
         {
-            var hulls = player.TechStore.Hulls.Where(tech => playerTechService.HasTech(player, tech)).ToList();
+            var hulls = techStore.Hulls.Where(tech => playerTechService.HasTech(player, tech)).ToList();
             var designsByHull = player.Designs.ToLookup(design => design.Hull).ToDictionary(lookup => lookup.Key, lookup => lookup.ToList());
             var latestVersionByHull = player.Designs.ToLookup(design => design.Hull).ToDictionary(lookup => lookup.Key, lookup => lookup.Max(design => design.Version));
 
@@ -75,7 +79,7 @@ namespace CraigStars
             }
 
             player.Designs.AddRange(newDesigns);
-            newDesigns.ForEach(design => { player.DesignsByGuid[design.Guid] = design; design.ComputeAggregate(player); });
+            newDesigns.ForEach(design => { player.DesignsByGuid[design.Guid] = design; fleetAggregator.ComputeDesignAggregate(player, design); });
             deletedDesigns.ForEach(design => player.DeletedDesigns.Add(design));
 
         }
@@ -89,7 +93,7 @@ namespace CraigStars
         internal ShipDesign DesignColonizer(Player player, string name = null)
         {
             var colonizer = playerTechService.GetBestColonizationModule(player);
-            var hull = player.TechStore.Hulls
+            var hull = techStore.Hulls
                 .Where(hull => playerTechService.HasTech(player, hull) && hull.CanUse(colonizer))
                 .OrderByDescending(hull => hull.CargoCapacity)
                 .First();
@@ -125,7 +129,7 @@ namespace CraigStars
             }
 
             player.DesignsByGuid[design.Guid] = design;
-            design.ComputeAggregate(player);
+            fleetAggregator.ComputeDesignAggregate(player, design);
 
             return design;
         }

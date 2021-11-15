@@ -14,6 +14,7 @@ namespace CraigStars.Tests
         PlayerService playerService;
         PlayerIntel playerIntel;
         ShipDesignGenerator designGenerator;
+        FleetAggregator fleetAggregator;
 
         [SetUp]
         public void SetUp()
@@ -22,6 +23,7 @@ namespace CraigStars.Tests
             playerService = TestUtils.TestContainer.GetInstance<PlayerService>();
             playerIntel = TestUtils.TestContainer.GetInstance<PlayerIntel>();
             designGenerator = TestUtils.TestContainer.GetInstance<ShipDesignGenerator>();
+            fleetAggregator = TestUtils.TestContainer.GetInstance<FleetAggregator>();
         }
 
         [Test]
@@ -30,7 +32,14 @@ namespace CraigStars.Tests
             var game = new Game() { StartMode = GameStartMode.Normal };
             game.Init(new List<Player>() { new Player() { AIControlled = true } }, new Rules(0));
 
-            PlayerShipDesignsGenerationStep step = new PlayerShipDesignsGenerationStep(new Provider<Game>(game), StaticTechStore.Instance, playerIntel, designGenerator, playerService);
+            PlayerShipDesignsGenerationStep step = new PlayerShipDesignsGenerationStep(
+                new Provider<Game>(game),
+                StaticTechStore.Instance,
+                playerIntel,
+                designGenerator,
+                playerService,
+                fleetAggregator
+            );
 
             var starbase = new ShipDesign()
             {

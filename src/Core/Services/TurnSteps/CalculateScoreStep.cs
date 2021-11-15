@@ -57,8 +57,9 @@ namespace CraigStars
             var score = new PlayerScore();
 
             // sum up planets
-            score.Planets = player.Planets.Count;
-            foreach (var planet in player.Planets)
+            var playerPlanets = Game.Planets.Where(planet => planet.PlayerNum == player.Num).ToList();
+            score.Planets = playerPlanets.Count;
+            foreach (var planet in playerPlanets)
             {
                 if (planet.HasStarbase)
                 {
@@ -70,7 +71,9 @@ namespace CraigStars
             }
 
             score.TechLevels = player.TechLevels.Sum();
-            foreach (var token in player.Fleets.SelectMany(fleet => fleet.Tokens))
+
+            var playerFleets = Game.Fleets.Where(fleet => fleet.PlayerNum == player.Num).ToList();
+            foreach (var token in playerFleets.SelectMany(fleet => fleet.Tokens))
             {
                 var powerRating = token.Design.Aggregate.PowerRating;
                 if (powerRating <= 0)
@@ -92,7 +95,7 @@ namespace CraigStars
             // Starbases: 3 points each (doesn't include Orbital Forts)
             score.Score += score.Starbases * 3;
             // Unarmed Ships: You receive 1/2 point for each unarmed ship (up to the number of planets you own).
-            score.Score += (int)Mathf.Clamp(score.UnarmedShips * .5f, 0, score.Planets);
+            score.Score += (int)Mathf.Clamp(score.UnarmedShips * .5f + 5f, 0, score.Planets);
             // Escort Ships: You receive 2 points for each Escort ship (up to the number of planets you own).
             score.Score += (int)Mathf.Clamp(score.EscortShips * 2, 0, score.Planets);
             // Capital Ships (8 * #_capital_ships * #_planets) /( #_capital_ships + #_planets)

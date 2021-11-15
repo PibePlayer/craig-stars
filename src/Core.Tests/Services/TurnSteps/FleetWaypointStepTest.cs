@@ -39,8 +39,8 @@ namespace CraigStars.Tests
             var planet = game.Planets[0];
             var fleet = game.Fleets[0];
             var player = game.Players[0];
-            fleet.Tokens.Add(new ShipToken(ShipDesigns.Teamster.Clone(game.Players[0]), 1));
-            fleet.ComputeAggregate(player, true);
+            fleet.Tokens.Add(new ShipToken(TestUtils.CreateDesign(game, player, ShipDesigns.Teamster.Clone(game.Players[0])), 1));
+            gameRunner.ComputeAggregates(recompute: true);
 
             // configure this fleet to load all on the planet
             var waypoint = fleet.Waypoints[0];
@@ -63,8 +63,8 @@ namespace CraigStars.Tests
             var planet = game.Planets[0];
             var fleet = game.Fleets[0];
             var player = game.Players[0];
-            fleet.Tokens.Add(new ShipToken(ShipDesigns.Teamster.Clone(game.Players[0]), 1));
-            fleet.ComputeAggregate(player, true);
+            fleet.Tokens.Add(new ShipToken(TestUtils.CreateDesign(game, player, ShipDesigns.Teamster.Clone(game.Players[0])), 1));
+            gameRunner.ComputeAggregates(recompute: true);
 
             // configure this fleet to unload some of its cargo
             var waypoint = fleet.Waypoints[0];
@@ -102,8 +102,8 @@ namespace CraigStars.Tests
             var planet = game.Planets[0];
             var fleet = game.Fleets[0];
             var player = game.Players[0];
-            fleet.Tokens.Add(new ShipToken(ShipDesigns.Teamster.Clone(game.Players[0]), 1));
-            fleet.ComputeAggregate(player, true);
+            fleet.Tokens.Add(new ShipToken(TestUtils.CreateDesign(game, player, ShipDesigns.Teamster.Clone(game.Players[0])), 1));
+            gameRunner.ComputeAggregates(recompute: true);
 
             // configure this fleet to unload some of its cargo
             var waypoint = fleet.Waypoints[0];
@@ -143,8 +143,8 @@ namespace CraigStars.Tests
             var planet = game.Planets[0];
             var fleet = game.Fleets[0];
             var player = game.Players[0];
-            fleet.Tokens.Add(new ShipToken(ShipDesigns.Teamster.Clone(game.Players[0]), 1));
-            fleet.ComputeAggregate(player, true);
+            fleet.Tokens.Add(new ShipToken(TestUtils.CreateDesign(game, player, ShipDesigns.Teamster.Clone(game.Players[0])), 1));
+            gameRunner.ComputeAggregates(recompute: true);
 
             // configure this fleet to unload all onto the planet
             var waypoint = fleet.Waypoints[0];
@@ -167,8 +167,8 @@ namespace CraigStars.Tests
             var planet = game.Planets[0];
             var fleet = game.Fleets[0];
             var player = game.Players[0];
-            fleet.Tokens.Add(new ShipToken(ShipDesigns.Teamster.Clone(game.Players[0]), 1));
-            fleet.ComputeAggregate(player, true);
+            fleet.Tokens.Add(new ShipToken(TestUtils.CreateDesign(game, player, ShipDesigns.Teamster.Clone(game.Players[0])), 1));
+            gameRunner.ComputeAggregates(recompute: true);
 
             // configure this fleet to unload some of its cargo
             var waypoint = fleet.Waypoints[0];
@@ -206,8 +206,8 @@ namespace CraigStars.Tests
             var planet = game.Planets[0];
             var fleet = game.Fleets[0];
             var player = game.Players[0];
-            fleet.Tokens.Add(new ShipToken(ShipDesigns.Teamster.Clone(game.Players[0]), 1));
-            fleet.ComputeAggregate(player, true);
+            fleet.Tokens.Add(new ShipToken(TestUtils.CreateDesign(game, player, ShipDesigns.Teamster.Clone(game.Players[0])), 1));
+            gameRunner.ComputeAggregates(recompute: true);
 
             // configure this fleet to unload some of its cargo
             var waypoint = fleet.Waypoints[0];

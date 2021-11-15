@@ -18,7 +18,7 @@ namespace CraigStars.Tests
     {
         static CSLog log = LogProvider.GetLogger(typeof(FleetSweepMinesStepTest));
 
-        FleetService fleetService = new();
+        FleetService fleetService = TestUtils.TestContainer.GetInstance<FleetService>();
 
         [Test]
         public void ProcessTest()
@@ -44,7 +44,7 @@ namespace CraigStars.Tests
             game.MineFields.Add(playerMineField);
 
             // make the fleet have a simple scout design with a mine dispenser 50
-            fleet.Tokens[0].Design = new ShipDesign()
+            fleet.Tokens[0].Design = TestUtils.CreateDesign(game, player1, new ShipDesign()
             {
                 PlayerNum = player1.Num,
                 Name = "Mine Sweeping Scout",
@@ -53,8 +53,8 @@ namespace CraigStars.Tests
                     new ShipDesignSlot(Techs.QuickJump5, 1, 1),
                     new ShipDesignSlot(Techs.MiniGun, 3, 1),
                 }
-            };
-            fleet.ComputeAggregate(player1);
+            });
+            gameRunner.ComputeAggregates(recompute: true);
 
             FleetSweepMinesStep step = new FleetSweepMinesStep(gameRunner.GameProvider, fleetService);
 

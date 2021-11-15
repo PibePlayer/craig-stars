@@ -21,13 +21,15 @@ namespace CraigStars.Tests
         Game game;
         GameRunner gameRunner;
         PlanetProductionStep step;
+        PlayerService playerService = TestUtils.TestContainer.GetInstance<PlayerService>();
         PlanetService planetService = TestUtils.TestContainer.GetInstance<PlanetService>();
+        FleetAggregator fleetAggregator = TestUtils.TestContainer.GetInstance<FleetAggregator>();
 
         [SetUp]
         public void SetUp()
         {
             (game, gameRunner) = TestUtils.GetSingleUnitGame();
-            step = new PlanetProductionStep(gameRunner.GameProvider, planetService, new PlayerService(game));
+            step = new PlanetProductionStep(gameRunner.GameProvider, planetService, playerService, fleetAggregator);
         }
 
         [Test]
@@ -281,7 +283,7 @@ namespace CraigStars.Tests
             planet.ContributesOnlyLeftoverToResearch = true;
             var design = ShipDesigns.LongRangeScount.Clone();
             design.PlayerNum = player.Num;
-            design.ComputeAggregate(player);
+            fleetAggregator.ComputeDesignAggregate(player, design);
             player.Designs.Add(design);
 
 
@@ -326,9 +328,9 @@ namespace CraigStars.Tests
             var design1 = ShipDesigns.LongRangeScount.Clone();
             var design2 = ShipDesigns.SantaMaria.Clone();
             design1.PlayerNum = player.Num;
-            design1.ComputeAggregate(player);
+            fleetAggregator.ComputeDesignAggregate(player, design1);
             design2.PlayerNum = player.Num;
-            design2.ComputeAggregate(player);
+            fleetAggregator.ComputeDesignAggregate(player, design2);
             player.Designs.Add(design1);
             player.Designs.Add(design2);
 
@@ -418,7 +420,7 @@ namespace CraigStars.Tests
                     new FleetCompositionToken(ShipDesignPurpose.Bomber, 1)
                 }
             };
-            fleet.ComputeAggregate(player, true);
+            fleetAggregator.ComputeAggregate(player, fleet, true);
 
 
             ProductionQueueItem item = new(QueueItemType.ShipToken, 1, game.Designs[1]);

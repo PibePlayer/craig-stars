@@ -13,12 +13,12 @@ namespace CraigStars.Tests
     {
         PlanetBombStep planetBomber;
         Game game;
+        GameRunner gameRunner;
 
         [SetUp]
         public void SetUp()
         {
             PlanetService planetService = TestUtils.TestContainer.GetInstance<PlanetService>();
-            GameRunner gameRunner;
             (game, gameRunner) = TestUtils.GetSingleUnitGame();
             planetBomber = new PlanetBombStep(gameRunner.GameProvider, planetService);
         }
@@ -126,8 +126,10 @@ namespace CraigStars.Tests
                     }
                 }
             };
+            game.Designs.Add(fleet.Tokens[0].Design);
+            game.Fleets.Add(fleet);
 
-            fleet.ComputeAggregate(fleetOwner);
+            gameRunner.ComputeAggregates(recompute: true);
 
             fleet.Orbiting = planet;
             planet.OrbitingFleets.Add(fleet);
@@ -186,6 +188,9 @@ namespace CraigStars.Tests
                 }
             };
 
+            game.Designs.Add(fleet1.Tokens[0].Design);
+            game.Fleets.Add(fleet1);
+
             // one mini-bomber with smart bombs
             var fleet2 = new Fleet()
             {
@@ -206,8 +211,9 @@ namespace CraigStars.Tests
                 }
             };
 
-            fleet1.ComputeAggregate(fleetOwner);
-            fleet2.ComputeAggregate(fleetOwner);
+            game.Designs.Add(fleet2.Tokens[0].Design);
+            game.Fleets.Add(fleet2);
+            gameRunner.ComputeAggregates(recompute: true);
 
             fleet1.Orbiting = planet;
             fleet2.Orbiting = planet;

@@ -18,10 +18,10 @@ namespace CraigStars.Tests
     {
         static CSLog log = LogProvider.GetLogger(typeof(FleetMoveStepTest));
 
-        PlayerService playerService = new PlayerService(new TestRulesProvider());
-        MineFieldDamager mineFieldDamager = new();
-        ShipDesignDiscoverer designDiscoverer = new();
-        FleetService fleetService = new();
+        PlayerService playerService = TestUtils.TestContainer.GetInstance<PlayerService>();
+        MineFieldDamager mineFieldDamager = TestUtils.TestContainer.GetInstance<MineFieldDamager>();
+        ShipDesignDiscoverer designDiscoverer = TestUtils.TestContainer.GetInstance<ShipDesignDiscoverer>();
+        FleetService fleetService = TestUtils.TestContainer.GetInstance<FleetService>();
 
         [Test]
         public void TestCheckForMineFieldHitSpeed()
@@ -44,6 +44,7 @@ namespace CraigStars.Tests
             // make a new fleet at -15x, and move it through the field
             var design = ShipDesigns.LongRangeScount.Clone();
             design.PlayerNum = player1.Num;
+            game.Designs.Add(design);
             var fleet = new Fleet()
             {
                 PlayerNum = player1.Num,
@@ -52,7 +53,8 @@ namespace CraigStars.Tests
                 },
                 Position = new Vector2(-15, 0)
             };
-            fleet.ComputeAggregate(player1);
+            game.Fleets.Add(fleet);
+            gameRunner.ComputeAggregates(recompute: true);
 
             FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
 
@@ -114,7 +116,7 @@ namespace CraigStars.Tests
                 },
                 Position = new Vector2(-15, 0)
             };
-            fleet.ComputeAggregate(player1);
+            gameRunner.ComputeAggregates(recompute: true);
 
             // make the normal minefield allow speed 5, 25% hit chance per warp
             // we'll go warp 9 to guarantee a hit (if we were to fly through it)

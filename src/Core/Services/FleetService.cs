@@ -12,6 +12,13 @@ namespace CraigStars
     public class FleetService
     {
 
+        private readonly FleetAggregator fleetAggregator;
+
+        public FleetService(FleetAggregator fleetAggregator)
+        {
+            this.fleetAggregator = fleetAggregator;
+        }
+
         #region Splits/Merges
 
         /// <summary>
@@ -61,7 +68,7 @@ namespace CraigStars
                 mergedFleet.OtherFleets.ForEach(otherFleet => otherFleet.OtherFleets.Remove(mergedFleet));
             }
 
-            fleet.ComputeAggregate(player, recompute: true);
+            fleetAggregator.ComputeAggregate(player, fleet, recompute: true);
         }
 
         /// <summary>
@@ -111,7 +118,7 @@ namespace CraigStars
                             }},
                             BattlePlan = fleet.BattlePlan
                         };
-                        newFleet.ComputeAggregate(player);
+                        fleetAggregator.ComputeAggregate(player, newFleet);
                         newFleet.OtherFleets.AddRange(fleet.OtherFleets);
                         newFleet.OtherFleets.Add(fleet);
 
@@ -160,7 +167,7 @@ namespace CraigStars
             fleet.Tokens.Add(remainingToken);
 
             // update our remaining fuel and cargo
-            fleet.ComputeAggregate(player, recompute: true);
+            fleetAggregator.ComputeAggregate(player, fleet, recompute: true);
 
             // TODO: make sure we account for any fractional leftovers
             if (fleet.Aggregate.CargoCapacity > 0)
@@ -177,7 +184,7 @@ namespace CraigStars
         }
 
         #endregion
-    
+
         #region Fuel Usage
 
 
@@ -359,7 +366,7 @@ namespace CraigStars
 
 
         #endregion
- 
+
         #region Battles
 
         /// <summary>

@@ -18,12 +18,14 @@ namespace CraigStars
         private readonly PlayerService playerService;
         private readonly PlayerIntel playerIntel;
         private readonly PlayerTechService playerTechService;
+        private readonly FleetAggregator fleetAggregator;
 
-        public PlayerScanStep(IProvider<Game> gameProvider, PlayerService playerService, PlayerIntel playerIntel, PlayerTechService playerTechService) : base(gameProvider, TurnGenerationState.Scan)
+        public PlayerScanStep(IProvider<Game> gameProvider, PlayerService playerService, PlayerIntel playerIntel, PlayerTechService playerTechService, FleetAggregator fleetAggregator) : base(gameProvider, TurnGenerationState.Scan)
         {
             this.playerService = playerService;
             this.playerIntel = playerIntel;
             this.playerTechService = playerTechService;
+            this.fleetAggregator = fleetAggregator;
         }
 
         /// <summary>
@@ -69,10 +71,10 @@ namespace CraigStars
             base.PreProcess(ownedPlanets);
 
             log.Debug("Before we scan, make sure all of our aggregates are up to date");
-            Game.Fleets.ForEach(f => f.ComputeAggregate(Game.Players[f.PlayerNum]));
-            foreach (var planet in ownedPlanets)
+            Game.Fleets.ForEach(fleet => fleetAggregator.ComputeAggregate(Game.Players[fleet.PlayerNum], fleet));
+            foreach (var planet in ownedPlanets.Where(p => p.HasStarbase))
             {
-                planet.Starbase?.ComputeAggregate(Game.Players[planet.PlayerNum]);
+                fleetAggregator.ComputeAggregate(Game.Players[planet.PlayerNum], planet.Starbase);
             }
         }
 

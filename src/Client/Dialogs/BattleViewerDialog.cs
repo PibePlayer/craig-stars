@@ -568,7 +568,13 @@ namespace CraigStars.Client
                 new HashSet<string>() { "Destroyer", "Scout", "Fuel Transport" }
             );
 
-            var battleEngine = new BattleEngine(game, new FleetService(), new ShipDesignDiscoverer());
+            var rulesProvider = new Game();
+
+            var battleEngine = new BattleEngine(game,
+                new FleetService(
+                    new FleetAggregator(rulesProvider, new PlayerService(rulesProvider))
+                ),
+                new ShipDesignDiscoverer());
             var battle = battleEngine.BuildBattle(game.Fleets);
             battleEngine.RunBattle(battle);
 

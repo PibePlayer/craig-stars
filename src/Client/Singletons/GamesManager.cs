@@ -417,9 +417,6 @@ namespace CraigStars.Singletons
                     }
                 }
 
-                // after we are fully loaded, update our design and fleet aggregates
-                game.ComputeAggregates();
-
                 return game;
             }
 

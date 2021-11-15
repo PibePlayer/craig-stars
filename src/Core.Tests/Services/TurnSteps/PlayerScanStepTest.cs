@@ -22,6 +22,7 @@ namespace CraigStars.Tests
         PlayerTechService playerTechService;
         PlayerService playerService;
         PlayerIntel playerIntel;
+        FleetAggregator fleetAggregator;
 
         [SetUp]
         public void SetUp()
@@ -29,6 +30,7 @@ namespace CraigStars.Tests
             playerTechService = TestUtils.TestContainer.GetInstance<PlayerTechService>();
             playerService = TestUtils.TestContainer.GetInstance<PlayerService>();
             playerIntel = TestUtils.TestContainer.GetInstance<PlayerIntel>();
+            fleetAggregator = TestUtils.TestContainer.GetInstance<FleetAggregator>();
         }
 
 
@@ -38,7 +40,7 @@ namespace CraigStars.Tests
             var (game, gameRunner) = TestUtils.GetSingleUnitGame();
             game.Planets[0].Population = 120000;
 
-            var scanStep = new PlayerScanStep(gameRunner.GameProvider, playerService, playerIntel, playerTechService);
+            var scanStep = new PlayerScanStep(gameRunner.GameProvider, playerService, playerIntel, playerTechService, fleetAggregator);
             scanStep.Execute(new TurnGenerationContext(), game.OwnedPlanets.ToList());
 
             // our player should know about the planet updates
@@ -54,7 +56,7 @@ namespace CraigStars.Tests
             var fleet = game.Fleets[0];
 
             player.TechLevels.Electronics = 3;
-            player.ComputeAggregates(recompute: true);
+            gameRunner.ComputeAggregates(recompute: true);
 
             // our fleet should have a penscan range of
             var scanRangePen = fleet.Aggregate.ScanRangePen;
@@ -80,7 +82,7 @@ namespace CraigStars.Tests
             var playerPlanet = player.ForeignPlanets[1];
             Assert.IsNull(playerPlanet.Hab);
 
-            var scanStep = new PlayerScanStep(gameRunner.GameProvider, playerService, playerIntel, playerTechService);
+            var scanStep = new PlayerScanStep(gameRunner.GameProvider, playerService, playerIntel, playerTechService, fleetAggregator);
             scanStep.Execute(new TurnGenerationContext(), game.OwnedPlanets.ToList());
 
             // we should know the hab now
@@ -95,7 +97,7 @@ namespace CraigStars.Tests
             var fleet = game.Fleets[0];
 
             player.TechLevels.Electronics = 3;
-            player.ComputeAggregates(recompute: true);
+            gameRunner.ComputeAggregates(recompute: true);
 
             // our fleet should have a penscan range of
             var scanRangePen = fleet.Aggregate.ScanRangePen;
@@ -125,7 +127,7 @@ namespace CraigStars.Tests
             fleet.PreviousPosition = new Vector2();
             fleet.Position = new Vector2(scanRangePen * 2 + 2, 0);
 
-            var scanStep = new PlayerScanStep(gameRunner.GameProvider, playerService, playerIntel, playerTechService);
+            var scanStep = new PlayerScanStep(gameRunner.GameProvider, playerService, playerIntel, playerTechService, fleetAggregator);
             scanStep.Execute(new TurnGenerationContext(), game.OwnedPlanets.ToList());
 
             // we should know the hab now
@@ -149,7 +151,7 @@ namespace CraigStars.Tests
             };
 
             // we should discover this fleet
-            var scanStep = new PlayerScanStep(gameRunner.GameProvider, playerService, playerIntel, playerTechService);
+            var scanStep = new PlayerScanStep(gameRunner.GameProvider, playerService, playerIntel, playerTechService, fleetAggregator);
             scanStep.ScanFleets(player1, scanners);
 
             Assert.AreEqual(1, player1.ForeignFleets.Count);
@@ -222,10 +224,10 @@ namespace CraigStars.Tests
             }
 
             game.UpdateInternalDictionaries();
-            game.ComputeAggregates();
+            gameRunner.ComputeAggregates();
 
             // we should discover this fleet
-            var scanStep = new PlayerScanStep(gameRunner.GameProvider, playerService, playerIntel, playerTechService);
+            var scanStep = new PlayerScanStep(gameRunner.GameProvider, playerService, playerIntel, playerTechService, fleetAggregator);
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Reset();

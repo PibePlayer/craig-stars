@@ -10,10 +10,12 @@ namespace CraigStars
         static CSLog log = LogProvider.GetLogger(typeof(FleetBattleStep));
 
         private readonly BattleEngine battleEngine;
+        private readonly FleetAggregator fleetAggregator;
 
-        public FleetBattleStep(IProvider<Game> gameProvider, BattleEngine battleEngine) : base(gameProvider, TurnGenerationState.Battle)
+        public FleetBattleStep(IProvider<Game> gameProvider, BattleEngine battleEngine, FleetAggregator fleetAggregator) : base(gameProvider, TurnGenerationState.Battle)
         {
             this.battleEngine = battleEngine;
+            this.fleetAggregator = fleetAggregator;
         }
 
         public override void PreProcess(List<Planet> ownedPlanets)
@@ -78,7 +80,7 @@ namespace CraigStars
                             else
                             {
                                 // update aggregates after battle
-                                fleet.ComputeAggregate(Game.Players[fleet.PlayerNum], true);
+                                fleetAggregator.ComputeAggregate(Game.Players[fleet.PlayerNum], fleet, recompute: true);
                             }
                         }
 

@@ -35,6 +35,8 @@ namespace CraigStars
         private readonly PlayerScanStep playerScanStep;
         private readonly PlanetService planetService;
         private readonly PlayerTechService playerTechService;
+        private readonly PlayerService playerService;
+        private readonly FleetAggregator fleetAggregator;
 
         public Game Game { get => gameProvider.Item; }
         public IProvider<Game> GameProvider { get => gameProvider; }
@@ -46,7 +48,9 @@ namespace CraigStars
             TurnGenerator turnGenerator,
             PlayerScanStep playerScanStep,
             PlanetService planetService,
-            PlayerTechService playerTechService)
+            PlayerTechService playerTechService,
+            PlayerService playerService,
+            FleetAggregator fleetAggregator)
         {
             this.gameProvider = gameProvider;
             this.universeGenerator = universeGenerator;
@@ -55,10 +59,13 @@ namespace CraigStars
             this.playerScanStep = playerScanStep;
             this.planetService = planetService;
             this.playerTechService = playerTechService;
+            this.playerService = playerService;
+            this.fleetAggregator = fleetAggregator;
 
             EventManager.PlanetPopulationEmptiedEvent += OnPlanetPopulationEmptied;
             EventManager.MapObjectCreatedEvent += OnMapObjectCreated;
             EventManager.MapObjectDeletedEvent += OnMapObjectDeleted;
+            EventManager.PlayerResearchLevelIncreasedEvent += OnPlayerResearchLevelIncreased;
 
             turnGenerator.TurnGeneratorAdvancedEvent += OnTurnGeneratorAdvanced;
             turnGenerator.PurgeDeletedMapObjectsEvent += OnPurgeDeletedMapObjects;
@@ -69,6 +76,7 @@ namespace CraigStars
             EventManager.PlanetPopulationEmptiedEvent -= OnPlanetPopulationEmptied;
             EventManager.MapObjectCreatedEvent -= OnMapObjectCreated;
             EventManager.MapObjectDeletedEvent -= OnMapObjectDeleted;
+            EventManager.PlayerResearchLevelIncreasedEvent -= OnPlayerResearchLevelIncreased;
 
             turnGenerator.TurnGeneratorAdvancedEvent -= OnTurnGeneratorAdvanced;
             turnGenerator.PurgeDeletedMapObjectsEvent -= OnPurgeDeletedMapObjects;
@@ -83,7 +91,7 @@ namespace CraigStars
             // generate a new univers
             universeGenerator.Generate();
 
-            Game.ComputeAggregates();
+            ComputeAggregates();
 
             Game.UpdateInternalDictionaries();
 
@@ -150,7 +158,7 @@ namespace CraigStars
             // after new player actions and designs are submitted, we need
             // to compute aggregates for fleets and designs
             // for turn generation
-            Game.ComputeAggregates();
+            ComputeAggregates();
 
             turnGenerator.GenerateTurn();
 
@@ -180,10 +188,23 @@ namespace CraigStars
             Game.Players.ForEach(p =>
             {
                 p.PlanetaryScanner = playerTechService.GetBestPlanetaryScanner(p);
-                p.ComputeAggregates();
+                fleetAggregator.ComputePlayerAggregates(p, recompute: true);
                 p.SetupMapObjectMappings();
                 p.UpdateMessageTargets();
             });
+        }
+
+        /// <summary>
+        /// After game load or creating a new game, loop through all designs, fleets, and starbases and build
+        /// </summary>
+        public void ComputeAggregates(bool recompute = false)
+        {
+            Game.Designs.ForEach(design => fleetAggregator.ComputeDesignAggregate(Game.Players[design.PlayerNum], design, recompute));
+            Game.Fleets.ForEach(fleet => fleetAggregator.ComputeAggregate(Game.Players[fleet.PlayerNum], fleet, recompute));
+            foreach (var planet in Game.OwnedPlanets.Where(p => p.HasStarbase))
+            {
+                fleetAggregator.ComputeStarbaseAggregate(Game.Players[planet.PlayerNum], planet.Starbase, recompute);
+            }
         }
 
         #region Event Handlers
@@ -217,6 +238,31 @@ namespace CraigStars
             planetService.EmptyPlanet(planet);
         }
 
+        /// <summary>
+        /// When a player's tech level increases their designs (and therefore fleets) get cheaper. JoaT races also
+        /// improve built in scan ranges
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="field"></param>
+        /// <param name="level"></param>
+        void OnPlayerResearchLevelIncreased(Player player, TechField field, int level)
+        {
+            var updateBuiltInScanners = field == TechField.Electronics && playerService.GetBuiltInScannerMultiplier(player.Race) > 0;
+            foreach (var design in Game.Designs.Where(d => d.PlayerNum == player.Num))
+            {
+                if (updateBuiltInScanners && design.Hull.BuiltInScanner)
+                {
+                    fleetAggregator.ComputeDesignScanRanges(player, design);
+                }
+                fleetAggregator.ComputeDesignCost(player, design);
+            }
+
+            foreach (var fleet in Game.Fleets.Where(f => f.PlayerNum == player.Num))
+            {
+                fleetAggregator.ComputeAggregate(player, fleet, recompute: true);
+            }
+
+        }
         #endregion
 
     }

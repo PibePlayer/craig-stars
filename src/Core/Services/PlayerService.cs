@@ -163,11 +163,13 @@ namespace CraigStars
         public bool FreeCargoCloaking(Race race) => Rules.PRTSpecs[race.PRT].FreeCargoCloaking;
 
         /// <summary>
-        /// The player's built in cloaking percentage
+        /// The player's built in cloaking units
         /// </summary>
-        public int BuiltInCloaking(Race race) => Rules.PRTSpecs[race.PRT].BuiltInCloakUnits;
+        public int BuiltInCloakUnits(Race race) => Rules.PRTSpecs[race.PRT].BuiltInCloakUnits;
 
         public int GetTechsCostExtraLevel(Race race) => Rules.PRTSpecs[race.PRT].TechsCostExtraLevel;
+
+        public int GetBuiltInScannerMultiplier(Race race) => Rules.PRTSpecs[race.PRT].BuiltInScannerMultiplier;
 
         /// <summary>
         /// Do this player's minefields act like scanners?

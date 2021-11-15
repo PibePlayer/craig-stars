@@ -26,20 +26,23 @@ namespace CraigStars.Tests
             var player = game.Players[0];
 
             // make the fleet have a simple scout design with a mine dispenser 50
-            fleet.Tokens[0].Design = new ShipDesign()
-            {
-                PlayerNum = fleet.PlayerNum,
-                Name = "Medium Freighter",
-                Hull = Techs.MediumFreighter,
-                Slots = new List<ShipDesignSlot>() {
-                    new ShipDesignSlot(Techs.QuickJump5, 1, 1),
+            fleet.Tokens[0].Design = TestUtils.CreateDesign(game, player,
+                new ShipDesign()
+                {
+                    PlayerNum = fleet.PlayerNum,
+                    Name = "Medium Freighter",
+                    Hull = Techs.MediumFreighter,
+                    Slots = new List<ShipDesignSlot>() {
+                        new ShipDesignSlot(Techs.QuickJump5, 1, 1),
+                    }
                 }
-            };
+            );
+
             player.Race.PRT = PRT.IS;
             player.Race.GrowthRate = 10;
             fleet.Cargo = fleet.Cargo.WithColonists(100);
 
-            fleet.ComputeAggregate(player);
+            gameRunner.ComputeAggregates(recompute: true);
 
             FleetReproduceStep step = new FleetReproduceStep(gameRunner.GameProvider, new PlayerService(game));
 
@@ -56,7 +59,7 @@ namespace CraigStars.Tests
             var player = game.Players[0];
 
             // make the fleet have a simple scout design with a mine dispenser 50
-            fleet.Tokens[0].Design = new ShipDesign()
+            fleet.Tokens[0].Design = TestUtils.CreateDesign(game, player, new ShipDesign()
             {
                 PlayerNum = fleet.PlayerNum,
                 Name = "Medium Freighter",
@@ -64,11 +67,11 @@ namespace CraigStars.Tests
                 Slots = new List<ShipDesignSlot>() {
                     new ShipDesignSlot(Techs.QuickJump5, 1, 1),
                 }
-            };
+            });
             player.Race.PRT = PRT.IS;
             player.Race.GrowthRate = 10;
 
-            fleet.ComputeAggregate(player);
+            gameRunner.ComputeAggregates(recompute: true);
 
             // leave space for 1kT of colonists
             fleet.Cargo = fleet.Cargo.WithColonists(fleet.Aggregate.CargoCapacity - 1);
@@ -97,7 +100,7 @@ namespace CraigStars.Tests
             var player = game.Players[0];
 
             // make the fleet have a simple scout design with a mine dispenser 50
-            fleet.Tokens[0].Design = new ShipDesign()
+            fleet.Tokens[0].Design = TestUtils.CreateDesign(game, player, new ShipDesign()
             {
                 PlayerNum = fleet.PlayerNum,
                 Name = "Medium Freighter",
@@ -105,12 +108,12 @@ namespace CraigStars.Tests
                 Slots = new List<ShipDesignSlot>() {
                     new ShipDesignSlot(Techs.QuickJump5, 1, 1),
                 }
-            };
+            });
             player.Race.PRT = PRT.IS;
             player.Race.GrowthRate = 10;
             fleet.Cargo = fleet.Cargo.WithColonists(100);
 
-            fleet.ComputeAggregate(player);
+            gameRunner.ComputeAggregates(recompute: true);
 
             FleetReproduceStep step = new FleetReproduceStep(gameRunner.GameProvider, new PlayerService(game));
 

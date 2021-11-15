@@ -9,7 +9,11 @@ namespace CraigStars.Tests
         static CSLog log = LogProvider.GetLogger(typeof(PlanetServiceTest));
 
         Rules rules = new Rules(0);
-        PlanetService service = new PlanetService(TestUtils.TestContainer.GetInstance<PlayerService>(), TestUtils.TestContainer.GetInstance<PlayerTechService>());
+        PlanetService service = new PlanetService(
+            TestUtils.TestContainer.GetInstance<PlayerService>(),
+            TestUtils.TestContainer.GetInstance<PlayerTechService>(),
+            TestUtils.TestContainer.GetInstance<IRulesProvider>()
+        );
 
         [Test]
         public void TestGetMaxMines()

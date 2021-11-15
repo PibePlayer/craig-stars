@@ -29,19 +29,6 @@ namespace CraigStars
         public override string RaceName { get => Race.Name; }
         public override string RacePluralName { get => Race.PluralName; }
 
-        /// <summary>
-        /// Each player gets a copy of rules from the server. These rules are used
-        /// for computing various values both for the UI and during turn generation
-        /// </summary>
-        [JsonIgnore] public Rules Rules { get; set; } = new Rules(0);
-
-        /// <summary>
-        /// Each player gets a TechStore from the server (or client)
-        /// Note: this defaults to StaticTechStore for testing
-        /// </summary>
-        [JsonIgnore]
-        public ITechStore TechStore { get; set; } = StaticTechStore.Instance;
-
         public Race Race { get; set; } = new();
         public int DefaultHullSet { get; set; } = 0;
         public PlayerStats Stats { get; set; } = new();
@@ -164,11 +151,10 @@ namespace CraigStars
         /// <summary>
         /// All battles by their guid, for lookups
         /// </summary>
-        [JsonIgnore] public Dictionary<Guid, BattleRecord> BattlesByGuid { get; set; }
-
-        [JsonIgnore] public Dictionary<Guid, BattlePlan> BattlePlansByGuid = new();
-        [JsonIgnore] public Dictionary<Guid, TransportPlan> TransportPlansByGuid = new();
-        [JsonIgnore] public Dictionary<Guid, ProductionPlan> ProductionPlansByGuid = new();
+        [JsonIgnore] public Dictionary<Guid, BattleRecord> BattlesByGuid { get; set; } = new();
+        [JsonIgnore] public Dictionary<Guid, BattlePlan> BattlePlansByGuid { get; set; } = new();
+        [JsonIgnore] public Dictionary<Guid, TransportPlan> TransportPlansByGuid { get; set; } = new();
+        [JsonIgnore] public Dictionary<Guid, ProductionPlan> ProductionPlansByGuid { get; set; } = new();
 
         /// <summary>
         /// FleetCompositions
@@ -221,42 +207,6 @@ namespace CraigStars
         #region Serializer Helpers
 
         /// <summary>
-        /// We use object references for players all over the place. Because of
-        /// this, we "populate" our player object rather than load it into a new object
-        /// I'm not super happy with this, but it's where the code is for now.
-        /// Because of this population, we need to wipe out various lists the player
-        /// object has. The serializer will re-add to them on load.
-        /// </summary>
-        /// <param name="context"></param>
-        [OnDeserializing]
-        internal void OnDeserializingMethod(StreamingContext context)
-        {
-            // reset our various lists
-            // the populate will add to them
-            DesignIntel.Clear();
-            PlanetIntel.Clear();
-            FleetIntel.Clear();
-            MineFieldIntel.Clear();
-            MineralPacketIntel.Clear();
-            SalvageIntel.Clear();
-            WormholeIntel.Clear();
-            MysteryTraderIntel.Clear();
-            Battles.Clear();
-
-            BattlePlans.Clear();
-            TransportPlans.Clear();
-            ProductionPlans.Clear();
-            FleetCompositions.Clear();
-            CargoTransferOrders.Clear();
-            MergeFleetOrders.Clear();
-            SplitFleetOrders.Clear();
-            FleetOrders.Clear();
-            DeletedDesigns.Clear();
-            MergedFleets.Clear();
-            Messages.Clear();
-        }
-
-        /// <summary>
         /// When a player is deserialized, we have to calculate all the computed values
         /// </summary>
         /// <param name="context"></param>
@@ -264,7 +214,6 @@ namespace CraigStars
         internal void OnDeserialized(StreamingContext context)
         {
             SetupMapObjectMappings();
-            ComputeAggregates();
         }
 
         public void SetupMapObjectMappings()
@@ -305,39 +254,6 @@ namespace CraigStars
                     {
                         fleet.OtherFleets.Add((Fleet)otherFleet);
                     }
-                }
-            });
-        }
-
-        /// <summary>
-        /// Compute design and fleet aggregates so the UI will show correct values
-        /// </summary>
-        public void ComputeAggregates(bool recompute = false)
-        {
-            Designs.ForEach(d => d.ComputeAggregate(this, recompute));
-            Fleets.ForEach(f => f.ComputeAggregate(this, recompute));
-            Planets.ForEach(p => p.Starbase?.ComputeAggregate(this, recompute));
-
-            ComputeDesignsInUse();
-        }
-
-        internal void ComputeDesignsInUse()
-        {
-            // sum up all designs in use
-            // get fleet designs
-            var designsInUse = Fleets.SelectMany(f => f.Tokens).Select(token => token.Design).ToLookup(design => design).ToDictionary(lookup => lookup.Key, lookup => lookup.Count());
-            // add in starbase designs
-            var starbaseDesignsInUse = Planets.Where(planet => planet.HasStarbase).Select(planet => planet.Starbase.Design).ToLookup(design => design).ToDictionary(lookup => lookup.Key, lookup => lookup.Count());
-            foreach (var starbaseDesign in starbaseDesignsInUse)
-            {
-                designsInUse.Add(starbaseDesign.Key, starbaseDesign.Value);
-            }
-
-            Designs.ForEach(design =>
-            {
-                if (designsInUse.TryGetValue(design, out int numInUse))
-                {
-                    design.NumInUse = numInUse;
                 }
             });
         }
@@ -401,7 +317,6 @@ namespace CraigStars
         {
             return Fleets.Select(f => f.Id).Max() + 1;
         }
-
 
         public ShipDesign GetDesign(string name)
         {

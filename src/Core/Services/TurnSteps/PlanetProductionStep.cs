@@ -13,11 +13,13 @@ namespace CraigStars
         static CSLog log = LogProvider.GetLogger(typeof(PlanetProductionStep));
         private readonly PlanetService planetService;
         private readonly PlayerService playerService;
+        private readonly FleetAggregator fleetAggregator;
 
-        public PlanetProductionStep(IProvider<Game> gameProvider, PlanetService planetService, PlayerService playerService) : base(gameProvider, TurnGenerationState.Production)
+        public PlanetProductionStep(IProvider<Game> gameProvider, PlanetService planetService, PlayerService playerService, FleetAggregator fleetAggregator) : base(gameProvider, TurnGenerationState.Production)
         {
             this.planetService = planetService;
             this.playerService = playerService;
+            this.fleetAggregator = fleetAggregator;
         }
 
         /// <summary>
@@ -304,7 +306,7 @@ namespace CraigStars
                             fleet.Tokens.Add(new ShipToken(item.Design, item.Quantity));
                         }
 
-                        fleet.ComputeAggregate(player, true);
+                        fleetAggregator.ComputeAggregate(player, fleet, true);
                         Message.FleetBuiltForComposition(player, item.Design, fleet, numBuilt);
                         foundFleet = true;
                         break;
@@ -325,7 +327,7 @@ namespace CraigStars
                     BattlePlan = player.BattlePlans[0]
                 };
                 fleet.Tokens.Add(new ShipToken(item.Design, item.Quantity));
-                fleet.ComputeAggregate(player);
+                fleetAggregator.ComputeAggregate(player, fleet);
                 fleet.Fuel = fleet.Aggregate.FuelCapacity;
                 fleet.Waypoints.Add(Waypoint.TargetWaypoint(planet));
                 planet.OrbitingFleets.Add(fleet);
@@ -360,7 +362,7 @@ namespace CraigStars
             }
             planet.Starbase.Name = item.Design.Name;
             planet.Starbase.Tokens.Add(new ShipToken(item.Design, 1));
-            planet.Starbase.ComputeAggregate(player, true);
+            fleetAggregator.ComputeStarbaseAggregate(player, planet.Starbase, true);
             planet.PacketSpeed = planet.Starbase.Aggregate.SafePacketSpeed;
             Message.FleetBuilt(player, item.Design, planet.Starbase, 1);
 

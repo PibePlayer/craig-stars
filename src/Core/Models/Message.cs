@@ -85,6 +85,12 @@ namespace CraigStars
             player.Messages.Add(new Message(MessageType.BuiltTerraform, text, planet));
         }
 
+        public static void Instaform(Player player, Planet planet, Hab terraformAmount)
+        {
+            string text = $"Your race has instantly terraformed {planet.Name} up to optimal conditions.";
+            player.Messages.Add(new Message(MessageType.BuiltTerraform, text, planet));
+        }
+
         public static void MineralPacket(Player player, Planet planet, MineralPacket packet)
         {
             string text = $"{planet.Name} has produced a mineral packet which has a destination of {packet.Target.Name}";

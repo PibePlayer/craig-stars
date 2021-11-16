@@ -12,7 +12,6 @@ namespace CraigStars.Tests
     public class InvasionProcessorTest
     {
         InvasionProcessor invasionProcessor = new InvasionProcessor(
-            TestUtils.TestContainer.GetInstance<PlayerService>(),
             TestUtils.TestContainer.GetInstance<PlanetService>(),
             TestUtils.TestContainer.GetInstance<IRulesProvider>()
         );

@@ -15,14 +15,12 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(PlayerScanStep));
 
-        private readonly PlayerService playerService;
         private readonly PlayerIntel playerIntel;
         private readonly PlayerTechService playerTechService;
         private readonly FleetAggregator fleetAggregator;
 
-        public PlayerScanStep(IProvider<Game> gameProvider, PlayerService playerService, PlayerIntel playerIntel, PlayerTechService playerTechService, FleetAggregator fleetAggregator) : base(gameProvider, TurnGenerationState.Scan)
+        public PlayerScanStep(IProvider<Game> gameProvider, PlayerIntel playerIntel, PlayerTechService playerTechService, FleetAggregator fleetAggregator) : base(gameProvider, TurnGenerationState.Scan)
         {
-            this.playerService = playerService;
             this.playerIntel = playerIntel;
             this.playerTechService = playerTechService;
             this.fleetAggregator = fleetAggregator;
@@ -149,7 +147,7 @@ namespace CraigStars
             }
 
             // Space demolition minefields act as scanners
-            if (playerService.MineFieldsAreScanners(player.Race))
+            if (player.Race.Spec.MineFieldsAreScanners)
             {
                 foreach (var mineField in Game.MineFields.Where(mf => mf.PlayerNum == player.Num))
                 {
@@ -376,7 +374,7 @@ namespace CraigStars
 
             }
             log.Debug($"{Game.Year}: {player} Discovering {fleetsToDiscover.Count} foreign fleets.");
-            fleetsToDiscover.ForEach(fleet => playerIntel.Discover(player, fleet, playerService.DiscoverDesignOnScan(player.Race)));
+            fleetsToDiscover.ForEach(fleet => playerIntel.Discover(player, fleet, player.Race.Spec.DiscoverDesignOnScan));
         }
 
     }

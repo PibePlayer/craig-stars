@@ -126,7 +126,7 @@ namespace CraigStars
             }
 
             // dump cargo if we aren't IT
-            if (fleet.Cargo.Total > 0 && !playerService.CanGateCargo(player.Race))
+            if (fleet.Cargo.Total > 0 && !player.Race.Spec.CanGateCargo)
             {
                 Message.FleetStargateDumpedCargo(player, fleet, wp0, wp1, fleet.Cargo);
                 fleet.AttemptTransfer(-fleet.Cargo);
@@ -310,7 +310,7 @@ namespace CraigStars
             {
                 startingShips += token.Quantity;
                 // Inner stellar travellers never lose ships to the void, but everyone else does
-                if (playerService.ShipsVanishInVoid(player.Race))
+                if (player.Race.Spec.ShipsVanishInVoid)
                 {
                     var rangeVanishChance = token.GetStargateRangeVanishingChance(distance, sourceStargate.SafeRange);
                     var massVanishingChance = token.GetStargateMassVanishingChance(sourceStargate.SafeHullMass, Game.Rules.StargateMaxHullMassFactor);
@@ -385,7 +385,7 @@ namespace CraigStars
         /// <returns>The actual distance travelled, if stopped by a minefield</returns>
         internal float CheckForMineFields(Fleet fleet, Player player, Waypoint dest, float distance)
         {
-            int safeWarpBonus = playerService.GetMineFieldSafeWarpBonus(player.Race);
+            int safeWarpBonus = player.Race.Spec.MineFieldSafeWarpBonus;
 
             // see if we are colliding with any of these minefields
             foreach (var mineField in Game.MineFields.Where(mf => mf.PlayerNum != fleet.PlayerNum))
@@ -432,7 +432,7 @@ namespace CraigStars
 
                                 mineFieldDamager.TakeMineFieldDamage(fleet, fleetPlayer, mineField, mineFieldPlayer, stats);
                                 mineFieldDamager.ReduceMineFieldOnImpact(mineField);
-                                if (playerService.MineFieldsAreScanners(mineFieldPlayer.Race))
+                                if (mineFieldPlayer.Race.Spec.MineFieldsAreScanners)
                                 {
                                     // SD races discover the exact fleet makeup
                                     foreach (var token in fleet.Tokens)

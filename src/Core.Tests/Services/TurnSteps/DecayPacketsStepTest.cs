@@ -32,7 +32,7 @@ namespace CraigStars.Tests
             };
             game.MineralPackets.Add(packet);
 
-            DecayPacketsStep step = new DecayPacketsStep(gameRunner.GameProvider, new PlayerService(game));
+            DecayPacketsStep step = new DecayPacketsStep(gameRunner.GameProvider, new TestRulesProvider());
 
             // no decay for safe speed
             packet.Cargo = new Cargo(100, 100, 100);
@@ -53,9 +53,9 @@ namespace CraigStars.Tests
             step.Decay(packet);
             Assert.AreEqual(new Cargo(50, 50, 50), packet.Cargo);
 
-
             // half of 50% decay for PP races
             player1.Race.PRT = PRT.PP;
+            gameRunner.ComputeAggregates(recompute: true);
             packet.Cargo = new Cargo(100, 100, 100);
             packet.WarpFactor = 10;
             packet.DistanceTravelled = packet.WarpFactor * packet.WarpFactor;
@@ -65,6 +65,7 @@ namespace CraigStars.Tests
             // protate distance, if we only travelled half the distance 
             // this year, our 50% packet decay is only 25%
             player1.Race.PRT = PRT.JoaT;
+            gameRunner.ComputeAggregates(recompute: true);
             packet.Cargo = new Cargo(100, 100, 100);
             packet.DistanceTravelled = packet.DistanceTravelled * .5f;
             step.Decay(packet);

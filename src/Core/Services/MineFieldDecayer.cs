@@ -13,13 +13,11 @@ namespace CraigStars
         static CSLog log = LogProvider.GetLogger(typeof(MineFieldDecayer));
 
         private readonly IRulesProvider rulesProvider;
-        private readonly PlayerService playerService;
 
         private Rules Rules => rulesProvider.Rules;
 
-        public MineFieldDecayer(IRulesProvider rulesProvider, PlayerService playerService)
+        public MineFieldDecayer(IRulesProvider rulesProvider)
         {
-            this.playerService = playerService;
             this.rulesProvider = rulesProvider;
         }
 
@@ -42,17 +40,17 @@ namespace CraigStars
             }
 
             var numPlanets = UniverseUtils.GetPlanetsWithin(planets, mineField.Position, mineField.Radius).Count();
-            var decayRate = playerService.GetMineFieldBaseDecayRate(player.Race);
-            decayRate += playerService.GetMineFieldPlanetDecayRate(player.Race) * numPlanets;
+            var decayRate = player.Race.Spec.MineFieldBaseDecayRate;
+            decayRate += player.Race.Spec.MineFieldPlanetDecayRate * numPlanets;
             if (mineField.Detonate)
             {
-                decayRate += playerService.GetMineFieldDetonateDecayRate(player.Race);
+                decayRate += player.Race.Spec.MineFieldDetonateDecayRate;
             }
 
             // Space Demolition mines decay slower
-            var decayFactor = playerService.GetMineFieldMinDecayFactor(player.Race);
+            var decayFactor = player.Race.Spec.MineFieldMinDecayFactor;
             decayRate *= decayFactor;
-            decayRate = Math.Min(decayRate, playerService.GetMineFieldMaxDecayRate(player.Race));
+            decayRate = Math.Min(decayRate, player.Race.Spec.MineFieldMaxDecayRate);
 
             // we decay at least 10 mines a year for normal and standar mines
             long decayedMines = Math.Max(Rules.MineFieldStatsByType[mineField.Type].MinDecay, (long)(mineField.NumMines * decayRate + .5));

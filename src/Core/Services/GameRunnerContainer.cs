@@ -85,6 +85,7 @@ namespace CraigStars
                 typeof(DetonateMinesStep),
                 typeof(PlanetMineStep),
                 typeof(PlanetProductionStep),
+                typeof(InstaformStep),
                 typeof(PlayerResearchStep),
                 typeof(PlanetGrowStep),
                 typeof(PacketMove1Step),

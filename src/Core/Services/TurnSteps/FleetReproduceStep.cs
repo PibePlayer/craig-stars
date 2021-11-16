@@ -9,19 +9,14 @@ namespace CraigStars
     /// </summary>
     public class FleetReproduceStep : TurnGenerationStep
     {
-        private readonly PlayerService playerService;
-
-        public FleetReproduceStep(IProvider<Game> gameProvider, PlayerService playerService) : base(gameProvider, TurnGenerationState.Grow)
-        {
-            this.playerService = playerService;
-        }
+        public FleetReproduceStep(IProvider<Game> gameProvider) : base(gameProvider, TurnGenerationState.Grow) { }
 
         public override void Process()
         {
             // for any IS fleets that have colonists and cargo space, grow colonists
             foreach (Fleet fleet in Game.Fleets.Where(
                 fleet => fleet.Cargo.Colonists > 0 &&
-                playerService.FleetsReproduce(Game.Players[fleet.PlayerNum].Race)))
+                Game.Players[fleet.PlayerNum].Race.Spec.FreighterGrowthFactor > 0))
             {
                 Reproduce(fleet, Game.Players[fleet.PlayerNum]);
             }
@@ -33,7 +28,7 @@ namespace CraigStars
         /// <param name="fleet"></param>
         internal void Reproduce(Fleet fleet, Player player)
         {
-            var growthFactor = playerService.GetFreighterGrowthFactor(player.Race);
+            var growthFactor = player.Race.Spec.FreighterGrowthFactor;
             var growth = (int)(growthFactor * player.Race.GrowthRate / 100f * fleet.Cargo.Colonists);
             fleet.Cargo = fleet.Cargo.WithColonists(fleet.Cargo.Colonists + growth);
             var over = fleet.Cargo.Total - fleet.Aggregate.CargoCapacity;

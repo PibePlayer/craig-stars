@@ -15,13 +15,11 @@ namespace CraigStars.UniverseGeneration
     public class PlayerFleetGenerationStep : UniverseGenerationStep
     {
         private readonly ITechStore techStore;
-        private readonly PlayerService playerService;
         private readonly FleetAggregator fleetAggregator;
 
-        public PlayerFleetGenerationStep(IProvider<Game> gameProvider, ITechStore techStore, PlayerService playerService, FleetAggregator fleetAggregator) : base(gameProvider, UniverseGenerationState.Fleets)
+        public PlayerFleetGenerationStep(IProvider<Game> gameProvider, ITechStore techStore, FleetAggregator fleetAggregator) : base(gameProvider, UniverseGenerationState.Fleets)
         {
             this.techStore = techStore;
-            this.playerService = playerService;
             this.fleetAggregator = fleetAggregator;
         }
 
@@ -38,7 +36,7 @@ namespace CraigStars.UniverseGeneration
             var fleets = new List<Fleet>();
             var id = 1;
 
-            foreach (StartingFleet startingFleet in playerService.GetStartingFleets(player.Race))
+            foreach (StartingFleet startingFleet in player.Race.Spec.StartingFleets)
             {
                 var hull = techStore.GetTechByName<TechHull>(startingFleet.HullName);
                 var design = player.GetDesign(startingFleet.Name);
@@ -46,7 +44,7 @@ namespace CraigStars.UniverseGeneration
             }
 
             // add fleets to any extra planets, as defined in the PRTSpec
-            var startingPlanets = playerService.GetStartingPlanets(player.Race);
+            var startingPlanets = player.Race.Spec.StartingPlanets;
             if (startingPlanets.Count > 0)
             {
                 for (int i = 1; i < startingPlanets.Count; i++)

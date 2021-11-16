@@ -1,4 +1,6 @@
 
+using Godot;
+
 namespace CraigStars
 {
     /// <summary>
@@ -8,11 +10,12 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(DecayPacketsStep));
 
-        private readonly PlayerService playerService;
+        private readonly IRulesProvider rulesProvider;
+        private Rules Rules => rulesProvider.Rules;
 
-        public DecayPacketsStep(IProvider<Game> gameProvider, PlayerService playerService) : base(gameProvider, TurnGenerationState.DecayMineralPackets)
+        public DecayPacketsStep(IProvider<Game> gameProvider, IRulesProvider rulesProvider) : base(gameProvider, TurnGenerationState.DecayMineralPackets)
         {
-            this.playerService = playerService;
+            this.rulesProvider = rulesProvider;
         }
 
         public override void Process()
@@ -31,9 +34,35 @@ namespace CraigStars
         internal void Decay(MineralPacket packet)
         {
             var player = Game.Players[packet.PlayerNum];
-            var decayRate = 1f - playerService.GetPacketDecayRate(player.Race, packet) * (packet.DistanceTravelled / (packet.WarpFactor * packet.WarpFactor));
+            var decayRate = 1f - GetPacketDecayRate(player.Race, packet) * (packet.DistanceTravelled / (packet.WarpFactor * packet.WarpFactor));
             packet.Cargo *= decayRate;
         }
 
+        /// <summary>
+        /// PP races can fling packets 1 warp faster without decaying.
+        /// </summary>
+        public float GetPacketDecayRate(Race race, MineralPacket packet)
+        {
+            int overSafeWarp = packet.WarpFactor - packet.SafeWarpSpeed;
+
+            // IT is always count as being at least 1 over the safe warp
+            overSafeWarp += race.Spec.PacketOverSafeWarpPenalty;
+
+            // we only care about packets thrown up to 3 warp over the limit 
+            overSafeWarp = Mathf.Clamp(packet.WarpFactor - packet.SafeWarpSpeed, 0, 3);
+
+            var packetDecayRate = 0f;
+            if (overSafeWarp > 0)
+            {
+                packetDecayRate = Rules.PacketDecayRate[overSafeWarp];
+            }
+
+            // PP have half the decay rate
+            packetDecayRate *= race.Spec.PacketDecayFactor;
+
+            return packetDecayRate;
+        }
+
     }
+
 }

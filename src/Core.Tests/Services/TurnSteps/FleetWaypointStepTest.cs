@@ -19,7 +19,6 @@ namespace CraigStars.Tests
         static CSLog log = LogProvider.GetLogger(typeof(FleetWaypointStepTest));
 
         IRulesProvider rulesProvider;
-        PlayerService playerService;
         PlanetService planetService;
         InvasionProcessor invasionProcessor;
         PlanetDiscoverer planetDiscover;
@@ -28,7 +27,6 @@ namespace CraigStars.Tests
         public void SetUp()
         {
             rulesProvider = new TestRulesProvider();
-            playerService = TestUtils.TestContainer.GetInstance<PlayerService>();
             planetService = TestUtils.TestContainer.GetInstance<PlanetService>();
             invasionProcessor = TestUtils.TestContainer.GetInstance<InvasionProcessor>();
             planetDiscover = TestUtils.TestContainer.GetInstance<PlanetDiscoverer>();
@@ -51,7 +49,7 @@ namespace CraigStars.Tests
             fleet.Cargo = new Cargo();
             planet.Cargo = new Cargo(ironium: 100);
 
-            var step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, playerService, planetService, invasionProcessor, planetDiscover);
+            var step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, planetService, invasionProcessor, planetDiscover);
             step.Process();
 
             Assert.AreEqual(0, planet.Cargo.Ironium);
@@ -75,7 +73,7 @@ namespace CraigStars.Tests
             fleet.Cargo = new Cargo();
             planet.Cargo = new Cargo(ironium: 100);
 
-            var step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, playerService, planetService, invasionProcessor, planetDiscover);
+            var step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, planetService, invasionProcessor, planetDiscover);
             step.Process();
 
             // should load 25 onto the fleet, leaving 75 on the planet
@@ -88,7 +86,7 @@ namespace CraigStars.Tests
             fleet.Cargo = new Cargo();
             planet.Cargo = new Cargo(ironium: 20);
 
-            step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, playerService, planetService, invasionProcessor, planetDiscover);
+            step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, planetService, invasionProcessor, planetDiscover);
             step.Process();
 
             // should load 20 into the fleet leaving 0 on the planet
@@ -114,7 +112,7 @@ namespace CraigStars.Tests
             fleet.Cargo = new Cargo();
             planet.Cargo = new Cargo(ironium: 100);
 
-            var step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, playerService, planetService, invasionProcessor, planetDiscover);
+            var step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, planetService, invasionProcessor, planetDiscover);
             step.Process();
 
             // should unload 25 onto the planet, leaving 75 on the ship
@@ -128,7 +126,7 @@ namespace CraigStars.Tests
             fleet.Cargo = new Cargo();
             planet.Cargo = new Cargo(ironium: 20);
 
-            step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, playerService, planetService, invasionProcessor, planetDiscover);
+            step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, planetService, invasionProcessor, planetDiscover);
             step.Process();
 
             // should load 20 the ship, leaving 0 on the planet and not completing the task
@@ -155,7 +153,7 @@ namespace CraigStars.Tests
             fleet.Cargo = fleet.Cargo.WithIronium(100);
             planet.Cargo = new Cargo();
 
-            var step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, playerService, planetService, invasionProcessor, planetDiscover);
+            var step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, planetService, invasionProcessor, planetDiscover);
             step.Process();
 
             Assert.AreEqual(100, planet.Cargo.Ironium);
@@ -179,7 +177,7 @@ namespace CraigStars.Tests
             fleet.Cargo = fleet.Cargo.WithIronium(100);
             planet.Cargo = new Cargo();
 
-            var step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, playerService, planetService, invasionProcessor, planetDiscover);
+            var step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, planetService, invasionProcessor, planetDiscover);
             step.Process();
 
             // should unload 25 onto the planet, leaving 75 on the ship
@@ -192,7 +190,7 @@ namespace CraigStars.Tests
             fleet.Cargo = fleet.Cargo.WithIronium(20);
             planet.Cargo = new Cargo();
 
-            step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, playerService, planetService, invasionProcessor, planetDiscover);
+            step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, planetService, invasionProcessor, planetDiscover);
             step.Process();
 
             // should unload 25 onto the planet, leaving 75 on the ship
@@ -218,7 +216,7 @@ namespace CraigStars.Tests
             fleet.Cargo = fleet.Cargo.WithIronium(100);
             planet.Cargo = new Cargo();
 
-            var step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, playerService, planetService, invasionProcessor, planetDiscover);
+            var step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, planetService, invasionProcessor, planetDiscover);
             step.Process();
 
             // should unload 25 onto the planet, leaving 75 on the ship
@@ -232,7 +230,7 @@ namespace CraigStars.Tests
             fleet.Cargo = fleet.Cargo.WithIronium(20);
             planet.Cargo = new Cargo();
 
-            step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, playerService, planetService, invasionProcessor, planetDiscover);
+            step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, planetService, invasionProcessor, planetDiscover);
             step.Process();
 
             // should unload 25 onto the planet, leaving 75 on the ship

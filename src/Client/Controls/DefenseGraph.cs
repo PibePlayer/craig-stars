@@ -49,7 +49,7 @@ namespace CraigStars.Client
                 {
                     Hab = Me.Race.HabCenter,
                 };
-                planet.Population = planetService.GetMaxPopulation(planet, Me, GameInfo.Rules);
+                planet.Population = planetService.GetMaxPopulation(planet, Me);
 
                 for (int numDefenses = 0; numDefenses <= 100; numDefenses += 20)
                 {

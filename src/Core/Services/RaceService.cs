@@ -43,6 +43,45 @@ namespace CraigStars
                 }
             }
 
+            // copy all PRT specs over
+            spec.StartingFleets = new(prtSpec.StartingFleets);
+            spec.StartingPlanets = new(prtSpec.StartingPlanets);
+            spec.TechCostFactor = new(prtSpec.TechCostFactor);
+            spec.MineralsPerSingleMineralPacket = prtSpec.MineralsPerSingleMineralPacket;
+            spec.MineralsPerMixedMineralPacket = prtSpec.MineralsPerMixedMineralPacket;
+            spec.PacketResourceCost = prtSpec.PacketResourceCost;
+            spec.PacketMineralCostFactor = prtSpec.PacketMineralCostFactor;
+            spec.PacketReceiverFactor = prtSpec.PacketReceiverFactor;
+            spec.PacketDecayFactor = prtSpec.PacketDecayFactor;
+            spec.PacketOverSafeWarpPenalty = prtSpec.PacketOverSafeWarpPenalty;
+            spec.CanGateCargo = prtSpec.CanGateCargo;
+            spec.ShipsVanishInVoid = prtSpec.ShipsVanishInVoid;
+            spec.BuiltInScannerMultiplier = prtSpec.BuiltInScannerMultiplier;
+            spec.TechsCostExtraLevel = prtSpec.TechsCostExtraLevel;
+            spec.FreighterGrowthFactor = prtSpec.FreighterGrowthFactor;
+            spec.GrowthFactor = prtSpec.GrowthFactor;
+            spec.BuiltInCloakUnits = prtSpec.BuiltInCloakUnits;
+            spec.StealsResearch = prtSpec.StealsResearch;
+            spec.FreeCargoCloaking = prtSpec.FreeCargoCloaking;
+            spec.MineFieldsAreScanners = prtSpec.MineFieldsAreScanners;
+            spec.MineFieldSafeWarpBonus = prtSpec.MineFieldSafeWarpBonus;
+            spec.MineFieldMinDecayFactor = prtSpec.MineFieldMinDecayFactor;
+            spec.MineFieldBaseDecayRate = prtSpec.MineFieldBaseDecayRate;
+            spec.MineFieldPlanetDecayRate = prtSpec.MineFieldPlanetDecayRate;
+            spec.MineFieldMaxDecayRate = prtSpec.MineFieldMaxDecayRate;
+            spec.CanDetonateMineFields = prtSpec.CanDetonateMineFields;
+            spec.MineFieldDetonateDecayRate = prtSpec.MineFieldDetonateDecayRate;
+            spec.DiscoverDesignOnScan = prtSpec.DiscoverDesignOnScan;
+            spec.CanRemoteMineOwnPlanets = prtSpec.CanRemoteMineOwnPlanets;
+            spec.InvasionAttackBonus = prtSpec.InvasionAttackBonus;
+            spec.InvasionDefendBonus = prtSpec.InvasionDefendBonus;
+            spec.MovementBonus = prtSpec.MovementBonus;
+            spec.Instaforming = prtSpec.Instaforming;
+            spec.PermaformChance = prtSpec.PermaformChance;
+            spec.MaxPermaformChance = prtSpec.MaxPermaformChance;
+            spec.PermaformPopAdjust = prtSpec.PermaformPopAdjust;
+
+
             // some PRTs reduce max pop by half, others increase it by 20%
             spec.MaxPopulationOffset += prtSpec.MaxPopulationOffset;
 
@@ -54,8 +93,8 @@ namespace CraigStars
 
                 spec.NewTechCostFactor *= lrtSpec.NewTechCostFactor;
 
-                spec.TechCostReductionPercent *= lrtSpec.TechCostReductionPercent;
-                spec.TechCostReductionPerLevel = Math.Max(spec.TechCostReductionPerLevel, lrtSpec.TechCostReductionPerLevel);
+                spec.MiniaturizationMax *= lrtSpec.MiniaturizationMax;
+                spec.MiniaturizationPerLevel = Math.Max(spec.MiniaturizationPerLevel, lrtSpec.MiniaturizationPerLevel);
                 spec.NoAdvancedScanners = spec.NoAdvancedScanners || lrtSpec.NoAdvancedScanners;
                 spec.ScanRangeFactor *= lrtSpec.ScanRangeFactor;
                 spec.FuelEfficiencyOffset += lrtSpec.FuelEfficiencyOffset;
@@ -78,8 +117,52 @@ namespace CraigStars
 
             }
 
+            spec.Costs = GetCostsForItems(race, spec);
+
             return spec;
         }
+
+        /// <summary>
+        /// Get a dictionary of costs by item type for this race
+        /// </summary>
+        /// <param name="race"></param>
+        /// <returns></returns>
+        Dictionary<QueueItemType, Cost> GetCostsForItems(Race race, RaceSpec spec) => new()
+        {
+            { QueueItemType.Mine, new Cost(resources: race.MineCost) },
+            { QueueItemType.AutoMines, new Cost(resources: race.MineCost) },
+            { QueueItemType.Factory, new Cost(germanium: Rules.FactoryCostGermanium + (race.FactoriesCostLess ? -1 : 0), resources: race.FactoryCost) },
+            { QueueItemType.AutoFactories, new Cost(germanium: Rules.FactoryCostGermanium + (race.FactoriesCostLess ? -1 : 0), resources: race.FactoryCost) },
+            { QueueItemType.MineralAlchemy, new Cost(resources: Rules.MineralAlchemyCost + spec.MineralAlchemyCostOffset) },
+            { QueueItemType.AutoMineralAlchemy, new Cost(resources: Rules.MineralAlchemyCost + spec.MineralAlchemyCostOffset) },
+            { QueueItemType.Defenses, Rules.DefenseCost },
+            { QueueItemType.AutoDefenses, Rules.DefenseCost },
+            { QueueItemType.TerraformEnvironment, Rules.TerraformCost + spec.TerraformCostOffset },
+            { QueueItemType.AutoMaxTerraform, Rules.TerraformCost + spec.TerraformCostOffset },
+            { QueueItemType.AutoMinTerraform, Rules.TerraformCost + spec.TerraformCostOffset },
+            { QueueItemType.IroniumMineralPacket, new Cost(resources: spec.PacketResourceCost, ironium: (int)(spec.MineralsPerSingleMineralPacket * spec.PacketMineralCostFactor)) },
+            { QueueItemType.BoraniumMineralPacket, new Cost(resources: spec.PacketResourceCost, boranium: (int)(spec.MineralsPerSingleMineralPacket * spec.PacketMineralCostFactor)) },
+            { QueueItemType.GermaniumMineralPacket, new Cost(resources: spec.PacketResourceCost, germanium: (int)(spec.MineralsPerSingleMineralPacket * spec.PacketMineralCostFactor)) },
+            {
+                QueueItemType.MixedMineralPacket,
+                new Cost(
+                    resources: spec.PacketResourceCost,
+                    ironium: (int)(spec.MineralsPerMixedMineralPacket * spec.PacketMineralCostFactor),
+                    boranium: (int)(spec.MineralsPerMixedMineralPacket * spec.PacketMineralCostFactor),
+                    germanium: (int)(spec.MineralsPerMixedMineralPacket * spec.PacketMineralCostFactor)
+                )
+            },
+            {
+                QueueItemType.AutoMineralPacket,
+                new Cost(
+                    resources: spec.PacketResourceCost,
+                    ironium: (int)(spec.MineralsPerMixedMineralPacket * spec.PacketMineralCostFactor),
+                    boranium: (int)(spec.MineralsPerMixedMineralPacket * spec.PacketMineralCostFactor),
+                    germanium: (int)(spec.MineralsPerMixedMineralPacket * spec.PacketMineralCostFactor)
+                )
+            },
+        };
+
     }
 
 }

@@ -59,12 +59,15 @@ namespace CraigStars
         /// 
         /// </summary>
         /// <param name="resourcesToSpend">The amount of resources to spend on research</param>
-        public void ResearchNextLevel(Player player, int resourcesToSpend)
+        /// <returns>The amount of resources spent on each field</returns>
+        public TechLevel ResearchNextLevel(Player player, int resourcesToSpend, TechLevel spent = null)
         {
             if (!CheckMaxLevels(player))
             {
-                return;
+                return new TechLevel();
             }
+
+            spent ??= new TechLevel();
 
             // don't research more than the max on this level
             var level = player.TechLevels[player.Researching];
@@ -85,6 +88,9 @@ namespace CraigStars
                 // figure out how many leftover points we have
                 var leftoverResources = spentOnCurrentLevel - totalCost;
 
+                // record how much we spent on this field
+                spent[player.Researching] += resourcesToSpend - leftoverResources;
+
                 // reset the amount we spent to zero
                 player.TechLevelsSpent[player.Researching] = 0;
 
@@ -104,7 +110,54 @@ namespace CraigStars
                 {
                     // we have leftover resources, so call ourselves again
                     // to apply them to the next level
-                    ResearchNextLevel(player, leftoverResources);
+                    ResearchNextLevel(player, leftoverResources, spent);
+                }
+            }
+            else
+            {
+                spent[player.Researching] += resourcesToSpend;
+            }
+
+            return spent;
+        }
+
+        /// <summary>
+        /// Research a single field, continuously researching it as long as we have resources leftover
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="resourcesToSpend"></param>
+        /// <param name="field"></param>
+        public void Research(Player player, int resourcesToSpend, TechField field)
+        {
+            // don't research more than the max on this level
+            var level = player.TechLevels[field];
+
+            // add the resourcesToSpend to how much we've currently spent
+            player.TechLevelsSpent[field] += resourcesToSpend;
+            var spentOnCurrentLevel = player.TechLevelsSpent[field];
+
+            int totalCost = GetTotalCost(player, field, level);
+
+            if (spentOnCurrentLevel >= totalCost)
+            {
+                // increase a level
+                player.TechLevels[field]++;
+                int newLevel = player.TechLevels[field];
+
+                // figure out how many leftover points we have
+                int leftoverResources = spentOnCurrentLevel - totalCost;
+
+                // reset the amount we spent to zero
+                player.TechLevelsSpent[field] = 0;
+
+                Message.TechLevel(player, field, newLevel, player.Researching);
+                EventManager.PublishPlayerResearchLevelIncreasedEvent(player, field, newLevel);
+
+                if (leftoverResources > 0)
+                {
+                    // we have leftover resources, so call ourselves again
+                    // to apply them to the next level
+                    Research(player, leftoverResources, field);
                 }
             }
         }

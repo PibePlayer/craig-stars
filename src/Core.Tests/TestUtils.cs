@@ -122,6 +122,7 @@ namespace CraigStars.Tests
 
             player.SetupMapObjectMappings();
             game.UpdateInternalDictionaries();
+            gameRunner.ComputeAggregates();
             gameRunner.AfterTurnGeneration();
 
             return (game, gameRunner);

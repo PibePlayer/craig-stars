@@ -24,9 +24,9 @@ namespace CraigStars
         }
 
         public int GetMaxMines(Planet planet, Player player) => planet.Population * player.Race.NumMines / 10000;
-        public int GetMaxPossibleMines(Planet planet, Player player) => GetMaxPopulation(planet, player, Rules) * player.Race.NumMines / 10000;
+        public int GetMaxPossibleMines(Planet planet, Player player) => GetMaxPopulation(planet, player) * player.Race.NumMines / 10000;
         public int GetMaxFactories(Planet planet, Player player) => planet.Population * player.Race.NumFactories / 10000;
-        public int GetMaxPossibleFactories(Planet planet, Player player) => GetMaxPopulation(planet, player, Rules) * player.Race.NumFactories / 10000;
+        public int GetMaxPossibleFactories(Planet planet, Player player) => GetMaxPopulation(planet, player) * player.Race.NumFactories / 10000;
         public int GetMaxDefenses(Planet planet, Player player) => 100;
 
         #region Ownership
@@ -50,14 +50,14 @@ namespace CraigStars
         #region Population & Growth
 
         public float GetPopulationDensity(Planet planet, Player player, Rules rules) => GetPopulationDensity(planet, player, rules, planet.Population);
-        public float GetPopulationDensity(Planet planet, Player player, Rules rules, int population) => population > 0 ? (float)population / GetMaxPopulation(planet, player, rules) : 0;
+        public float GetPopulationDensity(Planet planet, Player player, Rules rules, int population) => population > 0 ? (float)population / GetMaxPopulation(planet, player) : 0;
 
         /// <summary>
         /// The max population for the race on this planet
         /// TODO: support this later
         /// /// </summary>
         /// <returns></returns>
-        public int GetMaxPopulation(Planet planet, Player player, Rules rules)
+        public int GetMaxPopulation(Planet planet, Player player)
         {
             var race = player.Race;
             if (planet.Hab is Hab planetHab)
@@ -66,7 +66,7 @@ namespace CraigStars
 
                 // get this player's planet habitability
                 var hab = race.GetPlanetHabitability(planetHab);
-                return (int)(rules.MaxPopulation * maxPopulationFactor * hab / 100);
+                return (int)(Rules.MaxPopulation * maxPopulationFactor * hab / 100);
             }
             else
             {
@@ -78,13 +78,13 @@ namespace CraigStars
         /// The amount the population for this planet will grow next turn
         /// </summary>
         /// <returns></returns>
-        public int GetGrowthAmount(Planet planet, Player player, Rules rules)
+        public int GetGrowthAmount(Planet planet, Player player)
         {
             var race = player.Race;
-            var growthFactor = playerService.GetGrowthFactor(player.Race);
+            var growthFactor = player.Race.Spec.GrowthFactor;
             if (planet.Hab is Hab hab)
             {
-                double capacity = ((double)planet.Population / GetMaxPopulation(planet, player, rules));
+                double capacity = ((double)planet.Population / GetMaxPopulation(planet, player));
                 var habValue = race.GetPlanetHabitability(hab);
                 if (habValue > 0)
                 {

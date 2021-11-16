@@ -20,7 +20,7 @@ namespace CraigStars.Tests
             var playerTechService = new PlayerTechService(techStoreProvider);
             var playerService = new PlayerService(rulesProvider);
             var planetService = new PlanetService(playerService, playerTechService, rulesProvider);
-            var fleetAggregator = new FleetAggregator(rulesProvider, playerService);
+            var fleetAggregator = new FleetAggregator(rulesProvider);
             var fleetService = new FleetService(fleetAggregator);
             var estimator = new ProductionQueueEstimator(planetService, playerService);
             var shipDesignGenerator = new ShipDesignGenerator(playerTechService, fleetAggregator);

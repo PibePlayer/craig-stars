@@ -52,6 +52,8 @@ namespace CraigStars
             },
             BuiltInCloakUnits = 300,
             FreeCargoCloaking = true,
+            MineFieldSafeWarpBonus = 1,
+            StealsResearch = new StealsResearch(.5f, .5f, .5f, .5f, .5f, .5f),
         };
 
         public static PRTSpec WM = new PRTSpec(PRT.WM, -45)
@@ -63,8 +65,14 @@ namespace CraigStars
                 new StartingFleet("Santa Maria", Techs.ColonyShip.Name, ShipDesignPurpose.Colonizer),
                 new StartingFleet("Armed Probe", Techs.Scout.Name, ShipDesignPurpose.FighterScout),
             },
+            TechCostFactor = new Dictionary<TechCategory, float>() {
+                { TechCategory.BeamWeapon, .75f }, // weapons cost 25% less
+                { TechCategory.Torpedo, .75f }, // weapons cost 25% less
+                { TechCategory.Bomb, .75f }, // weapons cost 25% less
+            },
             DiscoverDesignOnScan = true,
             InvasionAttackBonus = 1.65f,
+            MovementBonus = 2,
         };
 
         public static PRTSpec CA = new PRTSpec(PRT.CA, -10)
@@ -76,6 +84,10 @@ namespace CraigStars
                 new StartingFleet("Santa Maria", Techs.ColonyShip.Name, ShipDesignPurpose.Colonizer),
                 new StartingFleet("Change of Heart", Techs.MiniMiner.Name, ShipDesignPurpose.Terraformer),
             },
+            Instaforming = true,
+            PermaformChance = .01f, // base chance is 1%
+            MaxPermaformChance = .1f, // max at 10%
+            PermaformPopAdjust = 100_000,
         };
 
         public static PRTSpec IS = new PRTSpec(PRT.IS, 100)

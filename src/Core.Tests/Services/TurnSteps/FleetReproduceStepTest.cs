@@ -44,7 +44,7 @@ namespace CraigStars.Tests
 
             gameRunner.ComputeAggregates(recompute: true);
 
-            FleetReproduceStep step = new FleetReproduceStep(gameRunner.GameProvider, new PlayerService(game));
+            FleetReproduceStep step = new FleetReproduceStep(gameRunner.GameProvider);
 
             step.Reproduce(fleet, player);
             Assert.AreEqual(105, fleet.Cargo.Colonists);
@@ -76,7 +76,7 @@ namespace CraigStars.Tests
             // leave space for 1kT of colonists
             fleet.Cargo = fleet.Cargo.WithColonists(fleet.Aggregate.CargoCapacity - 1);
 
-            FleetReproduceStep step = new FleetReproduceStep(gameRunner.GameProvider, new PlayerService(game));
+            FleetReproduceStep step = new FleetReproduceStep(gameRunner.GameProvider);
 
             // should fill cargo, but no more
             step.Reproduce(fleet, player);
@@ -115,12 +115,13 @@ namespace CraigStars.Tests
 
             gameRunner.ComputeAggregates(recompute: true);
 
-            FleetReproduceStep step = new FleetReproduceStep(gameRunner.GameProvider, new PlayerService(game));
+            FleetReproduceStep step = new FleetReproduceStep(gameRunner.GameProvider);
 
             step.Process();
             Assert.AreEqual(105, fleet.Cargo.Colonists);
 
             player.Race.PRT = PRT.JoaT;
+            gameRunner.ComputeAggregates(recompute: true);
 
             // shouldn't grow at all
             step.Process();

@@ -15,15 +15,13 @@ namespace CraigStars.UniverseGeneration
         private readonly ITechStore techStore;
         private readonly PlayerIntel playerIntel;
         private readonly ShipDesignGenerator designer;
-        private readonly PlayerService playerService;
         private readonly FleetAggregator fleetAggregator;
 
-        public PlayerShipDesignsGenerationStep(IProvider<Game> gameProvider, ITechStore techStore, PlayerIntel playerIntel, ShipDesignGenerator designer, PlayerService playerService, FleetAggregator fleetAggregator) : base(gameProvider, UniverseGenerationState.ShipDesigns)
+        public PlayerShipDesignsGenerationStep(IProvider<Game> gameProvider, ITechStore techStore, PlayerIntel playerIntel, ShipDesignGenerator designer, FleetAggregator fleetAggregator) : base(gameProvider, UniverseGenerationState.ShipDesigns)
         {
             this.techStore = techStore;
             this.playerIntel = playerIntel;
             this.designer = designer;
-            this.playerService = playerService;
             this.fleetAggregator = fleetAggregator;
         }
 
@@ -51,7 +49,7 @@ namespace CraigStars.UniverseGeneration
         {
             List<ShipDesign> designs = new List<ShipDesign>();
 
-            foreach (StartingFleet startingFleet in playerService.GetStartingFleets(player.Race))
+            foreach (StartingFleet startingFleet in player.Race.Spec.StartingFleets)
             {
                 var hull = techStore.GetTechByName<TechHull>(startingFleet.HullName);
                 designs.Add(designer.DesignShip(hull, startingFleet.Name, player, player.DefaultHullSet, startingFleet.Purpose));
@@ -80,7 +78,7 @@ namespace CraigStars.UniverseGeneration
                 HullSetNumber = player.DefaultHullSet,
             };
 
-            var startingPlanets = playerService.GetStartingPlanets(player.Race);
+            var startingPlanets = player.Race.Spec.StartingPlanets;
 
             FillStarbaseSlots(starbase, player.Race, startingPlanets[0]);
             designs.Add(starbase);

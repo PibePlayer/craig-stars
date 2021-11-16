@@ -50,5 +50,54 @@ namespace CraigStars.Tests
             Assert.AreEqual(new TechLevel(propulsion: 2), spec.StartingTechLevels);
 
         }
+
+        [Test]
+        public void TestCosts()
+        {
+            var rules = new Rules(0);
+            // default humanoid
+            Race race = new Race();
+            var spec = service.ComputeRaceSpecs(race);
+
+            Assert.AreEqual(new Cost(resources: 5), spec.Costs[QueueItemType.Mine]);
+            Assert.AreEqual(new Cost(germanium: 4, resources: 10), spec.Costs[QueueItemType.Factory]);
+            Assert.AreEqual(new Cost(resources: 100), spec.Costs[QueueItemType.MineralAlchemy]);
+            Assert.AreEqual(rules.DefenseCost, spec.Costs[QueueItemType.Defenses]);
+            Assert.AreEqual(rules.TerraformCost, spec.Costs[QueueItemType.TerraformEnvironment]);
+            Assert.AreEqual(new Cost(ironium: 110, resources: 10), spec.Costs[QueueItemType.IroniumMineralPacket]);
+            Assert.AreEqual(new Cost(boranium: 110, resources: 10), spec.Costs[QueueItemType.BoraniumMineralPacket]);
+            Assert.AreEqual(new Cost(germanium: 110, resources: 10), spec.Costs[QueueItemType.GermaniumMineralPacket]);
+            Assert.AreEqual(new Cost(ironium: 44, boranium: 44, germanium: 44, resources: 10), spec.Costs[QueueItemType.MixedMineralPacket]);
+        }
+
+        [Test]
+        public void TestCosts2()
+        {
+            var rules = new Rules(0);
+            // default humanoid
+            Race race = new Race() {
+
+                MineCost = 1,
+                FactoryCost = 2,
+                FactoriesCostLess = true,
+                PRT = PRT.PP, // cheaper packets
+                LRTs = new() {
+                    LRT.MA, // cheaper mineral alchemy
+                    LRT.TT, // cheaper terraforming
+                }
+            };
+            var spec = service.ComputeRaceSpecs(race);
+
+            Assert.AreEqual(new Cost(resources: 1), spec.Costs[QueueItemType.Mine]);
+            Assert.AreEqual(new Cost(germanium: 3, resources: 2), spec.Costs[QueueItemType.Factory]);
+            Assert.AreEqual(new Cost(resources: 25), spec.Costs[QueueItemType.MineralAlchemy]);
+            Assert.AreEqual(rules.DefenseCost, spec.Costs[QueueItemType.Defenses]);
+            Assert.AreEqual(new Cost(resources: 70), spec.Costs[QueueItemType.TerraformEnvironment]);
+            Assert.AreEqual(new Cost(ironium: 70, resources: 5), spec.Costs[QueueItemType.IroniumMineralPacket]);
+            Assert.AreEqual(new Cost(boranium: 70, resources: 5), spec.Costs[QueueItemType.BoraniumMineralPacket]);
+            Assert.AreEqual(new Cost(germanium: 70, resources: 5), spec.Costs[QueueItemType.GermaniumMineralPacket]);
+            Assert.AreEqual(new Cost(ironium: 25, boranium: 25, germanium: 25, resources: 5), spec.Costs[QueueItemType.MixedMineralPacket]);
+        }
+
     }
 }

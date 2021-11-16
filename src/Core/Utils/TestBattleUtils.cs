@@ -12,7 +12,7 @@ namespace CraigStars
         static PlayerTechService playerTechService = new PlayerTechService(new Provider<ITechStore>(StaticTechStore.Instance));
         static IRulesProvider rulesProvider = new Game();
         static PlayerService playerService = new PlayerService(rulesProvider);
-        static FleetAggregator fleetAggregator = new FleetAggregator(rulesProvider, playerService);
+        static FleetAggregator fleetAggregator = new FleetAggregator(rulesProvider);
         static FleetService fleetService = new FleetService(fleetAggregator);
         static ShipDesignDiscoverer designDiscoverer = new ShipDesignDiscoverer();
         static ShipDesignerTurnProcessor designerTurnProcessor = new ShipDesignerTurnProcessor(

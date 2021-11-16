@@ -51,7 +51,6 @@ namespace CraigStars
             PlayerScanStep playerScanStep,
             PlanetService planetService,
             PlayerTechService playerTechService,
-            PlayerService playerService,
             FleetAggregator fleetAggregator)
         {
             this.gameProvider = gameProvider;
@@ -62,7 +61,6 @@ namespace CraigStars
             this.playerScanStep = playerScanStep;
             this.planetService = planetService;
             this.playerTechService = playerTechService;
-            this.playerService = playerService;
             this.fleetAggregator = fleetAggregator;
 
             EventManager.PlanetPopulationEmptiedEvent += OnPlanetPopulationEmptied;
@@ -255,7 +253,7 @@ namespace CraigStars
         /// <param name="level"></param>
         void OnPlayerResearchLevelIncreased(Player player, TechField field, int level)
         {
-            var updateBuiltInScanners = field == TechField.Electronics && playerService.GetBuiltInScannerMultiplier(player.Race) > 0;
+            var updateBuiltInScanners = field == TechField.Electronics && player.Race.Spec.BuiltInScannerMultiplier > 0;
             foreach (var design in Game.Designs.Where(d => d.PlayerNum == player.Num))
             {
                 if (updateBuiltInScanners && design.Hull.BuiltInScanner)

@@ -15,7 +15,7 @@ namespace CraigStars
 
         public override void Process()
         {
-            OwnedPlanets.ForEach(p => p.Population += planetService.GetGrowthAmount(p, Game.Players[p.PlayerNum], Game.Rules));
+            OwnedPlanets.ForEach(p => p.Population += planetService.GetGrowthAmount(p, Game.Players[p.PlayerNum]));
         }
 
     }

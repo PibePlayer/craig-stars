@@ -20,14 +20,12 @@ namespace CraigStars
     /// </summary>
     public class InvasionProcessor
     {
-        private readonly PlayerService playerService;
         private readonly PlanetService planetService;
         private readonly IRulesProvider rulesProvider;
         private Rules Rules => rulesProvider.Rules;
 
-        public InvasionProcessor(PlayerService playerService, PlanetService planetService, IRulesProvider rulesProvider)
+        public InvasionProcessor(PlanetService planetService, IRulesProvider rulesProvider)
         {
-            this.playerService = playerService;
             this.planetService = planetService;
             this.rulesProvider = rulesProvider;
         }
@@ -53,8 +51,8 @@ namespace CraigStars
             int defenders = planet.Population;
 
             // determine bonuses for warmongers and inner strength
-            float attackBonus = playerService.GetInvasionAttackBonus(attacker.Race);
-            float defenseBonus = playerService.GetInvasionDefendBonus(defender.Race);
+            float attackBonus = attacker.Race.Spec.InvasionAttackBonus;
+            float defenseBonus = defender.Race.Spec.InvasionDefendBonus;
 
             if (attackers * attackBonus > defenders * defenseBonus)
             {

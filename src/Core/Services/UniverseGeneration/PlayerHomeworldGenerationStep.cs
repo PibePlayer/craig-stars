@@ -15,7 +15,6 @@ namespace CraigStars.UniverseGeneration
     {
         static CSLog log = LogProvider.GetLogger(typeof(PlayerHomeworldGenerationStep));
 
-        readonly PlayerService playerService;
         readonly PlanetService planetService;
         readonly PlanetDiscoverer planetDiscoverer;
         readonly FleetAggregator fleetAggregator;
@@ -24,12 +23,10 @@ namespace CraigStars.UniverseGeneration
 
         public PlayerHomeworldGenerationStep(
             IProvider<Game> gameProvider,
-            PlayerService playerService,
             PlanetService planetService,
             PlanetDiscoverer planetDiscoverer,
             FleetAggregator fleetAggregator) : base(gameProvider, UniverseGenerationState.Homeworlds)
         {
-            this.playerService = playerService;
             this.planetService = planetService;
             this.planetDiscoverer = planetDiscoverer;
             this.fleetAggregator = fleetAggregator;
@@ -53,9 +50,9 @@ namespace CraigStars.UniverseGeneration
 
             if (Game.Size > Size.Tiny)
             {
-                for (int i = 1; i < playerService.GetStartingPlanets(player.Race).Count; i++)
+                for (int i = 1; i < player.Race.Spec.StartingPlanets.Count; i++)
                 {
-                    var extraPlanet = playerService.GetStartingPlanets(player.Race)[i];
+                    var extraPlanet = player.Race.Spec.StartingPlanets[i];
 
                     // extra planet! woo!
                     var planet = Game.Planets.FirstOrDefault(
@@ -93,7 +90,7 @@ namespace CraigStars.UniverseGeneration
             var race = player.Race;
             var rules = Game.Rules;
             var random = Game.Rules.Random;
-            var startingPlanet = playerService.GetStartingPlanets(player.Race)[0];
+            var startingPlanet = player.Race.Spec.StartingPlanets[0];
 
             // own this planet
             planet.PlayerNum = player.Num;

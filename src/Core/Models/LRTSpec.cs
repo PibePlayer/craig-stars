@@ -22,6 +22,9 @@ namespace CraigStars
 
         public int PointCost { get; set; } = 66;
 
+        /// <summary>
+        /// Bonus starting tech levels this trait brings
+        /// </summary>
         public TechLevel StartingTechLevels { get; set; } = new();
 
         /// <summary>
@@ -30,15 +33,15 @@ namespace CraigStars
         public float NewTechCostFactor = 1f;
 
         /// <summary>
-        /// How much do new techs we just researched cost? 
+        /// What is the highest cost discount we can achieve for
         /// </summary>
-        public float TechCostReductionPercent { get; set; } = .75f;
+        public float MiniaturizationMax { get; set; } = .75f;
 
         /// <summary>
         /// How much cheaper do techs get as our tech levels improve? Defaults to 4% per level
         /// </summary>
         /// <value></value>
-        public float TechCostReductionPerLevel { get; set; } = .04f;
+        public float MiniaturizationPerLevel { get; set; } = .04f;
 
         /// <summary>
         /// Are we able to build penetrating scanners at all?

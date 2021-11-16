@@ -572,7 +572,7 @@ namespace CraigStars.Client
 
             var battleEngine = new BattleEngine(game,
                 new FleetService(
-                    new FleetAggregator(rulesProvider, new PlayerService(rulesProvider))
+                    new FleetAggregator(rulesProvider)
                 ),
                 new ShipDesignDiscoverer());
             var battle = battleEngine.BuildBattle(game.Fleets);

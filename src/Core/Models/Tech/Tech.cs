@@ -56,32 +56,34 @@ namespace CraigStars
 
             // From the diff between the player level and the requirements, find the lowest difference
             // i.e. 1 energey level in the example above
-            int lowestRequiredDiff = int.MaxValue;
+            int numTechLevelsAboveRequired = int.MaxValue;
             foreach (TechField field in Enum.GetValues(typeof(TechField)))
             {
                 var fieldDiff = levelDiff[field];
-                if (fieldDiff != -1 && fieldDiff <= lowestRequiredDiff)
+                if (fieldDiff != -1 && fieldDiff <= numTechLevelsAboveRequired)
                 {
-                    lowestRequiredDiff = fieldDiff;
+                    numTechLevelsAboveRequired = fieldDiff;
                 }
             }
 
             // for starter techs, they are all 0 requirements, so just use our lowest field
-            if (lowestRequiredDiff == int.MaxValue)
+            if (numTechLevelsAboveRequired == int.MaxValue)
             {
-                lowestRequiredDiff = player.TechLevels.Min();
+                numTechLevelsAboveRequired = player.TechLevels.Min();
             }
 
-            // BET costs twice as much for new tech
-            // but it can give you up to 80% off
-            double factor = 1;
-            factor = (lowestRequiredDiff == 0 ? player.Race.Spec.NewTechCostFactor : 1) - Math.Min(player.Race.Spec.TechCostReductionPercent, player.Race.Spec.TechCostReductionPerLevel * lowestRequiredDiff);
+            // As we learn techs, they get cheaper. We start off with full priced techs, but every additional level of research we learn makes
+            // techs cost a little less, maxing out at some discount (i.e. 75% or 80% for races with BET)
+            var miniaturization = Math.Min(player.Race.Spec.MiniaturizationMax, player.Race.Spec.MiniaturizationPerLevel * numTechLevelsAboveRequired);
+            // New techs cost BET races 2x
+            // new techs will have 0 for miniaturization.
+            double miniaturizationFactor = (numTechLevelsAboveRequired == 0 ? player.Race.Spec.NewTechCostFactor : 1) - miniaturization;
 
             return new Cost(
-                (int)Math.Ceiling(cost.Ironium * factor),
-                (int)Math.Ceiling(cost.Boranium * factor),
-                (int)Math.Ceiling(cost.Germanium * factor),
-                (int)Math.Ceiling(cost.Resources * factor)
+                (int)Math.Ceiling(cost.Ironium * miniaturizationFactor),
+                (int)Math.Ceiling(cost.Boranium * miniaturizationFactor),
+                (int)Math.Ceiling(cost.Germanium * miniaturizationFactor),
+                (int)Math.Ceiling(cost.Resources * miniaturizationFactor)
             );
             // if we are at level 26, a beginner tech would cost (26 * .04)
             // return cost * (1 - Math.Min(.75, .04 * lowestRequiredDiff));

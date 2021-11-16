@@ -62,15 +62,15 @@ namespace CraigStars.Tests
 
             player.Race.PRT = PRT.IS;
             player.Race.Spec = raceService.ComputeRaceSpecs(player.Race);
-            Assert.AreEqual(1000000, service.GetMaxPopulation(planet, player, rules));
+            Assert.AreEqual(1000000, service.GetMaxPopulation(planet, player));
 
             player.Race.PRT = PRT.JoaT;
             player.Race.Spec = raceService.ComputeRaceSpecs(player.Race);
-            Assert.AreEqual(1200000, service.GetMaxPopulation(planet, player, rules));
+            Assert.AreEqual(1200000, service.GetMaxPopulation(planet, player));
 
             player.Race.PRT = PRT.HE;
             player.Race.Spec = raceService.ComputeRaceSpecs(player.Race);
-            Assert.AreEqual(500000, service.GetMaxPopulation(planet, player, rules));
+            Assert.AreEqual(500000, service.GetMaxPopulation(planet, player));
 
         }
 
@@ -88,30 +88,30 @@ namespace CraigStars.Tests
             player.Race.Spec = raceService.ComputeRaceSpecs(player.Race);
 
             // less than 25% cap, grows at full 10% growth rate
-            Assert.AreEqual(10_000, service.GetGrowthAmount(planet, player, rules));
+            Assert.AreEqual(10_000, service.GetGrowthAmount(planet, player));
 
             // at 50% cap, it slows down in growth
             planet.Population = 600_000;
-            Assert.AreEqual(26700, service.GetGrowthAmount(planet, player, rules));
+            Assert.AreEqual(26700, service.GetGrowthAmount(planet, player));
 
             // we are basicallly at capacity, we only grow a tiny amount
             planet.Population = 1_180_000;
-            Assert.AreEqual(100, service.GetGrowthAmount(planet, player, rules));
+            Assert.AreEqual(100, service.GetGrowthAmount(planet, player));
 
             // no more growth past a certain capacity
             planet.Population = 1_190_000;
-            Assert.AreEqual(0, service.GetGrowthAmount(planet, player, rules));
+            Assert.AreEqual(0, service.GetGrowthAmount(planet, player));
 
             // hostile planets kill off colonists
             planet.Hab = new Hab(10, 15, 15);
             planet.Population = 2_500;
-            Assert.AreEqual(-100, service.GetGrowthAmount(planet, player, rules));
+            Assert.AreEqual(-100, service.GetGrowthAmount(planet, player));
 
             // super hostile planet with 100k people
             // should be -45% habitable, so should kill off -4.5% of the pop
             planet.Hab = new Hab(0, 0, 0);
             planet.Population = 100_000;
-            Assert.AreEqual(-4500, service.GetGrowthAmount(planet, player, rules));
+            Assert.AreEqual(-4500, service.GetGrowthAmount(planet, player));
 
             // TODO: terraforming planets don't die off or grow if planet is negative
 

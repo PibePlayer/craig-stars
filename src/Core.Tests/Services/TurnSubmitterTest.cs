@@ -49,7 +49,7 @@ namespace CraigStars.Tests
             playerPlanetReportGenerationStep.Process();
             player.SetupMapObjectMappings();
 
-            var scanStep = new PlayerScanStep(gameRunner.GameProvider, playerService, playerIntel, playerTechService, fleetAggregator);
+            var scanStep = new PlayerScanStep(gameRunner.GameProvider, playerIntel, playerTechService, fleetAggregator);
 
             scanStep.PreProcess(game.OwnedPlanets.ToList());
             scanStep.Process();

@@ -18,155 +18,8 @@ namespace CraigStars
             this.rulesProvider = rulesProvider;
         }
 
-
-        #region PRT and LRT logic
-
-        public List<StartingPlanet> GetStartingPlanets(Race race) => Rules.PRTSpecs[race.PRT].StartingPlanets;
-
-        /// <summary>
-        /// Get the starting fleets for a player
-        /// </summary>
-        /// <param name="race"></param>
-        /// <returns></returns>
-        public List<StartingFleet> GetStartingFleets(Race race) => Rules.PRTSpecs[race.PRT].StartingFleets;
-
-        /// <summary>
-        /// Any population growth bonus this race gets, i.e. HE gets 2x growth
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="rules"></param>
-        /// <returns></returns>
-        public float GetGrowthFactor(Race race) => Rules.PRTSpecs[race.PRT].GrowthFactor;
-
-        /// <summary>
-        /// The rate this player's colonists grow on freighters, defaults to 0, but IS grows .5 * their growth rate
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="rules"></param>
-        /// <returns></returns>
-        public float GetFreighterGrowthFactor(Race race) => Rules.PRTSpecs[race.PRT].FreighterGrowthFactor;
-
-        /// <summary>
-        /// Does this race discover a ShipDesign's components on scan?
-        /// </summary>
-        /// <value></value>
-        public bool DiscoverDesignOnScan(Race race) => Rules.PRTSpecs[race.PRT].DiscoverDesignOnScan;
-
-        /// <summary>
-        /// PP races can fling packets 1 warp faster without decaying.
-        /// </summary>
-        public float GetPacketDecayRate(Race race, MineralPacket packet)
-        {
-            int overSafeWarp = packet.WarpFactor - packet.SafeWarpSpeed;
-
-            // IT is always count as being at least 1 over the safe warp
-            overSafeWarp += Rules.PRTSpecs[race.PRT].PacketOverSafeWarpPenalty;
-
-            // we only care about packets thrown up to 3 warp over the limit 
-            overSafeWarp = Mathf.Clamp(packet.WarpFactor - packet.SafeWarpSpeed, 0, 3);
-
-            var packetDecayRate = 0f;
-            if (overSafeWarp > 0)
-            {
-                packetDecayRate = Rules.PacketDecayRate[overSafeWarp];
-            }
-
-            // PP have half the decay rate
-            packetDecayRate *= Rules.PRTSpecs[race.PRT].PacketDecayFactor;
-
-            return packetDecayRate;
-        }
-
-        /// <summary>
-        /// The effectiveness of this player at receiving packets
-        /// Races with the Interstellar trait are only 1/2 as effective at catching packets. To calculate the damage taken, divide receiverSpeed by two.
-        /// </summary>
-        /// <value></value>
-        public float GetPacketReceiverFactor(Race race) => Rules.PRTSpecs[race.PRT].PacketReceiverFactor;
-
-        /// <summary>
-        /// Get the cost to construct a single or mixed mineral packet 
-        /// </summary>
-        public int GetPacketResourceCost(Race race) => Rules.PRTSpecs[race.PRT].PacketResourceCost;
-
-        /// <summary>
-        /// Get the premium this race pays for packets. PP races are perfectly efficient, but
-        /// other races use minerals building the packet.
-        /// </summary>
-        public float GetPacketCostFactor(Race race) => Rules.PRTSpecs[race.PRT].PacketMineralCostFactor;
-
-        /// <summary>
-        /// The number of minerals contained in each mixed mineral packet
-        /// </summary>
-        public int GetMineralsPerMixedMineralPacket(Race race) => Rules.PRTSpecs[race.PRT].MineralsPerMixedMineralPacket;
-
-        /// <summary>
-        /// The number of minerals contained in each mixed mineral packet
-        /// </summary>
-        public int GetMineralsPerSingleMineralPacket(Race race) => Rules.PRTSpecs[race.PRT].MineralsPerSingleMineralPacket;
-
-        /// <summary>
-        /// Can this player send cargo through Stargates
-        /// </summary>
-        /// <param name="race"></param>
-        /// <returns></returns>
-        public bool CanGateCargo(Race race) => Rules.PRTSpecs[race.PRT].CanGateCargo;
-
-        /// <summary>
-        /// True if ships have a chance to vanish into the void when stargating
-        /// </summary>
-        /// <param name="race"></param>
-        /// <returns></returns>
-        public bool ShipsVanishInVoid(Race race) => Rules.PRTSpecs[race.PRT].ShipsVanishInVoid;
-
-        /// <summary>
-        /// Does this player cloak ships with cargo without reducing the cloak percentage?
-        /// </summary>
-        public bool FreeCargoCloaking(Race race) => Rules.PRTSpecs[race.PRT].FreeCargoCloaking;
-
-        /// <summary>
-        /// The player's built in cloaking units
-        /// </summary>
-        public int BuiltInCloakUnits(Race race) => Rules.PRTSpecs[race.PRT].BuiltInCloakUnits;
-
-        public int GetTechsCostExtraLevel(Race race) => Rules.PRTSpecs[race.PRT].TechsCostExtraLevel;
-
-        public int GetBuiltInScannerMultiplier(Race race) => Rules.PRTSpecs[race.PRT].BuiltInScannerMultiplier;
-
-        /// <summary>
-        /// Do this player's minefields act like scanners?
-        /// </summary>
-        /// <value></value>
-        public bool MineFieldsAreScanners(Race race) => Rules.PRTSpecs[race.PRT].MineFieldsAreScanners;
-
-        public int GetMineFieldSafeWarpBonus(Race race) => Rules.PRTSpecs[race.PRT].MineFieldSafeWarpBonus;
-
-        public float GetMineFieldMinDecayFactor(Race race) => Rules.PRTSpecs[race.PRT].MineFieldMinDecayFactor;
-
-        public float GetMineFieldBaseDecayRate(Race race) => Rules.PRTSpecs[race.PRT].MineFieldBaseDecayRate;
-
-        public float GetMineFieldPlanetDecayRate(Race race) => Rules.PRTSpecs[race.PRT].MineFieldPlanetDecayRate;
-
-        public bool CanDetonateMineFields(Race race) => Rules.PRTSpecs[race.PRT].CanDetonateMineFields;
-
-        public float GetMineFieldDetonateDecayRate(Race race) => Rules.PRTSpecs[race.PRT].MineFieldDetonateDecayRate;
-
-        public float GetMineFieldMaxDecayRate(Race race) => Rules.PRTSpecs[race.PRT].MineFieldMaxDecayRate;
-
-        /// <summary>
-        /// Do this player's minefields act like scanners?
-        /// </summary>
-        /// <value></value>
-        public bool FleetsReproduce(Race race) => Rules.PRTSpecs[race.PRT].FreighterGrowthFactor > 0;
-
-        public bool CanRemoteMineOwnPlanets(Race race) => Rules.PRTSpecs[race.PRT].CanRemoteMineOwnPlanets;
-
-        public float GetInvasionAttackBonus(Race race) => Rules.PRTSpecs[race.PRT].InvasionAttackBonus;
-        public float GetInvasionDefendBonus(Race race) => Rules.PRTSpecs[race.PRT].InvasionDefendBonus;
-
-        #endregion
-
         #region Production
+
         /// <summary>
         /// Get the cost of a single item in this ProductionQueueItem
         /// </summary>
@@ -175,66 +28,82 @@ namespace CraigStars
         /// <returns></returns>
         public Cost GetCostOfOne(Player player, ProductionQueueItem item)
         {
-            var race = player.Race;
-            int resources = 0;
-            int germanium = 0;
-            if (item.Type == QueueItemType.Mine || item.Type == QueueItemType.AutoMines)
+            if (player.Race.Spec.Costs.TryGetValue(item.Type, out var cost))
             {
-                resources = race.MineCost;
-            }
-            else if (item.Type == QueueItemType.Factory || item.Type == QueueItemType.AutoFactories)
-            {
-                resources = race.FactoryCost;
-                germanium = Rules.FactoryCostGermanium;
-                if (race.FactoriesCostLess)
-                {
-                    germanium = germanium - 1;
-                }
-            }
-            else if (item.Type == QueueItemType.MineralAlchemy || item.Type == QueueItemType.AutoMineralAlchemy)
-            {
-                resources = Rules.MineralAlchemyCost + player.Race.Spec.MineralAlchemyCostOffset;
-            }
-            else if (item.Type == QueueItemType.Defenses || item.Type == QueueItemType.AutoDefenses)
-            {
-                return Rules.DefenseCost;
-            }
-            else if (item.Type == QueueItemType.TerraformEnvironment || item.Type == QueueItemType.AutoMaxTerraform || item.Type == QueueItemType.AutoMinTerraform)
-            {
-                return Rules.TerraformCost + player.Race.Spec.TerraformCostOffset;
-            }
-            else if (item.Type == QueueItemType.IroniumMineralPacket)
-            {
-                return new Cost(ironium: (int)(GetMineralsPerSingleMineralPacket(player.Race) * GetPacketCostFactor(player.Race)), resources: GetPacketResourceCost(player.Race));
-            }
-            else if (item.Type == QueueItemType.BoraniumMineralPacket)
-            {
-                return new Cost(boranium: (int)(GetMineralsPerSingleMineralPacket(player.Race) * GetPacketCostFactor(player.Race)), resources: GetPacketResourceCost(player.Race));
-            }
-            else if (item.Type == QueueItemType.GermaniumMineralPacket)
-            {
-                return new Cost(germanium: (int)(GetMineralsPerSingleMineralPacket(player.Race) * GetPacketCostFactor(player.Race)), resources: GetPacketResourceCost(player.Race));
-            }
-            else if (item.Type == QueueItemType.MixedMineralPacket || item.Type == QueueItemType.AutoMineralPacket)
-            {
-                float packetCostFactor = GetPacketCostFactor(player.Race);
-                int mineralsPerMixedMineralPacket = GetMineralsPerMixedMineralPacket(player.Race);
-                int packetResourceCost = GetPacketResourceCost(player.Race);
-
-                return new Cost(
-                    (int)(mineralsPerMixedMineralPacket * packetCostFactor),
-                    (int)(mineralsPerMixedMineralPacket * packetCostFactor),
-                    (int)(mineralsPerMixedMineralPacket * packetCostFactor),
-                    GetPacketResourceCost(player.Race)
-                );
+                return cost;
             }
             else if (item.Type == QueueItemType.ShipToken || item.Type == QueueItemType.Starbase)
             {
                 // ship designs have their own cost
                 return item.Design.Aggregate.Cost;
             }
+            else
+            {
+                throw new ArgumentException($"Cannot find player cost for item type: {item.Type}");
+            }
+        }
 
-            return new Cost(germanium: germanium, resources: resources);
+        /// <summary>
+        /// Get the player's cost for this tech accounting for miniaturization and racial specs
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="tech"></param>
+        /// <returns></returns>
+        public Cost GetTechCost(Player player, Tech tech)
+        {
+            Cost cost = tech.Cost;
+
+            // see if this race has any discounts for this category
+            float factor = player.Race.Spec.TechCostFactor.TryGetValue(tech.Category, out factor) ? factor : 1f;
+
+            cost *= factor;
+
+            // figure out miniaturization
+            // this is 4% per level above the required tech we have.
+            // We count the smallest diff, i.e. if you have
+            // tech level 10 energy, 12 bio and the tech costs 9 energy, 4 bio
+            // the smallest level difference you have is 1 energy level (not 8 bio levels)
+
+            var levelDiff = new TechLevel(
+                tech.Requirements.Energy <= 0 ? -1 : player.TechLevels.Energy - tech.Requirements.Energy,
+                tech.Requirements.Weapons <= 0 ? -1 : player.TechLevels.Weapons - tech.Requirements.Weapons,
+                tech.Requirements.Propulsion <= 0 ? -1 : player.TechLevels.Propulsion - tech.Requirements.Propulsion,
+                tech.Requirements.Construction <= 0 ? -1 : player.TechLevels.Construction - tech.Requirements.Construction,
+                tech.Requirements.Electronics <= 0 ? -1 : player.TechLevels.Electronics - tech.Requirements.Electronics,
+                tech.Requirements.Biotechnology <= 0 ? -1 : player.TechLevels.Biotechnology - tech.Requirements.Biotechnology
+            );
+
+            // From the diff between the player level and the requirements, find the lowest difference
+            // i.e. 1 energey level in the example above
+            int numTechLevelsAboveRequired = int.MaxValue;
+            foreach (TechField field in Enum.GetValues(typeof(TechField)))
+            {
+                var fieldDiff = levelDiff[field];
+                if (fieldDiff != -1 && fieldDiff <= numTechLevelsAboveRequired)
+                {
+                    numTechLevelsAboveRequired = fieldDiff;
+                }
+            }
+
+            // for starter techs, they are all 0 requirements, so just use our lowest field
+            if (numTechLevelsAboveRequired == int.MaxValue)
+            {
+                numTechLevelsAboveRequired = player.TechLevels.Min();
+            }
+
+            // As we learn techs, they get cheaper. We start off with full priced techs, but every additional level of research we learn makes
+            // techs cost a little less, maxing out at some discount (i.e. 75% or 80% for races with BET)
+            var miniaturization = Math.Min(player.Race.Spec.MiniaturizationMax, player.Race.Spec.MiniaturizationPerLevel * numTechLevelsAboveRequired);
+            // New techs cost BET races 2x
+            // new techs will have 0 for miniaturization.
+            double miniaturizationFactor = (numTechLevelsAboveRequired == 0 ? player.Race.Spec.NewTechCostFactor : 1) - miniaturization;
+
+            return new Cost(
+                (int)Math.Ceiling(cost.Ironium * miniaturizationFactor),
+                (int)Math.Ceiling(cost.Boranium * miniaturizationFactor),
+                (int)Math.Ceiling(cost.Germanium * miniaturizationFactor),
+                (int)Math.Ceiling(cost.Resources * miniaturizationFactor)
+            );
         }
 
         #endregion

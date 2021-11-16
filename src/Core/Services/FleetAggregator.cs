@@ -10,13 +10,11 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(FleetAggregator));
 
-        private readonly PlayerService playerService;
         private readonly IRulesProvider rulesProvider;
         private Rules Rules => rulesProvider.Rules;
 
-        public FleetAggregator(IRulesProvider rulesProvider, PlayerService playerService)
+        public FleetAggregator(IRulesProvider rulesProvider)
         {
-            this.playerService = playerService;
             this.rulesProvider = rulesProvider;
         }
 
@@ -51,7 +49,7 @@ namespace CraigStars
             aggregate.CargoCapacity += hull.CargoCapacity;
             aggregate.MineSweep = 0;
 
-            aggregate.CloakUnits = playerService.BuiltInCloakUnits(player.Race);
+            aggregate.CloakUnits = player.Race.Spec.BuiltInCloakUnits;
             aggregate.ReduceCloaking = 0;
             aggregate.Bomber = false;
             aggregate.Bombs.Clear();
@@ -183,7 +181,7 @@ namespace CraigStars
                 // Movement = IdealEngineSpeed - 2 - Mass / 70 / NumEngines + NumManeuveringJets + 2*NumOverThrusters
                 // we added any MovementBonus components above
                 // we round up the slightest bit, and we can't go below 2, or above 10
-                aggregate.Movement = Mathf.Clamp((int)Math.Ceiling((double)((idealSpeed - 2) - aggregate.Mass / 70 / aggregate.NumEngines + aggregate.Movement)), 2, 10);
+                aggregate.Movement = Mathf.Clamp((int)Math.Ceiling((double)((idealSpeed - 2) - aggregate.Mass / 70 / aggregate.NumEngines + aggregate.Movement + player.Race.Spec.MovementBonus)), 2, 10);
             }
             else
             {
@@ -212,7 +210,7 @@ namespace CraigStars
             long scanRangePen = TechHullComponent.NoScanner;
 
             // compu thecanner as a built in JoaT scanner if it's build in
-            var builtInScannerMultiplier = playerService.GetBuiltInScannerMultiplier(player.Race);
+            var builtInScannerMultiplier = player.Race.Spec.BuiltInScannerMultiplier;
             if (builtInScannerMultiplier > 0 && hull.BuiltInScanner)
             {
                 scanRange = (long)(player.TechLevels.Electronics * builtInScannerMultiplier);
@@ -326,7 +324,7 @@ namespace CraigStars
 
             // Some races cloak cargo for free, otherwise
             // cloaking cargo comes at a penalty
-            bool freeCargoCloaking = playerService.FreeCargoCloaking(player.Race);
+            bool freeCargoCloaking = player.Race.Spec.FreeCargoCloaking;
             aggregate.CloakUnits = 0;
             aggregate.BaseCloakedCargo = 0;
             aggregate.ReduceCloaking = 0;
@@ -451,7 +449,7 @@ namespace CraigStars
 
             // figure out how much cargo we are cloaking
             // TODO: use playerService when computeAggregate is migrated to its own service
-            var cloakedCargo = aggregate.BaseCloakedCargo + (playerService.FreeCargoCloaking(player.Race) ? 0 : cargo.Total);
+            var cloakedCargo = aggregate.BaseCloakedCargo + (player.Race.Spec.FreeCargoCloaking ? 0 : cargo.Total);
             int cloakUnitsWithCargo = (int)Math.Round(aggregate.CloakUnits * (float)aggregate.MassEmpty / (aggregate.MassEmpty + cloakedCargo));
             aggregate.CloakPercent = CloakUtils.GetCloakPercentForCloakUnits(cloakUnitsWithCargo);
         }

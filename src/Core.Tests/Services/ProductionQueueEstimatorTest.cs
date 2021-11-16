@@ -23,11 +23,14 @@ namespace CraigStars.Tests
             TestUtils.TestContainer.GetInstance<PlayerService>()
         );
 
+        RaceService raceService = TestUtils.TestContainer.GetInstance<RaceService>();
+
         [Test]
         public void TestCalculateCompletionEstimatesSingleItem()
         {
             // create a starter homeworld with 35 resources / year
             var player = new Player();
+            player.Race.Spec = raceService.ComputeRaceSpecs(player.Race);
             Planet planet = new Planet()
             {
                 PlayerNum = player.Num,
@@ -36,7 +39,6 @@ namespace CraigStars.Tests
                 Mines = 10,
                 Factories = 10
             };
-
 
             var item1 = new ProductionQueueItem(QueueItemType.Mine, 1);
             List<ProductionQueueItem> items = new List<ProductionQueueItem>()
@@ -62,6 +64,7 @@ namespace CraigStars.Tests
             // create a world with 10 factory resources per year and 90 colonist resources
             // for 100 resourcs per year total
             var player = new Player();
+            player.Race.Spec = raceService.ComputeRaceSpecs(player.Race);
             Planet planet = new Planet()
             {
                 PlayerNum = player.Num,

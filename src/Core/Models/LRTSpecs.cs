@@ -92,8 +92,8 @@ namespace CraigStars
         public static LRTSpec BET = new LRTSpec(LRT.BET, 0)
         {
             NewTechCostFactor = 2,
-            TechCostReductionPercent = .8f,
-            TechCostReductionPerLevel = .05f,
+            MiniaturizationMax = .8f,
+            MiniaturizationPerLevel = .05f,
         };
 
         public static LRTSpec RS = new LRTSpec(LRT.RS, 0)

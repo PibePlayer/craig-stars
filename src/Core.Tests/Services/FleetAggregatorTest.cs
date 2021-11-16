@@ -12,8 +12,7 @@ namespace CraigStars.Tests
         public void SetUp()
         {
             IRulesProvider rulesProvider = TestUtils.TestContainer.GetInstance<IRulesProvider>();
-            PlayerService playerService = TestUtils.TestContainer.GetInstance<PlayerService>();
-            fleetAggregator = new FleetAggregator(rulesProvider, playerService);
+            fleetAggregator = new FleetAggregator(rulesProvider);
         }
 
         [Test]
@@ -157,6 +156,8 @@ namespace CraigStars.Tests
         {
             var player = new Player();
             player.Race.PRT = PRT.SS;
+            var raceService = TestUtils.TestContainer.GetInstance<RaceService>();
+            player.Race.Spec = raceService.ComputeRaceSpecs(player.Race);
 
             var freighterDesign = new ShipDesign()
             {
@@ -187,6 +188,23 @@ namespace CraigStars.Tests
             fleetAggregator.ComputeAggregate(player, fleet, recompute: true);
             Assert.AreEqual(75, fleet.Aggregate.CloakPercent);
 
+        }
+
+        [Test]
+        public void TestComputeWMMovement()
+        {
+            var player = new Player();
+            var design = ShipDesigns.LongRangeScount.Clone(player);
+
+            fleetAggregator.ComputeDesignAggregate(player, design, recompute: true);
+            Assert.AreEqual(4, design.Aggregate.Movement);
+
+            // WMs get 2 extra movement
+            player.Race.PRT = PRT.WM;
+            var raceService = TestUtils.TestContainer.GetInstance<RaceService>();
+            player.Race.Spec = raceService.ComputeRaceSpecs(player.Race);
+            fleetAggregator.ComputeDesignAggregate(player, design, recompute: true);
+            Assert.AreEqual(6, design.Aggregate.Movement);
         }
 
         [Test]

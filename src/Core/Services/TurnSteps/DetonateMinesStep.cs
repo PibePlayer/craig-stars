@@ -15,7 +15,7 @@ namespace CraigStars
 
         private readonly MineFieldDamager mineFieldDamager;
 
-        public DetonateMinesStep(IProvider<Game> gameProvider, MineFieldDamager mineFieldDamager) : base(gameProvider, TurnGenerationState.DetonateMines)
+        public DetonateMinesStep(IProvider<Game> gameProvider, MineFieldDamager mineFieldDamager) : base(gameProvider, TurnGenerationState.DetonateMinesStep)
         {
             this.mineFieldDamager = mineFieldDamager;
         }

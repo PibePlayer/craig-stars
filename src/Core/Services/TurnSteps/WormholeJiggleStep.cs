@@ -21,7 +21,7 @@ namespace CraigStars
         HashSet<Vector2> wormholePositions;
         List<Wormhole> newWormholes;
 
-        public WormholeJiggleStep(IProvider<Game> gameProvider, WormholeGenerationStep wormholeGenerator) : base(gameProvider, TurnGenerationState.WormholeJiggle)
+        public WormholeJiggleStep(IProvider<Game> gameProvider, WormholeGenerationStep wormholeGenerator) : base(gameProvider, TurnGenerationState.WormholeJiggleStep)
         {
             this.wormholeGenerator = wormholeGenerator;
         }

@@ -12,7 +12,7 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(FleetLayMinesStep));
 
-        public FleetLayMinesStep(IProvider<Game> gameProvider) : base(gameProvider, TurnGenerationState.MineLaying) { }
+        public FleetLayMinesStep(IProvider<Game> gameProvider) : base(gameProvider, TurnGenerationState.FleetLayMinesStep) { }
 
         public override void Process()
         {

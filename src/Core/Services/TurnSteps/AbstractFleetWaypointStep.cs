@@ -50,7 +50,8 @@ namespace CraigStars
             PlanetService planetService,
             InvasionProcessor invasionProcessor,
             PlanetDiscoverer planetDiscoverer,
-            int waypointIndex) : base(gameProvider, TurnGenerationState.Waypoint)
+            TurnGenerationState state,
+            int waypointIndex) : base(gameProvider, state)
         {
             this.rulesProvider = rulesProvider;
             this.planetService = planetService;

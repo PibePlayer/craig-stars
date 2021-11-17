@@ -13,7 +13,7 @@ namespace CraigStars
         private readonly IRulesProvider rulesProvider;
         private Rules Rules => rulesProvider.Rules;
 
-        public DecayPacketsStep(IProvider<Game> gameProvider, IRulesProvider rulesProvider) : base(gameProvider, TurnGenerationState.DecayMineralPackets)
+        public DecayPacketsStep(IProvider<Game> gameProvider, IRulesProvider rulesProvider) : base(gameProvider, TurnGenerationState.DecayPacketsStep)
         {
             this.rulesProvider = rulesProvider;
         }

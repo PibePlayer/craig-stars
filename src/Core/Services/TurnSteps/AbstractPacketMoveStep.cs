@@ -23,7 +23,7 @@ namespace CraigStars
         // some things (like remote mining) only happen on wp1
         private readonly int processIndex;
 
-        public AbstractPacketMoveStep(IProvider<Game> gameProvider, PlanetService planetService, int waypointIndex) : base(gameProvider, TurnGenerationState.Waypoint)
+        public AbstractPacketMoveStep(IProvider<Game> gameProvider, PlanetService planetService, TurnGenerationState state, int waypointIndex) : base(gameProvider, state)
         {
             this.planetService = planetService;
             this.processIndex = waypointIndex;

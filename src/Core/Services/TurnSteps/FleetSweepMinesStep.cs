@@ -12,7 +12,7 @@ namespace CraigStars
         static CSLog log = LogProvider.GetLogger(typeof(DecayMinesStep));
         private readonly FleetService fleetService;
 
-        public FleetSweepMinesStep(IProvider<Game> gameProvider, FleetService fleetService) : base(gameProvider, TurnGenerationState.MineSweeping)
+        public FleetSweepMinesStep(IProvider<Game> gameProvider, FleetService fleetService) : base(gameProvider, TurnGenerationState.FleetSweepMinesStep)
         {
             this.fleetService = fleetService;
         }

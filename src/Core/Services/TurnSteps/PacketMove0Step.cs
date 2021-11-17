@@ -8,6 +8,6 @@ namespace CraigStars
 {
     public class PacketMove0Step : AbstractPacketMoveStep
     {
-        public PacketMove0Step(IProvider<Game> gameProvider, PlanetService planetService) : base(gameProvider, planetService, 0) { }
+        public PacketMove0Step(IProvider<Game> gameProvider, PlanetService planetService) : base(gameProvider, planetService, TurnGenerationState.PacketMove0Step, 0) { }
     }
 }

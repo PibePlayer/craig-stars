@@ -10,7 +10,7 @@ namespace CraigStars
 
         private readonly MineFieldDecayer mineFieldDecayer;
 
-        public DecayMinesStep(IProvider<Game> gameProvider, MineFieldDecayer mineFieldDecayer) : base(gameProvider, TurnGenerationState.MineLaying)
+        public DecayMinesStep(IProvider<Game> gameProvider, MineFieldDecayer mineFieldDecayer) : base(gameProvider, TurnGenerationState.FleetLayMinesStep)
         {
             this.mineFieldDecayer = mineFieldDecayer;
         }

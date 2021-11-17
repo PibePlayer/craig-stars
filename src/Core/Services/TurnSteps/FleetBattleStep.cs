@@ -12,7 +12,7 @@ namespace CraigStars
         private readonly BattleEngine battleEngine;
         private readonly FleetAggregator fleetAggregator;
 
-        public FleetBattleStep(IProvider<Game> gameProvider, BattleEngine battleEngine, FleetAggregator fleetAggregator) : base(gameProvider, TurnGenerationState.Battle)
+        public FleetBattleStep(IProvider<Game> gameProvider, BattleEngine battleEngine, FleetAggregator fleetAggregator) : base(gameProvider, TurnGenerationState.FleetBattleStep)
         {
             this.battleEngine = battleEngine;
             this.fleetAggregator = fleetAggregator;

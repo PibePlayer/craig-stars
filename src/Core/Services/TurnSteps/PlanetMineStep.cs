@@ -9,7 +9,7 @@ namespace CraigStars
     {
         private readonly PlanetService planetService;
 
-        public PlanetMineStep(IProvider<Game> gameProvider, PlanetService planetService) : base(gameProvider, TurnGenerationState.Mining)
+        public PlanetMineStep(IProvider<Game> gameProvider, PlanetService planetService) : base(gameProvider, TurnGenerationState.PlanetMineStep)
         {
             this.planetService = planetService;
         }

@@ -6,150 +6,138 @@ using Newtonsoft.Json;
 namespace CraigStars
 {
     /// <summary>
-    /// The specification for an LRT
+    /// Interface for an LRTSpec
     /// </summary>
-    public class LRTSpec
+    public interface ILRTSpec
     {
-        [JsonConstructor]
-        public LRTSpec(LRT lrt, int pointCost)
-        {
-            LRT = lrt;
-            PointCost = pointCost;
-        }
-
-        [DefaultValue(LRT.None)]
-        public LRT LRT { get; }
-
-        public int PointCost { get; set; } = 66;
-
         /// <summary>
         /// Bonus starting tech levels this trait brings
         /// </summary>
-        public TechLevel StartingTechLevels { get; set; } = new();
+        TechLevel StartingTechLevels { get; set; }
 
         /// <summary>
         /// How much do new techs we just researched cost? 
         /// </summary>
-        public float NewTechCostFactor = 1f;
+        float NewTechCostFactor { get; set; }
 
         /// <summary>
         /// What is the highest cost discount we can achieve for
         /// </summary>
-        public float MiniaturizationMax { get; set; } = .75f;
+        float MiniaturizationMax { get; set; }
 
         /// <summary>
         /// How much cheaper do techs get as our tech levels improve? Defaults to 4% per level
         /// </summary>
         /// <value></value>
-        public float MiniaturizationPerLevel { get; set; } = .04f;
+        float MiniaturizationPerLevel { get; set; }
 
         /// <summary>
         /// Are we able to build penetrating scanners at all?
         /// </summary>
         /// <value></value>
-        public bool NoAdvancedScanners { get; set; } = false;
+        bool NoAdvancedScanners { get; set; }
 
         /// <summary>
         /// Multiple all scan ranges by this factor
         /// </summary>
-        public float ScanRangeFactor { get; set; } = 1f;
+        float ScanRangeFactor { get; set; }
 
         /// <summary>
         /// Factor to multiply fuel usage by (i.e. .85 would make fuel usage 15% more efficient)
         /// </summary>
         /// <value></value>
-        public float FuelEfficiencyOffset { get; set; } = 0f;
+        float FuelEfficiencyOffset { get; set; }
 
         /// <summary>
         /// Percent bonus to increase max population by
         /// </summary>
         /// <value></value>
-        public float MaxPopulationOffset { get; set; } = 0f;
+        float MaxPopulationOffset { get; set; }
 
         /// <summary>
         /// This value will be added to the cost of terraforming. (it could reduce it or increase it, depending on the LRT)
         /// </summary>
         /// <returns></returns>
-        public Cost TerraformCostOffset { get; set; } = new Cost();
+        Cost TerraformCostOffset { get; set; }
 
         /// <summary>
         /// This value will be added to the resource cost of mineral alchemy. (it could reduce it or increase it, depending on the LRT)
         /// </summary>
         /// <returns></returns>
-        public int MineralAlchemyCostOffset { get; set; } = 0;
+        int MineralAlchemyCostOffset { get; set; }
 
         /// <summary>
         /// This will be added to the normal amount of minerals and resources returned after recycling
         /// </summary>
         /// <value></value>
-        public float ScrapMineralOffset { get; set; } = 0f;
+        float ScrapMineralOffset { get; set; }
 
         /// <summary>
         /// By default, ships salvaged by starbases recover 80% of their minerals. This spec gives an offset
         /// to that
         /// </summary>
         /// <value></value>
-        public float ScrapMineralOffsetStarbase { get; set; } = 0f;
+        float ScrapMineralOffsetStarbase { get; set; }
 
         /// <summary>
         /// If true, scrapped fleets will return resources, not just minerals
         /// </summary>
         /// <value></value>
-        public bool ScrapResources { get; set; }
+        bool ScrapResources { get; set; }
 
         /// <summary>
         /// Factor to multiply the starting population of a planet by
         /// </summary>
-        public float StartingPopulationFactor { get; set; } = 1f;
+        float StartingPopulationFactor { get; set; }
 
         /// <summary>
         /// Amount to offset Starbase Cloaks by
         /// </summary>
-        public float StarbaseCloakOffset { get; set; } = 0;
+        float StarbaseCloakOffset { get; set; }
 
         /// <summary>
         /// Factor to multiply starbase cost by
         /// </summary>
-        public float StarbaseCostFactor { get; set; } = 1f;
+        float StarbaseCostFactor { get; set; }
 
         /// <summary>
         /// Factor to multiply research resources by
         /// </summary>
-        public float ResearchFactor { get; set; } = 1f;
+        float ResearchFactor { get; set; }
 
         /// <summary>
         /// Factor of research resources to apply to other fields that aren't the current one (splash damage, get it?)
         /// </summary>
-        public float ResearchSplashDamage { get; set; } = 0f;
+        float ResearchSplashDamage { get; set; }
 
         /// <summary>
         /// Amount to increase shield strength by
         /// </summary>
         /// <value></value>
-        public float ShieldStrengthFactor { get; set; } = 1f;
+        float ShieldStrengthFactor { get; set; }
 
         /// <summary>
         /// Rate per turn in battle that shields regenerate
         /// </summary>
         /// <value></value>
-        public float ShieldRegenerationRate { get; set; } = 0f;
+        float ShieldRegenerationRate { get; set; }
 
         /// <summary>
         /// Factor to multiply cost of engines by
         /// </summary>
         /// <value></value>
-        public float EngineCostFactor { get; set; } = 1f;
+        float EngineCostFactor { get; set; }
 
         /// <summary>
         /// The rate at which engines fail, i.e. .1 is 10%
         /// </summary>
         /// <value></value>
-        public float EngineFailureRate { get; set; } = 0f;
+        float EngineFailureRate { get; set; }
 
         /// <summary>
         /// The speed at which engines can reliably travel.
         /// </summary>
         /// <value></value>
-        public float EngineReliableSpeed { get; set; } = 10;
+        float EngineReliableSpeed { get; set; }
     }
 }

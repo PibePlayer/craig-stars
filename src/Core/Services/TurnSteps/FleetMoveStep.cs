@@ -15,7 +15,7 @@ namespace CraigStars
         private readonly FleetService fleetService;
         private readonly PlayerService playerService;
 
-        public FleetMoveStep(IProvider<Game> gameProvider, MineFieldDamager mineFieldDamager, ShipDesignDiscoverer designDiscoverer, FleetService fleetService, PlayerService playerService) : base(gameProvider, TurnGenerationState.MoveFleets)
+        public FleetMoveStep(IProvider<Game> gameProvider, MineFieldDamager mineFieldDamager, ShipDesignDiscoverer designDiscoverer, FleetService fleetService, PlayerService playerService) : base(gameProvider, TurnGenerationState.FleetMoveStep)
         {
             this.mineFieldDamager = mineFieldDamager;
             this.designDiscoverer = designDiscoverer;

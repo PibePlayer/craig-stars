@@ -9,7 +9,7 @@ namespace CraigStars
     /// </summary>
     public class FleetReproduceStep : TurnGenerationStep
     {
-        public FleetReproduceStep(IProvider<Game> gameProvider) : base(gameProvider, TurnGenerationState.Grow) { }
+        public FleetReproduceStep(IProvider<Game> gameProvider) : base(gameProvider, TurnGenerationState.FleetReproduceStep) { }
 
         public override void Process()
         {

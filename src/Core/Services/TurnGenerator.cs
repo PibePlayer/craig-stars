@@ -69,7 +69,7 @@ namespace CraigStars
         /// </summary>
         public void GenerateTurn()
         {
-            PublishTurnGeneratorAdvancedEvent(TurnGenerationState.Scrapping);
+            PublishTurnGeneratorAdvancedEvent(TurnGenerationState.FleetScrapStep);
             Game.Year++;
 
             // reset the players for a new turn
@@ -83,7 +83,7 @@ namespace CraigStars
             // execute each turn step
             var context = new TurnGenerationContext();
             var ownedPlanets = Game.OwnedPlanets.ToList();
-            foreach (var step in steps)
+            foreach (var step in steps.OrderBy(step => (int)step.State))
             {
                 PublishPurgeDeletedMapObjectsEvent();
                 PublishTurnGeneratorAdvancedEvent(step.State);

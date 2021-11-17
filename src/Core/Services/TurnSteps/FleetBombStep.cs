@@ -32,11 +32,11 @@ namespace CraigStars
     /// c a *b            156      Total minimum kill
     /// ============================================================================    
     /// </summary>
-    public class PlanetBombStep : TurnGenerationStep
+    public class FleetBombStep : TurnGenerationStep
     {
         private readonly PlanetService planetService;
 
-        public PlanetBombStep(IProvider<Game> gameProvider, PlanetService planetService) : base(gameProvider, TurnGenerationState.Bomb)
+        public FleetBombStep(IProvider<Game> gameProvider, PlanetService planetService) : base(gameProvider, TurnGenerationState.FleetBombStep)
         {
             this.planetService = planetService;
         }

@@ -11,7 +11,7 @@ namespace CraigStars.Tests
     [TestFixture]
     public class PlanetBombStepTest
     {
-        PlanetBombStep planetBomber;
+        FleetBombStep planetBomber;
         Game game;
         GameRunner gameRunner;
 
@@ -20,7 +20,7 @@ namespace CraigStars.Tests
         {
             PlanetService planetService = TestUtils.TestContainer.GetInstance<PlanetService>();
             (game, gameRunner) = TestUtils.GetSingleUnitGame();
-            planetBomber = new PlanetBombStep(gameRunner.GameProvider, planetService);
+            planetBomber = new FleetBombStep(gameRunner.GameProvider, planetService);
         }
 
         [Test]

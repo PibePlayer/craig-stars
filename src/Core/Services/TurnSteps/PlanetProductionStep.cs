@@ -15,7 +15,7 @@ namespace CraigStars
         private readonly PlayerService playerService;
         private readonly FleetAggregator fleetAggregator;
 
-        public PlanetProductionStep(IProvider<Game> gameProvider, PlanetService planetService, PlayerService playerService, FleetAggregator fleetAggregator) : base(gameProvider, TurnGenerationState.Production)
+        public PlanetProductionStep(IProvider<Game> gameProvider, PlanetService planetService, PlayerService playerService, FleetAggregator fleetAggregator) : base(gameProvider, TurnGenerationState.PlanetProductionStep)
         {
             this.planetService = planetService;
             this.playerService = playerService;

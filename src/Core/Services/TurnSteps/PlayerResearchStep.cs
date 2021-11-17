@@ -12,7 +12,7 @@ namespace CraigStars
         private readonly PlanetService planetService;
         private readonly Researcher researcher;
 
-        public PlayerResearchStep(IProvider<Game> gameProvider, PlanetService planetService, Researcher researcher) : base(gameProvider, TurnGenerationState.Research)
+        public PlayerResearchStep(IProvider<Game> gameProvider, PlanetService planetService, Researcher researcher) : base(gameProvider, TurnGenerationState.PlayerResearchStep)
         {
             this.planetService = planetService;
             this.researcher = researcher;

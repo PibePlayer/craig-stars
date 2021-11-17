@@ -19,7 +19,7 @@ namespace CraigStars
         private readonly PlayerTechService playerTechService;
         private readonly FleetAggregator fleetAggregator;
 
-        public PlayerScanStep(IProvider<Game> gameProvider, PlayerIntel playerIntel, PlayerTechService playerTechService, FleetAggregator fleetAggregator) : base(gameProvider, TurnGenerationState.Scan)
+        public PlayerScanStep(IProvider<Game> gameProvider, PlayerIntel playerIntel, PlayerTechService playerTechService, FleetAggregator fleetAggregator) : base(gameProvider, TurnGenerationState.PlayerScanStep)
         {
             this.playerIntel = playerIntel;
             this.playerTechService = playerTechService;

@@ -11,6 +11,6 @@ namespace CraigStars
             PlanetService planetService,
             InvasionProcessor invasionProcessor,
             PlanetDiscoverer planetDiscoverer
-        ) : base(gameProvider, rulesProvider, planetService, invasionProcessor, planetDiscoverer, 1) { }
+        ) : base(gameProvider, rulesProvider, planetService, invasionProcessor, planetDiscoverer, TurnGenerationState.FleetWaypoint1Step, 1) { }
     }
 }

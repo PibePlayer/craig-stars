@@ -6,14 +6,14 @@ using Godot;
 namespace CraigStars
 {
     /// <summary>
-    /// Move Fleets in space
+    /// Instantly terraform planets (for races with Instaforming)
     /// </summary>
     public class InstaformStep : TurnGenerationStep
     {
         static CSLog log = LogProvider.GetLogger(typeof(InstaformStep));
         private readonly PlanetService planetService;
 
-        public InstaformStep(IProvider<Game> gameProvider, PlanetService planetService) : base(gameProvider, TurnGenerationState.Production)
+        public InstaformStep(IProvider<Game> gameProvider, PlanetService planetService) : base(gameProvider, TurnGenerationState.InstaformStep)
         {
             this.planetService = planetService;
         }

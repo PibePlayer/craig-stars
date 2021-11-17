@@ -13,7 +13,7 @@ namespace CraigStars
     {
         private readonly PlanetService planetService;
 
-        public CheckVictoryStep(IProvider<Game> gameProvider, PlanetService planetService) : base(gameProvider, TurnGenerationState.VictoryCheck)
+        public CheckVictoryStep(IProvider<Game> gameProvider, PlanetService planetService) : base(gameProvider, TurnGenerationState.CheckVictoryStep)
         {
             this.planetService = planetService;
         }

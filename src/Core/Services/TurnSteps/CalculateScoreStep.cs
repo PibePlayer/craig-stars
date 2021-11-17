@@ -28,7 +28,7 @@ namespace CraigStars
     {
         private readonly PlanetService planetService;
 
-        public CalculateScoreStep(IProvider<Game> gameProvider, PlanetService planetService) : base(gameProvider, TurnGenerationState.CalculatingScore)
+        public CalculateScoreStep(IProvider<Game> gameProvider, PlanetService planetService) : base(gameProvider, TurnGenerationState.CalculateScoreStep)
         {
             this.planetService = planetService;
         }

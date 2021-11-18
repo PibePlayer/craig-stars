@@ -105,13 +105,13 @@ namespace CraigStars.Client
                 }
 
                 estimatedRange.Text = $"{fleetService.GetEstimatedRange(CommandedFleet.Fleet, Me)} l.y.";
-                if (CommandedFleet.Fleet.Aggregate.CloakPercent == 0)
+                if (CommandedFleet.Fleet.Spec.CloakPercent == 0)
                 {
                     percentCloaked.Text = "None";
                 }
                 else
                 {
-                    percentCloaked.Text = $"{CommandedFleet.Fleet.Aggregate.CloakPercent:.#}%";
+                    percentCloaked.Text = $"{CommandedFleet.Fleet.Spec.CloakPercent:.#}%";
                 }
 
                 // enable/disable buttons

@@ -29,7 +29,7 @@ namespace CraigStars.Tests
             player.Race.GrowthRate = 10;
 
             // update spec
-            gameRunner.ComputeAggregates();
+            gameRunner.ComputeSpecs();
 
             // growth should be 2x
             var planet = game.Planets[0];
@@ -46,11 +46,11 @@ namespace CraigStars.Tests
             var (game, gameRunner) = TestUtils.GetTwoPlayerGame();
             var player = game.Players[0];
             player.Race.PRT = PRT.SS;
-            gameRunner.ComputeAggregates();
+            gameRunner.ComputeSpecs();
 
             // 75% built in cloaking
             var fleet = game.Fleets[0];
-            Assert.AreEqual(75, fleet.Aggregate.CloakPercent);
+            Assert.AreEqual(75, fleet.Spec.CloakPercent);
 
             var planet = game.Planets[0];
             planet.Starbase = new Starbase()
@@ -60,8 +60,8 @@ namespace CraigStars.Tests
                     new ShipToken(TestUtils.CreateDesign(game, player, ShipDesigns.Starbase.Clone(player)), 1)
                 }
             };
-            gameRunner.ComputeAggregates();
-            Assert.AreEqual(75, planet.Starbase.Aggregate.CloakPercent);
+            gameRunner.ComputeSpecs();
+            Assert.AreEqual(75, planet.Starbase.Spec.CloakPercent);
 
             // travel through minefields at 1 warp better
             Assert.AreEqual(1, player.Race.Spec.MineFieldSafeWarpBonus);

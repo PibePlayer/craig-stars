@@ -7,7 +7,7 @@ namespace CraigStars.Client
 {
     public class HullSummary : Control
     {
-        [Inject] FleetAggregator fleetAggregator;
+        [Inject] FleetSpecService fleetSpecService;
 
         // TODO: if we ever get more than 99 Hull sets, make this smarter.
         public static int MaxHullSets = 99;
@@ -148,7 +148,7 @@ namespace CraigStars.Client
         /// <param name="slot"></param>
         void OnSlotUpdated(ShipDesignSlot slot)
         {
-            fleetAggregator.ComputeDesignAggregate(PlayersManager.Me, ShipDesign, true);
+            fleetSpecService.ComputeDesignSpec(PlayersManager.Me, ShipDesign, true);
             SlotUpdatedEvent?.Invoke(slot);
         }
 
@@ -253,25 +253,25 @@ namespace CraigStars.Client
                     icon.Texture = TextureLoader.Instance.FindTexture(ShipDesign);
 
                     costTitleLabel.Text = ShipDesign.Name.Empty() ? "Cost of design" : $"Cost of one {ShipDesign.Name}";
-                    costGrid.Cost = ShipDesign.Aggregate.Cost;
+                    costGrid.Cost = ShipDesign.Spec.Cost;
                     if (Hull.Starbase)
                     {
                         maxFuelLabel.Visible = maxFuelAmountLabel.Visible = false;
                     }
                     else
                     {
-                        maxFuelAmountLabel.Text = $"{ShipDesign.Aggregate.FuelCapacity}mg";
+                        maxFuelAmountLabel.Text = $"{ShipDesign.Spec.FuelCapacity}mg";
                         maxFuelLabel.Visible = maxFuelAmountLabel.Visible = true;
                     }
-                    armorAmountLabel.Text = $"{ShipDesign.Aggregate.Armor}dp";
-                    massLabel.Text = $"{ShipDesign.Aggregate.Mass}kT";
-                    shieldsAmountLabel.Text = $"{(ShipDesign.Aggregate.Shield > 0 ? $"{ShipDesign.Aggregate.Shield}dp" : "none")}";
-                    cloakJamAmountLabel.Text = $"{ShipDesign.Aggregate.CloakPercent}%/{0:.}%"; // TODO: jamming
-                    initiativeMovesAmountLabel.Text = $"{ShipDesign.Aggregate.Initiative}/{ShipDesign.Aggregate.Movement}";
-                    if (ShipDesign.Aggregate.Scanner)
+                    armorAmountLabel.Text = $"{ShipDesign.Spec.Armor}dp";
+                    massLabel.Text = $"{ShipDesign.Spec.Mass}kT";
+                    shieldsAmountLabel.Text = $"{(ShipDesign.Spec.Shield > 0 ? $"{ShipDesign.Spec.Shield}dp" : "none")}";
+                    cloakJamAmountLabel.Text = $"{ShipDesign.Spec.CloakPercent}%/{0:.}%"; // TODO: jamming
+                    initiativeMovesAmountLabel.Text = $"{ShipDesign.Spec.Initiative}/{ShipDesign.Spec.Movement}";
+                    if (ShipDesign.Spec.Scanner)
                     {
                         scannerRangeLabel.Visible = scannerRangeAmountLabel.Visible = true;
-                        scannerRangeAmountLabel.Text = $"{(ShipDesign.Aggregate.ScanRange >= 0 ? ShipDesign.Aggregate.ScanRange.ToString() : "")}/{(ShipDesign.Aggregate.ScanRangePen >= 0 ? ShipDesign.Aggregate.ScanRangePen.ToString() : "")}";
+                        scannerRangeAmountLabel.Text = $"{(ShipDesign.Spec.ScanRange >= 0 ? ShipDesign.Spec.ScanRange.ToString() : "")}/{(ShipDesign.Spec.ScanRangePen >= 0 ? ShipDesign.Spec.ScanRangePen.ToString() : "")}";
                     }
                     else
                     {

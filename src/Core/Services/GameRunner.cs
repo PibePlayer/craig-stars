@@ -37,7 +37,7 @@ namespace CraigStars
         private readonly PlanetService planetService;
         private readonly PlayerTechService playerTechService;
         private readonly PlayerService playerService;
-        private readonly FleetAggregator fleetAggregator;
+        private readonly FleetSpecService fleetSpecService;
 
         public Game Game { get => gameProvider.Item; }
         public IProvider<Game> GameProvider { get => gameProvider; }
@@ -51,7 +51,7 @@ namespace CraigStars
             PlayerScanStep playerScanStep,
             PlanetService planetService,
             PlayerTechService playerTechService,
-            FleetAggregator fleetAggregator)
+            FleetSpecService fleetSpecService)
         {
             this.gameProvider = gameProvider;
             this.raceService = raceService;
@@ -61,7 +61,7 @@ namespace CraigStars
             this.playerScanStep = playerScanStep;
             this.planetService = planetService;
             this.playerTechService = playerTechService;
-            this.fleetAggregator = fleetAggregator;
+            this.fleetSpecService = fleetSpecService;
 
             EventManager.PlanetPopulationEmptiedEvent += OnPlanetPopulationEmptied;
             EventManager.MapObjectCreatedEvent += OnMapObjectCreated;
@@ -91,11 +91,11 @@ namespace CraigStars
         {
             // update all of our player race specs before we generate.
             Game.Players.ForEach(player => player.Race.Spec = raceService.ComputeRaceSpecs(player.Race));
-            
+
             // generate a new univers
             universeGenerator.Generate();
 
-            ComputeAggregates();
+            ComputeSpecs();
 
             Game.UpdateInternalDictionaries();
 
@@ -160,9 +160,9 @@ namespace CraigStars
             Game.Players.ForEach(player => turnSubmitter.SubmitTurn(player));
 
             // after new player actions and designs are submitted, we need
-            // to compute aggregates for fleets and designs
+            // to compute specs for fleets and designs
             // for turn generation
-            ComputeAggregates();
+            ComputeSpecs();
 
             turnGenerator.GenerateTurn();
 
@@ -192,7 +192,7 @@ namespace CraigStars
             Game.Players.ForEach(p =>
             {
                 p.PlanetaryScanner = playerTechService.GetBestPlanetaryScanner(p);
-                fleetAggregator.ComputePlayerAggregates(p, recompute: true);
+                fleetSpecService.ComputePlayerFleetSpecs(p, recompute: true);
                 p.SetupMapObjectMappings();
                 p.UpdateMessageTargets();
             });
@@ -201,15 +201,15 @@ namespace CraigStars
         /// <summary>
         /// After game load or creating a new game, loop through all designs, fleets, and starbases and build
         /// </summary>
-        public void ComputeAggregates(bool recompute = false)
+        public void ComputeSpecs(bool recompute = false)
         {
             // No cheating, make sure only the server updates the race spec!
             Game.Players.ForEach(player => player.Race.Spec = raceService.ComputeRaceSpecs(player.Race));
-            Game.Designs.ForEach(design => fleetAggregator.ComputeDesignAggregate(Game.Players[design.PlayerNum], design, recompute));
-            Game.Fleets.ForEach(fleet => fleetAggregator.ComputeAggregate(Game.Players[fleet.PlayerNum], fleet, recompute));
+            Game.Designs.ForEach(design => fleetSpecService.ComputeDesignSpec(Game.Players[design.PlayerNum], design, recompute));
+            Game.Fleets.ForEach(fleet => fleetSpecService.ComputeFleetSpec(Game.Players[fleet.PlayerNum], fleet, recompute));
             foreach (var planet in Game.OwnedPlanets.Where(p => p.HasStarbase))
             {
-                fleetAggregator.ComputeStarbaseAggregate(Game.Players[planet.PlayerNum], planet.Starbase, recompute);
+                fleetSpecService.ComputeStarbaseSpec(Game.Players[planet.PlayerNum], planet.Starbase, recompute);
             }
         }
 
@@ -258,14 +258,14 @@ namespace CraigStars
             {
                 if (updateBuiltInScanners && design.Hull.BuiltInScanner)
                 {
-                    fleetAggregator.ComputeDesignScanRanges(player, design);
+                    fleetSpecService.ComputeDesignScanRanges(player, design);
                 }
-                fleetAggregator.ComputeDesignCost(player, design);
+                fleetSpecService.ComputeDesignCost(player, design);
             }
 
             foreach (var fleet in Game.Fleets.Where(f => f.PlayerNum == player.Num))
             {
-                fleetAggregator.ComputeAggregate(player, fleet, recompute: true);
+                fleetSpecService.ComputeFleetSpec(player, fleet, recompute: true);
             }
 
         }

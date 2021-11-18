@@ -459,8 +459,8 @@ namespace CraigStars.Client
 
                 foreach (var fleet in planet.OrbitingFleets.Where(f => f.Fleet.OwnedBy(Me)))
                 {
-                    range = Math.Max(range, fleet.Fleet.Aggregate.ScanRange);
-                    rangePen = Math.Max(rangePen, fleet.Fleet.Aggregate.ScanRangePen);
+                    range = Math.Max(range, fleet.Fleet.Spec.ScanRange);
+                    rangePen = Math.Max(rangePen, fleet.Fleet.Spec.ScanRangePen);
                 }
 
                 if (range > 0)
@@ -474,10 +474,10 @@ namespace CraigStars.Client
 
             }
 
-            foreach (var fleet in Fleets.Where(f => f.OwnedByMe && f.Orbiting == null && f.Fleet.Aggregate.ScanRange > 0))
+            foreach (var fleet in Fleets.Where(f => f.OwnedByMe && f.Orbiting == null && f.Fleet.Spec.ScanRange > 0))
             {
-                var range = fleet.Fleet.Aggregate.ScanRange;
-                var rangePen = fleet.Fleet.Aggregate.ScanRangePen;
+                var range = fleet.Fleet.Spec.ScanRange;
+                var rangePen = fleet.Fleet.Spec.ScanRangePen;
                 if (range > 0)
                 {
                     AddScannerCoverage(fleet.Position, range, false);

@@ -20,7 +20,7 @@ namespace CraigStars
         public override void Process()
         {
             // Separate our waypoint tasks into groups
-            foreach (var fleet in Game.Fleets.Where(fleet => fleet.Aggregate.MineSweep > 0))
+            foreach (var fleet in Game.Fleets.Where(fleet => fleet.Spec.MineSweep > 0))
             {
                 var fleetPlayer = Game.Players[fleet.PlayerNum];
                 // sweep mines from any minefields we would attack that we are contained by
@@ -35,7 +35,7 @@ namespace CraigStars
             }
 
             // starbases also sweep
-            foreach (var planet in Game.Planets.Where(planet => planet.HasStarbase && planet.Starbase.Aggregate.MineSweep > 0))
+            foreach (var planet in Game.Planets.Where(planet => planet.HasStarbase && planet.Starbase.Spec.MineSweep > 0))
             {
                 var planetPlayer = Game.Players[planet.PlayerNum];
                 // sweep mines from any minefields we would attack that we are contained by
@@ -58,7 +58,7 @@ namespace CraigStars
         internal void Sweep(Fleet fleet, Player fleetPlayer, MineField mineField, Player mineFieldPlayer)
         {
             long old = mineField.NumMines;
-            mineField.NumMines -= (long)(fleet.Aggregate.MineSweep * Game.Rules.MineFieldStatsByType[mineField.Type].SweepFactor);
+            mineField.NumMines -= (long)(fleet.Spec.MineSweep * Game.Rules.MineFieldStatsByType[mineField.Type].SweepFactor);
             mineField.NumMines = Math.Max(mineField.NumMines, 0);
 
             long numSwept = old - mineField.NumMines;

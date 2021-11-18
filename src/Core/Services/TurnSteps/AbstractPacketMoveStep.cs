@@ -122,7 +122,7 @@ namespace CraigStars
 
             var planet = packet.Target;
 
-            if (packet.Target.HasMassDriver && planet.Starbase.Aggregate.SafePacketSpeed >= packet.WarpFactor)
+            if (packet.Target.HasMassDriver && planet.Starbase.Spec.SafePacketSpeed >= packet.WarpFactor)
             {
                 // caught packet successfully, transfer cargo
                 packet.Target.AttemptTransfer(cargo);
@@ -136,7 +136,7 @@ namespace CraigStars
             {
                 var planetPlayer = Game.Players[planet.PlayerNum];
                 // uh oh, this packet is going to fast and we'll take damage
-                var receiverDriverSpeed = planet.HasStarbase ? planet.Starbase.Aggregate.SafePacketSpeed : 0;
+                var receiverDriverSpeed = planet.HasStarbase ? planet.Starbase.Spec.SafePacketSpeed : 0;
 
                 var speedOfPacket = packet.WarpFactor * packet.WarpFactor;
                 var speedOfReceiver = receiverDriverSpeed * receiverDriverSpeed;

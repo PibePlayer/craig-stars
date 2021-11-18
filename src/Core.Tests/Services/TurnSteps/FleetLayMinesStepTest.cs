@@ -37,7 +37,7 @@ namespace CraigStars.Tests
                 }
             });
 
-            gameRunner.ComputeAggregates(recompute: true);
+            gameRunner.ComputeSpecs(recompute: true);
 
             FleetLayMinesStep step = new FleetLayMinesStep(gameRunner.GameProvider);
 

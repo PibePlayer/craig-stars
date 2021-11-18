@@ -13,13 +13,13 @@ namespace CraigStars
         static CSLog log = LogProvider.GetLogger(typeof(PlanetProductionStep));
         private readonly PlanetService planetService;
         private readonly PlayerService playerService;
-        private readonly FleetAggregator fleetAggregator;
+        private readonly FleetSpecService fleetSpecService;
 
-        public PlanetProductionStep(IProvider<Game> gameProvider, PlanetService planetService, PlayerService playerService, FleetAggregator fleetAggregator) : base(gameProvider, TurnGenerationState.PlanetProductionStep)
+        public PlanetProductionStep(IProvider<Game> gameProvider, PlanetService planetService, PlayerService playerService, FleetSpecService fleetSpecService) : base(gameProvider, TurnGenerationState.PlanetProductionStep)
         {
             this.planetService = planetService;
             this.playerService = playerService;
-            this.fleetAggregator = fleetAggregator;
+            this.fleetSpecService = fleetSpecService;
         }
 
         /// <summary>
@@ -262,7 +262,7 @@ namespace CraigStars
             {
                 PlayerNum = planet.PlayerNum,
                 Position = planet.Position,
-                SafeWarpSpeed = planet.Starbase.Aggregate.SafePacketSpeed,
+                SafeWarpSpeed = planet.Starbase.Spec.SafePacketSpeed,
                 WarpFactor = planet.PacketSpeed,
                 Target = planet.PacketTarget,
                 Cargo = cargo * numBuilt
@@ -286,7 +286,7 @@ namespace CraigStars
             var id = player.Stats.NumFleetsBuilt;
             string name = item.FleetName != null ? item.FleetName : item.Design.Name;
             var existingFleetByName = planet.OrbitingFleets.Where(f => f.Name == name);
-            var existingFleetsRequiringTokens = planet.OrbitingFleets.Where(f => !f.Aggregate.FleetCompositionComplete).ToList();
+            var existingFleetsRequiringTokens = planet.OrbitingFleets.Where(f => !f.Spec.FleetCompositionComplete).ToList();
 
             bool foundFleet = false;
             if (existingFleetsRequiringTokens.Count > 0)
@@ -306,7 +306,7 @@ namespace CraigStars
                             fleet.Tokens.Add(new ShipToken(item.Design, item.Quantity));
                         }
 
-                        fleetAggregator.ComputeAggregate(player, fleet, true);
+                        fleetSpecService.ComputeFleetSpec(player, fleet, true);
                         Message.FleetBuiltForComposition(player, item.Design, fleet, numBuilt);
                         foundFleet = true;
                         break;
@@ -327,8 +327,8 @@ namespace CraigStars
                     BattlePlan = player.BattlePlans[0]
                 };
                 fleet.Tokens.Add(new ShipToken(item.Design, item.Quantity));
-                fleetAggregator.ComputeAggregate(player, fleet);
-                fleet.Fuel = fleet.Aggregate.FuelCapacity;
+                fleetSpecService.ComputeFleetSpec(player, fleet);
+                fleet.Fuel = fleet.Spec.FuelCapacity;
                 fleet.Waypoints.Add(Waypoint.TargetWaypoint(planet));
                 planet.OrbitingFleets.Add(fleet);
 
@@ -362,8 +362,8 @@ namespace CraigStars
             }
             planet.Starbase.Name = item.Design.Name;
             planet.Starbase.Tokens.Add(new ShipToken(item.Design, 1));
-            fleetAggregator.ComputeStarbaseAggregate(player, planet.Starbase, true);
-            planet.PacketSpeed = planet.Starbase.Aggregate.SafePacketSpeed;
+            fleetSpecService.ComputeStarbaseSpec(player, planet.Starbase, true);
+            planet.PacketSpeed = planet.Starbase.Spec.SafePacketSpeed;
             Message.FleetBuilt(player, item.Design, planet.Starbase, 1);
 
         }

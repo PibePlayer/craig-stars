@@ -3,12 +3,12 @@ using System.Collections.Generic;
 namespace CraigStars
 {
     /// <summary>
-    /// The aggregate of all the components and hull on a ship design
+    /// The spec of all the components and hull on a ship design
     /// </summary>
-    public class ShipDesignAggregate
+    public class ShipDesignSpec
     {
         /// <summary>
-        /// Have we already computed the aggregate for this design/fleet?
+        /// Have we already computed the spec for this design/fleet?
         /// </summary>
         /// <value></value>
         public bool Computed { get; set; }

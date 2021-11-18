@@ -315,17 +315,17 @@ namespace CraigStars.Client
                     var design = selectedToken.Token.Design;
                     selectionDesignLabel.Text = design.Name;
 
-                    if (design.Aggregate.HasWeapons)
+                    if (design.Spec.HasWeapons)
                     {
-                        selectionInitiative.Text = $"Initiative: {design.Aggregate.Initiative}";
+                        selectionInitiative.Text = $"Initiative: {design.Spec.Initiative}";
                     }
                     else
                     {
                         selectionInitiative.Text = $"Initiative: 0";
                     }
 
-                    selectionMovement.Text = $"Movement: {selectedToken.Token.Design.Aggregate.Movement}";
-                    selectionArmor.Text = $"Armor: {selectedToken.Token.Design.Aggregate.Armor}dp";
+                    selectionMovement.Text = $"Movement: {selectedToken.Token.Design.Spec.Movement}";
+                    selectionArmor.Text = $"Armor: {selectedToken.Token.Design.Spec.Armor}dp";
                     selectionShields.Text = $"Shields: {selectedGridToken.Shields}dp";
 
                     if (selectedGridToken.DamageArmor > 0)
@@ -572,7 +572,7 @@ namespace CraigStars.Client
 
             var battleEngine = new BattleEngine(game,
                 new FleetService(
-                    new FleetAggregator(rulesProvider)
+                    new FleetSpecService(rulesProvider)
                 ),
                 new ShipDesignDiscoverer());
             var battle = battleEngine.BuildBattle(game.Fleets);

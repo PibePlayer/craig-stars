@@ -54,14 +54,14 @@ namespace CraigStars.Tests
                     new ShipDesignSlot(Techs.MiniGun, 3, 1),
                 }
             });
-            gameRunner.ComputeAggregates(recompute: true);
+            gameRunner.ComputeSpecs(recompute: true);
 
             FleetSweepMinesStep step = new FleetSweepMinesStep(gameRunner.GameProvider, fleetService);
 
             // minigun sweeps 256 enemy mines
             step.Process();
             Assert.AreEqual(2, game.MineFields.Count);
-            Assert.AreEqual(1000 - fleet.Aggregate.MineSweep, game.MineFields[0].NumMines);
+            Assert.AreEqual(1000 - fleet.Spec.MineSweep, game.MineFields[0].NumMines);
 
             // it should ignore our mineField
             Assert.AreEqual(1000, game.MineFields[1].NumMines);

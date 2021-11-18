@@ -42,7 +42,7 @@ namespace CraigStars.Tests
             player.Race.GrowthRate = 10;
             fleet.Cargo = fleet.Cargo.WithColonists(100);
 
-            gameRunner.ComputeAggregates(recompute: true);
+            gameRunner.ComputeSpecs(recompute: true);
 
             FleetReproduceStep step = new FleetReproduceStep(gameRunner.GameProvider);
 
@@ -71,23 +71,23 @@ namespace CraigStars.Tests
             player.Race.PRT = PRT.IS;
             player.Race.GrowthRate = 10;
 
-            gameRunner.ComputeAggregates(recompute: true);
+            gameRunner.ComputeSpecs(recompute: true);
 
             // leave space for 1kT of colonists
-            fleet.Cargo = fleet.Cargo.WithColonists(fleet.Aggregate.CargoCapacity - 1);
+            fleet.Cargo = fleet.Cargo.WithColonists(fleet.Spec.CargoCapacity - 1);
 
             FleetReproduceStep step = new FleetReproduceStep(gameRunner.GameProvider);
 
             // should fill cargo, but no more
             step.Reproduce(fleet, player);
-            Assert.AreEqual(fleet.Aggregate.CargoCapacity, fleet.Cargo.Colonists);
+            Assert.AreEqual(fleet.Spec.CargoCapacity, fleet.Cargo.Colonists);
 
             fleet.Orbiting = game.Planets[0];
             var planetStartingPop = game.Planets[0].Population;
 
             // should overflow to planet
             step.Reproduce(fleet, player);
-            Assert.AreEqual(fleet.Aggregate.CargoCapacity, fleet.Cargo.Colonists);
+            Assert.AreEqual(fleet.Spec.CargoCapacity, fleet.Cargo.Colonists);
             Assert.AreEqual(planetStartingPop + Utils.Utils.RoundToNearest((int)(21 * 100 * .5)), game.Planets[0].Population);
 
         }
@@ -113,7 +113,7 @@ namespace CraigStars.Tests
             player.Race.GrowthRate = 10;
             fleet.Cargo = fleet.Cargo.WithColonists(100);
 
-            gameRunner.ComputeAggregates(recompute: true);
+            gameRunner.ComputeSpecs(recompute: true);
 
             FleetReproduceStep step = new FleetReproduceStep(gameRunner.GameProvider);
 
@@ -121,7 +121,7 @@ namespace CraigStars.Tests
             Assert.AreEqual(105, fleet.Cargo.Colonists);
 
             player.Race.PRT = PRT.JoaT;
-            gameRunner.ComputeAggregates(recompute: true);
+            gameRunner.ComputeSpecs(recompute: true);
 
             // shouldn't grow at all
             step.Process();

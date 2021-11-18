@@ -56,13 +56,13 @@ namespace CraigStars.Client
             remoteMiningLabel.Modulate = Colors.Red;
 
             // update our mining stats
-            if (Fleet != null && Planet != null && fleet.Aggregate.MiningRate > 0 && Planet.Explored && !Planet.Owned)
+            if (Fleet != null && Planet != null && fleet.Spec.MiningRate > 0 && Planet.Explored && !Planet.Owned)
             {
                 remoteMiningSummaryContainer.Visible = true;
 
                 remoteMiningLabel.Modulate = Colors.White;
                 remoteMiningLabel.Text = "Mining Rate per Year:";
-                Mineral output = planetService.GetMineralOutput(Planet, Fleet.Aggregate.MiningRate);
+                Mineral output = planetService.GetMineralOutput(Planet, Fleet.Spec.MiningRate);
                 ironium.Text = output.Ironium.ToString();
                 boranium.Text = output.Boranium.ToString();
                 germanium.Text = output.Germanium.ToString();
@@ -77,7 +77,7 @@ namespace CraigStars.Client
                 {
                     remoteMiningLabel.Text = "Warning: This planet is unexplored. We have no way of knowing if we can mine it.";
                 }
-                else if (!(fleet?.Aggregate?.MiningRate > 0))
+                else if (!(fleet?.Spec?.MiningRate > 0))
                 {
                     remoteMiningLabel.Text = "Warning: This fleet contains no ships with remote mining modules.";
                 }

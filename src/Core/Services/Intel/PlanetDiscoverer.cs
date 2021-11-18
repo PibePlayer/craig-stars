@@ -13,15 +13,15 @@ namespace CraigStars
         static CSLog log = LogProvider.GetLogger(typeof(PlanetDiscoverer));
         private readonly PlanetService planetService;
         private readonly ShipDesignDiscoverer designDiscoverer;
-        private readonly FleetAggregator fleetAggregator;
+        private readonly FleetSpecService fleetSpecService;
         private readonly IRulesProvider rulesProvider;
         private Rules Rules => rulesProvider.Rules;
 
-        public PlanetDiscoverer(PlanetService planetService, ShipDesignDiscoverer designDiscoverer, FleetAggregator fleetAggregator, IRulesProvider rulesProvider)
+        public PlanetDiscoverer(PlanetService planetService, ShipDesignDiscoverer designDiscoverer, FleetSpecService fleetSpecService, IRulesProvider rulesProvider)
         {
             this.planetService = planetService;
             this.designDiscoverer = designDiscoverer;
-            this.fleetAggregator = fleetAggregator;
+            this.fleetSpecService = fleetSpecService;
             this.rulesProvider = rulesProvider;
         }
 
@@ -176,7 +176,7 @@ namespace CraigStars
                 };
 
                 itemReport.Starbase.Tokens.Add(new ShipToken(player.DesignsByGuid[item.Starbase.Design.Guid], 1));
-                fleetAggregator.ComputeStarbaseAggregate(player, itemReport.Starbase, recompute: true);
+                fleetSpecService.ComputeStarbaseSpec(player, itemReport.Starbase, recompute: true);
             }
         }
     }

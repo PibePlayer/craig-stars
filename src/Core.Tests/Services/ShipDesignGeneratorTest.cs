@@ -19,7 +19,7 @@ namespace CraigStars.Tests
         {
             designer = new ShipDesignGenerator(
                 TestUtils.TestContainer.GetInstance<PlayerTechService>(),
-                TestUtils.TestContainer.GetInstance<FleetAggregator>()
+                TestUtils.TestContainer.GetInstance<FleetSpecService>()
             );
         }
 

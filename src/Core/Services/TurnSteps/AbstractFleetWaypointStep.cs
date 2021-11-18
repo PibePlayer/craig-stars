@@ -292,7 +292,7 @@ namespace CraigStars
             if (ValidateRemoteMining(fleet, wp, planet))
             {
                 // remote mine!
-                planet.Cargo += planetService.GetMineralOutput(planet, fleet.Aggregate.MiningRate);
+                planet.Cargo += planetService.GetMineralOutput(planet, fleet.Spec.MiningRate);
                 planetDiscoverer.DiscoverRemoteMined(fleetWaypoint.Player, planet);
             }
             else
@@ -327,7 +327,7 @@ namespace CraigStars
                 }
             }
 
-            if (fleet.Aggregate.MiningRate == 0)
+            if (fleet.Spec.MiningRate == 0)
             {
                 Message.RemoteMineNoMiners(Game.Players[fleet.PlayerNum], fleet, planet);
                 return false;
@@ -348,7 +348,7 @@ namespace CraigStars
             {
                 foreach (var task in fleetWaypoint.Tasks)
                 {
-                    var capacity = fleet.Aggregate.CargoCapacity - fleet.Cargo.Total;
+                    var capacity = fleet.Spec.CargoCapacity - fleet.Cargo.Total;
                     int transferAmount = 0;
                     int availableToLoad = task.cargoType == CargoType.Fuel ? cargoSource.Fuel : cargoSource.Cargo[task.cargoType];
 
@@ -501,7 +501,7 @@ namespace CraigStars
             var player = fleetWaypoint.Player;
 
             // create a new cargo instance out of our fleet cost
-            Cargo cargo = fleet.Aggregate.Cost;
+            Cargo cargo = fleet.Spec.Cost;
 
             // TODO: handle starbases and better recycling
             // this is 1/3rd for normal races, but UR is more efficient and scraps 45%
@@ -545,7 +545,7 @@ namespace CraigStars
                 {
                     Message.ColonizeOwnedPlanet(player, fleet);
                 }
-                else if (!fleet.Aggregate.Colonizer)
+                else if (!fleet.Spec.Colonizer)
                 {
                     Message.ColonizeWithNoModule(player, fleet);
                 }
@@ -606,7 +606,7 @@ namespace CraigStars
             switch (wp.Task)
             {
                 case WaypointTask.LayMineField:
-                    if (!fleet.Aggregate.CanLayMines)
+                    if (!fleet.Spec.CanLayMines)
                     {
                         wp.Task = WaypointTask.None;
                         Message.MinesLaidFailed(player, fleet);

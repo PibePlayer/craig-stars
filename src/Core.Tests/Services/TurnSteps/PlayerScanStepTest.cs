@@ -21,14 +21,14 @@ namespace CraigStars.Tests
 
         PlayerTechService playerTechService;
         PlayerIntel playerIntel;
-        FleetAggregator fleetAggregator;
+        FleetSpecService fleetSpecService;
 
         [SetUp]
         public void SetUp()
         {
             playerTechService = TestUtils.TestContainer.GetInstance<PlayerTechService>();
             playerIntel = TestUtils.TestContainer.GetInstance<PlayerIntel>();
-            fleetAggregator = TestUtils.TestContainer.GetInstance<FleetAggregator>();
+            fleetSpecService = TestUtils.TestContainer.GetInstance<FleetSpecService>();
         }
 
 
@@ -38,7 +38,7 @@ namespace CraigStars.Tests
             var (game, gameRunner) = TestUtils.GetSingleUnitGame();
             game.Planets[0].Population = 120000;
 
-            var scanStep = new PlayerScanStep(gameRunner.GameProvider, playerIntel, playerTechService, fleetAggregator);
+            var scanStep = new PlayerScanStep(gameRunner.GameProvider, playerIntel, playerTechService, fleetSpecService);
             scanStep.Execute(new TurnGenerationContext(), game.OwnedPlanets.ToList());
 
             // our player should know about the planet updates
@@ -54,10 +54,10 @@ namespace CraigStars.Tests
             var fleet = game.Fleets[0];
 
             player.TechLevels.Electronics = 3;
-            gameRunner.ComputeAggregates(recompute: true);
+            gameRunner.ComputeSpecs(recompute: true);
 
             // our fleet should have a penscan range of
-            var scanRangePen = fleet.Aggregate.ScanRangePen;
+            var scanRangePen = fleet.Spec.ScanRangePen;
 
             var planet2 = new Planet()
             {
@@ -81,7 +81,7 @@ namespace CraigStars.Tests
             var playerPlanet = player.ForeignPlanets[1];
             Assert.IsNull(playerPlanet.Hab);
 
-            var scanStep = new PlayerScanStep(gameRunner.GameProvider, playerIntel, playerTechService, fleetAggregator);
+            var scanStep = new PlayerScanStep(gameRunner.GameProvider, playerIntel, playerTechService, fleetSpecService);
             scanStep.Execute(new TurnGenerationContext(), game.OwnedPlanets.ToList());
 
             // we should know the hab now
@@ -96,10 +96,10 @@ namespace CraigStars.Tests
             var fleet = game.Fleets[0];
 
             player.TechLevels.Electronics = 3;
-            gameRunner.ComputeAggregates(recompute: true);
+            gameRunner.ComputeSpecs(recompute: true);
 
             // our fleet should have a penscan range of
-            var scanRangePen = fleet.Aggregate.ScanRangePen;
+            var scanRangePen = fleet.Spec.ScanRangePen;
 
             var planet2 = new Planet()
             {
@@ -126,7 +126,7 @@ namespace CraigStars.Tests
             fleet.PreviousPosition = new Vector2();
             fleet.Position = new Vector2(scanRangePen * 2 + 2, 0);
 
-            var scanStep = new PlayerScanStep(gameRunner.GameProvider, playerIntel, playerTechService, fleetAggregator);
+            var scanStep = new PlayerScanStep(gameRunner.GameProvider, playerIntel, playerTechService, fleetSpecService);
             scanStep.Execute(new TurnGenerationContext(), game.OwnedPlanets.ToList());
 
             // we should know the hab now
@@ -150,7 +150,7 @@ namespace CraigStars.Tests
             };
 
             // we should discover this fleet
-            var scanStep = new PlayerScanStep(gameRunner.GameProvider, playerIntel, playerTechService, fleetAggregator);
+            var scanStep = new PlayerScanStep(gameRunner.GameProvider, playerIntel, playerTechService, fleetSpecService);
             scanStep.ScanFleets(player1, scanners);
 
             Assert.AreEqual(1, player1.ForeignFleets.Count);
@@ -223,10 +223,10 @@ namespace CraigStars.Tests
             }
 
             game.UpdateInternalDictionaries();
-            gameRunner.ComputeAggregates();
+            gameRunner.ComputeSpecs();
 
             // we should discover this fleet
-            var scanStep = new PlayerScanStep(gameRunner.GameProvider, playerIntel, playerTechService, fleetAggregator);
+            var scanStep = new PlayerScanStep(gameRunner.GameProvider, playerIntel, playerTechService, fleetSpecService);
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Reset();

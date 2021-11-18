@@ -10,13 +10,13 @@ namespace CraigStars.Tests
         static CSLog log = LogProvider.GetLogger(typeof(PlanetServiceTest));
 
         Rules rules = new Rules(0);
-        FleetAggregator fleetAggregator = TestUtils.TestContainer.GetInstance<FleetAggregator>();
+        FleetSpecService fleetSpecService = TestUtils.TestContainer.GetInstance<FleetSpecService>();
         FleetService service;
 
         [SetUp]
         public void SetUp()
         {
-            service = new FleetService(fleetAggregator);
+            service = new FleetService(fleetSpecService);
         }
 
         [Test]

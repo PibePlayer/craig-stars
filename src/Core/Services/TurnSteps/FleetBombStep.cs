@@ -64,7 +64,7 @@ namespace CraigStars
             // get a list of all players orbiting the planet
 
             // find any enemy bombers orbiting this planet
-            var enemyBombers = planet.OrbitingFleets.Where(fleet => fleet.Aggregate.Bomber && Game.Players[fleet.PlayerNum].IsEnemy(planet.PlayerNum));
+            var enemyBombers = planet.OrbitingFleets.Where(fleet => fleet.Spec.Bomber && Game.Players[fleet.PlayerNum].IsEnemy(planet.PlayerNum));
 
             var orbitingPlayers = enemyBombers.Select(fleet => fleet.PlayerNum).ToHashSet();
 
@@ -104,12 +104,12 @@ namespace CraigStars
             // do all normal bombs
             foreach (var fleet in bombers)
             {
-                if (fleet.Aggregate.Bombs.Count > 0)
+                if (fleet.Spec.Bombs.Count > 0)
                 {
                     // figure out the killRate and minKill for this fleet's bombs
                     var defenseCoverage = planetService.GetDefenseCoverage(planet, defender);
-                    var killRateColonistsKilled = RoundToNearest(GetColonistsKilled(planet.Population, defenseCoverage, fleet.Aggregate.Bombs));
-                    var minColonistsKilled = RoundToNearest(GetMinColonistsKilled(planet.Population, defenseCoverage, fleet.Aggregate.Bombs));
+                    var killRateColonistsKilled = RoundToNearest(GetColonistsKilled(planet.Population, defenseCoverage, fleet.Spec.Bombs));
+                    var minColonistsKilled = RoundToNearest(GetMinColonistsKilled(planet.Population, defenseCoverage, fleet.Spec.Bombs));
 
                     var killed = Math.Max(killRateColonistsKilled, minColonistsKilled);
                     var leftoverPopulation = Math.Max(0, planet.Population - killed);
@@ -117,7 +117,7 @@ namespace CraigStars
                     planet.Population = leftoverPopulation;
 
                     // apply this against mines/factories and defenses proportionally
-                    var structuresDestroyed = GetStructuresDestroyed(defenseCoverage, fleet.Aggregate.Bombs);
+                    var structuresDestroyed = GetStructuresDestroyed(defenseCoverage, fleet.Spec.Bombs);
                     var totalStructures = planet.Mines + planet.Factories + planet.Defenses;
                     var leftoverMines = 0;
                     var leftoverFactories = 0;
@@ -158,10 +158,10 @@ namespace CraigStars
             // now do all smart bombs
             foreach (var fleet in bombers)
             {
-                if (fleet.Aggregate.SmartBombs.Count > 0)
+                if (fleet.Spec.SmartBombs.Count > 0)
                 {
                     // figure out the killRate and minKill for this fleet's bombs
-                    var smartKilled = RoundToNearest(GetColonistsKilledWithSmartBombs(planet.Population, smartDefenseCoverage, fleet.Aggregate.SmartBombs));
+                    var smartKilled = RoundToNearest(GetColonistsKilledWithSmartBombs(planet.Population, smartDefenseCoverage, fleet.Spec.SmartBombs));
 
                     var leftoverPopulation = Math.Max(0, planet.Population - smartKilled);
                     var actualKilled = planet.Population - leftoverPopulation;

@@ -40,9 +40,9 @@ namespace CraigStars
             .OrderBy(planet => planet.Population)
             .ToList();
             var buildablePlanets = player.Planets
-                .Where(planet => planetService.CanBuild(planet, player, design.Aggregate.Mass) && planetService.GetPopulationDensity(planet, player, gameInfo.Rules) >= PopulationDensityRequired)
+                .Where(planet => planetService.CanBuild(planet, player, design.Spec.Mass) && planetService.GetPopulationDensity(planet, player, gameInfo.Rules) >= PopulationDensityRequired)
                 .ToList();
-            var fleets = player.Fleets.Where(fleet => fleet.Aggregate.Purposes.Contains(ShipDesignPurpose.Freighter));
+            var fleets = player.Fleets.Where(fleet => fleet.Spec.Purposes.Contains(ShipDesignPurpose.Freighter));
 
             foreach (var fleet in fleets)
             {

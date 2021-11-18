@@ -46,7 +46,7 @@ namespace CraigStars.Client
 
         void OnCargoBarPressed(int newValue)
         {
-            if (MapObject?.Fleet != null && MapObject.Fleet.Aggregate.CargoCapacity > 0 && MapObject?.Fleet?.Orbiting != null)
+            if (MapObject?.Fleet != null && MapObject.Fleet.Spec.CargoCapacity > 0 && MapObject?.Fleet?.Orbiting != null)
             {
                 // trigger a cargo transfer event between this fleet and the planet it is orbiting
                 EventManager.PublishCargoTransferDialogRequestedEvent(MapObject.Fleet, MapObject.Fleet.Orbiting);
@@ -64,7 +64,7 @@ namespace CraigStars.Client
                 {
                     Visible = true;
                     shipCountLabel.Text = $"Ship Count: {fleet.Tokens.Count}";
-                    massLabel.Text = $"Fleet Mass: {fleet.Aggregate.Mass}";
+                    massLabel.Text = $"Fleet Mass: {fleet.Spec.Mass}";
                     if (fleet.Waypoints.Count > 1)
                     {
                         var wp1 = fleet.Waypoints[1];
@@ -79,19 +79,19 @@ namespace CraigStars.Client
                         warpLabel.Text = "Warp Speed: (stopped)";
                     }
                     // TODO: add minesweep summary
-                    if (fleet.Aggregate.MineSweep > 0)
+                    if (fleet.Spec.MineSweep > 0)
                     {
-                        mineSweepSummaryLabel.Text = $"This fleet can destroy up to {fleet.Aggregate.MineSweep} mines per year.";
+                        mineSweepSummaryLabel.Text = $"This fleet can destroy up to {fleet.Spec.MineSweep} mines per year.";
                     }
                     else
                     {
                         mineSweepSummaryLabel.Text = "";
                     }
 
-                    fuelBar.Capacity = fleet.Aggregate.FuelCapacity;
+                    fuelBar.Capacity = fleet.Spec.FuelCapacity;
                     fuelBar.Fuel = fleet.Fuel;
                     cargoBar.Cargo = fleet.Cargo;
-                    cargoBar.Capacity = fleet.Aggregate.CargoCapacity;
+                    cargoBar.Capacity = fleet.Spec.CargoCapacity;
 
                 }
                 else

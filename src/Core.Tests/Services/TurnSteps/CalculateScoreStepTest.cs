@@ -107,7 +107,7 @@ namespace CraigStars.Tests
                 1, 4, 7, 10 // should be 1 + 2 + 3 + 4 = 10 points total
             );
 
-            gameRunner.ComputeAggregates(recompute: true);
+            gameRunner.ComputeSpecs(recompute: true);
             var step = new CalculateScoreStep(gameRunner.GameProvider, planetService);
             var score = step.CalculateScore(player);
 

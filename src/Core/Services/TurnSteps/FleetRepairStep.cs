@@ -43,7 +43,7 @@ namespace CraigStars
             {
                 if (orbiting != null)
                 {
-                    if (fleet.Aggregate.Bomber && player.IsEnemy(orbiting.PlayerNum))
+                    if (fleet.Spec.Bomber && player.IsEnemy(orbiting.PlayerNum))
                     {
                         // no repairs while bombing
                         rate = RepairRate.None;
@@ -70,15 +70,15 @@ namespace CraigStars
             if (repairRate > 0)
             {
                 // apply any bonuses for the fleet
-                repairRate += fleet.Aggregate.RepairBonus;
+                repairRate += fleet.Spec.RepairBonus;
                 if (rate == RepairRate.OrbitingOwnPlanet && orbiting.HasStarbase)
                 {
                     // apply any bonuses for the starbase if we own this planet and it has a starbase
-                    repairRate += orbiting.Starbase.Aggregate.RepairBonus;
+                    repairRate += orbiting.Starbase.Spec.RepairBonus;
                 }
 
                 // IS races double repair
-                var repairAmount = fleet.Aggregate.Armor * repairRate * player.Race.Spec.RepairFactor;
+                var repairAmount = fleet.Spec.Armor * repairRate * player.Race.Spec.RepairFactor;
 
                 // Remove damage from this fleet by its armor * repairRate
                 fleet.Damage = Math.Max(0, (int)(fleet.Damage - repairAmount));
@@ -96,7 +96,7 @@ namespace CraigStars
             var repairRate = Rules.RepairRates[RepairRate.Starbase];
             
             // IS races repair starbases 1.5x
-            var repairAmount = starbase.Aggregate.Armor * repairRate * player.Race.Spec.StarbaseRepairFactor;
+            var repairAmount = starbase.Spec.Armor * repairRate * player.Race.Spec.StarbaseRepairFactor;
 
             // Remove damage from this fleet by its armor * repairRate
             starbase.Damage = Math.Max(0, (int)(starbase.Damage - repairAmount));

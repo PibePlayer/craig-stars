@@ -45,7 +45,7 @@ namespace CraigStars.Tests
             var player = game.Players[0];
             player.Race.PRT = PRT.CA;
 
-            gameRunner.ComputeAggregates();
+            gameRunner.ComputeSpecs();
 
             // make this 100%
             player.Race.Spec.PermaformChance = .1f;

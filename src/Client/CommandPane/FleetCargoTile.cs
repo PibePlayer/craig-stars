@@ -35,7 +35,7 @@ namespace CraigStars.Client
 
         void OnCargoBarPressed(int newValue)
         {
-            if (CommandedFleet?.Fleet != null && CommandedFleet.Fleet.Aggregate.CargoCapacity > 0 && CommandedFleet?.Fleet?.Orbiting != null)
+            if (CommandedFleet?.Fleet != null && CommandedFleet.Fleet.Spec.CargoCapacity > 0 && CommandedFleet?.Fleet?.Orbiting != null)
             {
                 // trigger a cargo transfer event between this fleet and the planet it is orbiting
                 EventManager.PublishCargoTransferDialogRequestedEvent(CommandedFleet.Fleet, CommandedFleet.Fleet.Orbiting);
@@ -52,10 +52,10 @@ namespace CraigStars.Client
             base.UpdateControls();
             if (CommandedFleet != null)
             {
-                fuelBar.Capacity = CommandedFleet.Fleet.Aggregate.FuelCapacity;
+                fuelBar.Capacity = CommandedFleet.Fleet.Spec.FuelCapacity;
                 fuelBar.Fuel = CommandedFleet.Fleet.Fuel;
                 cargoBar.Cargo = CommandedFleet.Fleet.Cargo;
-                cargoBar.Capacity = CommandedFleet.Fleet.Aggregate.CargoCapacity;
+                cargoBar.Capacity = CommandedFleet.Fleet.Spec.CargoCapacity;
                 cargoGrid.Cargo = CommandedFleet.Fleet.Cargo;
             }
         }

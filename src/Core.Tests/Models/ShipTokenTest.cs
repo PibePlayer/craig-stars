@@ -8,7 +8,7 @@ namespace CraigStars.Tests
     [TestFixture]
     public class ShipTokenTest
     {
-        FleetAggregator fleetAggregator = TestUtils.TestContainer.GetInstance<FleetAggregator>();
+        FleetSpecService fleetSpecService = TestUtils.TestContainer.GetInstance<FleetSpecService>();
 
         [Test]
         public void TestApplyMineDamage()
@@ -19,8 +19,8 @@ namespace CraigStars.Tests
 
             var mass = 100;
             var armor = 100;
-            token.Design.Aggregate.Mass = mass;
-            token.Design.Aggregate.Armor = armor;
+            token.Design.Spec.Mass = mass;
+            token.Design.Spec.Armor = armor;
 
             // we take 50 damage to 1 token
             Assert.AreEqual(new TokenDamage(50, 0), token.ApplyMineDamage(50));
@@ -49,9 +49,9 @@ namespace CraigStars.Tests
             var mass = 100;
             var armor = 150;
             var shield = 50;
-            token.Design.Aggregate.Mass = mass;
-            token.Design.Aggregate.Armor = armor;
-            token.Design.Aggregate.Shield = shield;
+            token.Design.Spec.Mass = mass;
+            token.Design.Spec.Armor = armor;
+            token.Design.Spec.Shield = shield;
 
             // we take 50 damage to 1 token
             // we should end up with 25 damage to the token because the shields absorb half
@@ -79,8 +79,8 @@ namespace CraigStars.Tests
 
             var mass = 100;
             var armor = 100;
-            token.Design.Aggregate.Mass = mass;
-            token.Design.Aggregate.Armor = armor;
+            token.Design.Spec.Mass = mass;
+            token.Design.Spec.Armor = armor;
 
             Assert.AreEqual(TokenDamage.None, token.ApplyOvergateDamage(dist: 100, safeRange: 100, safeSourceMass: mass, safeDestMass: mass));
 
@@ -104,8 +104,8 @@ namespace CraigStars.Tests
             // set the mass and armor
             var mass = 200;
             var armor = 100;
-            token.Design.Aggregate.Mass = mass;
-            token.Design.Aggregate.Armor = armor;
+            token.Design.Spec.Mass = mass;
+            token.Design.Spec.Armor = armor;
 
             // 1/4 damage for doubling allowed mass
             // i.e. sending a 200kT ship through a 100kT gate source gate with infinite dest gate
@@ -139,8 +139,8 @@ namespace CraigStars.Tests
             // set the mass and armor
             var mass = 200;
             var armor = 100;
-            token.Design.Aggregate.Mass = mass;
-            token.Design.Aggregate.Armor = armor;
+            token.Design.Spec.Mass = mass;
+            token.Design.Spec.Armor = armor;
 
             // 1/4 damage for doubling allowed mass
             // 50% damage for range
@@ -160,12 +160,12 @@ namespace CraigStars.Tests
             var player = new Player();
             ShipToken token = new ShipToken(ShipDesigns.LongRangeScount, 2);
             token.Design.PlayerNum = player.Num;
-            fleetAggregator.ComputeDesignAggregate(player, token.Design);
+            fleetSpecService.ComputeDesignSpec(player, token.Design);
 
             var mass = 100;
             var armor = 100;
-            token.Design.Aggregate.Mass = mass;
-            token.Design.Aggregate.Armor = armor;
+            token.Design.Spec.Mass = mass;
+            token.Design.Spec.Armor = armor;
 
             // one token at half damage
             token.Damage = 50;
@@ -187,7 +187,7 @@ namespace CraigStars.Tests
             token.Design.PlayerNum = player.Num;
 
             // set the mass and armor
-            token.Design.Aggregate.Mass = 200;
+            token.Design.Spec.Mass = 200;
 
             // no vanishing chance
             Assert.AreEqual(0, token.GetStargateMassVanishingChance(
@@ -195,13 +195,13 @@ namespace CraigStars.Tests
             );
 
             // no vanishing chance for 318kT on a 300/500 gate, due to rounding
-            token.Design.Aggregate.Mass = 318;
+            token.Design.Spec.Mass = 318;
             Assert.AreEqual(0, token.GetStargateMassVanishingChance(
                 safeSourceMass: 300)
             );
 
             // 200kT ship in a 100kt gate has a 14% chance of vanishing
-            token.Design.Aggregate.Mass = 600;
+            token.Design.Spec.Mass = 600;
             Assert.AreEqual(.14, token.GetStargateMassVanishingChance(
                 safeSourceMass: 300),
             .01);

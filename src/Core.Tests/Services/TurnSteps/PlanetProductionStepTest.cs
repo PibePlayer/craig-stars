@@ -23,13 +23,13 @@ namespace CraigStars.Tests
         PlanetProductionStep step;
         PlayerService playerService = TestUtils.TestContainer.GetInstance<PlayerService>();
         PlanetService planetService = TestUtils.TestContainer.GetInstance<PlanetService>();
-        FleetAggregator fleetAggregator = TestUtils.TestContainer.GetInstance<FleetAggregator>();
+        FleetSpecService fleetSpecService = TestUtils.TestContainer.GetInstance<FleetSpecService>();
 
         [SetUp]
         public void SetUp()
         {
             (game, gameRunner) = TestUtils.GetSingleUnitGame();
-            step = new PlanetProductionStep(gameRunner.GameProvider, planetService, playerService, fleetAggregator);
+            step = new PlanetProductionStep(gameRunner.GameProvider, planetService, playerService, fleetSpecService);
         }
 
         [Test]
@@ -259,7 +259,7 @@ namespace CraigStars.Tests
             planet.ContributesOnlyLeftoverToResearch = true;
             var design = ShipDesigns.LongRangeScount.Clone();
             design.PlayerNum = player.Num;
-            fleetAggregator.ComputeDesignAggregate(player, design);
+            fleetSpecService.ComputeDesignSpec(player, design);
             player.Designs.Add(design);
 
 
@@ -304,9 +304,9 @@ namespace CraigStars.Tests
             var design1 = ShipDesigns.LongRangeScount.Clone();
             var design2 = ShipDesigns.SantaMaria.Clone();
             design1.PlayerNum = player.Num;
-            fleetAggregator.ComputeDesignAggregate(player, design1);
+            fleetSpecService.ComputeDesignSpec(player, design1);
             design2.PlayerNum = player.Num;
-            fleetAggregator.ComputeDesignAggregate(player, design2);
+            fleetSpecService.ComputeDesignSpec(player, design2);
             player.Designs.Add(design1);
             player.Designs.Add(design2);
 
@@ -396,7 +396,7 @@ namespace CraigStars.Tests
                     new FleetCompositionToken(ShipDesignPurpose.Bomber, 1)
                 }
             };
-            fleetAggregator.ComputeAggregate(player, fleet, true);
+            fleetSpecService.ComputeFleetSpec(player, fleet, true);
 
             // build the design we just added
             ProductionQueueItem item = new(QueueItemType.ShipToken, 1, game.Designs[game.Designs.Count - 1]);

@@ -20,13 +20,13 @@ namespace CraigStars.Tests
             var playerTechService = new PlayerTechService(techStoreProvider);
             var playerService = new PlayerService(rulesProvider);
             var planetService = new PlanetService(playerService, playerTechService, rulesProvider);
-            var fleetAggregator = new FleetAggregator(rulesProvider);
-            var fleetService = new FleetService(fleetAggregator);
+            var fleetSpecService = new FleetSpecService(rulesProvider);
+            var fleetService = new FleetService(fleetSpecService);
             var estimator = new ProductionQueueEstimator(planetService, playerService);
-            var shipDesignGenerator = new ShipDesignGenerator(playerTechService, fleetAggregator);
+            var shipDesignGenerator = new ShipDesignGenerator(playerTechService, fleetSpecService);
 
             // Register default turn processors
-            var shipDesignerTurnProcessor = new ShipDesignerTurnProcessor(shipDesignGenerator, playerTechService, fleetAggregator, techStoreProvider);
+            var shipDesignerTurnProcessor = new ShipDesignerTurnProcessor(shipDesignGenerator, playerTechService, fleetSpecService, techStoreProvider);
             RegisterTurnProcessor(shipDesignerTurnProcessor);
             RegisterTurnProcessor(new FleetCompositionTurnProcessor());
             RegisterTurnProcessor(new PlanetProductionTurnProcessor(planetService, estimator));

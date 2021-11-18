@@ -20,8 +20,8 @@ namespace CraigStars
         /// </summary>
         public override void Process(PublicGameInfo gameInfo, Player player)
         {
-            foreach (Fleet fleet in player.Fleets.Where(fleet => fleet.Aggregate.Purposes.Contains(ShipDesignPurpose.SpeedMineLayer) ||
-            fleet.Aggregate.Purposes.Contains(ShipDesignPurpose.DamageMineLayer)))
+            foreach (Fleet fleet in player.Fleets.Where(fleet => fleet.Spec.Purposes.Contains(ShipDesignPurpose.SpeedMineLayer) ||
+            fleet.Spec.Purposes.Contains(ShipDesignPurpose.DamageMineLayer)))
             {
                 fleet.Waypoints[0].Task = WaypointTask.LayMineField;
             }

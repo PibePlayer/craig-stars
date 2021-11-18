@@ -101,8 +101,8 @@ namespace CraigStars
                 return;
             }
 
-            var sourceStargate = sourcePlanet.Starbase.Aggregate.Stargate;
-            var destStargate = destPlanet.Starbase.Aggregate.Stargate;
+            var sourceStargate = sourcePlanet.Starbase.Spec.Stargate;
+            var destStargate = destPlanet.Starbase.Spec.Stargate;
 
             // only the source gate matters for range
             var minSafeRange = sourceStargate.SafeRange;
@@ -118,7 +118,7 @@ namespace CraigStars
             // check if any ships exceed the max mass allowed
             foreach (var token in fleet.Tokens)
             {
-                if (token.Design.Aggregate.Mass > minSafeHullMass * Game.Rules.StargateMaxHullMassFactor)
+                if (token.Design.Spec.Mass > minSafeHullMass * Game.Rules.StargateMaxHullMassFactor)
                 {
                     Message.FleetStargateInvalidMass(player, fleet, wp0, wp1);
                     return;
@@ -257,7 +257,7 @@ namespace CraigStars
                 if (fleet.PlayerNum == planet.PlayerNum && planet.HasStarbase)
                 {
                     // refuel at starbases
-                    fleet.Fuel = fleet.Aggregate.FuelCapacity;
+                    fleet.Fuel = fleet.Spec.FuelCapacity;
                 }
             }
             else if (wp1.Target is Wormhole wormhole)

@@ -42,7 +42,7 @@ namespace CraigStars.Client
             {
                 Me.Designs.ForEach(design =>
                 {
-                    if (planetService.CanBuild(Planet, Me, design.Aggregate.Mass))
+                    if (planetService.CanBuild(Planet, Me, design.Spec.Mass))
                     {
                         if (design.Hull.Starbase)
                         {

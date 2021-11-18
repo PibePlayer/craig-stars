@@ -3,9 +3,9 @@ using System.Collections.Generic;
 namespace CraigStars
 {
     /// <summary>
-    /// Aggregate of fleet data, compiled from ship design aggregates.
+    /// Aggregate of fleet data, compiled from ship design specs.
     /// </summary>
-    public class FleetAggregate : ShipDesignAggregate
+    public class FleetSpec : ShipDesignSpec
     {
         public HashSet<ShipDesignPurpose> Purposes = new HashSet<ShipDesignPurpose>();
         public int TotalShips { get; set; }

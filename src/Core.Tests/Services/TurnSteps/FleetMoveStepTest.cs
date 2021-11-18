@@ -54,7 +54,7 @@ namespace CraigStars.Tests
                 Position = new Vector2(-15, 0)
             };
             game.Fleets.Add(fleet);
-            gameRunner.ComputeAggregates(recompute: true);
+            gameRunner.ComputeSpecs(recompute: true);
 
             FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
 
@@ -116,7 +116,7 @@ namespace CraigStars.Tests
                 },
                 Position = new Vector2(-15, 0)
             };
-            gameRunner.ComputeAggregates(recompute: true);
+            gameRunner.ComputeSpecs(recompute: true);
 
             // make the normal minefield allow speed 5, 25% hit chance per warp
             // we'll go warp 9 to guarantee a hit (if we were to fly through it)

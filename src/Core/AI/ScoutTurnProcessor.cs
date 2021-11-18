@@ -36,12 +36,12 @@ namespace CraigStars
 
             // find all the planets we don't know about yet
             List<Planet> unknownPlanets = player.AllPlanets.Where(planet => !planet.Explored).ToList();
-            List<Planet> buildablePlanets = player.Planets.Where(planet => planetService.CanBuild(planet, player, scoutShip.Aggregate.Mass)).ToList();
+            List<Planet> buildablePlanets = player.Planets.Where(planet => planetService.CanBuild(planet, player, scoutShip.Spec.Mass)).ToList();
 
             // get all the fleets that can scan and don't have waypoints yet
             List<Fleet> scannerFleets = new List<Fleet>();
 
-            foreach (Fleet fleet in player.Fleets.Where(fleet => fleet.Aggregate.Purposes.Contains(ShipDesignPurpose.Scout)))
+            foreach (Fleet fleet in player.Fleets.Where(fleet => fleet.Spec.Purposes.Contains(ShipDesignPurpose.Scout)))
             {
                 if (fleet.Waypoints.Count == 1)
                 {
@@ -97,7 +97,7 @@ namespace CraigStars
                     bool isBuilding = false;
                     foreach (ProductionQueueItem item in planet.ProductionQueue?.Items)
                     {
-                        if (item.Design != null && item.Design.Aggregate.Scanner)
+                        if (item.Design != null && item.Design.Spec.Scanner)
                         {
                             isBuilding = true;
                             queuedToBeBuilt++;

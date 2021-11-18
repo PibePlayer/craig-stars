@@ -20,7 +20,7 @@ namespace CraigStars
         public void TakeMineFieldDamage(Fleet fleet, Player fleetPlayer, MineField mineField, Player mineFieldPlayer, MineFieldStats stats, bool detonating = false)
         {
             // if any ship has ramscoops, everyone takes more damage
-            var hasRamScoop = fleet.Tokens.Any(token => token.Design.Aggregate.Engine.FreeSpeed > 1);
+            var hasRamScoop = fleet.Tokens.Any(token => token.Design.Spec.Engine.FreeSpeed > 1);
             var minDamage = hasRamScoop ? stats.MinDamagePerFleetRS : stats.MinDamagePerFleet;
             var damagePerEngine = hasRamScoop ? stats.DamagePerEngineRS : stats.DamagePerEngine;
 
@@ -30,7 +30,7 @@ namespace CraigStars
             // only calculate damage if we are a damaging minefield
             if (minDamage > 0)
             {
-                if (fleet.Aggregate.TotalShips <= 5)
+                if (fleet.Spec.TotalShips <= 5)
                 {
                     int firstDesignNumEngines = 0;
                     // we apply the min damage here, but it's based on number of engines
@@ -41,7 +41,7 @@ namespace CraigStars
                         // the first token takes the min damage for the fleet * the number of engines
                         if (firstDesignNumEngines == 0)
                         {
-                            firstDesignNumEngines = design.Aggregate.NumEngines;
+                            firstDesignNumEngines = design.Spec.NumEngines;
                             var tokenDamage = firstDesignNumEngines * minDamage;
                             totalDamage += tokenDamage;
                             var result = token.ApplyMineDamage(tokenDamage);
@@ -51,11 +51,11 @@ namespace CraigStars
                         {
                             // We applied the minimum to the first token
                             // we only damage additional tokens if they have more engines
-                            if (design.Aggregate.NumEngines > firstDesignNumEngines)
+                            if (design.Spec.NumEngines > firstDesignNumEngines)
                             {
                                 // i.e. if the next design has 4 engines instead of 2, we apply
                                 // 125 * 2 or 250 damage 
-                                var tokenDamage = damagePerEngine * (design.Aggregate.NumEngines - firstDesignNumEngines) * token.Quantity;
+                                var tokenDamage = damagePerEngine * (design.Spec.NumEngines - firstDesignNumEngines) * token.Quantity;
                                 totalDamage += tokenDamage;
                                 var result = token.ApplyMineDamage(tokenDamage);
                                 shipsDestroyed += result.shipsDestroyed;
@@ -70,7 +70,7 @@ namespace CraigStars
                     foreach (var token in fleet.Tokens)
                     {
                         var design = token.Design;
-                        var tokenDamage = damagePerEngine * (design.Aggregate.NumEngines) * token.Quantity;
+                        var tokenDamage = damagePerEngine * (design.Spec.NumEngines) * token.Quantity;
                         totalDamage += tokenDamage;
                         var result = token.ApplyMineDamage(tokenDamage);
                         shipsDestroyed += result.shipsDestroyed;

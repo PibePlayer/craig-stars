@@ -31,7 +31,7 @@ namespace CraigStars
             var growthFactor = player.Race.Spec.FreighterGrowthFactor;
             var growth = (int)(growthFactor * player.Race.GrowthRate / 100f * fleet.Cargo.Colonists);
             fleet.Cargo = fleet.Cargo.WithColonists(fleet.Cargo.Colonists + growth);
-            var over = fleet.Cargo.Total - fleet.Aggregate.CargoCapacity;
+            var over = fleet.Cargo.Total - fleet.Spec.CargoCapacity;
             if (over > 0)
             {
                 // remove excess colonists

@@ -41,8 +41,8 @@ namespace CraigStars
         public Planet PacketTarget { get; set; }
 
         [JsonIgnore] public bool HasStarbase { get => Starbase != null; }
-        [JsonIgnore] public bool HasMassDriver { get => Starbase != null && Starbase.Aggregate.HasMassDriver; }
-        [JsonIgnore] public bool HasStargate { get => Starbase != null && Starbase.Aggregate.HasStargate; }
+        [JsonIgnore] public bool HasMassDriver { get => Starbase != null && Starbase.Spec.HasMassDriver; }
+        [JsonIgnore] public bool HasStargate { get => Starbase != null && Starbase.Spec.HasStargate; }
 
         #endregion
 

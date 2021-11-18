@@ -12,11 +12,11 @@ namespace CraigStars
     public class FleetService
     {
 
-        private readonly FleetAggregator fleetAggregator;
+        private readonly FleetSpecService fleetSpecService;
 
-        public FleetService(FleetAggregator fleetAggregator)
+        public FleetService(FleetSpecService fleetSpecService)
         {
-            this.fleetAggregator = fleetAggregator;
+            this.fleetSpecService = fleetSpecService;
         }
 
         #region Splits/Merges
@@ -68,7 +68,7 @@ namespace CraigStars
                 mergedFleet.OtherFleets.ForEach(otherFleet => otherFleet.OtherFleets.Remove(mergedFleet));
             }
 
-            fleetAggregator.ComputeAggregate(player, fleet, recompute: true);
+            fleetSpecService.ComputeFleetSpec(player, fleet, recompute: true);
         }
 
         /// <summary>
@@ -81,9 +81,9 @@ namespace CraigStars
         public List<Fleet> Split(Fleet fleet, Player player, SplitAllFleetOrder split)
         {
             List<Fleet> newFleets = new List<Fleet>();
-            var originalCargoCapacity = fleet.Aggregate.CargoCapacity;
-            var originalFuelCapacity = fleet.Aggregate.FuelCapacity;
-            var fuelPercent = (float)fleet.Fuel / fleet.Aggregate.FuelCapacity;
+            var originalCargoCapacity = fleet.Spec.CargoCapacity;
+            var originalFuelCapacity = fleet.Spec.FuelCapacity;
+            var fuelPercent = (float)fleet.Fuel / fleet.Spec.FuelCapacity;
 
             var count = 0;
             ShipToken remainingToken = null;
@@ -118,22 +118,22 @@ namespace CraigStars
                             }},
                             BattlePlan = fleet.BattlePlan
                         };
-                        fleetAggregator.ComputeAggregate(player, newFleet);
+                        fleetSpecService.ComputeFleetSpec(player, newFleet);
                         newFleet.OtherFleets.AddRange(fleet.OtherFleets);
                         newFleet.OtherFleets.Add(fleet);
 
-                        if (newFleet.Aggregate.CargoCapacity > 0)
+                        if (newFleet.Spec.CargoCapacity > 0)
                         {
                             // how much of the cargo goes to this token
-                            var cargoPercent = (float)newFleet.Aggregate.CargoCapacity / originalCargoCapacity;
+                            var cargoPercent = (float)newFleet.Spec.CargoCapacity / originalCargoCapacity;
                             // copy cargo
                             // TODO: make sure we account for any fractional leftovers
-                            newFleet.Cargo = fleet.Cargo * (cargoPercent * newFleet.Aggregate.CargoCapacity);
+                            newFleet.Cargo = fleet.Cargo * (cargoPercent * newFleet.Spec.CargoCapacity);
                         }
 
                         // copy fuel
                         // TODO: make sure we account for any fractional leftovers
-                        newFleet.Fuel = (int)(fuelPercent * newFleet.Aggregate.FuelCapacity);
+                        newFleet.Fuel = (int)(fuelPercent * newFleet.Spec.FuelCapacity);
 
                         // copy all the waypoints
                         fleet.Waypoints.ForEach(wp =>
@@ -167,16 +167,16 @@ namespace CraigStars
             fleet.Tokens.Add(remainingToken);
 
             // update our remaining fuel and cargo
-            fleetAggregator.ComputeAggregate(player, fleet, recompute: true);
+            fleetSpecService.ComputeFleetSpec(player, fleet, recompute: true);
 
             // TODO: make sure we account for any fractional leftovers
-            if (fleet.Aggregate.CargoCapacity > 0)
+            if (fleet.Spec.CargoCapacity > 0)
             {
                 // how much of the cargo goes to this token
-                var cargoPercent = (float)fleet.Aggregate.CargoCapacity / originalCargoCapacity;
+                var cargoPercent = (float)fleet.Spec.CargoCapacity / originalCargoCapacity;
                 fleet.Cargo = fleet.Cargo * cargoPercent;
             }
-            fleet.Fuel = (int)(fleet.Aggregate.FuelCapacity * fuelPercent);
+            fleet.Fuel = (int)(fleet.Spec.FuelCapacity * fuelPercent);
             fleet.Name = $"{fleet.BaseName} #{fleet.Id}";
             fleet.OtherFleets.AddRange(newFleets);
 
@@ -248,16 +248,16 @@ namespace CraigStars
             foreach (var token in fleet.Tokens)
             {
                 // figure out this ship stack's mass as well as it's proportion of the cargo
-                int mass = token.Design.Aggregate.Mass * token.Quantity;
+                int mass = token.Design.Spec.Mass * token.Quantity;
                 int fleetCargo = fleet.Cargo.Total;
-                int stackCapacity = token.Design.Aggregate.CargoCapacity * token.Quantity;
-                int fleetCapacity = fleet.Aggregate.CargoCapacity;
+                int stackCapacity = token.Design.Spec.CargoCapacity * token.Quantity;
+                int fleetCapacity = fleet.Spec.CargoCapacity;
 
                 if (fleetCapacity > 0)
                 {
                     mass += (int)((float)fleetCargo * ((float)stackCapacity / (float)fleetCapacity));
                 }
-                fuelCost += GetFuelCost(warpFactor, mass, distance, efficiencyFactor, token.Design.Aggregate.Engine);
+                fuelCost += GetFuelCost(warpFactor, mass, distance, efficiencyFactor, token.Design.Spec.Engine);
             }
 
             return fuelCost;
@@ -292,9 +292,9 @@ namespace CraigStars
         public int GetDefaultWarpFactor(Fleet fleet, Player player)
         {
             var warpFactor = 5;
-            if (fleet.Aggregate.Engine != null)
+            if (fleet.Spec.Engine != null)
             {
-                return fleet.Aggregate.Engine.IdealSpeed;
+                return fleet.Spec.Engine.IdealSpeed;
             }
             return warpFactor;
         }
@@ -309,7 +309,7 @@ namespace CraigStars
             var freeSpeed = int.MaxValue;
             foreach (var token in fleet.Tokens)
             {
-                freeSpeed = Math.Min(freeSpeed, token.Design.Aggregate.Engine.FreeSpeed);
+                freeSpeed = Math.Min(freeSpeed, token.Design.Spec.Engine.FreeSpeed);
             }
             return freeSpeed;
         }
@@ -330,8 +330,8 @@ namespace CraigStars
             var fuelGenerated = 0.0;
             foreach (var token in fleet.Tokens)
             {
-                var freeSpeed = token.Design.Aggregate.Engine.FreeSpeed;
-                var numEngines = token.Design.Aggregate.NumEngines;
+                var freeSpeed = token.Design.Spec.Engine.FreeSpeed;
+                var numEngines = token.Design.Spec.NumEngines;
                 var speedDifference = freeSpeed - warpFactor;
                 if (speedDifference == 0)
                 {
@@ -379,7 +379,7 @@ namespace CraigStars
             bool willAttack = false;
             // if we have weapons and we don't own this other fleet, see if we
             // would target it
-            if (fleet.Aggregate.HasWeapons && fleet.BattlePlan.Tactic != BattleTactic.Disengage && otherPlayerNum != player.Num)
+            if (fleet.Spec.HasWeapons && fleet.BattlePlan.Tactic != BattleTactic.Disengage && otherPlayerNum != player.Num)
             {
                 switch (fleet.BattlePlan.AttackWho)
                 {

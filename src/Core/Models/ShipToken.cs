@@ -49,8 +49,8 @@ namespace CraigStars
         public TokenDamage ApplyMineDamage(int damage)
         {
             // mines do half damage to shields
-            var shields = Design.Aggregate.Shield;
-            var armor = Design.Aggregate.Armor;
+            var shields = Design.Spec.Shield;
+            var armor = Design.Spec.Armor;
             var possibleDamageToShields = damage * .5;
             var actualDamageToShields = Math.Min(shields, possibleDamageToShields);
             var remainingDamage = damage - actualDamageToShields;
@@ -84,7 +84,7 @@ namespace CraigStars
             var totalDamageFactor = Math.Min(.98, massDamageFactor + (1.0 - massDamageFactor) * rangeDamageFactor);
 
             // apply damage as a percentage of armor to all tokens
-            var armor = Design.Aggregate.Armor;
+            var armor = Design.Spec.Armor;
             int newDamage = (int)Math.Round(totalDamageFactor * Quantity * armor);
             QuantityDamaged = Quantity;
             Damage += newDamage;
@@ -125,7 +125,7 @@ namespace CraigStars
 
         public double GetStargateMassDamageFactor(float dist, int safeSourceMass, int safeDestMass, int maxMassFactor = 5)
         {
-            var mass = Design.Aggregate.Mass;
+            var mass = Design.Spec.Mass;
             var sourceMassDamageFactor = 1.0;
             var destMassDamageFactor = 1.0;
             if (safeSourceMass != TechHullComponent.InfinteGate && safeSourceMass < mass)
@@ -151,7 +151,7 @@ namespace CraigStars
         /// <returns>The chance this a ship in this </returns>
         public double GetStargateMassVanishingChance(int safeSourceMass, int maxMassFactor = 5)
         {
-            var mass = Design.Aggregate.Mass;
+            var mass = Design.Spec.Mass;
             var vanishingChance = 100.0 / 3 * (1 -
                 (double)((maxMassFactor * safeSourceMass - mass) * (maxMassFactor * safeSourceMass - mass)) /
                 ((4 * safeSourceMass) * (4 * safeSourceMass))

@@ -15,12 +15,12 @@ namespace CraigStars.UniverseGeneration
     public class PlayerFleetGenerationStep : UniverseGenerationStep
     {
         private readonly ITechStore techStore;
-        private readonly FleetAggregator fleetAggregator;
+        private readonly FleetSpecService fleetSpecService;
 
-        public PlayerFleetGenerationStep(IProvider<Game> gameProvider, ITechStore techStore, FleetAggregator fleetAggregator) : base(gameProvider, UniverseGenerationState.Fleets)
+        public PlayerFleetGenerationStep(IProvider<Game> gameProvider, ITechStore techStore, FleetSpecService fleetSpecService) : base(gameProvider, UniverseGenerationState.Fleets)
         {
             this.techStore = techStore;
-            this.fleetAggregator = fleetAggregator;
+            this.fleetSpecService = fleetSpecService;
         }
 
         public override void Process()
@@ -90,9 +90,9 @@ namespace CraigStars.UniverseGeneration
             planet.OrbitingFleets.Add(fleet);
             fleet.PlayerNum = player.Num;
 
-            // aggregate all the design data
-            fleetAggregator.ComputeAggregate(player, fleet);
-            fleet.Fuel = fleet.Aggregate.FuelCapacity;
+            // spec all the design data
+            fleetSpecService.ComputeFleetSpec(player, fleet);
+            fleet.Fuel = fleet.Spec.FuelCapacity;
 
             return fleet;
         }

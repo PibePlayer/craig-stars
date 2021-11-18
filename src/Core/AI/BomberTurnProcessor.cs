@@ -41,8 +41,8 @@ namespace CraigStars
                 planet.Owned &&
                 !planet.OwnedBy(player)
             ).ToList();
-            var buildablePlanets = player.Planets.Where(planet => planetService.CanBuild(planet, player, bomber.Aggregate.Mass)).ToList();
-            var bomberFleets = player.Fleets.Where(fleet => fleet.Aggregate.Purposes.Contains(ShipDesignPurpose.Bomber));
+            var buildablePlanets = player.Planets.Where(planet => planetService.CanBuild(planet, player, bomber.Spec.Mass)).ToList();
+            var bomberFleets = player.Fleets.Where(fleet => fleet.Spec.Purposes.Contains(ShipDesignPurpose.Bomber));
 
             foreach (var fleet in bomberFleets)
             {

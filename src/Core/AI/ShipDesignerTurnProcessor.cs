@@ -15,16 +15,16 @@ namespace CraigStars
 
         private readonly ShipDesignGenerator shipDesignGenerator;
         private readonly PlayerTechService playerTechService;
-        private readonly FleetAggregator fleetAggregator;
+        private readonly FleetSpecService fleetSpecService;
         private readonly IProvider<ITechStore> techStoreProvider;
 
         ITechStore techStore { get => techStoreProvider.Item; }
 
-        public ShipDesignerTurnProcessor(ShipDesignGenerator shipDesignGenerator, PlayerTechService playerTechService, FleetAggregator fleetAggregator, IProvider<ITechStore> techStoreProvider) : base("Ship Designer")
+        public ShipDesignerTurnProcessor(ShipDesignGenerator shipDesignGenerator, PlayerTechService playerTechService, FleetSpecService fleetSpecService, IProvider<ITechStore> techStoreProvider) : base("Ship Designer")
         {
             this.shipDesignGenerator = shipDesignGenerator;
             this.playerTechService = playerTechService;
-            this.fleetAggregator = fleetAggregator;
+            this.fleetSpecService = fleetSpecService;
             this.techStoreProvider = techStoreProvider;
         }
 
@@ -81,7 +81,7 @@ namespace CraigStars
             }
 
             player.Designs.AddRange(newDesigns);
-            newDesigns.ForEach(design => { player.DesignsByGuid[design.Guid] = design; fleetAggregator.ComputeDesignAggregate(player, design); });
+            newDesigns.ForEach(design => { player.DesignsByGuid[design.Guid] = design; fleetSpecService.ComputeDesignSpec(player, design); });
             deletedDesigns.ForEach(design => player.DeletedDesigns.Add(design));
 
         }
@@ -131,7 +131,7 @@ namespace CraigStars
             }
 
             player.DesignsByGuid[design.Guid] = design;
-            fleetAggregator.ComputeDesignAggregate(player, design);
+            fleetSpecService.ComputeDesignSpec(player, design);
 
             return design;
         }

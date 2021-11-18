@@ -129,7 +129,7 @@ namespace CraigStars.Tests
             game.Designs.Add(fleet.Tokens[0].Design);
             game.Fleets.Add(fleet);
 
-            gameRunner.ComputeAggregates(recompute: true);
+            gameRunner.ComputeSpecs(recompute: true);
 
             fleet.Orbiting = planet;
             planet.OrbitingFleets.Add(fleet);
@@ -213,7 +213,7 @@ namespace CraigStars.Tests
 
             game.Designs.Add(fleet2.Tokens[0].Design);
             game.Fleets.Add(fleet2);
-            gameRunner.ComputeAggregates(recompute: true);
+            gameRunner.ComputeSpecs(recompute: true);
 
             fleet1.Orbiting = planet;
             fleet2.Orbiting = planet;

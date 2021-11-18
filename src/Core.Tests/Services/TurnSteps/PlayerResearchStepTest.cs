@@ -55,7 +55,7 @@ namespace CraigStars.Tests
 
             // player2 steals resources
             player2.Race.PRT = PRT.SS;
-            gameRunner.ComputeAggregates();
+            gameRunner.ComputeSpecs();
 
             step.Execute(new TurnGenerationContext(), game.OwnedPlanets.ToList());
             Assert.AreEqual(20, player1.TechLevelsSpent[TechField.Energy]);

@@ -25,7 +25,7 @@ namespace CraigStars
         public Cost GetUpgradeCost(ShipDesign design)
         {
             // TODO: Do Better
-            return design.Aggregate.Cost - Tokens[0].Design.Aggregate.Cost;
+            return design.Spec.Cost - Tokens[0].Design.Spec.Cost;
         }
 
     }

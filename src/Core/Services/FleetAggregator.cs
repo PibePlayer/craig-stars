@@ -6,14 +6,14 @@ using static CraigStars.Utils.Utils;
 
 namespace CraigStars
 {
-    public class FleetAggregator
+    public class FleetSpecService
     {
-        static CSLog log = LogProvider.GetLogger(typeof(FleetAggregator));
+        static CSLog log = LogProvider.GetLogger(typeof(FleetSpecService));
 
         private readonly IRulesProvider rulesProvider;
         private Rules Rules => rulesProvider.Rules;
 
-        public FleetAggregator(IRulesProvider rulesProvider)
+        public FleetSpecService(IRulesProvider rulesProvider)
         {
             this.rulesProvider = rulesProvider;
         }
@@ -21,49 +21,49 @@ namespace CraigStars
         #region ShipDesigns
 
         /// <summary>
-        /// Compute any aggreate values for a ShipDesign. Each design's aggregate values are built from their
+        /// Compute any aggreate values for a ShipDesign. Each design's spec values are built from their
         /// hull, hull components, and player race spec.
         /// </summary>
         /// <param name="player">The player to calculate design values for</param>
         /// <param name="design">The design to compute values for</param>
         /// <param name="recompute">By default, we only compute these once per turn, set this to true to force a recompute</param>
-        public void ComputeDesignAggregate(Player player, ShipDesign design, bool recompute = false)
+        public void ComputeDesignSpec(Player player, ShipDesign design, bool recompute = false)
         {
-            var aggregate = design.Aggregate;
+            var spec = design.Spec;
             var hull = design.Hull;
             var slots = design.Slots;
-            if (aggregate.Computed && !recompute)
+            if (spec.Computed && !recompute)
             {
                 // don't recompute unless explicitly requested
                 return;
             }
             var rules = Rules;
-            aggregate.Mass = hull.Mass;
-            aggregate.Armor = hull.Armor;
-            aggregate.Shield = 0;
-            aggregate.CargoCapacity = 0;
-            aggregate.FuelCapacity = hull.FuelCapacity;
-            aggregate.Colonizer = false;
-            aggregate.Cost = hull.GetPlayerCost(player);
-            aggregate.SpaceDock = 0;
-            aggregate.CargoCapacity += hull.CargoCapacity;
-            aggregate.MineSweep = 0;
+            spec.Mass = hull.Mass;
+            spec.Armor = hull.Armor;
+            spec.Shield = 0;
+            spec.CargoCapacity = 0;
+            spec.FuelCapacity = hull.FuelCapacity;
+            spec.Colonizer = false;
+            spec.Cost = hull.GetPlayerCost(player);
+            spec.SpaceDock = 0;
+            spec.CargoCapacity += hull.CargoCapacity;
+            spec.MineSweep = 0;
 
-            aggregate.CloakUnits = player.Race.Spec.BuiltInCloakUnits;
-            aggregate.ReduceCloaking = 0;
-            aggregate.Bomber = false;
-            aggregate.Bombs.Clear();
-            aggregate.HasWeapons = false;
-            aggregate.WeaponSlots.Clear();
-            aggregate.Initiative = hull.Initiative;
-            aggregate.PowerRating = 0;
-            aggregate.Movement = 0;
-            aggregate.TorpedoInaccuracyFactor = 1;
-            aggregate.NumEngines = 0;
-            aggregate.MineLayingRateByMineType = new Dictionary<MineFieldType, int>();
-            aggregate.MiningRate = 0;
+            spec.CloakUnits = player.Race.Spec.BuiltInCloakUnits;
+            spec.ReduceCloaking = 0;
+            spec.Bomber = false;
+            spec.Bombs.Clear();
+            spec.HasWeapons = false;
+            spec.WeaponSlots.Clear();
+            spec.Initiative = hull.Initiative;
+            spec.PowerRating = 0;
+            spec.Movement = 0;
+            spec.TorpedoInaccuracyFactor = 1;
+            spec.NumEngines = 0;
+            spec.MineLayingRateByMineType = new Dictionary<MineFieldType, int>();
+            spec.MiningRate = 0;
 
-            aggregate.RepairBonus = hull.RepairBonus;
+            spec.RepairBonus = hull.RepairBonus;
 
 
             var numTachyonDetectors = 0;
@@ -76,9 +76,9 @@ namespace CraigStars
                 {
                     if (slot.HullComponent is TechEngine engine)
                     {
-                        aggregate.Engine = engine;
+                        spec.Engine = engine;
                         idealSpeed = engine.IdealSpeed;
-                        aggregate.NumEngines += slot.Quantity;
+                        spec.NumEngines += slot.Quantity;
                     }
                     if (slot.HullComponent.Category == TechCategory.BeamWeapon && slot.HullComponent.Power > 0 && (slot.HullComponent.Range + hull.RangeBonus) > 0)
                     {
@@ -90,28 +90,28 @@ namespace CraigStars
                             // lol, 4x, get it?
                             gattlingMultiplier = slot.HullComponent.Range * slot.HullComponent.Range;
                         }
-                        aggregate.MineSweep += slot.Quantity * slot.HullComponent.Power * ((slot.HullComponent.Range + hull.RangeBonus) * slot.HullComponent.Range) * gattlingMultiplier;
+                        spec.MineSweep += slot.Quantity * slot.HullComponent.Power * ((slot.HullComponent.Range + hull.RangeBonus) * slot.HullComponent.Range) * gattlingMultiplier;
                     }
                     Cost cost = slot.HullComponent.GetPlayerCost(player) * slot.Quantity;
-                    aggregate.Cost += cost;
-                    aggregate.Mass += slot.HullComponent.Mass * slot.Quantity;
-                    aggregate.Armor += slot.HullComponent.Armor * slot.Quantity;
-                    aggregate.Shield += slot.HullComponent.Shield * slot.Quantity;
-                    aggregate.CargoCapacity += slot.HullComponent.CargoBonus * slot.Quantity;
-                    aggregate.FuelCapacity += slot.HullComponent.FuelBonus * slot.Quantity;
-                    aggregate.Colonizer = aggregate.Colonizer || slot.HullComponent.ColonizationModule || slot.HullComponent.OrbitalConstructionModule;
-                    aggregate.Initiative += slot.HullComponent.InitiativeBonus;
-                    aggregate.Movement += slot.HullComponent.MovementBonus * slot.Quantity;
-                    aggregate.MiningRate += slot.HullComponent.MiningRate * slot.Quantity;
+                    spec.Cost += cost;
+                    spec.Mass += slot.HullComponent.Mass * slot.Quantity;
+                    spec.Armor += slot.HullComponent.Armor * slot.Quantity;
+                    spec.Shield += slot.HullComponent.Shield * slot.Quantity;
+                    spec.CargoCapacity += slot.HullComponent.CargoBonus * slot.Quantity;
+                    spec.FuelCapacity += slot.HullComponent.FuelBonus * slot.Quantity;
+                    spec.Colonizer = spec.Colonizer || slot.HullComponent.ColonizationModule || slot.HullComponent.OrbitalConstructionModule;
+                    spec.Initiative += slot.HullComponent.InitiativeBonus;
+                    spec.Movement += slot.HullComponent.MovementBonus * slot.Quantity;
+                    spec.MiningRate += slot.HullComponent.MiningRate * slot.Quantity;
 
                     // Add this mine type to the layers this design has
                     if (slot.HullComponent.MineLayingRate > 0)
                     {
-                        if (!aggregate.MineLayingRateByMineType.ContainsKey(slot.HullComponent.MineFieldType))
+                        if (!spec.MineLayingRateByMineType.ContainsKey(slot.HullComponent.MineFieldType))
                         {
-                            aggregate.MineLayingRateByMineType[slot.HullComponent.MineFieldType] = 0;
+                            spec.MineLayingRateByMineType[slot.HullComponent.MineFieldType] = 0;
                         }
-                        aggregate.MineLayingRateByMineType[slot.HullComponent.MineFieldType] += slot.HullComponent.MineLayingRate * slot.Quantity;
+                        spec.MineLayingRateByMineType[slot.HullComponent.MineFieldType] += slot.HullComponent.MineLayingRate * slot.Quantity;
                     }
 
                     // i.e. two .3f battle computers is (1 -.3) * (1 - .3) or (.7 * .7) or it decreases innaccuracy by 49%
@@ -119,12 +119,12 @@ namespace CraigStars
                     // a 75% accurate torpedo with two 30% comps and one 50% comp would be
                     // 100 - (100 - 75) * .7 * .7 * .5 = 94% accurate
                     // if TorpedoInnaccuracyDecrease is 1 (default), it's just 75%
-                    aggregate.TorpedoInaccuracyFactor *= (float)Math.Pow((1 - slot.HullComponent.TorpedoBonus), slot.Quantity);
+                    spec.TorpedoInaccuracyFactor *= (float)Math.Pow((1 - slot.HullComponent.TorpedoBonus), slot.Quantity);
 
                     // if this slot has a bomb, this design is a bomber
                     if (slot.HullComponent.HullSlotType == HullSlotType.Bomb)
                     {
-                        aggregate.Bomber = true;
+                        spec.Bomber = true;
                         var bomb = new Bomb()
                         {
                             Quantity = slot.Quantity,
@@ -134,25 +134,25 @@ namespace CraigStars
                         };
                         if (slot.HullComponent.Smart)
                         {
-                            aggregate.SmartBombs.Add(bomb);
+                            spec.SmartBombs.Add(bomb);
                         }
                         else
                         {
-                            aggregate.Bombs.Add(bomb);
+                            spec.Bombs.Add(bomb);
                         }
                     }
 
                     if (slot.HullComponent.Power > 0)
                     {
-                        aggregate.HasWeapons = true;
-                        aggregate.PowerRating += slot.HullComponent.Power * slot.Quantity;
-                        aggregate.WeaponSlots.Add(slot);
+                        spec.HasWeapons = true;
+                        spec.PowerRating += slot.HullComponent.Power * slot.Quantity;
+                        spec.WeaponSlots.Add(slot);
                     }
 
                     // cloaking
                     if (slot.HullComponent.CloakUnits > 0)
                     {
-                        aggregate.CloakUnits += slot.HullComponent.CloakUnits * slot.Quantity;
+                        spec.CloakUnits += slot.HullComponent.CloakUnits * slot.Quantity;
                     }
                     if (slot.HullComponent.ReduceCloaking)
                     {
@@ -166,35 +166,35 @@ namespace CraigStars
                 TechHullSlot hullSlot = hull.Slots[slot.HullSlotIndex - 1];
                 if (hullSlot.Type.HasFlag(HullSlotType.SpaceDock))
                 {
-                    aggregate.SpaceDock = hullSlot.Capacity;
+                    spec.SpaceDock = hullSlot.Capacity;
                 }
             }
 
-            // figure out the cloak as a percentage after we aggregated our cloak units
-            aggregate.CloakPercent = CloakUtils.GetCloakPercentForCloakUnits(aggregate.CloakUnits);
+            // figure out the cloak as a percentage after we specd our cloak units
+            spec.CloakPercent = CloakUtils.GetCloakPercentForCloakUnits(spec.CloakUnits);
 
             if (numTachyonDetectors > 0)
             {
                 // 95% ^ (SQRT(#_of_detectors) = Reduction factor for other player's cloaking (Capped at 81% or 17TDs)
-                aggregate.ReduceCloaking = (float)Math.Pow((100 - rules.TachyonCloakReduction) / 100f, Math.Sqrt(numTachyonDetectors));
+                spec.ReduceCloaking = (float)Math.Pow((100 - rules.TachyonCloakReduction) / 100f, Math.Sqrt(numTachyonDetectors));
             }
 
-            if (aggregate.NumEngines > 0)
+            if (spec.NumEngines > 0)
             {
                 // Movement = IdealEngineSpeed - 2 - Mass / 70 / NumEngines + NumManeuveringJets + 2*NumOverThrusters
                 // we added any MovementBonus components above
                 // we round up the slightest bit, and we can't go below 2, or above 10
-                aggregate.Movement = Mathf.Clamp((int)Math.Ceiling((double)((idealSpeed - 2) - aggregate.Mass / 70 / aggregate.NumEngines + aggregate.Movement + player.Race.Spec.MovementBonus)), 2, 10);
+                spec.Movement = Mathf.Clamp((int)Math.Ceiling((double)((idealSpeed - 2) - spec.Mass / 70 / spec.NumEngines + spec.Movement + player.Race.Spec.MovementBonus)), 2, 10);
             }
             else
             {
-                aggregate.Movement = 0;
+                spec.Movement = 0;
             }
 
             // compute the scan ranges
             ComputeDesignScanRanges(player, design);
 
-            aggregate.Computed = true;
+            spec.Computed = true;
         }
 
         /// <summary>
@@ -205,7 +205,7 @@ namespace CraigStars
         /// <param name="rules"></param>
         public void ComputeDesignScanRanges(Player player, ShipDesign design)
         {
-            var aggregate = design.Aggregate;
+            var spec = design.Spec;
             var hull = design.Hull;
             var slots = design.Slots;
 
@@ -224,7 +224,7 @@ namespace CraigStars
                 scanRange = (long)Math.Pow(scanRange, 4);
             }
 
-            // aggregate the scan range from each slot
+            // spec the scan range from each slot
             foreach (ShipDesignSlot slot in slots)
             {
                 if (slot.HullComponent != null)
@@ -253,19 +253,19 @@ namespace CraigStars
                 scanRangePen = (long)(Math.Pow(scanRangePen, .25));
             }
 
-            aggregate.ScanRange = (int)scanRange;
-            aggregate.ScanRangePen = (int)scanRangePen;
+            spec.ScanRange = (int)scanRange;
+            spec.ScanRangePen = (int)scanRangePen;
 
             // if we have no pen scan but we have a regular scan, set the pen scan range to 0
             if (scanRangePen == TechHullComponent.NoScanner)
             {
                 if (scanRange != TechHullComponent.NoScanner)
                 {
-                    aggregate.ScanRangePen = 0;
+                    spec.ScanRangePen = 0;
                 }
                 else
                 {
-                    aggregate.ScanRangePen = TechHullComponent.NoScanner;
+                    spec.ScanRangePen = TechHullComponent.NoScanner;
                 }
             }
         }
@@ -280,13 +280,13 @@ namespace CraigStars
         /// </summary>
         public void ComputeDesignCost(Player player, ShipDesign design)
         {
-            design.Aggregate.Cost = design.Hull.GetPlayerCost(player);
+            design.Spec.Cost = design.Hull.GetPlayerCost(player);
             foreach (ShipDesignSlot slot in design.Slots)
             {
                 if (slot.HullComponent != null)
                 {
                     Cost cost = slot.HullComponent.GetPlayerCost(player) * slot.Quantity;
-                    design.Aggregate.Cost += cost;
+                    design.Spec.Cost += cost;
                 }
             }
         }
@@ -296,142 +296,142 @@ namespace CraigStars
         #region Fleets
 
         /// <summary>
-        /// Compute the aggregates for a fleet and all its tokens. Note, this assumes the design aggregate is up to date.
+        /// Compute the specs for a fleet and all its tokens. Note, this assumes the design spec is up to date.
         /// </summary>
-        public virtual void ComputeAggregate(Player player, Fleet fleet, bool recompute = false)
+        public virtual void ComputeFleetSpec(Player player, Fleet fleet, bool recompute = false)
         {
-            var aggregate = fleet.Aggregate;
+            var spec = fleet.Spec;
             var cargo = fleet.Cargo;
             var tokens = fleet.Tokens;
 
-            if (aggregate.Computed && !recompute)
+            if (spec.Computed && !recompute)
             {
                 // don't recompute unless explicitly requested
                 return;
             }
 
-            aggregate.Purposes.Clear();
-            aggregate.MassEmpty = 0;
-            aggregate.Mass = cargo.Total;
-            aggregate.Shield = 0;
-            aggregate.CargoCapacity = 0;
-            aggregate.FuelCapacity = 0;
-            aggregate.Colonizer = false;
-            aggregate.Cost = new Cost();
-            aggregate.SpaceDock = 0;
-            aggregate.ScanRange = TechHullComponent.NoScanner;
-            aggregate.ScanRangePen = TechHullComponent.NoScanner;
-            aggregate.RepairBonus = 0;
-            aggregate.Engine = null;
-            aggregate.MineSweep = 0;
-            aggregate.MiningRate = 0;
+            spec.Purposes.Clear();
+            spec.MassEmpty = 0;
+            spec.Mass = cargo.Total;
+            spec.Shield = 0;
+            spec.CargoCapacity = 0;
+            spec.FuelCapacity = 0;
+            spec.Colonizer = false;
+            spec.Cost = new Cost();
+            spec.SpaceDock = 0;
+            spec.ScanRange = TechHullComponent.NoScanner;
+            spec.ScanRangePen = TechHullComponent.NoScanner;
+            spec.RepairBonus = 0;
+            spec.Engine = null;
+            spec.MineSweep = 0;
+            spec.MiningRate = 0;
 
             // Some races cloak cargo for free, otherwise
             // cloaking cargo comes at a penalty
             bool freeCargoCloaking = player.Race.Spec.FreeCargoCloaking;
-            aggregate.CloakUnits = 0;
-            aggregate.BaseCloakedCargo = 0;
-            aggregate.ReduceCloaking = 0;
+            spec.CloakUnits = 0;
+            spec.BaseCloakedCargo = 0;
+            spec.ReduceCloaking = 0;
 
-            aggregate.Bomber = false;
-            aggregate.Bombs.Clear();
+            spec.Bomber = false;
+            spec.Bombs.Clear();
 
-            aggregate.MineLayingRateByMineType = new Dictionary<MineFieldType, int>();
+            spec.MineLayingRateByMineType = new Dictionary<MineFieldType, int>();
 
-            aggregate.HasWeapons = false;
+            spec.HasWeapons = false;
 
-            aggregate.TotalShips = 0;
+            spec.TotalShips = 0;
 
             // compute each token's 
             tokens.ForEach(token =>
             {
                 // update our total ship count
-                aggregate.TotalShips += token.Quantity;
+                spec.TotalShips += token.Quantity;
 
-                aggregate.Purposes.Add(token.Design.Purpose);
+                spec.Purposes.Add(token.Design.Purpose);
 
                 // TODO: which default engine do we use for multiple fleets?
-                aggregate.Engine = token.Design.Aggregate.Engine;
+                spec.Engine = token.Design.Spec.Engine;
                 // cost
-                Cost cost = token.Design.Aggregate.Cost * token.Quantity;
-                aggregate.Cost += cost;
+                Cost cost = token.Design.Spec.Cost * token.Quantity;
+                spec.Cost += cost;
 
                 // mass
-                aggregate.Mass += token.Design.Aggregate.Mass * token.Quantity;
-                aggregate.MassEmpty += token.Design.Aggregate.Mass * token.Quantity;
+                spec.Mass += token.Design.Spec.Mass * token.Quantity;
+                spec.MassEmpty += token.Design.Spec.Mass * token.Quantity;
 
                 // armor
-                aggregate.Armor += token.Design.Aggregate.Armor * token.Quantity;
+                spec.Armor += token.Design.Spec.Armor * token.Quantity;
 
                 // shield
-                aggregate.Shield += token.Design.Aggregate.Shield * token.Quantity;
+                spec.Shield += token.Design.Spec.Shield * token.Quantity;
 
                 // cargo
-                aggregate.CargoCapacity += token.Design.Aggregate.CargoCapacity * token.Quantity;
+                spec.CargoCapacity += token.Design.Spec.CargoCapacity * token.Quantity;
 
                 // fuel
-                aggregate.FuelCapacity += token.Design.Aggregate.FuelCapacity * token.Quantity;
+                spec.FuelCapacity += token.Design.Spec.FuelCapacity * token.Quantity;
 
                 // minesweep
-                aggregate.MineSweep += token.Design.Aggregate.MineSweep * token.Quantity;
+                spec.MineSweep += token.Design.Spec.MineSweep * token.Quantity;
 
                 // remote mining
-                aggregate.MiningRate += token.Design.Aggregate.MiningRate * token.Quantity;
+                spec.MiningRate += token.Design.Spec.MiningRate * token.Quantity;
 
                 // colonization
-                if (token.Design.Aggregate.Colonizer)
+                if (token.Design.Spec.Colonizer)
                 {
-                    aggregate.Colonizer = true;
+                    spec.Colonizer = true;
                 }
 
-                // aggregate all mine layers in the fleet
-                if (token.Design.Aggregate.CanLayMines)
+                // spec all mine layers in the fleet
+                if (token.Design.Spec.CanLayMines)
                 {
-                    foreach (var entry in token.Design.Aggregate.MineLayingRateByMineType)
+                    foreach (var entry in token.Design.Spec.MineLayingRateByMineType)
                     {
-                        if (!aggregate.MineLayingRateByMineType.ContainsKey(entry.Key))
+                        if (!spec.MineLayingRateByMineType.ContainsKey(entry.Key))
                         {
-                            aggregate.MineLayingRateByMineType[entry.Key] = 0;
+                            spec.MineLayingRateByMineType[entry.Key] = 0;
                         }
-                        aggregate.MineLayingRateByMineType[entry.Key] += token.Design.Aggregate.MineLayingRateByMineType[entry.Key] * token.Quantity;
+                        spec.MineLayingRateByMineType[entry.Key] += token.Design.Spec.MineLayingRateByMineType[entry.Key] * token.Quantity;
                     }
                 }
 
                 // We should only have one ship stack with spacdock capabilities, but for this logic just go with the max
-                aggregate.SpaceDock = Math.Max(aggregate.SpaceDock, token.Design.Aggregate.SpaceDock);
+                spec.SpaceDock = Math.Max(spec.SpaceDock, token.Design.Spec.SpaceDock);
 
                 // sadly, the fleet only gets the best repair bonus from one design
-                aggregate.RepairBonus = Math.Max(aggregate.RepairBonus, token.Design.Aggregate.RepairBonus);
+                spec.RepairBonus = Math.Max(spec.RepairBonus, token.Design.Spec.RepairBonus);
 
-                aggregate.ScanRange = Math.Max(aggregate.ScanRange, token.Design.Aggregate.ScanRange);
-                aggregate.ScanRangePen = Math.Max(aggregate.ScanRangePen, token.Design.Aggregate.ScanRangePen);
+                spec.ScanRange = Math.Max(spec.ScanRange, token.Design.Spec.ScanRange);
+                spec.ScanRangePen = Math.Max(spec.ScanRangePen, token.Design.Spec.ScanRangePen);
 
                 // add bombs
-                aggregate.Bomber = token.Design.Aggregate.Bomber ? true : aggregate.Bomber;
-                aggregate.Bombs.AddRange(token.Design.Aggregate.Bombs);
-                aggregate.SmartBombs.AddRange(token.Design.Aggregate.SmartBombs);
+                spec.Bomber = token.Design.Spec.Bomber ? true : spec.Bomber;
+                spec.Bombs.AddRange(token.Design.Spec.Bombs);
+                spec.SmartBombs.AddRange(token.Design.Spec.SmartBombs);
 
                 // check if any tokens have weapons
-                // we process weapon slots per stack, so we don't need to aggregate all
+                // we process weapon slots per stack, so we don't need to spec all
                 // weapons in a fleet
-                aggregate.HasWeapons = token.Design.Aggregate.HasWeapons ? true : aggregate.HasWeapons;
+                spec.HasWeapons = token.Design.Spec.HasWeapons ? true : spec.HasWeapons;
 
-                if (token.Design.Aggregate.CloakUnits > 0)
+                if (token.Design.Spec.CloakUnits > 0)
                 {
                     // calculate the cloak units for this token based on the design's cloak units (i.e. 70 cloak units / kT for a stealh cloak)
-                    aggregate.CloakUnits += token.Design.Aggregate.CloakUnits;
+                    spec.CloakUnits += token.Design.Spec.CloakUnits;
                 }
                 else
                 {
                     // if this ship doesn't have cloaking, it counts as cargo (except for races with free cargo cloaking)
                     if (!freeCargoCloaking)
                     {
-                        aggregate.BaseCloakedCargo += token.Design.Aggregate.Mass * token.Quantity;
+                        spec.BaseCloakedCargo += token.Design.Spec.Mass * token.Quantity;
                     }
                 }
 
                 // choose the best tachyon detector ship
-                aggregate.ReduceCloaking = Math.Max(aggregate.ReduceCloaking, token.Design.Aggregate.ReduceCloaking);
+                spec.ReduceCloaking = Math.Max(spec.ReduceCloaking, token.Design.Spec.ReduceCloaking);
             });
 
             // compute the cloaking based on the cloak units and cargo
@@ -440,25 +440,24 @@ namespace CraigStars
             // compute things about the FleetComposition
             ComputeFleetComposition(fleet);
 
-            aggregate.Computed = true;
+            spec.Computed = true;
         }
 
 
 
         /// <summary>
-        /// Compute the fleet's aggregate cloaking
+        /// Compute the fleet's spec cloaking
         /// </summary>
         public void ComputeFleetCloaking(Player player, Fleet fleet)
         {
-            var aggregate = fleet.Aggregate;
+            var spec = fleet.Spec;
             var cargo = fleet.Cargo;
             var tokens = fleet.Tokens;
 
             // figure out how much cargo we are cloaking
-            // TODO: use playerService when computeAggregate is migrated to its own service
-            var cloakedCargo = aggregate.BaseCloakedCargo + (player.Race.Spec.FreeCargoCloaking ? 0 : cargo.Total);
-            int cloakUnitsWithCargo = (int)Math.Round(aggregate.CloakUnits * (float)aggregate.MassEmpty / (aggregate.MassEmpty + cloakedCargo));
-            aggregate.CloakPercent = CloakUtils.GetCloakPercentForCloakUnits(cloakUnitsWithCargo);
+            var cloakedCargo = spec.BaseCloakedCargo + (player.Race.Spec.FreeCargoCloaking ? 0 : cargo.Total);
+            int cloakUnitsWithCargo = (int)Math.Round(spec.CloakUnits * (float)spec.MassEmpty / (spec.MassEmpty + cloakedCargo));
+            spec.CloakPercent = CloakUtils.GetCloakPercentForCloakUnits(cloakUnitsWithCargo);
         }
 
         /// <summary>
@@ -467,14 +466,14 @@ namespace CraigStars
         /// <param name="fleet"></param>
         public void ComputeFleetComposition(Fleet fleet)
         {
-            var aggregate = fleet.Aggregate;
+            var spec = fleet.Spec;
             var cargo = fleet.Cargo;
             var tokens = fleet.Tokens;
             var fleetComposition = fleet.FleetComposition;
 
             // default is we are complete if we have no fleet composition
-            aggregate.FleetCompositionComplete = true;
-            aggregate.FleetCompositionTokensRequired = new List<FleetCompositionToken>();
+            spec.FleetCompositionComplete = true;
+            spec.FleetCompositionTokensRequired = new List<FleetCompositionToken>();
 
             if (fleetComposition != null && fleetComposition.Type != FleetCompositionType.None)
             {
@@ -498,8 +497,8 @@ namespace CraigStars
                 }
 
                 // add all the remaining FleetCompositionTokens we need
-                aggregate.FleetCompositionTokensRequired.AddRange(fleetCompositionByPurpose.Values);
-                aggregate.FleetCompositionComplete = aggregate.FleetCompositionTokensRequired.Count == 0;
+                spec.FleetCompositionTokensRequired.AddRange(fleetCompositionByPurpose.Values);
+                spec.FleetCompositionComplete = spec.FleetCompositionTokensRequired.Count == 0;
             }
         }
 
@@ -508,30 +507,30 @@ namespace CraigStars
         #region Starbases
 
         /// <summary>
-        /// Starbases are like fleets but with a bit more aggregate data
+        /// Starbases are like fleets but with a bit more spec data
         /// </summary>
         /// <param name="player"></param>
         /// <param name="starbase"></param>
         /// <param name="recompute"></param>
-        public void ComputeStarbaseAggregate(Player player, Starbase starbase, bool recompute = false)
+        public void ComputeStarbaseSpec(Player player, Starbase starbase, bool recompute = false)
         {
-            var Aggregate = starbase.Aggregate;
-            var Design = starbase.Design;
+            var spec = starbase.Spec;
+            var design = starbase.Design;
 
-            if (Aggregate.Computed && !recompute)
+            if (spec.Computed && !recompute)
             {
                 return;
             }
 
-            // compute fleet aggregates as normal
-            ComputeAggregate(player, starbase, recompute);
+            // compute fleet specs as normal
+            ComputeFleetSpec(player, starbase, recompute);
 
-            Aggregate.Stargate = null;
-            Aggregate.BasePacketSpeed = 0;
-            Aggregate.SafePacketSpeed = 0;
+            spec.Stargate = null;
+            spec.BasePacketSpeed = 0;
+            spec.SafePacketSpeed = 0;
             int numAdditionalMassDrivers = 0;
 
-            foreach (var slot in Design.Slots)
+            foreach (var slot in design.Slots)
             {
                 if (slot.HullComponent != null)
                 {
@@ -540,36 +539,36 @@ namespace CraigStars
                     {
                         // if we already have a massdriver at this speed, add an additional mass driver to up
                         // our speed
-                        if (Aggregate.BasePacketSpeed == slot.HullComponent.PacketSpeed)
+                        if (spec.BasePacketSpeed == slot.HullComponent.PacketSpeed)
                         {
                             numAdditionalMassDrivers++;
                         }
-                        Aggregate.BasePacketSpeed = Math.Max(Aggregate.BasePacketSpeed, slot.HullComponent.PacketSpeed);
+                        spec.BasePacketSpeed = Math.Max(spec.BasePacketSpeed, slot.HullComponent.PacketSpeed);
                     }
-                    if (Aggregate.Stargate == null && slot.HullComponent.SafeHullMass > 0)
+                    if (spec.Stargate == null && slot.HullComponent.SafeHullMass > 0)
                     {
-                        Aggregate.Stargate = slot.HullComponent;
+                        spec.Stargate = slot.HullComponent;
                     }
                 }
             }
 
-            Aggregate.SafePacketSpeed = Aggregate.BasePacketSpeed + numAdditionalMassDrivers;
+            spec.SafePacketSpeed = spec.BasePacketSpeed + numAdditionalMassDrivers;
         }
 
         #endregion
 
-        #region Player Aggregates
+        #region Player Specs
 
         /// <summary>
-        /// Compute a player's design, fleet, and starbase aggregates for the player data
+        /// Compute a player's design, fleet, and starbase specs for the player data
         /// </summary>
-        public void ComputePlayerAggregates(Player player, bool recompute = false)
+        public void ComputePlayerFleetSpecs(Player player, bool recompute = false)
         {
-            player.Designs.ForEach(design => ComputeDesignAggregate(player, design, recompute));
-            player.Fleets.ForEach(fleet => ComputeAggregate(player, fleet, recompute));
+            player.Designs.ForEach(design => ComputeDesignSpec(player, design, recompute));
+            player.Fleets.ForEach(fleet => ComputeFleetSpec(player, fleet, recompute));
             foreach (var planet in player.Planets.Where(p => p.HasStarbase))
             {
-                ComputeStarbaseAggregate(player, planet.Starbase, recompute);
+                ComputeStarbaseSpec(player, planet.Starbase, recompute);
             }
 
             ComputeDesignsInUse(player);

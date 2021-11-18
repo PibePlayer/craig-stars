@@ -231,7 +231,7 @@ namespace CraigStars
                         PlayerNum = fleet.PlayerNum,
                         Fleet = fleet,
                         Token = token,
-                        Shields = token.Quantity * token.Design.Aggregate.Shield,
+                        Shields = token.Quantity * token.Design.Spec.Shield,
                         Attributes = GetTokenAttributes(token)
                     }, game)
                 )
@@ -260,7 +260,7 @@ namespace CraigStars
                 attributes |= BattleTokenAttribute.Starbase;
             }
 
-            if (token.Design.Aggregate.HasWeapons)
+            if (token.Design.Spec.HasWeapons)
             {
                 attributes |= BattleTokenAttribute.Armed;
             }
@@ -324,7 +324,7 @@ namespace CraigStars
         {
             battle.HasTargets = false;
             // ignore tokens that are no longer part of the battle
-            foreach (var token in battle.RemainingTokens.Where(token => token.Token.Design.Aggregate.HasWeapons))
+            foreach (var token in battle.RemainingTokens.Where(token => token.Token.Design.Spec.HasWeapons))
             {
                 token.MoveTarget = GetTarget(token, battle.RemainingTokens.Where(target => target != token));
                 if (token.MoveTarget != null)
@@ -432,8 +432,8 @@ namespace CraigStars
         {
             // our tokens are moved by mass
             var tokensByMass = battle.Tokens
-                .Where(token => token.Token.Design.Aggregate.Movement > 0) // starbases don't move
-                .OrderByDescending(token => token.Token.Design.Aggregate.Mass).ToList();
+                .Where(token => token.Token.Design.Spec.Movement > 0) // starbases don't move
+                .OrderByDescending(token => token.Token.Design.Spec.Mass).ToList();
 
             // each token can move up to 3 times in a round
             // ships that can move 3 times go first, so we loop through the moveNum backwards
@@ -447,7 +447,7 @@ namespace CraigStars
                     foreach (BattleToken token in tokensByMass)
                     {
                         // movement is between 2 and 10, so we offset it to fit in our MovementByRound table
-                        var movement = token.Token.Design.Aggregate.Movement;
+                        var movement = token.Token.Design.Spec.Movement;
 
                         // see if this token can move on this moveNum (i.e. move 1, 2, or 3)
                         if (MovementByRound[movement - 2, roundBlock] > moveNum)
@@ -508,7 +508,7 @@ namespace CraigStars
 
                 // shields are shared among all tokens
                 var shields = target.Shields;
-                var armor = targetShipToken.Design.Aggregate.Armor;
+                var armor = targetShipToken.Design.Spec.Armor;
 
                 // beam weapons degrade 10% max over distance
                 var distance = weapon.Token.GetDistanceAway(target.Position);
@@ -596,7 +596,7 @@ namespace CraigStars
             ShipToken attackerShipToken = weapon.Token.Token;
             // damage is power * number of weapons * number of attackers.
             var damage = weapon.Slot.HullComponent.Power;
-            var torpedoInaccuracyFactor = weapon.Token.Token.Design.Aggregate.TorpedoInaccuracyFactor;
+            var torpedoInaccuracyFactor = weapon.Token.Token.Design.Spec.TorpedoInaccuracyFactor;
             var accuracy = (100f - (100f - weapon.Slot.HullComponent.Accuracy) * torpedoInaccuracyFactor) / 100f;
             var numTorpedos = weapon.Slot.Quantity * attackerShipToken.Quantity;
             float remainingTorpedos = numTorpedos;
@@ -621,7 +621,7 @@ namespace CraigStars
 
                 // shields are shared among all tokens
                 var shields = target.Shields;
-                var armor = targetShipToken.Design.Aggregate.Armor;
+                var armor = targetShipToken.Design.Spec.Armor;
 
                 int totalShieldDamage = 0;
                 int totalArmorDamage = 0;
@@ -724,7 +724,7 @@ namespace CraigStars
         {
             // count this token's moves
             token.MovesMade++;
-            if (token.MoveTarget == null || !token.Token.Design.Aggregate.HasWeapons)
+            if (token.MoveTarget == null || !token.Token.Design.Spec.HasWeapons)
             {
                 // tokens with no weapons always run away
                 RunAway(battle, token);
@@ -967,8 +967,8 @@ namespace CraigStars
         /// <returns></returns>
         float GetAttractiveness(BattleToken attacker, BattleToken defender)
         {
-            var cost = defender.Token.Design.Aggregate.Cost * defender.Token.Quantity;
-            var defense = (defender.Token.Design.Aggregate.Armor + defender.Token.Design.Aggregate.Shield) * defender.Token.Quantity;
+            var cost = defender.Token.Design.Spec.Cost * defender.Token.Quantity;
+            var defense = (defender.Token.Design.Spec.Armor + defender.Token.Design.Spec.Shield) * defender.Token.Quantity;
 
             // TODO: change defense based on attacker weapons
 
@@ -984,8 +984,8 @@ namespace CraigStars
         /// <returns></returns>
         float GetAttractiveness(BattleWeaponSlot weapon, BattleToken target)
         {
-            var cost = target.Token.Design.Aggregate.Cost * target.Token.Quantity;
-            var defense = (target.Token.Design.Aggregate.Armor + target.Token.Design.Aggregate.Shield) * target.Token.Quantity;
+            var cost = target.Token.Design.Spec.Cost * target.Token.Quantity;
+            var defense = (target.Token.Design.Spec.Armor + target.Token.Design.Spec.Shield) * target.Token.Quantity;
 
             // TODO: change defense based on attacker weapons
 

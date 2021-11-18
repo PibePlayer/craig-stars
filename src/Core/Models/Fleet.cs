@@ -8,13 +8,13 @@ using Godot;
 
 namespace CraigStars
 {
-    interface IAggregatable<T> where T : ShipDesignAggregate
+    interface IAggregatable<T> where T : ShipDesignSpec
     {
-        T Aggregate { get; }
+        T Spec { get; }
     }
 
     [JsonObject(IsReference = true)]
-    public class Fleet : MapObject, SerializableMapObject, ICargoHolder, IAggregatable<FleetAggregate>
+    public class Fleet : MapObject, SerializableMapObject, ICargoHolder, IAggregatable<FleetSpec>
     {
         static CSLog log = LogProvider.GetLogger(typeof(Fleet));
 
@@ -30,11 +30,11 @@ namespace CraigStars
         public int Age { get; set; }
         public Cargo Cargo { get; set; } = new Cargo();
         [JsonIgnore]
-        public int AvailableCapacity { get => Aggregate.CargoCapacity - Cargo.Total; }
+        public int AvailableCapacity { get => Spec.CargoCapacity - Cargo.Total; }
 
         public int Fuel { get; set; }
-        [JsonIgnore] public int FuelCapacity { get => Aggregate.FuelCapacity; }
-        [JsonIgnore] public int FuelMissing { get => Aggregate.FuelCapacity - Fuel; }
+        [JsonIgnore] public int FuelCapacity { get => Spec.FuelCapacity; }
+        [JsonIgnore] public int FuelMissing { get => Spec.FuelCapacity - Fuel; }
         public int Damage { get; set; }
 
         [JsonProperty(IsReference = true)]
@@ -66,9 +66,9 @@ namespace CraigStars
         [JsonIgnore] public Vector2? PreviousPosition { get; set; }
 
         [JsonIgnore]
-        public int Mass { get => Aggregate.Mass; set => Aggregate.Mass = value; }
+        public int Mass { get => Spec.Mass; set => Spec.Mass = value; }
 
-        public FleetAggregate Aggregate { get; set; } = new FleetAggregate();
+        public FleetSpec Spec { get; set; } = new FleetSpec();
 
         #endregion
 
@@ -103,7 +103,7 @@ namespace CraigStars
             var cargoResult = Cargo + transfer;
             var fuelResult = Fuel + fuelTransfer;
 
-            if (cargoResult >= 0 && cargoResult.Total <= Aggregate.CargoCapacity && fuelResult <= Aggregate.FuelCapacity)
+            if (cargoResult >= 0 && cargoResult.Total <= Spec.CargoCapacity && fuelResult <= Spec.FuelCapacity)
             {
                 // The transfer doesn't leave us with 0 minerals, or with so many minerals and fuel that we can't hold it
                 Cargo = cargoResult;

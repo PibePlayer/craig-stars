@@ -75,7 +75,7 @@ namespace CraigStars
             var playerFleets = Game.Fleets.Where(fleet => fleet.PlayerNum == player.Num).ToList();
             foreach (var token in playerFleets.SelectMany(fleet => fleet.Tokens))
             {
-                var powerRating = token.Design.Aggregate.PowerRating;
+                var powerRating = token.Design.Spec.PowerRating;
                 if (powerRating <= 0)
                 {
                     score.UnarmedShips += token.Quantity;

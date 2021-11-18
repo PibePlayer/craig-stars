@@ -29,14 +29,14 @@ namespace CraigStars
         public int NumBuilt { get; set; }
 
         /// <summary>
-        /// An aggregate of all components of a ship design
+        /// An spec of all components of a ship design
         /// </summary>
         /// <returns></returns>
-        public ShipDesignAggregate Aggregate { get; set; } = new ShipDesignAggregate();
+        public ShipDesignSpec Spec { get; set; } = new ShipDesignSpec();
 
-        // public aggregate values
-        public int Shields { get => Aggregate.Shield; set => Aggregate.Shield = value; }
-        public int Armor { get => Aggregate.Armor; set => Aggregate.Armor = value; }
+        // public spec values
+        public int Shields { get => Spec.Shield; set => Spec.Shield = value; }
+        public int Armor { get => Spec.Armor; set => Spec.Armor = value; }
 
         public override string ToString()
         {

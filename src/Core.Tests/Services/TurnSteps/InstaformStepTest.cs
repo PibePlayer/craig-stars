@@ -38,7 +38,7 @@ namespace CraigStars.Tests
             // allow Grav3 terraform
             player.TechLevels = new TechLevel(propulsion: 1, biotechnology: 1);
 
-            gameRunner.ComputeAggregates();
+            gameRunner.ComputeSpecs();
 
             var planet = new Planet()
             {

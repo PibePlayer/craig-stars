@@ -8,7 +8,7 @@ namespace CraigStars.Client
 {
     public class ShipDesigner : HBoxContainer
     {
-        [Inject] FleetAggregator fleetAggregator;
+        [Inject] FleetSpecService fleetSpecService;
         public event Action CancelledEvent;
         protected Player Me { get => PlayersManager.Me; }
 
@@ -104,7 +104,7 @@ namespace CraigStars.Client
             if (SourceShipDesign != null)
             {
                 var design = SourceShipDesign.Copy();
-                fleetAggregator.ComputeDesignAggregate(PlayersManager.Me, design);
+                fleetSpecService.ComputeDesignSpec(PlayersManager.Me, design);
                 if (!EditingExisting)
                 {
                     design.Version++;
@@ -162,7 +162,7 @@ namespace CraigStars.Client
         {
             // TODO, support updates
             designerHullSummary.ShipDesign.Name = designNameLineEdit.Text;
-            fleetAggregator.ComputeDesignAggregate(PlayersManager.Me, designerHullSummary.ShipDesign, true);
+            fleetSpecService.ComputeDesignSpec(PlayersManager.Me, designerHullSummary.ShipDesign, true);
             if (EditingExisting)
             {
                 // remove the old design and add the new one

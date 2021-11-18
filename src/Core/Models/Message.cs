@@ -120,7 +120,7 @@ namespace CraigStars
         public static void MineralPacketDamage(Player player, Planet planet, MineralPacket packet, int colonistsKilled, int defensesDestroyed)
         {
             string text = "";
-            if (planet.HasStarbase && planet.Starbase.Aggregate.HasMassDriver)
+            if (planet.HasStarbase && planet.Starbase.Spec.HasMassDriver)
             {
                 if (defensesDestroyed == 0)
                 {
@@ -599,7 +599,7 @@ namespace CraigStars
             if (fleet.PlayerNum == player.Num)
             {
                 // it's our fleet, it must be someone else's minefield
-                if (fleet.Aggregate.TotalShips <= shipsDestroyed)
+                if (fleet.Spec.TotalShips <= shipsDestroyed)
                 {
                     text = $"{fleet.Name} has been annihilated in a {mineField.Type} mine field at {TextUtils.GetPositionString(mineField.Position)}";
                 }
@@ -627,7 +627,7 @@ namespace CraigStars
             else
             {
                 // it's not our fleet, it must be our minefield
-                if (fleet.Aggregate.TotalShips <= shipsDestroyed)
+                if (fleet.Spec.TotalShips <= shipsDestroyed)
                 {
                     text = $"{fleet.RaceName} {fleet.Name} has been annihilated in your {mineField.Type} mine field at {TextUtils.GetPositionString(mineField.Position)}";
                 }

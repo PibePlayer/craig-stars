@@ -17,13 +17,13 @@ namespace CraigStars
 
         private readonly PlayerIntel playerIntel;
         private readonly PlayerTechService playerTechService;
-        private readonly FleetAggregator fleetAggregator;
+        private readonly FleetSpecService fleetSpecService;
 
-        public PlayerScanStep(IProvider<Game> gameProvider, PlayerIntel playerIntel, PlayerTechService playerTechService, FleetAggregator fleetAggregator) : base(gameProvider, TurnGenerationState.PlayerScanStep)
+        public PlayerScanStep(IProvider<Game> gameProvider, PlayerIntel playerIntel, PlayerTechService playerTechService, FleetSpecService fleetSpecService) : base(gameProvider, TurnGenerationState.PlayerScanStep)
         {
             this.playerIntel = playerIntel;
             this.playerTechService = playerTechService;
-            this.fleetAggregator = fleetAggregator;
+            this.fleetSpecService = fleetSpecService;
         }
 
         /// <summary>
@@ -68,11 +68,11 @@ namespace CraigStars
         {
             base.PreProcess(ownedPlanets);
 
-            log.Debug("Before we scan, make sure all of our aggregates are up to date");
-            Game.Fleets.ForEach(fleet => fleetAggregator.ComputeAggregate(Game.Players[fleet.PlayerNum], fleet));
+            log.Debug("Before we scan, make sure all of our specs are up to date");
+            Game.Fleets.ForEach(fleet => fleetSpecService.ComputeFleetSpec(Game.Players[fleet.PlayerNum], fleet));
             foreach (var planet in ownedPlanets.Where(p => p.HasStarbase))
             {
-                fleetAggregator.ComputeAggregate(Game.Players[planet.PlayerNum], planet.Starbase);
+                fleetSpecService.ComputeFleetSpec(Game.Players[planet.PlayerNum], planet.Starbase);
             }
         }
 
@@ -126,11 +126,11 @@ namespace CraigStars
             {
                 // find the best scanner at this location, whether fleet or planet
                 var scanner = new Scanner(planet.Position, planetaryScanner.ScanRange, planetaryScanner.ScanRangePen);
-                foreach (var fleet in planet.OrbitingFleets.Where(f => f.PlayerNum == player.Num && f.Aggregate.Scanner))
+                foreach (var fleet in planet.OrbitingFleets.Where(f => f.PlayerNum == player.Num && f.Spec.Scanner))
                 {
-                    scanner.Range = Math.Max(scanner.Range, fleet.Aggregate.ScanRange);
-                    scanner.RangePen = Math.Max(scanner.RangePen, fleet.Aggregate.ScanRangePen);
-                    scanner.CloakReduction = Math.Max(scanner.CloakReduction, fleet.Aggregate.ReduceCloaking);
+                    scanner.Range = Math.Max(scanner.Range, fleet.Spec.ScanRange);
+                    scanner.RangePen = Math.Max(scanner.RangePen, fleet.Spec.ScanRangePen);
+                    scanner.CloakReduction = Math.Max(scanner.CloakReduction, fleet.Spec.ReduceCloaking);
                 }
                 // square these ranges, because we are using
                 // the faster DistanceSquaredTo method to compare distances
@@ -141,9 +141,9 @@ namespace CraigStars
 
             // find all our fleets that are out and about
             log.Debug($"{Game.Year}: {player} Building List of Fleet Scanners");
-            foreach (var fleet in Game.Fleets.Where(f => f.PlayerNum == player.Num && f.Aggregate.Scanner))
+            foreach (var fleet in Game.Fleets.Where(f => f.PlayerNum == player.Num && f.Spec.Scanner))
             {
-                scanners.Add(new Scanner(fleet.Position, fleet.PreviousPosition.GetValueOrDefault(fleet.Position), fleet.Aggregate.ScanRange * fleet.Aggregate.ScanRange, fleet.Aggregate.ScanRangePen * fleet.Aggregate.ScanRangePen, fleet.Aggregate.ReduceCloaking));
+                scanners.Add(new Scanner(fleet.Position, fleet.PreviousPosition.GetValueOrDefault(fleet.Position), fleet.Spec.ScanRange * fleet.Spec.ScanRange, fleet.Spec.ScanRangePen * fleet.Spec.ScanRangePen, fleet.Spec.ReduceCloaking));
             }
 
             // Space demolition minefields act as scanners
@@ -354,7 +354,7 @@ namespace CraigStars
                 // and go to the next fleet
                 foreach (var scanner in scanners)
                 {
-                    var cloakFactor = 1 - (fleet.Aggregate.CloakPercent * scanner.CloakReduction / 100f);
+                    var cloakFactor = 1 - (fleet.Spec.CloakPercent * scanner.CloakReduction / 100f);
                     var distance = scanner.Position.DistanceSquaredTo(fleet.Position);
                     // if we pen scanned this, update the report
                     if (scanner.RangePen * cloakFactor >= distance)

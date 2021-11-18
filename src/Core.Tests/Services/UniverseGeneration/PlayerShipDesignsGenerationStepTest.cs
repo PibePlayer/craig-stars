@@ -13,7 +13,7 @@ namespace CraigStars.Tests
         PlayerTechService playerTechService;
         PlayerIntel playerIntel;
         ShipDesignGenerator designGenerator;
-        FleetAggregator fleetAggregator;
+        FleetSpecService fleetSpecService;
 
         [SetUp]
         public void SetUp()
@@ -21,7 +21,7 @@ namespace CraigStars.Tests
             playerTechService = TestUtils.TestContainer.GetInstance<PlayerTechService>();
             playerIntel = TestUtils.TestContainer.GetInstance<PlayerIntel>();
             designGenerator = TestUtils.TestContainer.GetInstance<ShipDesignGenerator>();
-            fleetAggregator = TestUtils.TestContainer.GetInstance<FleetAggregator>();
+            fleetSpecService = TestUtils.TestContainer.GetInstance<FleetSpecService>();
         }
 
         [Test]
@@ -35,7 +35,7 @@ namespace CraigStars.Tests
                 StaticTechStore.Instance,
                 playerIntel,
                 designGenerator,
-                fleetAggregator
+                fleetSpecService
             );
 
             var starbase = new ShipDesign()

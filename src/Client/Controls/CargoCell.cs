@@ -31,7 +31,7 @@ namespace CraigStars
                 else if (Cell?.Metadata is Cargo cargo)
                 {
                     var fleet = Row.Metadata as Fleet;
-                    if (fleet != null && fleet.Aggregate.CargoCapacity == 0)
+                    if (fleet != null && fleet.Spec.CargoCapacity == 0)
                     {
                         // if this cell is for a fleet with no cargo capacity, hide these controls
                         container.Visible = false;

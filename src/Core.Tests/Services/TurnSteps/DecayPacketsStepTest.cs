@@ -55,7 +55,7 @@ namespace CraigStars.Tests
 
             // half of 50% decay for PP races
             player1.Race.PRT = PRT.PP;
-            gameRunner.ComputeAggregates(recompute: true);
+            gameRunner.ComputeSpecs(recompute: true);
             packet.Cargo = new Cargo(100, 100, 100);
             packet.WarpFactor = 10;
             packet.DistanceTravelled = packet.WarpFactor * packet.WarpFactor;
@@ -65,7 +65,7 @@ namespace CraigStars.Tests
             // protate distance, if we only travelled half the distance 
             // this year, our 50% packet decay is only 25%
             player1.Race.PRT = PRT.JoaT;
-            gameRunner.ComputeAggregates(recompute: true);
+            gameRunner.ComputeSpecs(recompute: true);
             packet.Cargo = new Cargo(100, 100, 100);
             packet.DistanceTravelled = packet.DistanceTravelled * .5f;
             step.Decay(packet);

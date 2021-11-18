@@ -35,7 +35,7 @@ namespace CraigStars
             else if (item.Type == QueueItemType.ShipToken || item.Type == QueueItemType.Starbase)
             {
                 // ship designs have their own cost
-                return item.Design.Aggregate.Cost;
+                return item.Design.Spec.Cost;
             }
             else
             {

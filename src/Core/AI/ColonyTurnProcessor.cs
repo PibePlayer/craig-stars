@@ -42,9 +42,9 @@ namespace CraigStars
             .OrderByDescending(planet => player.Race.GetPlanetHabitability(planet.BaseHab.Value))
             .ToList();
             var buildablePlanets = player.Planets
-                .Where(planet => planetService.CanBuild(planet, player, colonyShip.Aggregate.Mass) && planetService.GetPopulationDensity(planet, player, gameInfo.Rules) >= PopulationDensityRequired)
+                .Where(planet => planetService.CanBuild(planet, player, colonyShip.Spec.Mass) && planetService.GetPopulationDensity(planet, player, gameInfo.Rules) >= PopulationDensityRequired)
                 .ToList();
-            var colonizerFleets = player.Fleets.Where(fleet => fleet.Aggregate.Purposes.Contains(ShipDesignPurpose.Colonizer));
+            var colonizerFleets = player.Fleets.Where(fleet => fleet.Spec.Purposes.Contains(ShipDesignPurpose.Colonizer));
 
             foreach (var fleet in colonizerFleets)
             {
@@ -110,7 +110,7 @@ namespace CraigStars
                     bool isBuilding = false;
                     foreach (ProductionQueueItem item in planet.ProductionQueue?.Items)
                     {
-                        if (item.Design != null && item.Design.Aggregate.Colonizer)
+                        if (item.Design != null && item.Design.Spec.Colonizer)
                         {
                             isBuilding = true;
                             queuedToBeBuilt++;

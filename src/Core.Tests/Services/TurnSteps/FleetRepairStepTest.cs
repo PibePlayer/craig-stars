@@ -38,7 +38,7 @@ namespace CraigStars.Tests
 
             // damage us by 10%
             fleet.Orbiting = null;
-            fleet.Aggregate.Armor = 100;
+            fleet.Spec.Armor = 100;
             fleet.Damage = 10;
 
             // should repair 2% of our damage because we're stopped
@@ -91,12 +91,12 @@ namespace CraigStars.Tests
             });
             game.Designs.Add(bombingFleet.Tokens.Last().Design);
 
-            gameRunner.ComputeAggregates(recompute: true);
+            gameRunner.ComputeSpecs(recompute: true);
 
             bombingFleet.Orbiting = defendingPalnet;
             defendingPalnet.OrbitingFleets.Add(bombingFleet);
 
-            bombingFleet.Aggregate.Armor = 100;
+            bombingFleet.Spec.Armor = 100;
             bombingFleet.Damage = 10;
             step.RepairFleet(bombingFleet, bombingPlayer, defendingPalnet);
 
@@ -112,7 +112,7 @@ namespace CraigStars.Tests
             var starbase = game.Planets[0].Starbase;
 
             // damage us by 20%
-            starbase.Aggregate.Armor = 100;
+            starbase.Spec.Armor = 100;
             starbase.Damage = 20;
 
             // should repair 2% of our damage because we're stopped
@@ -125,14 +125,14 @@ namespace CraigStars.Tests
         {
             var player = game.Players[0];
             player.Race.PRT = PRT.IS;
-            gameRunner.ComputeAggregates();
+            gameRunner.ComputeSpecs();
 
             var fleet = game.Fleets[0];
             var planet = game.Planets[0];
 
             // damage us by 10%
             fleet.Orbiting = null;
-            fleet.Aggregate.Armor = 100;
+            fleet.Spec.Armor = 100;
             fleet.Damage = 10;
 
             // should repair 4% of our damage because we're stopped and we're IS
@@ -142,7 +142,7 @@ namespace CraigStars.Tests
             // test repairing a starbase as IS
             // damage us by 20%
             var starbase = game.Planets[0].Starbase;
-            starbase.Aggregate.Armor = 100;
+            starbase.Spec.Armor = 100;
             starbase.Damage = 20;
 
             // should repair 2% of our damage because we're stopped

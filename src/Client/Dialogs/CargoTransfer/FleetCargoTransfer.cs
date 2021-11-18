@@ -57,9 +57,9 @@ namespace CraigStars.Client
 
         public override void _Ready()
         {
-            // for testing, update the aggregate
-            Fleet.Aggregate.CargoCapacity = Fleet.Cargo.Total * 2;
-            Fleet.Aggregate.FuelCapacity = Fleet.Fuel;
+            // for testing, update the spec
+            Fleet.Spec.CargoCapacity = Fleet.Cargo.Total * 2;
+            Fleet.Spec.FuelCapacity = Fleet.Fuel;
             nameLabel = FindNode("NameLabel") as Label;
             fuelBar = FindNode("FuelBar") as CargoBar;
             cargoBar = FindNode("CargoBar") as CargoBar;
@@ -101,7 +101,7 @@ namespace CraigStars.Client
             Cargo newCargo = Fleet.Cargo;
 
             // how much room we have in the hold
-            var available = Fleet.Aggregate.CargoCapacity - Fleet.Cargo.Total;
+            var available = Fleet.Spec.CargoCapacity - Fleet.Cargo.Total;
 
             // make sure we only request a new cargo value between 0 and the most amount of mineral we can put in
             newCargo = newCargo.WithIronium(Mathf.Clamp(newValue, 0, Fleet.Cargo.Ironium + available));
@@ -116,7 +116,7 @@ namespace CraigStars.Client
             Cargo newCargo = Fleet.Cargo;
 
             // how much room we have in the hold
-            var available = Fleet.Aggregate.CargoCapacity - Fleet.Cargo.Total;
+            var available = Fleet.Spec.CargoCapacity - Fleet.Cargo.Total;
 
             // make sure we only request a new cargo value between 0 and the most amount of mineral we can put in
             newCargo = newCargo.WithBoranium(Mathf.Clamp(newValue, 0, Fleet.Cargo.Boranium + available));
@@ -129,7 +129,7 @@ namespace CraigStars.Client
             Cargo newCargo = Fleet.Cargo;
 
             // how much room we have in the hold
-            var available = Fleet.Aggregate.CargoCapacity - Fleet.Cargo.Total;
+            var available = Fleet.Spec.CargoCapacity - Fleet.Cargo.Total;
 
             // make sure we only request a new cargo value between 0 and the most amount of mineral we can put in
             newCargo = newCargo.WithGermanium(Mathf.Clamp(newValue, 0, Fleet.Cargo.Germanium + available));
@@ -142,7 +142,7 @@ namespace CraigStars.Client
             Cargo newCargo = Fleet.Cargo;
 
             // how much room we have in the hold
-            var available = Fleet.Aggregate.CargoCapacity - Fleet.Cargo.Total;
+            var available = Fleet.Spec.CargoCapacity - Fleet.Cargo.Total;
 
             // make sure we only request a new cargo value between 0 and the most amount of mineral we can put in
             newCargo = newCargo.WithColonists(Mathf.Clamp(newValue, 0, Fleet.Cargo.Colonists + available));
@@ -155,7 +155,7 @@ namespace CraigStars.Client
             int newFuel = Fleet.Fuel;
 
             // how much room we have in the hold
-            var available = Fleet.Aggregate.FuelCapacity - Fleet.Fuel;
+            var available = Fleet.Spec.FuelCapacity - Fleet.Fuel;
 
             // make sure we only request a new cargo value between 0 and the most amount of mineral we can put in
             newFuel = Mathf.Clamp(newValue, 0, Fleet.Fuel + available);
@@ -173,12 +173,12 @@ namespace CraigStars.Client
             colonistsBar.Cargo = new Cargo(colonists: Fleet.Cargo.Colonists);
             fuelBar.Fuel = Fleet.Fuel;
 
-            cargoBar.Capacity = Fleet.Aggregate.CargoCapacity;
-            ironiumBar.Capacity = Fleet.Aggregate.CargoCapacity;
-            boraniumBar.Capacity = Fleet.Aggregate.CargoCapacity;
-            germaniumBar.Capacity = Fleet.Aggregate.CargoCapacity;
-            colonistsBar.Capacity = Fleet.Aggregate.CargoCapacity;
-            fuelBar.Capacity = Fleet.Aggregate.FuelCapacity;
+            cargoBar.Capacity = Fleet.Spec.CargoCapacity;
+            ironiumBar.Capacity = Fleet.Spec.CargoCapacity;
+            boraniumBar.Capacity = Fleet.Spec.CargoCapacity;
+            germaniumBar.Capacity = Fleet.Spec.CargoCapacity;
+            colonistsBar.Capacity = Fleet.Spec.CargoCapacity;
+            fuelBar.Capacity = Fleet.Spec.FuelCapacity;
         }
 
         public bool AttemptTransfer(Cargo newCargo, int newFuel)

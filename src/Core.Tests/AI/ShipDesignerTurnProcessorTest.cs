@@ -19,7 +19,7 @@ namespace CraigStars.Tests
             shipDesignerTurnProcessor = new ShipDesignerTurnProcessor(
                 TestUtils.TestContainer.GetInstance<ShipDesignGenerator>(),
                 TestUtils.TestContainer.GetInstance<PlayerTechService>(),
-                TestUtils.TestContainer.GetInstance<FleetAggregator>(),
+                TestUtils.TestContainer.GetInstance<FleetSpecService>(),
                 TestUtils.TestContainer.GetInstance<IProvider<ITechStore>>()
                 );
         }

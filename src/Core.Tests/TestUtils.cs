@@ -32,7 +32,7 @@ namespace CraigStars.Tests
             TestContainer.Register<PlanetService>(Lifestyle.Singleton);
             TestContainer.Register<PlayerService>(Lifestyle.Singleton);
             TestContainer.Register<FleetService>(Lifestyle.Singleton);
-            TestContainer.Register<FleetAggregator>(Lifestyle.Singleton);
+            TestContainer.Register<FleetSpecService>(Lifestyle.Singleton);
             TestContainer.Register<Researcher>(Lifestyle.Singleton);
             TestContainer.Register<PlayerTechService>(Lifestyle.Singleton);
             TestContainer.Register<ShipDesignGenerator>(Lifestyle.Singleton);
@@ -133,7 +133,7 @@ namespace CraigStars.Tests
 
             player.SetupMapObjectMappings();
             game.UpdateInternalDictionaries();
-            gameRunner.ComputeAggregates();
+            gameRunner.ComputeSpecs();
             gameRunner.AfterTurnGeneration();
 
             return (game, gameRunner);
@@ -282,9 +282,9 @@ namespace CraigStars.Tests
                 BattlePlan = player.BattlePlans[0]
             };
 
-            var fleetAggregator = TestUtils.TestContainer.GetInstance<FleetAggregator>();
-            fleetAggregator.ComputeDesignAggregate(player, design);
-            fleetAggregator.ComputeAggregate(player, fleet);
+            var fleetSpecService = TestUtils.TestContainer.GetInstance<FleetSpecService>();
+            fleetSpecService.ComputeDesignSpec(player, design);
+            fleetSpecService.ComputeFleetSpec(player, fleet);
             fleet.Fuel = fleet.FuelCapacity;
             return fleet;
         }
@@ -307,9 +307,9 @@ namespace CraigStars.Tests
                 BattlePlan = player.BattlePlans[0]
             };
 
-            var fleetAggregator = TestUtils.TestContainer.GetInstance<FleetAggregator>();
-            fleetAggregator.ComputeDesignAggregate(player, design);
-            fleetAggregator.ComputeAggregate(player, fleet);
+            var fleetSpecService = TestUtils.TestContainer.GetInstance<FleetSpecService>();
+            fleetSpecService.ComputeDesignSpec(player, design);
+            fleetSpecService.ComputeFleetSpec(player, fleet);
             fleet.Fuel = fleet.FuelCapacity;
             return fleet;
         }

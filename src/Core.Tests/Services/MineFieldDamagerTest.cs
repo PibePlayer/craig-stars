@@ -22,7 +22,7 @@ namespace CraigStars.Tests
         MineFieldDamager mineFieldDamager = TestUtils.TestContainer.GetInstance<MineFieldDamager>();
         ShipDesignDiscoverer designDiscoverer = TestUtils.TestContainer.GetInstance<ShipDesignDiscoverer>();
         FleetService fleetService = TestUtils.TestContainer.GetInstance<FleetService>();
-        FleetAggregator fleetAggregator = TestUtils.TestContainer.GetInstance<FleetAggregator>();
+        FleetSpecService fleetSpecService = TestUtils.TestContainer.GetInstance<FleetSpecService>();
 
         [Test]
         public void TestTakeMineFieldDamage()
@@ -51,7 +51,7 @@ namespace CraigStars.Tests
                 },
             };
             game.Fleets.Add(fleet);
-            gameRunner.ComputeAggregates(recompute: true);
+            gameRunner.ComputeSpecs(recompute: true);
 
             FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
 
@@ -77,8 +77,8 @@ namespace CraigStars.Tests
 
             // give it a ramscoop
             fleet.Tokens[0].Design.Slots[0].HullComponent = Techs.RadiatingHydroRamScoop;
-            gameRunner.ComputeAggregates(recompute: true);
-            
+            gameRunner.ComputeSpecs(recompute: true);
+
             // should do 125 damage per engine (only 1 engine per ship)
             // 1250 damage will destroy 3 ships (350 armor each), and leave 200 damage for the rest
             mineFieldDamager.TakeMineFieldDamage(fleet, player1, game.MineFields[0], player2, stats);
@@ -114,7 +114,7 @@ namespace CraigStars.Tests
                 },
             };
             game.Fleets.Add(fleet);
-            gameRunner.ComputeAggregates(recompute: true);
+            gameRunner.ComputeSpecs(recompute: true);
 
             FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
 
@@ -170,7 +170,7 @@ namespace CraigStars.Tests
                 },
             };
             game.Fleets.Add(fleet);
-            gameRunner.ComputeAggregates(recompute: true);
+            gameRunner.ComputeSpecs(recompute: true);
 
             FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
 

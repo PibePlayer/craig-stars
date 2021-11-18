@@ -179,7 +179,7 @@ namespace CraigStars
         public void BuildSortedWeaponSlots()
         {
             SortedWeaponSlots = Tokens.SelectMany(
-                    token => token.Token.Design.Aggregate.WeaponSlots.Select(
+                    token => token.Token.Design.Spec.WeaponSlots.Select(
                         slot => new BattleWeaponSlot(token, slot)))
                     .OrderBy(bws => bws.Slot.HullComponent.Initiative).ToList();
         }

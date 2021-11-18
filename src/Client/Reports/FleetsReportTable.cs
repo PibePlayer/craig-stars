@@ -103,7 +103,7 @@ namespace CraigStars.Client
                 new Cell(task),
                 new Cell($"{item.Fuel}mg", item.Fuel),
                 new Cell("Cargo", item.Cargo.Total, metadata: item.Cargo),
-                new Cell($"{item.Aggregate.Mass}kT", item.Aggregate.Mass),
+                new Cell($"{item.Spec.Mass}kT", item.Spec.Mass),
             };
         }
 

@@ -90,24 +90,24 @@ namespace CraigStars.Client
                     UpdateTitle($"{starbase.Name} v{starbase.Tokens[0].Design.Version}");
                     Visible = true;
 
-                    dockCapacity.Text = starbase.DockCapacity == TechHull.UnlimitedSpaceDock ? "Unlimited" : $"{starbase.Aggregate.SpaceDock}kT";
-                    armor.Text = $"{starbase.Aggregate.Armor}dp";
-                    shields.Text = $"{starbase.Aggregate.Shield}dp";
+                    dockCapacity.Text = starbase.DockCapacity == TechHull.UnlimitedSpaceDock ? "Unlimited" : $"{starbase.Spec.SpaceDock}kT";
+                    armor.Text = $"{starbase.Spec.Armor}dp";
+                    shields.Text = $"{starbase.Spec.Shield}dp";
                     damage.Text = starbase.Damage == 0 ? "none" : $"{starbase.Damage}dp";
 
-                    if (starbase.Aggregate.HasStargate)
+                    if (starbase.Spec.HasStargate)
                     {
-                        var gate = starbase.Aggregate.Stargate;
+                        var gate = starbase.Spec.Stargate;
                         var safeHullMass = $"{(gate.SafeHullMass == TechHullComponent.InfinteGate ? "any" : $"{gate.SafeHullMass}kT")}";
                         var safeRange = $"{(gate.SafeRange == TechHullComponent.InfinteGate ? "any" : $"{gate.SafeRange} l.y.")}";
                         stargate.Text = $"{safeHullMass}/{safeRange}";
                     }
-                    if (starbase.Aggregate.HasMassDriver)
+                    if (starbase.Spec.HasMassDriver)
                     {
                         destination.Visible = true;
                         destinationLabel.Visible = true;
                         setDestinationButton.Visible = true;
-                        massDriver.Text = $"Warp {starbase.Aggregate.SafePacketSpeed}";
+                        massDriver.Text = $"Warp {starbase.Spec.SafePacketSpeed}";
                         if (CommandedPlanet.Planet.PacketTarget != null)
                         {
                             destination.Text = CommandedPlanet.Planet.PacketTarget.Name;

@@ -12,13 +12,13 @@ namespace CraigStars
         static PlayerTechService playerTechService = new PlayerTechService(new Provider<ITechStore>(StaticTechStore.Instance));
         static IRulesProvider rulesProvider = new Game();
         static PlayerService playerService = new PlayerService(rulesProvider);
-        static FleetAggregator fleetAggregator = new FleetAggregator(rulesProvider);
-        static FleetService fleetService = new FleetService(fleetAggregator);
+        static FleetSpecService fleetSpecService = new FleetSpecService(rulesProvider);
+        static FleetService fleetService = new FleetService(fleetSpecService);
         static ShipDesignDiscoverer designDiscoverer = new ShipDesignDiscoverer();
         static ShipDesignerTurnProcessor designerTurnProcessor = new ShipDesignerTurnProcessor(
-            new ShipDesignGenerator(playerTechService, fleetAggregator),
+            new ShipDesignGenerator(playerTechService, fleetSpecService),
             playerTechService,
-            fleetAggregator,
+            fleetSpecService,
             new Provider<ITechStore>(StaticTechStore.Instance)
             );
 
@@ -86,8 +86,8 @@ namespace CraigStars
                 }
             });
 
-            fleetAggregator.ComputePlayerAggregates(player1);
-            fleetAggregator.ComputePlayerAggregates(player2);
+            fleetSpecService.ComputePlayerFleetSpecs(player1);
+            fleetSpecService.ComputePlayerFleetSpecs(player2);
 
             var game = new Game()
             {
@@ -153,8 +153,8 @@ namespace CraigStars
                 player2.Fleets[0]
             };
 
-            fleetAggregator.ComputePlayerAggregates(player1);
-            fleetAggregator.ComputePlayerAggregates(player2);
+            fleetSpecService.ComputePlayerFleetSpecs(player1);
+            fleetSpecService.ComputePlayerFleetSpecs(player2);
 
             return fleets;
         }
@@ -208,8 +208,8 @@ namespace CraigStars
                 player2.Fleets[0]
             };
 
-            fleetAggregator.ComputePlayerAggregates(player1);
-            fleetAggregator.ComputePlayerAggregates(player2);
+            fleetSpecService.ComputePlayerFleetSpecs(player1);
+            fleetSpecService.ComputePlayerFleetSpecs(player2);
 
             return game;
         }

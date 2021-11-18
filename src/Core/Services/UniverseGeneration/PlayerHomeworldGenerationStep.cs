@@ -107,6 +107,7 @@ namespace CraigStars.UniverseGeneration
                 race.HabCenter.rad
             );
             planet.BaseHab = planet.Hab;
+            planet.TerraformedAmount = new Hab();
 
             planet.Population = (int)(startingPlanet.Population * race.Spec.StartingPopulationFactor);
 
@@ -152,6 +153,7 @@ namespace CraigStars.UniverseGeneration
                 (int)(race.HabCenter.rad + (race.HabWidth.rad - random.Next(race.HabWidth.rad - 1)) / 2 * habPenalty)
             );
             planet.BaseHab = planet.Hab;
+            planet.TerraformedAmount = new Hab();
 
             planet.Population = (int)(startingPlanet.Population * race.Spec.StartingPopulationFactor);
 

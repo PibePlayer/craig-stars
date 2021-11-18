@@ -85,9 +85,8 @@ namespace CraigStars
                 new StartingFleet("Change of Heart", Techs.MiniMiner.Name, ShipDesignPurpose.Terraformer),
             },
             Instaforming = true,
-            PermaformChance = .01f, // base chance is 1%
-            MaxPermaformChance = .1f, // max at 10%
-            PermaformPopAdjust = 100_000,
+            PermaformChance = .1f, // chance is 10% if pop is over 100k
+            PermaformPopulation = 100_000,
         };
 
         public static PRTSpec IS = new PRTSpec(PRT.IS, 100)
@@ -97,9 +96,17 @@ namespace CraigStars
                 new StartingFleet("Long Range Scout", Techs.Scout.Name, ShipDesignPurpose.Scout),
                 new StartingFleet("Santa Maria", Techs.ColonyShip.Name, ShipDesignPurpose.Colonizer),
             },
+            TechCostFactor = new Dictionary<TechCategory, float>() {
+                { TechCategory.PlanetaryDefense, .6f }, // defenses cost 40% less
+                { TechCategory.BeamWeapon, 1.25f }, // weapons cost 25% less
+                { TechCategory.Torpedo, 1.25f }, // weapons cost 25% less
+                { TechCategory.Bomb, 1.25f }, // weapons cost 25% less
+            },
             FreighterGrowthFactor = .5f,
             InvasionDefendBonus = 2f,
-        };
+            RepairFactor = 2f, // double repairs!
+            StarbaseRepairFactor = 1.5f,
+    };
 
         public static PRTSpec SD = new PRTSpec(PRT.SD, 150)
         {

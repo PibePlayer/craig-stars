@@ -164,6 +164,7 @@ namespace CraigStars.Tests
                 Population = 100000, // 100k people
                 BaseHab = new Hab(50, 50, 50),
                 Hab = new Hab(50, 50, 50), // perfect planet
+                TerraformedAmount = new Hab(),
                 Mines = 50 // start with 100 mines
             };
 
@@ -201,6 +202,7 @@ namespace CraigStars.Tests
                 PlayerNum = player.Num,
                 Hab = new Hab(50, 50, 50),
                 BaseHab = new Hab(50, 50, 50),
+                TerraformedAmount = new Hab(),
             };
 
             // can't terraform a perfect planet
@@ -248,6 +250,7 @@ namespace CraigStars.Tests
                 PlayerNum = player.Num,
                 Hab = new Hab(50, 50, 50),
                 BaseHab = new Hab(50, 50, 50),
+                TerraformedAmount = new Hab(),
             };
 
             // can't terraform a perfect planet
@@ -296,6 +299,7 @@ namespace CraigStars.Tests
             {
                 Hab = new Hab(50, 50, 50),
                 BaseHab = new Hab(50, 50, 50),
+                TerraformedAmount = new Hab(),
                 PlayerNum = player.Num
             };
 
@@ -305,22 +309,32 @@ namespace CraigStars.Tests
             // this is off by 1, we can terraform
             planet.BaseHab = new Hab(49, 50, 50);
             planet.Hab = new Hab(49, 50, 50);
+            planet.TerraformedAmount = new Hab();
             Assert.AreEqual(HabType.Gravity, service.GetBestTerraform(planet, player));
 
             // test to make sure we pick temperature because it's farther away
             planet.BaseHab = new Hab(55, 60, 50);
             planet.Hab = new Hab(55, 60, 50);
+            planet.TerraformedAmount = new Hab();
             Assert.AreEqual(HabType.Temperature, service.GetBestTerraform(planet, player));
 
             // test to make sure we pick radiation because it's the only one we can still terraform
             planet.BaseHab = new Hab(60, 60, 60);
             planet.Hab = new Hab(55, 55, 56);
+            planet.TerraformedAmount = new Hab(-5, -5, -4);
             Assert.AreEqual(HabType.Radiation, service.GetBestTerraform(planet, player));
 
             // return null if we can't terraform anymore
             planet.BaseHab = new Hab(60, 60, 50);
             planet.Hab = new Hab(55, 55, 50);
+            planet.TerraformedAmount = new Hab(-5, -5, 0);
             Assert.AreEqual(null, service.GetBestTerraform(planet, player));
+
+            // Check for instaformed planets
+            planet.BaseHab = new Hab(49, 50, 50);
+            planet.Hab = new Hab(50, 50, 50);
+            planet.TerraformedAmount = new Hab();
+            Assert.AreEqual(HabType.Gravity, service.GetBestTerraform(planet, player));
 
         }
 
@@ -409,7 +423,67 @@ namespace CraigStars.Tests
             Assert.AreEqual(new ProductionQueueItem(QueueItemType.Mine, 1), planet.ProductionQueue.Items[0]);
             Assert.AreEqual(new ProductionQueueItem(QueueItemType.AutoFactories, 10), planet.ProductionQueue.Items[1]);
             Assert.AreEqual(new ProductionQueueItem(QueueItemType.AutoMines, 5), planet.ProductionQueue.Items[2]);
+        }
 
+        [Test]
+        public void TestTerraform()
+        {
+            var player = new Player();
+            // allow Grav3 terraform
+            player.TechLevels = new TechLevel(propulsion: 1, biotechnology: 1);
+            player.Race.Spec = raceService.ComputeRaceSpecs(player.Race);
+
+            var planet = new Planet()
+            {
+                PlayerNum = player.Num,
+                Hab = new Hab(47, 50, 50),
+                BaseHab = new Hab(47, 50, 50),
+                TerraformedAmount = new Hab(),
+            };
+
+            // should terraform one point
+            service.TerraformOneStep(planet, player);
+            Assert.AreEqual(new Hab(48, 50, 50), planet.Hab);
+            Assert.AreEqual(new Hab(1, 0, 0), planet.TerraformedAmount);
+
+            // should terraform backwards
+            planet.Hab = new Hab(53, 50, 50);
+            planet.TerraformedAmount = new Hab();
+            service.TerraformOneStep(planet, player);
+            Assert.AreEqual(new Hab(52, 50, 50), planet.Hab);
+            Assert.AreEqual(new Hab(-1, 0, 0), planet.TerraformedAmount);
+
+            // should not terraform backwards
+            planet.Hab = new Hab(50, 50, 50);
+            planet.TerraformedAmount = new Hab();
+            service.TerraformOneStep(planet, player);
+            Assert.AreEqual(new Hab(50, 50, 50), planet.Hab);
+            Assert.AreEqual(new Hab(0, 0, 0), planet.TerraformedAmount);
+        }
+
+        [Test]
+        public void TestEmptyPlanet()
+        {
+            var planet = new Planet()
+            {
+                PlayerNum = 0,
+                Population = 100_000,
+                Defenses = 100,
+                Hab = new Hab(50, 50, 50),
+                BaseHab = new Hab(47, 50, 50),
+                TerraformedAmount = new Hab(3, 0, 0),
+                Scanner = true,
+                Starbase = new Starbase()
+            };
+
+            service.EmptyPlanet(planet);
+
+            Assert.AreEqual(MapObject.Unowned, planet.PlayerNum);
+            Assert.AreEqual(new Hab(50, 50, 50), planet.Hab);
+            Assert.AreEqual(0, planet.Population);
+            Assert.AreEqual(0, planet.Defenses);
+            Assert.IsNull(planet.Starbase);
+            Assert.IsFalse(planet.Scanner);
         }
     }
 }

@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Large Freighter0003.png-ca52fd91be87064d8dd7aca18dcccafb.stex"
+path="res://.import/Super Fuel Xport0001.png-f04f79216f1f7abc037b52266849138a.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/gui/tech/ShipHull/Large Freighter0003.png"
-dest_files=[ "res://.import/Large Freighter0003.png-ca52fd91be87064d8dd7aca18dcccafb.stex" ]
+source_file="res://assets/gui/tech/ShipHull/Super Fuel Xport0001.png"
+dest_files=[ "res://.import/Super Fuel Xport0001.png-f04f79216f1f7abc037b52266849138a.stex" ]
 
 [params]
 

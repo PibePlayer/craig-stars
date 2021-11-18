@@ -168,30 +168,6 @@ namespace CraigStars.Tests
         }
 
         [Test]
-        public void TestTerraform()
-        {
-            var player = game.Players[0];
-            // allow Grav3 terraform
-            player.TechLevels = new TechLevel(propulsion: 1, biotechnology: 1);
-
-            var planet = new Planet()
-            {
-                PlayerNum = player.Num,
-                Hab = new Hab(47, 50, 50),
-                BaseHab = new Hab(47, 50, 50),
-            };
-
-            // should terraform one point
-            step.Terraform(planet, player);
-            Assert.AreEqual(new Hab(48, 50, 50), planet.Hab);
-
-            // should terraform backwards
-            planet.Hab = new Hab(53, 50, 50);
-            step.Terraform(planet, player);
-            Assert.AreEqual(new Hab(52, 50, 50), planet.Hab);
-        }
-
-        [Test]
         public void TestBuildSingleComplete()
         {
             // make a starter homeworld that only contributes leftovers to research
@@ -422,8 +398,8 @@ namespace CraigStars.Tests
             };
             fleetAggregator.ComputeAggregate(player, fleet, true);
 
-
-            ProductionQueueItem item = new(QueueItemType.ShipToken, 1, game.Designs[1]);
+            // build the design we just added
+            ProductionQueueItem item = new(QueueItemType.ShipToken, 1, game.Designs[game.Designs.Count - 1]);
 
             Fleet builtFleet = null;
 
@@ -441,7 +417,7 @@ namespace CraigStars.Tests
 
             // our existing fleet should be updated
             Assert.AreEqual(2, fleet.Tokens.Count);
-            Assert.AreEqual(game.Designs[1], fleet.Tokens[1].Design);
+            Assert.AreEqual(game.Designs[game.Designs.Count - 1], fleet.Tokens[1].Design);
             Assert.AreEqual(1, fleet.Tokens[1].Quantity);
         }
     }

@@ -19,6 +19,7 @@ namespace CraigStars
 
         public Hab? Hab { get; set; }
         public Hab? BaseHab { get; set; }
+        public Hab? TerraformedAmount { get; set; }
         public Mineral MineralConcentration { get; set; }
 
         [JsonIgnore]

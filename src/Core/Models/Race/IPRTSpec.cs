@@ -221,22 +221,26 @@ namespace CraigStars
         bool Instaforming { get; set; }
 
         /// <summary>
-        /// The base chance for permaforming a world (increases with pop)
+        /// The chance for permaforming a planet, assuming population is >= PermaformPopulation
         /// </summary>
         /// <value></value>
         float PermaformChance { get; set; }
 
         /// <summary>
-        /// The maximum permaform chance this race has
-        /// </summary>
-        /// <value></value>
-        float MaxPermaformChance { get; set; }
-
-        /// <summary>
         /// The Population where a race's permaform chances top out
         /// </summary>
         /// <value></value>
-        int PermaformPopAdjust { get; set; }
+        int PermaformPopulation { get; set; }
+
+        /// <summary>
+        /// How good is this race at repairs
+        /// </summary>
+        float RepairFactor { get; set; }
+
+        /// <summary>
+        /// How good is this race at repairing starbases
+        /// </summary>
+        float StarbaseRepairFactor { get; set; }
 
     }
 }

@@ -14,9 +14,9 @@ using System.Linq;
 namespace CraigStars.Tests
 {
     [TestFixture]
-    public class InstaformTest
+    public class InstaformStepTest
     {
-        static CSLog log = LogProvider.GetLogger(typeof(InstaformTest));
+        static CSLog log = LogProvider.GetLogger(typeof(InstaformStepTest));
 
         Game game;
         GameRunner gameRunner;
@@ -45,11 +45,16 @@ namespace CraigStars.Tests
                 PlayerNum = player.Num,
                 Hab = new Hab(45, 50, 50),
                 BaseHab = new Hab(45, 50, 50),
+                TerraformedAmount = new Hab(),
             };
 
             // should terraform 3 grav points
             step.Instaform(planet, player);
             Assert.AreEqual(new Hab(48, 50, 50), planet.Hab);
+
+            // make sure we lose instaforming on planet empty
+            planetService.EmptyPlanet(planet);
+            Assert.AreEqual(new Hab(45, 50, 50), planet.Hab);
         }
     }
 }

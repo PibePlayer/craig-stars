@@ -35,7 +35,7 @@ namespace CraigStars
             Hab terraformAmount = planetService.GetTerraformAmount(planet, player);
             if (terraformAmount.AbsSum > 0)
             {
-                // for example, the planet has Grav 49, but our player wants Grav 50 
+                // Instantly terraform this planet (but don't update planet.TerraformAmount, this change doesn't stick if we leave)
                 planet.Hab = planet.Hab + terraformAmount;
                 Message.Instaform(player, planet, terraformAmount);
             }

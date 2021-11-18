@@ -69,7 +69,9 @@ namespace CraigStars
                 itemReport.Population = (int)(item.Population * (1 - randomPopulationError));
                 itemReport.MineralConcentration = item.MineralConcentration;
                 itemReport.Hab = item.Hab;
+                itemReport.TerraformedAmount = item.TerraformedAmount;
                 itemReport.BaseHab = item.BaseHab;
+                itemReport.TerraformedAmount = item.TerraformedAmount;
                 itemReport.ReportAge = 0;
                 itemReport.PlayerNum = item.PlayerNum;
                 itemReport.RaceName = item.RaceName;
@@ -122,6 +124,7 @@ namespace CraigStars
             itemReport.MineralConcentration = item.MineralConcentration;
             itemReport.Hab = item.Hab;
             itemReport.BaseHab = item.BaseHab;
+            itemReport.TerraformedAmount = item.TerraformedAmount;
             itemReport.ReportAge = 0;
             itemReport.MineYears = item.MineYears;
             itemReport.Mines = item.Mines;

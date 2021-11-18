@@ -78,9 +78,9 @@ namespace CraigStars
             spec.MovementBonus = prtSpec.MovementBonus;
             spec.Instaforming = prtSpec.Instaforming;
             spec.PermaformChance = prtSpec.PermaformChance;
-            spec.MaxPermaformChance = prtSpec.MaxPermaformChance;
-            spec.PermaformPopAdjust = prtSpec.PermaformPopAdjust;
-
+            spec.PermaformPopulation = prtSpec.PermaformPopulation;
+            spec.RepairFactor = prtSpec.RepairFactor;
+            spec.StarbaseRepairFactor = prtSpec.StarbaseRepairFactor;
 
             // some PRTs reduce max pop by half, others increase it by 20%
             spec.MaxPopulationOffset += prtSpec.MaxPopulationOffset;

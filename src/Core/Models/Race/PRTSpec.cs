@@ -122,9 +122,10 @@ namespace CraigStars
 
         public float PermaformChance { get; set; } = 0f;
 
-        public float MaxPermaformChance { get; set; } = 0f;
+        public int PermaformPopulation { get; set; } = 0;
 
-        public int PermaformPopAdjust { get; set; } = 0;
+        public float RepairFactor { get; set; } = 1f;
 
+        public float StarbaseRepairFactor { get; set; } = 1f;
     }
 }

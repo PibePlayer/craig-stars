@@ -55,6 +55,7 @@ namespace CraigStars.Tests
             var planet = game.Planets[0];
             planet.Starbase = new Starbase()
             {
+                PlayerNum = player.Num,
                 Tokens = new List<ShipToken>() {
                     new ShipToken(TestUtils.CreateDesign(game, player, ShipDesigns.Starbase.Clone(player)), 1)
                 }

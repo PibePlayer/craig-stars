@@ -42,7 +42,10 @@ namespace CraigStars
             planet.Starbase = null;
             planet.Scanner = false;
             planet.Defenses = 0;
+            planet.Population = 0;
             planet.ProductionQueue = new ProductionQueue();
+            // reset any Instaforming
+            planet.Hab = planet.BaseHab + planet.TerraformedAmount;
         }
 
         #endregion
@@ -483,16 +486,16 @@ namespace CraigStars
             var largestDistance = 0;
             HabType? bestHabType = null;
 
-            var bestTotalTerraform = playerTechService.GetBestTerraform(player, TerraformHabType.All);
-            var totalTerraformAbility = bestTotalTerraform == null ? 0 : bestTotalTerraform.Ability;
+            TechTerraform bestTotalTerraform = playerTechService.GetBestTerraform(player, TerraformHabType.All);
+            int totalTerraformAbility = bestTotalTerraform == null ? 0 : bestTotalTerraform.Ability;
 
             foreach (HabType habType in Enum.GetValues(typeof(HabType)))
             {
                 // get the two ways we can terraform
-                var bestHabTerraform = playerTechService.GetBestTerraform(player, (TerraformHabType)habType);
+                TechTerraform bestHabTerraform = playerTechService.GetBestTerraform(player, (TerraformHabType)habType);
 
                 // find out which terraform tech has the greater terraform ability
-                var ability = totalTerraformAbility;
+                int ability = totalTerraformAbility;
                 if (bestHabTerraform != null)
                 {
                     ability = Mathf.Max(ability, bestHabTerraform.Ability);
@@ -506,8 +509,11 @@ namespace CraigStars
                 // The distance from the starting hab of this planet
                 int fromIdealBaseDistance = Math.Abs(player.Race.HabCenter[habType] - planet.BaseHab.Value[habType]);
 
+                // figure out what our hab is without any instaforming
+                Hab habWithoutInstaforming = planet.BaseHab.Value + planet.TerraformedAmount.Value;
+
                 // the distance from the current hab of this planet
-                int fromIdeal = player.Race.HabCenter[habType] - planet.Hab.Value[habType];
+                int fromIdeal = player.Race.HabCenter[habType] - habWithoutInstaforming[habType];
                 int fromIdealDistance = Math.Abs(fromIdeal);
 
                 int terraformAmount = 0;
@@ -529,6 +535,69 @@ namespace CraigStars
             }
 
             return bestHabType;
+        }
+
+        /// <summary>
+        /// Terraform this planet one step in whatever the best option is
+        /// </summary>
+        /// <param name="planet"></param>
+        public void TerraformOneStep(Planet planet, Player player)
+        {
+            var bestHab = GetBestTerraform(planet, player);
+
+            if (bestHab.HasValue)
+            {
+                var habType = bestHab.Value;
+                int fromIdeal = player.Race.HabCenter[habType] - planet.Hab.Value[habType];
+                if (fromIdeal > 0)
+                {
+                    // for example, the planet has Grav 49, but our player wants Grav 50 
+                    planet.Hab = planet.Hab.Value.WithType(habType, planet.Hab.Value[habType] + 1);
+                    planet.TerraformedAmount = planet.TerraformedAmount.Value.WithType(habType, planet.TerraformedAmount.Value[habType] + 1);
+                    Message.Terraform(player, planet, habType, 1);
+                }
+                else if (fromIdeal < 0)
+                {
+                    // for example, the planet has Grav 51, but our player wants Grav 50 
+                    planet.Hab = planet.Hab.Value.WithType(habType, planet.Hab.Value[habType] - 1);
+                    planet.TerraformedAmount = planet.TerraformedAmount.Value.WithType(habType, planet.TerraformedAmount.Value[habType] - 1);
+                    Message.Terraform(player, planet, habType, -1);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Permanently terraform this planet one step for a random habtype
+        /// This adjusts the BaseHab as well as the hab
+        /// </summary>
+        /// <param name="planet"></param>
+        public void PermaformOneStep(Planet planet, Player player, HabType habType)
+        {
+            // pick a random hab
+            int fromIdealBaseHab = player.Race.HabCenter[habType] - planet.BaseHab.Value[habType];
+            if (fromIdealBaseHab > 0)
+            {
+                // for example, the planet has Grav 49, but our player wants Grav 50 
+                planet.BaseHab = planet.BaseHab.Value.WithType(habType, planet.BaseHab.Value[habType] + 1);
+                Message.Permaform(player, planet, habType, 1);
+            }
+            else if (fromIdealBaseHab < 0)
+            {
+                // for example, the planet has Grav 51, but our player wants Grav 50 
+                planet.BaseHab = planet.BaseHab.Value.WithType(habType, planet.BaseHab.Value[habType] - 1);
+                Message.Permaform(player, planet, habType, -1);
+            }
+
+            // if this means our terraformed hab is beter as well, improve it
+            int fromIdealHab = player.Race.HabCenter[habType] - planet.Hab.Value[habType];
+            if (fromIdealHab > 0)
+            {
+                planet.Hab = planet.Hab.Value.WithType(habType, planet.Hab.Value[habType] + 1);
+            }
+            else if (fromIdealHab < 0)
+            {
+                planet.Hab = planet.Hab.Value.WithType(habType, planet.Hab.Value[habType] - 1);
+            }
         }
 
         #endregion

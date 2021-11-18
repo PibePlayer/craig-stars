@@ -12,7 +12,7 @@ namespace CraigStars
         /// </summary>
         /// <returns></returns>
         [JsonIgnore]
-        public Random Random { get; set; } = new Random();
+        public virtual Random Random { get; set; } = new Random();
 
         /// <summary>
         /// The maximum number of players allowed in a game
@@ -243,6 +243,20 @@ namespace CraigStars
                     ChanceOfHit = .035f,
                     SweepFactor = 1f/3, // speed hump minds are swept at 1/3rd the normal rate
             } },
+        };
+
+        /// <summary>
+        /// Base repair rates for various scenarios. These are increased when
+        /// starbases or fleet repairs are present
+        /// </summary>
+        public Dictionary<RepairRate, float> RepairRates = new()
+        {
+            { RepairRate.None, 0f },
+            { RepairRate.Moving, .01f },
+            { RepairRate.Stopped, .02f },
+            { RepairRate.Orbiting, .03f },
+            { RepairRate.OrbitingOwnPlanet, .05f },
+            { RepairRate.Starbase, .1f },
         };
 
         /// <summary>

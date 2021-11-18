@@ -106,6 +106,7 @@ namespace CraigStars.UniverseGeneration
                 rad
             );
             planet.BaseHab = planet.Hab;
+            planet.TerraformedAmount = new Hab();
         }
 
     }

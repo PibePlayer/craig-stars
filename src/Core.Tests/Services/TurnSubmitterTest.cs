@@ -41,6 +41,7 @@ namespace CraigStars.Tests
                 Position = new Vector2(100, 0),
                 BaseHab = new Hab(),
                 Hab = new Hab(),
+                TerraformedAmount = new Hab(),
             });
             game.UpdateInternalDictionaries();
 

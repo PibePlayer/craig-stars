@@ -63,6 +63,9 @@ namespace CraigStars
             aggregate.MineLayingRateByMineType = new Dictionary<MineFieldType, int>();
             aggregate.MiningRate = 0;
 
+            aggregate.RepairBonus = hull.RepairBonus;
+
+
             var numTachyonDetectors = 0;
 
             var idealSpeed = 0;
@@ -318,6 +321,7 @@ namespace CraigStars
             aggregate.SpaceDock = 0;
             aggregate.ScanRange = TechHullComponent.NoScanner;
             aggregate.ScanRangePen = TechHullComponent.NoScanner;
+            aggregate.RepairBonus = 0;
             aggregate.Engine = null;
             aggregate.MineSweep = 0;
             aggregate.MiningRate = 0;
@@ -395,6 +399,9 @@ namespace CraigStars
 
                 // We should only have one ship stack with spacdock capabilities, but for this logic just go with the max
                 aggregate.SpaceDock = Math.Max(aggregate.SpaceDock, token.Design.Aggregate.SpaceDock);
+
+                // sadly, the fleet only gets the best repair bonus from one design
+                aggregate.RepairBonus = Math.Max(aggregate.RepairBonus, token.Design.Aggregate.RepairBonus);
 
                 aggregate.ScanRange = Math.Max(aggregate.ScanRange, token.Design.Aggregate.ScanRange);
                 aggregate.ScanRangePen = Math.Max(aggregate.ScanRangePen, token.Design.Aggregate.ScanRangePen);

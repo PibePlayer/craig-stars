@@ -12,10 +12,13 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(InstaformStep));
         private readonly PlanetService planetService;
+        private readonly IRulesProvider rulesProvider;
+        private Rules Rules => rulesProvider.Rules;
 
-        public PermaformStep(IProvider<Game> gameProvider, PlanetService planetService) : base(gameProvider, TurnGenerationState.PermaformStep)
+        public PermaformStep(IProvider<Game> gameProvider, PlanetService planetService, IRulesProvider rulesProvider) : base(gameProvider, TurnGenerationState.PermaformStep)
         {
             this.planetService = planetService;
+            this.rulesProvider = rulesProvider;
         }
 
         public override void Process()
@@ -32,6 +35,19 @@ namespace CraigStars
         /// <param name="planet"></param>
         internal void Permaform(Planet planet, Player player)
         {
+            var adjustedPermaformChance = player.Race.Spec.PermaformChance;
+            if (planet.Population <= player.Race.Spec.PermaformPopulation)
+            {
+                // adjust our permaform chance based on population size
+                adjustedPermaformChance *= 1.0f - (player.Race.Spec.PermaformPopulation - planet.Population) / (float)player.Race.Spec.PermaformPopulation;
+            }
+
+            // see if we permaform
+            if (adjustedPermaformChance >= Rules.Random.NextDouble())
+            {
+                HabType habType = (HabType)Rules.Random.Next(3);
+                planetService.PermaformOneStep(planet, player, habType);
+            }
         }
     }
 }

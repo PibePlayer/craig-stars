@@ -91,6 +91,13 @@ namespace CraigStars
             player.Messages.Add(new Message(MessageType.BuiltTerraform, text, planet));
         }
 
+        public static void Permaform(Player player, Planet planet, HabType habType, int change)
+        {
+            string changeText = change > 0 ? "increased" : "decreased";
+            string text = $"Your race has permanently {changeText} the {habType} on {planet.Name}.";
+            player.Messages.Add(new Message(MessageType.BuiltTerraform, text, planet));
+        }
+
         public static void MineralPacket(Player player, Planet planet, MineralPacket packet)
         {
             string text = $"{planet.Name} has produced a mineral packet which has a destination of {packet.Target.Name}";

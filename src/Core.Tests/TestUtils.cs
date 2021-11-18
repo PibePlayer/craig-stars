@@ -76,6 +76,7 @@ namespace CraigStars.Tests
             game.Players.Add(player);
 
             // create an empty planet and make the player aware of it
+            var starbase = CreateDesign(game, player, ShipDesigns.Starbase.Clone(player));
             var planet = new Planet()
             {
                 Name = "Planet 1",
@@ -83,7 +84,17 @@ namespace CraigStars.Tests
                 MineYears = new Mineral(),
                 BaseHab = new Hab(50, 50, 50),
                 Hab = new Hab(50, 50, 50),
+                TerraformedAmount = new Hab(),
                 MineralConcentration = new Mineral(100, 100, 100),
+                Starbase = new Starbase()
+                {
+                    PlayerNum = player.Num,
+                    Tokens = new List<ShipToken>()
+                    {
+                        new ShipToken(starbase, 1),
+                    },
+                    BattlePlan = player.BattlePlans[0],
+                }
             };
             game.Planets.Add(planet);
 
@@ -164,6 +175,7 @@ namespace CraigStars.Tests
                 MineYears = new Mineral(),
                 BaseHab = new Hab(50, 50, 50),
                 Hab = new Hab(50, 50, 50),
+                TerraformedAmount = new Hab(),
                 MineralConcentration = new Mineral(100, 100, 100),
             };
             var planet2 = new Planet()
@@ -174,6 +186,7 @@ namespace CraigStars.Tests
                 MineYears = new Mineral(),
                 BaseHab = new Hab(50, 50, 50),
                 Hab = new Hab(50, 50, 50),
+                TerraformedAmount = new Hab(),
                 MineralConcentration = new Mineral(100, 100, 100),
             };
             game.Planets.Add(planet1);

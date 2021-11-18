@@ -1853,12 +1853,26 @@ namespace CraigStars
             Mass = 12,
             Armor = 5,
             FuelCapacity = 750,
+            RepairBonus = .05f, // +5% repair
             Slots = new List<TechHullSlot>(new TechHullSlot[] {
                 new TechHullSlot(HullSlotType.Engine, 1, true),
                 new TechHullSlot(HullSlotType.Shield),
             })
         };
 
+        public static readonly TechHull SuperFuelXport = new TechHull("Super Fuel Xport", new Cost(20, 0, 8, 70), new TechRequirements(construction: 7, prtRequired: PRT.IS), 270, TechCategory.ShipHull)
+        {
+            Type = TechHullType.FuelTransport,
+            Mass = 111,
+            Armor = 12,
+            FuelCapacity = 2250,
+            RepairBonus = .1f, // +10% repair
+            Slots = new List<TechHullSlot>(new TechHullSlot[] {
+                new TechHullSlot(HullSlotType.Engine, 2, true),
+                new TechHullSlot(HullSlotType.Shield, 2),
+                new TechHullSlot(HullSlotType.Scanner),
+            })
+        };
         public static readonly TechHull MiniMineLayer = new TechHull("Mini Mine Layer", new Cost(8, 2, 5, 20), new TechRequirements(prtRequired: PRT.SD), 280, TechCategory.ShipHull)
         {
             Type = TechHullType.MineLayer,
@@ -1900,6 +1914,7 @@ namespace CraigStars
             RangeBonus = 1,
             Starbase = true,
             SpaceDock = 0,
+            RepairBonus = .03f, // 8% total repair rate
             Slots = new List<TechHullSlot>(new TechHullSlot[] {
                 new TechHullSlot(HullSlotType.OrbitalElectrical, 1, false),
                 new TechHullSlot(HullSlotType.Weapon, 12, false),
@@ -1916,6 +1931,7 @@ namespace CraigStars
             Initiative = 14,
             RangeBonus = 1,
             Starbase = true,
+            RepairBonus = .15f, // 20% total repair rate
             SpaceDock = TechHull.UnlimitedSpaceDock,
             Slots = new List<TechHullSlot>(new TechHullSlot[] {
                 new TechHullSlot(HullSlotType.OrbitalElectrical, 1, false),
@@ -1940,6 +1956,7 @@ namespace CraigStars
             Armor = 1500,
             Initiative = 18,
             Starbase = true,
+            RepairBonus = .15f, // 20% total repair rate
             SpaceDock = TechHull.UnlimitedSpaceDock,
             Slots = new List<TechHullSlot>(new TechHullSlot[] {
                 new TechHullSlot(HullSlotType.OrbitalElectrical, 1, false),
@@ -2277,6 +2294,7 @@ namespace CraigStars
                 MiniBomber,
                 MiniMiner,
                 FuelTransport,
+                SuperFuelXport,
                 MiniMineLayer,
                 SuperMineLayer,
 

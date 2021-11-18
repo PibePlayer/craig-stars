@@ -68,6 +68,7 @@ namespace CraigStars.Tests
                 MineYears = new Mineral(),
                 BaseHab = new Hab(1, 2, 3),
                 Hab = new Hab(1, 2, 3),
+                TerraformedAmount = new Hab(),
                 MineralConcentration = new Mineral(4, 5, 6),
             };
 

@@ -217,7 +217,7 @@ namespace CraigStars
         /// The Population where a race's permaform chances top out
         /// </summary>
         /// <value></value>
-        public int PermaformPopAdjust { get; set; } = 0;
+        public int PermaformPopulation { get; set; } = 0;
 
         /// <summary>
         /// How much do new techs we just researched cost? 
@@ -337,5 +337,16 @@ namespace CraigStars
         /// </summary>
         /// <value></value>
         public float EngineReliableSpeed { get; set; } = 10;
+
+        /// <summary>
+        /// How good is this race at repairs
+        /// </summary>
+        public float RepairFactor { get; set; } = 1f;
+
+        /// <summary>
+        /// How good is this race at repairing starbases
+        /// </summary>
+        public float StarbaseRepairFactor { get; set; } = 1f;
+
     }
 }

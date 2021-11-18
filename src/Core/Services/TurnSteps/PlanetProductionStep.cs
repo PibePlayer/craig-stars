@@ -223,7 +223,7 @@ namespace CraigStars
                 for (int i = 0; i < numBuilt; i++)
                 {
                     // terraform one at a time to ensure the best things get terraformed
-                    Terraform(planet, player);
+                    planetService.TerraformOneStep(planet, player);
                 }
             }
             else if (item.IsPacket)
@@ -405,30 +405,6 @@ namespace CraigStars
             return newAllocated;
         }
 
-        /// <summary>
-        /// Terraform this planet one step in whatever the best option is
-        /// </summary>
-        /// <param name="planet"></param>
-        internal void Terraform(Planet planet, Player player)
-        {
-            var bestHab = planetService.GetBestTerraform(planet, player);
-            if (bestHab.HasValue)
-            {
-                var habType = bestHab.Value;
-                int fromIdeal = player.Race.HabCenter[habType] - planet.Hab.Value[habType];
-                if (fromIdeal > 0)
-                {
-                    // for example, the planet has Grav 49, but our player wants Grav 50 
-                    planet.Hab = planet.Hab.Value.WithType(habType, planet.Hab.Value[habType] + 1);
-                    Message.Terraform(player, planet, habType, 1);
-                }
-                else if (fromIdeal < 1)
-                {
-                    // for example, the planet has Grav 51, but our player wants Grav 50 
-                    planet.Hab = planet.Hab.Value.WithType(habType, planet.Hab.Value[habType] - 1);
-                    Message.Terraform(player, planet, habType, -1);
-                }
-            }
-        }
+
     }
 }

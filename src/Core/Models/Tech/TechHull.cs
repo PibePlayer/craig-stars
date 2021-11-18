@@ -7,6 +7,7 @@ namespace CraigStars
     public class TechHull : Tech
     {
         public const int UnlimitedSpaceDock = int.MaxValue;
+
         public TechHullType Type { get; set; }
         public int Mass { get; set; }
         public int Armor { get; set; }
@@ -25,6 +26,7 @@ namespace CraigStars
         [DefaultValue(UnlimitedSpaceDock)]
         public int SpaceDock { get; set; } = UnlimitedSpaceDock;
         public int Initiative { get; set; }
+        public float RepairBonus { get; set; }
         public List<TechHullSlot> Slots { get; set; } = new List<TechHullSlot>();
 
         public TechHull()

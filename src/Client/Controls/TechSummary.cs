@@ -170,6 +170,18 @@ namespace CraigStars.Client
                     AddStatsLabel("Armor Strength", hull.Armor.ToString());
                     AddStatsLabel("Initiative", hull.Initiative.ToString());
 
+                    if (hull.RepairBonus > 0)
+                    {
+                        if (hull.Starbase)
+                        {
+                            AddDescription($"This starbase will repair fleets in orbit {hull.RepairBonus * 100}% faster.");
+                        }
+                        else
+                        {
+                            AddDescription($"This hull will help the fleet repair {hull.RepairBonus * 100}% faster.");
+                        }
+                    }
+
                 }
                 else if (Tech is TechPlanetaryScanner planetaryScanner)
                 {

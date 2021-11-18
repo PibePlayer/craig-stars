@@ -25,10 +25,11 @@ namespace CraigStars.Tests
             var player = game.Players[0];
 
             // single planet and fleet, 2 points (1 for planet, .5 rounded up for fleet)
+            // also 3 points for starbase
             var step = new CalculateScoreStep(gameRunner.GameProvider, planetService);
             var score = step.CalculateScore(player);
 
-            Assert.AreEqual(2, score.Score);
+            Assert.AreEqual(5, score.Score);
         }
 
         [Test]
@@ -58,8 +59,10 @@ namespace CraigStars.Tests
             game.Planets[0].Starbase = new Starbase()
             {
                 PlayerNum = player.Num,
-                Tokens = new List<ShipToken>() {
-                new ShipToken() { Quantity = 1, Design = starbaseDesign }
+                Tokens = new List<ShipToken>()
+                {
+                    new ShipToken() { Quantity = 1, Design = starbaseDesign
+                }
             }
             };
 

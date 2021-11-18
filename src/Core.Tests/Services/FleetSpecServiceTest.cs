@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace CraigStars.Tests
 {
     [TestFixture]
-    public class FleetAggregatorTest
+    public class FleetSpecServiceTest
     {
         FleetSpecService fleetSpecService;
 

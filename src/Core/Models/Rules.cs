@@ -106,6 +106,12 @@ namespace CraigStars
         public int MaxPopulation = 1000000;
 
         /// <summary>
+        /// Do fleets scan while moving through space, or do they trigger scanners at the end of their movement
+        /// (Stars! defaults to not scan while moving, but I'm proud of my algorithm so I'm leaving it as an option.)
+        /// </summary>
+        public bool FleetsScanWhileMoving = false;
+
+        /// <summary>
         /// The amount scanned populations differ from the actual population on the planet
         /// </summary>
         [DefaultValue(.2f)]

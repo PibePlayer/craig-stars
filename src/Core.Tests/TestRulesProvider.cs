@@ -5,7 +5,8 @@ namespace CraigStars.Tests
 {
     public class TestRulesProvider : IRulesProvider
     {
-        public Rules Rules => new Rules(0);
+        public Rules TestRules { get; set; } = new Rules(0);
+        public Rules Rules => TestRules;
     }
 
 }

@@ -66,7 +66,7 @@ namespace CraigStars.Client
                     scannerType.Text = $"{scanner.Name}";
                     if (scanner.ScanRangePen > 0)
                     {
-                        scannerRange.Text = $"{scanner.ScanRange}/{scanner.ScanRangePen} l.y.";
+                        scannerRange.Text = $"{scanner.ScanRange * Me.Race.Spec.ScanRangeFactor}/{scanner.ScanRangePen} l.y.";
                     }
                     else
                     {

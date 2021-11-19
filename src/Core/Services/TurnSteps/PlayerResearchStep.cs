@@ -24,18 +24,19 @@ namespace CraigStars
             var totalSpent = new TechLevel();
             foreach (var playerPlanets in planetsByPlayer)
             {
-                // figure out how many resoruces each planet has
-                var resourcesToSpend = 0;
+                // figure out how many resources we have leftover
+                var player = Game.Players[playerPlanets.Key];
+                var resourcesToSpend = player.LeftoverResources;
+
+                // figure out how many resoruces each planet allocates
                 foreach (var planet in playerPlanets)
                 {
-                    var player = Game.Players[planet.PlayerNum];
                     resourcesToSpend += playerPlanets.Sum(p => planetService.GetResourcesPerYearResearch(p, player));
                 }
 
                 // research for this player
-                var playerNum = playerPlanets.Key;
-                Game.Players[playerNum].ResearchSpentLastYear = resourcesToSpend;
-                totalSpent += researcher.ResearchNextLevel(Game.Players[playerNum], resourcesToSpend);
+                player.ResearchSpentLastYear = resourcesToSpend;
+                totalSpent += researcher.ResearchNextLevel(player, resourcesToSpend);
             }
 
 

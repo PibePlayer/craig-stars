@@ -246,6 +246,7 @@ namespace CraigStars
             if (scanRange != TechHullComponent.NoScanner)
             {
                 scanRange = (long)(Math.Pow(scanRange, .25));
+                scanRange = (int)(scanRange * player.Race.Spec.ScanRangeFactor);
             }
 
             if (scanRangePen != TechHullComponent.NoScanner)

@@ -34,6 +34,43 @@ namespace CraigStars.Tests
         }
 
         [Test]
+        public void LeftoverResourcesTest()
+        {
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
+
+            var player = game.Players[0];
+            var planet = game.Planets[0];
+
+            // player1 researches with all resources
+            planet.Population = 10000; // 10 resources
+            planet.Factories = 10; // 10 resources
+            planet.ProductionQueue.Items.Add(new ProductionQueueItem(QueueItemType.Mine, 1)); // 1 mine costs 5 resources, leaving 15
+            player.ResearchAmount = 0;
+            player.Researching = TechField.Energy;
+
+            PlanetProductionStep productionStep = new PlanetProductionStep(
+                new Provider<Game>(game),
+                TestUtils.TestContainer.GetInstance<PlanetService>(),
+                TestUtils.TestContainer.GetInstance<PlayerService>(),
+                TestUtils.TestContainer.GetInstance<FleetSpecService>()
+            );
+
+            // create a new research step for this game
+            PlayerResearchStep researchStep = new PlayerResearchStep(
+                new Provider<Game>(game),
+                TestUtils.TestContainer.GetInstance<PlanetService>(),
+                TestUtils.TestContainer.GetInstance<Researcher>()
+            );
+
+            // build
+            productionStep.Execute(new TurnGenerationContext(), game.OwnedPlanets.ToList());
+
+            // have leftover resources used for research, even though we apply 0%
+            researchStep.Execute(new TurnGenerationContext(), game.OwnedPlanets.ToList());
+            Assert.AreEqual(15, player.TechLevelsSpent[TechField.Energy]);
+        }
+
+        [Test]
         public void StolenResearchTest()
         {
             var player1 = game.Players[0];

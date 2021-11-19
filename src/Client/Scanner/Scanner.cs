@@ -453,7 +453,7 @@ namespace CraigStars.Client
                 // if we own this planet and it has a scanner, include it
                 if (planet.OwnedByMe && planet.Planet.Scanner && Me.PlanetaryScanner != null)
                 {
-                    range = Me.PlanetaryScanner.ScanRange;
+                    range = (int)(Me.PlanetaryScanner.ScanRange * Me.Race.Spec.ScanRangeFactor);
                     rangePen = Me.PlanetaryScanner.ScanRangePen;
                 }
 

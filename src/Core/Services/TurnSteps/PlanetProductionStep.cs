@@ -28,20 +28,29 @@ namespace CraigStars
         internal struct ProcessItemResult
         {
             public readonly bool completed;
+            public readonly int numCompleted;
             public readonly Cost remainingCost;
 
-            public ProcessItemResult(bool completed, Cost remainingCost)
+            public ProcessItemResult(bool completed, int numCompleted, Cost remainingCost)
             {
                 this.completed = completed;
+                this.numCompleted = numCompleted;
                 this.remainingCost = remainingCost;
+            }
+
+            public override string ToString()
+            {
+                return $"completed: {completed}, numCompleted: {numCompleted}, remainingCost: {remainingCost}";
             }
         }
 
         public override void Process()
         {
+            Game.Players.ForEach(player => player.LeftoverResources = 0);
             OwnedPlanets.ForEach(planet =>
             {
-                Build(planet, Game.Players[planet.PlayerNum]);
+                int leftoverResources = Build(planet, Game.Players[planet.PlayerNum]);
+                Game.Players[planet.PlayerNum].LeftoverResources += leftoverResources;
             });
         }
 
@@ -80,11 +89,42 @@ namespace CraigStars
                 }
                 else
                 {
-                    // we didn't finish this item
-                    // if it's not an auto build, stop here
-                    // otherwise we will continue to the next item
-                    if (!item.IsAuto)
+                    // we didn't finish this item, but we made some progress
+                    if (item.IsAuto)
                     {
+                        // if this item is an auto build and it's the last item in 
+                        // the queue, create a new real partial object and put it at the top of the queue
+                        if (index == queue.Items.Count - 1 && item.Allocated != Cost.Zero)
+                        {
+                            // we completed one or more auto build items, so add the remaining
+                            // to the top of the queue and break
+                            QueueItemType realItemTypeToAdd = item.Type switch
+                            {
+                                QueueItemType.AutoMines => QueueItemType.Mine,
+                                QueueItemType.AutoFactories => QueueItemType.Factory,
+                                QueueItemType.AutoDefenses => QueueItemType.Defenses,
+                                QueueItemType.AutoMaxTerraform => QueueItemType.TerraformEnvironment,
+                                QueueItemType.AutoMinTerraform => QueueItemType.TerraformEnvironment,
+                                QueueItemType.AutoMineralAlchemy => QueueItemType.MineralAlchemy,
+                                QueueItemType.AutoMineralPacket => QueueItemType.MixedMineralPacket,
+                                _ => throw new ArgumentException($"No regular item corresponds to {item.Type}")
+                            };
+                            // add this partial item to the top of the queue
+                            queue.Items.Insert(0, new ProductionQueueItem(realItemTypeToAdd, 1, allocated: item.Allocated));
+                            item.Allocated = new Cost();
+                            break;
+                        }
+                        else
+                        {
+                            // there are still things in the queue. Auto items should never block, so reclaim any resources
+                            // we spent on this and use it on the next item.
+                            allocated += item.Allocated;
+                            item.Allocated = new Cost();
+                        }
+                    }
+                    else
+                    {
+                        // this wasn't an auto and we didnt' finish, the production is done
                         break;
                     }
                 }
@@ -114,20 +154,20 @@ namespace CraigStars
             {
                 // can't built, break out
                 Message.BuildMineralPacketNoMassDriver(player, planet);
-                return new ProcessItemResult(completed: true, allocated);
+                return new ProcessItemResult(completed: true, item.Quantity, allocated);
             }
             if (item.IsPacket && planet.PacketTarget == null)
             {
                 // can't built, break out
                 Message.BuildMineralPacketNoTarget(player, planet);
-                return new ProcessItemResult(completed: true, allocated);
+                return new ProcessItemResult(completed: true, item.Quantity, allocated);
             }
 
             // no need to build anymore of this, skip it.
             int quantityDesired = planetService.GetQuantityToBuild(planet, player, item.Quantity, item.Type);
             if (quantityDesired == 0)
             {
-                return new ProcessItemResult(completed: true, allocated);
+                return new ProcessItemResult(completed: true, item.Quantity, allocated);
             }
 
             // add anything we've already allocated to this item
@@ -168,19 +208,19 @@ namespace CraigStars
                 // we finished some of these items, but not all
                 item.Allocated = AllocatePartialBuild(costPer, allocated);
                 allocated -= item.Allocated;
-                return new ProcessItemResult(completed: false, allocated);
+                return new ProcessItemResult(completed: false, numBuilt, allocated);
             }
             else if (numBuilt >= quantityDesired)
             {
                 // all done with this item
-                return new ProcessItemResult(completed: true, allocated);
+                return new ProcessItemResult(completed: true, numBuilt, allocated);
             }
             else
             {
                 // allocate as many minerals/resources as we can to the this item
                 item.Allocated = AllocatePartialBuild(costPer, allocated);
                 allocated -= item.Allocated;
-                return new ProcessItemResult(completed: false, allocated);
+                return new ProcessItemResult(completed: false, numBuilt, allocated);
             }
 
         }

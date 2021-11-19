@@ -15,12 +15,16 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(PlayerScanStep));
 
+        private readonly IRulesProvider rulesProvider;
         private readonly PlayerIntel playerIntel;
         private readonly PlayerTechService playerTechService;
         private readonly FleetSpecService fleetSpecService;
 
-        public PlayerScanStep(IProvider<Game> gameProvider, PlayerIntel playerIntel, PlayerTechService playerTechService, FleetSpecService fleetSpecService) : base(gameProvider, TurnGenerationState.PlayerScanStep)
+        Rules Rules { get => rulesProvider.Rules; }
+
+        public PlayerScanStep(IProvider<Game> gameProvider, IRulesProvider rulesProvider, PlayerIntel playerIntel, PlayerTechService playerTechService, FleetSpecService fleetSpecService) : base(gameProvider, TurnGenerationState.PlayerScanStep)
         {
+            this.rulesProvider = rulesProvider;
             this.playerIntel = playerIntel;
             this.playerTechService = playerTechService;
             this.fleetSpecService = fleetSpecService;
@@ -125,7 +129,7 @@ namespace CraigStars
             foreach (var planet in Game.Planets.Where(p => p.PlayerNum == player.Num && p.Scanner))
             {
                 // find the best scanner at this location, whether fleet or planet
-                var scanner = new Scanner(planet.Position, planetaryScanner.ScanRange, planetaryScanner.ScanRangePen);
+                var scanner = new Scanner(planet.Position, (int)(planetaryScanner.ScanRange * player.Race.Spec.ScanRangeFactor), planetaryScanner.ScanRangePen);
                 foreach (var fleet in planet.OrbitingFleets.Where(f => f.PlayerNum == player.Num && f.Spec.Scanner))
                 {
                     scanner.Range = Math.Max(scanner.Range, fleet.Spec.ScanRange);
@@ -176,7 +180,7 @@ namespace CraigStars
 
                 foreach (var scanner in scanners)
                 {
-                    if (scanner.PreviousPosition != scanner.Position)
+                    if (Rules.FleetsScanWhileMoving && scanner.PreviousPosition != scanner.Position)
                     {
                         // this scanner moved, so make sure if we travelled past this planet it is still scanned
                         // we do this by checking the closest point the planet came to the line the fleet moved on

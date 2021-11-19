@@ -81,6 +81,7 @@ namespace CraigStars.Tests
             result = step.ProcessItem(planet, player, item, new Cost(resources: 8));
             Assert.AreEqual(false, result.completed);
             Assert.AreEqual(Cost.Zero, result.remainingCost);
+            Assert.AreEqual(1, result.numCompleted); // completed one item
             Assert.AreEqual(1, planet.Mines);
             Assert.AreEqual(new Cost(resources: 3), item.Allocated);
             Assert.AreEqual(2, item.Quantity); // auto items don't reduce in quantity
@@ -232,7 +233,7 @@ namespace CraigStars.Tests
                 new ProductionQueueItem(QueueItemType.AutoMines, 1)
             };
             planet.Cargo = new Cargo(germanium: 3, colonists: planet.Cargo.Colonists);
-            step.Build(planet, player);
+            int leftoverResources = step.Build(planet, player);
 
             // should use all germanium and allocate it to factory (and 7 resources, which is 3/4 of the 10 required)
             // the mine should be built
@@ -243,18 +244,19 @@ namespace CraigStars.Tests
             Assert.AreEqual(1, planet.ProductionQueue.Items[0].Quantity);
             Assert.AreEqual(QueueItemType.AutoMines, planet.ProductionQueue.Items[1].Type);
             Assert.AreEqual(1, planet.ProductionQueue.Items[1].Quantity);
-            Assert.AreEqual(new Cost(germanium: 3, resources: 7), planet.ProductionQueue.Items[0].Allocated);
-            Assert.AreEqual(new Cargo(colonists: planet.Cargo.Colonists), planet.Cargo);
+            Assert.AreEqual(30, leftoverResources);
+            Assert.AreEqual(new Cost(), planet.ProductionQueue.Items[0].Allocated);
+            Assert.AreEqual(new Cargo(germanium: 3, colonists: planet.Cargo.Colonists), planet.Cargo);
         }
 
         [Test]
         public void TestBuildAuto2()
         {
-            // make the planet a standard homeworld with 35 available resources
+            // make the planet a standard homeworld 35 resources
             var player = game.Players[0];
             var planet = game.Planets[0];
             var initialFleetCount = game.Fleets.Count;
-            planet.Factories = 10;
+            planet.Factories = 10; 
             planet.Mines = 10;
             planet.ContributesOnlyLeftoverToResearch = true;
             var design = ShipDesigns.LongRangeScount.Clone();
@@ -268,28 +270,71 @@ namespace CraigStars.Tests
             // anything else.
             planet.ProductionQueue.Items = new List<ProductionQueueItem>() {
                 new ProductionQueueItem(QueueItemType.AutoFactories, 20),
-                new ProductionQueueItem(QueueItemType.AutoMines, 20),
-                new ProductionQueueItem(QueueItemType.ShipToken, 5, design),
+                new ProductionQueueItem(QueueItemType.AutoMines, 1),
+                new ProductionQueueItem(QueueItemType.ShipToken, 1, design),
             };
-            planet.Cargo = new Cargo(germanium: 3, colonists: planet.Cargo.Colonists);
-            step.Build(planet, player);
+            planet.Cargo = new Cargo(germanium: 3, ironium: 18, boranium: 2, colonists: planet.Cargo.Colonists);
+            int leftoverResources = step.Build(planet, player);
 
-            // should use all germanium and allocate it to factory (and 7 resources, which is 3/4 of the 10 required)
-            // 5 mines should be built, no fleets should be built
+            // should skip factories because we can't build one
+            // it should build 1 mine, then allocate the rest for the scout
             Assert.AreEqual(10, planet.Factories);
-            Assert.AreEqual(15, planet.Mines);
+            Assert.AreEqual(11, planet.Mines);
             Assert.AreEqual(3, planet.ProductionQueue.Items.Count);
             Assert.AreEqual(QueueItemType.AutoFactories, planet.ProductionQueue.Items[0].Type);
             Assert.AreEqual(20, planet.ProductionQueue.Items[0].Quantity);
             Assert.AreEqual(QueueItemType.AutoMines, planet.ProductionQueue.Items[1].Type);
-            Assert.AreEqual(20, planet.ProductionQueue.Items[1].Quantity);
-            Assert.AreEqual(new Cost(germanium: 3, resources: 7), planet.ProductionQueue.Items[0].Allocated);
-            Assert.AreEqual(new Cargo(colonists: planet.Cargo.Colonists), planet.Cargo);
+            Assert.AreEqual(1, planet.ProductionQueue.Items[1].Quantity);
+
+            // it should partially build the fleet
+            Assert.AreEqual(QueueItemType.ShipToken, planet.ProductionQueue.Items[2].Type);
+            Assert.AreEqual(1, planet.ProductionQueue.Items[2].Quantity);
+            Assert.AreEqual(new Cost(ironium: 6, boranium: 0, germanium: 3, resources: 9), planet.ProductionQueue.Items[2].Allocated);
+            
+            // what we couldnt spend is leftover
+            Assert.AreEqual(new Cargo(ironium: 12, boranium: 2, germanium: 0, colonists: planet.Cargo.Colonists), planet.Cargo);
+            Assert.AreEqual(21, leftoverResources);
             Assert.AreEqual(initialFleetCount, game.Fleets.Count); // we shouldn't have any additional fleets
         }
 
         [Test]
         public void TestBuildAuto3()
+        {
+            // make the planet a standard homeworld with one extra factory for 36 available resources
+            var player = game.Players[0];
+            var planet = game.Planets[0];
+            planet.Factories = 11;
+            planet.Mines = 10;
+            planet.ContributesOnlyLeftoverToResearch = true;
+
+            // setup an auto queue that tries to build 20 factories, then 20 mines
+            // we should build one factory, and one partial factory, then no mines
+            planet.ProductionQueue.Items = new List<ProductionQueueItem>() {
+                new ProductionQueueItem(QueueItemType.AutoFactories, 20),
+                new ProductionQueueItem(QueueItemType.AutoMines, 20),
+            };
+            planet.Cargo = new Cargo(germanium: 5, colonists: planet.Cargo.Colonists);
+            int leftoverResources = step.Build(planet, player);
+
+            // we should build one factory and but be unable to build a second, so we should
+            // move on to building mines. We have 26 resources left after spending 10 on a factor, 
+            // so we should be able to build 5 mines and have 1 resource leftover for another mine
+            // we'll also still have 1 germanium we didn't spend on a factory
+            Assert.AreEqual(12, planet.Factories);
+            Assert.AreEqual(15, planet.Mines);
+            Assert.AreEqual(3, planet.ProductionQueue.Items.Count);
+            Assert.AreEqual(QueueItemType.Mine, planet.ProductionQueue.Items[0].Type);
+            Assert.AreEqual(new Cost(resources: 1), planet.ProductionQueue.Items[0].Allocated);
+            Assert.AreEqual(QueueItemType.AutoFactories, planet.ProductionQueue.Items[1].Type);
+            Assert.AreEqual(20, planet.ProductionQueue.Items[1].Quantity);
+            Assert.AreEqual(QueueItemType.AutoMines, planet.ProductionQueue.Items[2].Type);
+            Assert.AreEqual(20, planet.ProductionQueue.Items[2].Quantity);
+            Assert.AreEqual(new Cargo(germanium: 1, colonists: planet.Cargo.Colonists), planet.Cargo);
+            Assert.AreEqual(0, leftoverResources);
+        }
+
+        [Test]
+        public void TestBuildAuto4()
         {
             // make this a larger planet so we can build everything
             var player = game.Players[0];

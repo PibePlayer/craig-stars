@@ -65,6 +65,7 @@ namespace CraigStars
         public int ResearchSpentLastYear { get; set; } = 0;
         public TechField Researching { get; set; } = TechField.Energy;
         public NextResearchField NextResearchField { get; set; } = NextResearchField.LowestField;
+        [JsonIgnore] public int LeftoverResources { get; set; }
 
         #endregion
 

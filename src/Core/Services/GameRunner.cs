@@ -36,7 +36,6 @@ namespace CraigStars
         private readonly PlayerScanStep playerScanStep;
         private readonly PlanetService planetService;
         private readonly PlayerTechService playerTechService;
-        private readonly PlayerService playerService;
         private readonly FleetSpecService fleetSpecService;
 
         public Game Game { get => gameProvider.Item; }

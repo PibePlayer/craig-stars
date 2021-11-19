@@ -43,7 +43,7 @@ namespace CraigStars.Server
         /// The game that is being run by the server
         /// </summary>
         /// <value></value>
-        protected Game Game { get => GameRunner.Game; }
+        protected Game Game { get => GameRunner?.Game; }
 
         protected GameRunner GameRunner { get; set; }
 
@@ -323,7 +323,7 @@ namespace CraigStars.Server
             gameRunner.GenerateUniverse();
 
             // TODO: remove this turn process stuff later
-            game.Players.ForEach(player => player.Settings.TurnProcessors.AddRange(TurnProcessorManager.Instance.TurnProcessors.Select(p => p.Name)));
+            // game.Players.ForEach(player => player.Settings.TurnProcessors.AddRange(TurnProcessorManager.Instance.TurnProcessors.Select(p => p.Name)));
 
             SaveToDisk = saveToDisk;
 

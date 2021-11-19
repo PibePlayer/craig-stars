@@ -33,8 +33,6 @@ namespace CraigStars.Client
             Players,
         }
 
-        bool turnGenerating;
-
         public override void _Ready()
         {
             commandsMenu = GetNode<MenuButton>("Panel/HBoxContainerRight/CommandsMenuButton").GetPopup();
@@ -187,7 +185,7 @@ namespace CraigStars.Client
 
         public override void _Input(InputEvent @event)
         {
-            if (turnGenerating || !IsInsideTree())
+            if (!IsInsideTree())
             {
                 return;
             }

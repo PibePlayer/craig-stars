@@ -12,6 +12,7 @@ namespace CraigStars.Tests
     [TestFixture]
     public class TurnSubmitterTest
     {
+        IRulesProvider rulesProvider;
         FleetService fleetService;
         PlayerTechService playerTechService;
         PlayerService playerService;
@@ -21,6 +22,7 @@ namespace CraigStars.Tests
         [SetUp]
         public void SetUp()
         {
+            rulesProvider = new TestRulesProvider();
             fleetService = TestUtils.TestContainer.GetInstance<FleetService>();
             playerTechService = TestUtils.TestContainer.GetInstance<PlayerTechService>();
             playerService = TestUtils.TestContainer.GetInstance<PlayerService>();
@@ -50,7 +52,7 @@ namespace CraigStars.Tests
             playerPlanetReportGenerationStep.Process();
             player.SetupMapObjectMappings();
 
-            var scanStep = new PlayerScanStep(gameRunner.GameProvider, playerIntel, playerTechService, fleetSpecService);
+            var scanStep = new PlayerScanStep(gameRunner.GameProvider, rulesProvider, playerIntel, playerTechService, fleetSpecService);
 
             scanStep.PreProcess(game.OwnedPlanets.ToList());
             scanStep.Process();

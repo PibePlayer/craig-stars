@@ -180,6 +180,25 @@ namespace CraigStars
         public int StargateMaxHullMassFactor = 5;
 
         /// <summary>
+        /// Represents the random chance per turn or per planet or per whatever that these
+        /// events will happen
+        /// </summary>
+        public Dictionary<RandomEventType, float> RandomEventChances = new()
+        {
+            { RandomEventType.Comet, .01f },
+            { RandomEventType.MineralDeposit, .01f },
+            { RandomEventType.PlanetaryChange, .01f },
+            { RandomEventType.AncientArtifact, .01f },
+            { RandomEventType.MysteryTrader, .01f }
+        };
+
+        /// <summary>
+        /// The range for random mineral deposit discoveries
+        /// </summary>
+        /// <returns></returns>
+        public Tuple<int, int> RandomMineralDepositBonusRange = new(20, 50);
+
+        /// <summary>
         /// MineFields are cloaked to 75% until spotted
         /// </summary>
         [DefaultValue(75)]

@@ -94,7 +94,7 @@ namespace CraigStars
                 typeof(PacketMove1Step),
                 typeof(FleetRefuelStep),
                 typeof(RandomCometStrikeStep),
-                typeof(RandomMineralDiscoveryStep),
+                typeof(RandomMineralDepositStep),
                 typeof(RandomPlanetaryChangeStep),
                 typeof(FleetBattleStep),
                 typeof(FleetBombStep),

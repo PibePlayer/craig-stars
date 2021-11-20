@@ -703,6 +703,12 @@ namespace CraigStars
             player.Messages.Add(new Message(MessageType.MinesSwept, text, target));
         }
 
+        public static void RandomMineralDeposit(Player player, Planet planet, MineralType mineralType)
+        {
+            var text = $"Your surveyors on {planet.Name} have discovered a previously unknown deposit of {mineralType}, significantly increasing the planet's concentration.";
+            player.Messages.Add(new Message(MessageType.RandomMineralDeposit, text, planet));
+        }
+
         public static void Victory(Player player, Player victor)
         {
             string text = "";

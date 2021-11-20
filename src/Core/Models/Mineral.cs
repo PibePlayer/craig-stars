@@ -133,5 +133,26 @@ namespace CraigStars
         {
             return new Mineral(Ironium, Boranium, germanium);
         }
+
+        /// <summary>
+        /// Get a copy of this struct with 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public Mineral WithType(MineralType type, int value = 0)
+        {
+            switch (type)
+            {
+                case MineralType.Ironium:
+                    return WithIronium(value);
+                case MineralType.Boranium:
+                    return WithBoranium(value);
+                case MineralType.Germanium:
+                    return WithGermanium(value);
+                default:
+                    throw new IndexOutOfRangeException($"Type {type} out of range for {this.GetType().ToString()}");
+            }
+        }        
     }
 }

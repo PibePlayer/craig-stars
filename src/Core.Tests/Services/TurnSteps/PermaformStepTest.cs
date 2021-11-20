@@ -64,7 +64,7 @@ namespace CraigStars.Tests
             var mockRules = A.Fake<Rules>();
             var random = A.Fake<Random>();
             A.CallTo(() => mockRulesProvider.Rules).Returns(mockRules);
-            A.CallTo(() => mockRules.Random).Returns(random);
+            mockRules.Random = random;
             A.CallTo(() => random.Next(3)).Returns((int)HabType.Gravity);
 
             // should permaform one step, and adjust our value up one

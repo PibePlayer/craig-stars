@@ -175,7 +175,7 @@ namespace CraigStars
 
         [JsonProperty(ItemIsReference = true)]
         public List<Message> Messages { get; set; } = new();
-        [JsonIgnore] public IEnumerable<Message> FilteredMessages { get => Messages.Where(m => ((ulong)m.Type & UISettings.MessageTypeFilter) > 0); }
+        [JsonIgnore] public IEnumerable<Message> FilteredMessages { get => Messages.Where(m => !UISettings.MessageTypeFilter.Contains(m.Type)); }
 
         [JsonProperty(IsReference = true)]
         public Planet Homeworld { get; set; }

@@ -106,12 +106,12 @@ namespace CraigStars.Client
             {
                 if (buttonPressed)
                 {
-                    Me.UISettings.MessageTypeFilter |= (ulong)activeMessage.Type;
+                    Me.UISettings.MessageTypeFilter.Add(activeMessage.Type);
                 }
                 else
                 {
                     // turn off this
-                    Me.UISettings.MessageTypeFilter &= ~(ulong)activeMessage.Type;
+                    Me.UISettings.MessageTypeFilter.Remove(activeMessage.Type);
                 }
 
                 Me.Dirty = true;
@@ -144,7 +144,7 @@ namespace CraigStars.Client
 
             // show the FilterMessagesCheckbox if we are filtering messages
             // if we are showing all messages, don't show it.
-            filterMessagesCheckbox.Visible = Me.UISettings.MessageTypeFilter != ulong.MaxValue;
+            filterMessagesCheckbox.Visible = Me.UISettings.MessageTypeFilter.Count > 0;
 
             if (messages.Count > 0)
             {
@@ -156,7 +156,7 @@ namespace CraigStars.Client
                     messageText.Text = activeMessage.Text;
                 }
 
-                filterMessageTypeCheckbox.Pressed = (Me.UISettings.MessageTypeFilter & (ulong)activeMessage.Type) > 0;
+                filterMessageTypeCheckbox.Pressed = Me.UISettings.MessageTypeFilter.Contains(activeMessage.Type);
                 // disable/enable buttons
                 prevButton.Disabled = messageNum == 0;
                 nextButton.Disabled = messageNum >= messages.Count - 1;

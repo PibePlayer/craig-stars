@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace CraigStars
 {
     /// <summary>
@@ -24,7 +26,7 @@ namespace CraigStars
         /// Default to showing all messages
         /// </summary>
         /// <value></value>
-        public ulong MessageTypeFilter { get; set; } = ulong.MaxValue;
+        public HashSet<MessageType> MessageTypeFilter { get; set; } = new();
 
     }
 }

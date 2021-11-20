@@ -203,36 +203,6 @@ namespace CraigStars.Client
             }
         }
 
-        public override List<MapObjectSprite> GetPeers()
-        {
-            List<MapObjectSprite> peers = new List<MapObjectSprite>();
-            if (Orbiting != null)
-            {
-                // add any fleets after myself
-                bool foundMe = false;
-                Orbiting.OrbitingFleets.Where(f => f.OwnedByMe).ToList().ForEach(f =>
-                {
-                    if (f == this)
-                    {
-                        foundMe = true;
-                        return;
-                    }
-                    if (foundMe)
-                    {
-                        peers.Add(f);
-                    }
-                });
-
-                // add the planet as the final peer
-                if (Orbiting.OwnedByMe)
-                {
-                    peers.Add(Orbiting);
-                }
-            }
-
-            return peers;
-        }
-
         public override void UpdateSprite()
         {
             if (!IsInstanceValid(this) || waypointsLine == null)

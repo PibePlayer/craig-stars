@@ -397,11 +397,7 @@ namespace CraigStars.Client
             if (homeworld != null)
             {
                 selectedWaypoint = null;
-                commandedMapObject?.Deselect();
-                commandedMapObject = homeworld;
-
-                commandedMapObject.Command();
-                EventManager.PublishMapObjectCommandedEvent(homeworld);
+                CommandMapObject(homeworld);
 
                 SelectHomeworld();
             }
@@ -692,7 +688,7 @@ namespace CraigStars.Client
         void SelectMapObject(MapObjectSprite mapObject)
         {
             // don't deselect the commanded map object in case we selected something else
-            if (selectedMapObject != commandedMapObject)
+            if (selectedMapObject != null && selectedMapObject != commandedMapObject)
             {
                 selectedMapObject.Deselect();
                 selectedMapObject.UpdateSprite();
@@ -735,9 +731,21 @@ namespace CraigStars.Client
                 return;
             }
 
-            // deselect the current map object
-            commandedMapObject.Deselect();
-            commandedMapObject.UpdateSprite();
+            if (commandedMapObject != null)
+            {
+                // deselect the current map object
+                commandedMapObject.Deselect();
+                commandedMapObject.UpdateSprite();
+                // disable the active peer for any planets at the last commanded object's location
+                foreach (var peer in mapObjectsByLocation[commandedMapObject.Position])
+                {
+                    if (peer is PlanetSprite planet)
+                    {
+                        planet.HasCommandedPeer = false;
+                        planet.UpdateSprite();
+                    }
+                }
+            }
 
             // update and select the new one
             commandedMapObject = mapObject;
@@ -752,6 +760,14 @@ namespace CraigStars.Client
             }
 
             commandedMapObject.Command();
+            foreach (var peer in mapObjectsAtLocation)
+            {
+                if (peer is PlanetSprite planet)
+                {
+                    planet.HasCommandedPeer = true;
+                    planet.UpdateSprite();
+                }
+            }
             commandedMapObject.UpdateSprite();
             EventManager.PublishMapObjectCommandedEvent(mapObject);
 
@@ -767,6 +783,9 @@ namespace CraigStars.Client
             log.Debug($"CommandedFleetChanged to {(CommandedFleet == null ? "None" : CommandedFleet)}");
             waypointAreas.ForEach(wpa => { if (IsInstanceValid(wpa)) { RemoveChild(wpa); wpa.DisconnectAll(); wpa.QueueFree(); } });
             waypointAreas.Clear();
+
+            // reset the cursor
+            Input.SetDefaultCursorShape(Input.CursorShape.Arrow);
             selectedWaypoint = null;
             CommandedFleet?.Fleet?.Waypoints.Each((wp, index) => AddWaypointArea(CommandedFleet.Fleet, wp));
             CommandedFleet?.UpdateSprite();
@@ -1096,11 +1115,9 @@ namespace CraigStars.Client
                 }
                 else if (selectedMapObject != null)
                 {
-                    // if the selected object (or one of its peers) is currently being commanded, it'll need a large
-                    // selected object indicator
-                    if (selectedMapObject == commandedMapObject ||
-                    (commandedMapObject != null && commandedMapObject.GetPeers().Contains(selectedMapObject)) ||
-                    (commandedMapObject is FleetSprite commandedFleet && commandedFleet.Orbiting == selectedMapObject))
+                    // if the selected MapObject is at the same location as a commanded MapObject
+                    // the selected object indicator will need to be big
+                    if (commandedMapObject != null && mapObjectsByLocation[selectedMapObject.Position].Contains(commandedMapObject))
                     {
                         selectedMapObjectIndicatorSprite.SelectLarge(selectedMapObject.Position);
                     }

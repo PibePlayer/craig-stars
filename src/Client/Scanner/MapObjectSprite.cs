@@ -79,24 +79,5 @@ namespace CraigStars.Client
             State = ScannerState.None;
         }
 
-        /// <summary>
-        /// True if we have an active peer
-        /// </summary>
-        /// <param name="peers"></param>
-        /// <returns></returns>
-        public bool HasActivePeer(List<MapObjectSprite> peers = null)
-        {
-            if (peers == null)
-            {
-                peers = GetPeers();
-            }
-            return peers.Find(p => p.State == ScannerState.Commanded) != null;
-        }
-
-        public virtual List<MapObjectSprite> GetPeers()
-        {
-            return Enumerable.Empty<MapObjectSprite>().ToList();
-        }
-
     }
 }

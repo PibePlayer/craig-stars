@@ -40,12 +40,13 @@ namespace CraigStars.Client
             }
         }
 
+        public bool HasCommandedPeer { get ; set; }
+
         public override bool Commandable { get => true; }
 
         public List<FleetSprite> OrbitingFleets { get; set; } = new List<FleetSprite>();
         public PlanetSprite PacketTarget { get; set; }
 
-        bool hasActivePeer;
         bool isCommanded;
         Orbiting orbitingState = Orbiting.None;
         ScannerOwnerAlly ownerAllyState = ScannerOwnerAlly.Unknown;
@@ -86,13 +87,6 @@ namespace CraigStars.Client
             };
 
             UpdateSprite();
-        }
-
-        public override List<MapObjectSprite> GetPeers()
-        {
-            var list = new List<MapObjectSprite>();
-            list.AddRange(OrbitingFleets.Where(f => f.OwnedByMe));
-            return list;
         }
 
         public override void _Draw()
@@ -227,9 +221,8 @@ namespace CraigStars.Client
             nameLabel.Visible = Me.UISettings.ShowPlanetNames;
 
             ownerAllyState = Planet.ReportAge == MapObject.Unexplored ? ScannerOwnerAlly.Unknown : ScannerOwnerAlly.Known;
-            hasActivePeer = HasActivePeer();
             orbitingState = Orbiting.None;
-            isCommanded = hasActivePeer || State == ScannerState.Commanded;
+            isCommanded = HasCommandedPeer || State == ScannerState.Commanded;
 
             if (PacketTarget != null)
             {

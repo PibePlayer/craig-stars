@@ -54,6 +54,7 @@ TurnProcessorManager="*res://src/Client/Singletons/TurnProcessorManager.tscn"
 
 [debug]
 
+settings/fps/force_fps=60
 settings/stdout/verbose_stdout=true
 
 [display]

@@ -22,6 +22,10 @@ namespace CraigStars.Client
             set
             {
                 MapObject = value;
+                if (value != null && countLabel != null)
+                {
+                    countLabel.Text = $"{Fleet.Tokens.Sum(token => token.Quantity)}";
+                }
             }
         }
 
@@ -53,6 +57,7 @@ namespace CraigStars.Client
         Node2D spriteContainer;
         Sprite selected;
         Sprite active;
+        Label countLabel;
 
         List<Sprite> stateSprites;
 
@@ -63,6 +68,7 @@ namespace CraigStars.Client
             selected = GetNode<Sprite>("Sprite/Selected");
             active = GetNode<Sprite>("Sprite/Active");
             spriteContainer = GetNode<Node2D>("Sprite");
+            countLabel = GetNode<Label>("CountLabel");
 
             stateSprites = new List<Sprite>() {
                 selected,
@@ -226,6 +232,9 @@ namespace CraigStars.Client
                 waypointsLine.ZAsRelative = true;
                 waypointsLine.ZIndex = 0;
             }
+
+            countLabel.Visible = Orbiting == null && Me.UISettings.ShowFleetTokenCounts;
+            countLabel.Text = $"{Fleet.Tokens.Sum(token => token.Quantity)}";
 
             // if we are orbiting a planet, don't show any sprites
             if (Orbiting != null)

@@ -12,6 +12,7 @@ namespace CraigStars.Client
         ToolButton percentViewToolButton;
         ToolButton populationViewToolButton;
         ToolButton planetNamesToolButton;
+        ToolButton fleetTokenCountsToolButton;
         ToolButton scannerToolButton;
         SpinBox scannerSpinBox;
 
@@ -42,6 +43,7 @@ namespace CraigStars.Client
             percentViewToolButton = (ToolButton)FindNode("PercentViewToolButton");
             populationViewToolButton = GetNode<ToolButton>("Panel/HBoxContainerLeft/PopulationViewToolButton");
             planetNamesToolButton = GetNode<ToolButton>("Panel/HBoxContainerLeft/PlanetNamesToolButton");
+            fleetTokenCountsToolButton = GetNode<ToolButton>("Panel/HBoxContainerLeft/FleetTokenCountsToolButton");
             scannerToolButton = GetNode<ToolButton>("Panel/HBoxContainerLeft/ScannerToolButton");
             scannerSpinBox = GetNode<SpinBox>("Panel/HBoxContainerLeft/ScannerSpinBox");
 
@@ -61,6 +63,7 @@ namespace CraigStars.Client
             percentViewToolButton.Connect("pressed", this, nameof(OnPercentViewToolButtonPressed));
             populationViewToolButton.Connect("pressed", this, nameof(OnPopulationViewToolButtonPressed));
             planetNamesToolButton.Connect("pressed", this, nameof(OnPlanetNamesToolButtonPressed));
+            fleetTokenCountsToolButton.Connect("pressed", this, nameof(OnFleetTokenCountsToolButtonPressed));
             scannerToolButton.Connect("pressed", this, nameof(OnScannerToolButtonPressed));
             scannerSpinBox.Connect("value_changed", this, nameof(OnScannerSpinBoxValueChanged));
 
@@ -90,6 +93,7 @@ namespace CraigStars.Client
             percentViewToolButton.Pressed = Me.UISettings.PlanetViewState == PlanetViewState.Percent;
             populationViewToolButton.Pressed = Me.UISettings.PlanetViewState == PlanetViewState.Population;
             planetNamesToolButton.Pressed = Me.UISettings.ShowPlanetNames;
+            fleetTokenCountsToolButton.Pressed = Me.UISettings.ShowFleetTokenCounts;
             scannerToolButton.Pressed = Me.UISettings.ShowScanners;
             scannerSpinBox.Value = Me.UISettings.ScannerPercent;
         }
@@ -154,6 +158,15 @@ namespace CraigStars.Client
             Me.UISettings.ShowPlanetNames = planetNamesToolButton.Pressed;
             Me.Dirty = true;
             EventManager.PublishPlayerDirtyEvent();
+            EventManager.PublishPlanetViewStateUpdatedEvent();
+        }
+
+        void OnFleetTokenCountsToolButtonPressed()
+        {
+            Me.UISettings.ShowFleetTokenCounts = fleetTokenCountsToolButton.Pressed;
+            Me.Dirty = true;
+            EventManager.PublishPlayerDirtyEvent();
+            EventManager.PublishFleetViewStateUpdatedEvent();
             EventManager.PublishPlanetViewStateUpdatedEvent();
         }
 

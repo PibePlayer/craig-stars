@@ -36,11 +36,12 @@ namespace CraigStars.Client
                 if (value != null && nameLabel != null)
                 {
                     nameLabel.Text = Planet.Name;
+                    countLabel.Text = $"{Planet.OrbitingFleets.Sum(fleet => fleet.Tokens.Sum(token => token.Quantity))}";
                 }
             }
         }
 
-        public bool HasCommandedPeer { get ; set; }
+        public bool HasCommandedPeer { get; set; }
 
         public override bool Commandable { get => true; }
 
@@ -59,6 +60,7 @@ namespace CraigStars.Client
         Sprite orbitingCommanded;
         Line2D packetTargetLine;
         Label nameLabel;
+        Label countLabel;
 
         List<Sprite> stateSprites;
 
@@ -75,6 +77,7 @@ namespace CraigStars.Client
             orbitingCommanded = GetNode<Sprite>("Sprite/OrbitingActive");
             packetTargetLine = GetNode<Line2D>("DestinationLine");
             nameLabel = GetNode<Label>("NameLabel");
+            countLabel = GetNode<Label>("CountLabel");
 
             // create a list of these sprites
             stateSprites = new List<Sprite>() {
@@ -219,6 +222,8 @@ namespace CraigStars.Client
 
             nameLabel.Text = Planet.Name;
             nameLabel.Visible = Me.UISettings.ShowPlanetNames;
+            countLabel.Visible = Planet.OrbitingFleets.Count > 0 && Me.UISettings.ShowFleetTokenCounts;
+            countLabel.Text = $"{Planet.OrbitingFleets.Sum(fleet => fleet.Tokens.Sum(token => token.Quantity))}";
 
             ownerAllyState = Planet.ReportAge == MapObject.Unexplored ? ScannerOwnerAlly.Unknown : ScannerOwnerAlly.Known;
             orbitingState = Orbiting.None;

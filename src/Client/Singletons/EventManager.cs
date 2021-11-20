@@ -77,11 +77,13 @@ namespace CraigStars.Client
 
         public static event Action PlayerDirtyChangedEvent;
         public static event Action PlanetViewStateUpdatedEvent;
+        public static event Action FleetViewStateUpdatedEvent;
         public static event Action ScannerScaleUpdatedEvent;
         public static event Action<Planet> ProductionQueueChangedEvent;
 
         public static void PublishPlayerDirtyEvent() => PlayerDirtyChangedEvent?.Invoke();
         public static void PublishPlanetViewStateUpdatedEvent() => PlanetViewStateUpdatedEvent?.Invoke();
+        public static void PublishFleetViewStateUpdatedEvent() => FleetViewStateUpdatedEvent?.Invoke();
         public static void PublishScannerScaleUpdatedEvent() => ScannerScaleUpdatedEvent?.Invoke();
         public static void PublishProductionQueueChangedEvent(Planet planet) => ProductionQueueChangedEvent?.Invoke(planet);
 

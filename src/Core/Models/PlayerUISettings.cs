@@ -19,7 +19,22 @@ namespace CraigStars
         /// <value></value>
         public bool ShowPlanetNames { get; set; }
 
+        /// <summary>
+        /// True to show fleet token counts
+        /// </summary>
+        /// <value></value>
+        public bool ShowFleetTokenCounts { get; set; }
+
+        /// <summary>
+        /// Toggle to show/hide scanner view
+        /// </summary>
+        /// <value></value>
         public bool ShowScanners { get; set; }
+
+        /// <summary>
+        /// Percent to scale scanner range by (useful for determining cloaked ship scan range)
+        /// </summary>
+        /// <value></value>
         public int ScannerPercent { get; set; } = 100;
 
         /// <summary>

@@ -107,6 +107,7 @@ namespace CraigStars.Client
             EventManager.WaypointSelectedEvent += OnWaypointSelected;
             EventManager.WaypointDeletedEvent += OnWaypointDeleted;
             EventManager.PlanetViewStateUpdatedEvent += OnPlanetViewStateUpdated;
+            EventManager.FleetViewStateUpdatedEvent += OnFleetViewStateUpdated;
             EventManager.PacketDestinationToggleEvent += OnPacketDestinationToggle;
             EventManager.GameExitingEvent += OnGameExiting;
         }
@@ -129,6 +130,7 @@ namespace CraigStars.Client
                 EventManager.WaypointSelectedEvent -= OnWaypointSelected;
                 EventManager.WaypointDeletedEvent -= OnWaypointDeleted;
                 EventManager.PlanetViewStateUpdatedEvent -= OnPlanetViewStateUpdated;
+                EventManager.FleetViewStateUpdatedEvent -= OnFleetViewStateUpdated;
                 EventManager.PacketDestinationToggleEvent -= OnPacketDestinationToggle;
                 EventManager.GameExitingEvent -= OnGameExiting;
             }
@@ -557,6 +559,12 @@ namespace CraigStars.Client
         void OnPlanetViewStateUpdated()
         {
             Planets.ForEach(p => p.UpdateSprite());
+            penScannersNode.Visible = normalScannersNode.Visible = Me.UISettings.ShowScanners;
+        }
+
+        void OnFleetViewStateUpdated()
+        {
+            Fleets.ForEach(f => f.UpdateSprite());
             penScannersNode.Visible = normalScannersNode.Visible = Me.UISettings.ShowScanners;
         }
 

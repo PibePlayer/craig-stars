@@ -157,7 +157,7 @@ jobs:
         run: |
           rootBuildPath="${GITHUB_WORKSPACE}/build"
           formattedExportName="$( echo ${EXPORT_NAME} | sed 's/./\L&/g' | sed 's/ /-/g' )"
-          filename="${formattedExportName}-${EXPORT_PLATFORM}-v${VERSION}-$(date +'%F-%R').${FILE_EXT}"
+          filename="${formattedExportName}-${EXPORT_PLATFORM}-v${VERSION}-$(date +'%F-%H%M')${FILE_EXT}"
           filePath="${rootBuildPath}/${filename}"
           
           if [ "${FILE_TYPE}" = "executable" ]

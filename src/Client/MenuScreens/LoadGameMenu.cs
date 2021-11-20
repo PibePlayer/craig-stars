@@ -27,6 +27,7 @@ namespace CraigStars.Client
         {
             base._Ready();
             loadButton = GetNode<Button>("VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer/LoadButton");
+            loadButton.GrabFocus();
             deleteButton = (Button)FindNode("DeleteButton");
             savesTable = (PlayerSavesTable)FindNode("SavesTable");
             backButton = GetNode<Button>("VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/BackButton");

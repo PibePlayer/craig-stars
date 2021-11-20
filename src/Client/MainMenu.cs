@@ -57,6 +57,7 @@ namespace CraigStars.Client
                 continueGameButton.Connect("pressed", this, nameof(OnContinueGameButtonPressed));
             }
 
+            ((CSButton)FindNode("NewGameButton")).GrabFocus();
             ((CSButton)FindNode("ExitButton")).OnPressed((b) => GetTree().Quit());
             ((CSButton)FindNode("SettingsButton")).OnPressed((b) => GetTree().ChangeScene("res://src/Client/MenuScreens/SettingsMenu.tscn"));
             ((CSButton)FindNode("NewGameButton")).OnPressed((b) => GetTree().ChangeScene("res://src/Client/MenuScreens/NewGameMenu.tscn"));

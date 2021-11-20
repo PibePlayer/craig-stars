@@ -34,6 +34,7 @@ namespace CraigStars.Client
             sizeOptionButton.Selected = (int)Size;
             densityOptionButton.Selected = (int)Density;
             nameLineEdit.Text = GameName;
+            nameLineEdit.GrabFocus();
         }
 
         public GameSettings<Player> GetGameSettings()

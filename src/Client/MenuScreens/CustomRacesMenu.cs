@@ -19,6 +19,7 @@ namespace CraigStars.Client
         public override void _Ready()
         {
             newButton = (Button)FindNode("NewButton");
+            newButton.GrabFocus();
             editButton = (Button)FindNode("EditButton");
             deleteButton = (Button)FindNode("DeleteButton");
             raceItemList = (ItemList)FindNode("RaceItemList");

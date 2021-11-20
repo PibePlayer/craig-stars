@@ -12,6 +12,7 @@ namespace CraigStars.Client
         public override void _Ready()
         {
             nameLineEdit = (LineEdit)FindNode("NameLineEdit");
+            nameLineEdit.GrabFocus();
             fastHotseatCheckButton = (CheckButton)FindNode("FastHotseatCheckButton");
 
             fastHotseatCheckButton.Pressed = Settings.Instance.FastHotseat;

@@ -265,9 +265,8 @@ namespace CraigStars.Tests
             player.Designs.Add(design);
 
 
-            // setup an auto queue that tries to build 20 factories, then 20 mines, then 5 ships
-            // we should not build any factories, then build 5 mines, then no longer have enough resources to build
-            // anything else.
+            // setup an auto queue that tries to build 20 factories, then 1 mine, then 1 ship
+            // we should not build any factories, then build 1 mine, then partially build the ship
             planet.ProductionQueue.Items = new List<ProductionQueueItem>() {
                 new ProductionQueueItem(QueueItemType.AutoFactories, 20),
                 new ProductionQueueItem(QueueItemType.AutoMines, 1),
@@ -317,7 +316,7 @@ namespace CraigStars.Tests
             int leftoverResources = step.Build(planet, player);
 
             // we should build one factory and but be unable to build a second, so we should
-            // move on to building mines. We have 26 resources left after spending 10 on a factor, 
+            // move on to building mines. We have 26 resources left after spending 10 on a factory, 
             // so we should be able to build 5 mines and have 1 resource leftover for another mine
             // we'll also still have 1 germanium we didn't spend on a factory
             Assert.AreEqual(12, planet.Factories);

@@ -92,9 +92,9 @@ namespace CraigStars
                     // we didn't finish this item, but we made some progress
                     if (item.IsAuto)
                     {
-                        // if this item is an auto build and it's the last item in 
-                        // the queue, create a new real partial object and put it at the top of the queue
-                        if (index == queue.Items.Count - 1 && item.Allocated != Cost.Zero)
+                        // if this item is an auto build and we don't have resources leftover
+                        // queue up a partially built item and break out of production, we are done
+                        if (result.remainingCost.Resources <= 0)
                         {
                             // we completed one or more auto build items, so add the remaining
                             // to the top of the queue and break
@@ -116,7 +116,7 @@ namespace CraigStars
                         }
                         else
                         {
-                            // there are still things in the queue. Auto items should never block, so reclaim any resources
+                            // We still have resources leftover. Reclaim any resources
                             // we spent on this and use it on the next item.
                             allocated += item.Allocated;
                             item.Allocated = new Cost();

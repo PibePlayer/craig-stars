@@ -6,6 +6,15 @@ A clone of the 4X game Stars!
 
 [![Build and Release Latest](https://github.com/sirgwain/craig-stars/actions/workflows/build-and-release-latest.yaml/badge.svg)](https://github.com/sirgwain/craig-stars/actions/workflows/build-and-release-latest.yaml)
 
+# Download
+
+Download the latest release from [release](https://github.com/sirgwain/craig-stars/releases) from github.
+
+### Mac OS Image
+
+**Note**: The macOS dmg file is not signed and will report that it is damaged if you download it and run it. To fix this, open up a terminal and execute `xattr -r -d com.apple.quarantine ~/Downloads/path-to-craig-stars-image.dmg`. This will hopefully be fixed by a future release of
+godot ([issue #51550](https://github.com/godotengine/godot/pull/51550)).
+
 # Development
 
 This clone is done using the [Godot](https://godotengine.org) game engine. To launch this project, install Godot Mono 3.3 or greater (and [the required .net sdks](https://docs.godotengine.org/en/latest/tutorials/scripting/c_sharp/c_sharp_basics.html#setting-up-c-for-godot)), open project.godot in the editor and click the Play button.

@@ -3,7 +3,7 @@ using CraigStars.Utils;
 using Godot;
 using System;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     [Tool]
     public class HabBar : HBoxContainer
@@ -175,7 +175,6 @@ namespace CraigStars
             // update so our draw draws
             Update();
         }
-
 
     }
 }

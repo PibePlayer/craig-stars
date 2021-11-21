@@ -39,6 +39,9 @@ namespace CraigStars.Client
 
         PopulationTooltip populationTooltip;
         MineralTooltip mineralTooltip;
+        GravityTooltip gravityTooltip;
+        TemperatureTooltip temperatureTooltip;
+        RadiationTooltip radiationTooltip;
 
         public override void _Ready()
         {
@@ -59,9 +62,15 @@ namespace CraigStars.Client
 
             populationTooltip = GetNode<PopulationTooltip>("CanvasLayer/PopulationTooltip");
             mineralTooltip = GetNode<MineralTooltip>("CanvasLayer/MineralTooltip");
+            gravityTooltip = GetNode<GravityTooltip>("CanvasLayer/GravityTooltip");
+            temperatureTooltip = GetNode<TemperatureTooltip>("CanvasLayer/TemperatureTooltip");
+            radiationTooltip = GetNode<RadiationTooltip>("CanvasLayer/RadiationTooltip");
 
             valueLabel.Connect("gui_input", this, nameof(OnTooltipGuiInput), new Godot.Collections.Array() { populationTooltip });
             populationLabel.Connect("gui_input", this, nameof(OnTooltipGuiInput), new Godot.Collections.Array() { populationTooltip });
+            gravHabBar.Connect("gui_input", this, nameof(OnTooltipGuiInput), new Godot.Collections.Array() { gravityTooltip });
+            tempHabBar.Connect("gui_input", this, nameof(OnTooltipGuiInput), new Godot.Collections.Array() { temperatureTooltip });
+            radHabBar.Connect("gui_input", this, nameof(OnTooltipGuiInput), new Godot.Collections.Array() { radiationTooltip });
 
             ironiumMineralBar.Connect("gui_input", this, nameof(OnMineralGuiInput), new Godot.Collections.Array() { MineralType.Ironium });
             boraniumMineralBar.Connect("gui_input", this, nameof(OnMineralGuiInput), new Godot.Collections.Array() { MineralType.Boranium });

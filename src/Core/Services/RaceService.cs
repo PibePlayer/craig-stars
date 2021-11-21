@@ -81,6 +81,7 @@ namespace CraigStars
             spec.PermaformPopulation = prtSpec.PermaformPopulation;
             spec.RepairFactor = prtSpec.RepairFactor;
             spec.StarbaseRepairFactor = prtSpec.StarbaseRepairFactor;
+            spec.StarbaseCostFactor = prtSpec.StarbaseCostFactor;
 
             // some PRTs reduce max pop by half, others increase it by 20%
             spec.MaxPopulationOffset += prtSpec.MaxPopulationOffset;
@@ -105,8 +106,9 @@ namespace CraigStars
                 spec.ScrapMineralOffsetStarbase += lrtSpec.ScrapMineralOffsetStarbase;
                 spec.ScrapResources = spec.ScrapResources || lrtSpec.ScrapResources;
                 spec.StartingPopulationFactor *= lrtSpec.StartingPopulationFactor;
-                spec.StarbaseCloakOffset += lrtSpec.StarbaseCloakOffset;
-                spec.StarbaseCostFactor *= lrtSpec.StarbaseCostFactor;
+                spec.StarbaseBuiltInCloakUnits += lrtSpec.StarbaseBuiltInCloakUnits;
+                // This only gets set once. This means two LRTs with a StarbaseCostFactor will pick the first one though...
+                spec.StarbaseCostFactor = spec.StarbaseCostFactor == 1f ? Math.Min(spec.StarbaseCostFactor, lrtSpec.StarbaseCostFactor) : spec.StarbaseCostFactor;
                 spec.ResearchFactor *= lrtSpec.ResearchFactor;
                 spec.ResearchSplashDamage += lrtSpec.ResearchSplashDamage;
                 spec.ShieldStrengthFactor *= lrtSpec.ShieldStrengthFactor;

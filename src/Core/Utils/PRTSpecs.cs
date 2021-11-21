@@ -184,6 +184,7 @@ namespace CraigStars
                 new StartingFleet("Santa Maria", Techs.ColonyShip.Name, ShipDesignPurpose.Colonizer),
             },
             CanRemoteMineOwnPlanets = true,
+            StarbaseCostFactor = .8f,
         };
 
         public static PRTSpec JoaT = new PRTSpec(PRT.JoaT, 66)

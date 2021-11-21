@@ -127,5 +127,8 @@ namespace CraigStars
         public float RepairFactor { get; set; } = 1f;
 
         public float StarbaseRepairFactor { get; set; } = 1f;
+
+        public float StarbaseCostFactor { get; set; } = 1f;
+
     }
 }

@@ -242,5 +242,12 @@ namespace CraigStars
         /// </summary>
         float StarbaseRepairFactor { get; set; }
 
+        /// <summary>
+        /// The factor to multiply the total cost of a starbase by
+        /// Note: this is not cumulative with the ISB LRT
+        /// </summary>
+        [DefaultValue(1f)]
+        float StarbaseCostFactor { get; set; }
+
     }
 }

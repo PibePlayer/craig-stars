@@ -282,13 +282,22 @@ namespace CraigStars
         public void ComputeDesignCost(Player player, ShipDesign design)
         {
             design.Spec.Cost = design.Hull.GetPlayerCost(player);
+            float componentCostFactor = design.Hull.Starbase ? Rules.StarbaseComponentCostFactor : 1f;
+            Cost componentsCost = new();
             foreach (ShipDesignSlot slot in design.Slots)
             {
                 if (slot.HullComponent != null)
                 {
-                    Cost cost = slot.HullComponent.GetPlayerCost(player) * slot.Quantity;
-                    design.Spec.Cost += cost;
+                    componentsCost += slot.HullComponent.GetPlayerCost(player) * slot.Quantity;
                 }
+            }
+
+            design.Spec.Cost += componentsCost * componentCostFactor;
+
+            // apply a race's starbase cost factor
+            if (design.Hull.Starbase)
+            {
+                design.Spec.Cost *= player.Race.Spec.StarbaseCostFactor;
             }
         }
 
@@ -452,13 +461,19 @@ namespace CraigStars
         public void ComputeFleetCloaking(Player player, Fleet fleet)
         {
             var spec = fleet.Spec;
-            var cargo = fleet.Cargo;
-            var tokens = fleet.Tokens;
+            int cloakUnits = spec.CloakUnits;
 
-            // figure out how much cargo we are cloaking
-            var cloakedCargo = spec.BaseCloakedCargo + (player.Race.Spec.FreeCargoCloaking ? 0 : cargo.Total);
-            int cloakUnitsWithCargo = (int)Math.Round(spec.CloakUnits * (float)spec.MassEmpty / (spec.MassEmpty + cloakedCargo));
-            spec.CloakPercent = CloakUtils.GetCloakPercentForCloakUnits(cloakUnitsWithCargo);
+            // starbases have no mass or cargo, but fleet cloaking is adjusted for it
+            if (fleet.Spec.Mass > 0)
+            {
+                var cargo = fleet.Cargo;
+                var tokens = fleet.Tokens;
+
+                // figure out how much cargo we are cloaking
+                var cloakedCargo = spec.BaseCloakedCargo + (player.Race.Spec.FreeCargoCloaking ? 0 : cargo.Total);
+                cloakUnits = (int)Math.Round(spec.CloakUnits * (float)spec.MassEmpty / (spec.MassEmpty + cloakedCargo));
+            }
+            spec.CloakPercent = CloakUtils.GetCloakPercentForCloakUnits(cloakUnits);
         }
 
         /// <summary>
@@ -554,6 +569,14 @@ namespace CraigStars
             }
 
             spec.SafePacketSpeed = spec.BasePacketSpeed + numAdditionalMassDrivers;
+
+            // update cloaking for built in fleet cloaking
+            if (player.Race.Spec.StarbaseBuiltInCloakUnits > 0)
+            {
+                spec.CloakUnits += player.Race.Spec.StarbaseBuiltInCloakUnits;
+                ComputeFleetCloaking(player, starbase);
+            }
+
         }
 
         #endregion

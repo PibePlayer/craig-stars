@@ -51,7 +51,7 @@ namespace CraigStars
 
         public static LRTSpec ISB = new LRTSpec(LRT.ISB, 0)
         {
-            StarbaseCloakOffset = .2f,
+            StarbaseBuiltInCloakUnits = 40, // 20% built in cloaking
             StarbaseCostFactor = .8f
         };
 

@@ -16,7 +16,7 @@ namespace CraigStars.Tests
         }
 
         [Test]
-        public void TestComputeStarbasespec()
+        public void TestComputeStarbaseSpec()
         {
             // make a starbase with two mass drivers
             var player = new Player();
@@ -32,19 +32,41 @@ namespace CraigStars.Tests
                     new ShipDesignSlot(Techs.MassDriver7, 11, 1),
                 }
             };
+            fleetSpecService.ComputeDesignSpec(player, design);
 
             var starbase = new Starbase()
             {
                 PlayerNum = player.Num,
                 Tokens = new List<ShipToken>() {
                   new ShipToken(design, 1)
-                }
+                },
             };
 
             fleetSpecService.ComputeStarbaseSpec(player, starbase);
 
             Assert.AreEqual(7, starbase.Spec.BasePacketSpeed);
             Assert.AreEqual(8, starbase.Spec.SafePacketSpeed);
+
+            player.Race.Spec.StarbaseBuiltInCloakUnits = 40;
+            fleetSpecService.ComputeStarbaseSpec(player, starbase, recompute: true);
+            Assert.AreEqual(20, starbase.Spec.CloakPercent);
+        }
+
+        [Test]
+        public void TestComputeStarbaseCost()
+        {
+            // make a starbase with two mass drivers
+            var player = new Player();
+            var design = ShipDesigns.Starbase.Clone(player);
+
+            fleetSpecService.ComputeDesignCost(player, design);
+
+            Assert.AreEqual(new Cost(136, 176, 266, 744), design.Spec.Cost);
+
+            player.Race.Spec.StarbaseCostFactor = .8f;
+            fleetSpecService.ComputeDesignCost(player, design);
+            // Real stars has 596 resources for this starbase and an AR player
+            Assert.AreEqual(new Cost(109, 141, 213, 595), design.Spec.Cost);
         }
 
         [Test]

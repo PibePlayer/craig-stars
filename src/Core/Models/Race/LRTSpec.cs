@@ -31,7 +31,7 @@ namespace CraigStars
         public float ScrapMineralOffsetStarbase { get; set; } = 0f;
         public bool ScrapResources { get; set; }
         public float StartingPopulationFactor { get; set; } = 1f;
-        public float StarbaseCloakOffset { get; set; } = 0;
+        public int StarbaseBuiltInCloakUnits { get; set; }
         public float StarbaseCostFactor { get; set; } = 1f;
         public float ResearchFactor { get; set; } = 1f;
         public float ResearchSplashDamage { get; set; } = 0f;

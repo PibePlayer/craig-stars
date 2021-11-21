@@ -75,13 +75,15 @@ namespace CraigStars.Tests
         {
             var rules = new Rules(0);
             // default humanoid
-            Race race = new Race() {
+            Race race = new Race()
+            {
 
                 MineCost = 1,
                 FactoryCost = 2,
                 FactoriesCostLess = true,
                 PRT = PRT.PP, // cheaper packets
-                LRTs = new() {
+                LRTs = new()
+                {
                     LRT.MA, // cheaper mineral alchemy
                     LRT.TT, // cheaper terraforming
                 }
@@ -99,5 +101,31 @@ namespace CraigStars.Tests
             Assert.AreEqual(new Cost(ironium: 25, boranium: 25, germanium: 25, resources: 5), spec.Costs[QueueItemType.MixedMineralPacket]);
         }
 
+        [Test]
+        public void TestStarbaseCostFactor()
+        {
+            // empty race, should be default 
+            Race race = new Race();
+            var spec = service.ComputeRaceSpecs(race);            
+            Assert.AreEqual(1f, spec.StarbaseCostFactor);
+
+            // should be .8f for AR
+            race.PRT = PRT.AR;
+            spec = service.ComputeRaceSpecs(race);
+            Assert.AreEqual(.8f, spec.StarbaseCostFactor);
+
+            // should still be .8f for ISB and AR
+            race.PRT = PRT.AR;
+            race.LRTs.Add(LRT.ISB);
+            spec = service.ComputeRaceSpecs(race);
+            Assert.AreEqual(.8f, spec.StarbaseCostFactor);
+
+            // should be .8f for ISB
+            race.PRT = PRT.JoaT;
+            race.LRTs.Add(LRT.ISB);
+            spec = service.ComputeRaceSpecs(race);
+            Assert.AreEqual(.8f, spec.StarbaseCostFactor);
+
+        }
     }
 }

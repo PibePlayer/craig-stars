@@ -1053,7 +1053,7 @@ namespace CraigStars
 
         #region BeamWeapons
 
-        public static readonly TechHullComponent Laser = new TechHullComponent("Laser", new Cost(0, 5, 0, 4), new TechRequirements(), 0, TechCategory.BeamWeapon)
+        public static readonly TechHullComponent Laser = new TechHullComponent("Laser", new Cost(0, 6, 0, 5), new TechRequirements(), 0, TechCategory.BeamWeapon)
         {
             Mass = 1,
             Initiative = 9,
@@ -1924,7 +1924,7 @@ namespace CraigStars
             })
         };
 
-        public static readonly TechHull SpaceStation = new TechHull("Space Station", new Cost(106, 71, 220, 528), new TechRequirements(), 20, TechCategory.StarbaseHull)
+        public static readonly TechHull SpaceStation = new TechHull("Space Station", new Cost(120, 80, 250, 600), new TechRequirements(), 20, TechCategory.StarbaseHull)
         {
             Type = TechHullType.Starbase,
             Armor = 500,

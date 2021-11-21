@@ -89,6 +89,9 @@ namespace CraigStars
 
         public Cost TerraformCost { get; set; } = new Cost(0, 0, 0, 100);
 
+        [DefaultValue(.5f)]
+        public float StarbaseComponentCostFactor { get; set; } = .5f;
+
         /// <summary>
         /// The decay rate for packets for the amount over the safe warp speed
         /// </summary>

@@ -77,10 +77,10 @@ namespace CraigStars
         public static Cost operator *(Cost a, double b)
         {
             return new Cost(
-                (int)(a.Ironium * b),
-                (int)(a.Boranium * b),
-                (int)(a.Germanium * b),
-                (int)(a.Resources * b)
+                (int)(a.Ironium * b + .5),
+                (int)(a.Boranium * b + .5),
+                (int)(a.Germanium * b + .5),
+                (int)(a.Resources * b + .5)
             );
         }
 

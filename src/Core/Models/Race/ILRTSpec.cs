@@ -91,9 +91,9 @@ namespace CraigStars
         float StartingPopulationFactor { get; set; }
 
         /// <summary>
-        /// Amount to offset Starbase Cloaks by
+        /// ISB races have 20% built in cloaking for starbases
         /// </summary>
-        float StarbaseCloakOffset { get; set; }
+        int StarbaseBuiltInCloakUnits { get; set; }
 
         /// <summary>
         /// Factor to multiply starbase cost by

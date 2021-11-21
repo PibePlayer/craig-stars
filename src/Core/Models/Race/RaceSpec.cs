@@ -289,14 +289,14 @@ namespace CraigStars
         public float StartingPopulationFactor { get; set; } = 1f;
 
         /// <summary>
-        /// Amount to offset Starbase Cloaks by
-        /// </summary>
-        public float StarbaseCloakOffset { get; set; } = 0;
-
-        /// <summary>
         /// Factor to multiply starbase cost by
         /// </summary>
         public float StarbaseCostFactor { get; set; } = 1f;
+
+        /// <summary>
+        /// ISB races have 20% built in cloaking for starbases
+        /// </summary>
+        public int StarbaseBuiltInCloakUnits { get; set; } = 0;
 
         /// <summary>
         /// Factor to multiply research resources by

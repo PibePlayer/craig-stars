@@ -75,9 +75,9 @@ jobs:
           - platform: windows
             extension: .exe
             type: executable
-          - platform: mac
-            extension: .dmg
-            type: archive
+          # - platform: mac
+          #   extension: .dmg
+          #   type: archive
           - platform: linux
             extension: .x86_64
             type: executable

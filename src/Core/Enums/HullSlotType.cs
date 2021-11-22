@@ -25,6 +25,7 @@ namespace CraigStars
         OrbitalElectrical = HullSlotType.Orbital | HullSlotType.Electrical,
         ShieldElectricalMechanical = HullSlotType.Shield | HullSlotType.Electrical | HullSlotType.Mechanical,
         ScannerElectricalMechanical = HullSlotType.Scanner | HullSlotType.Electrical | HullSlotType.Mechanical,
+        ArmorScannerElectricalMechanical = HullSlotType.Armor | HullSlotType.Scanner | HullSlotType.Electrical | HullSlotType.Mechanical,
         MineElectricalMechanical = HullSlotType.MineLayer | HullSlotType.Electrical | HullSlotType.Mechanical,
         ShieldArmor = HullSlotType.Shield | HullSlotType.Armor,
         WeaponShield = HullSlotType.Shield | HullSlotType.Weapon,

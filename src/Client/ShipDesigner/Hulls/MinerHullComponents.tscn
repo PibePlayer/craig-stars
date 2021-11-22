@@ -3,7 +3,7 @@
 [ext_resource path="res://src/Client/ShipDesigner/HullComponentPanel.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/Client/ShipDesigner/HullComponents.cs" type="Script" id=2]
 
-[node name="MiniMineLayerHullComponents" type="Control"]
+[node name="MinerHullComponents" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource( 2 )
@@ -21,36 +21,53 @@ __meta__ = {
 }
 
 [node name="HullComponent1" parent="Container" instance=ExtResource( 1 )]
-margin_left = -24.0
+margin_left = -64.0
 margin_top = -8.0
-margin_right = 56.0
+margin_right = 16.0
 margin_bottom = 72.0
 Type = 1
+Quantity = 2
 Required = true
 
 [node name="HullComponent2" parent="Container" instance=ExtResource( 1 )]
-margin_left = 56.0
-margin_top = -48.0
-margin_right = 136.0
-margin_bottom = 32.0
+margin_left = 176.0
+margin_top = -8.0
+margin_right = 256.0
+margin_bottom = 72.0
 Index = 2
-Type = 4096
+Type = 166
 Quantity = 2
 
 [node name="HullComponent3" parent="Container" instance=ExtResource( 1 )]
-margin_left = 56.0
-margin_top = 33.0
-margin_right = 136.0
-margin_bottom = 113.0
+margin_left = 16.0
+margin_top = -48.0
+margin_right = 96.0
+margin_bottom = 32.0
 Index = 3
-Type = 4096
+Type = 16
 Quantity = 2
 
 [node name="HullComponent4" parent="Container" instance=ExtResource( 1 )]
-margin_left = 136.0
-margin_top = -8.0
-margin_right = 216.0
-margin_bottom = 72.0
+margin_left = 96.0
+margin_top = -48.0
+margin_right = 176.0
+margin_bottom = 32.0
 Index = 4
-Type = 38
+Type = 16
+
+[node name="HullComponent5" parent="Container" instance=ExtResource( 1 )]
+margin_left = 16.0
+margin_top = 32.0
+margin_right = 96.0
+margin_bottom = 112.0
+Index = 5
+Type = 16
 Quantity = 2
+
+[node name="HullComponent6" parent="Container" instance=ExtResource( 1 )]
+margin_left = 96.0
+margin_top = 32.0
+margin_right = 176.0
+margin_bottom = 112.0
+Index = 6
+Type = 16

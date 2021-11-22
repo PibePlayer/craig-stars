@@ -323,6 +323,8 @@ namespace CraigStars.Client
                         return "Weapon\nor\nShield";
                     case HullSlotType.ScannerElectricalMechanical:
                         return "Scanner\nElec\nMech";
+                    case HullSlotType.ArmorScannerElectricalMechanical:
+                        return "Armor\nScanner\nElec/Mech";
                     case HullSlotType.MineElectricalMechanical:
                         return "Mine\nElec\nMech";
                     case HullSlotType.General:

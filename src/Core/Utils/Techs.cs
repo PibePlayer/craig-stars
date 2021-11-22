@@ -1862,7 +1862,7 @@ namespace CraigStars
             })
         };
 
-        public static readonly TechHull B52Bomber = new TechHull("B-52 Bomber", new Cost(90, 15, 10, 280), new TechRequirements(construction: 15), 180, TechCategory.ShipHull)
+        public static readonly TechHull B52Bomber = new TechHull("B-52 Bomber", new Cost(90, 15, 10, 280), new TechRequirements(construction: 15), 200, TechCategory.ShipHull)
         {
             Type = TechHullType.Bomber,
             FuelCapacity = 750,
@@ -1879,6 +1879,18 @@ namespace CraigStars
             })
         };
 
+        public static readonly TechHull MidgetMiner = new TechHull("Midget Miner", new Cost(10, 0, 3, 20), new TechRequirements(lrtsRequired: LRT.ARM), 210, TechCategory.ShipHull)
+        {
+            Type = TechHullType.Miner,
+            FuelCapacity = 210,
+            Armor = 100,
+            Mass = 10,
+            Slots = new List<TechHullSlot>(new TechHullSlot[] {
+                new TechHullSlot(HullSlotType.Engine, 1, true),
+                new TechHullSlot(HullSlotType.Mining, 2)
+            })
+        };
+
         public static readonly TechHull MiniMiner = new TechHull("Mini-Miner", new Cost(25, 0, 6, 50), new TechRequirements(construction: 2), 220, TechCategory.ShipHull)
         {
             Type = TechHullType.Miner,
@@ -1890,6 +1902,54 @@ namespace CraigStars
                 new TechHullSlot(HullSlotType.ScannerElectricalMechanical),
                 new TechHullSlot(HullSlotType.Mining),
                 new TechHullSlot(HullSlotType.Mining)
+            })
+        };
+
+        public static readonly TechHull Miner = new TechHull("Miner", new Cost(32, 0, 6, 110), new TechRequirements(construction: 6, lrtsRequired: LRT.ARM), 230, TechCategory.ShipHull)
+        {
+            Type = TechHullType.Miner,
+            FuelCapacity = 500,
+            Armor = 475,
+            Mass = 110,
+            Slots = new List<TechHullSlot>(new TechHullSlot[] {
+                new TechHullSlot(HullSlotType.Engine, 2, true),
+                new TechHullSlot(HullSlotType.ArmorScannerElectricalMechanical, 2),
+                new TechHullSlot(HullSlotType.Mining, 2),
+                new TechHullSlot(HullSlotType.Mining, 1),
+                new TechHullSlot(HullSlotType.Mining, 2),
+                new TechHullSlot(HullSlotType.Mining, 1)
+            })
+        };
+
+        public static readonly TechHull MaxiMiner = new TechHull("Maxi-Miner", new Cost(32, 0, 6, 140), new TechRequirements(construction: 11, lrtsDenied: LRT.OBRM), 240, TechCategory.ShipHull)
+        {
+            Type = TechHullType.Miner,
+            FuelCapacity = 850,
+            Armor = 1400,
+            Mass = 110,
+            Slots = new List<TechHullSlot>(new TechHullSlot[] {
+                new TechHullSlot(HullSlotType.Engine, 3, true),
+                new TechHullSlot(HullSlotType.ArmorScannerElectricalMechanical, 2),
+                new TechHullSlot(HullSlotType.Mining, 4),
+                new TechHullSlot(HullSlotType.Mining, 1),
+                new TechHullSlot(HullSlotType.Mining, 4),
+                new TechHullSlot(HullSlotType.Mining, 1)
+            })
+        };
+
+        public static readonly TechHull UltraMiner = new TechHull("Ultra-Miner", new Cost(30, 0, 6, 130), new TechRequirements(construction: 14, lrtsRequired: LRT.ARM), 250, TechCategory.ShipHull)
+        {
+            Type = TechHullType.Miner,
+            FuelCapacity = 1300,
+            Armor = 1500,
+            Mass = 100,
+            Slots = new List<TechHullSlot>(new TechHullSlot[] {
+                new TechHullSlot(HullSlotType.Engine, 2, true),
+                new TechHullSlot(HullSlotType.ArmorScannerElectricalMechanical, 3),
+                new TechHullSlot(HullSlotType.Mining, 4),
+                new TechHullSlot(HullSlotType.Mining, 2),
+                new TechHullSlot(HullSlotType.Mining, 4),
+                new TechHullSlot(HullSlotType.Mining, 2)
             })
         };
 
@@ -2341,7 +2401,11 @@ namespace CraigStars
                 B17Bomber,
                 StealthBomber,
                 B52Bomber,
+                MidgetMiner,
                 MiniMiner,
+                Miner,
+                MaxiMiner,
+                UltraMiner,
                 FuelTransport,
                 SuperFuelXport,
                 MiniMineLayer,

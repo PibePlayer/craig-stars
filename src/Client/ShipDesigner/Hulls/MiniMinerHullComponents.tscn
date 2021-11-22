@@ -25,8 +25,8 @@ margin_left = -24.0
 margin_top = -8.0
 margin_right = 56.0
 margin_bottom = 72.0
-Required = true
 Type = 1
+Required = true
 
 [node name="HullComponent2" parent="Container" instance=ExtResource( 1 )]
 margin_left = 136.0

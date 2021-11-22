@@ -37,9 +37,7 @@ namespace CraigStars
 
         #region Diplomacy
 
-        public HashSet<int> Allies { get; set; } = new();
-        public HashSet<int> Neutrals { get; set; } = new();
-        public HashSet<int> Enemies { get; set; } = new();
+        public List<PlayerRelationship> PlayerRelations { get; set; } = new();
 
         #endregion
 
@@ -269,7 +267,8 @@ namespace CraigStars
         public bool IsEnemy(int playerNum)
         {
             // either they are explicit enemies or not friends
-            return Enemies.Contains(playerNum) || (!IsFriend(playerNum) && !IsNeutral(playerNum));
+            return playerNum >= 0 && playerNum < PlayerRelations.Count
+                && PlayerRelations[playerNum].Relation == PlayerRelation.Enemy || (!IsFriend(playerNum) && !IsNeutral(playerNum));
         }
 
         /// <summary>
@@ -279,7 +278,8 @@ namespace CraigStars
         /// <returns></returns>
         public bool IsNeutral(int playerNum)
         {
-            return Neutrals.Contains(playerNum);
+            return playerNum >= 0 && playerNum < PlayerRelations.Count
+                && PlayerRelations[playerNum].Relation == PlayerRelation.Neutral;
         }
 
         /// <summary>
@@ -289,7 +289,8 @@ namespace CraigStars
         /// <returns></returns>
         public bool IsFriend(int playerNum)
         {
-            return Num == playerNum || Allies.Contains(playerNum);
+            return Num == playerNum || playerNum >= 0 && playerNum < PlayerRelations.Count
+                && PlayerRelations[playerNum].Relation == PlayerRelation.Friend;
         }
 
         /// <summary>

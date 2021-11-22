@@ -331,11 +331,18 @@ namespace CraigStarsTable
                         AddColumnHeaders();
                         AddRows();
                         SelectedRow = 0;
+                        var firstRow = Data.Rows.FirstOrDefault();
+                        if (firstRow != null)
+                        {
+                            RowSelectedEvent.Invoke(0, 0, firstRow.Data[0], firstRow.Metadata);
+                        }
+
                         Update();
                     }
 
                     mutex.ReleaseMutex();
                 }
+
             }
         }
 
@@ -508,6 +515,10 @@ namespace CraigStarsTable
             if (rows.Count > 0)
             {
                 SelectedRow = rows[0].Index;
+                if (rows[0].Data.Count > 0)
+                {
+                    RowSelectedEvent.Invoke(0, 0, rows[0].Data[0], rows[0].Metadata);
+                }
             }
             else
             {

@@ -27,6 +27,7 @@ namespace CraigStars.Client
             ShipDesigner,
             Research,
             BattlePlans,
+            PlayerRelations,
             TransportPlans,
             ProductionPlans,
             Race,
@@ -52,6 +53,7 @@ namespace CraigStars.Client
 
             commandsMenu.AddItem("Ship Designer", (int)MenuItem.ShipDesigner);
             commandsMenu.AddItem("Research", (int)MenuItem.Research);
+            commandsMenu.AddItem("Player Relations", (int)MenuItem.PlayerRelations);
             plansMenu.AddItem("Battle Plans", (int)MenuItem.BattlePlans);
             plansMenu.AddItem("Transport Plans", (int)MenuItem.TransportPlans);
             plansMenu.AddItem("Production Plans", (int)MenuItem.ProductionPlans);
@@ -110,6 +112,9 @@ namespace CraigStars.Client
                     break;
                 case MenuItem.Research:
                     EventManager.PublishResearchDialogRequestedEvent();
+                    break;
+                case MenuItem.PlayerRelations:
+                    EventManager.PublishPlayerRelationsDialogRequestedEvent();
                     break;
                 case MenuItem.TransportPlans:
                     EventManager.PublishTransportPlansDialogRequestedEvent();
@@ -215,6 +220,10 @@ namespace CraigStars.Client
             if (@event.IsActionPressed("research"))
             {
                 EventManager.PublishResearchDialogRequestedEvent();
+            }
+            if (@event.IsActionPressed("player_relations"))
+            {
+                EventManager.PublishPlayerRelationsDialogRequestedEvent();
             }
             if (@event.IsActionPressed("battle_plans"))
             {

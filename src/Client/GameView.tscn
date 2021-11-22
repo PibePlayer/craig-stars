@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=2]
+[gd_scene load_steps=36 format=2]
 
 [ext_resource path="res://src/Client/Scanner/Scanner.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/Client/Scanner/ScannerSelectedStats.tscn" type="PackedScene" id=2]
@@ -33,6 +33,7 @@
 [ext_resource path="res://src/Client/Dialogs/TransportPlansDialog.tscn" type="PackedScene" id=31]
 [ext_resource path="res://src/Client/Scanner/OtherObjectsPopupMenu.tscn" type="PackedScene" id=32]
 [ext_resource path="res://src/Client/Dialogs/ProductionPlansDialog.tscn" type="PackedScene" id=33]
+[ext_resource path="res://src/Client/Dialogs/PlayerRelationsDialog.tscn" type="PackedScene" id=34]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.145098, 0.145098, 0.168627, 1 )
@@ -46,9 +47,7 @@ expand_margin_right = 5.0
 expand_margin_top = 5.0
 expand_margin_bottom = 5.0
 
-[node name="GameView" type="Control" groups=[
-"GameView",
-]]
+[node name="GameView" type="Control" groups=["GameView"]]
 script = ExtResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -265,5 +264,8 @@ visible = false
 visible = false
 
 [node name="BattleViewerDialog" parent="CanvasLayer" instance=ExtResource( 28 )]
+
+[node name="PlayerRelationsDialog" parent="CanvasLayer" instance=ExtResource( 34 )]
+visible = false
 
 [node name="OtherObjectsPopupMenu" parent="CanvasLayer" instance=ExtResource( 32 )]

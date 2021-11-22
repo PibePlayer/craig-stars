@@ -28,9 +28,10 @@ namespace CraigStars
         public void SubmitAITurns(Game game)
         {
             log.Debug($"Submitting AI turns");
+            var aiPlayers = game.Players.Where(player => player.AIControlled && !player.SubmittedTurn).ToList();
             Task.Run(() =>
             {
-                foreach (var player in game.Players.Where(player => player.AIControlled && !player.SubmittedTurn))
+                foreach (var player in aiPlayers)
                 {
                     try
                     {

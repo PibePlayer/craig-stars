@@ -26,7 +26,14 @@ namespace CraigStars.UniverseGeneration
                 step.Process();
             }
 
-            Game.Players.ForEach(player => player.SetupMapObjectMappings());
+            Game.Players.ForEach(player =>
+            {
+                // setup initial player relationships
+                player.PlayerRelations = Game.Players.Select(p => new PlayerRelationship(p.Num, PlayerRelation.Enemy)).ToList();
+
+                // setup player's object mappings
+                player.SetupMapObjectMappings();
+            });
         }
 
     }

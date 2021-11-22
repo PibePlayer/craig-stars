@@ -163,6 +163,7 @@ namespace CraigStars.Client
         public static event Action RaceDesignerDialogRequestedEvent;
         public static event Action ShipDesignerDialogRequestedEvent;
         public static event Action PlayerStatusDialogRequestedEvent;
+        public static event Action PlayerRelationsDialogRequestedEvent;
         public static event Action<FleetSprite> MergeFleetsDialogRequestedEvent;
         public static event Action<BattleRecord> BattleViewerDialogRequestedEvent;
         public static event Action<MapObjectSprite> ViewportAlternateSelectEvent;
@@ -177,6 +178,7 @@ namespace CraigStars.Client
         public static void PublishReportsDialogRequestedEvent() => ReportsDialogRequestedEvent?.Invoke();
         public static void PublishShipDesignerDialogRequestedEvent() => ShipDesignerDialogRequestedEvent?.Invoke();
         public static void PublishPlayerStatusDialogRequestedEvent() => PlayerStatusDialogRequestedEvent?.Invoke();
+        public static void PublishPlayerRelationsDialogRequestedEvent() => PlayerRelationsDialogRequestedEvent?.Invoke();
         public static void PublishTechBrowserDialogRequestedEvent() => TechBrowserDialogRequestedEvent?.Invoke();
         public static void PublishRaceDesignerDialogRequestedEvent() => RaceDesignerDialogRequestedEvent?.Invoke();
         public static void PublishMergeFleetsDialogRequestedEvent(FleetSprite sourceFleet) => MergeFleetsDialogRequestedEvent?.Invoke(sourceFleet);

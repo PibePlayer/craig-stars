@@ -17,15 +17,17 @@ namespace CraigStars
         public const string ProcessedPacketsContextKey = "ProcessedPackets";
 
         private readonly PlanetService planetService;
+        private readonly ShipDesignDiscoverer designDiscoverer;
 
         HashSet<MineralPacket> processedMineralPackets = new HashSet<MineralPacket>();
 
         // some things (like remote mining) only happen on wp1
         private readonly int processIndex;
 
-        public AbstractPacketMoveStep(IProvider<Game> gameProvider, PlanetService planetService, TurnGenerationState state, int waypointIndex) : base(gameProvider, state)
+        public AbstractPacketMoveStep(IProvider<Game> gameProvider, PlanetService planetService, ShipDesignDiscoverer designDiscoverer, TurnGenerationState state, int waypointIndex) : base(gameProvider, state)
         {
             this.planetService = planetService;
+            this.designDiscoverer = designDiscoverer;
             this.processIndex = waypointIndex;
         }
 
@@ -55,7 +57,7 @@ namespace CraigStars
             }
         }
 
-        private void MovePacket(MineralPacket packet, Player player)
+        void MovePacket(MineralPacket packet, Player player)
         {
             float dist = packet.WarpFactor * packet.WarpFactor;
             float totalDist = packet.Position.DistanceTo(packet.Target.Position);
@@ -161,6 +163,12 @@ namespace CraigStars
             // if we didn't recieve this planet, notify the sender
             if (planet.PlayerNum != packet.PlayerNum)
             {
+                if (player.Race.Spec.DetectPacketDestinationStarbases && planet.HasStarbase)
+                {
+                    // discover the receiving planet's starbase design
+                    designDiscoverer.Discover(player, planet.Starbase.Design, true);
+                }
+
                 Message.MineralPacketArrived(player, planet, packet);
             }
 

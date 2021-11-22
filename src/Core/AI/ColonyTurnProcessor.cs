@@ -38,9 +38,9 @@ namespace CraigStars
             ShipDesign colonyShip = shipDesignerTurnProcessor.DesignColonizer(player);
 
             var colonizablePlanets = player.AllPlanets
-            .Where(planet => planet.Explored && !planet.Owned && player.Race.GetPlanetHabitability(planet.BaseHab.Value) > 0)
-            .OrderByDescending(planet => player.Race.GetPlanetHabitability(planet.BaseHab.Value))
-            .ToList();
+                .Where(planet => planet.Explored && !planet.Owned && player.Race.GetPlanetHabitability(planet.BaseHab.Value) > 0)
+                .OrderByDescending(planet => player.Race.GetPlanetHabitability(planet.BaseHab.Value))
+                .ToList();
             var buildablePlanets = player.Planets
                 .Where(planet => planetService.CanBuild(planet, player, colonyShip.Spec.Mass) && planetService.GetPopulationDensity(planet, player, gameInfo.Rules) >= PopulationDensityRequired)
                 .ToList();

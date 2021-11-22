@@ -8,6 +8,7 @@ namespace CraigStars
 {
     public class PacketMove1Step : AbstractPacketMoveStep
     {
-        public PacketMove1Step(IProvider<Game> gameProvider, PlanetService planetService) : base(gameProvider, planetService, TurnGenerationState.PacketMove1Step, 1) { }
+        public PacketMove1Step(IProvider<Game> gameProvider, PlanetService planetService, ShipDesignDiscoverer designDiscoverer) 
+            : base(gameProvider, planetService, designDiscoverer, TurnGenerationState.PacketMove1Step, 1) { }
     }
 }

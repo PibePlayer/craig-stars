@@ -1,7 +1,6 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://src/Client/CommandPane/WarpFactor.cs" type="Script" id=1]
-[ext_resource path="res://src/Client/GUIColors.tres" type="Resource" id=2]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.431373, 0.431373, 0.431373, 1 )
@@ -21,7 +20,6 @@ script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
-GUIColors = ExtResource( 2 )
 
 [node name="Panel" type="Panel" parent="."]
 show_behind_parent = true

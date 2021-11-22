@@ -150,6 +150,16 @@ namespace CraigStars
                 scanners.Add(new Scanner(fleet.Position, fleet.PreviousPosition.GetValueOrDefault(fleet.Position), fleet.Spec.ScanRange * fleet.Spec.ScanRange, fleet.Spec.ScanRangePen * fleet.Spec.ScanRangePen, fleet.Spec.ReduceCloaking));
             }
 
+            // PP players have built in scanners on packets
+            if (player.Race.Spec.PacketBuiltInScanner)
+            {
+                foreach (var packet in Game.MineralPackets.Where(p => p.OwnedBy(player)))
+                {
+                    // add packets as pen scanners
+                    scanners.Add(new Scanner(packet.Position, 0, packet.WarpFactor * packet.WarpFactor * packet.WarpFactor * packet.WarpFactor));
+                }
+            }
+
             // Space demolition minefields act as scanners
             if (player.Race.Spec.MineFieldsAreScanners)
             {

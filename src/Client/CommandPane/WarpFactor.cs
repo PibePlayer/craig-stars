@@ -10,13 +10,6 @@ namespace CraigStars
         static CSLog log = LogProvider.GetLogger(typeof(WarpFactor));
         public event Action<int> WarpSpeedChangedEvent;
 
-        /// <summary>
-        /// Max warp factor with 0 being stopped and 11 being use stargate
-        /// </summary>
-        /// <value></value>
-        [Export]
-        public int MaxWarpFactor { get; set; } = 11;
-
         [Export(PropertyHint.Range),]
         public int WarpSpeed
         {
@@ -28,6 +21,31 @@ namespace CraigStars
             }
         }
         int warpSpeed = 5;
+
+        [Export]
+        public int MinWarpFactor { get; set; } = 0;
+
+        /// <summary>
+        /// Max warp factor with 0 being stopped and 11 being use stargate
+        /// </summary>
+        /// <value></value>
+        [Export]
+        public int MaxWarpFactor { get; set; } = 11;
+
+        [Export]
+        public int StargateWarpFactor { get; set; } = 11;
+
+        [Export]
+        public int WarnSpeed { get; set; } = 10;
+
+        [Export]
+        public int DangerSpeed { get; set; } = 12;
+
+        [Export]
+        public bool HasStargate { get; set; } = false;
+
+        [Export]
+        public Color BaseColorOverride { get; set; } = Colors.Fuchsia;
 
         Panel panel;
         Label label;
@@ -47,6 +65,7 @@ namespace CraigStars
 
             borderWidth = panelStyleBox.BorderWidthLeft + panelStyleBox.BorderWidthRight;
             borderHeight = panelStyleBox.BorderWidthTop + panelStyleBox.BorderWidthBottom;
+
             Update();
         }
 
@@ -75,7 +94,7 @@ namespace CraigStars
                 mousePosition = mouse.Position;
                 int warpSpeedFromClick = (int)(Math.Round(mousePosition.x / (panel.RectSize.x - borderWidth) * MaxWarpFactor));
                 log.Debug($"Mouse clicked {mousePosition} for warp speed {warpSpeedFromClick}");
-                if (warpSpeedFromClick >= 0 && warpSpeedFromClick <= MaxWarpFactor)
+                if (warpSpeedFromClick >= MinWarpFactor && warpSpeedFromClick <= MaxWarpFactor)
                 {
                     WarpSpeed = warpSpeedFromClick;
                     WarpSpeedChangedEvent?.Invoke(WarpSpeed);
@@ -87,24 +106,27 @@ namespace CraigStars
         {
             if (panel != null)
             {
-                var color = GUIColorsProvider.Colors.WarpColor;
-                if (WarpSpeed > 0 && WarpSpeed < MaxWarpFactor)
+                var color = BaseColorOverride != Colors.Fuchsia ? BaseColorOverride : GUIColorsProvider.Colors.WarpColor;
+                label.Text = $"Warp {WarpSpeed}";
+                if (WarpSpeed >= WarnSpeed && WarpSpeed < DangerSpeed)
                 {
-                    label.Text = $"Warp {WarpSpeed}";
-                    if (WarpSpeed == 10)
-                    {
-                        color = GUIColorsProvider.Colors.WarpDamageColor;
-                    }
+                    color = GUIColorsProvider.Colors.WarpWarnColor;
+                }
+                else if (WarpSpeed >= DangerSpeed)
+                {
+                    color = GUIColorsProvider.Colors.WarpDangerColor;
                 }
                 else if (WarpSpeed == 0)
                 {
                     label.Text = $"Stopped!";
                 }
-                else if (WarpSpeed == MaxWarpFactor)
+                
+                if (WarpSpeed == StargateWarpFactor && HasStargate)
                 {
                     label.Text = $"Use Stargate";
                     color = GUIColorsProvider.Colors.StargateColor;
                 }
+
                 // get the width of our rectangle
                 // it's a percentage of the speed, minus the line widths
                 float width = panel.RectSize.x * ((float)WarpSpeed / (float)MaxWarpFactor);

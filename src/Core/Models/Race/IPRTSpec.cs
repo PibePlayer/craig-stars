@@ -79,6 +79,43 @@ namespace CraigStars
         int PacketOverSafeWarpPenalty { get; set; }
 
         /// <summary>
+        /// Do packets have a built in scanner?
+        /// </summary>
+        bool PacketBuiltInScanner { get; set; }
+
+        /// <summary>
+        /// Do packets detect the destination starbase when they arrive?
+        /// </summary>
+        bool DetectPacketDestinationStarbases { get; set; }
+
+        /// <summary>
+        /// Does this race detect all packets in space?
+        /// </summary>
+        /// <value></value>
+        bool DetectAllPackets { get; set; }
+
+        /// <summary>
+        /// Chance this race's packets terraform the receiving planet in this race's favor
+        /// </summary>
+        /// <value></value>
+        float PacketTerraformChance { get; set; }
+
+        /// <summary>
+        /// Chance that this race's packets permaform the receiving planet in this race's favor
+        /// This only applies to every PacketPermaformSizeUnit kT of uncaught resources
+        /// </summary>
+        /// <value></value>
+        float PacketPermaformChance { get; set; }
+
+        /// <summary>
+        /// The unit of uncaught packet size for permaforming, i.e. every 100kT of uncaught minerals
+        /// has a .1% chance of permaforming the planet
+        /// </summary>
+        /// <value></value>
+        [DefaultValue(100)]
+        int PacketPermaformSizeUnit { get; set; }
+
+        /// <summary>
         /// Can this rate send cargo through stargates?
         /// </summary>
         [DefaultValue(false)]

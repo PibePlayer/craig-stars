@@ -9,6 +9,7 @@ namespace CraigStars.Client
         [Inject] protected PlanetService planetService;
         public PlanetSprite CommandedPlanet { get; set; }
         public Player Me { get => PlayersManager.Me; }
+        public PublicGameInfo GameInfo { get => PlayersManager.GameInfo; }
 
         Label titleLabel;
 

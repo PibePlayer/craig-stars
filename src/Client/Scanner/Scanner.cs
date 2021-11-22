@@ -234,17 +234,6 @@ namespace CraigStars.Client
                 });
             }
 
-            Planets.ForEach(planetSprite =>
-            {
-                if (
-                    planetSprite.Planet.PacketTarget != null &&
-                    MapObjectsByGuid.TryGetValue(planetSprite.Planet.PacketTarget.Guid, out var mapObjectSprite) &&
-                    mapObjectSprite is PlanetSprite target)
-                {
-                    planetSprite.PacketTarget = target;
-                }
-            });
-
             log.Debug($"{GameInfo.Year} Refreshed Planets.");
 
             // rebuild our MapObjectsByGuid
@@ -270,6 +259,18 @@ namespace CraigStars.Client
             mapObjects.AddRange(transientMapObjects);
 
             mapObjectsByLocation = mapObjects.ToLookup(mo => mo.MapObject.Position).ToDictionary(lookup => lookup.Key, lookup => lookup.ToList());
+
+            // add planet packet destination lines
+            Planets.ForEach(planetSprite =>
+            {
+                if (
+                    planetSprite.Planet.PacketTarget != null &&
+                    MapObjectsByGuid.TryGetValue(planetSprite.Planet.PacketTarget.Guid, out var mapObjectSprite) &&
+                    mapObjectSprite is PlanetSprite target)
+                {
+                    planetSprite.PacketTarget = target;
+                }
+            });
 
             log.Debug($"{GameInfo.Year} Done refreshing transient viewport objects.");
         }
@@ -483,6 +484,18 @@ namespace CraigStars.Client
                 if (rangePen > 0)
                 {
                     AddScannerCoverage(fleet.Position, rangePen, true);
+                }
+            }
+
+            if (Me.Race.Spec.PacketBuiltInScanner)
+            {
+                foreach (var packet in Me.MineralPackets)
+                {
+                    var rangePen = packet.WarpFactor * packet.WarpFactor;
+                    if (rangePen > 0)
+                    {
+                        AddScannerCoverage(packet.Position, rangePen, true);
+                    }
                 }
             }
 

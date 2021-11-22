@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://src/Client/CommandPane/PlanetStarbaseTile.cs" type="Script" id=1]
 [ext_resource path="res://src/Client/CommandPane/Tile.tscn" type="PackedScene" id=2]
+[ext_resource path="res://src/Client/CommandPane/WarpFactor.tscn" type="PackedScene" id=3]
 
 [node name="PlanetStarbaseTile" instance=ExtResource( 2 )]
 script = ExtResource( 1 )
@@ -116,13 +117,13 @@ size_flags_horizontal = 3
 columns = 2
 
 [node name="MassDriverLabel" type="Label" parent="VBoxContainer/Controls/MassDriverGrid" index="0"]
-margin_right = 144.0
+margin_right = 76.0
 margin_bottom = 14.0
 size_flags_horizontal = 3
 text = "Mass Driver"
 
 [node name="MassDriver" type="Label" parent="VBoxContainer/Controls/MassDriverGrid" index="1"]
-margin_left = 148.0
+margin_left = 80.0
 margin_right = 180.0
 margin_bottom = 14.0
 text = "none"
@@ -130,7 +131,7 @@ align = 2
 
 [node name="DestinationLabel" type="Label" parent="VBoxContainer/Controls/MassDriverGrid" index="2"]
 margin_top = 18.0
-margin_right = 144.0
+margin_right = 76.0
 margin_bottom = 32.0
 hint_tooltip = "The planet to fling packets at"
 mouse_filter = 1
@@ -138,7 +139,7 @@ size_flags_horizontal = 3
 text = "Destination"
 
 [node name="Destination" type="Label" parent="VBoxContainer/Controls/MassDriverGrid" index="3"]
-margin_left = 148.0
+margin_left = 80.0
 margin_top = 18.0
 margin_right = 180.0
 margin_bottom = 32.0
@@ -147,6 +148,15 @@ align = 2
 
 [node name="SetDestinationButton" type="Button" parent="VBoxContainer/Controls/MassDriverGrid" index="4"]
 margin_top = 36.0
-margin_right = 144.0
+margin_right = 76.0
 margin_bottom = 56.0
-text = "Set Destination"
+text = "Set Dest"
+
+[node name="WarpFactor" parent="VBoxContainer/Controls/MassDriverGrid" index="5" instance=ExtResource( 3 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 80.0
+margin_top = 36.0
+margin_right = 180.0
+margin_bottom = 56.0
+BaseColorOverride = Color( 0.360784, 0, 1, 1 )

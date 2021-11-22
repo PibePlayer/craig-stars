@@ -136,6 +136,12 @@ namespace CraigStars.Client
                     distance.Visible = true;
                     warpFactorText.Visible = true;
                     warpFactor.Visible = true;
+
+                    // setup the warpFactor control to support stargates
+                    var hasStargate = CommandedFleet?.Fleet?.Orbiting?.HasStargate;
+                    warpFactor.HasStargate = hasStargate.HasValue && hasStargate.Value;
+                    warpFactor.MaxWarpFactor = warpFactor.HasStargate ? 11 : 10;
+                    
                     travelTime.Visible = true;
                     selectedWaypointGrid.Visible = true;
                     estimatedFuelUsage.Visible = true;

@@ -145,7 +145,10 @@ namespace CraigStars.Tests
             var player1 = game.Players[0];
 
             // our scan won't work unless we know about our own designs
-            playerIntel.Discover(player1, game.Designs[0]);
+            foreach (var design in game.Designs.Where(d => d.PlayerNum == player1.Num))
+            {
+                playerIntel.Discover(player1, design);
+            }
 
             var fleet2 = game.Fleets[1];
 

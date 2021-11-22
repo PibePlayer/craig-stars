@@ -161,7 +161,7 @@ namespace CraigStars
             // after new player actions and designs are submitted, we need
             // to compute specs for fleets and designs
             // for turn generation
-            ComputeSpecs();
+            ComputeSpecs(recompute: true);
 
             turnGenerator.GenerateTurn();
 

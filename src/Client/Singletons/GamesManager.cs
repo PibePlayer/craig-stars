@@ -540,6 +540,7 @@ namespace CraigStars.Singletons
                 playerGameInfo.Open(playerGameInfoPath, File.ModeFlags.Write).ThrowOnError();
                 await Task.Run(() =>
                 {
+                    log.Info($"Saving player {playerNum} GameInfo to {playerGameInfoPath}");
                     playerGameInfo.StoreString(Serializers.Serialize(gameInfo));
                 });
                 playerGameInfo.Close();

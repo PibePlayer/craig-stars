@@ -18,6 +18,7 @@ namespace CraigStars.Client
         Label destination;
         Label destinationLabel;
         Button setDestinationButton;
+        WarpFactor warpFactor;
 
         public override void _Ready()
         {
@@ -33,12 +34,23 @@ namespace CraigStars.Client
             destination = FindNode("Destination") as Label;
             destinationLabel = FindNode("DestinationLabel") as Label;
             setDestinationButton = FindNode("SetDestinationButton") as Button;
+            warpFactor = GetNode<WarpFactor>("VBoxContainer/Controls/MassDriverGrid/WarpFactor");
 
             setDestinationButton.Connect("pressed", this, nameof(OnSetDestinationButtonPressed));
 
             statsGrid.Connect("gui_input", this, nameof(OnStatsGridGUIInput));
 
+            warpFactor.WarpSpeedChangedEvent += OnWarpSpeedChanged;
+
             EventManager.PacketDestinationChangedEvent += OnPacketDestinationChanged;
+        }
+
+        void OnWarpSpeedChanged(int warpFactor)
+        {
+            if (CommandedPlanet?.Planet != null && CommandedPlanet.Planet.HasMassDriver)
+            {
+                CommandedPlanet.Planet.PacketSpeed = warpFactor;
+            }
         }
 
         public override void _Notification(int what)
@@ -82,6 +94,7 @@ namespace CraigStars.Client
             destination.Visible = false;
             destinationLabel.Visible = false;
             setDestinationButton.Visible = false;
+            warpFactor.Visible = false;
             if (CommandedPlanet != null)
             {
                 if (CommandedPlanet.Planet.HasStarbase)
@@ -104,9 +117,16 @@ namespace CraigStars.Client
                     }
                     if (starbase.Spec.HasMassDriver)
                     {
+                        var maxOverSpeed = GameInfo.Rules.PacketDecayRate.Count;
                         destination.Visible = true;
                         destinationLabel.Visible = true;
                         setDestinationButton.Visible = true;
+                        warpFactor.Visible = true;
+                        warpFactor.WarpSpeed = CommandedPlanet.Planet.PacketSpeed;
+                        warpFactor.MinWarpFactor = CommandedPlanet.Planet.Starbase.Spec.SafePacketSpeed;
+                        warpFactor.MaxWarpFactor = CommandedPlanet.Planet.Starbase.Spec.SafePacketSpeed + maxOverSpeed;
+                        warpFactor.WarnSpeed = warpFactor.MinWarpFactor + 1;
+                        warpFactor.DangerSpeed = warpFactor.MinWarpFactor + maxOverSpeed;
                         massDriver.Text = $"Warp {starbase.Spec.SafePacketSpeed}";
                         if (CommandedPlanet.Planet.PacketTarget != null)
                         {

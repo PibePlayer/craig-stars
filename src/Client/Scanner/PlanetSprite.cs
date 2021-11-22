@@ -229,7 +229,7 @@ namespace CraigStars.Client
             orbitingState = Orbiting.None;
             isCommanded = HasCommandedPeer || State == ScannerState.Commanded;
 
-            if (PacketTarget != null)
+            if (PacketTarget != null && Planet.PacketTarget != null)
             {
                 packetTargetLine.Points = new Vector2[] {
                     new Vector2(),

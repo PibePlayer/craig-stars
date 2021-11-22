@@ -47,22 +47,45 @@ namespace CraigStars
             spec.StartingFleets = new(prtSpec.StartingFleets);
             spec.StartingPlanets = new(prtSpec.StartingPlanets);
             spec.TechCostFactor = new(prtSpec.TechCostFactor);
+
+            // PP
             spec.MineralsPerSingleMineralPacket = prtSpec.MineralsPerSingleMineralPacket;
             spec.MineralsPerMixedMineralPacket = prtSpec.MineralsPerMixedMineralPacket;
             spec.PacketResourceCost = prtSpec.PacketResourceCost;
             spec.PacketMineralCostFactor = prtSpec.PacketMineralCostFactor;
             spec.PacketReceiverFactor = prtSpec.PacketReceiverFactor;
             spec.PacketDecayFactor = prtSpec.PacketDecayFactor;
+            spec.PacketDecayFactor = prtSpec.PacketDecayFactor;
+            spec.PacketBuiltInScanner = prtSpec.PacketBuiltInScanner;
+            spec.DetectPacketDestinationStarbases = prtSpec.DetectPacketDestinationStarbases;
+            spec.DetectAllPackets = prtSpec.DetectAllPackets;
+            spec.PacketTerraformChance = prtSpec.PacketTerraformChance;
+            spec.PacketPermaformChance = prtSpec.PacketPermaformChance;
+
+            // IT
             spec.PacketOverSafeWarpPenalty = prtSpec.PacketOverSafeWarpPenalty;
             spec.CanGateCargo = prtSpec.CanGateCargo;
             spec.ShipsVanishInVoid = prtSpec.ShipsVanishInVoid;
+
+            // JoaT
             spec.BuiltInScannerMultiplier = prtSpec.BuiltInScannerMultiplier;
             spec.TechsCostExtraLevel = prtSpec.TechsCostExtraLevel;
+
+            // IS
             spec.FreighterGrowthFactor = prtSpec.FreighterGrowthFactor;
+            spec.InvasionDefendBonus = prtSpec.InvasionDefendBonus;
+            spec.RepairFactor = prtSpec.RepairFactor;
+            spec.StarbaseRepairFactor = prtSpec.StarbaseRepairFactor;
+
+            // HE
             spec.GrowthFactor = prtSpec.GrowthFactor;
+
+            // SS
             spec.BuiltInCloakUnits = prtSpec.BuiltInCloakUnits;
             spec.StealsResearch = prtSpec.StealsResearch;
             spec.FreeCargoCloaking = prtSpec.FreeCargoCloaking;
+
+            // SD
             spec.MineFieldsAreScanners = prtSpec.MineFieldsAreScanners;
             spec.MineFieldSafeWarpBonus = prtSpec.MineFieldSafeWarpBonus;
             spec.MineFieldMinDecayFactor = prtSpec.MineFieldMinDecayFactor;
@@ -71,19 +94,24 @@ namespace CraigStars
             spec.MineFieldMaxDecayRate = prtSpec.MineFieldMaxDecayRate;
             spec.CanDetonateMineFields = prtSpec.CanDetonateMineFields;
             spec.MineFieldDetonateDecayRate = prtSpec.MineFieldDetonateDecayRate;
+
+            // WM
             spec.DiscoverDesignOnScan = prtSpec.DiscoverDesignOnScan;
-            spec.CanRemoteMineOwnPlanets = prtSpec.CanRemoteMineOwnPlanets;
             spec.InvasionAttackBonus = prtSpec.InvasionAttackBonus;
-            spec.InvasionDefendBonus = prtSpec.InvasionDefendBonus;
+
+            // AR
+            spec.CanRemoteMineOwnPlanets = prtSpec.CanRemoteMineOwnPlanets;
             spec.MovementBonus = prtSpec.MovementBonus;
+            spec.StarbaseCostFactor = prtSpec.StarbaseCostFactor;
+
+            // CA
             spec.Instaforming = prtSpec.Instaforming;
             spec.PermaformChance = prtSpec.PermaformChance;
             spec.PermaformPopulation = prtSpec.PermaformPopulation;
-            spec.RepairFactor = prtSpec.RepairFactor;
-            spec.StarbaseRepairFactor = prtSpec.StarbaseRepairFactor;
-            spec.StarbaseCostFactor = prtSpec.StarbaseCostFactor;
+
 
             // some PRTs reduce max pop by half, others increase it by 20%
+            // HE & JoaT
             spec.MaxPopulationOffset += prtSpec.MaxPopulationOffset;
 
             // go through all LRTs for the spec

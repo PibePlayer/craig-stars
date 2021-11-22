@@ -106,7 +106,7 @@ namespace CraigStars
             InvasionDefendBonus = 2f,
             RepairFactor = 2f, // double repairs!
             StarbaseRepairFactor = 1.5f,
-    };
+        };
 
         public static PRTSpec SD = new PRTSpec(PRT.SD, 150)
         {
@@ -147,6 +147,12 @@ namespace CraigStars
             PacketResourceCost = 5,
             PacketMineralCostFactor = 1,
             PacketDecayFactor = .5f,
+            PacketBuiltInScanner = true,
+            DetectPacketDestinationStarbases = true,
+            DetectAllPackets = true,
+            PacketTerraformChance = .5f, // 50%
+            PacketPermaformChance = .001f, // .1% per 100kt overage
+
         };
 
         public static PRTSpec IT = new PRTSpec(PRT.IT, -180)

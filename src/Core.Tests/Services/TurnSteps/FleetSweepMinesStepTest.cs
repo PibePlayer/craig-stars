@@ -30,6 +30,7 @@ namespace CraigStars.Tests
 
             var mineField = new MineField()
             {
+                Position = new Vector2(1000, 1000), // move away from starbase
                 PlayerNum = player2.Num,
                 NumMines = 1000,
             };
@@ -38,6 +39,7 @@ namespace CraigStars.Tests
             // should ignore this mineField
             var playerMineField = new MineField()
             {
+                Position = new Vector2(1000, 1000), // move away from starbase
                 PlayerNum = player1.Num,
                 NumMines = 1000
             };
@@ -54,6 +56,7 @@ namespace CraigStars.Tests
                     new ShipDesignSlot(Techs.MiniGun, 3, 1),
                 }
             });
+            fleet.Position = new Vector2(1000, 1000); // move away from starbase
             gameRunner.ComputeSpecs(recompute: true);
 
             FleetSweepMinesStep step = new FleetSweepMinesStep(gameRunner.GameProvider, fleetService);

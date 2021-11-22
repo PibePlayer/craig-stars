@@ -197,7 +197,9 @@ namespace CraigStars.UniverseGeneration
                 }
             }
             };
+            fleetSpecService.ComputeDesignSpec(player, planet.Starbase.Design);
             fleetSpecService.ComputeFleetSpec(player, planet.Starbase);
+            planet.PacketSpeed = planet.Starbase.Spec.SafePacketSpeed;
         }
 
         /// <summary>

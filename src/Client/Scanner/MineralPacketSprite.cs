@@ -57,6 +57,8 @@ namespace CraigStars.Client
                 return;
             }
 
+            Update();
+
             // do nothing
         }
     }

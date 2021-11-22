@@ -107,7 +107,10 @@ namespace CraigStars
         public Color WarpColor { get; set; } = new Color("FF0000");
 
         [Export]
-        public Color WarpDamageColor { get; set; } = new Color("FFFF00");
+        public Color WarpWarnColor { get; set; } = new Color("FFFF00");
+
+        [Export]
+        public Color WarpDangerColor { get; set; } = new Color("FF0000");
 
         [Export]
         public Color MassDriverColor { get; set; } = Colors.Purple.Darkened(.25f);

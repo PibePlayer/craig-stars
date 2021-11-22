@@ -52,6 +52,19 @@ namespace CraigStars
         [DefaultValue(0f)]
         public int PacketOverSafeWarpPenalty { get; set; } = 0;
 
+        public bool PacketBuiltInScanner { get; set; }
+
+        public bool DetectPacketDestinationStarbases { get; set; }
+
+        public bool DetectAllPackets { get; set; }
+
+        public float PacketTerraformChance { get; set; }
+
+        public float PacketPermaformChance { get; set; }
+
+        [DefaultValue(100)]
+        public int PacketPermaformSizeUnit { get; set; }
+
         [DefaultValue(false)]
         public bool CanGateCargo { get; set; } = false;
 

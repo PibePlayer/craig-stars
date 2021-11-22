@@ -322,22 +322,31 @@ namespace CraigStarsTable
                 {
                     mutex.WaitOne();
 
-                    ClearTable();
-
-                    if (Data.VisibleColumns.Count() > 0)
+                    try
                     {
-                        gridContainer.Columns = Data.VisibleColumns.Count();
+                        ClearTable();
 
-                        AddColumnHeaders();
-                        AddRows();
-                        SelectedRow = 0;
-                        var firstRow = Data.Rows.FirstOrDefault();
-                        if (firstRow != null)
+                        if (Data.VisibleColumns.Count() > 0)
                         {
-                            RowSelectedEvent.Invoke(0, 0, firstRow.Data[0], firstRow.Metadata);
-                        }
+                            gridContainer.Columns = Data.VisibleColumns.Count();
 
-                        Update();
+                            AddColumnHeaders();
+                            AddRows();
+                            SelectedRow = 0;
+                            var firstRow = Data.Rows.FirstOrDefault();
+                            if (firstRow != null)
+                            {
+                                RowSelectedEvent.Invoke(0, 0, firstRow.Data[0], firstRow.Metadata);
+                            }
+
+                            Update();
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        // things inside a mutex won't print otherwise, just crash
+                        GD.PrintErr($"{e.ToString()}\n{e.StackTrace}");
+                        throw e;
                     }
 
                     mutex.ReleaseMutex();
@@ -357,46 +366,54 @@ namespace CraigStarsTable
                 using (var mutex = new System.Threading.Mutex())
                 {
                     mutex.WaitOne();
-
-                    RemoveChild(gridContainer);
-                    await Task.Run(() =>
+                    
+                    try
                     {
-                        try
+                        RemoveChild(gridContainer);
+                        await Task.Run(() =>
                         {
-                            ClearRows();
-
-                            if (Data.VisibleColumns.Count() > 0)
+                            try
                             {
-                                AddRows();
-                                // if we are selecting a row that is 
-                                if (SelectedRow > cellControls.GetLength(0))
+                                ClearRows();
+
+                                if (Data.VisibleColumns.Count() > 0)
                                 {
-                                    SelectedRow = NoRowSelected;
+                                    AddRows();
+                                    // if we are selecting a row that is 
+                                    if (SelectedRow > cellControls.GetLength(0))
+                                    {
+                                        SelectedRow = NoRowSelected;
+                                    }
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                GD.PrintErr("Failed to add table rows: ", e);
+                                throw e;
+                            }
+                        });
+
+                        AddChild(gridContainer);
+
+                        if (Data.VisibleColumns.Count() > 0)
+                        {
+                            Update();
+
+                            if (SelectedRow != NoRowSelected && cellControls.GetLength(0) > SelectedRow)
+                            {
+                                if (cellControls[SelectedRow, 0] is ICSCellControl<T> cell)
+                                {
+                                    RowSelectedEvent?.Invoke(SelectedRow, 0, cell.Cell, cell.Row.Metadata);
                                 }
                             }
                         }
-                        catch (Exception e)
-                        {
-                            GD.PrintErr("Failed to add table rows: ", e);
-                            throw e;
-                        }
-                    });
-
-                    AddChild(gridContainer);
-
-                    if (Data.VisibleColumns.Count() > 0)
-                    {
-                        Update();
-
-                        if (SelectedRow != NoRowSelected && cellControls.GetLength(0) > SelectedRow)
-                        {
-                            if (cellControls[SelectedRow, 0] is ICSCellControl<T> cell)
-                            {
-                                RowSelectedEvent?.Invoke(SelectedRow, 0, cell.Cell, cell.Row.Metadata);
-                            }
-                        }
                     }
-
+                    catch (Exception e)
+                    {
+                        // things inside a mutex won't print otherwise, just crash
+                        GD.PrintErr($"{e.ToString()}\n{e.StackTrace}");
+                        throw e;
+                    }
                     mutex.ReleaseMutex();
                 }
             }

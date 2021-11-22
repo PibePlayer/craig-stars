@@ -166,6 +166,9 @@ namespace CraigStars.Tests
             game.Players.Add(player1);
             game.Players.Add(player2);
 
+            var starbase1 = CreateDesign(game, player1, ShipDesigns.Starbase.Clone(player1));
+            var starbase2 = CreateDesign(game, player2, ShipDesigns.Starbase.Clone(player2));
+
             // create empty planets and have the players discover them
             var planet1 = new Planet()
             {
@@ -177,6 +180,15 @@ namespace CraigStars.Tests
                 Hab = new Hab(50, 50, 50),
                 TerraformedAmount = new Hab(),
                 MineralConcentration = new Mineral(100, 100, 100),
+                Starbase = new Starbase()
+                {
+                    PlayerNum = player1.Num,
+                    Tokens = new List<ShipToken>()
+                    {
+                        new ShipToken(starbase1, 1),
+                    },
+                    BattlePlan = player1.BattlePlans[0],
+                }
             };
             var planet2 = new Planet()
             {
@@ -188,6 +200,15 @@ namespace CraigStars.Tests
                 Hab = new Hab(50, 50, 50),
                 TerraformedAmount = new Hab(),
                 MineralConcentration = new Mineral(100, 100, 100),
+                Starbase = new Starbase()
+                {
+                    PlayerNum = player2.Num,
+                    Tokens = new List<ShipToken>()
+                    {
+                        new ShipToken(starbase2, 1),
+                    },
+                    BattlePlan = player2.BattlePlans[0],
+                }
             };
             game.Planets.Add(planet1);
             game.Planets.Add(planet2);

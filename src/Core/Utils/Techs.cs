@@ -1833,6 +1833,52 @@ namespace CraigStars
             })
         };
 
+        public static readonly TechHull B17Bomber = new TechHull("B-17 Bomber", new Cost(55, 10, 10, 150), new TechRequirements(construction: 6), 180, TechCategory.ShipHull)
+        {
+            Type = TechHullType.Bomber,
+            Mass = 69,
+            Armor = 175,
+            FuelCapacity = 400,
+            Slots = new List<TechHullSlot>(new TechHullSlot[] {
+                new TechHullSlot(HullSlotType.Engine, 2, true),
+                new TechHullSlot(HullSlotType.Bomb, 4, false),
+                new TechHullSlot(HullSlotType.Bomb, 4, false),
+                new TechHullSlot(HullSlotType.ScannerElectricalMechanical, 1, false),
+            })
+        };
+
+        public static readonly TechHull StealthBomber = new TechHull("Stealth Bomber", new Cost(55, 10, 15, 175), new TechRequirements(construction: 8, prtRequired: PRT.SS), 190, TechCategory.ShipHull)
+        {
+            Type = TechHullType.Bomber,
+            FuelCapacity = 750,
+            Armor = 225,
+            Mass = 70,
+            Slots = new List<TechHullSlot>(new TechHullSlot[] {
+                new TechHullSlot(HullSlotType.Engine, 2, true),
+                new TechHullSlot(HullSlotType.Bomb, 4, false),
+                new TechHullSlot(HullSlotType.Bomb, 4, false),
+                new TechHullSlot(HullSlotType.ScannerElectricalMechanical, 1, false),
+                new TechHullSlot(HullSlotType.Electrical, 3, false),
+            })
+        };
+
+        public static readonly TechHull B52Bomber = new TechHull("B-52 Bomber", new Cost(90, 15, 10, 280), new TechRequirements(construction: 15), 180, TechCategory.ShipHull)
+        {
+            Type = TechHullType.Bomber,
+            FuelCapacity = 750,
+            Armor = 450,
+            Mass = 110,
+            Slots = new List<TechHullSlot>(new TechHullSlot[] {
+                new TechHullSlot(HullSlotType.Engine, 2, true),
+                new TechHullSlot(HullSlotType.Bomb, 4, false),
+                new TechHullSlot(HullSlotType.Bomb, 4, false),
+                new TechHullSlot(HullSlotType.Bomb, 4, false),
+                new TechHullSlot(HullSlotType.Bomb, 4, false),
+                new TechHullSlot(HullSlotType.ScannerElectricalMechanical, 2, false),
+                new TechHullSlot(HullSlotType.Shield, 2, false),
+            })
+        };
+
         public static readonly TechHull MiniMiner = new TechHull("Mini-Miner", new Cost(25, 0, 6, 50), new TechRequirements(construction: 2), 220, TechCategory.ShipHull)
         {
             Type = TechHullType.Miner,
@@ -2292,6 +2338,9 @@ namespace CraigStars
                 MiniColonyShip,
                 ColonyShip,
                 MiniBomber,
+                B17Bomber,
+                StealthBomber,
+                B52Bomber,
                 MiniMiner,
                 FuelTransport,
                 SuperFuelXport,

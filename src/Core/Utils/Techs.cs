@@ -1996,9 +1996,9 @@ namespace CraigStars
         public static readonly TechHull SuperMineLayer = new TechHull("Super Mine Layer", new Cost(20, 3, 9, 30), new TechRequirements(construction: 15, prtRequired: PRT.SD), 290, TechCategory.ShipHull)
         {
             Type = TechHullType.MineLayer,
-            Mass = 30,
-            Armor = 1200,
             FuelCapacity = 2200,
+            Armor = 1200,
+            Mass = 30,
             Slots = new List<TechHullSlot>(new TechHullSlot[] {
                 new TechHullSlot(HullSlotType.Engine, 1, true),
                 new TechHullSlot(HullSlotType.MineLayer, 8),
@@ -2008,6 +2008,51 @@ namespace CraigStars
                 new TechHullSlot(HullSlotType.MineElectricalMechanical, 3),
             })
         };
+
+        public static readonly TechHull Nubian = new TechHull("Nubian", new Cost(75, 12, 12, 150), new TechRequirements(construction: 26), 300, TechCategory.ShipHull)
+        {
+            Type = TechHullType.Fighter,
+            FuelCapacity = 5000,
+            Armor = 5000,
+            Initiative = 2,
+            Mass = 100,
+            Slots = new List<TechHullSlot>(new TechHullSlot[] {
+                new TechHullSlot(HullSlotType.Engine, 3, true),
+                new TechHullSlot(HullSlotType.General, 3, false),
+                new TechHullSlot(HullSlotType.General, 3, false),
+                new TechHullSlot(HullSlotType.General, 3, false),
+                new TechHullSlot(HullSlotType.General, 3, false),
+                new TechHullSlot(HullSlotType.General, 3, false),
+                new TechHullSlot(HullSlotType.General, 3, false),
+                new TechHullSlot(HullSlotType.General, 3, false),
+                new TechHullSlot(HullSlotType.General, 3, false),
+                new TechHullSlot(HullSlotType.General, 3, false),
+                new TechHullSlot(HullSlotType.General, 3, false),
+                new TechHullSlot(HullSlotType.General, 3, false),
+                new TechHullSlot(HullSlotType.General, 3, false),
+            })
+        };
+
+
+        public static readonly TechHull MetaMorph = new TechHull("Meta Morph", new Cost(50, 12, 12, 120), new TechRequirements(construction: 10, prtRequired: PRT.HE), 310, TechCategory.ShipHull)
+        {
+            Type = TechHullType.ArmedFreighter,
+            Mass = 85,
+            Armor = 500,
+            Initiative = 2,
+            FuelCapacity = 700,
+            CargoCapacity = 500,
+            Slots = new List<TechHullSlot>(new TechHullSlot[] {
+                new TechHullSlot(HullSlotType.Engine, 3, true),
+                new TechHullSlot(HullSlotType.General, 8, false),
+                new TechHullSlot(HullSlotType.General, 2, false),
+                new TechHullSlot(HullSlotType.General, 2, false),
+                new TechHullSlot(HullSlotType.General, 1, false),
+                new TechHullSlot(HullSlotType.General, 2, false),
+                new TechHullSlot(HullSlotType.General, 2, false),
+            })
+        };
+
         #endregion
 
         #region StarbaseHulls
@@ -2015,11 +2060,11 @@ namespace CraigStars
         public static readonly TechHull OrbitalFort = new TechHull("Orbital Fort", new Cost(24, 0, 34, 80), new TechRequirements(), 10, TechCategory.StarbaseHull)
         {
             Type = TechHullType.Starbase,
+            SpaceDock = 0,
             Armor = 100,
             Initiative = 10,
             RangeBonus = 1,
             Starbase = true,
-            SpaceDock = 0,
             RepairBonus = .03f, // 8% total repair rate
             Slots = new List<TechHullSlot>(new TechHullSlot[] {
                 new TechHullSlot(HullSlotType.OrbitalElectrical, 1, false),
@@ -2033,12 +2078,12 @@ namespace CraigStars
         public static readonly TechHull SpaceStation = new TechHull("Space Station", new Cost(120, 80, 250, 600), new TechRequirements(), 20, TechCategory.StarbaseHull)
         {
             Type = TechHullType.Starbase,
+            SpaceDock = TechHull.UnlimitedSpaceDock,
             Armor = 500,
             Initiative = 14,
             RangeBonus = 1,
             Starbase = true,
             RepairBonus = .15f, // 20% total repair rate
-            SpaceDock = TechHull.UnlimitedSpaceDock,
             Slots = new List<TechHullSlot>(new TechHullSlot[] {
                 new TechHullSlot(HullSlotType.OrbitalElectrical, 1, false),
                 new TechHullSlot(HullSlotType.Weapon, 16, false),
@@ -2055,15 +2100,42 @@ namespace CraigStars
             })
         };
 
+        public static readonly TechHull UltraStation = new TechHull("Ultra Station", new Cost(120, 80, 300, 600), new TechRequirements(construction: 12, lrtsRequired: LRT.ISB), 30, TechCategory.StarbaseHull)
+        {
+            Type = TechHullType.Starbase,
+            SpaceDock = TechHull.UnlimitedSpaceDock,
+            Armor = 1000,
+            Initiative = 16,
+            Starbase = true,
+            RepairBonus = .15f, // 20% total repair rate
+            Slots = new List<TechHullSlot>(new TechHullSlot[] {
+                new TechHullSlot(HullSlotType.OrbitalElectrical, 1, false),
+                new TechHullSlot(HullSlotType.Weapon, 16, false),
+                new TechHullSlot(HullSlotType.Electrical, 3, false),
+                new TechHullSlot(HullSlotType.Weapon, 16, false),
+                new TechHullSlot(HullSlotType.Shield, 20, false),
+                new TechHullSlot(HullSlotType.Shield, 20, false),
+                new TechHullSlot(HullSlotType.Electrical, 3, false),
+                new TechHullSlot(HullSlotType.Weapon, 16, false),
+                new TechHullSlot(HullSlotType.Electrical, 3, false),
+                new TechHullSlot(HullSlotType.Weapon, 16, false),
+                new TechHullSlot(HullSlotType.OrbitalElectrical, 1, false),
+                new TechHullSlot(HullSlotType.ShieldArmor, 20, false),
+                new TechHullSlot(HullSlotType.Weapon, 16, false),
+                new TechHullSlot(HullSlotType.ShieldArmor, 20, false),
+                new TechHullSlot(HullSlotType.Electrical, 3, false),
+                new TechHullSlot(HullSlotType.Weapon, 16, false),
+            })
+        };
+
         public static readonly TechHull DeathStar = new TechHull("Death Star", new Cost(120, 80, 350, 750), new TechRequirements(construction: 17, prtRequired: PRT.AR), 40, TechCategory.StarbaseHull)
         {
             Type = TechHullType.Starbase,
-            Mass = 0,
+            SpaceDock = TechHull.UnlimitedSpaceDock,
             Armor = 1500,
             Initiative = 18,
             Starbase = true,
             RepairBonus = .15f, // 20% total repair rate
-            SpaceDock = TechHull.UnlimitedSpaceDock,
             Slots = new List<TechHullSlot>(new TechHullSlot[] {
                 new TechHullSlot(HullSlotType.OrbitalElectrical, 1, false),
                 new TechHullSlot(HullSlotType.Weapon, 32, false),
@@ -2083,6 +2155,8 @@ namespace CraigStars
                 new TechHullSlot(HullSlotType.Weapon, 32, false),
             })
         };
+
+
         #endregion
 
         #region Defenses
@@ -2410,10 +2484,13 @@ namespace CraigStars
                 SuperFuelXport,
                 MiniMineLayer,
                 SuperMineLayer,
+                Nubian,
+                MetaMorph,
 
                 // starbases
                 OrbitalFort,
                 SpaceStation,
+                UltraStation,
                 DeathStar,
 
                 // defenses

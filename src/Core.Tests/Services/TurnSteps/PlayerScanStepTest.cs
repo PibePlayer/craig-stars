@@ -250,7 +250,7 @@ namespace CraigStars.Tests
         }
 
         [Test]
-        public void DiscoverStargatesInRangeTest()
+        public void TestDiscoverStargatesInRange()
         {
             var (game, gameRunner) = TestUtils.GetTwoPlayerGame();
             var player1 = game.Players[0];
@@ -269,8 +269,6 @@ namespace CraigStars.Tests
 
             // move the planet in range
             planet2.Position = new Vector2(250, 0);
-
-            gameRunner.ComputeSpecs();
 
             game.UpdateInternalDictionaries();
             gameRunner.ComputeSpecs();
@@ -301,6 +299,42 @@ namespace CraigStars.Tests
             Assert.AreEqual(new Hab(50, 50, 50), player1Planet2.Hab);
             Assert.Greater(player1Planet2.Population, 0);
             Assert.AreEqual(player2.Num, player1Planet2.PlayerNum);
+        }
+
+        [Test]
+        public void TestDetectAllPackets()
+        {
+            var (game, gameRunner) = TestUtils.GetTwoPlayerGame();
+            var player1 = game.Players[0];
+            var player2 = game.Players[1];
+
+            game.MineralPackets.Add(new MineralPacket()
+            {
+                PlayerNum = player2.Num,
+                Position = new Vector2(1000, 1000),
+                Cargo = new Cargo(1, 2, 3),
+                WarpFactor = 10,
+                Heading = new Vector2(1, 0),
+                Target = game.Planets[0]
+            });
+
+            var scanStep = new PlayerScanStep(gameRunner.GameProvider, rulesProvider, playerIntel, playerTechService, fleetSpecService);
+            scanStep.Execute(new TurnGenerationContext(), game.OwnedPlanets.ToList());
+
+            // should have nothing
+            Assert.IsEmpty(player1.MineralPackets);
+
+            player1.Race.PRT = PRT.PP;
+            gameRunner.ComputeSpecs();
+
+            scanStep.Execute(new TurnGenerationContext(), game.OwnedPlanets.ToList());
+
+            // should now know there is a packet coming towards us
+            Assert.IsNotEmpty(player1.ForeignMineralPackets);
+            Assert.AreEqual(new Vector2(1000, 1000), player1.ForeignMineralPackets[0].Position);
+            Assert.AreEqual(new Vector2(1, 0), player1.ForeignMineralPackets[0].Heading);
+            Assert.AreEqual(new Cargo(1, 2, 3), player1.ForeignMineralPackets[0].Cargo);
+
         }
     }
 

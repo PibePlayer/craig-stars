@@ -286,6 +286,13 @@ namespace CraigStars
                     continue;
                 }
 
+                // PP races detect all packets in flight
+                if (player.Race.Spec.DetectAllPackets)
+                {
+                    playerIntel.Discover(player, packet, false);
+                    continue;
+                }
+
                 foreach (var scanner in scanners)
                 {
                     // if we aren't orbiting a planet, we can be seen with regular scanners
@@ -348,6 +355,7 @@ namespace CraigStars
             {
                 DiscoverStargatesInRange(player);
             }
+
         }
 
         /// <summary>

@@ -63,7 +63,7 @@ namespace CraigStars
         public float PacketPermaformChance { get; set; }
 
         [DefaultValue(100)]
-        public int PacketPermaformSizeUnit { get; set; }
+        public int PacketPermaTerraformSizeUnit { get; set; } = 100;
 
         [DefaultValue(false)]
         public bool CanGateCargo { get; set; } = false;

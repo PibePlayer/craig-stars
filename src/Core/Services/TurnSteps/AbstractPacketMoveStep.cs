@@ -18,16 +18,19 @@ namespace CraigStars
 
         private readonly PlanetService planetService;
         private readonly ShipDesignDiscoverer designDiscoverer;
+        private readonly IRulesProvider rulesProvider;
+        private Rules Rules => rulesProvider.Rules;
 
         HashSet<MineralPacket> processedMineralPackets = new HashSet<MineralPacket>();
 
         // some things (like remote mining) only happen on wp1
         private readonly int processIndex;
 
-        public AbstractPacketMoveStep(IProvider<Game> gameProvider, PlanetService planetService, ShipDesignDiscoverer designDiscoverer, TurnGenerationState state, int waypointIndex) : base(gameProvider, state)
+        public AbstractPacketMoveStep(IProvider<Game> gameProvider, PlanetService planetService, ShipDesignDiscoverer designDiscoverer, IRulesProvider rulesProvider, TurnGenerationState state, int waypointIndex) : base(gameProvider, state)
         {
             this.planetService = planetService;
             this.designDiscoverer = designDiscoverer;
+            this.rulesProvider = rulesProvider;
             this.processIndex = waypointIndex;
         }
 
@@ -124,6 +127,8 @@ namespace CraigStars
 
             var planet = packet.Target;
 
+            int uncaught = 0;
+
             if (packet.Target.HasMassDriver && planet.Starbase.Spec.SafePacketSpeed >= packet.WarpFactor)
             {
                 // caught packet successfully, transfer cargo
@@ -133,6 +138,9 @@ namespace CraigStars
             else if (!planet.Owned)
             {
                 packet.Target.AttemptTransfer(cargo);
+
+                // all uncaught
+                uncaught = weight;
             }
             else if (planet.Owned)
             {
@@ -143,6 +151,7 @@ namespace CraigStars
                 var speedOfPacket = packet.WarpFactor * packet.WarpFactor;
                 var speedOfReceiver = receiverDriverSpeed * receiverDriverSpeed;
                 var percentCaughtSafely = (float)speedOfReceiver / speedOfPacket;
+                uncaught = (int)((1f - percentCaughtSafely) * weight);
                 var mineralsRecovered = weight * percentCaughtSafely + weight * (1 / 3f) * (1 - percentCaughtSafely);
                 var rawDamage = (speedOfPacket - speedOfReceiver) * weight / 160f;
                 var damageWithDefenses = rawDamage * (1 - planetService.GetDefenseCoverage(planet, planetPlayer));
@@ -172,9 +181,82 @@ namespace CraigStars
                 Message.MineralPacketArrived(player, planet, packet);
             }
 
+            if (uncaught > 0)
+            {
+                CheckTerraform(packet, player, planet, uncaught);
+                CheckPermaform(packet, player, planet, uncaught);
+            }
+
             // delete the packet
             EventManager.PublishMapObjectDeletedEvent(packet);
         }
+
+        /// <summary>
+        /// From starsautohost: https://starsautohost.org/sahforum2/index.php?t=msg&th=1294&start=0&rid=0
+        /// 
+        /// For each uncaught 100kT of mineral there is 50% chance of performing 1 click of normal terraforming on the target planet (i.e. the same terra with the same limits as if you were sat on the planet spending resources).
+        /// So a large packet of 2000kT on an unoccupied planet should expect to terrafrom it 10 clicks, which is a lot.
+        /// 
+        /// Secondly, the same packet can also perform "permanent terraforming" by altering the underlying planet variables.
+        /// There is a 50% chance of performing 1 click of permanent terraforming per 1000kT of uncaught material.
+        /// 
+        /// This ability is only available to PP and CA and for CAs it is random, whereas PP's can choose what planet to permanently alter.
+        /// 
+        /// Note these figures are for uncaught amounts, so work best on planets with no defences and especially no flingers.
+        /// 
+        /// The direction of terraforming in all cases is towards the optimum for the flinging race. 
+        /// Whether the target is yours, friends, enemies or empty makes no difference.
+        /// 
+        /// For an immunity I believe the terraforming is towards the closest edge.
+        /// </summary>
+        /// <param name="packet"></param>
+        /// <param name="player"></param>
+        /// <param name="planet"></param>
+        /// <param name="uncaught"></param>
+        internal void CheckTerraform(MineralPacket packet, Player player, Planet planet, int uncaught)
+        {
+            if (player.Race.Spec.PacketTerraformChance > 0)
+            {
+                // we have a 50% chance per 100kt of uncaught minerals, so if we have 200kT uncaught, we 
+                // check twice
+                for (int uncaughtCheck = player.Race.Spec.PacketPermaTerraformSizeUnit; uncaughtCheck <= uncaught; uncaughtCheck += player.Race.Spec.PacketPermaTerraformSizeUnit)
+                {
+                    if (player.Race.Spec.PacketTerraformChance >= Rules.Random.NextDouble())
+                    {
+                        // terraform one at a time to ensure the best things get terraformed
+                        (HabType habType, int direction) = planetService.TerraformOneStep(planet, player);
+                        Message.PacketTerraform(player, planet, habType, direction);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Same as above, but the chances are lower
+        /// </summary>
+        /// <param name="packet"></param>
+        /// <param name="player"></param>
+        /// <param name="planet"></param>
+        /// <param name="uncaught"></param>
+        internal void CheckPermaform(MineralPacket packet, Player player, Planet planet, int uncaught)
+        {
+            if (player.Race.Spec.PacketPermaformChance > 0 && player.Race.Spec.PacketPermaTerraformSizeUnit > 0)
+            {
+                // we have a 50% chance per 100kt of uncaught minerals, so if we have 200kT uncaught, we 
+                // check twice
+                for (int uncaughtCheck = player.Race.Spec.PacketPermaTerraformSizeUnit; uncaughtCheck <= uncaught; uncaughtCheck += player.Race.Spec.PacketPermaTerraformSizeUnit)
+                {
+                    if (player.Race.Spec.PacketPermaformChance >= Rules.Random.NextDouble())
+                    {
+                        // terraform one at a time to ensure the best things get terraformed
+                        HabType habType = (HabType)Rules.Random.Next(3);
+                        (habType, int direction) = planetService.PermaformOneStep(planet, player, habType);
+                        Message.PacketPermaform(player, planet, habType, direction);
+                    }
+                }
+            }
+        }
+
 
         /// <summary>
         /// Override PostProcess() to set processed waypoints to the TurnGeneratorContext

@@ -541,7 +541,9 @@ namespace CraigStars
         /// Terraform this planet one step in whatever the best option is
         /// </summary>
         /// <param name="planet"></param>
-        public void TerraformOneStep(Planet planet, Player player)
+        /// <param name="player"></param>
+        /// <returns>The habtype and direction the terraforming took place</returns>
+        public (HabType, int) TerraformOneStep(Planet planet, Player player)
         {
             var bestHab = GetBestTerraform(planet, player);
 
@@ -554,16 +556,17 @@ namespace CraigStars
                     // for example, the planet has Grav 49, but our player wants Grav 50 
                     planet.Hab = planet.Hab.Value.WithType(habType, planet.Hab.Value[habType] + 1);
                     planet.TerraformedAmount = planet.TerraformedAmount.Value.WithType(habType, planet.TerraformedAmount.Value[habType] + 1);
-                    Message.Terraform(player, planet, habType, 1);
+                    return (habType, 1);
                 }
                 else if (fromIdeal < 0)
                 {
                     // for example, the planet has Grav 51, but our player wants Grav 50 
                     planet.Hab = planet.Hab.Value.WithType(habType, planet.Hab.Value[habType] - 1);
                     planet.TerraformedAmount = planet.TerraformedAmount.Value.WithType(habType, planet.TerraformedAmount.Value[habType] - 1);
-                    Message.Terraform(player, planet, habType, -1);
+                    return (habType, -1);
                 }
             }
+            return (HabType.Gravity, 0);
         }
 
         /// <summary>
@@ -571,21 +574,22 @@ namespace CraigStars
         /// This adjusts the BaseHab as well as the hab
         /// </summary>
         /// <param name="planet"></param>
-        public void PermaformOneStep(Planet planet, Player player, HabType habType)
+        public (HabType habType, int direction) PermaformOneStep(Planet planet, Player player, HabType habType)
         {
+            int direction = 0;
             // pick a random hab
             int fromIdealBaseHab = player.Race.HabCenter[habType] - planet.BaseHab.Value[habType];
             if (fromIdealBaseHab > 0)
             {
                 // for example, the planet has Grav 49, but our player wants Grav 50 
                 planet.BaseHab = planet.BaseHab.Value.WithType(habType, planet.BaseHab.Value[habType] + 1);
-                Message.Permaform(player, planet, habType, 1);
+                direction = 1;
             }
             else if (fromIdealBaseHab < 0)
             {
                 // for example, the planet has Grav 51, but our player wants Grav 50 
                 planet.BaseHab = planet.BaseHab.Value.WithType(habType, planet.BaseHab.Value[habType] - 1);
-                Message.Permaform(player, planet, habType, -1);
+                direction = -1;
             }
 
             // if this means our terraformed hab is beter as well, improve it
@@ -598,6 +602,8 @@ namespace CraigStars
             {
                 planet.Hab = planet.Hab.Value.WithType(habType, planet.Hab.Value[habType] - 1);
             }
+
+            return (habType, direction);
         }
 
         #endregion

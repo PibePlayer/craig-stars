@@ -263,7 +263,8 @@ namespace CraigStars
                 for (int i = 0; i < numBuilt; i++)
                 {
                     // terraform one at a time to ensure the best things get terraformed
-                    planetService.TerraformOneStep(planet, player);
+                    (HabType habType, int direction) = planetService.TerraformOneStep(planet, player);
+                    Message.Terraform(player, planet, habType, direction);
                 }
             }
             else if (item.IsPacket)

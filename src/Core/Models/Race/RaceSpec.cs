@@ -113,8 +113,8 @@ namespace CraigStars
         /// has a .1% chance of permaforming the planet
         /// </summary>
         /// <value></value>
-        public int PacketPermaformSizeUnit { get; set; }
-        
+        public int PacketPermaTerraformSizeUnit { get; set; }
+
         /// <summary>
         /// Can this rate send cargo through stargates?
         /// </summary>

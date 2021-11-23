@@ -61,6 +61,7 @@ namespace CraigStars
             spec.DetectAllPackets = prtSpec.DetectAllPackets;
             spec.PacketTerraformChance = prtSpec.PacketTerraformChance;
             spec.PacketPermaformChance = prtSpec.PacketPermaformChance;
+            spec.PacketPermaTerraformSizeUnit = prtSpec.PacketPermaTerraformSizeUnit;
 
             // IT
             spec.PacketOverSafeWarpPenalty = prtSpec.PacketOverSafeWarpPenalty;

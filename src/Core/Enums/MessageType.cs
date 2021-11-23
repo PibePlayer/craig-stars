@@ -45,6 +45,10 @@ namespace CraigStars
         Victor,
         FleetReproduce,
         RandomMineralDeposit,
+        Permaform,
+        Instaform,
+        PacketTerraform,
+        PacketPermaform,
 
     }
 }

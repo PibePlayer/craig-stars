@@ -256,7 +256,7 @@ namespace CraigStars.Tests
             var player = game.Players[0];
             var planet = game.Planets[0];
             var initialFleetCount = game.Fleets.Count;
-            planet.Factories = 10; 
+            planet.Factories = 10;
             planet.Mines = 10;
             planet.ContributesOnlyLeftoverToResearch = true;
             var design = ShipDesigns.LongRangeScount.Clone();
@@ -289,7 +289,7 @@ namespace CraigStars.Tests
             Assert.AreEqual(QueueItemType.ShipToken, planet.ProductionQueue.Items[2].Type);
             Assert.AreEqual(1, planet.ProductionQueue.Items[2].Quantity);
             Assert.AreEqual(new Cost(ironium: 6, boranium: 0, germanium: 3, resources: 9), planet.ProductionQueue.Items[2].Allocated);
-            
+
             // what we couldnt spend is leftover
             Assert.AreEqual(new Cargo(ironium: 12, boranium: 2, germanium: 0, colonists: planet.Cargo.Colonists), planet.Cargo);
             Assert.AreEqual(21, leftoverResources);
@@ -464,5 +464,38 @@ namespace CraigStars.Tests
             Assert.AreEqual(game.Designs[game.Designs.Count - 1], fleet.Tokens[1].Design);
             Assert.AreEqual(1, fleet.Tokens[1].Quantity);
         }
+
+        [Test]
+        public void TestBuildPacket()
+        {
+            var player = game.Players[0];
+            var planet = game.Planets[0];
+            planet.PacketSpeed = 5;
+
+            var target = new Planet() {
+                Position = new Vector2(100, 100),
+                Name = "Target Planet",
+            };
+            game.Planets.Add(target);
+
+            planet.PacketTarget = target;
+
+            ProductionQueueItem item = new(QueueItemType.MixedMineralPacket, 1);
+
+            MineralPacket builtPacket = null;
+            Action<MapObject> onPacketBuilt = (MapObject mo) =>
+            {
+                builtPacket = (MineralPacket)mo;
+            };
+
+            EventManager.MapObjectCreatedEvent += onPacketBuilt;
+            step.BuildPacket(planet, player, new Cargo(1, 1, 1), 1);
+            EventManager.MapObjectCreatedEvent -= onPacketBuilt;
+
+            Assert.IsNotNull(builtPacket);
+            Assert.GreaterOrEqual(5, builtPacket.WarpFactor);
+
+        }
+
     }
 }

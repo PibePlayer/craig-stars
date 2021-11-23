@@ -150,8 +150,8 @@ namespace CraigStars
             PacketBuiltInScanner = true,
             DetectPacketDestinationStarbases = true,
             DetectAllPackets = true,
-            PacketTerraformChance = .5f, // 50%
-            PacketPermaformChance = .001f, // .1% per 100kt overage
+            PacketTerraformChance = .5f, // 50% per 100kT uncaught
+            PacketPermaformChance = .001f, // .1% per 100kT uncaught
 
         };
 

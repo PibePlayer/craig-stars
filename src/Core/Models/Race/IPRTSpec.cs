@@ -113,7 +113,7 @@ namespace CraigStars
         /// </summary>
         /// <value></value>
         [DefaultValue(100)]
-        int PacketPermaformSizeUnit { get; set; }
+        int PacketPermaTerraformSizeUnit { get; set; }
 
         /// <summary>
         /// Can this rate send cargo through stargates?

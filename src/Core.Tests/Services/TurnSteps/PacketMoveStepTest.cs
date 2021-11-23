@@ -10,6 +10,7 @@ using log4net.Core;
 using log4net.Repository.Hierarchy;
 using System.Threading.Tasks;
 using System.Linq;
+using FakeItEasy;
 
 namespace CraigStars.Tests
 {
@@ -25,7 +26,7 @@ namespace CraigStars.Tests
         public void TestCompleteMoveCaught()
         {
             var (game, gameRunner) = TestUtils.GetSingleUnitGame();
-            PacketMove1Step step = new PacketMove1Step(gameRunner.GameProvider, planetService, designDiscoverer);
+            PacketMove1Step step = new PacketMove1Step(gameRunner.GameProvider, planetService, designDiscoverer, new TestRulesProvider());
             var player = game.Players[0];
 
             // create a starbase with a warp5 receiver
@@ -81,7 +82,7 @@ namespace CraigStars.Tests
         public void TestCompleteMoveOverspeed()
         {
             var (game, gameRunner) = TestUtils.GetSingleUnitGame();
-            PacketMove1Step step = new PacketMove1Step(gameRunner.GameProvider, planetService, designDiscoverer);
+            PacketMove1Step step = new PacketMove1Step(gameRunner.GameProvider, planetService, designDiscoverer, new TestRulesProvider());
             var player = game.Players[0];
             player.TechLevels = new TechLevel(energy: 5);
 
@@ -138,7 +139,7 @@ namespace CraigStars.Tests
         public void TestCompleteMoveKillPlanet()
         {
             var (game, gameRunner) = TestUtils.GetSingleUnitGame();
-            PacketMove1Step step = new PacketMove1Step(gameRunner.GameProvider, planetService, designDiscoverer);
+            PacketMove1Step step = new PacketMove1Step(gameRunner.GameProvider, planetService, designDiscoverer, new TestRulesProvider());
             var player = game.Players[0];
 
             var planet2 = new Planet()
@@ -171,7 +172,7 @@ namespace CraigStars.Tests
         public void TestCompleteMoveDiscoverStarbase()
         {
             var (game, gameRunner) = TestUtils.GetTwoPlayerGame();
-            PacketMove1Step step = new PacketMove1Step(gameRunner.GameProvider, planetService, designDiscoverer);
+            PacketMove1Step step = new PacketMove1Step(gameRunner.GameProvider, planetService, designDiscoverer, new TestRulesProvider());
             var player1 = game.Players[0];
             var player2 = game.Players[1];
             var planet2 = game.Planets[1];
@@ -218,6 +219,132 @@ namespace CraigStars.Tests
             // player2 should catch just fine
             Assert.AreEqual(25000, planet2.Population);
             Assert.AreEqual(new Cargo(1000), planet2.Cargo.WithColonists(0));
+        }
+
+        [Test]
+        public void TestTerraform()
+        {
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
+            IRulesProvider mockRulesProvider = A.Fake<IRulesProvider>();
+            var player = game.Players[0];
+
+            // allow Grav3 terraform
+            player.Race.PRT = PRT.PP;
+            player.TechLevels = new TechLevel(propulsion: 1, biotechnology: 1);
+            gameRunner.ComputeSpecs();
+
+            // make sure our random number generator returns "yes, permaform" and "permaform gravity"
+            var mockRules = A.Fake<Rules>();
+            var random = A.Fake<Random>();
+            A.CallTo(() => mockRulesProvider.Rules).Returns(mockRules);
+            mockRules.Random = random;
+
+            PacketMove1Step step = new PacketMove1Step(gameRunner.GameProvider, planetService, designDiscoverer, mockRulesProvider);
+
+            // make an extra planet
+            var planet2 = new Planet()
+            {
+                BaseHab = new Hab(47, 50, 50),
+                Hab = new Hab(47, 50, 50),
+                TerraformedAmount = new Hab(),
+            };
+
+            // create a 1000kT packet
+            MineralPacket packet = new MineralPacket()
+            {
+                PlayerNum = player.Num,
+                SafeWarpSpeed = 13,
+                WarpFactor = 13,
+                Cargo = new Cargo(200),
+                Target = planet2
+            };
+
+            // set our specs
+            player.Race.Spec.PacketTerraformChance = .5f;
+            player.Race.Spec.PacketPermaTerraformSizeUnit = 100;
+
+            // make it not-random
+            // out of three loops, the first two permaform, the second does not
+            // they both permaform gravity
+            A.CallTo(() => random.NextDouble()).Returns(.5);
+            A.CallTo(() => random.Next(3)).Returns((int)HabType.Gravity);
+
+            step.CheckTerraform(packet, player, planet2, 200);
+
+            // should permaform one step, and adjust our value up one
+            Assert.AreEqual(new Hab(49, 50, 50), planet2.Hab);
+            Assert.AreEqual(new Hab(47, 50, 50), planet2.BaseHab);
+            Assert.AreEqual(new Hab(2, 0, 0), planet2.TerraformedAmount);
+
+            // make it fail
+            A.CallTo(() => random.NextDouble()).Returns(.6);
+            step.CheckPermaform(packet, player, planet2, 200);
+            // should be the same
+            Assert.AreEqual(new Hab(49, 50, 50), planet2.Hab);
+            Assert.AreEqual(new Hab(47, 50, 50), planet2.BaseHab);
+            Assert.AreEqual(new Hab(2, 0, 0), planet2.TerraformedAmount);
+
+        }        
+
+        [Test]
+        public void TestPermaform()
+        {
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
+            IRulesProvider mockRulesProvider = A.Fake<IRulesProvider>();
+
+            // make sure our random number generator returns "yes, permaform" and "permaform gravity"
+            var mockRules = A.Fake<Rules>();
+            var random = A.Fake<Random>();
+            A.CallTo(() => mockRulesProvider.Rules).Returns(mockRules);
+            mockRules.Random = random;
+
+            PacketMove1Step step = new PacketMove1Step(gameRunner.GameProvider, planetService, designDiscoverer, mockRulesProvider);
+
+            // make a PP player
+            var player = game.Players[0];
+            player.Race.PRT = PRT.PP;
+
+            // make an extra planet
+            var planet2 = new Planet()
+            {
+                BaseHab = new Hab(47, 50, 50),
+                Hab = new Hab(47, 50, 50),
+                TerraformedAmount = new Hab(),
+            };
+
+            // create a 1000kT packet
+            MineralPacket packet = new MineralPacket()
+            {
+                PlayerNum = player.Num,
+                SafeWarpSpeed = 13,
+                WarpFactor = 13,
+                Cargo = new Cargo(200),
+                Target = planet2
+            };
+
+            // set our specs
+            player.Race.Spec.PacketPermaformChance = .001f;
+            player.Race.Spec.PacketPermaTerraformSizeUnit = 100;
+
+            // make it not-random
+            // out of three loops, the first two permaform, the second does not
+            // they both permaform gravity
+            A.CallTo(() => random.NextDouble()).Returns(.001);
+            A.CallTo(() => random.Next(3)).Returns((int)HabType.Gravity);
+
+            step.CheckPermaform(packet, player, planet2, 200);
+
+            // should permaform one step, and adjust our value up one
+            Assert.AreEqual(new Hab(49, 50, 50), planet2.Hab);
+            Assert.AreEqual(new Hab(49, 50, 50), planet2.BaseHab);
+
+            // make it fail
+            A.CallTo(() => random.NextDouble()).Returns(.002);
+            step.CheckPermaform(packet, player, planet2, 200);
+            // should be the same
+            Assert.AreEqual(new Hab(49, 50, 50), planet2.Hab);
+            Assert.AreEqual(new Hab(49, 50, 50), planet2.BaseHab);
+
         }
     }
 }

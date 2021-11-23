@@ -85,17 +85,46 @@ namespace CraigStars
             player.Messages.Add(new Message(MessageType.BuiltTerraform, text, planet));
         }
 
+        public static void PacketTerraform(Player player, Planet planet, HabType habType, int change)
+        {
+            string changeText = change > 0 ? "increased" : "decreased";
+            string newValueText = "";
+            var newValue = planet.Hab.Value[habType];
+            switch (habType)
+            {
+                case HabType.Gravity:
+                    newValueText = TextUtils.GetGravString(newValue);
+                    break;
+                case HabType.Temperature:
+                    newValueText = TextUtils.GetTempString(newValue);
+                    break;
+                case HabType.Radiation:
+                    newValueText = TextUtils.GetRadString(newValue);
+                    break;
+            }
+
+            string text = $"Your mineral packet hitting {planet.Name} has {changeText} the {habType} to {newValueText}";
+            player.Messages.Add(new Message(MessageType.PacketTerraform, text, planet));
+        }
+
+        public static void PacketPermaform(Player player, Planet planet, HabType habType, int change)
+        {
+            string changeText = change > 0 ? "increased" : "decreased";
+            string text = $"Your mineral packet has permanently {changeText} the {habType} on {planet.Name}.";
+            player.Messages.Add(new Message(MessageType.PacketPermaform, text, planet));
+        }
+
         public static void Instaform(Player player, Planet planet, Hab terraformAmount)
         {
             string text = $"Your race has instantly terraformed {planet.Name} up to optimal conditions.";
-            player.Messages.Add(new Message(MessageType.BuiltTerraform, text, planet));
+            player.Messages.Add(new Message(MessageType.Instaform, text, planet));
         }
 
         public static void Permaform(Player player, Planet planet, HabType habType, int change)
         {
             string changeText = change > 0 ? "increased" : "decreased";
             string text = $"Your race has permanently {changeText} the {habType} on {planet.Name}.";
-            player.Messages.Add(new Message(MessageType.BuiltTerraform, text, planet));
+            player.Messages.Add(new Message(MessageType.Permaform, text, planet));
         }
 
         public static void MineralPacket(Player player, Planet planet, MineralPacket packet)

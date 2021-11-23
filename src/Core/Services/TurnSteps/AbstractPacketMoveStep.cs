@@ -224,8 +224,11 @@ namespace CraigStars
                     if (player.Race.Spec.PacketTerraformChance >= Rules.Random.NextDouble())
                     {
                         // terraform one at a time to ensure the best things get terraformed
-                        (HabType habType, int direction) = planetService.TerraformOneStep(planet, player);
-                        Message.PacketTerraform(player, planet, habType, direction);
+                        var result = planetService.TerraformOneStep(planet, player);
+                        if (result.Terraformed)
+                        {
+                            Message.PacketTerraform(player, planet, result.type, result.direction);
+                        }
                     }
                 }
             }
@@ -250,8 +253,11 @@ namespace CraigStars
                     {
                         // terraform one at a time to ensure the best things get terraformed
                         HabType habType = (HabType)Rules.Random.Next(3);
-                        (habType, int direction) = planetService.PermaformOneStep(planet, player, habType);
-                        Message.PacketPermaform(player, planet, habType, direction);
+                        var result = planetService.PermaformOneStep(planet, player, habType);
+                        if (result.Terraformed)
+                        {
+                            Message.PacketPermaform(player, planet, result.type, result.direction);
+                        }
                     }
                 }
             }

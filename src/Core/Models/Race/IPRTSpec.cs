@@ -118,8 +118,13 @@ namespace CraigStars
         /// <summary>
         /// Can this rate send cargo through stargates?
         /// </summary>
-        [DefaultValue(false)]
         bool CanGateCargo { get; set; }
+
+        /// <summary>
+        /// Can this race detect other planets with stargates if they are in range?
+        /// </summary>
+        /// <value></value>
+        bool CanDetectStargatePlanets { get; set; }
 
         /// <summary>
         /// Does this race lose ships to the endless void if they overgate?

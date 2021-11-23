@@ -175,6 +175,7 @@ namespace CraigStars
                 })
             },
             CanGateCargo = true,
+            CanDetectStargatePlanets = true,
             ShipsVanishInVoid = false,
             PacketMineralCostFactor = 1.2f,
             PacketReceiverFactor = .5f,

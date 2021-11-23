@@ -66,6 +66,7 @@ namespace CraigStars
             // IT
             spec.PacketOverSafeWarpPenalty = prtSpec.PacketOverSafeWarpPenalty;
             spec.CanGateCargo = prtSpec.CanGateCargo;
+            spec.CanDetectStargatePlanets = prtSpec.CanDetectStargatePlanets;
             spec.ShipsVanishInVoid = prtSpec.ShipsVanishInVoid;
 
             // JoaT

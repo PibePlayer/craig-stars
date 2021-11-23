@@ -248,6 +248,60 @@ namespace CraigStars.Tests
             log.Debug($"Completed All Scans: ({TimeSpan.FromMilliseconds(stopwatch.ElapsedMilliseconds):c})");
 
         }
+
+        [Test]
+        public void DiscoverStargatesInRangeTest()
+        {
+            var (game, gameRunner) = TestUtils.GetTwoPlayerGame();
+            var player1 = game.Players[0];
+            var player2 = game.Players[1];
+
+            // our scan won't work unless we know about our own designs
+            playerIntel.Discover(player1, game.Designs[0]);
+
+            // add a 250 ly stargate
+            var planet1 = game.Planets[0];
+            planet1.Starbase.Design.Slots.Add(new ShipDesignSlot(Techs.Stargate100_250, 0, 1));
+
+            // add a stargate to detect
+            var planet2 = game.Planets[1];
+            planet2.Starbase.Design.Slots.Add(new ShipDesignSlot(Techs.Stargate100_250, 0, 1));
+
+            // move the planet in range
+            planet2.Position = new Vector2(250, 0);
+
+            gameRunner.ComputeSpecs();
+
+            game.UpdateInternalDictionaries();
+            gameRunner.ComputeSpecs();
+
+            // we should discover this fleet
+            var scanStep = new PlayerScanStep(gameRunner.GameProvider, rulesProvider, playerIntel, playerTechService, fleetSpecService);
+
+            scanStep.Execute(new TurnGenerationContext(), game.OwnedPlanets.ToList());
+
+            // update our various "ByGuid" dicts
+            player1.SetupMapObjectMappings();
+
+            // verify we didn't pen scan this planet
+            var player1Planet2 = player1.PlanetsByGuid[planet2.Guid];
+            Assert.IsFalse(player1Planet2.HasStarbase);
+            Assert.IsNull(player1Planet2.Hab);
+
+            // make our race IT, so we discover starbases
+            player1.Race.PRT = PRT.IT;
+            gameRunner.ComputeSpecs();
+
+            game.UpdateInternalDictionaries();
+            gameRunner.ComputeSpecs();
+
+            scanStep.Execute(new TurnGenerationContext(), game.OwnedPlanets.ToList());
+
+            Assert.IsTrue(player1Planet2.HasStarbase);
+            Assert.AreEqual(new Hab(50, 50, 50), player1Planet2.Hab);
+            Assert.Greater(player1Planet2.Population, 0);
+            Assert.AreEqual(player2.Num, player1Planet2.PlayerNum);
+        }
     }
 
 }

@@ -344,6 +344,10 @@ namespace CraigStars
                 }
             }
 
+            if (player.Race.Spec.CanDetectStargatePlanets)
+            {
+                DiscoverStargatesInRange(player);
+            }
         }
 
         /// <summary>
@@ -390,6 +394,29 @@ namespace CraigStars
             log.Debug($"{Game.Year}: {player} Discovering {fleetsToDiscover.Count} foreign fleets.");
             fleetsToDiscover.ForEach(fleet => playerIntel.Discover(player, fleet, player.Race.Spec.DiscoverDesignOnScan));
         }
+
+        /// <summary>
+        /// We can detect other races with stargates, discover them.
+        /// </summary>
+        /// <param name="player"></param>
+        void DiscoverStargatesInRange(Player player)
+        {
+            var playerStargatePlanets = OwnedPlanets.Where(p => p.OwnedBy(player) && p.HasStargate).ToList();
+            foreach (var planet in OwnedPlanets.Where(p => !p.OwnedBy(player) && p.HasStargate))
+            {
+                foreach (var playerStargatePlanet in playerStargatePlanets)
+                {
+                    var range = playerStargatePlanet.Starbase.Spec.Stargate.SafeRange * playerStargatePlanet.Starbase.Spec.Stargate.SafeRange;
+                    if (planet.Position.DistanceSquaredTo(playerStargatePlanet.Position) <= range)
+                    {
+                        playerIntel.Discover(player, planet, true);
+                        // go on to the next planet
+                        break;
+                    }
+                }
+            }
+        }
+
 
     }
 }

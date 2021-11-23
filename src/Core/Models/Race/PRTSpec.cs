@@ -65,8 +65,9 @@ namespace CraigStars
         [DefaultValue(100)]
         public int PacketPermaTerraformSizeUnit { get; set; } = 100;
 
-        [DefaultValue(false)]
-        public bool CanGateCargo { get; set; } = false;
+        public bool CanGateCargo { get; set; }
+
+        public bool CanDetectStargatePlanets { get; set; }
 
         [DefaultValue(true)]
         public bool ShipsVanishInVoid { get; set; } = true;

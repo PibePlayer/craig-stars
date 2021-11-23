@@ -336,7 +336,7 @@ namespace CraigStarsTable
                             var firstRow = Data.Rows.FirstOrDefault();
                             if (firstRow != null)
                             {
-                                RowSelectedEvent.Invoke(0, 0, firstRow.Data[0], firstRow.Metadata);
+                                RowSelectedEvent?.Invoke(0, 0, firstRow.Data[0], firstRow.Metadata);
                             }
 
                             Update();

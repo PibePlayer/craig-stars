@@ -311,7 +311,7 @@ namespace CraigStars.Server
                 Name = settings.Name,
                 GameInfo = settings
             };
-            if (GamesManager.Exists(game.Name))
+            if (GamesManager.FileExists(game.Name))
             {
                 GamesManager.DeleteGame(game.Name);
             }

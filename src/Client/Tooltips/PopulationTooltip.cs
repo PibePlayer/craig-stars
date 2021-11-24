@@ -23,11 +23,11 @@ namespace CraigStars.Client
                 if (Planet.OwnedBy(Me))
                 {
                     var hab = Me.Race.GetPlanetHabitability(Planet.Hab.Value);
-                    var growthAmount = planetService.GetGrowthAmount(Planet, Me);
+                    var growthAmount = Planet.Spec.GrowthAmount;
                     if (hab > 0)
                     {
                         tipRichTextLabel.BbcodeText = $"Your population on [b]{Planet.Name}[/b] is [b]{Planet.Population:n0}[/b]." +
-                            $"[b]{Planet.Name}[/b] will support a population of up to [b]{planetService.GetMaxPopulation(Planet, Me):n0}[/b]" +
+                            $"[b]{Planet.Name}[/b] will support a population of up to [b]{Planet.Spec.MaxPopulation:n0}[/b]" +
                             $" of your colonists.\n";
                     }
                     else
@@ -54,7 +54,7 @@ namespace CraigStars.Client
                     tipRichTextLabel.BbcodeText = $"[b]{Planet.Name}[/b] is uninhabited.\n";
                     if (hab > 0)
                     {
-                        tipRichTextLabel.BbcodeText += $"If you were to colonize [b]{Planet.Name}[/b], it would support up to [b]{planetService.GetMaxPopulation(Planet, Me):n0}[/b] " +
+                        tipRichTextLabel.BbcodeText += $"If you were to colonize [b]{Planet.Name}[/b], it would support up to [b]{Planet.Spec.MaxPopulation:n0}[/b] " +
                             "of your colonists";
                     }
                     else
@@ -70,7 +70,7 @@ namespace CraigStars.Client
                     tipRichTextLabel.BbcodeText = $"[b]{Planet.Name}[/b] is uninhabited.\n";
                     if (hab > 0)
                     {
-                        tipRichTextLabel.BbcodeText += $"If you were to colonize [b]{Planet.Name}[/b], it would support up to [b]{planetService.GetMaxPopulation(Planet, Me):n0}[/b] " +
+                        tipRichTextLabel.BbcodeText += $"If you were to colonize [b]{Planet.Name}[/b], it would support up to [b]{Planet.Spec.MaxPopulation:n0}[/b] " +
                             "of your colonists";
                     }
                     else

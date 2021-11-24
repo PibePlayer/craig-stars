@@ -47,6 +47,7 @@ namespace CraigStars.Tests
             planet.ProductionQueue.Items.Add(new ProductionQueueItem(QueueItemType.Mine, 1)); // 1 mine costs 5 resources, leaving 15
             player.ResearchAmount = 0;
             player.Researching = TechField.Energy;
+            gameRunner.ComputeSpecs();
 
             PlanetProductionStep productionStep = new PlanetProductionStep(
                 new Provider<Game>(game),

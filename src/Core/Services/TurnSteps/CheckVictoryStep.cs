@@ -125,7 +125,7 @@ namespace CraigStars
 
         internal void CheckProductionCapacity(Player player)
         {
-            var productionCapacity = player.Planets.Sum(planet => planetService.GetResourcesPerYear(planet, player));
+            var productionCapacity = player.Planets.Sum(planet => planet.Spec.ResourcesPerYear);
             if (productionCapacity >= Game.VictoryConditions.ProductionCapacity)
             {
                 player.AchievedVictoryConditions.Add(VictoryConditionType.ProductionCapacity);

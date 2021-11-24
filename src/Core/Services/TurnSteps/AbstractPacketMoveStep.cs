@@ -154,7 +154,7 @@ namespace CraigStars
                 uncaught = (int)((1f - percentCaughtSafely) * weight);
                 var mineralsRecovered = weight * percentCaughtSafely + weight * (1 / 3f) * (1 - percentCaughtSafely);
                 var rawDamage = (speedOfPacket - speedOfReceiver) * weight / 160f;
-                var damageWithDefenses = rawDamage * (1 - planetService.GetDefenseCoverage(planet, planetPlayer));
+                var damageWithDefenses = rawDamage * (1 - planet.Spec.DefenseCoverage);
                 var colonistsKilled = RoundToNearest(Math.Max(damageWithDefenses * planet.Population / 1000f, damageWithDefenses * 100));
                 var defensesDestroyed = (int)Math.Max(planet.Defenses * damageWithDefenses / 1000, damageWithDefenses / 20);
 

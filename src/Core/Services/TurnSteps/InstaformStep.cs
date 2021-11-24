@@ -32,7 +32,7 @@ namespace CraigStars
         /// <param name="planet"></param>
         internal void Instaform(Planet planet, Player player)
         {
-            Hab terraformAmount = planetService.GetTerraformAmount(planet, player);
+            Hab terraformAmount = planet.Spec.TerraformAmount;
             if (terraformAmount.AbsSum > 0)
             {
                 // Instantly terraform this planet (but don't update planet.TerraformAmount, this change doesn't stick if we leave)

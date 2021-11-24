@@ -67,7 +67,7 @@ namespace CraigStars
                 }
                 // Planets:  From 1 to 6 points, scoring 1 point for each 100,000 colonists
                 score.Score += Mathf.Clamp(planet.Population / 100000, 1, 6);
-                score.Resources += planetService.GetResourcesPerYear(planet, player);
+                score.Resources += planet.Spec.ResourcesPerYear;
             }
 
             score.TechLevels = player.TechLevels.Sum();

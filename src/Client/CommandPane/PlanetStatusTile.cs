@@ -7,7 +7,7 @@ namespace CraigStars.Client
     public class PlanetStatusTile : PlanetTile
     {
         [Inject] protected PlayerTechService playerTechService;
-        
+
         Label population;
         Label resources;
         Label scannerType;
@@ -55,11 +55,11 @@ namespace CraigStars.Client
             if (CommandedPlanet != null)
             {
                 population.Text = $"{CommandedPlanet.Planet.Population:n0}";
-                resources.Text = $"{planetService.GetResourcesPerYearAvailable(CommandedPlanet.Planet, Me):n0} of {planetService.GetResourcesPerYear(CommandedPlanet.Planet, Me):n0}";
-                defenses.Text = $"{CommandedPlanet.Planet.Defenses:n0} of {planetService.GetMaxDefenses(CommandedPlanet.Planet, Me):n0}";
+                resources.Text = $"{CommandedPlanet.Planet.Spec.ResourcesPerYearAvailable:n0} of {CommandedPlanet.Planet.Spec.ResourcesPerYear:n0}";
+                defenses.Text = $"{CommandedPlanet.Planet.Defenses:n0} of {CommandedPlanet.Planet.Spec.MaxDefenses:n0}";
                 var defense = playerTechService.GetBestDefense(Me);
                 defenseType.Text = defense?.Name;
-                defenseCoverage.Text = $"{planetService.GetDefenseCoverage(CommandedPlanet.Planet, Me):P1}";
+                defenseCoverage.Text = $"{CommandedPlanet.Planet.Spec.DefenseCoverage:P1}";
                 if (CommandedPlanet.Planet.Scanner)
                 {
                     var scanner = playerTechService.GetBestPlanetaryScanner(Me);

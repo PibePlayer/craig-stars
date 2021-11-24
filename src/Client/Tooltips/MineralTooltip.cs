@@ -37,7 +37,7 @@ namespace CraigStars.Client
             {
                 onSurfaceValueLabel.Text = $"{Planet.Cargo[Type]}kT";
                 mineralConcentrationValueLabel.Text = $"{Planet.MineralConcentration[Type]}";
-                miningRateValueLabel.Text = $"{planetService.GetMineralOutput(Planet, Me)[Type]}kT/yr";
+                miningRateValueLabel.Text = $"{Planet.Spec.MineralOutput[Type]}kT/yr";
             }
         }
 

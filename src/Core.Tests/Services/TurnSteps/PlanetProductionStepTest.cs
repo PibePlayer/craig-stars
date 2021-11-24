@@ -93,8 +93,8 @@ namespace CraigStars.Tests
         {
             var player = game.Players[0];
             var planet = game.Planets[0];
-            var maxMines = planetService.GetMaxMines(planet, player);
-            var maxPossibleMines = planetService.GetMaxPossibleMines(planet, player);
+            var maxMines = planet.Spec.MaxMines;
+            var maxPossibleMines = planet.Spec.MaxPossibleMines;
 
             // we have the max possible mines, so we won't actually build any
             planet.Mines = maxPossibleMines;
@@ -177,6 +177,7 @@ namespace CraigStars.Tests
             planet.Factories = 10;
             planet.Mines = 10;
             planet.ContributesOnlyLeftoverToResearch = true;
+            planet.Spec = planetService.ComputePlanetSpec(planet, player);
 
             // should build one factory
             // and have 4kt less germanium
@@ -225,6 +226,7 @@ namespace CraigStars.Tests
             planet.Factories = 10;
             planet.Mines = 10;
             planet.ContributesOnlyLeftoverToResearch = true;
+            planet.Spec = planetService.ComputePlanetSpec(planet, player);
 
             // build a factory and mine without enough germanium, but auto build tasks
             // so when the factory doesn't complete, it should move on and try the mines
@@ -263,6 +265,7 @@ namespace CraigStars.Tests
             design.PlayerNum = player.Num;
             fleetSpecService.ComputeDesignSpec(player, design);
             player.Designs.Add(design);
+            planet.Spec = planetService.ComputePlanetSpec(planet, player);
 
 
             // setup an auto queue that tries to build 20 factories, then 1 mine, then 1 ship
@@ -305,6 +308,7 @@ namespace CraigStars.Tests
             planet.Factories = 11;
             planet.Mines = 10;
             planet.ContributesOnlyLeftoverToResearch = true;
+            planet.Spec = planetService.ComputePlanetSpec(planet, player);
 
             // setup an auto queue that tries to build 20 factories, then 20 mines
             // we should build one factory, and one partial factory, then no mines
@@ -345,14 +349,8 @@ namespace CraigStars.Tests
             planet.ContributesOnlyLeftoverToResearch = true;
 
             // we are going to auto build some stuff and add a couple ship builds at the end
-            var design1 = ShipDesigns.LongRangeScount.Clone();
-            var design2 = ShipDesigns.SantaMaria.Clone();
-            design1.PlayerNum = player.Num;
-            fleetSpecService.ComputeDesignSpec(player, design1);
-            design2.PlayerNum = player.Num;
-            fleetSpecService.ComputeDesignSpec(player, design2);
-            player.Designs.Add(design1);
-            player.Designs.Add(design2);
+            var design1 = TestUtils.CreateDesign(game, player, ShipDesigns.LongRangeScount.Clone());
+            var design2 = TestUtils.CreateDesign(game, player, ShipDesigns.SantaMaria.Clone());
 
             // add some auto steps and a couple ships. They should all complete
             planet.ProductionQueue.Items = new List<ProductionQueueItem>() {
@@ -363,6 +361,8 @@ namespace CraigStars.Tests
                 new ProductionQueueItem(QueueItemType.ShipToken, 1, design2),
             };
             planet.Cargo = new Cargo(1000, 1000, 1000, colonists: planet.Cargo.Colonists);
+
+            gameRunner.ComputeSpecs();
             step.Build(planet, player);
 
             // 1 mine, 1 factory, and 2 ships should be built
@@ -472,7 +472,8 @@ namespace CraigStars.Tests
             var planet = game.Planets[0];
             planet.PacketSpeed = 5;
 
-            var target = new Planet() {
+            var target = new Planet()
+            {
                 Position = new Vector2(100, 100),
                 Name = "Target Planet",
             };

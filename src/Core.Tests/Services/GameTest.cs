@@ -48,6 +48,7 @@ namespace CraigStars.Tests
 
             // generate the turn
             gameRunner.GenerateTurn();
+            gameRunner.ComputeSpecs();
 
             // make sure our turn was generated and the player's report was updated
             Assert.Greater(player.Homeworld.Population, 25000);

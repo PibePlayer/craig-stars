@@ -104,7 +104,8 @@ namespace CraigStars
 
                 if (reportAge == MapObject.Unexplored)
                 {
-                    Message.PlanetDiscovered(player, itemReport, planetService.GetTerraformAmount(itemReport, player));
+                    itemReport.Spec = planetService.ComputePlanetSpec(itemReport, player);
+                    Message.PlanetDiscovered(player, itemReport, itemReport.Spec.TerraformAmount);
                 }
             }
         }

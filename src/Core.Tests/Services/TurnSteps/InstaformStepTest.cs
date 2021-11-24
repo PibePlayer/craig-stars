@@ -38,8 +38,6 @@ namespace CraigStars.Tests
             // allow Grav3 terraform
             player.TechLevels = new TechLevel(propulsion: 1, biotechnology: 1);
 
-            gameRunner.ComputeSpecs();
-
             var planet = new Planet()
             {
                 PlayerNum = player.Num,
@@ -47,6 +45,9 @@ namespace CraigStars.Tests
                 BaseHab = new Hab(45, 50, 50),
                 TerraformedAmount = new Hab(),
             };
+
+            game.Planets.Add(planet);
+            gameRunner.ComputeSpecs();
 
             // should terraform 3 grav points
             step.Instaform(planet, player);

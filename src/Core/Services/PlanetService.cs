@@ -28,11 +28,37 @@ namespace CraigStars
             this.rulesProvider = rulesProvider;
         }
 
-        public int GetMaxMines(Planet planet, Player player) => planet.Population * player.Race.NumMines / 10000;
-        public int GetMaxPossibleMines(Planet planet, Player player) => GetMaxPopulation(planet, player) * player.Race.NumMines / 10000;
-        public int GetMaxFactories(Planet planet, Player player) => planet.Population * player.Race.NumFactories / 10000;
-        public int GetMaxPossibleFactories(Planet planet, Player player) => GetMaxPopulation(planet, player) * player.Race.NumFactories / 10000;
-        public int GetMaxDefenses(Planet planet, Player player) => 100;
+        public PlanetSpec ComputePlanetSpec(Planet planet, Player player)
+        {
+            var spec = new PlanetSpec();
+            spec.MaxPopulation = GetMaxPopulation(planet, player);
+            spec.MaxMines = planet.Population * player.Race.NumMines / 10000;
+            spec.MaxFactories = planet.Population * player.Race.NumFactories / 10000;
+            spec.MaxDefenses = 100;
+            spec.MaxPossibleMines = spec.MaxPopulation * player.Race.NumMines / 10000;
+            spec.MaxPossibleFactories = spec.MaxPopulation * player.Race.NumFactories / 10000;
+            spec.PopulationDensity = GetPopulationDensity(planet, player, planet.Population);
+            spec.GrowthAmount = GetGrowthAmount(planet, player, spec.MaxPopulation);
+            spec.MineralOutput = GetMineralOutput(planet, planet.Mines, player.Race.MineOutput);
+
+            spec.ResourcesPerYear = GetResourcesPerYear(planet, player);
+            spec.ResourcesPerYearAvailable = planet.ContributesOnlyLeftoverToResearch
+                ? spec.ResourcesPerYear
+                : (int)(spec.ResourcesPerYear * (1 - player.ResearchAmount / 100.0) + .5f);
+            spec.ResourcesPerYearResearch = GetResourcesPerYearResearch(planet, player, player.ResearchAmount);
+
+            spec.Defense = playerTechService.GetBestDefense(player);
+            if (spec.Defense != null && planet.Defenses > 0)
+            {
+                spec.DefenseCoverage = GetDefenseCoverage(planet, player, spec.Defense, spec.MaxDefenses);
+                spec.DefenseCoverageSmart = GetDefenseCoverageSmart(planet, player, spec.Defense, spec.MaxDefenses);
+            }
+
+            spec.TerraformAmount = GetTerraformAmount(planet, player);
+            spec.CanTerraform = spec.TerraformAmount.AbsSum > 0;
+
+            return spec;
+        }
 
         #region Ownership
 
@@ -49,6 +75,7 @@ namespace CraigStars
             planet.Defenses = 0;
             planet.Population = 0;
             planet.ProductionQueue = new ProductionQueue();
+            planet.Spec = new();
             // reset any Instaforming
             planet.Hab = planet.BaseHab + planet.TerraformedAmount;
         }
@@ -57,15 +84,20 @@ namespace CraigStars
 
         #region Population & Growth
 
-        public float GetPopulationDensity(Planet planet, Player player, Rules rules) => GetPopulationDensity(planet, player, rules, planet.Population);
-        public float GetPopulationDensity(Planet planet, Player player, Rules rules, int population) => population > 0 ? (float)population / GetMaxPopulation(planet, player) : 0;
+        /// <summary>
+        /// Get the population density of a planet, based on some population value
+        /// </summary>
+        /// <param name="planet"></param>
+        /// <param name="player"></param>
+        /// <param name="population"></param>
+        /// <returns></returns>
+        public float GetPopulationDensity(Planet planet, Player player, int population) => population > 0 ? (float)population / GetMaxPopulation(planet, player) : 0;
 
         /// <summary>
         /// The max population for the race on this planet
-        /// TODO: support this later
         /// /// </summary>
         /// <returns></returns>
-        public int GetMaxPopulation(Planet planet, Player player)
+        int GetMaxPopulation(Planet planet, Player player)
         {
             var race = player.Race;
             if (planet.Hab is Hab planetHab)
@@ -86,13 +118,13 @@ namespace CraigStars
         /// The amount the population for this planet will grow next turn
         /// </summary>
         /// <returns></returns>
-        public int GetGrowthAmount(Planet planet, Player player)
+        int GetGrowthAmount(Planet planet, Player player, int maxPopulation)
         {
             var race = player.Race;
             var growthFactor = player.Race.Spec.GrowthFactor;
             if (planet.Hab is Hab hab)
             {
-                double capacity = ((double)planet.Population / GetMaxPopulation(planet, player));
+                double capacity = ((double)planet.Population / maxPopulation);
                 var habValue = race.GetPlanetHabitability(hab);
                 if (habValue > 0)
                 {
@@ -122,12 +154,6 @@ namespace CraigStars
         #endregion
 
         #region Minerals
-
-        /// <summary>
-        /// The mineral output of this planet if it is owned
-        /// </summary>
-        /// <returns></returns>
-        public Mineral GetMineralOutput(Planet planet, Player player) => GetMineralOutput(planet, planet.Mines, player.Race.MineOutput);
 
         /// <summary>
         /// Get the amount of minerals this planet outputs for a a certain number of mines, given a race mineOutput
@@ -163,7 +189,7 @@ namespace CraigStars
         /// Determine the number of resources this planet generates in a year
         /// </summary>
         /// <value>The number of resources this planet generates in a year</value>
-        public int GetResourcesPerYear(Planet planet, Player player)
+        int GetResourcesPerYear(Planet planet, Player player)
         {
             var race = player.Race;
 
@@ -178,69 +204,40 @@ namespace CraigStars
         }
 
         /// <summary>
-        /// Determine the number of resources this planet generates in a year
-        /// </summary>
-        /// <value>The number of resources this planet will contribute per year</value>
-        public int GetResourcesPerYearAvailable(Planet planet, Player player) => planet.ContributesOnlyLeftoverToResearch ?
-            GetResourcesPerYear(planet, player)
-            : (int)(GetResourcesPerYear(planet, player) * (1 - player.ResearchAmount / 100.0) + .5f);
-
-        /// <summary>
-        /// Determine the number of resources this planet generates in a year
-        /// </summary>
-        /// <value>The number of resources this planet will contribute per year</value>
-        public int GetResourcesPerYearResearch(Planet planet, Player player) => GetResourcesPerYearResearch(planet, player, player.ResearchAmount);
-
-        /// <summary>
         /// Get the number of resources this planet produces per year for research for a given player's research amount.
         /// </summary>
         /// <param name="researchAmount"></param>
-        /// <returns></returns>
+        /// <returns>The number of resources this planet will contribute per year</returns>
         public int GetResourcesPerYearResearch(Planet planet, Player player, int researchAmount) => planet.ContributesOnlyLeftoverToResearch ? 0 : (int)(GetResourcesPerYear(planet, player) * (researchAmount / 100.0));
 
         #endregion
 
         #region Defense
 
-
-        /// <summary>
-        /// Get the defense coverage for this planet, assuming it has a player
-        /// </summary>
-        /// <param name="techStore"></param>
-        /// <returns></returns>
-        public float GetDefenseCoverage(Planet planet, Player player) => GetDefenseCoverage(planet, player, playerTechService.GetBestDefense(player));
-
         /// <summary>
         /// Get the defense coverage for this planet for a given defense type
         /// </summary>
         /// <param name="techStore"></param>
         /// <returns></returns>
-        public float GetDefenseCoverage(Planet planet, Player player, TechDefense defense)
+        public float GetDefenseCoverage(Planet planet, Player player, TechDefense defense, int maxDefenses = 100)
         {
             if (planet.Defenses > 0 && defense != null)
             {
-                return (float)(1.0 - (Math.Pow((1 - (defense.DefenseCoverage / 100)), Mathf.Clamp(planet.Defenses, 0, GetMaxDefenses(planet, player)))));
+                return (float)(1.0 - (Math.Pow((1 - (defense.DefenseCoverage / 100)), Mathf.Clamp(planet.Defenses, 0, maxDefenses))));
             }
             return 0;
         }
 
         /// <summary>
-        /// Get the defense coverage for this planet against smart bombs, assuming it has a player
-        /// </summary>
-        /// <param name="techStore"></param>
-        /// <returns></returns>
-        public float GetDefenseCoverageSmart(Planet planet, Player player, Rules rules) => GetDefenseCoverageSmart(planet, player, rules, playerTechService.GetBestDefense(player));
-
-        /// <summary>
         /// Get the defense coverage for this planet for a given defense type
         /// </summary>
         /// <param name="techStore"></param>
         /// <returns></returns>
-        public float GetDefenseCoverageSmart(Planet planet, Player player, Rules rules, TechDefense defense)
+        public float GetDefenseCoverageSmart(Planet planet, Player player, TechDefense defense, int maxDefenses = 100)
         {
             if (planet.Defenses > 0 && defense != null)
             {
-                return (float)(1.0 - (Math.Pow((1 - (defense.DefenseCoverage / 100 * rules.SmartDefenseCoverageFactor)), Mathf.Clamp(planet.Defenses, 0, GetMaxDefenses(planet, player)))));
+                return (float)(1.0 - (Math.Pow((1 - (defense.DefenseCoverage / 100 * Rules.SmartDefenseCoverageFactor)), Mathf.Clamp(planet.Defenses, 0, maxDefenses))));
             }
             return 0;
         }
@@ -293,22 +290,22 @@ namespace CraigStars
             switch (type)
             {
                 case QueueItemType.AutoMines:
-                    requestedQuantity = Math.Min(requestedQuantity, GetMaxMines(planet, player) - planet.Mines);
+                    requestedQuantity = Math.Min(requestedQuantity, planet.Spec.MaxMines - planet.Mines);
                     break;
                 case QueueItemType.AutoFactories:
-                    requestedQuantity = Math.Min(requestedQuantity, GetMaxFactories(planet, player) - planet.Factories);
+                    requestedQuantity = Math.Min(requestedQuantity, planet.Spec.MaxFactories - planet.Factories);
                     break;
                 case QueueItemType.AutoDefenses:
-                    requestedQuantity = Math.Min(requestedQuantity, GetMaxDefenses(planet, player) - planet.Defenses);
+                    requestedQuantity = Math.Min(requestedQuantity, planet.Spec.MaxDefenses - planet.Defenses);
                     break;
                 case QueueItemType.Mine:
-                    requestedQuantity = Math.Min(requestedQuantity, GetMaxPossibleMines(planet, player) - planet.Mines);
+                    requestedQuantity = Math.Min(requestedQuantity, planet.Spec.MaxPossibleMines - planet.Mines);
                     break;
                 case QueueItemType.Factory:
-                    requestedQuantity = Math.Min(requestedQuantity, GetMaxPossibleFactories(planet, player) - planet.Factories);
+                    requestedQuantity = Math.Min(requestedQuantity, planet.Spec.MaxPossibleFactories - planet.Factories);
                     break;
                 case QueueItemType.Defenses:
-                    requestedQuantity = Math.Min(requestedQuantity, GetMaxDefenses(planet, player) - planet.Defenses);
+                    requestedQuantity = Math.Min(requestedQuantity, planet.Spec.MaxDefenses - planet.Defenses);
                     break;
                 case QueueItemType.TerraformEnvironment:
                 case QueueItemType.AutoMaxTerraform:
@@ -325,18 +322,13 @@ namespace CraigStars
 
         #region Terraforming
 
-        public bool CanTerraform(Planet planet, Player player)
-        {
-            return GetTerraformAmount(planet, player).AbsSum > 0;
-        }
-
         /// <summary>
         /// Get the total amount we can terraform this planet
         /// </summary>
         /// <param name="planet">The planet to check for tarraformability</param>
         /// <param name="player">The player to check terraformability for. If not set this function uses the planet owner</param>
         /// <returns></returns>
-        public Hab GetTerraformAmount(Planet planet, Player player)
+        Hab GetTerraformAmount(Planet planet, Player player)
         {
             Hab terraformAmount = new Hab();
             if (player == null)
@@ -561,6 +553,7 @@ namespace CraigStars
                     // for example, the planet has Grav 49, but our player wants Grav 50 
                     planet.Hab = planet.Hab.Value.WithType(habType, planet.Hab.Value[habType] + 1);
                     planet.TerraformedAmount = planet.TerraformedAmount.Value.WithType(habType, planet.TerraformedAmount.Value[habType] + 1);
+                    planet.Spec = ComputePlanetSpec(planet, player);
                     return new TerraformResult(habType, 1);
                 }
                 else if (fromIdeal < 0)
@@ -568,6 +561,7 @@ namespace CraigStars
                     // for example, the planet has Grav 51, but our player wants Grav 50 
                     planet.Hab = planet.Hab.Value.WithType(habType, planet.Hab.Value[habType] - 1);
                     planet.TerraformedAmount = planet.TerraformedAmount.Value.WithType(habType, planet.TerraformedAmount.Value[habType] - 1);
+                    planet.Spec = ComputePlanetSpec(planet, player);
                     return new TerraformResult(habType, -1);
                 }
             }
@@ -608,6 +602,7 @@ namespace CraigStars
                 planet.Hab = planet.Hab.Value.WithType(habType, planet.Hab.Value[habType] - 1);
             }
 
+            planet.Spec = ComputePlanetSpec(planet, player);
             return new TerraformResult(habType, direction);
         }
 

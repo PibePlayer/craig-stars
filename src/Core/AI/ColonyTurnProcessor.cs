@@ -42,7 +42,7 @@ namespace CraigStars
                 .OrderByDescending(planet => player.Race.GetPlanetHabitability(planet.BaseHab.Value))
                 .ToList();
             var buildablePlanets = player.Planets
-                .Where(planet => planetService.CanBuild(planet, player, colonyShip.Spec.Mass) && planetService.GetPopulationDensity(planet, player, gameInfo.Rules) >= PopulationDensityRequired)
+                .Where(planet => planetService.CanBuild(planet, player, colonyShip.Spec.Mass) && planet.Spec.PopulationDensity >= PopulationDensityRequired)
                 .ToList();
             var colonizerFleets = player.Fleets.Where(fleet => fleet.Spec.Purposes.Contains(ShipDesignPurpose.Colonizer));
 
@@ -60,7 +60,7 @@ namespace CraigStars
                 f => f.Waypoints.Count == 1 &&
                 f.Orbiting != null &&
                 f.Orbiting.PlayerNum == player.Num &&
-                planetService.GetPopulationDensity(f.Orbiting, player, gameInfo.Rules, f.Orbiting.Population - f.AvailableCapacity) >= PopulationDensityRequired)
+                planetService.GetPopulationDensity(f.Orbiting, player, f.Orbiting.Population - f.AvailableCapacity) >= PopulationDensityRequired)
             )
             {
                 var planetToColonize = ClosestPlanet(fleet, colonizablePlanets);

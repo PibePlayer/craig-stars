@@ -31,7 +31,7 @@ namespace CraigStars
                 // figure out how many resoruces each planet allocates
                 foreach (var planet in playerPlanets)
                 {
-                    resourcesToSpend += playerPlanets.Sum(p => planetService.GetResourcesPerYearResearch(p, player));
+                    resourcesToSpend += playerPlanets.Sum(planet => planet.Spec.ResourcesPerYearResearch);
                 }
 
                 // research for this player

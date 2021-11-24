@@ -46,15 +46,15 @@ namespace CraigStars
             int yearlyResources = 0;
             if (contributesOnlyLeftoverToResearch)
             {
-                yearlyResources = planetService.GetResourcesPerYear(planet, player);
+                yearlyResources = planet.Spec.ResourcesPerYear;
             }
             else
             {
-                yearlyResources = planetService.GetResourcesPerYearAvailable(planet, player);
+                yearlyResources = planet.Spec.ResourcesPerYearAvailable;
             }
 
             // this is how man resources and minerals our planet produces each year
-            Cost yearlyAvailableToSpend = new Cost(planetService.GetMineralOutput(planet, player), yearlyResources);
+            Cost yearlyAvailableToSpend = new Cost(planet.Spec.MineralOutput, yearlyResources);
 
             // allocate all minerals on the planet to our starting "cost"
             Cost previousItemsCost = -planet.Cargo.ToCost();

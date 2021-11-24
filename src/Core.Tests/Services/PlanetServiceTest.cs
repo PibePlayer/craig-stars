@@ -25,7 +25,8 @@ namespace CraigStars.Tests
 
             var player = new Player();
             planet.Population = 10000;
-            Assert.AreEqual(10, service.GetMaxMines(planet, player));
+            planet.Spec = service.ComputePlanetSpec(planet, player);
+            Assert.AreEqual(10, planet.Spec.MaxMines);
         }
 
         [Test]
@@ -36,7 +37,8 @@ namespace CraigStars.Tests
 
             var player = new Player();
             planet.Population = 10000;
-            Assert.AreEqual(10, service.GetMaxFactories(planet, player));
+            planet.Spec = service.ComputePlanetSpec(planet, player);
+            Assert.AreEqual(10, planet.Spec.MaxFactories);
         }
 
         [Test]
@@ -48,7 +50,8 @@ namespace CraigStars.Tests
             var player = new Player();
             planet.PlayerNum = player.Num;
             planet.Population = 10000;
-            Assert.AreEqual(100, service.GetMaxDefenses(planet, player));
+            planet.Spec = service.ComputePlanetSpec(planet, player);
+            Assert.AreEqual(100, planet.Spec.MaxDefenses);
         }
 
         [Test]
@@ -62,15 +65,18 @@ namespace CraigStars.Tests
 
             player.Race.PRT = PRT.IS;
             player.Race.Spec = raceService.ComputeRaceSpecs(player.Race);
-            Assert.AreEqual(1000000, service.GetMaxPopulation(planet, player));
+            planet.Spec = service.ComputePlanetSpec(planet, player);
+            Assert.AreEqual(1000000, planet.Spec.MaxPopulation);
 
             player.Race.PRT = PRT.JoaT;
             player.Race.Spec = raceService.ComputeRaceSpecs(player.Race);
-            Assert.AreEqual(1200000, service.GetMaxPopulation(planet, player));
+            planet.Spec = service.ComputePlanetSpec(planet, player);
+            Assert.AreEqual(1200000, planet.Spec.MaxPopulation);
 
             player.Race.PRT = PRT.HE;
             player.Race.Spec = raceService.ComputeRaceSpecs(player.Race);
-            Assert.AreEqual(500000, service.GetMaxPopulation(planet, player));
+            planet.Spec = service.ComputePlanetSpec(planet, player);
+            Assert.AreEqual(500000, planet.Spec.MaxPopulation);
 
         }
 
@@ -86,32 +92,38 @@ namespace CraigStars.Tests
             planet.Population = 100_000;
 
             player.Race.Spec = raceService.ComputeRaceSpecs(player.Race);
+            planet.Spec = service.ComputePlanetSpec(planet, player);
 
             // less than 25% cap, grows at full 10% growth rate
-            Assert.AreEqual(10_000, service.GetGrowthAmount(planet, player));
+            Assert.AreEqual(10_000, planet.Spec.GrowthAmount);
 
             // at 50% cap, it slows down in growth
             planet.Population = 600_000;
-            Assert.AreEqual(26700, service.GetGrowthAmount(planet, player));
+            planet.Spec = service.ComputePlanetSpec(planet, player);
+            Assert.AreEqual(26700, planet.Spec.GrowthAmount);
 
             // we are basicallly at capacity, we only grow a tiny amount
             planet.Population = 1_180_000;
-            Assert.AreEqual(100, service.GetGrowthAmount(planet, player));
+            planet.Spec = service.ComputePlanetSpec(planet, player);
+            Assert.AreEqual(100, planet.Spec.GrowthAmount);
 
             // no more growth past a certain capacity
             planet.Population = 1_190_000;
-            Assert.AreEqual(0, service.GetGrowthAmount(planet, player));
+            planet.Spec = service.ComputePlanetSpec(planet, player);
+            Assert.AreEqual(0, planet.Spec.GrowthAmount);
 
             // hostile planets kill off colonists
             planet.Hab = new Hab(10, 15, 15);
             planet.Population = 2_500;
-            Assert.AreEqual(-100, service.GetGrowthAmount(planet, player));
+            planet.Spec = service.ComputePlanetSpec(planet, player);
+            Assert.AreEqual(-100, planet.Spec.GrowthAmount);
 
             // super hostile planet with 100k people
             // should be -45% habitable, so should kill off -4.5% of the pop
             planet.Hab = new Hab(0, 0, 0);
             planet.Population = 100_000;
-            Assert.AreEqual(-4500, service.GetGrowthAmount(planet, player));
+            planet.Spec = service.ComputePlanetSpec(planet, player);
+            Assert.AreEqual(-4500, planet.Spec.GrowthAmount);
 
             // TODO: terraforming planets don't die off or grow if planet is negative
 
@@ -128,8 +140,9 @@ namespace CraigStars.Tests
             planet.Hab = new Hab(50, 50, 50);
             planet.PlayerNum = player.Num;
             planet.Population = 100000;
+            planet.Spec = service.ComputePlanetSpec(planet, player);
 
-            Assert.AreEqual(.1f, service.GetPopulationDensity(planet, player, rules));
+            Assert.AreEqual(.1f, planet.Spec.PopulationDensity);
         }
 
         [Test]
@@ -140,9 +153,12 @@ namespace CraigStars.Tests
 
             var planet = new Planet()
             {
+                PlayerNum = player.Num,
                 Defenses = 10,
                 Population = 10000
             };
+
+            planet.Spec = service.ComputePlanetSpec(planet, player);
 
             // should be about 9.5%
             Assert.AreEqual(.095f, service.GetDefenseCoverage(planet, player, defense), .001);
@@ -167,6 +183,8 @@ namespace CraigStars.Tests
                 TerraformedAmount = new Hab(),
                 Mines = 50 // start with 100 mines
             };
+
+            planet.Spec = service.ComputePlanetSpec(planet, player);
 
             // planet supports 1200 mines, so we can build up to 1150 more
             Assert.AreEqual(1150, service.GetQuantityToBuild(planet, player, 2000, QueueItemType.Mine));
@@ -204,29 +222,34 @@ namespace CraigStars.Tests
                 BaseHab = new Hab(50, 50, 50),
                 TerraformedAmount = new Hab(),
             };
+            planet.Spec = service.ComputePlanetSpec(planet, player);
 
             // can't terraform a perfect planet
-            Assert.AreEqual(new Hab(), service.GetTerraformAmount(planet, player));
+            Assert.AreEqual(new Hab(), planet.Spec.TerraformAmount);
 
             // this is off by 1, we can terraform
             planet.BaseHab = new Hab(49, 50, 50);
             planet.Hab = new Hab(49, 50, 50);
-            Assert.AreEqual(new Hab(grav: 1), service.GetTerraformAmount(planet, player));
+            planet.Spec = service.ComputePlanetSpec(planet, player);
+            Assert.AreEqual(new Hab(grav: 1), planet.Spec.TerraformAmount);
 
             // test the other direction
             planet.BaseHab = new Hab(55, 50, 50);
             planet.Hab = new Hab(55, 50, 50);
-            Assert.AreEqual(new Hab(grav: -3), service.GetTerraformAmount(planet, player));
+            planet.Spec = service.ComputePlanetSpec(planet, player);
+            Assert.AreEqual(new Hab(grav: -3), planet.Spec.TerraformAmount);
 
             // this is off by 10, but we've already terraformed 3, so we can't terraform anymore
             planet.BaseHab = new Hab(37, 50, 50);
             planet.Hab = new Hab(40, 50, 50);
-            Assert.AreEqual(new Hab(), service.GetTerraformAmount(planet, player));
+            planet.Spec = service.ComputePlanetSpec(planet, player);
+            Assert.AreEqual(new Hab(), planet.Spec.TerraformAmount);
 
             // this is off by 10, we've already terraformed 2, so we can do one more
             planet.BaseHab = new Hab(37, 50, 50);
             planet.Hab = new Hab(39, 50, 50);
-            Assert.AreEqual(new Hab(grav: 1), service.GetTerraformAmount(planet, player));
+            planet.Spec = service.ComputePlanetSpec(planet, player);
+            Assert.AreEqual(new Hab(grav: 1), planet.Spec.TerraformAmount);
 
         }
 
@@ -347,8 +370,9 @@ namespace CraigStars.Tests
                 Factories = 10,
                 Population = 25000
             };
+            planet.Spec = service.ComputePlanetSpec(planet, player);
 
-            Assert.AreEqual(35, service.GetResourcesPerYear(planet, player));
+            Assert.AreEqual(35, planet.Spec.ResourcesPerYear);
         }
 
 
@@ -363,13 +387,15 @@ namespace CraigStars.Tests
                 ContributesOnlyLeftoverToResearch = false
             };
             player.ResearchAmount = 15;
+            planet.Spec = service.ComputePlanetSpec(planet, player);
 
-            Assert.AreEqual(30, service.GetResourcesPerYearAvailable(planet, player));
-            Assert.AreEqual(5, service.GetResourcesPerYearResearch(planet, player));
+            Assert.AreEqual(30, planet.Spec.ResourcesPerYearAvailable);
+            Assert.AreEqual(5, planet.Spec.ResourcesPerYearResearch);
 
             planet.ContributesOnlyLeftoverToResearch = true;
-            Assert.AreEqual(35, service.GetResourcesPerYearAvailable(planet, player));
-            Assert.AreEqual(0, service.GetResourcesPerYearResearch(planet, player));
+            planet.Spec = service.ComputePlanetSpec(planet, player);
+            Assert.AreEqual(35, planet.Spec.ResourcesPerYearAvailable);
+            Assert.AreEqual(0, planet.Spec.ResourcesPerYearResearch);
         }
 
         [Test]

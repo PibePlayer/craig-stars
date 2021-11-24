@@ -215,7 +215,7 @@ namespace CraigStars.Client
                 int resourcesNeededToComplete = researcher.GetTotalCost(Me, field, Me.TechLevels[field]) - Me.TechLevelsSpent[field];
                 resourcesNeededToCompleteAmountLabel.Text = $"{resourcesNeededToComplete}";
                 var resourcesToSpend = Me.Planets.Sum(p => planetService.GetResourcesPerYearResearch(p, Me, researchAmount));
-                var totalResources = Me.Planets.Sum(p => planetService.GetResourcesPerYear(p, Me));
+                var totalResources = Me.Planets.Sum(p => p.Spec.ResourcesPerYear);
                 if (resourcesToSpend <= 0)
                 {
                     estimatedTimeToCompletionAmountLabel.Text = "Never";

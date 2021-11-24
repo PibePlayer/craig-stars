@@ -140,7 +140,7 @@ namespace CraigStars.Client
                 {
                     int habValue = race.GetPlanetHabitability(hab);
                     int terraformHabValue = habValue;
-                    Hab terraformedHab = planet.Hab.Value + planetService.GetTerraformAmount(planet, Me);
+                    Hab terraformedHab = planet.Hab.Value + planet.Spec.TerraformAmount;
                     if (terraformedHab != hab)
                     {
                         terraformHabValue = race.GetPlanetHabitability(terraformedHab);

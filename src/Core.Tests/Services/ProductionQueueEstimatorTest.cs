@@ -18,12 +18,23 @@ namespace CraigStars.Tests
     {
         static CSLog log = LogProvider.GetLogger(typeof(ProductionQueueEstimatorTest));
 
-        ProductionQueueEstimator estimator = new ProductionQueueEstimator(
-            TestUtils.TestContainer.GetInstance<PlanetService>(),
-            TestUtils.TestContainer.GetInstance<PlayerService>()
-        );
 
-        RaceService raceService = TestUtils.TestContainer.GetInstance<RaceService>();
+        PlanetService planetService;
+        RaceService raceService;
+
+        ProductionQueueEstimator estimator;
+
+        [SetUp]
+        public void SetUp()
+        {
+            planetService = TestUtils.TestContainer.GetInstance<PlanetService>();
+            raceService = TestUtils.TestContainer.GetInstance<RaceService>();
+
+            estimator = new ProductionQueueEstimator(
+              planetService,
+              TestUtils.TestContainer.GetInstance<PlayerService>()
+          );
+        }
 
         [Test]
         public void TestCalculateCompletionEstimatesSingleItem()
@@ -39,6 +50,7 @@ namespace CraigStars.Tests
                 Mines = 10,
                 Factories = 10
             };
+            planet.Spec = planetService.ComputePlanetSpec(planet, player);
 
             var item1 = new ProductionQueueItem(QueueItemType.Mine, 1);
             List<ProductionQueueItem> items = new List<ProductionQueueItem>()
@@ -75,6 +87,7 @@ namespace CraigStars.Tests
 
             // give the planet a bunch of germanium to build factories with
             planet.Cargo = new Cargo(germanium: 1000).WithColonists(planet.Cargo.Colonists);
+            planet.Spec = planetService.ComputePlanetSpec(planet, player);
 
             // 40 mines cost 200 resources, so should take 2 turns
             var item1 = new ProductionQueueItem(QueueItemType.Mine, 40);

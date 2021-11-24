@@ -70,7 +70,7 @@ namespace CraigStars.Client
             AddAvailableItem(new ProductionQueueItem(QueueItemType.Defenses));
             AddAvailableItem(new ProductionQueueItem(QueueItemType.MineralAlchemy));
 
-            if (planetService.CanTerraform(Planet, Me))
+            if (Planet.Spec.CanTerraform)
             {
                 AddAvailableItem(new ProductionQueueItem(QueueItemType.TerraformEnvironment));
             }

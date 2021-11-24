@@ -47,7 +47,7 @@ namespace CraigStars
             }
 
             // figure out how many attackers are stopped by defenses
-            int attackers = (int)(colonistsDropped * (1 - planetService.GetDefenseCoverage(planet, defender) * Rules.InvasionDefenseCoverageFactor));
+            int attackers = (int)(colonistsDropped * (1 - planet.Spec.DefenseCoverage * Rules.InvasionDefenseCoverageFactor));
             int defenders = planet.Population;
 
             // determine bonuses for warmongers and inner strength

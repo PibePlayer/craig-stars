@@ -11,10 +11,18 @@ namespace CraigStars.Tests
     [TestFixture]
     public class InvasionProcessorTest
     {
-        InvasionProcessor invasionProcessor = new InvasionProcessor(
-            TestUtils.TestContainer.GetInstance<PlanetService>(),
-            TestUtils.TestContainer.GetInstance<IRulesProvider>()
-        );
+        PlanetService planetService;
+        InvasionProcessor invasionProcessor;
+
+        [SetUp]
+        public void SetUp()
+        {
+            planetService = TestUtils.TestContainer.GetInstance<PlanetService>();
+            invasionProcessor = new InvasionProcessor(
+               planetService,
+               TestUtils.TestContainer.GetInstance<IRulesProvider>()
+           );
+        }
 
         [Test]
         public void TestInvadePlanetNoDefenses()
@@ -138,6 +146,7 @@ namespace CraigStars.Tests
 
             fleet.Orbiting = planet;
             planet.OrbitingFleets.Add(fleet);
+            planet.Spec = planetService.ComputePlanetSpec(planet, planetOwner);
 
             // 100,000 attackers for 100,000 well defended defenders, defenders win
             int attackers = 100000;

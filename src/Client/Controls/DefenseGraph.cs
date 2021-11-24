@@ -49,17 +49,19 @@ namespace CraigStars.Client
                 {
                     Hab = Me.Race.HabCenter,
                 };
-                planet.Population = planetService.GetMaxPopulation(planet, Me);
+                planet.Population = planet.Spec.MaxPopulation;
 
                 for (int numDefenses = 0; numDefenses <= 100; numDefenses += 20)
                 {
                     planet.Defenses = numDefenses;
                     float defenseCoverage = planetService.GetDefenseCoverage(planet, Me, Defense);
+                    float defenseCoverageSmart = planetService.GetDefenseCoverageSmart(planet, Me, Defense);
 
                     // each "box" in our graph has a unit of one. We have 6 boxes (0, 20, 40, 60, 80, 100%) so
-                    // multiply by 5. 
-                    // TODO: make this graph more intuitive but still work with weird engine fuel usage scaling
+                    // multiply by 6. 
                     points.Add(new Vector2(numDefenses, defenseCoverage * 6));
+
+                    // TODO: add smartDefenseCoverage points
                 }
             }
 

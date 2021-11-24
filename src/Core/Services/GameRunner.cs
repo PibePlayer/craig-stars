@@ -188,12 +188,13 @@ namespace CraigStars
 
             // After a turn is generated, update some data on each player 
             // (like their current best planetary scanner)
-            Game.Players.ForEach(p =>
+            Game.Players.ForEach(player =>
             {
-                p.PlanetaryScanner = playerTechService.GetBestPlanetaryScanner(p);
-                fleetSpecService.ComputePlayerFleetSpecs(p, recompute: true);
-                p.SetupMapObjectMappings();
-                p.UpdateMessageTargets();
+                player.PlanetaryScanner = playerTechService.GetBestPlanetaryScanner(player);
+                fleetSpecService.ComputePlayerFleetSpecs(player, recompute: true);
+                player.Planets.ForEach(planet => planet.Spec = planetService.ComputePlanetSpec(planet, player));
+                player.SetupMapObjectMappings();
+                player.UpdateMessageTargets();
             });
         }
 
@@ -204,6 +205,7 @@ namespace CraigStars
         {
             // No cheating, make sure only the server updates the race spec!
             Game.Players.ForEach(player => player.Race.Spec = raceService.ComputeRaceSpecs(player.Race));
+            Game.OwnedPlanets.ToList().ForEach(planet => planet.Spec = planetService.ComputePlanetSpec(planet, Game.Players[planet.PlayerNum]));
             Game.Designs.ForEach(design => fleetSpecService.ComputeDesignSpec(Game.Players[design.PlayerNum], design, recompute));
             Game.Fleets.ForEach(fleet => fleetSpecService.ComputeFleetSpec(Game.Players[fleet.PlayerNum], fleet, recompute));
             foreach (var planet in Game.OwnedPlanets.Where(p => p.HasStarbase))

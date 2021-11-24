@@ -34,10 +34,11 @@ namespace CraigStars.Tests
             // growth should be 2x
             var planet = game.Planets[0];
             planet.Population = 10000;
-            Assert.AreEqual(2000, planetService.GetGrowthAmount(planet, player));
+            planet.Spec = planetService.ComputePlanetSpec(planet, player);
+            Assert.AreEqual(2000, planet.Spec.GrowthAmount);
 
             // max pop should be half
-            Assert.AreEqual(500000, planetService.GetMaxPopulation(planet, player));
+            Assert.AreEqual(500000, planet.Spec.MaxPopulation);
         }
 
         [Test]

@@ -32,7 +32,7 @@ Your colonists prefer planets where {typeName} is between [b]{habLowString}[/b]
 and [b]{habHighString}[/b].".Replace("\n", "");
 
                 // if we can terraform, show it
-                Hab terraformAmount = planetService.GetTerraformAmount(Planet, Me);
+                Hab terraformAmount = Planet.Spec.TerraformAmount;
                 if (terraformAmount[type] != 0)
                 {
                     var terraformedHab = Planet.Hab.Value.WithRad(Planet.Hab.Value[type] + terraformAmount[type]);

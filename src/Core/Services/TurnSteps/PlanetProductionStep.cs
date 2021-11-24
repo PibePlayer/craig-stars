@@ -63,7 +63,7 @@ namespace CraigStars
         {
             // allocate surface minerals + resources not going to research
             Cost allocated = new Cost(planet.Cargo.Ironium, planet.Cargo.Boranium, planet.Cargo.Germanium,
-                                      planetService.GetResourcesPerYearAvailable(planet, player));
+                                      planet.Spec.ResourcesPerYearAvailable);
 
             // add the production queue's last turn resources
             var queue = planet.ProductionQueue;
@@ -241,21 +241,21 @@ namespace CraigStars
                 log.Debug($"{Game.Year}: {planet.PlayerNum} built {numBuilt} mines on {planet.Name}");
                 planet.Mines += numBuilt;
                 // this should never need to clamp because we adjust quantity in Build(), but just in case
-                planet.Mines = Mathf.Clamp(planet.Mines, 0, planetService.GetMaxPossibleMines(planet, player));
+                planet.Mines = Mathf.Clamp(planet.Mines, 0, planet.Spec.MaxPossibleMines);
                 Message.Mine(player, planet, numBuilt);
             }
             else if (item.Type == QueueItemType.Factory || item.Type == QueueItemType.AutoFactories)
             {
                 log.Debug($"{Game.Year}: {player} built {numBuilt} factories on {planet.Name}");
                 planet.Factories += numBuilt;
-                planet.Factories = Mathf.Clamp(planet.Factories, 0, planetService.GetMaxPossibleFactories(planet, player));
+                planet.Factories = Mathf.Clamp(planet.Factories, 0, planet.Spec.MaxPossibleFactories);
                 Message.Factory(player, planet, numBuilt);
             }
             else if (item.Type == QueueItemType.Defenses || item.Type == QueueItemType.AutoDefenses)
             {
                 log.Debug($"{Game.Year}: {player} built {numBuilt} defenses on {planet.Name}");
                 planet.Defenses += numBuilt;
-                planet.Defenses = Mathf.Clamp(planet.Defenses, 0, planetService.GetMaxDefenses(planet, player));
+                planet.Defenses = Mathf.Clamp(planet.Defenses, 0, planet.Spec.MaxDefenses);
                 Message.Defense(player, planet, numBuilt);
             }
             else if (item.IsTerraform)

@@ -10,6 +10,7 @@ namespace CraigStars.Client
         static CSLog log = LogProvider.GetLogger(typeof(CargoTransferDialog));
 
         [Inject] FleetSpecService fleetSpecService;
+        [Inject] PlanetService planetService;
 
         public ICargoHolder Source { get; set; }
         public ICargoHolder Dest { get; set; }
@@ -170,8 +171,6 @@ namespace CraigStars.Client
         {
             if (netCargoDiff != Cargo.Empty || netFuelDiff != 0)
             {
-                var me = PlayersManager.Me;
-
                 Fleet source;
                 ICargoHolder dest;
 
@@ -200,18 +199,20 @@ namespace CraigStars.Client
                     FuelTransfer = netFuelDiff
                 };
 
-                me.CargoTransferOrders.Add(order);
-                me.FleetOrders.Add(order);
+                Me.CargoTransferOrders.Add(order);
+                Me.FleetOrders.Add(order);
 
                 // update the spec for the source fleet
-                fleetSpecService.ComputeFleetSpec(me, source, recompute: true);
+                fleetSpecService.ComputeFleetSpec(Me, source, recompute: true);
 
                 if (dest is Fleet fleet)
                 {
                     // if the dest is also a fleet, update its spec with a new mass
-                    fleetSpecService.ComputeFleetSpec(me, fleet, recompute: true);
+                    fleetSpecService.ComputeFleetSpec(Me, fleet, recompute: true);
+                } else if (dest is Planet planet) {
+                    planet.Spec = planetService.ComputePlanetSpec(planet, base.Me);
                 }
-                log.Info($"{me.Name} made immediate transfer from {source.Name} to {dest.Name} for {netCargoDiff} cargo and {netFuelDiff} fuel");
+                log.Info($"{Me.Name} made immediate transfer from {source.Name} to {dest.Name} for {netCargoDiff} cargo and {netFuelDiff} fuel");
 
                 EventManager.PublishCargoTransferredEvent(source, dest);
                 // zero it out for next time

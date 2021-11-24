@@ -107,7 +107,7 @@ namespace CraigStars
                 if (fleet.Spec.Bombs.Count > 0)
                 {
                     // figure out the killRate and minKill for this fleet's bombs
-                    var defenseCoverage = planetService.GetDefenseCoverage(planet, defender);
+                    var defenseCoverage = planet.Spec.DefenseCoverage;
                     var killRateColonistsKilled = RoundToNearest(GetColonistsKilled(planet.Population, defenseCoverage, fleet.Spec.Bombs));
                     var minColonistsKilled = RoundToNearest(GetMinColonistsKilled(planet.Population, defenseCoverage, fleet.Spec.Bombs));
 
@@ -138,6 +138,9 @@ namespace CraigStars
                     planet.Factories = leftoverFactories;
                     planet.Defenses = leftoverDefenses;
 
+                    // update planet spec
+                    planet.Spec = planetService.ComputePlanetSpec(planet, defender);
+
                     // let each player know a bombing happened
                     Message.PlanetBombed(attacker, planet, fleet, actualKilled, minesDestroyed, factoriesDestroyed, defensesDestroyed);
                     Message.PlanetBombed(defender, planet, fleet, actualKilled, minesDestroyed, factoriesDestroyed, defensesDestroyed);
@@ -154,7 +157,7 @@ namespace CraigStars
         /// <param name="bombers"></param>
         void SmartBombPlanet(Planet planet, Player defender, Player attacker, IEnumerable<Fleet> bombers)
         {
-            var smartDefenseCoverage = planetService.GetDefenseCoverageSmart(planet, defender, Game.Rules);
+            var smartDefenseCoverage = planet.Spec.DefenseCoverageSmart;
             // now do all smart bombs
             foreach (var fleet in bombers)
             {
@@ -166,6 +169,9 @@ namespace CraigStars
                     var leftoverPopulation = Math.Max(0, planet.Population - smartKilled);
                     var actualKilled = planet.Population - leftoverPopulation;
                     planet.Population = leftoverPopulation;
+
+                    // update planet spec
+                    planet.Spec = planetService.ComputePlanetSpec(planet, defender);
 
                     // let each player know a bombing happened
                     Message.PlanetSmartBombed(attacker, planet, fleet, actualKilled);

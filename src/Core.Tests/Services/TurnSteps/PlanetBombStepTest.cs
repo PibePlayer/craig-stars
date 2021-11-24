@@ -128,6 +128,7 @@ namespace CraigStars.Tests
             };
             game.Designs.Add(fleet.Tokens[0].Design);
             game.Fleets.Add(fleet);
+            game.Planets.Add(planet);
 
             gameRunner.ComputeSpecs(recompute: true);
 
@@ -190,6 +191,7 @@ namespace CraigStars.Tests
 
             game.Designs.Add(fleet1.Tokens[0].Design);
             game.Fleets.Add(fleet1);
+            game.Planets.Add(planet);
 
             // one mini-bomber with smart bombs
             var fleet2 = new Fleet()

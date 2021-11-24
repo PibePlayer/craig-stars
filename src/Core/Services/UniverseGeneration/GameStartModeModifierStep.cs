@@ -58,13 +58,10 @@ namespace CraigStars.UniverseGeneration
             ownedPlanets.ForEach(planet =>
             {
                 var player = game.Players[planet.PlayerNum];
-                planet.Mines = Mathf.Clamp(planet.Mines + mineFactoryBonus, 0, planetService.GetMaxPossibleMines(planet, player));
-                planet.Factories = Mathf.Clamp(planet.Factories + mineFactoryBonus, 0, planetService.GetMaxPossibleFactories(planet, player));
-                planet.Defenses = Mathf.Clamp(planet.Defenses + defenseBonus, 0, planetService.GetMaxDefenses(planet, player));
+                planet.Mines = Mathf.Clamp(planet.Mines + mineFactoryBonus, 0, planet.Spec.MaxPossibleMines);
+                planet.Factories = Mathf.Clamp(planet.Factories + mineFactoryBonus, 0, planet.Spec.MaxPossibleFactories);
+                planet.Defenses = Mathf.Clamp(planet.Defenses + defenseBonus, 0, planet.Spec.MaxDefenses);
             });
-
-
-
         }
     }
 }

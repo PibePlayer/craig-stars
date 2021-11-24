@@ -36,11 +36,11 @@ namespace CraigStars
             ShipDesign design = player.GetLatestDesign(ShipDesignPurpose.Freighter);
 
             var lowPopPlanets = player.Planets
-            .Where(planet => planetService.GetPopulationDensity(planet, player, gameInfo.Rules) < PopulationDensityRequired)
+            .Where(planet => planet.Spec.PopulationDensity < PopulationDensityRequired)
             .OrderBy(planet => planet.Population)
             .ToList();
             var buildablePlanets = player.Planets
-                .Where(planet => planetService.CanBuild(planet, player, design.Spec.Mass) && planetService.GetPopulationDensity(planet, player, gameInfo.Rules) >= PopulationDensityRequired)
+                .Where(planet => planetService.CanBuild(planet, player, design.Spec.Mass) && planet.Spec.PopulationDensity >= PopulationDensityRequired)
                 .ToList();
             var fleets = player.Fleets.Where(fleet => fleet.Spec.Purposes.Contains(ShipDesignPurpose.Freighter));
 
@@ -58,7 +58,7 @@ namespace CraigStars
                 f => f.Waypoints.Count == 1 &&
                 f.Orbiting != null &&
                 f.Orbiting.PlayerNum == player.Num &&
-                planetService.GetPopulationDensity(f.Orbiting, player, gameInfo.Rules, f.Orbiting.Population - f.AvailableCapacity) >= PopulationDensityRequired)
+                planetService.GetPopulationDensity(f.Orbiting, player, f.Orbiting.Population - f.AvailableCapacity) >= PopulationDensityRequired)
             )
             {
                 if (lowPopPlanets.Count > 0)

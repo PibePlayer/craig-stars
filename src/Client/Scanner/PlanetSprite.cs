@@ -157,7 +157,7 @@ namespace CraigStars.Client
                         {
                             // this is a red planet, draw it differently
                             int terraformHabValue = hab;
-                            Hab terraformedHab = Planet.Hab.Value + planetService.GetTerraformAmount(Planet, Me);
+                            Hab terraformedHab = Planet.Hab.Value + Planet.Spec.TerraformAmount;
                             if (terraformedHab != Planet.Hab)
                             {
                                 // this is a bad planet but we can terraform it

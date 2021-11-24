@@ -96,7 +96,7 @@ namespace CraigStars.Client
                 {
                     owner = "--";
                 }
-                capacity = planetService.GetPopulationDensity(item, player, RulesManager.Rules);
+                capacity = item.Spec.PopulationDensity;
                 habitability = race.GetPlanetHabitability(item.Hab.Value);
                 habitabilityText = $"{habitability:.#}%";
                 habColor = habitability > 0 ? Colors.Green : Colors.Red;

@@ -7,12 +7,10 @@ namespace CraigStars.Client
 {
     public class ResourcesTooltip : CSTooltip
     {
-        [Inject] protected PlanetService planetService;
         RichTextLabel tipRichTextLabel;
 
         public override void _Ready()
         {
-            this.ResolveDependencies();
             tipRichTextLabel = GetNode<RichTextLabel>("MarginContainer/TipRichTextLabel");
         }
 
@@ -20,9 +18,9 @@ namespace CraigStars.Client
         {
             if (Planet != null)
             {
-                tipRichTextLabel.BbcodeText = $"[b]{Planet.Name}[/b] generates [b]{planetService.GetResourcesPerYear(Planet, Me)}[/b] resources each year. " +
-                $"[b]{planetService.GetResourcesPerYearResearch(Planet, Me)}[/b] of these resources have been alloocated to research. That leaves " +
-                $"[b]{planetService.GetResourcesPerYearAvailable(Planet, Me)}[/b] resources for use by the planet";
+                tipRichTextLabel.BbcodeText = $"[b]{Planet.Name}[/b] generates [b]{Planet.Spec.ResourcesPerYear}[/b] resources each year. " +
+                $"[b]{Planet.Spec.ResourcesPerYearResearch}[/b] of these resources have been alloocated to research. That leaves " +
+                $"[b]{Planet.Spec.ResourcesPerYearAvailable}[/b] resources for use by the planet";
             }
         }
     }

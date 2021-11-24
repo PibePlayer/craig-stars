@@ -79,6 +79,12 @@ namespace CraigStars
         public bool RemoteMined { get; set; } = false;
         public bool Explored { get => ReportAge != Unexplored; }
 
+        /// <summary>
+        /// The specs for this planet
+        /// </summary>
+        /// <returns></returns>
+        public PlanetSpec Spec = new();
+
         #endregion
 
         /// <summary>

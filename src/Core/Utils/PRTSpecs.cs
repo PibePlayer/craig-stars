@@ -120,6 +120,7 @@ namespace CraigStars
             },
             MineFieldsAreScanners = true,
             CanDetonateMineFields = true,
+            MineFieldRateMoveFactor = .5f,
             MineFieldMinDecayFactor = .25f,
             MineFieldSafeWarpBonus = 2,
         };

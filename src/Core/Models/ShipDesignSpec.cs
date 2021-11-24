@@ -76,5 +76,11 @@ namespace CraigStars
         /// </summary>
         public Dictionary<MineFieldType, int> MineLayingRateByMineType { get; set; } = new Dictionary<MineFieldType, int>();
 
+        /// <summary>
+        /// True if this ship design is immune to its own minefield detonation
+        /// </summary>
+        /// <value></value>
+        public bool ImmuneToOwnDetonation { get; set; }
+
     }
 }

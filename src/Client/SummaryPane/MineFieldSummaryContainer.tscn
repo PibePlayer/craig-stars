@@ -17,13 +17,17 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
 margin_left = 47.0
 margin_right = 333.0
+margin_bottom = 112.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+margin_right = 286.0
 margin_bottom = 68.0
 custom_constants/separation = 10
 
-[node name="Panel" type="Panel" parent="HBoxContainer"]
+[node name="Panel" type="Panel" parent="VBoxContainer/HBoxContainer"]
 show_behind_parent = true
 margin_right = 64.0
 margin_bottom = 68.0
@@ -32,7 +36,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 custom_styles/panel = SubResource( 1 )
 
-[node name="Icon" type="TextureRect" parent="HBoxContainer/Panel"]
+[node name="Icon" type="TextureRect" parent="VBoxContainer/HBoxContainer/Panel"]
 margin_right = 64.0
 margin_bottom = 68.0
 rect_min_size = Vector2( 64, 64 )
@@ -43,58 +47,64 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="GridContainer" type="GridContainer" parent="HBoxContainer"]
+[node name="GridContainer" type="GridContainer" parent="VBoxContainer/HBoxContainer"]
 margin_left = 74.0
 margin_right = 286.0
 margin_bottom = 68.0
 columns = 2
 
-[node name="LocationLabel" type="Label" parent="HBoxContainer/GridContainer"]
+[node name="LocationLabel" type="Label" parent="VBoxContainer/HBoxContainer/GridContainer"]
 margin_right = 81.0
 margin_bottom = 14.0
 text = "Location:"
 
-[node name="Location" type="Label" parent="HBoxContainer/GridContainer"]
+[node name="Location" type="Label" parent="VBoxContainer/HBoxContainer/GridContainer"]
 margin_left = 85.0
 margin_right = 212.0
 margin_bottom = 14.0
 text = "(1234, 3244)"
 
-[node name="FieldTypeLabel" type="Label" parent="HBoxContainer/GridContainer"]
+[node name="FieldTypeLabel" type="Label" parent="VBoxContainer/HBoxContainer/GridContainer"]
 margin_top = 18.0
 margin_right = 81.0
 margin_bottom = 32.0
 text = "Field Type:"
 
-[node name="FieldType" type="Label" parent="HBoxContainer/GridContainer"]
+[node name="FieldType" type="Label" parent="VBoxContainer/HBoxContainer/GridContainer"]
 margin_left = 85.0
 margin_top = 18.0
 margin_right = 212.0
 margin_bottom = 32.0
 text = "Standard"
 
-[node name="FieldRadiusLabel" type="Label" parent="HBoxContainer/GridContainer"]
+[node name="FieldRadiusLabel" type="Label" parent="VBoxContainer/HBoxContainer/GridContainer"]
 margin_top = 36.0
 margin_right = 81.0
 margin_bottom = 50.0
 text = "Field Radius:"
 
-[node name="FieldRadius" type="Label" parent="HBoxContainer/GridContainer"]
+[node name="FieldRadius" type="Label" parent="VBoxContainer/HBoxContainer/GridContainer"]
 margin_left = 85.0
 margin_top = 36.0
 margin_right = 212.0
 margin_bottom = 50.0
 text = "67 l.y. (4228 mines)"
 
-[node name="DecayRateLabel" type="Label" parent="HBoxContainer/GridContainer"]
+[node name="DecayRateLabel" type="Label" parent="VBoxContainer/HBoxContainer/GridContainer"]
 margin_top = 54.0
 margin_right = 81.0
 margin_bottom = 68.0
 text = "Decay Rate:"
 
-[node name="DecayRate" type="Label" parent="HBoxContainer/GridContainer"]
+[node name="DecayRate" type="Label" parent="VBoxContainer/HBoxContainer/GridContainer"]
 margin_left = 85.0
 margin_top = 54.0
 margin_right = 212.0
 margin_bottom = 68.0
 text = "591 / year"
+
+[node name="DetonateCheckButton" type="CheckButton" parent="VBoxContainer"]
+margin_top = 72.0
+margin_right = 286.0
+margin_bottom = 112.0
+text = "Detonate"

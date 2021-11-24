@@ -1985,6 +1985,8 @@ namespace CraigStars
             Mass = 10,
             Armor = 60,
             FuelCapacity = 400,
+            MineLayingFactor = 2f,
+            ImmuneToOwnDetonation = true,
             Slots = new List<TechHullSlot>(new TechHullSlot[] {
                 new TechHullSlot(HullSlotType.Engine, 1, true),
                 new TechHullSlot(HullSlotType.MineLayer, 2),
@@ -1999,6 +2001,8 @@ namespace CraigStars
             FuelCapacity = 2200,
             Armor = 1200,
             Mass = 30,
+            MineLayingFactor = 2f,
+            ImmuneToOwnDetonation = true,
             Slots = new List<TechHullSlot>(new TechHullSlot[] {
                 new TechHullSlot(HullSlotType.Engine, 1, true),
                 new TechHullSlot(HullSlotType.MineLayer, 8),

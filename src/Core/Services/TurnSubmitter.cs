@@ -28,6 +28,7 @@ namespace CraigStars
             UpdateFleetActions(player);
             UpdateShipDesigns(player);
             UpdateProductionQueues(player);
+            UpdateMineFields(player);
 
             game.Players[player.Num].SubmittedTurn = true;
             player.SubmittedTurn = true;
@@ -116,6 +117,7 @@ namespace CraigStars
                         wp0.Task = playerWp0.Task;
                         wp0.WarpFactor = playerWp0.WarpFactor;
                         wp0.TransportTasks = playerWp0.TransportTasks;
+                        wp0.LayMineFieldDuration = playerWp0.LayMineFieldDuration;
 
                         var index = 1;
 
@@ -214,6 +216,36 @@ namespace CraigStars
                 }
             }
         }
+
+        /// <summary>
+        /// Enable detonation
+        /// </summary>
+        /// <param name="player"></param>
+        void UpdateMineFields(Player player)
+        {
+            foreach (var playerMineField in player.MineFields)
+            {
+                if (game.MineFieldsByGuid.TryGetValue(playerMineField.Guid, out var mineField))
+                {
+                    if (mineField.OwnedBy(player))
+                    {
+                        if (player.Race.Spec.CanDetonateMineFields)
+                        {
+                            mineField.Detonate = playerMineField.Detonate;
+                        }
+                    }
+                    else
+                    {
+                        log.Error($"{game.Year}: Game MineField not owned by player MineField: {playerMineField.Name}, Guid: {playerMineField.Guid}, Player: {player}");
+                    }
+                }
+                else
+                {
+                    log.Error($"{game.Year}: Could not find Game MineField for Player MineField: {playerMineField.Name}, Guid: {playerMineField.Guid}");
+                }
+            }
+        }
+
 
     }
 }

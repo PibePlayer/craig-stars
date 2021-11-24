@@ -74,7 +74,7 @@ namespace CraigStars
                     if (player.MapObjectsByGuid.TryGetValue(mapObject.Guid, out var playerMapObject))
                     {
                         var target = playerMapObject;
-                        var playerWaypoint = Waypoint.TargetWaypoint(target, wp.WarpFactor, wp.Task, wp.TransportTasks);
+                        var playerWaypoint = Waypoint.TargetWaypoint(target, wp.WarpFactor, wp.Task, wp.TransportTasks, wp.LayMineFieldDuration);
                         playerWaypoint.OriginalPosition = wp.OriginalPosition;
 
                         if (wp.OriginalTarget is MapObject originalTarget)
@@ -101,7 +101,7 @@ namespace CraigStars
                     // TODO: figure out targeting other items
                     // we might have to add waypoint reports as a separate
                     // step
-                    itemReport.Waypoints.Add(Waypoint.PositionWaypoint(wp.Position, wp.WarpFactor, wp.Task, wp.TransportTasks));
+                    itemReport.Waypoints.Add(Waypoint.PositionWaypoint(wp.Position, wp.WarpFactor, wp.Task, wp.TransportTasks, wp.LayMineFieldDuration));
                 }
             });
             itemReport.Cargo = item.Cargo;

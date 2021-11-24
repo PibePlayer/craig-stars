@@ -185,6 +185,13 @@ namespace CraigStars
         bool MineFieldsAreScanners { get; set; }
 
         /// <summary>
+        /// The factor to multiply the minefield laying rate by while the ship moves
+        /// SD races can lay half mines while moving, all other races lay none while moving
+        /// </summary>
+        /// <value></value>
+        float MineFieldRateMoveFactor { get; set; }
+
+        /// <summary>
         /// Space Demolition fleets can travel 2 warp speeds faster through minefields
         /// </summary>
         [DefaultValue(0)]

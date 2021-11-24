@@ -17,23 +17,37 @@ namespace CraigStars.Client
         Label fieldRadius;
         Label decayRateLabel;
         Label decayRate;
+        CheckButton detonateCheckButton;
 
         public override void _Ready()
         {
             this.ResolveDependencies();
             base._Ready();
-            location = GetNode<Label>("HBoxContainer/GridContainer/Location");
-            fieldType = GetNode<Label>("HBoxContainer/GridContainer/FieldType");
-            fieldRadius = GetNode<Label>("HBoxContainer/GridContainer/FieldRadius");
-            decayRate = GetNode<Label>("HBoxContainer/GridContainer/DecayRate");
-            decayRateLabel = GetNode<Label>("HBoxContainer/GridContainer/DecayRateLabel");
-            icon = GetNode<TextureRect>("HBoxContainer/Panel/Icon");
+            location = GetNode<Label>("VBoxContainer/HBoxContainer/GridContainer/Location");
+            fieldType = GetNode<Label>("VBoxContainer/HBoxContainer/GridContainer/FieldType");
+            fieldRadius = GetNode<Label>("VBoxContainer/HBoxContainer/GridContainer/FieldRadius");
+            decayRate = GetNode<Label>("VBoxContainer/HBoxContainer/GridContainer/DecayRate");
+            decayRateLabel = GetNode<Label>("VBoxContainer/HBoxContainer/GridContainer/DecayRateLabel");
+            icon = GetNode<TextureRect>("VBoxContainer/HBoxContainer/Panel/Icon");
+            detonateCheckButton = GetNode<CheckButton>("VBoxContainer/DetonateCheckButton");
+
+            detonateCheckButton.Connect("toggled", this, nameof(OnDetonateCheckButtonToggled));
+
+        }
+
+        void OnDetonateCheckButtonToggled(bool toggled)
+        {
+            if (MapObject != null)
+            {
+                MapObject.MineField.Detonate = toggled;
+            }
         }
 
         protected override void UpdateControls()
         {
             decayRate.Visible = false;
             decayRateLabel.Visible = false;
+            detonateCheckButton.Visible = false;
             if (MapObject != null)
             {
                 location.Text = $"{TextUtils.GetPositionString(MapObject.MineField.Position)}";
@@ -44,6 +58,9 @@ namespace CraigStars.Client
                     decayRate.Visible = true;
                     decayRateLabel.Visible = true;
                     decayRate.Text = $"{mineFieldDecayer.GetDecayRate(MapObject.MineField, Me, Me.AllPlanets)} mines / year";
+
+                    // SD races can detonate standard minefields
+                    detonateCheckButton.Visible = Me.Race.Spec.CanDetonateMineFields && MapObject.MineField.Type == MineFieldType.Standard;
                 }
 
                 switch (MapObject.MineField.Type)

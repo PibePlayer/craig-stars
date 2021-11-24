@@ -11,6 +11,16 @@ namespace CraigStars.Client
     {
         static CSLog log = LogProvider.GetLogger(typeof(FleetWaypointTaskTile));
 
+        enum LayMineFieldDuration
+        {
+            Indefinitely,
+            One,
+            Two,
+            Three,
+            Four,
+            Five,
+        }
+
         OptionButton waypointTask;
         Control transportContainer;
         TextureRect fuelTask;
@@ -25,6 +35,10 @@ namespace CraigStars.Client
         TransportPlanDetail transportPlanDetail;
 
         RemoteMiningWaypointTaskContainer remoteMiningWaypointTaskContainer;
+
+        Control layMineFieldWaypointTaksContainer;
+        OptionButton layMineFieldDurationOptionButton;
+        Label minesLaidPerYearLabel;
 
         Texture loadTexture;
         Texture unloadTexture;
@@ -55,9 +69,19 @@ namespace CraigStars.Client
 
             remoteMiningWaypointTaskContainer = (RemoteMiningWaypointTaskContainer)FindNode("RemoteMiningWaypointTaskContainer");
 
+            layMineFieldWaypointTaksContainer = GetNode<Control>("VBoxContainer/Controls/LayMineFieldWaypointTaskContainer");
+            layMineFieldDurationOptionButton = GetNode<OptionButton>("VBoxContainer/Controls/LayMineFieldWaypointTaskContainer/LayMineFieldDurationOptionButton");
+            minesLaidPerYearLabel = GetNode<Label>("VBoxContainer/Controls/LayMineFieldWaypointTaskContainer/MinesLaidPerYearLabel");
+            layMineFieldDurationOptionButton.PopulateOptionButton<LayMineFieldDuration>((task) => task switch
+            {
+                LayMineFieldDuration.Indefinitely => "Indefinitely",
+                _ => $"for {(int)task} years"
+            });
+
             waypointTask.PopulateOptionButton<WaypointTask>((task) => EnumUtils.GetLabelForWaypointTask(task));
 
             waypointTask.Connect("item_selected", this, nameof(OnWaypointTaskItemSelected));
+            layMineFieldDurationOptionButton.Connect("item_selected", this, nameof(OnLayMineFieldDurationOptionButtonSelected));
             editButton.Connect("pressed", this, nameof(OnEditButtonPressed));
             transportPlanEditOKButton.Connect("pressed", this, nameof(OnTransportPlanEditOKButtonPressed));
             applyPlanMenuButton.GetPopup().Connect("index_pressed", this, nameof(OnApplyPlanMenuButtonIndexPressed));
@@ -81,6 +105,20 @@ namespace CraigStars.Client
                 ActiveWaypoint.Task = (WaypointTask)index;
             }
             UpdateControls();
+        }
+
+        void OnLayMineFieldDurationOptionButtonSelected(int index)
+        {
+            if (ActiveWaypoint != null && index >= 0 &&
+                index < Enum.GetValues(typeof(LayMineFieldDuration)).Length)
+            {
+                var duration = (LayMineFieldDuration)index;
+                ActiveWaypoint.LayMineFieldDuration = duration switch
+                {
+                    LayMineFieldDuration.Indefinitely => Waypoint.Indefinite,
+                    _ => (int)duration
+                };
+            }
         }
 
         /// <summary>
@@ -126,6 +164,7 @@ namespace CraigStars.Client
             {
                 transportContainer.Visible = false;
                 remoteMiningWaypointTaskContainer.Visible = false;
+                layMineFieldWaypointTaksContainer.Visible = false;
 
                 if (waypointTask != null && wp != null)
                 {
@@ -151,6 +190,26 @@ namespace CraigStars.Client
                         remoteMiningWaypointTaskContainer.Visible = true;
                         remoteMiningWaypointTaskContainer.Planet = ActiveWaypoint.Target as Planet;
                         remoteMiningWaypointTaskContainer.Fleet = CommandedFleet.Fleet;
+                    }
+                    else if (wp.Task == WaypointTask.LayMineField)
+                    {
+                        layMineFieldWaypointTaksContainer.Visible = true;
+
+                        if (wp.LayMineFieldDuration == Waypoint.Indefinite)
+                        {
+                            layMineFieldDurationOptionButton.Selected = 0;
+                        }
+                        else
+                        {
+                            layMineFieldDurationOptionButton.Selected = Mathf.Clamp(wp.LayMineFieldDuration, 1, layMineFieldDurationOptionButton.Items.Count);
+                        }
+
+                        int minesLaid = 0;
+                        foreach (var entry in CommandedFleet.Fleet.Spec.MineLayingRateByMineType)
+                        {
+                            minesLaid += entry.Value;
+                        }
+                        minesLaidPerYearLabel.Text = $"This fleet can lay {minesLaid} mines per year";
                     }
                 }
 

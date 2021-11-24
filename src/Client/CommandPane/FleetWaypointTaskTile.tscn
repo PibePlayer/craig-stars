@@ -186,3 +186,21 @@ margin_top = 168.0
 margin_right = 271.0
 margin_bottom = 188.0
 text = "OK"
+
+[node name="LayMineFieldWaypointTaskContainer" type="VBoxContainer" parent="VBoxContainer/Controls" index="4"]
+visible = false
+margin_top = 24.0
+margin_right = 180.0
+margin_bottom = 79.0
+
+[node name="LayMineFieldDurationOptionButton" type="OptionButton" parent="VBoxContainer/Controls/LayMineFieldWaypointTaskContainer" index="0"]
+margin_right = 180.0
+margin_bottom = 20.0
+
+[node name="MinesLaidPerYearLabel" type="Label" parent="VBoxContainer/Controls/LayMineFieldWaypointTaskContainer" index="1"]
+self_modulate = Color( 1, 0, 0, 1 )
+margin_top = 24.0
+margin_right = 180.0
+margin_bottom = 55.0
+text = "This fleet can lay 320 mines per year"
+autowrap = true

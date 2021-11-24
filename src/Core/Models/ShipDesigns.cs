@@ -115,7 +115,21 @@ namespace CraigStars
                 new ShipDesignSlot(Techs.QuickJump5, 1, 1),
                 new ShipDesignSlot(Techs.LadyFingerBomb, 2, 2),
             }
-        };        
+        };
+
+        public static ShipDesign LittleHen = new ShipDesign()
+        {
+            Name = "Little Hen",
+            Hull = Techs.MiniMineLayer,
+            HullSetNumber = 1,
+            Slots = new List<ShipDesignSlot>()
+            {
+                new ShipDesignSlot(Techs.QuickJump5, 1, 1),
+                new ShipDesignSlot(Techs.MineDispenser40, 2, 2),
+                new ShipDesignSlot(Techs.MineDispenser40, 3, 2),
+                new ShipDesignSlot(Techs.BatScanner, 4, 1),
+            }
+        };
 
     }
 }

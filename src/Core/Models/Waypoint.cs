@@ -2,12 +2,15 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using System.ComponentModel;
 
 namespace CraigStars
 {
     public class Waypoint
     {
         public const int StargateWarpFactor = 11;
+        public const int Indefinite = -1;
+
         [JsonProperty(IsReference = true)]
         public MapObject Target
         {
@@ -47,11 +50,14 @@ namespace CraigStars
 
         public WaypointTransportTasks TransportTasks { get; set; }
 
+        [DefaultValue(Indefinite)]
+        public int LayMineFieldDuration { get; set; } = Indefinite;
+
         public bool TaskComplete { get; set; }
 
         public Waypoint() { }
 
-        public Waypoint(MapObject target, Vector2 position, int warpFactor = 5, WaypointTask task = WaypointTask.None, WaypointTransportTasks transportTasks = new WaypointTransportTasks())
+        public Waypoint(MapObject target, Vector2 position, int warpFactor = 5, WaypointTask task = WaypointTask.None, WaypointTransportTasks transportTasks = new WaypointTransportTasks(), int layMineFieldDuration = Indefinite)
         {
             this.target = target;
             if (target != null)
@@ -65,6 +71,7 @@ namespace CraigStars
                 Position = position;
             }
             TransportTasks = transportTasks;
+            LayMineFieldDuration = layMineFieldDuration;
             WarpFactor = warpFactor;
             Task = task;
         }
@@ -85,12 +92,12 @@ namespace CraigStars
             };
         }
 
-        public static Waypoint TargetWaypoint(MapObject target, int warpFactor = 5, WaypointTask task = WaypointTask.None, WaypointTransportTasks? transportTasks = null)
+        public static Waypoint TargetWaypoint(MapObject target, int warpFactor = 5, WaypointTask task = WaypointTask.None, WaypointTransportTasks? transportTasks = null, int layMineFieldDuration = Indefinite)
         {
             return new Waypoint(target, Vector2.Zero, warpFactor, task, transportTasks == null ? new WaypointTransportTasks() : transportTasks.Value);
         }
 
-        public static Waypoint PositionWaypoint(Vector2 position, int warpFactor = 5, WaypointTask task = WaypointTask.None, WaypointTransportTasks? transportTasks = null)
+        public static Waypoint PositionWaypoint(Vector2 position, int warpFactor = 5, WaypointTask task = WaypointTask.None, WaypointTransportTasks? transportTasks = null, int layMineFieldDuration = Indefinite)
         {
             return new Waypoint(null, position, warpFactor, task, transportTasks == null ? new WaypointTransportTasks() : transportTasks.Value);
         }

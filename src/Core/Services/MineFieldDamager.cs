@@ -34,7 +34,8 @@ namespace CraigStars
                 {
                     int firstDesignNumEngines = 0;
                     // we apply the min damage here, but it's based on number of engines
-                    foreach (var token in fleet.Tokens)
+                    // Some designs are immune to their own detonation, so ignore those.
+                    foreach (var token in fleet.Tokens.Where(token => !(detonating && token.Design.Spec.ImmuneToOwnDetonation && mineField.OwnedBy(fleetPlayer))))
                     {
                         var design = token.Design;
 
@@ -67,8 +68,9 @@ namespace CraigStars
                 {
                     // we have more than 5 ships, so min damage doesn't apply. Each ship
                     // takes 
-                    foreach (var token in fleet.Tokens)
+                    foreach (var token in fleet.Tokens.Where(token => !(detonating && token.Design.Spec.ImmuneToOwnDetonation && mineField.OwnedBy(fleetPlayer))))
                     {
+
                         var design = token.Design;
                         var tokenDamage = damagePerEngine * (design.Spec.NumEngines) * token.Quantity;
                         totalDamage += tokenDamage;
@@ -80,7 +82,10 @@ namespace CraigStars
 
             // send messages to players
             Message.FleetHitMineField(fleetPlayer, fleet, mineField, totalDamage, shipsDestroyed);
-            Message.FleetHitMineField(mineFieldPlayer, fleet, mineField, totalDamage, shipsDestroyed);
+            if (mineFieldPlayer.Num != fleetPlayer.Num)
+            {
+                Message.FleetHitMineField(mineFieldPlayer, fleet, mineField, totalDamage, shipsDestroyed);
+            }
 
             // remove any complete destroyed tokens.
             fleet.Tokens = fleet.Tokens.Where(token => token.Quantity > 0).ToList();

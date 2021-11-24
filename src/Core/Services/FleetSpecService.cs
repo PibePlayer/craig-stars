@@ -62,7 +62,8 @@ namespace CraigStars
             spec.NumEngines = 0;
             spec.MineLayingRateByMineType = new Dictionary<MineFieldType, int>();
             spec.MiningRate = 0;
-
+            spec.ImmuneToOwnDetonation = hull.ImmuneToOwnDetonation;
+            
             spec.RepairBonus = hull.RepairBonus;
 
 
@@ -111,7 +112,7 @@ namespace CraigStars
                         {
                             spec.MineLayingRateByMineType[slot.HullComponent.MineFieldType] = 0;
                         }
-                        spec.MineLayingRateByMineType[slot.HullComponent.MineFieldType] += slot.HullComponent.MineLayingRate * slot.Quantity;
+                        spec.MineLayingRateByMineType[slot.HullComponent.MineFieldType] += (int)(slot.HullComponent.MineLayingRate * slot.Quantity * hull.MineLayingFactor);
                     }
 
                     // i.e. two .3f battle computers is (1 -.3) * (1 - .3) or (.7 * .7) or it decreases innaccuracy by 49%

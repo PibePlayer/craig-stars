@@ -96,6 +96,8 @@ namespace CraigStars
 
         public bool MineFieldsAreScanners { get; set; } = false;
 
+        public float MineFieldRateMoveFactor { get; set; } = 0f;
+
         [DefaultValue(0)]
         public int MineFieldSafeWarpBonus { get; set; } = 0;
 

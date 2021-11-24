@@ -27,6 +27,11 @@ namespace CraigStars
         public int SpaceDock { get; set; } = UnlimitedSpaceDock;
         public int Initiative { get; set; }
         public float RepairBonus { get; set; }
+
+        [DefaultValue(1f)]
+        public float MineLayingFactor { get; set; } = 1f;
+        public bool ImmuneToOwnDetonation { get; set; }
+
         public List<TechHullSlot> Slots { get; set; } = new List<TechHullSlot>();
 
         public TechHull()

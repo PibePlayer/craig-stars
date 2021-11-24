@@ -89,6 +89,7 @@ namespace CraigStars
 
             // SD
             spec.MineFieldsAreScanners = prtSpec.MineFieldsAreScanners;
+            spec.MineFieldRateMoveFactor = prtSpec.MineFieldRateMoveFactor;
             spec.MineFieldSafeWarpBonus = prtSpec.MineFieldSafeWarpBonus;
             spec.MineFieldMinDecayFactor = prtSpec.MineFieldMinDecayFactor;
             spec.MineFieldBaseDecayRate = prtSpec.MineFieldBaseDecayRate;

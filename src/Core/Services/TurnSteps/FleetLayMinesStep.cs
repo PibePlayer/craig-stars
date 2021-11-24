@@ -20,7 +20,6 @@ namespace CraigStars
             // Separate our waypoint tasks into groups
             foreach (var fleet in Game.Fleets.Where(fleet =>
                 fleet.Spec.CanLayMines &&
-                fleet.Waypoints.Count > 0 &&
                 fleet.Waypoints[0].Task == WaypointTask.LayMineField))
             {
                 LayMineField(fleet, Game.Players[fleet.PlayerNum]);
@@ -31,6 +30,18 @@ namespace CraigStars
         {
             foreach (var entry in fleet.Spec.MineLayingRateByMineType)
             {
+                int minesLaid = entry.Value;
+                if (fleet.Waypoints.Count > 1)
+                {
+                    minesLaid = (int)(minesLaid * player.Race.Spec.MineFieldRateMoveFactor);
+                }
+
+                // we aren't laying mines (probably because we're moving, skip it)
+                if (minesLaid == 0)
+                {
+                    continue;
+                }
+
                 // see if we are adding to an existing minefield
                 var mineField = LocateExistingMineField(player, fleet.Position, entry.Key);
                 if (mineField == null)
@@ -47,7 +58,6 @@ namespace CraigStars
 
                 // add to it!
                 long currentMines = mineField.NumMines;
-                int minesLaid = entry.Value;
                 mineField.NumMines += minesLaid;
                 Message.MinesLaid(player, fleet, mineField, minesLaid);
 

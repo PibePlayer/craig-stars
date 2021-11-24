@@ -53,10 +53,10 @@ namespace CraigStars.Tests
         {
             var (game, gameRunner) = TestUtils.GetSingleUnitGame();
             game.Fleets[0].Position = new Vector2(100, 100); // out of the blast radius
-            var player1 = game.Players[0];
+            var player = game.Players[0];
             var mineField = new MineField()
             {
-                PlayerNum = player1.Num,
+                PlayerNum = player.Num,
                 Type = MineFieldType.Standard,
                 Position = new Vector2(0, 0),
             };
@@ -75,6 +75,47 @@ namespace CraigStars.Tests
             Assert.AreEqual(1, game.Fleets.Count);
             Assert.AreEqual(0, game.Fleets[0].Tokens[0].Damage);
 
+        }
+
+        [Test]
+        public void TestTakeMineFieldDetonateDamage()
+        {
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
+            var player = game.Players[0];
+            player.Race.PRT = PRT.SD;
+
+            var mineField = new MineField()
+            {
+                PlayerNum = player.Num,
+                Type = MineFieldType.Standard,
+                Position = new Vector2(0, 0),
+                NumMines = 320,
+                Detonate = true,
+            };
+            game.MineFields.Add(mineField);
+
+            // make a new fleet with 10 stalwart defenders (350 armor each)
+            var design = TestUtils.CreateDesign(game, player, ShipDesigns.LittleHen.Clone(player));
+            var fleet = new Fleet()
+            {
+                PlayerNum = player.Num,
+                Tokens = new List<ShipToken>() {
+                    new ShipToken(design, 1)
+                },
+            };
+            game.Fleets.Add(fleet);
+            gameRunner.ComputeSpecs(recompute: true);
+
+            Assert.AreEqual(2, game.Fleets.Count);
+
+            DetonateMinesStep step = new DetonateMinesStep(gameRunner.GameProvider, mineFieldDamager);
+            step.Detonate(mineField);
+            gameRunner.OnPurgeDeletedMapObjects();
+
+            // one fleet should die
+            Assert.AreEqual(1, game.Fleets.Count);
+            Assert.AreEqual(fleet, game.Fleets[0]);
+            Assert.AreEqual(0, game.Fleets[0].Damage);
         }
     }
 }

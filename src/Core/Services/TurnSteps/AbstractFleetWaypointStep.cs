@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CraigStars
 {
@@ -38,6 +39,7 @@ namespace CraigStars
         private readonly PlanetService planetService;
         private readonly InvasionProcessor invasionProcessor;
         private readonly PlanetDiscoverer planetDiscoverer;
+        private readonly FleetSpecService fleetSpecService;
 
         private Rules Rules => rulesProvider.Rules;
 
@@ -50,6 +52,7 @@ namespace CraigStars
             PlanetService planetService,
             InvasionProcessor invasionProcessor,
             PlanetDiscoverer planetDiscoverer,
+            FleetSpecService fleetSpecService,
             TurnGenerationState state,
             int waypointIndex) : base(gameProvider, state)
         {
@@ -57,6 +60,7 @@ namespace CraigStars
             this.planetService = planetService;
             this.invasionProcessor = invasionProcessor;
             this.planetDiscoverer = planetDiscoverer;
+            this.fleetSpecService = fleetSpecService;
             this.waypointIndex = waypointIndex;
         }
 
@@ -564,7 +568,36 @@ namespace CraigStars
                         planetService.ApplyProductionPlan(planet.ProductionQueue.Items, fleetWaypoint.Player, fleetWaypoint.Player.ProductionPlans[0]);
                     }
                     planet.Population = fleet.Cargo.Colonists * 100;
+                    planet.Mines = player.Race.Spec.InnateMining ? planetService.GetInnateMines(planet, player) : 0;
+
                     fleet.Cargo = fleet.Cargo.WithColonists(0);
+
+                    if (fleet.Spec.OrbitalConstructionModule)
+                    {
+                        // get the Starter Colony for this player
+                        var design = Game.Designs.Where(design => design.PlayerNum == player.Num && design.Purpose == ShipDesignPurpose.StarterColony).FirstOrDefault();
+                        if (design != null)
+                        {
+                            planet.Starbase = new Starbase()
+                            {
+                                Name = design.Name,
+                                Orbiting = planet,
+                                Position = planet.Position,
+                                BattlePlan = player.BattlePlans[0],
+
+                                Tokens = new List<ShipToken>() {
+                                    new ShipToken(design, 1)
+                                }
+                            };
+                            fleetSpecService.ComputeStarbaseSpec(player, planet.Starbase, true);
+                        }
+                        else
+                        {
+                            log.Error("Uh oh, we tried to colonize a planet with an Orbital Construction Module but we have no Starter Colony design.");
+                        }
+                    }
+
+                    planet.Spec = planetService.ComputePlanetSpec(planet, player);
 
                     Message.PlanetColonized(player, planet);
                     ProcessScrapFleetTask(fleetWaypoint);

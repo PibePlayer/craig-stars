@@ -22,6 +22,7 @@ namespace CraigStars.Tests
         PlanetService planetService;
         InvasionProcessor invasionProcessor;
         PlanetDiscoverer planetDiscover;
+        FleetSpecService fleetSpecService;
 
         [SetUp]
         public void SetUp()
@@ -30,6 +31,7 @@ namespace CraigStars.Tests
             planetService = TestUtils.TestContainer.GetInstance<PlanetService>();
             invasionProcessor = TestUtils.TestContainer.GetInstance<InvasionProcessor>();
             planetDiscover = TestUtils.TestContainer.GetInstance<PlanetDiscoverer>();
+            fleetSpecService = TestUtils.TestContainer.GetInstance<FleetSpecService>();
         }
 
         [Test]
@@ -49,7 +51,7 @@ namespace CraigStars.Tests
             fleet.Cargo = new Cargo();
             planet.Cargo = new Cargo(ironium: 100);
 
-            var step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, planetService, invasionProcessor, planetDiscover);
+            var step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, planetService, invasionProcessor, planetDiscover, fleetSpecService);
             step.Process();
 
             Assert.AreEqual(0, planet.Cargo.Ironium);
@@ -73,7 +75,7 @@ namespace CraigStars.Tests
             fleet.Cargo = new Cargo();
             planet.Cargo = new Cargo(ironium: 100);
 
-            var step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, planetService, invasionProcessor, planetDiscover);
+            var step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, planetService, invasionProcessor, planetDiscover, fleetSpecService);
             step.Process();
 
             // should load 25 onto the fleet, leaving 75 on the planet
@@ -86,7 +88,7 @@ namespace CraigStars.Tests
             fleet.Cargo = new Cargo();
             planet.Cargo = new Cargo(ironium: 20);
 
-            step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, planetService, invasionProcessor, planetDiscover);
+            step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, planetService, invasionProcessor, planetDiscover, fleetSpecService);
             step.Process();
 
             // should load 20 into the fleet leaving 0 on the planet
@@ -112,7 +114,7 @@ namespace CraigStars.Tests
             fleet.Cargo = new Cargo();
             planet.Cargo = new Cargo(ironium: 100);
 
-            var step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, planetService, invasionProcessor, planetDiscover);
+            var step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, planetService, invasionProcessor, planetDiscover, fleetSpecService);
             step.Process();
 
             // should unload 25 onto the planet, leaving 75 on the ship
@@ -126,7 +128,7 @@ namespace CraigStars.Tests
             fleet.Cargo = new Cargo();
             planet.Cargo = new Cargo(ironium: 20);
 
-            step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, planetService, invasionProcessor, planetDiscover);
+            step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, planetService, invasionProcessor, planetDiscover, fleetSpecService);
             step.Process();
 
             // should load 20 the ship, leaving 0 on the planet and not completing the task
@@ -153,7 +155,7 @@ namespace CraigStars.Tests
             fleet.Cargo = fleet.Cargo.WithIronium(100);
             planet.Cargo = new Cargo();
 
-            var step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, planetService, invasionProcessor, planetDiscover);
+            var step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, planetService, invasionProcessor, planetDiscover, fleetSpecService);
             step.Process();
 
             Assert.AreEqual(100, planet.Cargo.Ironium);
@@ -177,7 +179,7 @@ namespace CraigStars.Tests
             fleet.Cargo = fleet.Cargo.WithIronium(100);
             planet.Cargo = new Cargo();
 
-            var step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, planetService, invasionProcessor, planetDiscover);
+            var step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, planetService, invasionProcessor, planetDiscover, fleetSpecService);
             step.Process();
 
             // should unload 25 onto the planet, leaving 75 on the ship
@@ -190,7 +192,7 @@ namespace CraigStars.Tests
             fleet.Cargo = fleet.Cargo.WithIronium(20);
             planet.Cargo = new Cargo();
 
-            step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, planetService, invasionProcessor, planetDiscover);
+            step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, planetService, invasionProcessor, planetDiscover, fleetSpecService);
             step.Process();
 
             // should unload 25 onto the planet, leaving 75 on the ship
@@ -216,7 +218,7 @@ namespace CraigStars.Tests
             fleet.Cargo = fleet.Cargo.WithIronium(100);
             planet.Cargo = new Cargo();
 
-            var step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, planetService, invasionProcessor, planetDiscover);
+            var step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, planetService, invasionProcessor, planetDiscover, fleetSpecService);
             step.Process();
 
             // should unload 25 onto the planet, leaving 75 on the ship
@@ -230,7 +232,7 @@ namespace CraigStars.Tests
             fleet.Cargo = fleet.Cargo.WithIronium(20);
             planet.Cargo = new Cargo();
 
-            step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, planetService, invasionProcessor, planetDiscover);
+            step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, planetService, invasionProcessor, planetDiscover, fleetSpecService);
             step.Process();
 
             // should unload 25 onto the planet, leaving 75 on the ship
@@ -240,6 +242,112 @@ namespace CraigStars.Tests
 
         }
 
+        [Test]
+        public void TestColonize()
+        {
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
+            var player = game.Players[0];
+
+            var planet = new Planet()
+            {
+                Name = "Planet To Colonize",
+                BaseHab = new Hab(50, 50, 50),
+                Hab = new Hab(50, 50, 50),
+                TerraformedAmount = new Hab(),
+                MineralConcentration = new Mineral(100, 100, 100),
+                Cargo = new Cargo(),
+            };
+
+            game.Planets.Add(planet);
+
+            // build a colony fleet
+            var colonizer = TestUtils.CreateDesign(game, player, ShipDesigns.SantaMaria);
+            var fleet = new Fleet()
+            {
+                PlayerNum = player.Num,
+                Tokens = new List<ShipToken>() {
+                    new ShipToken(colonizer, 1)
+                },
+                Cargo = new Cargo(colonists: 25)
+            };
+            game.Fleets.Add(fleet);
+
+            planet.OrbitingFleets.Add(fleet);
+            fleet.Orbiting = planet;
+            fleet.Waypoints.Add(Waypoint.TargetWaypoint(planet, task: WaypointTask.Colonize));
+
+            gameRunner.ComputeSpecs(recompute: true);
+
+            var step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, planetService, invasionProcessor, planetDiscover, fleetSpecService);
+            step.Process();
+
+            // we should colonize the planet and have some scrap resources
+            Assert.AreEqual(player.Num, planet.PlayerNum);
+            Assert.AreEqual(2500, planet.Population);
+            Assert.Greater(planet.Cargo.Total, 25);
+        }
+
+        [Test]
+        public void TestColonizeAR()
+        {
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
+            var player = game.Players[0];
+
+            var planet = new Planet()
+            {
+                Name = "Planet To Colonize",
+                BaseHab = new Hab(50, 50, 50),
+                Hab = new Hab(50, 50, 50),
+                TerraformedAmount = new Hab(),
+                MineralConcentration = new Mineral(100, 100, 100),
+                Cargo = new Cargo(),
+            };
+
+            game.Planets.Add(planet);
+
+            // build a colony fleet with an orbital construction module
+            var colonizer = TestUtils.CreateDesign(game, player, ShipDesigns.SantaMaria);
+            colonizer.Slots[1].HullComponent = Techs.OrbitalConstructionModule;
+            var fleet = new Fleet()
+            {
+                PlayerNum = player.Num,
+                Tokens = new List<ShipToken>() {
+                    new ShipToken(colonizer, 1)
+                },
+                Cargo = new Cargo(colonists: 25)
+            };
+            game.Fleets.Add(fleet);
+
+            planet.OrbitingFleets.Add(fleet);
+            fleet.Orbiting = planet;
+            fleet.Waypoints.Add(Waypoint.TargetWaypoint(planet, task: WaypointTask.Colonize));
+
+            // add a starter colony
+            var starterColony = new ShipDesign()
+            {
+                PlayerNum = player.Num,
+                Name = "Starter Colony",
+                Purpose = ShipDesignPurpose.StarterColony,
+                Hull = Techs.OrbitalFort,
+                HullSetNumber = player.DefaultHullSet,
+                CanDelete = false,
+            };
+            game.Designs.Add(starterColony);
+
+            gameRunner.ComputeSpecs(recompute: true);
+
+            var step = new FleetWaypoint0Step(gameRunner.GameProvider, rulesProvider, planetService, invasionProcessor, planetDiscover, fleetSpecService);
+            step.Process();
+
+            // we should colonize the planet and have some scrap resources
+            Assert.AreEqual(player.Num, planet.PlayerNum);
+            Assert.AreEqual(2500, planet.Population);
+            Assert.Greater(planet.Cargo.Total, 25);
+
+            // we should have an orbital fort
+            Assert.IsTrue(planet.HasStarbase);
+            Assert.AreEqual(starterColony, planet.Starbase.Tokens[0].Design);
+        }
 
     }
 }

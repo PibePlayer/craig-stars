@@ -51,6 +51,7 @@ namespace CraigStars
             itemReport.Hull = item.Hull;
             itemReport.HullSetNumber = item.HullSetNumber;
             itemReport.Purpose = item.Purpose;
+            itemReport.CanDelete = item.CanDelete;
         }
     }
 }

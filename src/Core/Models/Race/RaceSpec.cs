@@ -39,6 +39,8 @@ namespace CraigStars
         /// <returns></returns>
         public Dictionary<QueueItemType, Cost> Costs = new();
 
+        #region PRTs
+
         /// <summary>
         /// The amount of minerals in a single ironium, boranium, or germanium packet
         /// </summary>
@@ -343,6 +345,41 @@ namespace CraigStars
         public float StarbaseCostFactor { get; set; } = 1f;
 
         /// <summary>
+        /// Does this race have innate mining (because they live in space)
+        /// </summary>
+        /// <value></value>
+        public bool InnateMining { get; set; }
+
+        /// <summary>
+        /// Does this race have innate resources (because they can't build factories)
+        /// </summary>
+        /// <value></value>
+        public bool InnateResources { get; set; }
+
+        /// <summary>
+        /// Does this race have innate scanning (because they live in space)
+        /// </summary>
+        /// <value></value>
+        public bool InnateScanner { get; set; }
+
+        /// <summary>
+        /// Can this race build planetary defenses
+        /// </summary>
+        /// <value></value>
+        [DefaultValue(true)]
+        public bool CanBuildDefenses { get; set; } = true;
+
+        /// <summary>
+        /// Does this race live on starbases (as opposed to planets?)
+        /// </summary>
+        /// <value></value>
+        public bool LivesOnStarbases { get; set; }
+
+        #endregion
+
+        #region LRT
+
+        /// <summary>
         /// ISB races have 20% built in cloaking for starbases
         /// </summary>
         public int StarbaseBuiltInCloakUnits { get; set; } = 0;
@@ -397,5 +434,6 @@ namespace CraigStars
         /// </summary>
         public float StarbaseRepairFactor { get; set; } = 1f;
 
+        #endregion
     }
 }

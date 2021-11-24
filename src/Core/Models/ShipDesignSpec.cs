@@ -33,7 +33,7 @@ namespace CraigStars
         public int CloakPercent { get; set; }
         public float ReduceCloaking { get; set; }
         public float TorpedoInaccuracyFactor { get; set; }
-
+        public bool OrbitalConstructionModule { get; set; }
 
         /// <summary>
         /// The number of movement points in battle spread across 4 rounds

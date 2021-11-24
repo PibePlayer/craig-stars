@@ -190,6 +190,7 @@ namespace CraigStars.Tests
                     BattlePlan = player1.BattlePlans[0],
                 }
             };
+            planet1.Starbase.Orbiting = planet1;
             var planet2 = new Planet()
             {
                 Name = "Planet 2",
@@ -210,6 +211,7 @@ namespace CraigStars.Tests
                     BattlePlan = player2.BattlePlans[0],
                 }
             };
+            planet2.Starbase.Orbiting = planet2;
             game.Planets.Add(planet1);
             game.Planets.Add(planet2);
 
@@ -344,11 +346,11 @@ namespace CraigStars.Tests
         /// <returns></returns>
         internal static ShipDesign CreateDesign(Game game, Player player, ShipDesign design)
         {
-            design.PlayerNum = player.Num;
-            game.Designs.Add(design);
-            player.Designs.Add(design);
+            var gameDesign = design.Clone(player);
+            game.Designs.Add(gameDesign);
+            player.Designs.Add(gameDesign);
 
-            return design;
+            return gameDesign;
         }
     }
 }

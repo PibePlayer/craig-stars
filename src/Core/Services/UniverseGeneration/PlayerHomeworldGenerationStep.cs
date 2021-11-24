@@ -112,9 +112,9 @@ namespace CraigStars.UniverseGeneration
             planet.Population = (int)(startingPlanet.Population * race.Spec.StartingPopulationFactor);
 
             // homeworlds start with mines and factories
-            planet.Mines = rules.StartingMines;
-            planet.Factories = rules.StartingFactories;
-            planet.Defenses = rules.StartingDefenses;
+            planet.Mines = player.Race.Spec.InnateMining ? planetService.GetInnateMines(planet, player) : rules.StartingMines;
+            planet.Factories = player.Race.Spec.InnateMining ? 0 : rules.StartingFactories;
+            planet.Defenses = player.Race.Spec.CanBuildDefenses ? rules.StartingDefenses : 0;
 
             // homeworlds have a scanner
             planet.Homeworld = true;
@@ -158,8 +158,9 @@ namespace CraigStars.UniverseGeneration
             planet.Population = (int)(startingPlanet.Population * race.Spec.StartingPopulationFactor);
 
             // extra worlds start with mines and factories
-            planet.Mines = rules.StartingMines;
-            planet.Factories = rules.StartingFactories;
+            planet.Mines = player.Race.Spec.InnateMining ? planetService.GetInnateMines(planet, player) : rules.StartingMines;
+            planet.Factories = player.Race.Spec.InnateMining ? 0 : rules.StartingFactories;
+
             planet.ContributesOnlyLeftoverToResearch = false;
             planet.Scanner = true;
 

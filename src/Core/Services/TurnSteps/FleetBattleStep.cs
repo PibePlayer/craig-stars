@@ -74,6 +74,20 @@ namespace CraigStars
 
                             if (!hasTokens)
                             {
+                                if (fleet is Starbase starbase)
+                                {
+                                    var player = Game.Players[starbase.PlayerNum];
+                                    if (player.Race.Spec.LivesOnStarbases)
+                                    {
+                                        // kill this AR planet.
+                                        var planet = starbase.Orbiting;
+                                        planet.Population = 0;
+                                        planet.Mines = player.Race.Spec.InnateMining ? 0 : planet.Mines;
+                                        planet.Factories = player.Race.Spec.InnateResources ? 0 : planet.Factories;
+                                        EventManager.PublishPlanetPopulationEmptiedEvent(planet);
+                                    }
+                                }
+
                                 // this fleet was destroyed
                                 EventManager.PublishMapObjectDeletedEvent(fleet);
                             }

@@ -6,12 +6,12 @@ namespace CraigStars.Client
 {
     public class PlanetStatusTile : PlanetTile
     {
-        [Inject] protected PlayerTechService playerTechService;
-
         Label population;
         Label resources;
         Label scannerType;
         Label scannerRange;
+        HSeparator defenseHSeparator;
+        GridContainer defensesGrid;
         Label defenses;
         Label defenseType;
         Label defenseCoverage;
@@ -21,12 +21,13 @@ namespace CraigStars.Client
 
         public override void _Ready()
         {
-            this.ResolveDependencies();
             base._Ready();
             population = FindNode("Population") as Label;
             resources = FindNode("Resources") as Label;
             scannerType = FindNode("ScannerType") as Label;
             scannerRange = FindNode("ScannerRange") as Label;
+            defenseHSeparator = FindNode("DefenseHSeparator") as HSeparator;
+            defensesGrid = FindNode("DefensesGrid") as GridContainer;
             defenses = FindNode("Defenses") as Label;
             defenseType = FindNode("DefenseType") as Label;
             defenseCoverage = FindNode("DefenseCoverage") as Label;
@@ -56,21 +57,40 @@ namespace CraigStars.Client
             {
                 population.Text = $"{CommandedPlanet.Planet.Population:n0}";
                 resources.Text = $"{CommandedPlanet.Planet.Spec.ResourcesPerYearAvailable:n0} of {CommandedPlanet.Planet.Spec.ResourcesPerYear:n0}";
-                defenses.Text = $"{CommandedPlanet.Planet.Defenses:n0} of {CommandedPlanet.Planet.Spec.MaxDefenses:n0}";
-                var defense = playerTechService.GetBestDefense(Me);
-                defenseType.Text = defense?.Name;
-                defenseCoverage.Text = $"{CommandedPlanet.Planet.Spec.DefenseCoverage:P1}";
+
+                if (Me.Race.Spec.CanBuildDefenses)
+                {
+                    defenseHSeparator.Visible = true;
+                    defensesGrid.Visible = true;
+
+                    defenses.Text = $"{CommandedPlanet.Planet.Defenses:n0} of {CommandedPlanet.Planet.Spec.MaxDefenses:n0}";
+                    defenseType.Text = $"{CommandedPlanet.Planet.Spec.Defense.Name}";
+                    defenseCoverage.Text = $"{CommandedPlanet.Planet.Spec.DefenseCoverage:P1}";
+                }
+                else
+                {
+                    defenseHSeparator.Visible = false;
+                    defensesGrid.Visible = false;
+                }
+
                 if (CommandedPlanet.Planet.Scanner)
                 {
-                    var scanner = playerTechService.GetBestPlanetaryScanner(Me);
-                    scannerType.Text = $"{scanner.Name}";
-                    if (scanner.ScanRangePen > 0)
+                    if (Me.Race.Spec.InnateScanner)
                     {
-                        scannerRange.Text = $"{scanner.ScanRange * Me.Race.Spec.ScanRangeFactor}/{scanner.ScanRangePen} l.y.";
+                        scannerType.Text = $"Innate";
                     }
                     else
                     {
-                        scannerRange.Text = $"{scanner.ScanRange} l.y.";
+                        scannerType.Text = $"{CommandedPlanet.Planet.Spec.Scanner.Name}";
+                    }
+
+                    if (CommandedPlanet.Planet.Spec.ScanRangePen > 0)
+                    {
+                        scannerRange.Text = $"{CommandedPlanet.Planet.Spec.ScanRange}/{CommandedPlanet.Planet.Spec.ScanRangePen} l.y.";
+                    }
+                    else
+                    {
+                        scannerRange.Text = $"{CommandedPlanet.Planet.Spec.ScanRange} l.y.";
                     }
 
                 }

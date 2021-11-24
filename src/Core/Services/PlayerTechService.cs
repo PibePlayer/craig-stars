@@ -79,6 +79,21 @@ namespace CraigStars
         /// Get the best planetary scanner this player has access to
         /// </summary>
         /// <returns></returns>
+        public TechHull GetBestOrbitalConstructionHull(Player player)
+        {
+            var techs = TechStore.GetTechsByCategory(TechCategory.StarbaseHull)
+                .Where(t => t is TechHull th && th.OrbitalConstructionHull)
+                .Where(t => HasTech(player, t))
+                .OrderBy(t => t.Ranking)
+                .ToList();
+
+            return techs.FirstOrDefault() as TechHull;
+        }
+
+        /// <summary>
+        /// Get the best planetary scanner this player has access to
+        /// </summary>
+        /// <returns></returns>
         public TechPlanetaryScanner GetBestPlanetaryScanner(Player player)
         {
             return GetBestTech<TechPlanetaryScanner>(player, TechCategory.PlanetaryScanner);
@@ -287,9 +302,19 @@ namespace CraigStars
         /// <returns></returns>
         public TechHullComponent GetBestColonizationModule(Player player)
         {
-            var techs = TechStore.GetTechsByCategory(TechCategory.Mechanical)
-                .Where(t => t is TechHullComponent hc && HasTech(player, hc) && hc.ColonizationModule)
-                .OrderByDescending(t => t.Ranking);
+            IEnumerable<Tech> techs;
+            if (player.Race.Spec.LivesOnStarbases)
+            {
+                techs = TechStore.GetTechsByCategory(TechCategory.Mechanical)
+                    .Where(t => t is TechHullComponent hc && HasTech(player, hc) && hc.OrbitalConstructionModule)
+                    .OrderByDescending(t => t.Ranking);
+            }
+            else
+            {
+                techs = TechStore.GetTechsByCategory(TechCategory.Mechanical)
+                    .Where(t => t is TechHullComponent hc && HasTech(player, hc) && hc.ColonizationModule)
+                    .OrderByDescending(t => t.Ranking);
+            }
 
             return techs.FirstOrDefault() as TechHullComponent;
         }

@@ -69,6 +69,22 @@ namespace CraigStars.UniverseGeneration
         internal List<ShipDesign> GetStarbaseDesigns(Player player)
         {
             List<ShipDesign> designs = new List<ShipDesign>();
+
+            if (player.Race.Spec.LivesOnStarbases)
+            {
+                // create a starter colony for AR races
+                var starterColony = new ShipDesign()
+                {
+                    PlayerNum = player.Num,
+                    Name = "Starter Colony",
+                    Purpose = ShipDesignPurpose.StarterColony,
+                    Hull = Techs.OrbitalFort,
+                    HullSetNumber = player.DefaultHullSet,
+                    CanDelete = false,
+                };
+                designs.Add(starterColony);
+            }
+
             var starbase = new ShipDesign()
             {
                 PlayerNum = player.Num,

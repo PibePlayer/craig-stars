@@ -146,5 +146,13 @@ namespace CraigStars
 
         public float StarbaseCostFactor { get; set; } = 1f;
 
+        public bool InnateMining { get; set; }
+        public bool InnateResources { get; set; }
+        public bool InnateScanner { get; set; }
+        [DefaultValue(.1f)]
+        public float InnatePopulationFactor { get; set; } = .1f;
+        [DefaultValue(true)]
+        public bool CanBuildDefenses { get; set; } = true;
+        public bool LivesOnStarbases { get; set; }
     }
 }

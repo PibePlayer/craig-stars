@@ -22,9 +22,32 @@ namespace CraigStars
         /// Starbases have +1 range
         /// </summary>
         public int RangeBonus { get; set; }
+
+        /// <summary>
+        /// True if this hull is a starbase
+        /// </summary>
+        /// <value></value>
         public bool Starbase { get; set; }
+
+        /// <summary>
+        /// The spacedoc determines what size ships this starbase can build
+        /// </summary>
+        /// <value></value>
         [DefaultValue(UnlimitedSpaceDock)]
         public int SpaceDock { get; set; } = UnlimitedSpaceDock;
+
+        /// <summary>
+        /// The factor this Starbase will be modify the innate ScanRange for pen scanning
+        /// For AR races, the Ultra Station and Death Star have half the innate scan range as pen scanning
+        /// </summary>
+        public float InnateScanRangePenFactor;
+
+        /// <summary>
+        /// If true, this hull is built by orbital construction modules
+        /// </summary>
+        /// <value></value>
+        public bool OrbitalConstructionHull { get; set; }
+
         public int Initiative { get; set; }
         public float RepairBonus { get; set; }
 

@@ -58,7 +58,7 @@ namespace CraigStars
         public override string ToString()
         {
             var networkDescription = AIControlled ? "AI Controlled" : $"NetworkId: {NetworkId}";
-            return $"Player {Num} {Name} ({networkDescription})";
+            return $"Player {Num + 1} {Name} ({networkDescription})";
         }
 
     }

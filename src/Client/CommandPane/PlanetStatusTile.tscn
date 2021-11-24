@@ -74,7 +74,7 @@ mouse_default_cursor_shape = 16
 text = "181 of 213"
 align = 2
 
-[node name="HSeparator" type="HSeparator" parent="VBoxContainer/Controls" index="1"]
+[node name="ScannerHSeparator" type="HSeparator" parent="VBoxContainer/Controls" index="1"]
 margin_top = 36.0
 margin_right = 187.0
 margin_bottom = 40.0
@@ -114,7 +114,7 @@ margin_bottom = 32.0
 text = "150 l.y."
 align = 2
 
-[node name="HSeparator2" type="HSeparator" parent="VBoxContainer/Controls" index="3"]
+[node name="DefenseHSeparator" type="HSeparator" parent="VBoxContainer/Controls" index="3"]
 margin_top = 80.0
 margin_right = 187.0
 margin_bottom = 84.0

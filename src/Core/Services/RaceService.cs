@@ -106,6 +106,11 @@ namespace CraigStars
             spec.CanRemoteMineOwnPlanets = prtSpec.CanRemoteMineOwnPlanets;
             spec.MovementBonus = prtSpec.MovementBonus;
             spec.StarbaseCostFactor = prtSpec.StarbaseCostFactor;
+            spec.InnateMining = prtSpec.InnateMining;
+            spec.InnateResources = prtSpec.InnateResources;
+            spec.InnateScanner = prtSpec.InnateScanner;
+            spec.CanBuildDefenses = prtSpec.CanBuildDefenses;
+            spec.LivesOnStarbases = prtSpec.LivesOnStarbases;
 
             // CA
             spec.Instaforming = prtSpec.Instaforming;

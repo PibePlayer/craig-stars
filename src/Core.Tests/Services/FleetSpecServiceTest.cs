@@ -7,11 +7,13 @@ namespace CraigStars.Tests
     public class FleetSpecServiceTest
     {
         FleetSpecService fleetSpecService;
+        RaceService raceService;
 
         [SetUp]
         public void SetUp()
         {
             IRulesProvider rulesProvider = TestUtils.TestContainer.GetInstance<IRulesProvider>();
+            raceService = TestUtils.TestContainer.GetInstance<RaceService>();
             fleetSpecService = new FleetSpecService(rulesProvider);
         }
 
@@ -178,7 +180,6 @@ namespace CraigStars.Tests
         {
             var player = new Player();
             player.Race.PRT = PRT.SS;
-            var raceService = TestUtils.TestContainer.GetInstance<RaceService>();
             player.Race.Spec = raceService.ComputeRaceSpecs(player.Race);
 
             var freighterDesign = new ShipDesign()
@@ -223,7 +224,6 @@ namespace CraigStars.Tests
 
             // WMs get 2 extra movement
             player.Race.PRT = PRT.WM;
-            var raceService = TestUtils.TestContainer.GetInstance<RaceService>();
             player.Race.Spec = raceService.ComputeRaceSpecs(player.Race);
             fleetSpecService.ComputeDesignSpec(player, design, recompute: true);
             Assert.AreEqual(6, design.Spec.Movement);
@@ -263,7 +263,20 @@ namespace CraigStars.Tests
             Assert.AreEqual(2, fleet.Spec.FleetCompositionTokensRequired.Count);
             Assert.AreEqual(ShipDesignPurpose.Bomber, fleet.Spec.FleetCompositionTokensRequired[0].Purpose);
             Assert.AreEqual(ShipDesignPurpose.Bomber, fleet.Spec.FleetCompositionTokensRequired[0].Purpose);
+        }
 
+        [Test]
+        public void TestARColonizer()
+        {
+            var player = new Player();
+            player.Race.PRT = PRT.AR;
+            player.Race.Spec = raceService.ComputeRaceSpecs(player.Race);
+            
+            var design = ShipDesigns.SantaMaria.Clone(player);
+            design.Slots[1].HullComponent = Techs.OrbitalConstructionModule;
+
+            fleetSpecService.ComputeDesignSpec(player, design, recompute: true);
+            Assert.AreEqual(true, design.Spec.OrbitalConstructionModule);
         }
     }
 

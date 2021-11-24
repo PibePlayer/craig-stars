@@ -52,6 +52,7 @@ namespace CraigStars
 
         public int GrowthRate { get; set; } = 15;
         public int ColonistsPerResource { get; set; } = 1000;
+        public int InnateAnnualResourcesFactor { get; set; } = 10; // for AR: Planet Value * sqrt(Population * Energy Tech / 10)
         public int FactoryOutput { get; set; } = 10;
         public int FactoryCost { get; set; } = 10;
         public int NumFactories { get; set; } = 10;

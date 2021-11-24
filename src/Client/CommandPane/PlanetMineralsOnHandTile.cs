@@ -48,8 +48,23 @@ namespace CraigStars.Client
                 boranium.Text = $"{CommandedPlanet.Planet.Cargo.Boranium}kT";
                 germanium.Text = $"{CommandedPlanet.Planet.Cargo.Germanium}kT";
 
-                mines.Text = $"{CommandedPlanet.Planet.Mines} of {CommandedPlanet.Planet.Spec.MaxMines}";
-                factories.Text = $"{CommandedPlanet.Planet.Factories} of {CommandedPlanet.Planet.Spec.MaxFactories}";
+                if (Me.Race.Spec.InnateMining)
+                {
+                    mines.Text = $"{CommandedPlanet.Planet.Mines}*";
+                }
+                else
+                {
+                    mines.Text = $"{CommandedPlanet.Planet.Mines} of {CommandedPlanet.Planet.Spec.MaxMines}";
+                }
+
+                if (Me.Race.Spec.InnateResources)
+                {
+                    factories.Text = "n/a";
+                }
+                else
+                {
+                    factories.Text = $"{CommandedPlanet.Planet.Factories} of {CommandedPlanet.Planet.Spec.MaxFactories}";
+                }
             }
         }
 

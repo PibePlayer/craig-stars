@@ -368,11 +368,28 @@ namespace CraigStars.Tests
             var planet = new Planet()
             {
                 Factories = 10,
-                Population = 25000
+                Population = 25000,
+                Starbase = new Starbase()
+                {
+                    PlayerNum = player.Num,
+                    Tokens = new List<ShipToken>() {
+                        new ShipToken() {
+                            Design = ShipDesigns.Starbase.Clone(player),
+                            Quantity = 1
+                        }
+                    }
+                }
             };
             planet.Spec = service.ComputePlanetSpec(planet, player);
 
             Assert.AreEqual(35, planet.Spec.ResourcesPerYear);
+
+            // Test AR
+            player.Race.PRT = PRT.AR;
+            player.Race.Spec = raceService.ComputeRaceSpecs(player.Race);
+            player.TechLevels.Energy = 1;
+            planet.Spec = service.ComputePlanetSpec(planet, player);
+            Assert.AreEqual(50, planet.Spec.ResourcesPerYear);
         }
 
 

@@ -17,6 +17,11 @@ namespace CraigStars
         public TechDefense Defense { get; set; }
         public float DefenseCoverage { get; set; }
         public float DefenseCoverageSmart { get; set; }
+
+        public TechPlanetaryScanner Scanner { get; set; }
+        public int ScanRange { get; set; }
+        public int ScanRangePen { get; set; }
+
         public bool CanTerraform { get; set; }
         public Hab TerraformAmount { get; set; } = new();
     }

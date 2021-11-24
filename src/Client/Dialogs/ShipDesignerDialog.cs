@@ -128,6 +128,7 @@ namespace CraigStars.Client
             starbaseHullSummary.ShipDesign = design;
             starbaseHullSummary.Hull = design.Hull;
             starbaseHullSummary.UpdateControls();
+            deleteStarbaseDesignButton.Disabled = !design.CanDelete;
             editStarbaseDesignButton.Disabled = design.InUse;
         }
 

@@ -21,6 +21,8 @@ namespace CraigStars
         public ShipDesignPurpose Purpose { get; set; }
         public TechHull Hull { get; set; } = new TechHull();
         public int HullSetNumber { get; set; }
+        [DefaultValue(true)]
+        public bool CanDelete { get; set; } = true;
         public List<ShipDesignSlot> Slots { get; set; } = new List<ShipDesignSlot>();
 
         [JsonIgnore]

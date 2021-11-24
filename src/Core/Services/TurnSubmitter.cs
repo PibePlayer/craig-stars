@@ -56,9 +56,9 @@ namespace CraigStars
                     }
                     else
                     {
+                        // TODO: update design name, slots, etc
                         log.Debug($"{game.Year}: Updating Game design from Player Design: {player} - {design.Name}.");
                     }
-                    // TODO: update design name, slots, etc
                 }
                 else
                 {

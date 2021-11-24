@@ -18,6 +18,10 @@ namespace CraigStars
             OwnedPlanets.ForEach(planet =>
             {
                 planet.Population += planet.Spec.GrowthAmount;
+                var player = Game.Players[planet.PlayerNum];
+                if (player.Race.Spec.InnateMining) {
+                    planet.Mines = planetService.GetInnateMines(planet, player);
+                }
                 planetService.ComputePlanetSpec(planet, Game.Players[planet.PlayerNum]);
             });
         }

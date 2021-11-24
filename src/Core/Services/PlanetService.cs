@@ -32,11 +32,11 @@ namespace CraigStars
         {
             var spec = new PlanetSpec();
             spec.MaxPopulation = GetMaxPopulation(planet, player);
-            spec.MaxMines = planet.Population * player.Race.NumMines / 10000;
-            spec.MaxFactories = planet.Population * player.Race.NumFactories / 10000;
-            spec.MaxDefenses = 100;
-            spec.MaxPossibleMines = spec.MaxPopulation * player.Race.NumMines / 10000;
-            spec.MaxPossibleFactories = spec.MaxPopulation * player.Race.NumFactories / 10000;
+            spec.MaxMines = player.Race.Spec.InnateMining ? 0 : planet.Population * player.Race.NumMines / 10000;
+            spec.MaxFactories = player.Race.Spec.InnateResources ? 0 : planet.Population * player.Race.NumFactories / 10000;
+            spec.MaxDefenses = player.Race.Spec.CanBuildDefenses ? 100 : 0;
+            spec.MaxPossibleMines = player.Race.Spec.InnateMining ? 0 : spec.MaxPopulation * player.Race.NumMines / 10000;
+            spec.MaxPossibleFactories = player.Race.Spec.InnateResources ? 0 : spec.MaxPopulation * player.Race.NumFactories / 10000;
             spec.PopulationDensity = GetPopulationDensity(planet, player, planet.Population);
             spec.GrowthAmount = GetGrowthAmount(planet, player, spec.MaxPopulation);
             spec.MineralOutput = GetMineralOutput(planet, planet.Mines, player.Race.MineOutput);
@@ -47,11 +47,23 @@ namespace CraigStars
                 : (int)(spec.ResourcesPerYear * (1 - player.ResearchAmount / 100.0) + .5f);
             spec.ResourcesPerYearResearch = GetResourcesPerYearResearch(planet, player, player.ResearchAmount);
 
-            spec.Defense = playerTechService.GetBestDefense(player);
+            spec.Defense = player.Race.Spec.CanBuildDefenses ? playerTechService.GetBestDefense(player) : null;
             if (spec.Defense != null && planet.Defenses > 0)
             {
                 spec.DefenseCoverage = GetDefenseCoverage(planet, player, spec.Defense, spec.MaxDefenses);
                 spec.DefenseCoverageSmart = GetDefenseCoverageSmart(planet, player, spec.Defense, spec.MaxDefenses);
+            }
+
+            if (player.Race.Spec.InnateScanner)
+            {
+                spec.ScanRange = (int)(GetInnateScanRange(planet, player) * player.Race.Spec.ScanRangeFactor);
+                spec.ScanRangePen = (int)(spec.ScanRange * planet.Starbase.Design.Hull.InnateScanRangePenFactor);
+            }
+            else
+            {
+                spec.Scanner = playerTechService.GetBestPlanetaryScanner(player);
+                spec.ScanRange = (int)(spec.Scanner.ScanRange * player.Race.Spec.ScanRangeFactor);
+                spec.ScanRangePen = spec.Scanner.ScanRangePen;
             }
 
             spec.TerraformAmount = GetTerraformAmount(planet, player);
@@ -128,7 +140,7 @@ namespace CraigStars
                 var habValue = race.GetPlanetHabitability(hab);
                 if (habValue > 0)
                 {
-                    int popGrowth = (int)(planet.Population * (race.GrowthRate * growthFactor / 100.0) * (habValue / 100.0));
+                    int popGrowth = (int)(planet.Population * (race.GrowthRate * growthFactor / 100.0) * (habValue / 100.0) + .5f);
 
                     if (capacity > .25)
                     {
@@ -154,6 +166,24 @@ namespace CraigStars
         #endregion
 
         #region Minerals
+
+        public int GetInnateMines(Planet planet, Player player)
+        {
+            if (player.Race.Spec.InnateMining)
+            {
+                return (int)(Mathf.Sqrt(planet.Population) * .1f);
+            }
+            return 0;
+        }
+
+        public int GetInnateScanRange(Planet planet, Player player)
+        {
+            if (player.Race.Spec.InnateScanner)
+            {
+                return (int)(Mathf.Sqrt(planet.Population * .1f));
+            }
+            return 0;
+        }
 
         /// <summary>
         /// Get the amount of minerals this planet outputs for a a certain number of mines, given a race mineOutput
@@ -193,14 +223,21 @@ namespace CraigStars
         {
             var race = player.Race;
 
-            // compute resources from population
-            int resourcesFromPop = planet.Population == 0 ? 0 : planet.Population / race.ColonistsPerResource;
+            if (race.Spec.InnateResources)
+            {
+                return (int)(Mathf.Sqrt(planet.Population * player.TechLevels.Energy / race.InnateAnnualResourcesFactor));
+            }
+            else
+            {
+                // compute resources from population
+                int resourcesFromPop = planet.Population == 0 ? 0 : planet.Population / race.ColonistsPerResource;
 
-            // compute resources from factories
-            int resourcesFromFactories = planet.Factories * race.FactoryOutput / 10;
+                // compute resources from factories
+                int resourcesFromFactories = planet.Factories * race.FactoryOutput / 10;
 
-            // return the sum
-            return resourcesFromPop + resourcesFromFactories;
+                // return the sum
+                return resourcesFromPop + resourcesFromFactories;
+            }
         }
 
         /// <summary>

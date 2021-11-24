@@ -19,4 +19,5 @@ public enum ShipDesignPurpose
     SpeedMineLayer,
     Starbase,
     Fort,
+    StarterColony,
 }

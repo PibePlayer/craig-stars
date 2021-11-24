@@ -123,13 +123,12 @@ namespace CraigStars
 
             // build a list of scanners for this player
             var scanners = new List<Scanner>();
-            var planetaryScanner = playerTechService.GetBestPlanetaryScanner(player);
 
             log.Debug($"{Game.Year}: {player} Building List of Planet Scanners");
             foreach (var planet in Game.Planets.Where(p => p.PlayerNum == player.Num && p.Scanner))
             {
                 // find the best scanner at this location, whether fleet or planet
-                var scanner = new Scanner(planet.Position, (int)(planetaryScanner.ScanRange * player.Race.Spec.ScanRangeFactor), planetaryScanner.ScanRangePen);
+                var scanner = new Scanner(planet.Position, (int)(planet.Spec.ScanRange), planet.Spec.ScanRangePen);
                 foreach (var fleet in planet.OrbitingFleets.Where(f => f.PlayerNum == player.Num && f.Spec.Scanner))
                 {
                     scanner.Range = Math.Max(scanner.Range, fleet.Spec.ScanRange);

@@ -63,9 +63,8 @@ namespace CraigStars
             spec.MineLayingRateByMineType = new Dictionary<MineFieldType, int>();
             spec.MiningRate = 0;
             spec.ImmuneToOwnDetonation = hull.ImmuneToOwnDetonation;
-            
+            spec.OrbitalConstructionModule = false;
             spec.RepairBonus = hull.RepairBonus;
-
 
             var numTachyonDetectors = 0;
 
@@ -104,6 +103,7 @@ namespace CraigStars
                     spec.Initiative += slot.HullComponent.InitiativeBonus;
                     spec.Movement += slot.HullComponent.MovementBonus * slot.Quantity;
                     spec.MiningRate += slot.HullComponent.MiningRate * slot.Quantity;
+                    spec.OrbitalConstructionModule = spec.OrbitalConstructionModule || slot.HullComponent.OrbitalConstructionModule;
 
                     // Add this mine type to the layers this design has
                     if (slot.HullComponent.MineLayingRate > 0)
@@ -328,6 +328,7 @@ namespace CraigStars
             spec.CargoCapacity = 0;
             spec.FuelCapacity = 0;
             spec.Colonizer = false;
+            spec.OrbitalConstructionModule = false;
             spec.Cost = new Cost();
             spec.SpaceDock = 0;
             spec.ScanRange = TechHullComponent.NoScanner;
@@ -390,10 +391,8 @@ namespace CraigStars
                 spec.MiningRate += token.Design.Spec.MiningRate * token.Quantity;
 
                 // colonization
-                if (token.Design.Spec.Colonizer)
-                {
-                    spec.Colonizer = true;
-                }
+                spec.Colonizer = spec.Colonizer || token.Design.Spec.Colonizer;
+                spec.OrbitalConstructionModule = spec.OrbitalConstructionModule || token.Design.Spec.OrbitalConstructionModule;
 
                 // spec all mine layers in the fleet
                 if (token.Design.Spec.CanLayMines)
@@ -443,6 +442,7 @@ namespace CraigStars
 
                 // choose the best tachyon detector ship
                 spec.ReduceCloaking = Math.Max(spec.ReduceCloaking, token.Design.Spec.ReduceCloaking);
+
             });
 
             // compute the cloaking based on the cloak units and cargo
@@ -609,10 +609,15 @@ namespace CraigStars
             // get fleet designs
             var designsInUse = player.Fleets.SelectMany(f => f.Tokens).Select(token => token.Design).ToLookup(design => design).ToDictionary(lookup => lookup.Key, lookup => lookup.Count());
             // add in starbase designs
-            var starbaseDesignsInUse = player.Planets.Where(planet => planet.HasStarbase).Select(planet => planet.Starbase.Design).ToLookup(design => design).ToDictionary(lookup => lookup.Key, lookup => lookup.Count());
+            Dictionary<ShipDesign, int> starbaseDesignsInUse = player.Planets.Where(planet => planet.HasStarbase).Select(planet => planet.Starbase.Design).ToLookup(design => design).ToDictionary(lookup => lookup.Key, lookup => lookup.Count());
             foreach (var starbaseDesign in starbaseDesignsInUse)
             {
                 designsInUse.Add(starbaseDesign.Key, starbaseDesign.Value);
+                int numInUse = starbaseDesign.Value;
+                var design = starbaseDesign.Key;
+
+                // we can't delete the StarterColony of in use designs for AR races
+                starbaseDesign.Key.CanDelete = !(design.Purpose == ShipDesignPurpose.StarterColony || (numInUse > 0 && player.Race.Spec.LivesOnStarbases));
             }
 
             player.Designs.ForEach(design =>

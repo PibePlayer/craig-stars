@@ -298,5 +298,36 @@ namespace CraigStars
         [DefaultValue(1f)]
         float StarbaseCostFactor { get; set; }
 
+        /// <summary>
+        /// Does this race have innate mining (because they live in space)
+        /// </summary>
+        /// <value></value>
+        bool InnateMining { get; set; }
+
+        /// <summary>
+        /// Does this race have innate resources (because they can't build factories)
+        /// </summary>
+        /// <value></value>
+        bool InnateResources { get; set; }
+
+        /// <summary>
+        /// Does this race have innate scanning (because they live in space)
+        /// </summary>
+        /// <value></value>
+        bool InnateScanner { get; set; }
+
+        /// <summary>
+        /// Can this race build planetary defenses
+        /// </summary>
+        /// <value></value>
+        [DefaultValue(true)]
+        bool CanBuildDefenses { get; set; }
+
+        /// <summary>
+        /// Does this race live on starbases (as opposed to planets?)
+        /// </summary>
+        /// <value></value>
+        bool LivesOnStarbases { get; set; }
+
     }
 }

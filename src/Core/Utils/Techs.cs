@@ -2069,6 +2069,7 @@ namespace CraigStars
             Initiative = 10,
             RangeBonus = 1,
             Starbase = true,
+            OrbitalConstructionHull = true,
             RepairBonus = .03f, // 8% total repair rate
             Slots = new List<TechHullSlot>(new TechHullSlot[] {
                 new TechHullSlot(HullSlotType.OrbitalElectrical, 1, false),
@@ -2112,6 +2113,7 @@ namespace CraigStars
             Initiative = 16,
             Starbase = true,
             RepairBonus = .15f, // 20% total repair rate
+            InnateScanRangePenFactor = .5f, // AR races get half innate scanning range for pen scanning
             Slots = new List<TechHullSlot>(new TechHullSlot[] {
                 new TechHullSlot(HullSlotType.OrbitalElectrical, 1, false),
                 new TechHullSlot(HullSlotType.Weapon, 16, false),
@@ -2140,6 +2142,7 @@ namespace CraigStars
             Initiative = 18,
             Starbase = true,
             RepairBonus = .15f, // 20% total repair rate
+            InnateScanRangePenFactor = .5f, // AR races get half innate scanning range for pen scanning
             Slots = new List<TechHullSlot>(new TechHullSlot[] {
                 new TechHullSlot(HullSlotType.OrbitalElectrical, 1, false),
                 new TechHullSlot(HullSlotType.Weapon, 32, false),

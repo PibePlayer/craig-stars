@@ -193,6 +193,12 @@ namespace CraigStars
             },
             CanRemoteMineOwnPlanets = true,
             StarbaseCostFactor = .8f,
+            InnateMining = true,
+            InnateResources = true,
+            InnateScanner = true,
+            InnatePopulationFactor = .1f,
+            CanBuildDefenses = false,
+            LivesOnStarbases = true,
         };
 
         public static PRTSpec JoaT = new PRTSpec(PRT.JoaT, 66)

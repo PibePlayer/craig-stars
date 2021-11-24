@@ -450,10 +450,10 @@ namespace CraigStars.Client
                 var rangePen = -1;
 
                 // if we own this planet and it has a scanner, include it
-                if (planet.OwnedByMe && planet.Planet.Scanner && Me.PlanetaryScanner != null)
+                if (planet.OwnedByMe && planet.Planet.Scanner)
                 {
-                    range = (int)(Me.PlanetaryScanner.ScanRange * Me.Race.Spec.ScanRangeFactor);
-                    rangePen = Me.PlanetaryScanner.ScanRangePen;
+                    range = (int)(planet.Planet.Spec.ScanRange);
+                    rangePen = planet.Planet.Spec.ScanRangePen;
                 }
 
                 foreach (var fleet in planet.OrbitingFleets.Where(f => f.Fleet.OwnedBy(Me)))

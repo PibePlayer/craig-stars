@@ -20,7 +20,7 @@ namespace CraigStars
                 HabHigh = new Hab(85, 85, 85),
 
                 GrowthRate = 15,
-                ColonistsPerResource = 1000,
+                PopEfficiency = 10,
                 FactoryOutput = 10,
                 FactoryCost = 10,
                 NumFactories = 10,
@@ -53,7 +53,7 @@ namespace CraigStars
                 HabHigh = new Hab(56, 81, 53),
 
                 GrowthRate = 20,
-                ColonistsPerResource = 1000,
+                PopEfficiency = 10,
                 FactoryOutput = 10,
                 FactoryCost = 9,
                 NumFactories = 17,
@@ -95,7 +95,7 @@ namespace CraigStars
                 ImmuneGrav = true,
 
                 GrowthRate = 10,
-                ColonistsPerResource = 1000,
+                PopEfficiency = 10,
                 FactoryOutput = 10,
                 FactoryCost = 10,
                 NumFactories = 10,

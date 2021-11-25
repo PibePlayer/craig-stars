@@ -24,6 +24,7 @@ border_width_bottom = 2
 border_color = Color( 0.176471, 0.168627, 0.2, 1 )
 
 [node name="RaceDesignerDialog" instance=ExtResource( 1 )]
+visible = true
 rect_min_size = Vector2( 700, 405 )
 window_title = "Race Designer"
 script = ExtResource( 5 )
@@ -84,6 +85,7 @@ margin_bottom = 371.0
 size_flags_vertical = 3
 
 [node name="Name" type="MarginContainer" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer" index="0"]
+visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 4.0
@@ -510,7 +512,6 @@ margin_bottom = 42.0
 text = "You can expect that 1 in 2 planets will be habitable to your race."
 
 [node name="Production" type="MarginContainer" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer" index="4"]
-visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 4.0
@@ -522,17 +523,45 @@ margin_bottom = -4.0
 margin_right = 672.0
 margin_bottom = 283.0
 
-[node name="ColonistsPerResourceContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer" index="0"]
-margin_right = 702.0
+[node name="AnnualResourcesContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer" index="0"]
+visible = false
+margin_right = 672.0
 margin_bottom = 24.0
 
-[node name="ColonistsPerResourceLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/ColonistsPerResourceContainer" index="0"]
+[node name="AnnualResourcesLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/AnnualResourcesContainer" index="0"]
+margin_top = 5.0
+margin_right = 427.0
+margin_bottom = 19.0
+text = "Annual Resources = Planet Value * sqrt(Population * Energy Tech / "
+
+[node name="AnnualResourcesSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/AnnualResourcesContainer" index="1"]
+margin_left = 431.0
+margin_right = 505.0
+margin_bottom = 24.0
+min_value = 7.0
+max_value = 25.0
+value = 10.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PlanetaryProductionContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer" index="1"]
+margin_right = 672.0
+margin_bottom = 283.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ColonistsPerResourceContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/PlanetaryProductionContainer" index="0"]
+margin_right = 672.0
+margin_bottom = 24.0
+
+[node name="ColonistsPerResourceLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/PlanetaryProductionContainer/ColonistsPerResourceContainer" index="0"]
 margin_top = 5.0
 margin_right = 295.0
 margin_bottom = 19.0
 text = "One resource is generated each year for every"
 
-[node name="ColonistsPerResourceSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/ColonistsPerResourceContainer" index="1"]
+[node name="ColonistsPerResourceSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/PlanetaryProductionContainer/ColonistsPerResourceContainer" index="1"]
 margin_left = 299.0
 margin_right = 373.0
 margin_bottom = 24.0
@@ -544,25 +573,25 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="ColonistsPerResourceLabel2" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/ColonistsPerResourceContainer" index="2"]
+[node name="ColonistsPerResourceLabel2" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/PlanetaryProductionContainer/ColonistsPerResourceContainer" index="2"]
 margin_left = 377.0
 margin_top = 5.0
 margin_right = 439.0
 margin_bottom = 19.0
 text = "colonists."
 
-[node name="FactoryOutputContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer" index="1"]
+[node name="FactoryOutputContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/PlanetaryProductionContainer" index="1"]
 margin_top = 28.0
-margin_right = 702.0
+margin_right = 672.0
 margin_bottom = 52.0
 
-[node name="FactoryOutputLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/FactoryOutputContainer" index="0"]
+[node name="FactoryOutputLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/PlanetaryProductionContainer/FactoryOutputContainer" index="0"]
 margin_top = 5.0
 margin_right = 173.0
 margin_bottom = 19.0
 text = "Every 10 factories produce "
 
-[node name="FactoryOutputSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/FactoryOutputContainer" index="1"]
+[node name="FactoryOutputSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/PlanetaryProductionContainer/FactoryOutputContainer" index="1"]
 margin_left = 177.0
 margin_right = 251.0
 margin_bottom = 24.0
@@ -573,25 +602,25 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="FactoryOutputLabel2" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/FactoryOutputContainer" index="2"]
+[node name="FactoryOutputLabel2" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/PlanetaryProductionContainer/FactoryOutputContainer" index="2"]
 margin_left = 255.0
 margin_top = 5.0
 margin_right = 387.0
 margin_bottom = 19.0
 text = "resources each year."
 
-[node name="FactoryCostContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer" index="2"]
+[node name="FactoryCostContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/PlanetaryProductionContainer" index="2"]
 margin_top = 56.0
-margin_right = 702.0
+margin_right = 672.0
 margin_bottom = 80.0
 
-[node name="FactoryCostLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/FactoryCostContainer" index="0"]
+[node name="FactoryCostLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/PlanetaryProductionContainer/FactoryCostContainer" index="0"]
 margin_top = 5.0
 margin_right = 112.0
 margin_bottom = 19.0
 text = "Factories require "
 
-[node name="FactoryCostSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/FactoryCostContainer" index="1"]
+[node name="FactoryCostSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/PlanetaryProductionContainer/FactoryCostContainer" index="1"]
 margin_left = 116.0
 margin_right = 190.0
 margin_bottom = 24.0
@@ -602,25 +631,25 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="FactoryCostLabel2" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/FactoryCostContainer" index="2"]
+[node name="FactoryCostLabel2" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/PlanetaryProductionContainer/FactoryCostContainer" index="2"]
 margin_left = 194.0
 margin_top = 5.0
 margin_right = 318.0
 margin_bottom = 19.0
 text = "resources  to build."
 
-[node name="NumFactoriesContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer" index="3"]
+[node name="NumFactoriesContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/PlanetaryProductionContainer" index="3"]
 margin_top = 84.0
-margin_right = 702.0
+margin_right = 672.0
 margin_bottom = 108.0
 
-[node name="NumFactoriesLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/NumFactoriesContainer" index="0"]
+[node name="NumFactoriesLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/PlanetaryProductionContainer/NumFactoriesContainer" index="0"]
 margin_top = 5.0
 margin_right = 269.0
 margin_bottom = 19.0
 text = "Every 10,000 colonists may operate up to "
 
-[node name="NumFactoriesSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/NumFactoriesContainer" index="1"]
+[node name="NumFactoriesSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/PlanetaryProductionContainer/NumFactoriesContainer" index="1"]
 margin_left = 273.0
 margin_right = 347.0
 margin_bottom = 24.0
@@ -631,35 +660,35 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="NumFactoriesLabel2" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/NumFactoriesContainer" index="2"]
+[node name="NumFactoriesLabel2" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/PlanetaryProductionContainer/NumFactoriesContainer" index="2"]
 margin_left = 351.0
 margin_top = 5.0
 margin_right = 410.0
 margin_bottom = 19.0
 text = "factories."
 
-[node name="FactoriesCostLessContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer" index="4"]
+[node name="FactoriesCostLessContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/PlanetaryProductionContainer" index="4"]
 margin_top = 112.0
-margin_right = 702.0
+margin_right = 672.0
 margin_bottom = 136.0
 
-[node name="FactoriesCostLessCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/FactoriesCostLessContainer" index="0"]
+[node name="FactoriesCostLessCheckBox" type="CheckBox" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/PlanetaryProductionContainer/FactoriesCostLessContainer" index="0"]
 margin_right = 322.0
 margin_bottom = 24.0
 text = "Factories cost 1kT less of Germanium to build"
 
-[node name="MineOutputContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer" index="5"]
+[node name="MineOutputContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/PlanetaryProductionContainer" index="5"]
 margin_top = 140.0
-margin_right = 702.0
+margin_right = 672.0
 margin_bottom = 164.0
 
-[node name="MineOutputLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/MineOutputContainer" index="0"]
+[node name="MineOutputLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/PlanetaryProductionContainer/MineOutputContainer" index="0"]
 margin_top = 5.0
 margin_right = 195.0
 margin_bottom = 19.0
 text = "Every 10 mines produce up to "
 
-[node name="MineOutputSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/MineOutputContainer" index="1"]
+[node name="MineOutputSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/PlanetaryProductionContainer/MineOutputContainer" index="1"]
 margin_left = 199.0
 margin_right = 273.0
 margin_bottom = 24.0
@@ -671,25 +700,25 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="MineOutputLabel2" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/MineOutputContainer" index="2"]
+[node name="MineOutputLabel2" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/PlanetaryProductionContainer/MineOutputContainer" index="2"]
 margin_left = 277.0
 margin_top = 5.0
 margin_right = 450.0
 margin_bottom = 19.0
 text = "of each mineral every year."
 
-[node name="MineCostContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer" index="6"]
+[node name="MineCostContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/PlanetaryProductionContainer" index="6"]
 margin_top = 168.0
-margin_right = 702.0
+margin_right = 672.0
 margin_bottom = 192.0
 
-[node name="MineCostLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/MineCostContainer" index="0"]
+[node name="MineCostLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/PlanetaryProductionContainer/MineCostContainer" index="0"]
 margin_top = 5.0
 margin_right = 89.0
 margin_bottom = 19.0
 text = "Mines require"
 
-[node name="MineCostSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/MineCostContainer" index="1"]
+[node name="MineCostSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/PlanetaryProductionContainer/MineCostContainer" index="1"]
 margin_left = 93.0
 margin_right = 167.0
 margin_bottom = 24.0
@@ -700,25 +729,25 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="MineCostLabel2" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/MineCostContainer" index="2"]
+[node name="MineCostLabel2" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/PlanetaryProductionContainer/MineCostContainer" index="2"]
 margin_left = 171.0
 margin_top = 5.0
 margin_right = 291.0
 margin_bottom = 19.0
 text = "resources to build."
 
-[node name="NumMinesContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer" index="7"]
+[node name="NumMinesContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/PlanetaryProductionContainer" index="7"]
 margin_top = 196.0
-margin_right = 702.0
+margin_right = 672.0
 margin_bottom = 220.0
 
-[node name="NumMinesLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/NumMinesContainer" index="0"]
+[node name="NumMinesLabel" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/PlanetaryProductionContainer/NumMinesContainer" index="0"]
 margin_top = 5.0
 margin_right = 269.0
 margin_bottom = 19.0
 text = "Every 10,000 colonists may operate up to "
 
-[node name="NumMinesSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/NumMinesContainer" index="1"]
+[node name="NumMinesSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/PlanetaryProductionContainer/NumMinesContainer" index="1"]
 margin_left = 273.0
 margin_right = 347.0
 margin_bottom = 24.0
@@ -729,7 +758,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="NumMinesLabel2" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/NumMinesContainer" index="2"]
+[node name="NumMinesLabel2" type="Label" parent="MarginContainer/VBoxContainer/ContentContainer/VBoxContainer/TabContainer/Production/VBoxContainer/PlanetaryProductionContainer/NumMinesContainer" index="2"]
 margin_left = 351.0
 margin_top = 5.0
 margin_right = 391.0

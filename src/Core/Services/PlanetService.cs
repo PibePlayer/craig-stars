@@ -225,12 +225,12 @@ namespace CraigStars
 
             if (race.Spec.InnateResources)
             {
-                return (int)(Mathf.Sqrt(planet.Population * player.TechLevels.Energy / race.InnateAnnualResourcesFactor));
+                return (int)(Mathf.Sqrt(planet.Population * player.TechLevels.Energy / race.PopEfficiency));
             }
             else
             {
                 // compute resources from population
-                int resourcesFromPop = planet.Population == 0 ? 0 : planet.Population / race.ColonistsPerResource;
+                int resourcesFromPop = planet.Population == 0 ? 0 : planet.Population / (race.PopEfficiency * 100);
 
                 // compute resources from factories
                 int resourcesFromFactories = planet.Factories * race.FactoryOutput / 10;

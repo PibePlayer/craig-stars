@@ -51,8 +51,13 @@ namespace CraigStars
         Hab? habWidth = null;
 
         public int GrowthRate { get; set; } = 15;
-        public int ColonistsPerResource { get; set; } = 1000;
-        public int InnateAnnualResourcesFactor { get; set; } = 10; // for AR: Planet Value * sqrt(Population * Energy Tech / 10)
+
+        /// <summary>
+        /// For normal races, this is the colonists per resource (in kT of colonists)
+        /// for AR races, this is the Annual resources sqrt of pop * energy / thing
+        /// </summary>
+        /// <value></value>
+        public int PopEfficiency { get; set; } = 10;
         public int FactoryOutput { get; set; } = 10;
         public int FactoryCost { get; set; } = 10;
         public int NumFactories { get; set; } = 10;

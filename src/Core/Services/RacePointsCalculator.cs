@@ -146,7 +146,7 @@ namespace CraigStars
             }
 
             // pop efficiency
-            int popEfficiency = race.ColonistsPerResource / 100;
+            int popEfficiency = race.PopEfficiency;
             if (popEfficiency > 25)
                 popEfficiency = 25;
 
@@ -359,7 +359,7 @@ namespace CraigStars
                 // we have more extra's
                 int[] scienceCost = new int[] { 150, 330, 540, 780, 1050, 1380 };
                 points += scienceCost[(-techcosts) - 1];
-                if (techcosts < -4 && race.ColonistsPerResource < 1000)
+                if (techcosts < -4 && (popEfficiency < 10))
                 {
                     points -= 190;
                 }

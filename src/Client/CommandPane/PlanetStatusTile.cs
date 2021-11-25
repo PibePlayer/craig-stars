@@ -18,6 +18,7 @@ namespace CraigStars.Client
 
         PopulationTooltip populationTooltip;
         ResourcesTooltip resourcesTooltip;
+        ScannerTooltip scannerTooltip;
 
         public override void _Ready()
         {
@@ -35,18 +36,53 @@ namespace CraigStars.Client
             population.Connect("gui_input", this, nameof(OnTooltipGuiInput), new Godot.Collections.Array() { populationTooltip });
             resourcesTooltip = GetNode<ResourcesTooltip>("VBoxContainer/Controls/CanvasLayer/ResourcesTooltip");
             resources.Connect("gui_input", this, nameof(OnTooltipGuiInput), new Godot.Collections.Array() { resourcesTooltip });
+            scannerTooltip = GetNode<ScannerTooltip>("VBoxContainer/Controls/CanvasLayer/ScannerTooltip");
+            scannerType.Connect("gui_input", this, nameof(OnTooltipGuiInput), new Godot.Collections.Array() { scannerTooltip });
+            scannerRange.Connect("gui_input", this, nameof(OnTooltipGuiInput), new Godot.Collections.Array() { scannerTooltip });
 
+            defenses.Connect("gui_input", this, nameof(OnDefensesGuiInput));
+            defenseType.Connect("gui_input", this, nameof(OnDefensesGuiInput));
+            defenseCoverage.Connect("gui_input", this, nameof(OnDefensesGuiInput));
         }
 
         void OnTooltipGuiInput(InputEvent @event, CSTooltip tooltip)
         {
             if (@event.IsActionPressed("ui_select"))
             {
-                tooltip.ShowAtMouse(CommandedPlanet?.Planet);
+                if (tooltip is ScannerTooltip)
+                {
+                    if (Me.Race.Spec.InnateScanner)
+                    {
+                        tooltip.ShowAtMouse(CommandedPlanet?.Planet);
+                    }
+                    else
+                    {
+                        TechSummaryPopup.Tech = CommandedPlanet.Planet.Spec.Scanner;
+                        TechSummaryPopup.ShowAtMouse();
+                    }
+                }
+                else
+                {
+                    tooltip.ShowAtMouse(CommandedPlanet?.Planet);
+                }
             }
             else if (@event.IsActionReleased("ui_select"))
             {
                 tooltip.Hide();
+                TechSummaryPopup.Instance.Hide();
+            }
+        }
+
+        void OnDefensesGuiInput(InputEvent @event)
+        {
+            if (@event.IsActionPressed("ui_select"))
+            {
+                TechSummaryPopup.Tech = CommandedPlanet.Planet.Spec.Defense;
+                TechSummaryPopup.ShowAtMouse();
+            }
+            else if (@event.IsActionReleased("ui_select"))
+            {
+                TechSummaryPopup.Instance.Hide();
             }
         }
 

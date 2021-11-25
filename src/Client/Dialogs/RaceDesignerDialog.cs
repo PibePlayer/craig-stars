@@ -75,6 +75,9 @@ namespace CraigStars.Client
         SpinBox growthRate;
         Label growthRateDescription;
 
+        Control annualResourcesContainer;
+        SpinBox annualResourcesSpinBox;
+        Control planetaryProductionContainer;
         SpinBox colonistsPerResourceSpinBox;
         SpinBox factoryOutputSpinBox;
         SpinBox factoryCostSpinBox;
@@ -144,6 +147,9 @@ namespace CraigStars.Client
             growthRateDescription = (Label)FindNode("GrowthRateDescription");
 
             // production
+            annualResourcesContainer = (Control)FindNode("AnnualResourcesContainer");
+            annualResourcesSpinBox = (SpinBox)FindNode("AnnualResourcesSpinBox");
+            planetaryProductionContainer = (Control)FindNode("PlanetaryProductionContainer");
             colonistsPerResourceSpinBox = (SpinBox)FindNode("ColonistsPerResourceSpinBox");
             factoryOutputSpinBox = (SpinBox)FindNode("FactoryOutputSpinBox");
             factoryCostSpinBox = (SpinBox)FindNode("FactoryCostSpinBox");
@@ -195,6 +201,7 @@ namespace CraigStars.Client
             radHabEditor.HabChangedEvent += OnHabChanged;
             growthRate.Connect("value_changed", this, nameof(OnGrowthRateChanged));
 
+            annualResourcesSpinBox.Connect("value_changed", this, nameof(OnProductionValueChanged));
             colonistsPerResourceSpinBox.Connect("value_changed", this, nameof(OnProductionValueChanged));
             factoryOutputSpinBox.Connect("value_changed", this, nameof(OnProductionValueChanged));
             factoryCostSpinBox.Connect("value_changed", this, nameof(OnProductionValueChanged));
@@ -316,6 +323,11 @@ namespace CraigStars.Client
                         break;
                 }
 
+                // update production view
+                annualResourcesContainer.Visible = Race.PRT == PRT.AR;
+                planetaryProductionContainer.Visible = Race.PRT != PRT.AR;
+
+
                 // LRT
                 ifeCheckBox.Pressed = Race.HasLRT(LRT.IFE);
                 ttCheckBox.Pressed = Race.HasLRT(LRT.TT);
@@ -337,7 +349,8 @@ namespace CraigStars.Client
                 // TODO: update growthRateDescription
 
                 // production
-                colonistsPerResourceSpinBox.Value = Race.ColonistsPerResource;
+                colonistsPerResourceSpinBox.Value = Race.PopEfficiency * 100;
+                annualResourcesSpinBox.Value = Race.PopEfficiency;
                 factoryOutputSpinBox.Value = Race.FactoryOutput;
                 factoryCostSpinBox.Value = Race.FactoryCost;
                 numFactoriesSpinBox.Value = Race.NumFactories;
@@ -426,7 +439,7 @@ namespace CraigStars.Client
             race.GrowthRate = (int)growthRate.Value;
 
             // production
-            race.ColonistsPerResource = (int)colonistsPerResourceSpinBox.Value;
+            race.PopEfficiency = (int)(colonistsPerResourceSpinBox.Value / 100);
             race.FactoryOutput = (int)factoryOutputSpinBox.Value;
             race.FactoryCost = (int)factoryCostSpinBox.Value;
             race.NumFactories = (int)numFactoriesSpinBox.Value;
@@ -488,6 +501,8 @@ namespace CraigStars.Client
             if (loadingRace) return;
             updatedRace.PRT = prt;
             UpdateTechsStartHighLabel(updatedRace);
+            annualResourcesContainer.Visible = prt == PRT.AR;
+            planetaryProductionContainer.Visible = prt != PRT.AR;
             UpdateAdvantagePoints();
         }
 
@@ -526,7 +541,7 @@ namespace CraigStars.Client
         {
             if (loadingRace) return;
 
-            updatedRace.ColonistsPerResource = (int)colonistsPerResourceSpinBox.Value;
+            updatedRace.PopEfficiency = (int)(colonistsPerResourceSpinBox.Value / 100);
             updatedRace.FactoryOutput = (int)factoryOutputSpinBox.Value;
             updatedRace.FactoryCost = (int)factoryCostSpinBox.Value;
             updatedRace.NumFactories = (int)numFactoriesSpinBox.Value;

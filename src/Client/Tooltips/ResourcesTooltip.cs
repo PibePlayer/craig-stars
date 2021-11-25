@@ -20,7 +20,12 @@ namespace CraigStars.Client
             {
                 tipRichTextLabel.BbcodeText = $"[b]{Planet.Name}[/b] generates [b]{Planet.Spec.ResourcesPerYear}[/b] resources each year. " +
                 $"[b]{Planet.Spec.ResourcesPerYearResearch}[/b] of these resources have been alloocated to research. That leaves " +
-                $"[b]{Planet.Spec.ResourcesPerYearAvailable}[/b] resources for use by the planet";
+                $"[b]{Planet.Spec.ResourcesPerYearAvailable}[/b] resources for use by the planet.";
+
+                if (Me.Race.Spec.InnateResources)
+                {
+                    tipRichTextLabel.BbcodeText += "  Your resources at the planet are increase with population and [b]Energy[/b] tech.";
+                }
             }
         }
     }

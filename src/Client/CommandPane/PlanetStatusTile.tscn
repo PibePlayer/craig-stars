@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://src/Client/CommandPane/PlanetStatusTile.cs" type="Script" id=1]
 [ext_resource path="res://src/Client/Tooltips/PopulationTooltip.tscn" type="PackedScene" id=2]
 [ext_resource path="res://src/Client/Tooltips/ResourcesTooltip.tscn" type="PackedScene" id=3]
 [ext_resource path="res://src/Client/CommandPane/Tile.tscn" type="PackedScene" id=4]
+[ext_resource path="res://src/Client/Tooltips/ScannerTooltip.tscn" type="PackedScene" id=5]
 
 [node name="PlanetStatusTile" instance=ExtResource( 4 )]
 margin_right = 207.0
@@ -96,6 +97,8 @@ text = "Scanner Type"
 margin_left = 108.0
 margin_right = 187.0
 margin_bottom = 14.0
+mouse_filter = 0
+mouse_default_cursor_shape = 16
 text = "Scooper 150"
 align = 2
 
@@ -111,6 +114,8 @@ margin_left = 108.0
 margin_top = 18.0
 margin_right = 187.0
 margin_bottom = 32.0
+mouse_filter = 0
+mouse_default_cursor_shape = 16
 text = "150 l.y."
 align = 2
 
@@ -136,6 +141,8 @@ text = "Defenses"
 margin_left = 91.0
 margin_right = 187.0
 margin_bottom = 14.0
+mouse_filter = 0
+mouse_default_cursor_shape = 16
 text = "10 of 82"
 align = 2
 
@@ -151,6 +158,8 @@ margin_left = 91.0
 margin_top = 18.0
 margin_right = 187.0
 margin_bottom = 32.0
+mouse_filter = 0
+mouse_default_cursor_shape = 16
 text = "Missile Battery"
 align = 2
 
@@ -166,19 +175,23 @@ margin_left = 91.0
 margin_top = 36.0
 margin_right = 187.0
 margin_bottom = 50.0
+mouse_filter = 0
+mouse_default_cursor_shape = 16
 text = "18.29%"
 align = 2
 
 [node name="CanvasLayer" type="CanvasLayer" parent="VBoxContainer/Controls" index="5"]
 layer = 35
 
-[node name="PopulationTooltip" parent="VBoxContainer/Controls/CanvasLayer" index="0" instance=ExtResource( 2 )]
+[node name="ScannerTooltip" parent="VBoxContainer/Controls/CanvasLayer" index="0" instance=ExtResource( 5 )]
+
+[node name="PopulationTooltip" parent="VBoxContainer/Controls/CanvasLayer" index="1" instance=ExtResource( 2 )]
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_right = 312.0
 margin_bottom = 155.0
 
-[node name="ResourcesTooltip" parent="VBoxContainer/Controls/CanvasLayer" index="1" instance=ExtResource( 3 )]
+[node name="ResourcesTooltip" parent="VBoxContainer/Controls/CanvasLayer" index="2" instance=ExtResource( 3 )]
 visible = false
 anchor_right = 0.0
 anchor_bottom = 0.0

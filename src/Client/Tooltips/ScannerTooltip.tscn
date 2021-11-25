@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=2]
 
-[ext_resource path="res://src/Client/Tooltips/ResourcesTooltip.cs" type="Script" id=1]
+[ext_resource path="res://src/Client/Tooltips/ScannerTooltip.cs" type="Script" id=1]
 [ext_resource path="res://assets/gui/OpenSans-Bold.ttf" type="DynamicFontData" id=2]
 [ext_resource path="res://assets/gui/OpenSans-Regular-12.ttf" type="DynamicFontData" id=3]
 
@@ -12,11 +12,12 @@ font_data = ExtResource( 2 )
 size = 14
 font_data = ExtResource( 3 )
 
-[node name="ResourcesTooltip" type="PopupPanel"]
+[node name="ScannerTooltip" type="PopupPanel"]
+visible = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_right = -1128.0
-margin_bottom = -801.0
+margin_bottom = -757.0
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -37,7 +38,7 @@ __meta__ = {
 
 [node name="TipRichTextLabel" type="RichTextLabel" parent="MarginContainer"]
 margin_right = 304.0
-margin_bottom = 91.0
+margin_bottom = 135.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 custom_fonts/bold_font = SubResource( 1 )

@@ -153,6 +153,6 @@ namespace CraigStars
                 default:
                     throw new IndexOutOfRangeException($"Type {type} out of range for {this.GetType().ToString()}");
             }
-        }        
+        }
     }
 }

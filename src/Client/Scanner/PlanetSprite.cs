@@ -58,6 +58,8 @@ namespace CraigStars.Client
         Sprite inhabitedCommanded;
         Sprite orbiting;
         Sprite orbitingCommanded;
+        PlanetSpriteMinerals surfaceMinerals;
+        PlanetSpriteMinerals mineralConcentration;
         Line2D packetTargetLine;
         Label nameLabel;
         Label countLabel;
@@ -78,6 +80,8 @@ namespace CraigStars.Client
             packetTargetLine = GetNode<Line2D>("DestinationLine");
             nameLabel = GetNode<Label>("NameLabel");
             countLabel = GetNode<Label>("CountLabel");
+            surfaceMinerals = GetNode<PlanetSpriteMinerals>("SurfaceMinerals");
+            mineralConcentration = GetNode<PlanetSpriteMinerals>("MineralConcentration");
 
             // create a list of these sprites
             stateSprites = new List<Sprite>() {
@@ -103,6 +107,8 @@ namespace CraigStars.Client
             {
                 // just use sprites
                 case PlanetViewState.None:
+                case PlanetViewState.SurfaceMinerals:
+                case PlanetViewState.MineralConcentration:
                     break;
                 case PlanetViewState.Normal:
                     if (Planet.HasStarbase)
@@ -298,11 +304,22 @@ namespace CraigStars.Client
                 return;
             }
 
-            if (Planet.Explored && planetViewState != PlanetViewState.Normal)
+            if (Planet.Explored
+                && planetViewState != PlanetViewState.Normal
+                && planetViewState != PlanetViewState.SurfaceMinerals
+                && planetViewState != PlanetViewState.MineralConcentration
+                )
             {
                 // we use the draw
                 return;
             }
+
+            surfaceMinerals.Mineral = Planet.Cargo != null ? Planet.Cargo.ToMineral() : new Mineral();
+            surfaceMinerals.Scale = Me.UISettings.MineralScale;
+            mineralConcentration.Mineral = Planet.MineralConcentration;
+
+            surfaceMinerals.Visible = planetViewState == PlanetViewState.SurfaceMinerals;
+            mineralConcentration.Visible = planetViewState == PlanetViewState.MineralConcentration;
 
             switch (ownerAllyState)
             {

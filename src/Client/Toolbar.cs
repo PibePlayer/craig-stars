@@ -9,6 +9,8 @@ namespace CraigStars.Client
         protected Player Me { get => PlayersManager.Me; }
 
         ToolButton normalViewToolButton;
+        ToolButton surfaceMineralsViewToolButton;
+        ToolButton mineralConcentrationViewToolButton;
         ToolButton percentViewToolButton;
         ToolButton populationViewToolButton;
         ToolButton planetNamesToolButton;
@@ -41,6 +43,8 @@ namespace CraigStars.Client
             plansMenu = GetNode<MenuButton>("Panel/HBoxContainerRight/PlansMenuButton").GetPopup();
             infoMenu = GetNode<MenuButton>("Panel/HBoxContainerRight/InfoMenuButton").GetPopup();
             normalViewToolButton = (ToolButton)FindNode("NormalViewToolButton");
+            surfaceMineralsViewToolButton = (ToolButton)FindNode("SurfaceMineralsViewToolButton");
+            mineralConcentrationViewToolButton = (ToolButton)FindNode("MineralConcentrationViewToolButton");
             percentViewToolButton = (ToolButton)FindNode("PercentViewToolButton");
             populationViewToolButton = GetNode<ToolButton>("Panel/HBoxContainerLeft/PopulationViewToolButton");
             planetNamesToolButton = GetNode<ToolButton>("Panel/HBoxContainerLeft/PlanetNamesToolButton");
@@ -61,9 +65,11 @@ namespace CraigStars.Client
             infoMenu.AddItem("Technology Browser", (int)MenuItem.TechBrowser);
             infoMenu.AddItem("Players", (int)MenuItem.Players);
 
-            normalViewToolButton.Connect("pressed", this, nameof(OnNormalViewToolButtonPressed));
-            percentViewToolButton.Connect("pressed", this, nameof(OnPercentViewToolButtonPressed));
-            populationViewToolButton.Connect("pressed", this, nameof(OnPopulationViewToolButtonPressed));
+            normalViewToolButton.Connect("pressed", this, nameof(OnPlanetViewStateToolButtonPressed), new Godot.Collections.Array() { PlanetViewState.Normal });
+            surfaceMineralsViewToolButton.Connect("pressed", this, nameof(OnPlanetViewStateToolButtonPressed), new Godot.Collections.Array() { PlanetViewState.SurfaceMinerals });
+            mineralConcentrationViewToolButton.Connect("pressed", this, nameof(OnPlanetViewStateToolButtonPressed), new Godot.Collections.Array() { PlanetViewState.MineralConcentration });
+            percentViewToolButton.Connect("pressed", this, nameof(OnPlanetViewStateToolButtonPressed), new Godot.Collections.Array() { PlanetViewState.Percent });
+            populationViewToolButton.Connect("pressed", this, nameof(OnPlanetViewStateToolButtonPressed), new Godot.Collections.Array() { PlanetViewState.Population });
             planetNamesToolButton.Connect("pressed", this, nameof(OnPlanetNamesToolButtonPressed));
             fleetTokenCountsToolButton.Connect("pressed", this, nameof(OnFleetTokenCountsToolButtonPressed));
             scannerToolButton.Connect("pressed", this, nameof(OnScannerToolButtonPressed));
@@ -92,6 +98,8 @@ namespace CraigStars.Client
         {
             submitTurnButton.Disabled = false;
             normalViewToolButton.Pressed = Me.UISettings.PlanetViewState == PlanetViewState.Normal;
+            surfaceMineralsViewToolButton.Pressed = Me.UISettings.PlanetViewState == PlanetViewState.SurfaceMinerals;
+            mineralConcentrationViewToolButton.Pressed = Me.UISettings.PlanetViewState == PlanetViewState.MineralConcentration;
             percentViewToolButton.Pressed = Me.UISettings.PlanetViewState == PlanetViewState.Percent;
             populationViewToolButton.Pressed = Me.UISettings.PlanetViewState == PlanetViewState.Population;
             planetNamesToolButton.Pressed = Me.UISettings.ShowPlanetNames;
@@ -134,25 +142,9 @@ namespace CraigStars.Client
             }
         }
 
-        void OnNormalViewToolButtonPressed()
+        void OnPlanetViewStateToolButtonPressed(PlanetViewState state)
         {
-            Me.UISettings.PlanetViewState = PlanetViewState.Normal;
-            Me.Dirty = true;
-            EventManager.PublishPlayerDirtyEvent();
-            EventManager.PublishPlanetViewStateUpdatedEvent();
-        }
-
-        void OnPercentViewToolButtonPressed()
-        {
-            Me.UISettings.PlanetViewState = PlanetViewState.Percent;
-            Me.Dirty = true;
-            EventManager.PublishPlayerDirtyEvent();
-            EventManager.PublishPlanetViewStateUpdatedEvent();
-        }
-
-        void OnPopulationViewToolButtonPressed()
-        {
-            Me.UISettings.PlanetViewState = PlanetViewState.Population;
+            Me.UISettings.PlanetViewState = state;
             Me.Dirty = true;
             EventManager.PublishPlayerDirtyEvent();
             EventManager.PublishPlanetViewStateUpdatedEvent();

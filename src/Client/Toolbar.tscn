@@ -1,9 +1,11 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://src/Client/Toolbar.cs" type="Script" id=1]
 [ext_resource path="res://assets/scanner/planet-commanded.png" type="Texture" id=2]
 [ext_resource path="res://assets/gui/icons/scanner.png" type="Texture" id=3]
 [ext_resource path="res://assets/scanner/fleet.png" type="Texture" id=4]
+[ext_resource path="res://assets/gui/icons/MineralViewState.png" type="Texture" id=5]
+[ext_resource path="res://assets/gui/icons/NormalViewState.png" type="Texture" id=6]
 
 [sub_resource type="ButtonGroup" id=1]
 
@@ -36,15 +38,116 @@ rect_min_size = Vector2( 40, 40 )
 toggle_mode = true
 pressed = true
 group = SubResource( 1 )
-text = "N"
 flat = false
 __meta__ = {
 "_editor_description_": "Normal View"
 }
 
-[node name="PercentViewToolButton" type="ToolButton" parent="Panel/HBoxContainerLeft"]
+[node name="CenterContainer" type="CenterContainer" parent="Panel/HBoxContainerLeft/NormalViewToolButton"]
+margin_right = 40.0
+margin_bottom = 40.0
+mouse_filter = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextureRect" type="TextureRect" parent="Panel/HBoxContainerLeft/NormalViewToolButton/CenterContainer"]
+margin_left = 9.0
+margin_top = 9.0
+margin_right = 30.0
+margin_bottom = 30.0
+texture = ExtResource( 6 )
+stretch_mode = 4
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SurfaceMineralsViewToolButton" type="ToolButton" parent="Panel/HBoxContainerLeft"]
 margin_left = 44.0
 margin_right = 84.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 40, 0 )
+toggle_mode = true
+group = SubResource( 1 )
+flat = false
+
+[node name="CenterContainer" type="CenterContainer" parent="Panel/HBoxContainerLeft/SurfaceMineralsViewToolButton"]
+margin_right = 40.0
+margin_bottom = 40.0
+mouse_filter = 1
+
+[node name="TextureRect" type="TextureRect" parent="Panel/HBoxContainerLeft/SurfaceMineralsViewToolButton/CenterContainer"]
+margin_left = 4.0
+margin_top = 4.0
+margin_right = 36.0
+margin_bottom = 36.0
+texture = ExtResource( 5 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/HBoxContainerLeft/SurfaceMineralsViewToolButton/CenterContainer"]
+margin_left = 16.0
+margin_top = 13.0
+margin_right = 23.0
+margin_bottom = 27.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="Panel/HBoxContainerLeft/SurfaceMineralsViewToolButton/CenterContainer/VBoxContainer"]
+margin_right = 7.0
+margin_bottom = 14.0
+mouse_filter = 1
+text = "S"
+align = 1
+
+[node name="MineralConcentrationViewToolButton" type="ToolButton" parent="Panel/HBoxContainerLeft"]
+margin_left = 88.0
+margin_right = 128.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 40, 0 )
+toggle_mode = true
+group = SubResource( 1 )
+flat = false
+
+[node name="CenterContainer" type="CenterContainer" parent="Panel/HBoxContainerLeft/MineralConcentrationViewToolButton"]
+margin_right = 40.0
+margin_bottom = 40.0
+mouse_filter = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextureRect" type="TextureRect" parent="Panel/HBoxContainerLeft/MineralConcentrationViewToolButton/CenterContainer"]
+margin_left = 4.0
+margin_top = 4.0
+margin_right = 36.0
+margin_bottom = 36.0
+texture = ExtResource( 5 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/HBoxContainerLeft/MineralConcentrationViewToolButton/CenterContainer"]
+margin_left = 16.0
+margin_top = 13.0
+margin_right = 24.0
+margin_bottom = 27.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="Panel/HBoxContainerLeft/MineralConcentrationViewToolButton/CenterContainer/VBoxContainer"]
+margin_right = 8.0
+margin_bottom = 14.0
+mouse_filter = 1
+text = "C"
+align = 1
+
+[node name="PercentViewToolButton" type="ToolButton" parent="Panel/HBoxContainerLeft"]
+margin_left = 132.0
+margin_right = 172.0
 margin_bottom = 40.0
 rect_min_size = Vector2( 40, 40 )
 toggle_mode = true
@@ -56,8 +159,8 @@ __meta__ = {
 }
 
 [node name="PopulationViewToolButton" type="ToolButton" parent="Panel/HBoxContainerLeft"]
-margin_left = 88.0
-margin_right = 128.0
+margin_left = 176.0
+margin_right = 216.0
 margin_bottom = 40.0
 rect_min_size = Vector2( 40, 40 )
 toggle_mode = true
@@ -69,8 +172,8 @@ __meta__ = {
 }
 
 [node name="PlanetNamesToolButton" type="ToolButton" parent="Panel/HBoxContainerLeft"]
-margin_left = 132.0
-margin_right = 172.0
+margin_left = 220.0
+margin_right = 260.0
 margin_bottom = 40.0
 rect_min_size = Vector2( 40, 0 )
 toggle_mode = true
@@ -120,8 +223,8 @@ text = "Abc"
 align = 1
 
 [node name="FleetTokenCountsToolButton" type="ToolButton" parent="Panel/HBoxContainerLeft"]
-margin_left = 176.0
-margin_right = 216.0
+margin_left = 264.0
+margin_right = 304.0
 margin_bottom = 40.0
 rect_min_size = Vector2( 40, 0 )
 toggle_mode = true
@@ -170,25 +273,42 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="MenuButton" type="MenuButton" parent="Panel/HBoxContainerLeft"]
-margin_left = 220.0
-margin_right = 232.0
-margin_bottom = 40.0
-
 [node name="ScannerToolButton" type="ToolButton" parent="Panel/HBoxContainerLeft"]
-margin_left = 236.0
-margin_right = 276.0
+margin_left = 308.0
+margin_right = 348.0
 margin_bottom = 40.0
 rect_min_size = Vector2( 40, 40 )
 toggle_mode = true
 pressed = true
-icon = ExtResource( 3 )
 flat = false
-expand_icon = true
+__meta__ = {
+"_editor_description_": "Show Scanners"
+}
+
+[node name="CenterContainer" type="CenterContainer" parent="Panel/HBoxContainerLeft/ScannerToolButton"]
+margin_right = 40.0
+margin_bottom = 40.0
+mouse_filter = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextureRect" type="TextureRect" parent="Panel/HBoxContainerLeft/ScannerToolButton/CenterContainer"]
+margin_left = 4.0
+margin_top = 4.0
+margin_right = 36.0
+margin_bottom = 36.0
+rect_min_size = Vector2( 32, 32 )
+texture = ExtResource( 3 )
+expand = true
+stretch_mode = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="ScannerSpinBox" type="SpinBox" parent="Panel/HBoxContainerLeft"]
-margin_left = 280.0
-margin_right = 354.0
+margin_left = 352.0
+margin_right = 426.0
 margin_bottom = 40.0
 rect_min_size = Vector2( 0, 40 )
 value = 100.0

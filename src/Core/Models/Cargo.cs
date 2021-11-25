@@ -222,6 +222,11 @@ namespace CraigStars
             return new Cost(Ironium, Boranium, Germanium, resources);
         }
 
+        public Mineral ToMineral()
+        {
+            return new Mineral(Ironium, Boranium, Germanium);
+        }
+
         /// <summary>
         /// Get a copy of this, with updated Ironium
         /// </summary>

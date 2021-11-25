@@ -123,6 +123,7 @@ namespace CraigStars.Client
             // save the scale to the UI
             Me.Dirty = true;
             EventManager.PublishPlayerDirtyEvent();
+            EventManager.PublishPlanetViewStateUpdatedEvent();
             UpdateMineralScale();
         }
 

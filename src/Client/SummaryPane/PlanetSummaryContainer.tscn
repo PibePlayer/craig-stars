@@ -118,6 +118,9 @@ ShowSeparator = false
 margin_top = 110.0
 margin_right = 380.0
 margin_bottom = 124.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Title" type="Label" parent="IroniumBar"]
 margin_right = 80.0
@@ -132,6 +135,8 @@ margin_left = 84.0
 margin_right = 326.0
 margin_bottom = 14.0
 mouse_default_cursor_shape = 16
+Concentration = 130
+MiningRate = 200
 
 [node name="OverIndicator" type="Label" parent="IroniumBar"]
 margin_left = 330.0
@@ -143,6 +148,9 @@ rect_min_size = Vector2( 50, 0 )
 margin_top = 128.0
 margin_right = 380.0
 margin_bottom = 142.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Title" type="Label" parent="BoraniumBar"]
 margin_right = 80.0
@@ -195,6 +203,80 @@ margin_right = 380.0
 margin_bottom = 14.0
 rect_min_size = Vector2( 50, 0 )
 
+[node name="ScaleContainer" type="HBoxContainer" parent="."]
+margin_top = 164.0
+margin_right = 380.0
+margin_bottom = 194.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ScaleLabel" type="Label" parent="ScaleContainer"]
+margin_top = 8.0
+margin_right = 80.0
+margin_bottom = 22.0
+rect_min_size = Vector2( 80, 0 )
+text = "kT"
+align = 2
+
+[node name="ScaleLabels" type="HBoxContainer" parent="ScaleContainer"]
+margin_left = 84.0
+margin_right = 326.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 0, 30 )
+mouse_filter = 0
+mouse_default_cursor_shape = 2
+size_flags_horizontal = 3
+
+[node name="ScaleLabel1" type="Label" parent="ScaleContainer/ScaleLabels"]
+margin_top = 8.0
+margin_right = 45.0
+margin_bottom = 22.0
+size_flags_horizontal = 3
+text = "0"
+
+[node name="ScaleLabel2" type="Label" parent="ScaleContainer/ScaleLabels"]
+margin_left = 49.0
+margin_top = 8.0
+margin_right = 94.0
+margin_bottom = 22.0
+size_flags_horizontal = 3
+text = "1000"
+
+[node name="ScaleLabel3" type="Label" parent="ScaleContainer/ScaleLabels"]
+margin_left = 98.0
+margin_top = 8.0
+margin_right = 143.0
+margin_bottom = 22.0
+size_flags_horizontal = 3
+text = "2000"
+
+[node name="ScaleLabel4" type="Label" parent="ScaleContainer/ScaleLabels"]
+margin_left = 147.0
+margin_top = 8.0
+margin_right = 192.0
+margin_bottom = 22.0
+size_flags_horizontal = 3
+text = "3000"
+
+[node name="ScaleLabel5" type="Label" parent="ScaleContainer/ScaleLabels"]
+margin_left = 196.0
+margin_top = 8.0
+margin_right = 242.0
+margin_bottom = 22.0
+size_flags_horizontal = 3
+text = "4000"
+
+[node name="SpacerLabel" type="Label" parent="ScaleContainer"]
+margin_left = 330.0
+margin_top = 8.0
+margin_right = 380.0
+margin_bottom = 22.0
+rect_min_size = Vector2( 50, 0 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 layer = 35
 
@@ -211,3 +293,7 @@ margin_bottom = 155.0
 [node name="TemperatureTooltip" parent="CanvasLayer" instance=ExtResource( 7 )]
 
 [node name="RadiationTooltip" parent="CanvasLayer" instance=ExtResource( 8 )]
+
+[node name="ScalePopupMenu" type="PopupMenu" parent="CanvasLayer"]
+margin_right = 20.0
+margin_bottom = 20.0

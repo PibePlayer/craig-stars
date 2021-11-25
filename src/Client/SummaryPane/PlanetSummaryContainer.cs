@@ -2,6 +2,7 @@ using Godot;
 using System;
 using CraigStars.Singletons;
 using CraigStars.Utils;
+using System.Collections.Generic;
 
 namespace CraigStars.Client
 {
@@ -11,6 +12,8 @@ namespace CraigStars.Client
 
         Player Me { get => PlayersManager.Me; }
         PublicGameInfo GameInfo { get => PlayersManager.GameInfo; }
+
+        List<int> scales = new List<int>() { 100, 500, 1000, 2500, 5000, 7500, 10_000, 20_000, 30_000 };
 
         public PlanetSprite Planet
         {
@@ -36,6 +39,8 @@ namespace CraigStars.Client
         MineralBar ironiumMineralBar;
         MineralBar boraniumMineralBar;
         MineralBar germaniumMineralBar;
+        Container scaleLabels;
+        PopupMenu scalePopupMenu;
 
         PopulationTooltip populationTooltip;
         MineralTooltip mineralTooltip;
@@ -59,6 +64,8 @@ namespace CraigStars.Client
             ironiumMineralBar = (MineralBar)FindNode("IroniumMineralBar");
             boraniumMineralBar = (MineralBar)FindNode("BoraniumMineralBar");
             germaniumMineralBar = (MineralBar)FindNode("GermaniumMineralBar");
+            scaleLabels = (Container)FindNode("ScaleLabels");
+            scalePopupMenu = (PopupMenu)FindNode("ScalePopupMenu");
 
             populationTooltip = GetNode<PopulationTooltip>("CanvasLayer/PopulationTooltip");
             mineralTooltip = GetNode<MineralTooltip>("CanvasLayer/MineralTooltip");
@@ -78,6 +85,15 @@ namespace CraigStars.Client
 
             Connect("visibility_changed", this, nameof(OnVisible));
             EventManager.MapObjectSelectedEvent += OnMapObjectSelected;
+
+            // add the scales
+            scales.ForEach(scale => scalePopupMenu.AddRadioCheckItem($"{scale}kT", scale));
+            scales.Each((scale, index) => scalePopupMenu.SetItemChecked(index, scale == Me.UISettings.MineralScale));
+            scalePopupMenu.Show();
+            scalePopupMenu.Hide(); // force resize
+
+            scalePopupMenu.Connect("id_pressed", this, nameof(OnScalePopupMenuIdPressed));
+            scaleLabels.Connect("gui_input", this, nameof(OnScaleLabelsGuiInput));
         }
 
         public override void _Notification(int what)
@@ -99,6 +115,26 @@ namespace CraigStars.Client
             gravHabBar.High = race.HabHigh.grav;
             tempHabBar.High = race.HabHigh.temp;
             radHabBar.High = race.HabHigh.rad;
+        }
+
+        void OnScalePopupMenuIdPressed(int id)
+        {
+            Me.UISettings.MineralScale = id;
+            // save the scale to the UI
+            Me.Dirty = true;
+            EventManager.PublishPlayerDirtyEvent();
+            UpdateMineralScale();
+        }
+
+        void OnScaleLabelsGuiInput(InputEvent @event)
+        {
+            if (@event.IsActionPressed("ui_select"))
+            {
+                var mousePos = GetGlobalMousePosition();
+                var yPos = mousePos.y - scalePopupMenu.RectSize.y;
+                scalePopupMenu.RectPosition = new Vector2(mousePos.x, Mathf.Clamp(yPos, 0, GetViewportRect().Size.y - scalePopupMenu.RectSize.y));
+                scalePopupMenu.ShowModal();
+            }
         }
 
         void OnMapObjectSelected(MapObjectSprite mapObject)
@@ -127,6 +163,28 @@ namespace CraigStars.Client
             else if (@event.IsActionReleased("ui_select"))
             {
                 tooltip.Hide();
+            }
+        }
+
+        void UpdateMineralScale()
+        {
+            ironiumMineralBar.Scale = Me.UISettings.MineralScale;
+            boraniumMineralBar.Scale = Me.UISettings.MineralScale;
+            germaniumMineralBar.Scale = Me.UISettings.MineralScale;
+
+            // toggle this checkbox item
+            scales.Each((scale, index) => scalePopupMenu.SetItemChecked(index, scale == Me.UISettings.MineralScale));
+
+            int labelValue = 0;
+            int numLabels = scaleLabels.GetChildCount();
+            foreach (Node node in scaleLabels.GetChildren())
+            {
+                var label = node as Label;
+                if (label != null)
+                {
+                    label.Text = labelValue.ToString();
+                    labelValue += (int)(Me.UISettings.MineralScale / (float)numLabels + .5f);
+                }
             }
         }
 
@@ -227,6 +285,12 @@ namespace CraigStars.Client
                     ironiumMineralBar.Surface = planet.Cargo.Ironium;
                     boraniumMineralBar.Surface = planet.Cargo.Boranium;
                     germaniumMineralBar.Surface = planet.Cargo.Germanium;
+
+                    ironiumMineralBar.MiningRate = planet.Spec.MineralOutput.Ironium;
+                    boraniumMineralBar.MiningRate = planet.Spec.MineralOutput.Boranium;
+                    germaniumMineralBar.MiningRate = planet.Spec.MineralOutput.Germanium;
+
+                    UpdateMineralScale();
                 }
             }
         }

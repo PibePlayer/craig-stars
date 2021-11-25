@@ -38,6 +38,12 @@ namespace CraigStars
         public int ScannerPercent { get; set; } = 100;
 
         /// <summary>
+        /// Percent to scale scanner range by (useful for determining cloaked ship scan range)
+        /// </summary>
+        /// <value></value>
+        public int MineralScale { get; set; } = 5000;
+
+        /// <summary>
         /// Default to showing all messages
         /// </summary>
         /// <value></value>

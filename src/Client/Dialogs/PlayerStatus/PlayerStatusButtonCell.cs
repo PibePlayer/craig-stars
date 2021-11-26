@@ -28,27 +28,6 @@ namespace CraigStars.Client
             };
             AddChild(label);
             UpdateCell();
-
-            EventManager.TurnSubmittedEvent += OnPlayerStatusChanged;
-            EventManager.TurnUnsubmittedEvent += OnPlayerStatusChanged;
-        }
-
-        public override void _Notification(int what)
-        {
-            base._Notification(what);
-            if (what == NotificationPredelete)
-            {
-                EventManager.TurnSubmittedEvent -= OnPlayerStatusChanged;
-                EventManager.TurnUnsubmittedEvent -= OnPlayerStatusChanged;
-            }
-        }
-
-        void OnPlayerStatusChanged(PublicGameInfo gameInfo, PublicPlayerInfo player)
-        {
-            if (IsVisibleInTree())
-            {
-                UpdateCell();
-            }
         }
 
         /// <summary>
@@ -57,14 +36,20 @@ namespace CraigStars.Client
         /// 
         /// TODO: This code is awful. It needs to be cleaned up and unit tested
         /// </summary>
-        protected override void UpdateCell()
+        public override void UpdateCell()
         {
             base.UpdateCell();
 
             // setup a label as well as a button
             if (label != null)
             {
-                if (Row.Metadata.SubmittedTurn)
+                PublicPlayerInfo player = Row.Metadata;
+
+                if (Me != null && Me.Num == player.Num && !Me.SubmittedTurn)
+                {
+                    Cell.Text = "Playing";
+                }
+                else if (player.SubmittedTurn)
                 {
                     Cell.Text = "Submitted";
                 }
@@ -108,12 +93,12 @@ namespace CraigStars.Client
                 }
                 else
                 {
-                    if (Me == null || Me != Row.Metadata || (Me != null && Me.SubmittedTurn))
+                    if (Me == null || Me.Num != Row.Metadata.Num || (Me != null && Me.SubmittedTurn))
                     {
                         label.Visible = false;
                         button.Visible = true;
 
-                        if (Row.Metadata.SubmittedTurn)
+                        if (player.SubmittedTurn)
                         {
                             button.Text = "Unsubmit Turn";
                         }

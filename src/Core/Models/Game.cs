@@ -37,6 +37,7 @@ namespace CraigStars
         public Size Size { get => GameInfo.Size; set => GameInfo.Size = value; }
         public Density Density { get => GameInfo.Density; set => GameInfo.Density = value; }
         [JsonIgnore] public int YearsPassed { get => GameInfo.YearsPassed; }
+        public Boolean AllPlayersSubmitted() => GameInfo.AllPlayersSubmitted();
 
         #endregion
 
@@ -104,11 +105,6 @@ namespace CraigStars
             GameInfo.Players.AddRange(Players.Cast<PublicPlayerInfo>());
 
             Rules = rules;
-        }
-
-        public Boolean AllPlayersSubmitted()
-        {
-            return Players.All(p => p.SubmittedTurn);
         }
 
         /// <summary>

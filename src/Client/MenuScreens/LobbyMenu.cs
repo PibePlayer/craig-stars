@@ -244,7 +244,7 @@ namespace CraigStars.Client
                 }
                 else if (child is NewGameNetworkPlayer newGameNetworkPlayer)
                 {
-                    if (newGameNetworkPlayer.Player == player)
+                    if (newGameNetworkPlayer.Player.Num == player.Num)
                     {
                         playerReadyContainers.RemoveChild(child);
                         child.QueueFree();

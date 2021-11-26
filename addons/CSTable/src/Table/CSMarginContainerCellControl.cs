@@ -70,6 +70,10 @@ namespace CraigStarsTable
             CellSelectedEvent?.Invoke(this, null);
         }
 
-        protected abstract void UpdateCell();
+        public virtual void UpdateCell()
+        {
+
+        }
+
     }
 }

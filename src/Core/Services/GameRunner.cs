@@ -14,6 +14,11 @@ namespace CraigStars
         static CSLog log = LogProvider.GetLogger(typeof(GameRunner));
 
         /// <summary>
+        /// This event is triggered when universe generation events happen
+        /// </summary>
+        public event Action<UniverseGenerationState> UniverseGeneratorAdvancedEvent;
+
+        /// <summary>
         /// This event is triggered when turn events happen
         /// </summary>
         public event Action<TurnGenerationState> TurnGeneratorAdvancedEvent;
@@ -67,6 +72,7 @@ namespace CraigStars
             EventManager.MapObjectDeletedEvent += OnMapObjectDeleted;
             EventManager.PlayerResearchLevelIncreasedEvent += OnPlayerResearchLevelIncreased;
 
+            universeGenerator.UniverseGeneratorAdvancedEvent += OnUniverseGeneratorAdvanced;
             turnGenerator.TurnGeneratorAdvancedEvent += OnTurnGeneratorAdvanced;
             turnGenerator.PurgeDeletedMapObjectsEvent += OnPurgeDeletedMapObjects;
         }
@@ -78,10 +84,10 @@ namespace CraigStars
             EventManager.MapObjectDeletedEvent -= OnMapObjectDeleted;
             EventManager.PlayerResearchLevelIncreasedEvent -= OnPlayerResearchLevelIncreased;
 
+            universeGenerator.UniverseGeneratorAdvancedEvent -= OnUniverseGeneratorAdvanced;
             turnGenerator.TurnGeneratorAdvancedEvent -= OnTurnGeneratorAdvanced;
             turnGenerator.PurgeDeletedMapObjectsEvent -= OnPurgeDeletedMapObjects;
         }
-
 
         /// <summary>
         /// Generate a new Universe and update all players with turn 0 scan knowledge
@@ -99,10 +105,10 @@ namespace CraigStars
             Game.UpdateInternalDictionaries();
 
             // update player intel with new universe
+            universeGenerator.PublishUniverseGeneratorAdvancedEvent(UniverseGenerationState.Scan);
             playerScanStep.Execute(new TurnGenerationContext(), Game.OwnedPlanets.ToList());
 
             AfterTurnGeneration();
-
         }
 
         public void SubmitTurn(Player player)
@@ -112,7 +118,7 @@ namespace CraigStars
                 log.Info($"{Game.Year}: {player} submitted turn");
                 Game.Players[player.Num] = player;
                 Game.Players[player.Num].SubmittedTurn = true;
-                Game.Players[player.Num].SubmittedTurn = true;
+                Game.GameInfo.Players[player.Num].SubmittedTurn = true;
             }
             else
             {
@@ -125,7 +131,7 @@ namespace CraigStars
             if (player.Num >= 0 && player.Num < Game.Players.Count)
             {
                 Game.Players[player.Num].SubmittedTurn = false;
-                Game.Players[player.Num].SubmittedTurn = false;
+                Game.GameInfo.Players[player.Num].SubmittedTurn = false;
             }
             else
             {
@@ -136,6 +142,15 @@ namespace CraigStars
         public Boolean AllPlayersSubmitted()
         {
             return Game.Players.All(p => p.SubmittedTurn);
+        }
+
+        /// <summary>
+        /// Propogate universe generator events up to clients
+        /// </summary>
+        /// <param name="state"></param>
+        void OnUniverseGeneratorAdvanced(UniverseGenerationState state)
+        {
+            UniverseGeneratorAdvancedEvent?.Invoke(state);
         }
 
         /// <summary>
@@ -166,6 +181,7 @@ namespace CraigStars
             turnGenerator.GenerateTurn();
 
             // do any post-turn generation steps
+            TurnGeneratorAdvancedEvent?.Invoke(TurnGenerationState.UpdatingPlayers);
             AfterTurnGeneration();
 
             TurnGeneratorAdvancedEvent?.Invoke(TurnGenerationState.Finished);
@@ -181,7 +197,6 @@ namespace CraigStars
         internal void AfterTurnGeneration()
         {
             log.Debug($"{Game.Year} Updating internal dictionaries and player dictionaries");
-            TurnGeneratorAdvancedEvent?.Invoke(TurnGenerationState.UpdatingPlayers);
 
             // Update the Game dictionaries used for lookups, like PlanetsByGuid, FleetsByGuid, etc.
             Game.UpdateInternalDictionaries();
@@ -190,11 +205,17 @@ namespace CraigStars
             // (like their current best planetary scanner)
             Game.Players.ForEach(player =>
             {
+                player.SubmittedTurn = false;
                 player.PlanetaryScanner = playerTechService.GetBestPlanetaryScanner(player);
                 fleetSpecService.ComputePlayerFleetSpecs(player, recompute: true);
                 player.Planets.ForEach(planet => planet.Spec = planetService.ComputePlanetSpec(planet, player));
                 player.SetupMapObjectMappings();
                 player.UpdateMessageTargets();
+            });
+
+            Game.GameInfo.Players.ForEach(player =>
+            {
+                player.SubmittedTurn = false;
             });
         }
 

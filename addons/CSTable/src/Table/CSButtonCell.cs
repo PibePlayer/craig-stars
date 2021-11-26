@@ -69,7 +69,7 @@ namespace CraigStarsTable
             this.onPressed = onPressed;
         }
 
-        protected override void UpdateCell()
+        public override void UpdateCell()
         {
             if (button != null)
             {

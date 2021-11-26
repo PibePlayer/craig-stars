@@ -124,6 +124,11 @@ namespace CraigStars.Server
             Client.EventManager.PublishTurnGeneratorAdvancedEvent(state);
         }
 
+        protected override void PublishUniverseGeneratorAdvancedEvent(UniverseGenerationState state)
+        {
+            Client.EventManager.PublishUniverseGeneratorAdvancedEvent(state);
+        }
+
         protected override void PublishTurnPassedEvent()
         {
             // notify each non AI player about the new turn

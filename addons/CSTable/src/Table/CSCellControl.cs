@@ -52,6 +52,6 @@ namespace CraigStarsTable
             MouseEnteredEvent?.Invoke(this);
         }
 
-        protected abstract void UpdateCell();
+        public abstract void UpdateCell();
     }
 }

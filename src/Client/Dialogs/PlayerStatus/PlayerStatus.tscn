@@ -1,7 +1,6 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://src/Client/Dialogs/PlayerStatus/PlayerStatus.cs" type="Script" id=1]
-[ext_resource path="res://src/Client/Dialogs/PlayerStatus/TurnGenerationStatus.tscn" type="PackedScene" id=2]
 [ext_resource path="res://addons/CSTable/CSTable.cs" type="Script" id=3]
 
 [node name="PlayerStatus" type="TabContainer"]
@@ -14,20 +13,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Status" type="MarginContainer" parent="."]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 4.0
-margin_top = 32.0
-margin_right = -4.0
-margin_bottom = -4.0
-
-[node name="TurnGenerationStatus" parent="Status" instance=ExtResource( 2 )]
-margin_right = 777.0
-margin_bottom = 578.0
-
 [node name="Scores" type="MarginContainer" parent="."]
-visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 4.0

@@ -14,6 +14,8 @@ namespace CraigStars.Client
 
         [Inject] TurnProcessorRunner turnProcessorRunner;
 
+        Player Me { get => PlayersManager.Me; }
+
         /// <summary>
         /// The GameInfo passed in when we're created
         /// </summary>
@@ -28,32 +30,23 @@ namespace CraigStars.Client
         /// <value></value>
         public bool AutoJoin { get; set; }
 
-        Player Me { get => PlayersManager.Me; }
-
         /// <summary>
         /// For hotseat games, this is the list of all non ai players
         /// </summary>
         public List<Player> LocalPlayers { get; set; } = new List<Player>();
 
+        InGameMenu inGameMenu;
         PackedScene gameViewScene;
         string projectName;
-        Control container;
-        ProgressBar progressBar;
-        Label label;
-        Label subLabel;
         GameView gameView;
-        TurnGenerationStatus turnGenerationStatus;
         ResourceInteractiveLoader loader;
 
         public override void _Ready()
         {
             this.ResolveDependencies();
             base._Ready();
-            container = GetNode<Container>("CanvasLayer/Container");
-            progressBar = GetNode<ProgressBar>("CanvasLayer/Container/PanelContainer/VBoxContainer/ProgressBar");
-            label = GetNode<Label>("CanvasLayer/Container/PanelContainer/VBoxContainer/Label");
-            subLabel = GetNode<Label>("CanvasLayer/Container/PanelContainer/VBoxContainer/SubLabel");
-            turnGenerationStatus = GetNode<TurnGenerationStatus>("CanvasLayer/Container/PanelContainer/VBoxContainer/TurnGenerationStatus");
+
+            inGameMenu = GetNode<InGameMenu>("CanvasLayer/InGameMenu");
 
             projectName = ProjectSettings.GetSetting("application/config/name").ToString();
             PlayerName ??= Settings.Instance.PlayerName;
@@ -66,7 +59,6 @@ namespace CraigStars.Client
             EventManager.TurnSubmittedEvent += OnTurnSubmitted;
             EventManager.TurnUnsubmittedEvent += OnTurnUnsubmitted;
             EventManager.TurnGeneratingEvent += OnTurnGenerating;
-            EventManager.TurnGeneratorAdvancedEvent += OnTurnGeneratorAdvanced;
             EventManager.TurnPassedEvent += OnTurnPassed;
 
             // set the game info for the turn generation status to our GameInfo (whether we are a client or the host)
@@ -89,8 +81,8 @@ namespace CraigStars.Client
                 }
 
             }
-            turnGenerationStatus.UpdatePlayerStatuses();
             OS.SetWindowTitle($"{projectName} - {GameInfo.Name}: Year {GameInfo.Year}");
+            inGameMenu.PopupCentered();
         }
 
         public override void _ExitTree()
@@ -113,7 +105,6 @@ namespace CraigStars.Client
                 EventManager.TurnSubmittedEvent -= OnTurnSubmitted;
                 EventManager.TurnUnsubmittedEvent -= OnTurnUnsubmitted;
                 EventManager.TurnGeneratingEvent -= OnTurnGenerating;
-                EventManager.TurnGeneratorAdvancedEvent -= OnTurnGeneratorAdvanced;
                 EventManager.TurnPassedEvent -= OnTurnPassed;
             }
         }
@@ -127,12 +118,7 @@ namespace CraigStars.Client
         void LoadGameView()
         {
             log.Debug("Reloading GameView");
-            label.Text = "Loading client resources";
-            subLabel.Text = "";
-            if (CSResourceLoader.TotalResources > 0)
-            {
-                progressBar.Value = CSResourceLoader.Loaded / CSResourceLoader.TotalResources;
-            }
+            inGameMenu.PopupCentered();
             gameViewScene = CSResourceLoader.GetPackedScene("GameView.tscn");
             CallDeferred(nameof(SetNewGameView));
         }
@@ -143,7 +129,7 @@ namespace CraigStars.Client
         /// </summary>
         void RemoveGameViewAndShowTurnGeneration()
         {
-            container.Visible = true;
+            inGameMenu.PopupCentered();
             // remove the old game view and re-add it
             if (gameView != null && IsInstanceValid(gameView))
             {
@@ -161,12 +147,11 @@ namespace CraigStars.Client
             log.Debug("Setting new GameView and hiding turn generation view");
 
             OS.SetWindowTitle($"{projectName} - {GameInfo.Name}: Year {GameInfo.Year} - {Me?.Name}");
-            label.Text = "Refreshing Scanner";
+            // inGameMenu.ProgressStatus.ProgressLabel = "Refreshing Scanner";
 
             PlayersManager.GameInfo = GameInfo;
-            // Create a new instande of GameView. Note, we have to create it
-            // new, otherwise _Ready() won't be called if we re-use the same scene
-            // TODO: we should probably re-use this scene
+
+            // Create a new instance of GameView if we haven't already.
             if (gameView == null)
             {
                 gameView = gameViewScene.Instance<GameView>();
@@ -174,8 +159,7 @@ namespace CraigStars.Client
             }
 
             gameView.Visible = true;
-            container.Visible = false;
-            turnGenerationStatus.Visible = false;
+            inGameMenu.Visible = false;
 
             EventManager.PublishGameViewResetEvent(GameInfo);
         }
@@ -234,8 +218,7 @@ namespace CraigStars.Client
                 RemoveGameViewAndShowTurnGeneration();
 
                 // this was us, show the dialog
-                turnGenerationStatus.Visible = true;
-                turnGenerationStatus.UpdatePlayerStatuses();
+                inGameMenu.Visible = true;
 
                 // save our game
                 var _ = GamesManager.Instance.SavePlayer(gameInfo, player);
@@ -247,21 +230,17 @@ namespace CraigStars.Client
             PlayersManager.GameInfo = GameInfo = gameInfo;
             PlayersManager.GameInfo.Players.ForEach(p => log.Debug($"{PlayersManager.GameInfo}: Player: {p}, Submitted: {p.SubmittedTurn}"));
 
-            var localPublicPlayer = GameInfo.Players.Find(p => p.Num == player.Num);
-            localPublicPlayer.Update(player);
-
             if (PlayersManager.Me != null)
             {
                 await GamesManager.Instance.SavePlayerGameInfo(gameInfo, PlayersManager.Me.Num);
             }
 
-            if (PlayersManager.Me != null && player.Num == PlayersManager.Me.Num)
+            if (PlayersManager.Me != null && PlayersManager.Me.Num == player.Num)
             {
                 // we just submitted our turn, remove the game view and show this container
                 RemoveGameViewAndShowTurnGeneration();
                 // this was us, show the dialog
-                turnGenerationStatus.Visible = true;
-                turnGenerationStatus.UpdatePlayerStatuses();
+                inGameMenu.Visible = true;
 
                 // Mark the current player as submitted and clear it out
                 // so a new play can be assumed
@@ -278,18 +257,14 @@ namespace CraigStars.Client
                     }
                 }
             }
-            else
-            {
-                turnGenerationStatus.UpdatePlayerStatuses();
-            }
-
         }
 
         async void OnTurnUnsubmitted(PublicGameInfo gameInfo, PublicPlayerInfo player)
         {
             PlayersManager.GameInfo = GameInfo = gameInfo;
-            // put this player back into rotation so they can be played
-            var localPlayer = LocalPlayers.Find(p => p == player);
+
+            // update the local player to unsubmitted
+            var localPlayer = LocalPlayers.Find(p => p.Num == player.Num);
             if (localPlayer != null)
             {
                 localPlayer.SubmittedTurn = false;
@@ -301,9 +276,6 @@ namespace CraigStars.Client
             {
                 await GamesManager.Instance.SavePlayerGameInfo(gameInfo, PlayersManager.Me.Num);
             }
-
-            var localPublicPlayer = GameInfo.Players.Find(p => p.Num == player.Num);
-            localPublicPlayer.Update(player);
         }
 
         void OnTurnGenerating()
@@ -312,40 +284,15 @@ namespace CraigStars.Client
             RemoveGameViewAndShowTurnGeneration();
 
             // this was us, show the dialog
-            turnGenerationStatus.Visible = true;
-            turnGenerationStatus.UpdatePlayerStatuses();
-        }
-
-
-        /// <summary>
-        /// While a turn is being generated, this will update the progress bar
-        /// </summary>
-        /// <param name="state"></param>
-        void OnTurnGeneratorAdvanced(TurnGenerationState state)
-        {
-            progressBar.Value = 100 * (((int)state + 1) / (float)(Enum.GetValues(typeof(TurnGenerationState)).Length));
-
-            switch (state)
-            {
-                case TurnGenerationState.WaitingForPlayers:
-                    label.Text = "Waiting for Players";
-                    subLabel.Text = "";
-                    break;
-                default:
-                    label.Text = "Generating Turn";
-                    subLabel.Text = state.ToString();
-                    break;
-            }
-
-            // let any client listeners know the game advanced the turn state
-            // EventManager.PublishTurnGeneratorAdvancedEvent(state);
+            inGameMenu.Visible = true;
         }
 
         async void OnTurnPassed(PublicGameInfo gameInfo, Player player)
         {
+            PlayersManager.GameInfo = GameInfo = gameInfo;
             // replace this player in the list
             // this uses our magic HashCode override that uses playerNum as the Equals
-            LocalPlayers.Remove(player);
+            LocalPlayers.RemoveAll(p => p.Num == player.Num);
             LocalPlayers.Add(player);
 
             await GamesManager.Instance.SavePlayer(gameInfo, player);
@@ -353,7 +300,6 @@ namespace CraigStars.Client
             // if we don't already have a local player, play this player
             if (PlayersManager.Me == null)
             {
-                PlayersManager.GameInfo = GameInfo = gameInfo;
                 PlayersManager.Me = player;
                 turnProcessorRunner.RunTurnProcessors(PlayersManager.GameInfo, PlayersManager.Me, TurnProcessorManager.Instance);
                 OS.SetWindowTitle($"{projectName} - {gameInfo.Name}: Year {gameInfo.Year}");
@@ -371,6 +317,7 @@ namespace CraigStars.Client
             if (player != null)
             {
                 PlayersManager.Me = player;
+                PlayersManager.Me.SubmittedTurn = false;
                 RemoveGameViewAndShowTurnGeneration();
                 CallDeferred(nameof(LoadGameView));
             }
@@ -382,14 +329,13 @@ namespace CraigStars.Client
         /// <param name="player"></param>
         void OnPlayerData(PublicGameInfo gameInfo, Player player)
         {
-            LocalPlayers.Remove(player);
+            PlayersManager.GameInfo = GameInfo = gameInfo;
+            LocalPlayers.RemoveAll(p => p.Num == player.Num);
             LocalPlayers.Add(player);
 
             // if we don't already have a local player, play this player
             if (PlayersManager.Me == null)
             {
-                GameInfo = gameInfo;
-                PlayersManager.GameInfo = GameInfo = gameInfo;
                 PlayersManager.Me = player;
                 turnProcessorRunner.RunTurnProcessors(PlayersManager.GameInfo, PlayersManager.Me, TurnProcessorManager.Instance);
                 OS.SetWindowTitle($"{projectName} - {gameInfo.Name}: Year {gameInfo.Year}");

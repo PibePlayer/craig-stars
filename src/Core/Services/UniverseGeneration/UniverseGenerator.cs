@@ -9,9 +9,12 @@ namespace CraigStars.UniverseGeneration
 {
     public class UniverseGenerator
     {
-        Game Game { get; }
+        public event Action<UniverseGenerationState> UniverseGeneratorAdvancedEvent;
 
+        Game Game { get; }
         IList<UniverseGenerationStep> steps;
+
+        public void PublishUniverseGeneratorAdvancedEvent(UniverseGenerationState state) => UniverseGeneratorAdvancedEvent?.Invoke(state);
 
         public UniverseGenerator(Game game, IList<UniverseGenerationStep> steps)
         {
@@ -21,8 +24,10 @@ namespace CraigStars.UniverseGeneration
 
         public void Generate()
         {
+            PublishUniverseGeneratorAdvancedEvent(UniverseGenerationState.Starting);
             foreach (var step in steps)
             {
+                PublishUniverseGeneratorAdvancedEvent(step.State);
                 step.Process();
             }
 
@@ -34,6 +39,7 @@ namespace CraigStars.UniverseGeneration
                 // setup player's object mappings
                 player.SetupMapObjectMappings();
             });
+
         }
 
     }

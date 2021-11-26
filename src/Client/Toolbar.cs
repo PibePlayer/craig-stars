@@ -16,7 +16,7 @@ namespace CraigStars.Client
         ToolButton planetNamesToolButton;
         ToolButton fleetTokenCountsToolButton;
         ToolButton scannerToolButton;
-        SpinBox scannerSpinBox;
+        // SpinBox scannerSpinBox;
 
         PopupMenu commandsMenu;
         PopupMenu plansMenu;
@@ -50,7 +50,7 @@ namespace CraigStars.Client
             planetNamesToolButton = GetNode<ToolButton>("Panel/HBoxContainerLeft/PlanetNamesToolButton");
             fleetTokenCountsToolButton = GetNode<ToolButton>("Panel/HBoxContainerLeft/FleetTokenCountsToolButton");
             scannerToolButton = GetNode<ToolButton>("Panel/HBoxContainerLeft/ScannerToolButton");
-            scannerSpinBox = GetNode<SpinBox>("Panel/HBoxContainerLeft/ScannerSpinBox");
+            // scannerSpinBox = GetNode<SpinBox>("Panel/HBoxContainerLeft/ScannerSpinBox");
 
             reportsButton = (Button)FindNode("ReportsButton");
             submitTurnButton = (Button)FindNode("SubmitTurnButton");
@@ -72,8 +72,8 @@ namespace CraigStars.Client
             populationViewToolButton.Connect("pressed", this, nameof(OnPlanetViewStateToolButtonPressed), new Godot.Collections.Array() { PlanetViewState.Population });
             planetNamesToolButton.Connect("pressed", this, nameof(OnPlanetNamesToolButtonPressed));
             fleetTokenCountsToolButton.Connect("pressed", this, nameof(OnFleetTokenCountsToolButtonPressed));
-            scannerToolButton.Connect("pressed", this, nameof(OnScannerToolButtonPressed));
-            scannerSpinBox.Connect("value_changed", this, nameof(OnScannerSpinBoxValueChanged));
+            scannerToolButton.Connect("toggled", this, nameof(OnScannerToolButtonToggled));
+            // scannerSpinBox.Connect("value_changed", this, nameof(OnScannerSpinBoxValueChanged));
 
             reportsButton.Connect("pressed", this, nameof(OnReportsButtonPressed));
             submitTurnButton.Connect("pressed", this, nameof(OnSubmitTurnButtonPressed));
@@ -105,7 +105,7 @@ namespace CraigStars.Client
             planetNamesToolButton.Pressed = Me.UISettings.ShowPlanetNames;
             fleetTokenCountsToolButton.Pressed = Me.UISettings.ShowFleetTokenCounts;
             scannerToolButton.Pressed = Me.UISettings.ShowScanners;
-            scannerSpinBox.Value = Me.UISettings.ScannerPercent;
+            // scannerSpinBox.Value = Me.UISettings.ScannerPercent;
         }
 
         void OnMenuItemIdPressed(int id)
@@ -167,21 +167,21 @@ namespace CraigStars.Client
             EventManager.PublishPlanetViewStateUpdatedEvent();
         }
 
-        void OnScannerToolButtonPressed()
+        void OnScannerToolButtonToggled(bool toggled)
         {
-            Me.UISettings.ShowScanners = scannerToolButton.Pressed;
+            Me.UISettings.ShowScanners = toggled;
             Me.Dirty = true;
             EventManager.PublishPlayerDirtyEvent();
             EventManager.PublishPlanetViewStateUpdatedEvent();
         }
 
-        void OnScannerSpinBoxValueChanged(float value)
-        {
-            Me.UISettings.ScannerPercent = (int)scannerSpinBox.Value;
-            Me.Dirty = true;
-            EventManager.PublishPlayerDirtyEvent();
-            EventManager.PublishScannerScaleUpdatedEvent();
-        }
+        // void OnScannerSpinBoxValueChanged(float value)
+        // {
+        //     Me.UISettings.ScannerPercent = (int)scannerSpinBox.Value;
+        //     Me.Dirty = true;
+        //     EventManager.PublishPlayerDirtyEvent();
+        //     EventManager.PublishScannerScaleUpdatedEvent();
+        // }
 
         void OnReportsButtonPressed()
         {
@@ -190,6 +190,8 @@ namespace CraigStars.Client
 
         void OnSubmitTurnButtonPressed()
         {
+            submitTurnButton.Disabled = true;
+            PlayersManager.Me.SubmittedTurn = true;
             EventManager.PublishSubmitTurnRequestedEvent(PlayersManager.Me);
         }
 
@@ -202,8 +204,7 @@ namespace CraigStars.Client
             if (!submitTurnButton.Disabled && @event.IsActionPressed("submit_turn"))
             {
                 // submit our turn
-                submitTurnButton.Disabled = true;
-                EventManager.PublishSubmitTurnRequestedEvent(PlayersManager.Me);
+                OnSubmitTurnButtonPressed();
             }
             if (@event.IsActionPressed("technology_browser"))
             {

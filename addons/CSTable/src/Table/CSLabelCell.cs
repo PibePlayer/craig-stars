@@ -47,7 +47,7 @@ namespace CraigStarsTable
             UpdateCell();
         }
 
-        protected override void UpdateCell()
+        public override void UpdateCell()
         {
             if (label != null)
             {

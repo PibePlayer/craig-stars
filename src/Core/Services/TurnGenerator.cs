@@ -76,7 +76,6 @@ namespace CraigStars
             log.Debug($"{Game.Year}: Resetting players");
             Game.Players.ForEach(p =>
             {
-                p.SubmittedTurn = false;
                 p.Messages.Clear();
             });
 

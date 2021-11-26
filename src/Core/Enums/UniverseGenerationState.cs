@@ -5,6 +5,7 @@ namespace CraigStars
     /// </summary>
     public enum UniverseGenerationState
     {
+        Starting,
         Planets,
         Wormholes,
         TechLevels,

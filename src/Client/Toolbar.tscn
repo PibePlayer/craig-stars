@@ -23,6 +23,7 @@ __meta__ = {
 [node name="Panel" type="Panel" parent="."]
 margin_right = 1440.0
 margin_bottom = 40.0
+mouse_filter = 1
 
 [node name="HBoxContainerLeft" type="HBoxContainer" parent="Panel"]
 margin_right = 188.0
@@ -282,7 +283,7 @@ toggle_mode = true
 pressed = true
 flat = false
 __meta__ = {
-"_editor_description_": "Show Scanners"
+"_editor_description_": "Normal View"
 }
 
 [node name="CenterContainer" type="CenterContainer" parent="Panel/HBoxContainerLeft/ScannerToolButton"]
@@ -302,17 +303,6 @@ rect_min_size = Vector2( 32, 32 )
 texture = ExtResource( 3 )
 expand = true
 stretch_mode = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="ScannerSpinBox" type="SpinBox" parent="Panel/HBoxContainerLeft"]
-margin_left = 352.0
-margin_right = 426.0
-margin_bottom = 40.0
-rect_min_size = Vector2( 0, 40 )
-value = 100.0
-suffix = "%"
 __meta__ = {
 "_edit_use_anchors_": false
 }

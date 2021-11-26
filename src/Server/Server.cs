@@ -108,6 +108,7 @@ namespace CraigStars.Server
         protected abstract void PublishTurnSubmittedEvent(PublicGameInfo gameInfo, PublicPlayerInfo player);
         protected abstract void PublishTurnUnsubmittedEvent(PublicGameInfo gameInfo, PublicPlayerInfo player);
         protected abstract void PublishTurnGeneratingEvent();
+        protected abstract void PublishUniverseGeneratorAdvancedEvent(UniverseGenerationState state);
         protected abstract void PublishTurnGeneratorAdvancedEvent(TurnGenerationState state);
         protected abstract void PublishTurnPassedEvent();
 
@@ -215,6 +216,7 @@ namespace CraigStars.Server
                 try
                 {
                     log.Debug($"{Game.Year}: Submitting turn for {player}");
+                    player.SubmittedTurn = true;
                     GameRunner.SubmitTurn(player);
                     await GodotTaskFactory.StartNew(() => PublishTurnSubmittedEvent(Game.GameInfo, player));
 
@@ -243,6 +245,7 @@ namespace CraigStars.Server
         /// <param name="player"></param>
         protected async virtual void OnUnsubmitTurnRequested(PublicPlayerInfo player)
         {
+            player.SubmittedTurn = false;
             await Task.Run(() =>
             {
                 try
@@ -294,6 +297,11 @@ namespace CraigStars.Server
             AITurnSubmitter.SubmitAITurns(Game);
         }
 
+        void OnUniverseGeneratorAdvanced(UniverseGenerationState state)
+        {
+            GodotTaskFactory.StartNew(() => PublishUniverseGeneratorAdvancedEvent(state));
+        }
+
         void OnTurnGeneratorAdvanced(TurnGenerationState state)
         {
             GodotTaskFactory.StartNew(() => PublishTurnGeneratorAdvancedEvent(state));
@@ -320,14 +328,18 @@ namespace CraigStars.Server
 
             // PlayersManager.Instance.NumPlayers = PlayersManager.Instance.Players.Count;
             game.Init(settings.Players, RulesManager.Rules);
+            gameRunner.UniverseGeneratorAdvancedEvent += OnUniverseGeneratorAdvanced;
             gameRunner.GenerateUniverse();
+            gameRunner.UniverseGeneratorAdvancedEvent -= OnUniverseGeneratorAdvanced;
 
             // TODO: remove this turn process stuff later
             // game.Players.ForEach(player => player.Settings.TurnProcessors.AddRange(TurnProcessorManager.Instance.TurnProcessors.Select(p => p.Name)));
 
             SaveToDisk = saveToDisk;
 
+            OnUniverseGeneratorAdvanced(UniverseGenerationState.Saving);
             SaveGame(game);
+            OnUniverseGeneratorAdvanced(UniverseGenerationState.Finished);
 
             return gameRunner;
         }

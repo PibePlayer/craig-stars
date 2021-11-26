@@ -11,23 +11,19 @@ namespace CraigStars.Client
         protected PublicGameInfo GameInfo { get => PlayersManager.GameInfo; }
         protected Player Me { get => PlayersManager.Me; }
 
-        TurnGenerationStatus turnGenerationStatus;
         CSTable scoreTable;
         CSTable victoryTable;
 
         public override void _Ready()
         {
-            turnGenerationStatus = GetNode<TurnGenerationStatus>("Status/TurnGenerationStatus");
             scoreTable = GetNode<CSTable>("Scores/ScoreTable");
             victoryTable = GetNode<CSTable>("Victory Conditions/VBoxContainer/VictoryTable");
-
         }
 
         public void OnVisible(PublicGameInfo gameInfo)
         {
             if (IsVisibleInTree())
             {
-                turnGenerationStatus.UpdatePlayerStatuses();
                 ResetScoreTable(gameInfo);
                 ResetVictoryTable(gameInfo);
             }

@@ -12,6 +12,8 @@ namespace CraigStarsTable
         Row<T> Row { get; set; }
         Cell Cell { get; set; }
         Column<T> Column { get; set; }
+
+        void UpdateCell();
     }
 
     public interface ICellControl : ICSCellControl<object>

@@ -28,6 +28,7 @@ namespace CraigStars.Client
         public static event Action<PublicGameInfo, Player> PlayerDataEvent;
         public static event Action TurnGeneratingEvent;
         public static event Action<TurnGenerationState> TurnGeneratorAdvancedEvent;
+        public static event Action<UniverseGenerationState> UniverseGeneratorAdvancedEvent;
         public static event Action<PublicGameInfo, Player> TurnPassedEvent;
         public static event Action<PublicGameInfo> GameViewResetEvent;
 
@@ -45,6 +46,7 @@ namespace CraigStars.Client
         public static void PublishPlayTurnRequestedEvent(int playerNum) => PlayTurnRequestedEvent?.Invoke(playerNum);
 
         public static void PublishPlayerDataEvent(PublicGameInfo gameInfo, Player player) => PlayerDataEvent?.Invoke(gameInfo, player);
+        public static void PublishUniverseGeneratorAdvancedEvent(UniverseGenerationState state) => UniverseGeneratorAdvancedEvent?.Invoke(state);
         public static void PublishTurnGeneratorAdvancedEvent(TurnGenerationState state) => TurnGeneratorAdvancedEvent?.Invoke(state);
         public static void PublishTurnGeneratingEvent() => TurnGeneratingEvent?.Invoke();
         public static void PublishTurnPassedEvent(PublicGameInfo gameInfo, Player player) => TurnPassedEvent?.Invoke(gameInfo, player);

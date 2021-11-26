@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=2]
+[gd_scene load_steps=35 format=2]
 
 [ext_resource path="res://src/Client/Scanner/Scanner.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/Client/Scanner/ScannerSelectedStats.tscn" type="PackedScene" id=2]
@@ -28,7 +28,6 @@
 [ext_resource path="res://src/Client/Dialogs/MergeFleetsDialog.tscn" type="PackedScene" id=26]
 [ext_resource path="res://src/Client/Dialogs/RaceDesignerDialog.tscn" type="PackedScene" id=27]
 [ext_resource path="res://src/Client/Dialogs/BattleViewerDialog.tscn" type="PackedScene" id=28]
-[ext_resource path="res://src/Client/Dialogs/InGameMenu.tscn" type="PackedScene" id=29]
 [ext_resource path="res://src/Client/Dialogs/BattlePlansDialog.tscn" type="PackedScene" id=30]
 [ext_resource path="res://src/Client/Dialogs/TransportPlansDialog.tscn" type="PackedScene" id=31]
 [ext_resource path="res://src/Client/Scanner/OtherObjectsPopupMenu.tscn" type="PackedScene" id=32]
@@ -254,8 +253,6 @@ visible = false
 [node name="TechBrowserDialog" parent="CanvasLayer" instance=ExtResource( 17 )]
 
 [node name="MergeFleetsDialog" parent="CanvasLayer" instance=ExtResource( 26 )]
-
-[node name="InGameMenu" parent="CanvasLayer" instance=ExtResource( 29 )]
 
 [node name="TransportPlansDialog" parent="CanvasLayer" instance=ExtResource( 31 )]
 visible = false

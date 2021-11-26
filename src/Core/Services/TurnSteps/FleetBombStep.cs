@@ -66,11 +66,11 @@ namespace CraigStars
             // find any enemy bombers orbiting this planet
             var enemyBombers = planet.OrbitingFleets.Where(fleet => fleet.Spec.Bomber && Game.Players[fleet.PlayerNum].IsEnemy(planet.PlayerNum));
 
-            var orbitingPlayers = enemyBombers.Select(fleet => fleet.PlayerNum).ToHashSet();
+            var orbitingPlayerNums = enemyBombers.Select(fleet => fleet.PlayerNum).ToHashSet();
 
-            foreach (var player in orbitingPlayers)
+            foreach (var playerNum in orbitingPlayerNums)
             {
-                BombPlanet(planet, Game.Players[planet.PlayerNum], Game.Players[player], enemyBombers.Where(fleet => fleet.PlayerNum == player));
+                BombPlanet(planet, Game.Players[planet.PlayerNum], Game.Players[playerNum], enemyBombers.Where(fleet => fleet.PlayerNum == playerNum));
                 // stop bombing if everyone is dead
                 if (planet.Population == 0)
                 {
@@ -80,9 +80,9 @@ namespace CraigStars
 
             if (planet.Population > 0)
             {
-                foreach (var player in orbitingPlayers)
+                foreach (var playerNum in orbitingPlayerNums)
                 {
-                    SmartBombPlanet(planet, Game.Players[planet.PlayerNum], Game.Players[player], enemyBombers.Where(fleet => fleet.PlayerNum == player));
+                    SmartBombPlanet(planet, Game.Players[planet.PlayerNum], Game.Players[playerNum], enemyBombers.Where(fleet => fleet.PlayerNum == playerNum));
                     // stop bombing if everyone is dead
                     if (planet.Population == 0)
                     {

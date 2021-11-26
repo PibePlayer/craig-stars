@@ -499,6 +499,8 @@ namespace CraigStars.Client
                 }
             }
 
+            penScannersNode.Visible = normalScannersNode.Visible = Me.UISettings.ShowScanners;
+
             log.Debug("Finished updating Scanner Scanners");
         }
 

@@ -9,18 +9,24 @@ namespace CraigStars.Client
         Player Me { get => PlayersManager.Me; }
         PublicGameInfo GameInfo { get => PlayersManager.GameInfo; }
 
+        TurnGenerationStatus turnGenerationStatus;
         Button saveTurnButton;
+        Button generateTurnButton;
         Button exitGameButton;
         Button exitToMainMenuButton;
 
         public override void _Ready()
         {
             base._Ready();
-            saveTurnButton = GetNode<Button>("MarginContainer/CenterContainer/VBoxContainer/SaveTurnButton");
-            exitGameButton = GetNode<Button>("MarginContainer/CenterContainer/VBoxContainer/ExitGameButton");
-            exitToMainMenuButton = GetNode<Button>("MarginContainer/CenterContainer/VBoxContainer/ExitToMainMenuButton");
+
+            turnGenerationStatus = GetNode<TurnGenerationStatus>("MarginContainer/VBoxContainer/TurnGenerationStatus");
+            saveTurnButton = GetNode<Button>("MarginContainer/VBoxContainer/CenterContainer/VBoxContainer/SaveTurnButton");
+            generateTurnButton = GetNode<Button>("MarginContainer/VBoxContainer/CenterContainer/VBoxContainer/GenerateTurnButton");
+            exitGameButton = GetNode<Button>("MarginContainer/VBoxContainer/CenterContainer/VBoxContainer/ExitGameButton");
+            exitToMainMenuButton = GetNode<Button>("MarginContainer/VBoxContainer/CenterContainer/VBoxContainer/ExitToMainMenuButton");
 
             saveTurnButton.Connect("pressed", this, nameof(OnSaveTurnButtonPressed));
+            generateTurnButton.Connect("pressed", this, nameof(OnGenerateTurnButtonPressed));
             exitGameButton.Connect("pressed", this, nameof(OnExitGameButtonPressed));
             exitToMainMenuButton.Connect("pressed", this, nameof(OnExitToMainMenuButtonPressed));
 
@@ -49,7 +55,11 @@ namespace CraigStars.Client
         {
             if (IsVisibleInTree())
             {
+                turnGenerationStatus.Visible = GameInfo != null;
+                saveTurnButton.Visible = Me != null;
+                saveTurnButton.Disabled = Me == null || !Me.Dirty;
                 DialogManager.DialogRefCount++;
+
             }
             else
             {
@@ -64,7 +74,7 @@ namespace CraigStars.Client
 
         void OnPlayerDirtyChanged()
         {
-            saveTurnButton.Disabled = !Me.Dirty;
+            saveTurnButton.Disabled = Me == null || !Me.Dirty;
         }
 
         public override void _UnhandledInput(InputEvent @event)
@@ -100,9 +110,21 @@ namespace CraigStars.Client
             EventManager.PublishPlayerDirtyEvent();
         }
 
+        void OnGenerateTurnButtonPressed()
+        {
+            if (GameInfo != null && !GameInfo.AllPlayersSubmitted())
+            {
+                CSConfirmDialog.Show("Some players have not submitted their turns, are you sure you want to force turn generation?",
+                () =>
+                {
+                    // EventManager.PublishGenerateTurnEvent();
+                });
+            }
+        }
+
         void OnExitGameButtonPressed()
         {
-            if (Me.Dirty)
+            if (Me != null && Me.Dirty)
             {
                 CSConfirmDialog.Show("You have unsaved changes to your turn, are you sure you want to exit?",
                 () =>
@@ -120,7 +142,7 @@ namespace CraigStars.Client
 
         void OnExitToMainMenuButtonPressed()
         {
-            if (Me.Dirty)
+            if (Me != null && Me.Dirty)
             {
                 CSConfirmDialog.Show("You have unsaved changes to your turn, are you sure you want to exit?",
                 () =>

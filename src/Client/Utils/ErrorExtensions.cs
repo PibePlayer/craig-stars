@@ -26,7 +26,7 @@ namespace GodotUtils
                 return;
             }
 
-            if (String.IsNullOrEmpty(message))
+            if (string.IsNullOrEmpty(message))
             {
                 message = "Encountered Godot error.";
             }

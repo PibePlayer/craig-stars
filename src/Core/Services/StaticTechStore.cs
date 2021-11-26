@@ -77,7 +77,7 @@ namespace CraigStars
         }
         List<TechHull> starbaseHulls;
 
-        Dictionary<String, Tech> TechsByName { get; set; } = new Dictionary<String, Tech>();
+        Dictionary<string, Tech> TechsByName { get; set; } = new Dictionary<string, Tech>();
         Dictionary<TechCategory, List<Tech>> TechsByCategory { get; set; } = new Dictionary<TechCategory, List<Tech>>();
         public IEnumerable<TechCategory> Categories
         {

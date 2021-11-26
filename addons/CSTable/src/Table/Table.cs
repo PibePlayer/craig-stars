@@ -366,7 +366,7 @@ namespace CraigStarsTable
                 using (var mutex = new System.Threading.Mutex())
                 {
                     mutex.WaitOne();
-                    
+
                     try
                     {
                         RemoveChild(gridContainer);
@@ -525,6 +525,11 @@ namespace CraigStarsTable
                     var newIndex = (row.SortIndex + 1) * numVisibleColumns + nonHiddenColumnIndex;
 
                     gridContainer.MoveChild(node, newIndex);
+                    if (node is ICSCellControl<T> cellControl)
+                    {
+                        cellControl.Row.Metadata = row.Metadata;
+                        cellControl.UpdateCell();
+                    }
                     nonHiddenColumnIndex++;
                 }
             }

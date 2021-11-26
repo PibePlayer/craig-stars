@@ -66,6 +66,7 @@ namespace CraigStars
 
         [JsonIgnore] public bool ScoresVisible { get => PublicPlayerScores && YearsPassed >= Rules.ShowPublicScoresAfterYears || VictorDeclared; }
         [JsonIgnore] public int YearsPassed { get => Year - Rules.StartingYear; }
+        public bool AllPlayersSubmitted() => Players.All(p => p.SubmittedTurn);
 
         #endregion
 

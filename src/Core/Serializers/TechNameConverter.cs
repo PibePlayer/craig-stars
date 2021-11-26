@@ -16,7 +16,7 @@ namespace CraigStars
 
         public override Tech ReadJson(JsonReader reader, Type objectType, Tech existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
-            string name = reader.Value as String;
+            string name = reader.Value as string;
             var tech = TechStore.GetTechByName<Tech>(name);
             if (tech == null)
             {

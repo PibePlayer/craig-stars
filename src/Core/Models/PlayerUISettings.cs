@@ -11,7 +11,7 @@ namespace CraigStars
         /// What view are we doing for planets, i.e. normal, percent, surface minerals?
         /// </summary>
         /// <value></value>
-        public PlanetViewState PlanetViewState { get; set; }
+        public PlanetViewState PlanetViewState { get; set; } = PlanetViewState.Normal;
 
         /// <summary>
         /// True to show planet names
@@ -29,7 +29,7 @@ namespace CraigStars
         /// Toggle to show/hide scanner view
         /// </summary>
         /// <value></value>
-        public bool ShowScanners { get; set; }
+        public bool ShowScanners { get; set; } = true;
 
         /// <summary>
         /// Percent to scale scanner range by (useful for determining cloaked ship scan range)

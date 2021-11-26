@@ -315,12 +315,17 @@ namespace CraigStars.Server
         protected override void PublishTurnGeneratingEvent()
         {
             clientRPC.SendTurnGenerating(Game.GameInfo);
-
         }
 
         protected override void PublishTurnGeneratorAdvancedEvent(TurnGenerationState state)
         {
             clientRPC.SendTurnGeneratorAdvanced(Game.GameInfo, state);
+        }
+
+        protected override void PublishUniverseGeneratorAdvancedEvent(UniverseGenerationState state)
+        {
+            // TODO: fill in
+            // clientRPC.SendUniverseGeneratorAdvanced(Game.GameInfo, state);
         }
 
         protected override void PublishTurnPassedEvent()

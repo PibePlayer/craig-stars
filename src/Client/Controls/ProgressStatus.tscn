@@ -1,0 +1,29 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://src/Client/Controls/ProgressStatus.cs" type="Script" id=1]
+
+[node name="ProgressStatus" type="VBoxContainer"]
+margin_top = 196.0
+margin_right = 378.0
+margin_bottom = 246.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="."]
+margin_right = 378.0
+margin_bottom = 14.0
+text = "Loading"
+align = 1
+
+[node name="SubLabel" type="Label" parent="."]
+margin_top = 18.0
+margin_right = 378.0
+margin_bottom = 32.0
+align = 1
+
+[node name="ProgressBar" type="ProgressBar" parent="."]
+margin_top = 36.0
+margin_right = 378.0
+margin_bottom = 50.0

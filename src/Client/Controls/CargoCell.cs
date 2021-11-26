@@ -17,7 +17,7 @@ namespace CraigStars
             base._Ready();
         }
 
-        protected override void UpdateCell()
+        public override void UpdateCell()
         {
             if (ironium != null)
             {

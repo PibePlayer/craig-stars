@@ -6,11 +6,11 @@ namespace CraigStars
     {
         OwnPlanets,
         AttainTechLevels,
-        ExceedScore,
-        ExceedSecondPlaceScore,
+        ExceedsScore,
+        ExceedsSecondPlaceScore,
         ProductionCapacity,
         OwnCapitalShips,
-        HighestScore
+        HighestScoreAfterYears
     }
 
     /// <summary>
@@ -21,7 +21,7 @@ namespace CraigStars
         public HashSet<VictoryConditionType> Conditions { get; set; } = new HashSet<VictoryConditionType>() {
             VictoryConditionType.OwnPlanets,
             VictoryConditionType.AttainTechLevels,
-            VictoryConditionType.ExceedSecondPlaceScore
+            VictoryConditionType.ExceedsSecondPlaceScore
         };
 
         public int NumCriteriaRequired { get; set; } = 1;
@@ -29,8 +29,8 @@ namespace CraigStars
         public int OwnPlanets { get; set; } = 60;
         public int AttainTechLevel { get; set; } = 22;
         public int AttainTechLevelNumFields { get; set; } = 4;
-        public int ExceedScore { get; set; } = 11000;
-        public int ExceedSecondPlaceScorePercent { get; set; } = 100;
+        public int ExceedsScore { get; set; } = 11000;
+        public int ExceedsSecondPlaceScore { get; set; } = 100;
         public int ProductionCapacity { get; set; } = 100000;
         public int OwnCapitalShips { get; set; } = 100;
         public int HighestScoreAfterYears { get; set; } = 100;

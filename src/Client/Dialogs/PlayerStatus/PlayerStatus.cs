@@ -123,20 +123,20 @@ namespace CraigStars.Client
 
             object[] OwnPlanets = new object[numPlayers + 1];
             object[] AttainTechLevels = new object[numPlayers + 1];
-            object[] ExceedScore = new object[numPlayers + 1];
-            object[] ExceedSecondPlaceScore = new object[numPlayers + 1];
+            object[] ExceedsScore = new object[numPlayers + 1];
+            object[] ExceedsSecondPlaceScore = new object[numPlayers + 1];
             object[] ProductionCapacity = new object[numPlayers + 1];
             object[] OwnCapitalShips = new object[numPlayers + 1];
-            object[] HighestScore = new object[numPlayers + 1];
+            object[] HighestScoreAfterYears = new object[numPlayers + 1];
 
             var victoryConditions = GameInfo.VictoryConditions;
             OwnPlanets[0] = $"Own {((int)(victoryConditions.OwnPlanets / 100f * Me.AllPlanets.Count()))} planets.";
             AttainTechLevels[0] = $"Attain Tech {victoryConditions.AttainTechLevel} in {victoryConditions.AttainTechLevelNumFields} fields.";
-            ExceedScore[0] = $"Excced a score of {victoryConditions.ExceedScore}.";
-            ExceedSecondPlaceScore[0] = $"Exceed second place score by {victoryConditions.ExceedSecondPlaceScorePercent}%.";
+            ExceedsScore[0] = $"Excced a score of {victoryConditions.ExceedsScore}.";
+            ExceedsSecondPlaceScore[0] = $"Exceed second place score by {victoryConditions.ExceedsSecondPlaceScore}%.";
             ProductionCapacity[0] = $"Has a production capacity of {victoryConditions.ProductionCapacity / 1000} thousand.";
             OwnCapitalShips[0] = $"Owns {victoryConditions.OwnCapitalShips} capital ships.";
-            HighestScore[0] = $"Has the highest score after {victoryConditions.HighestScoreAfterYears} years.";
+            HighestScoreAfterYears[0] = $"Has the highest score after {victoryConditions.HighestScoreAfterYears} years.";
 
             for (int i = 0; i < gameInfo.Players.Count; i++)
             {
@@ -145,21 +145,21 @@ namespace CraigStars.Client
 
                 OwnPlanets[index] = player.AchievedVictoryConditions.Contains(VictoryConditionType.OwnPlanets);
                 AttainTechLevels[index] = player.AchievedVictoryConditions.Contains(VictoryConditionType.AttainTechLevels);
-                ExceedScore[index] = player.AchievedVictoryConditions.Contains(VictoryConditionType.ExceedScore);
-                ExceedSecondPlaceScore[index] = player.AchievedVictoryConditions.Contains(VictoryConditionType.ExceedSecondPlaceScore);
+                ExceedsScore[index] = player.AchievedVictoryConditions.Contains(VictoryConditionType.ExceedsScore);
+                ExceedsSecondPlaceScore[index] = player.AchievedVictoryConditions.Contains(VictoryConditionType.ExceedsSecondPlaceScore);
                 ProductionCapacity[index] = player.AchievedVictoryConditions.Contains(VictoryConditionType.ProductionCapacity);
                 OwnCapitalShips[index] = player.AchievedVictoryConditions.Contains(VictoryConditionType.OwnCapitalShips);
-                HighestScore[index] = player.AchievedVictoryConditions.Contains(VictoryConditionType.HighestScore);
+                HighestScoreAfterYears[index] = player.AchievedVictoryConditions.Contains(VictoryConditionType.HighestScoreAfterYears);
 
             }
 
             victoryTable.Data.AddRow(OwnPlanets);
             victoryTable.Data.AddRow(AttainTechLevels);
-            victoryTable.Data.AddRow(ExceedScore);
-            victoryTable.Data.AddRow(ExceedSecondPlaceScore);
+            victoryTable.Data.AddRow(ExceedsScore);
+            victoryTable.Data.AddRow(ExceedsSecondPlaceScore);
             victoryTable.Data.AddRow(ProductionCapacity);
             victoryTable.Data.AddRow(OwnCapitalShips);
-            victoryTable.Data.AddRow(HighestScore);
+            victoryTable.Data.AddRow(HighestScoreAfterYears);
 
             victoryTable.ResetTable();
         }

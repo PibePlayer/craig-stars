@@ -13,14 +13,14 @@ __meta__ = {
 
 [node name="NameLabel" type="Label" parent="."]
 margin_top = 5.0
-margin_right = 97.0
+margin_right = 107.0
 margin_bottom = 19.0
 rect_min_size = Vector2( 80, 0 )
 text = "Name:"
 align = 2
 
 [node name="NameLineEdit" type="LineEdit" parent="."]
-margin_left = 101.0
+margin_left = 111.0
 margin_right = 400.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
@@ -28,14 +28,14 @@ text = "A Barefoot Jaywalk"
 
 [node name="SizeLabel" type="Label" parent="."]
 margin_top = 31.0
-margin_right = 97.0
+margin_right = 107.0
 margin_bottom = 45.0
 rect_min_size = Vector2( 80, 0 )
 text = "Universe Size:"
 align = 2
 
 [node name="SizeOptionButton" type="OptionButton" parent="."]
-margin_left = 101.0
+margin_left = 111.0
 margin_top = 28.0
 margin_right = 400.0
 margin_bottom = 48.0
@@ -48,19 +48,39 @@ __meta__ = {
 
 [node name="DensityLabel" type="Label" parent="."]
 margin_top = 55.0
-margin_right = 97.0
+margin_right = 107.0
 margin_bottom = 69.0
 rect_min_size = Vector2( 80, 0 )
 text = "Planet Density:"
 align = 2
 
 [node name="DensityOptionButton" type="OptionButton" parent="."]
-margin_left = 101.0
+margin_left = 111.0
 margin_top = 52.0
 margin_right = 400.0
 margin_bottom = 72.0
 text = "Normal"
 items = [ "Sparse", null, false, 0, null, "Normal", null, false, 1, null, "Dense", null, false, 2, null, "Packed", null, false, 3, null ]
+selected = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PlayerPositionsLabel" type="Label" parent="."]
+margin_top = 79.0
+margin_right = 107.0
+margin_bottom = 93.0
+rect_min_size = Vector2( 80, 0 )
+text = "Planet Positions:"
+align = 2
+
+[node name="PlayerPositionsOptionButton" type="OptionButton" parent="."]
+margin_left = 111.0
+margin_top = 76.0
+margin_right = 400.0
+margin_bottom = 96.0
+text = "Moderate"
+items = [ "Close", null, false, 0, null, "Moderate", null, false, 1, null, "Farther", null, false, 2, null, "Distant", null, false, 3, null ]
 selected = 1
 __meta__ = {
 "_edit_use_anchors_": false

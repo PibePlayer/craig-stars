@@ -48,10 +48,10 @@ namespace CraigStars
                     case VictoryConditionType.AttainTechLevels:
                         CheckAttainTechLevels(player);
                         break;
-                    case VictoryConditionType.ExceedScore:
+                    case VictoryConditionType.ExceedsScore:
                         CheckExceedScore(player);
                         break;
-                    case VictoryConditionType.ExceedSecondPlaceScore:
+                    case VictoryConditionType.ExceedsSecondPlaceScore:
                         CheckExceedSecondPlaceScore(player);
                         break;
                     case VictoryConditionType.ProductionCapacity:
@@ -60,7 +60,7 @@ namespace CraigStars
                     case VictoryConditionType.OwnCapitalShips:
                         CheckOwnCapitalShips(player);
                         break;
-                    case VictoryConditionType.HighestScore:
+                    case VictoryConditionType.HighestScoreAfterYears:
                         CheckHighestScore(player);
                         break;
                     default:
@@ -103,9 +103,9 @@ namespace CraigStars
 
         internal void CheckExceedScore(Player player)
         {
-            if (player.Score.Score > Game.VictoryConditions.ExceedScore)
+            if (player.Score.Score > Game.VictoryConditions.ExceedsScore)
             {
-                player.AchievedVictoryConditions.Add(VictoryConditionType.ExceedScore);
+                player.AchievedVictoryConditions.Add(VictoryConditionType.ExceedsScore);
             }
         }
 
@@ -116,9 +116,9 @@ namespace CraigStars
                 var scores = Game.Players.OrderByDescending(p => p.Score.Score).Select(p => p.Score.Score).ToList();
                 // if player 1 is score 120, player 2 is score 100
                 // our score is 20% higher
-                if (((float)player.Score.Score / scores[1] - 1) * 100 > Game.VictoryConditions.ExceedSecondPlaceScorePercent)
+                if (((float)player.Score.Score / scores[1] - 1) * 100 > Game.VictoryConditions.ExceedsSecondPlaceScore)
                 {
-                    player.AchievedVictoryConditions.Add(VictoryConditionType.ExceedSecondPlaceScore);
+                    player.AchievedVictoryConditions.Add(VictoryConditionType.ExceedsSecondPlaceScore);
                 }
             }
         }
@@ -147,7 +147,7 @@ namespace CraigStars
                 if (player.Score == Game.Players.OrderByDescending(player => player.Score).Select(player => player.Score).ToArray()[0])
                 {
                     // our score is the highest after a certain number of years
-                    player.AchievedVictoryConditions.Add(VictoryConditionType.HighestScore);
+                    player.AchievedVictoryConditions.Add(VictoryConditionType.HighestScoreAfterYears);
                 }
             }
         }

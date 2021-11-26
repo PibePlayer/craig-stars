@@ -15,6 +15,7 @@ namespace CraigStars.Client
 
         NewGameOptions newGameOptions;
         NewGamePlayers newGamePlayers;
+        VictoryConditionsOptions victoryConditionsOptions;
 
 
         public override void _Ready()
@@ -23,8 +24,9 @@ namespace CraigStars.Client
             startButton = GetNode<Button>("VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/StartButton");
             backButton = GetNode<Button>("VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/BackButton");
 
-            newGameOptions = GetNode<NewGameOptions>("VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/NewGameOptions");
-            newGamePlayers = GetNode<NewGamePlayers>("VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/NewGamePlayers");
+            newGameOptions = GetNode<NewGameOptions>("VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/TabContainer/Game/VBoxContainer/NewGameOptions");
+            newGamePlayers = GetNode<NewGamePlayers>("VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/TabContainer/Game/VBoxContainer/NewGamePlayers");
+            victoryConditionsOptions = GetNode<VictoryConditionsOptions>("VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/TabContainer/Victory Conditions/VictoryConditionsOptions");
 
             fastHotseatCheckButton = (CheckButton)FindNode("FastHotseatCheckButton");
 
@@ -64,6 +66,7 @@ namespace CraigStars.Client
             GameSettings<Player> settings = newGameOptions.GetGameSettings();
             settings.Players = newGamePlayers.Players;
             settings.Mode = settings.Players.Where(p => !p.AIControlled).Count() > 1 ? GameMode.Hotseat : GameMode.SinglePlayer;
+            settings.VictoryConditions = victoryConditionsOptions.GetVictoryConditions();
 
             // start a new game and change to the client view
             Action startGame = () =>

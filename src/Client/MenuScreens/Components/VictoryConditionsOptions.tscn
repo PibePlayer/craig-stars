@@ -1,0 +1,335 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://src/Client/MenuScreens/Components/VictoryConditionsOptions.cs" type="Script" id=1]
+
+[node name="VictoryConditionsOptions" type="VBoxContainer"]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 477.0
+margin_bottom = 401.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="OwnPlanetsContainer" type="HBoxContainer" parent="."]
+margin_right = 472.0
+margin_bottom = 24.0
+
+[node name="OwnPlanetsCheckBox" type="CheckBox" parent="OwnPlanetsContainer"]
+margin_right = 24.0
+margin_bottom = 24.0
+pressed = true
+
+[node name="OwnPlanetsLabel" type="Label" parent="OwnPlanetsContainer"]
+margin_left = 28.0
+margin_top = 5.0
+margin_right = 64.0
+margin_bottom = 19.0
+text = "Owns"
+
+[node name="OwnPlanetsSpinBox" type="SpinBox" parent="OwnPlanetsContainer"]
+margin_left = 68.0
+margin_right = 142.0
+margin_bottom = 24.0
+min_value = 20.0
+value = 60.0
+suffix = "%"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="OwnPlanetsLabel2" type="Label" parent="OwnPlanetsContainer"]
+margin_left = 146.0
+margin_top = 5.0
+margin_right = 232.0
+margin_bottom = 19.0
+text = "of all planets."
+
+[node name="AttainTechLevelsContainer" type="HBoxContainer" parent="."]
+margin_top = 28.0
+margin_right = 472.0
+margin_bottom = 52.0
+
+[node name="AttainTechLevelsCheckBox" type="CheckBox" parent="AttainTechLevelsContainer"]
+margin_right = 24.0
+margin_bottom = 24.0
+pressed = true
+
+[node name="AttainTechLevelsLabel" type="Label" parent="AttainTechLevelsContainer"]
+margin_left = 28.0
+margin_top = 5.0
+margin_right = 107.0
+margin_bottom = 19.0
+text = "Attains Tech"
+
+[node name="AttainTechLevelSpinBox" type="SpinBox" parent="AttainTechLevelsContainer"]
+margin_left = 111.0
+margin_right = 185.0
+margin_bottom = 24.0
+min_value = 8.0
+max_value = 26.0
+value = 22.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AttainTechLevelsLabel2" type="Label" parent="AttainTechLevelsContainer"]
+margin_left = 189.0
+margin_top = 5.0
+margin_right = 201.0
+margin_bottom = 19.0
+text = "in"
+
+[node name="AttainTechLevelNumFieldsSpinBox" type="SpinBox" parent="AttainTechLevelsContainer"]
+margin_left = 205.0
+margin_right = 279.0
+margin_bottom = 24.0
+min_value = 2.0
+max_value = 6.0
+value = 4.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AttainTechLevelsLabel3" type="Label" parent="AttainTechLevelsContainer"]
+margin_left = 283.0
+margin_top = 5.0
+margin_right = 322.0
+margin_bottom = 19.0
+text = "fields."
+
+[node name="ExceedsScoreContainer" type="HBoxContainer" parent="."]
+margin_top = 56.0
+margin_right = 472.0
+margin_bottom = 80.0
+
+[node name="ExceedsScoreCheckBox" type="CheckBox" parent="ExceedsScoreContainer"]
+margin_right = 24.0
+margin_bottom = 24.0
+
+[node name="ExceedsScoreLabel" type="Label" parent="ExceedsScoreContainer"]
+margin_left = 28.0
+margin_top = 5.0
+margin_right = 150.0
+margin_bottom = 19.0
+text = "Exceeds a score of "
+
+[node name="ExceedsScoreSpinBox" type="SpinBox" parent="ExceedsScoreContainer"]
+margin_left = 154.0
+margin_right = 228.0
+margin_bottom = 24.0
+min_value = 1000.0
+max_value = 20000.0
+step = 1000.0
+value = 11000.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ExceedsScoreLabel2" type="Label" parent="ExceedsScoreContainer"]
+margin_left = 232.0
+margin_top = 5.0
+margin_right = 236.0
+margin_bottom = 19.0
+text = "."
+
+[node name="ExceedsSecondPlaceScoreContainer" type="HBoxContainer" parent="."]
+margin_top = 84.0
+margin_right = 472.0
+margin_bottom = 108.0
+
+[node name="ExceedsSecondPlaceScoreCheckBox" type="CheckBox" parent="ExceedsSecondPlaceScoreContainer"]
+margin_right = 24.0
+margin_bottom = 24.0
+pressed = true
+
+[node name="ExceedsSecondPlaceScoreLabel" type="Label" parent="ExceedsSecondPlaceScoreContainer"]
+margin_left = 28.0
+margin_top = 5.0
+margin_right = 226.0
+margin_bottom = 19.0
+text = "Exceeds second place score by"
+
+[node name="ExceedsSecondPlaceScoreSpinBox" type="SpinBox" parent="ExceedsSecondPlaceScoreContainer"]
+margin_left = 230.0
+margin_right = 304.0
+margin_bottom = 24.0
+min_value = 20.0
+step = 300.0
+value = 20.0
+suffix = "%"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ExceedsSecondPlaceScoreLabel2" type="Label" parent="ExceedsSecondPlaceScoreContainer"]
+margin_left = 308.0
+margin_top = 5.0
+margin_right = 312.0
+margin_bottom = 19.0
+text = "."
+
+[node name="ProductionCapacityContainer" type="HBoxContainer" parent="."]
+margin_top = 112.0
+margin_right = 472.0
+margin_bottom = 136.0
+
+[node name="ProductionCapacityCheckBox" type="CheckBox" parent="ProductionCapacityContainer"]
+margin_right = 24.0
+margin_bottom = 24.0
+
+[node name="ProductionCapacityLabel" type="Label" parent="ProductionCapacityContainer"]
+margin_left = 28.0
+margin_top = 5.0
+margin_right = 212.0
+margin_bottom = 19.0
+text = "Has a production capacity of "
+
+[node name="ProductionCapacitySpinBox" type="SpinBox" parent="ProductionCapacityContainer"]
+margin_left = 216.0
+margin_right = 290.0
+margin_bottom = 24.0
+min_value = 10.0
+max_value = 500.0
+step = 10.0
+value = 100.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ExceedsScoreLabel2" type="Label" parent="ProductionCapacityContainer"]
+margin_left = 294.0
+margin_top = 5.0
+margin_right = 357.0
+margin_bottom = 19.0
+text = "thousand."
+
+[node name="OwnCapitalShipsContainer" type="HBoxContainer" parent="."]
+margin_top = 140.0
+margin_right = 472.0
+margin_bottom = 164.0
+
+[node name="OwnCapitalShipsCheckBox" type="CheckBox" parent="OwnCapitalShipsContainer"]
+margin_right = 24.0
+margin_bottom = 24.0
+
+[node name="OwnCapitalShipsLabel" type="Label" parent="OwnCapitalShipsContainer"]
+margin_left = 28.0
+margin_top = 5.0
+margin_right = 64.0
+margin_bottom = 19.0
+text = "Owns"
+
+[node name="OwnCapitalShipsSpinBox" type="SpinBox" parent="OwnCapitalShipsContainer"]
+margin_left = 68.0
+margin_right = 142.0
+margin_bottom = 24.0
+min_value = 10.0
+max_value = 300.0
+step = 10.0
+value = 100.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ExceedsScoreLabel2" type="Label" parent="OwnCapitalShipsContainer"]
+margin_left = 146.0
+margin_top = 5.0
+margin_right = 230.0
+margin_bottom = 19.0
+text = "capital ships."
+
+[node name="HighestScoreAfterYearsContainer" type="HBoxContainer" parent="."]
+margin_top = 168.0
+margin_right = 472.0
+margin_bottom = 192.0
+
+[node name="HighestScoreAfterYearsCheckBox" type="CheckBox" parent="HighestScoreAfterYearsContainer"]
+margin_right = 24.0
+margin_bottom = 24.0
+
+[node name="HighestScoreAfterYearsLabel" type="Label" parent="HighestScoreAfterYearsContainer"]
+margin_left = 28.0
+margin_top = 5.0
+margin_right = 204.0
+margin_bottom = 19.0
+text = "Has the highest score after "
+
+[node name="HighestScoreAfterYearsSpinBox" type="SpinBox" parent="HighestScoreAfterYearsContainer"]
+margin_left = 208.0
+margin_right = 282.0
+margin_bottom = 24.0
+min_value = 30.0
+max_value = 900.0
+step = 10.0
+value = 100.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HighestScoreAfterYearsLabel2" type="Label" parent="HighestScoreAfterYearsContainer"]
+margin_left = 286.0
+margin_top = 5.0
+margin_right = 324.0
+margin_bottom = 19.0
+text = "years."
+
+[node name="NumCriteriaRequiredContainer" type="HBoxContainer" parent="."]
+margin_top = 196.0
+margin_right = 472.0
+margin_bottom = 220.0
+
+[node name="NumCriteriaRequiredLabel" type="Label" parent="NumCriteriaRequiredContainer"]
+margin_top = 5.0
+margin_right = 121.0
+margin_bottom = 19.0
+text = "Winner must meet"
+
+[node name="NumCriteriaRequiredSpinBox" type="SpinBox" parent="NumCriteriaRequiredContainer"]
+margin_left = 125.0
+margin_right = 199.0
+margin_bottom = 24.0
+min_value = 1.0
+max_value = 7.0
+value = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="NumCriteriaRequiredLabel2" type="Label" parent="NumCriteriaRequiredContainer"]
+margin_left = 203.0
+margin_top = 5.0
+margin_right = 394.0
+margin_bottom = 19.0
+text = "of the above selected criteria."
+
+[node name="YearsPassedContainer" type="HBoxContainer" parent="."]
+margin_top = 224.0
+margin_right = 472.0
+margin_bottom = 248.0
+
+[node name="YearsPassedLabel" type="Label" parent="YearsPassedContainer"]
+margin_top = 5.0
+margin_right = 49.0
+margin_bottom = 19.0
+text = "At least"
+
+[node name="YearsPassedSpinBox" type="SpinBox" parent="YearsPassedContainer"]
+margin_left = 53.0
+margin_right = 127.0
+margin_bottom = 24.0
+min_value = 30.0
+max_value = 500.0
+step = 10.0
+value = 50.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="YearsPassedLabel2" type="Label" parent="YearsPassedContainer"]
+margin_left = 131.0
+margin_top = 5.0
+margin_right = 416.0
+margin_bottom = 19.0
+text = "years must pass before a winner is declared."

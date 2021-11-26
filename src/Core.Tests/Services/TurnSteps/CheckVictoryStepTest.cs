@@ -61,19 +61,19 @@ namespace CraigStars.Tests
             player2.Score.Score = 100;
 
             // we must exceed the second player score by 100%
-            game.VictoryConditions.ExceedScore = 100;
+            game.VictoryConditions.ExceedsScore = 100;
 
             // this player owns all planets
             var step = new CheckVictoryStep(gameRunner.GameProvider, planetService);
             step.CheckExceedSecondPlaceScore(player1);
 
-            Assert.IsTrue(player1.AchievedVictoryConditions.Contains(VictoryConditionType.ExceedSecondPlaceScore));
+            Assert.IsTrue(player1.AchievedVictoryConditions.Contains(VictoryConditionType.ExceedsSecondPlaceScore));
 
             // we only exceed the score by 20%
             player1.AchievedVictoryConditions.Clear();
             player1.Score.Score = 120;
             step.CheckExceedSecondPlaceScore(player1);
-            Assert.IsFalse(player1.AchievedVictoryConditions.Contains(VictoryConditionType.ExceedSecondPlaceScore));
+            Assert.IsFalse(player1.AchievedVictoryConditions.Contains(VictoryConditionType.ExceedsSecondPlaceScore));
         }
 
     }

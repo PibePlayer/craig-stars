@@ -32,6 +32,12 @@ namespace CraigStars
         public bool ShowScanners { get; set; } = true;
 
         /// <summary>
+        /// Toggle to show/hide minefields
+        /// </summary>
+        /// <value></value>
+        public bool ShowMineFields { get; set; } = true;
+
+        /// <summary>
         /// Percent to scale scanner range by (useful for determining cloaked ship scan range)
         /// </summary>
         /// <value></value>

@@ -108,6 +108,7 @@ namespace CraigStars.Client
             EventManager.WaypointDeletedEvent += OnWaypointDeleted;
             EventManager.PlanetViewStateUpdatedEvent += OnPlanetViewStateUpdated;
             EventManager.FleetViewStateUpdatedEvent += OnFleetViewStateUpdated;
+            EventManager.ViewStateUpdatedEvent += OnViewStateUpdated;
             EventManager.PacketDestinationToggleEvent += OnPacketDestinationToggle;
             EventManager.GameExitingEvent += OnGameExiting;
         }
@@ -131,6 +132,7 @@ namespace CraigStars.Client
                 EventManager.WaypointDeletedEvent -= OnWaypointDeleted;
                 EventManager.PlanetViewStateUpdatedEvent -= OnPlanetViewStateUpdated;
                 EventManager.FleetViewStateUpdatedEvent -= OnFleetViewStateUpdated;
+                EventManager.ViewStateUpdatedEvent -= OnViewStateUpdated;
                 EventManager.PacketDestinationToggleEvent -= OnPacketDestinationToggle;
                 EventManager.GameExitingEvent -= OnGameExiting;
             }
@@ -254,6 +256,8 @@ namespace CraigStars.Client
             transientMapObjects.AddRange(AddMapObjectsToViewport<MineField, MineFieldSprite>(Me.AllMineFields, mineFieldScene, GetNode("MineFields")));
             transientMapObjects.AddRange(AddMapObjectsToViewport<MineralPacket, MineralPacketSprite>(Me.AllMineralPackets, mineralPacketScene, GetNode("MineralPackets")));
 
+            GetNode<Node2D>("MineFields").Visible = Me.UISettings.ShowMineFields;
+            
             mapObjects.Clear();
             mapObjects.AddRange(Planets);
             mapObjects.AddRange(transientMapObjects);
@@ -581,6 +585,12 @@ namespace CraigStars.Client
         {
             Fleets.ForEach(f => f.UpdateSprite());
             penScannersNode.Visible = normalScannersNode.Visible = Me.UISettings.ShowScanners;
+        }
+
+        void OnViewStateUpdated()
+        {
+            // misc view states, like hiding minefields
+            GetNode<Node2D>("MineFields").Visible = Me.UISettings.ShowMineFields;
         }
 
         void OnMapObjectCommanded(MapObjectSprite mapObject)

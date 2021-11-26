@@ -16,7 +16,8 @@ namespace CraigStars.Client
         ToolButton planetNamesToolButton;
         ToolButton fleetTokenCountsToolButton;
         ToolButton scannerToolButton;
-        // SpinBox scannerSpinBox;
+        ToolButton mineFieldsToolButton;
+        SpinBox scannerSpinBox;
 
         PopupMenu commandsMenu;
         PopupMenu plansMenu;
@@ -50,7 +51,8 @@ namespace CraigStars.Client
             planetNamesToolButton = GetNode<ToolButton>("Panel/HBoxContainerLeft/PlanetNamesToolButton");
             fleetTokenCountsToolButton = GetNode<ToolButton>("Panel/HBoxContainerLeft/FleetTokenCountsToolButton");
             scannerToolButton = GetNode<ToolButton>("Panel/HBoxContainerLeft/ScannerToolButton");
-            // scannerSpinBox = GetNode<SpinBox>("Panel/HBoxContainerLeft/ScannerSpinBox");
+            mineFieldsToolButton = GetNode<ToolButton>("Panel/HBoxContainerLeft/MineFieldsToolButton");
+            scannerSpinBox = GetNode<SpinBox>("Panel/HBoxContainerLeft/ScannerSpinBox");
 
             reportsButton = (Button)FindNode("ReportsButton");
             submitTurnButton = (Button)FindNode("SubmitTurnButton");
@@ -73,7 +75,8 @@ namespace CraigStars.Client
             planetNamesToolButton.Connect("pressed", this, nameof(OnPlanetNamesToolButtonPressed));
             fleetTokenCountsToolButton.Connect("pressed", this, nameof(OnFleetTokenCountsToolButtonPressed));
             scannerToolButton.Connect("toggled", this, nameof(OnScannerToolButtonToggled));
-            // scannerSpinBox.Connect("value_changed", this, nameof(OnScannerSpinBoxValueChanged));
+            mineFieldsToolButton.Connect("toggled", this, nameof(OnMineFieldsToolButtonToggled));
+            scannerSpinBox.Connect("value_changed", this, nameof(OnScannerSpinBoxValueChanged));
 
             reportsButton.Connect("pressed", this, nameof(OnReportsButtonPressed));
             submitTurnButton.Connect("pressed", this, nameof(OnSubmitTurnButtonPressed));
@@ -105,7 +108,8 @@ namespace CraigStars.Client
             planetNamesToolButton.Pressed = Me.UISettings.ShowPlanetNames;
             fleetTokenCountsToolButton.Pressed = Me.UISettings.ShowFleetTokenCounts;
             scannerToolButton.Pressed = Me.UISettings.ShowScanners;
-            // scannerSpinBox.Value = Me.UISettings.ScannerPercent;
+            mineFieldsToolButton.Pressed = Me.UISettings.ShowMineFields;
+            scannerSpinBox.Value = Me.UISettings.ScannerPercent;
         }
 
         void OnMenuItemIdPressed(int id)
@@ -175,13 +179,21 @@ namespace CraigStars.Client
             EventManager.PublishPlanetViewStateUpdatedEvent();
         }
 
-        // void OnScannerSpinBoxValueChanged(float value)
-        // {
-        //     Me.UISettings.ScannerPercent = (int)scannerSpinBox.Value;
-        //     Me.Dirty = true;
-        //     EventManager.PublishPlayerDirtyEvent();
-        //     EventManager.PublishScannerScaleUpdatedEvent();
-        // }
+        void OnMineFieldsToolButtonToggled(bool toggled)
+        {
+            Me.UISettings.ShowMineFields = toggled;
+            Me.Dirty = true;
+            EventManager.PublishPlayerDirtyEvent();
+            EventManager.PublishViewStateUpdatedEvent();
+        }
+
+        void OnScannerSpinBoxValueChanged(float value)
+        {
+            Me.UISettings.ScannerPercent = (int)scannerSpinBox.Value;
+            Me.Dirty = true;
+            EventManager.PublishPlayerDirtyEvent();
+            EventManager.PublishScannerScaleUpdatedEvent();
+        }
 
         void OnReportsButtonPressed()
         {

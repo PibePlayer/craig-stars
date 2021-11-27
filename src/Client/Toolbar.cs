@@ -17,6 +17,7 @@ namespace CraigStars.Client
         ToolButton fleetTokenCountsToolButton;
         ToolButton scannerToolButton;
         ToolButton mineFieldsToolButton;
+        ToolButton idleFleetsToolButton;
         SpinBox scannerSpinBox;
 
         PopupMenu commandsMenu;
@@ -52,6 +53,7 @@ namespace CraigStars.Client
             fleetTokenCountsToolButton = GetNode<ToolButton>("Panel/HBoxContainerLeft/FleetTokenCountsToolButton");
             scannerToolButton = GetNode<ToolButton>("Panel/HBoxContainerLeft/ScannerToolButton");
             mineFieldsToolButton = GetNode<ToolButton>("Panel/HBoxContainerLeft/MineFieldsToolButton");
+            idleFleetsToolButton = GetNode<ToolButton>("Panel/HBoxContainerLeft/IdleFleetsToolButton");
             scannerSpinBox = GetNode<SpinBox>("Panel/HBoxContainerLeft/ScannerSpinBox");
 
             reportsButton = (Button)FindNode("ReportsButton");
@@ -76,6 +78,7 @@ namespace CraigStars.Client
             fleetTokenCountsToolButton.Connect("pressed", this, nameof(OnFleetTokenCountsToolButtonPressed));
             scannerToolButton.Connect("toggled", this, nameof(OnScannerToolButtonToggled));
             mineFieldsToolButton.Connect("toggled", this, nameof(OnMineFieldsToolButtonToggled));
+            idleFleetsToolButton.Connect("toggled", this, nameof(OnIdleFleetsToolButtonToggled));
             scannerSpinBox.Connect("value_changed", this, nameof(OnScannerSpinBoxValueChanged));
 
             reportsButton.Connect("pressed", this, nameof(OnReportsButtonPressed));
@@ -109,6 +112,7 @@ namespace CraigStars.Client
             fleetTokenCountsToolButton.Pressed = Me.UISettings.ShowFleetTokenCounts;
             scannerToolButton.Pressed = Me.UISettings.ShowScanners;
             mineFieldsToolButton.Pressed = Me.UISettings.ShowMineFields;
+            idleFleetsToolButton.Pressed = Me.UISettings.ShowIdleFleetsOnly;
             scannerSpinBox.Value = Me.UISettings.ScannerPercent;
         }
 
@@ -179,6 +183,15 @@ namespace CraigStars.Client
             EventManager.PublishPlanetViewStateUpdatedEvent();
         }
 
+        void OnScannerSpinBoxValueChanged(float value)
+        {
+            Me.UISettings.ScannerPercent = (int)scannerSpinBox.Value;
+            Me.Dirty = true;
+            EventManager.PublishPlayerDirtyEvent();
+            EventManager.PublishScannerScaleUpdatedEvent();
+        }
+
+
         void OnMineFieldsToolButtonToggled(bool toggled)
         {
             Me.UISettings.ShowMineFields = toggled;
@@ -187,12 +200,13 @@ namespace CraigStars.Client
             EventManager.PublishViewStateUpdatedEvent();
         }
 
-        void OnScannerSpinBoxValueChanged(float value)
+        void OnIdleFleetsToolButtonToggled(bool toggled)
         {
-            Me.UISettings.ScannerPercent = (int)scannerSpinBox.Value;
+            Me.UISettings.ShowIdleFleetsOnly = toggled;
             Me.Dirty = true;
             EventManager.PublishPlayerDirtyEvent();
-            EventManager.PublishScannerScaleUpdatedEvent();
+            EventManager.PublishFleetViewStateUpdatedEvent();
+            EventManager.PublishPlanetViewStateUpdatedEvent();
         }
 
         void OnReportsButtonPressed()

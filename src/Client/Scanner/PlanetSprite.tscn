@@ -85,6 +85,7 @@ margin_left = -16.0
 margin_top = -45.0
 margin_right = -16.0
 margin_bottom = -45.0
+mouse_filter = 2
 
 [node name="MineralConcentration" parent="." instance=ExtResource( 8 )]
 visible = false
@@ -92,6 +93,7 @@ margin_left = -16.0
 margin_top = -45.0
 margin_right = -16.0
 margin_bottom = -45.0
+mouse_filter = 2
 Scale = 100
 
 [node name="NameLabel" type="Label" parent="."]

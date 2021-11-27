@@ -51,6 +51,19 @@ namespace CraigStars.Client
 
         public List<FleetSprite> OtherFleets { get; set; } = new List<FleetSprite>();
 
+        /// <summary>
+        /// True if this fleet is currently filtered out and should not be displayed
+        /// around planets 
+        /// </summary>
+        /// <value></value>
+        public bool FilteredOut
+        {
+            get
+            {
+                return Me.UISettings.ShowIdleFleetsOnly && Fleet.Waypoints.Count > 1;
+            }
+        }
+
         CollisionShape2D collisionShape;
         Line2D waypointsLine;
 
@@ -139,7 +152,8 @@ namespace CraigStars.Client
             }
 
             Fleet.Waypoints.Insert(index + 1, waypoint);
-            waypoint.WarpFactor = fleetService.GetBestWarpFactor(Fleet, Me, Fleet.Waypoints[index], waypoint);
+            // TODO: make this better, my fleets keep running out of fuel.
+            // waypoint.WarpFactor = fleetService.GetBestWarpFactor(Fleet, Me, Fleet.Waypoints[index], waypoint);
 
             UpdateWaypointsLine();
 
@@ -173,7 +187,7 @@ namespace CraigStars.Client
 
 
             Fleet.Waypoints.Insert(index + 1, waypoint);
-            waypoint.WarpFactor = fleetService.GetBestWarpFactor(Fleet, Me, Fleet.Waypoints[index], waypoint);
+            // waypoint.WarpFactor = fleetService.GetBestWarpFactor(Fleet, Me, Fleet.Waypoints[index], waypoint);
 
             UpdateWaypointsLine();
 
@@ -219,6 +233,7 @@ namespace CraigStars.Client
             // turn them all off
             stateSprites.ForEach(s => s.Visible = false);
 
+
             // update the waypoints line 
             if (State == ScannerState.Commanded)
             {
@@ -233,11 +248,14 @@ namespace CraigStars.Client
                 waypointsLine.ZIndex = 0;
             }
 
-            countLabel.Visible = Orbiting == null && Me.UISettings.ShowFleetTokenCounts;
+            var filteredOut = FilteredOut;
+            collisionShape.Disabled = filteredOut;
+            waypointsLine.Visible = !filteredOut;
+            countLabel.Visible = Orbiting == null && Me.UISettings.ShowFleetTokenCounts && !filteredOut;
             countLabel.Text = $"{Fleet.Tokens.Sum(token => token.Quantity)}";
 
             // if we are orbiting a planet, don't show any sprites
-            if (Orbiting != null)
+            if (Orbiting != null || filteredOut)
             {
                 Update();
                 return;

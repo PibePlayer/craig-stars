@@ -228,8 +228,9 @@ namespace CraigStars.Client
 
             nameLabel.Text = Planet.Name;
             nameLabel.Visible = Me.UISettings.ShowPlanetNames;
-            countLabel.Visible = Planet.OrbitingFleets.Count > 0 && Me.UISettings.ShowFleetTokenCounts;
-            countLabel.Text = $"{Planet.OrbitingFleets.Sum(fleet => fleet.Tokens.Sum(token => token.Quantity))}";
+            var filteredOrbitingFleets = OrbitingFleets.Where(fleet => !fleet.FilteredOut).ToList();
+            countLabel.Visible = filteredOrbitingFleets.Count > 0 && Me.UISettings.ShowFleetTokenCounts;
+            countLabel.Text = $"{filteredOrbitingFleets.Sum(fleet => fleet.Fleet.Tokens.Sum(token => token.Quantity))}";
 
             ownerAllyState = Planet.ReportAge == MapObject.Unexplored ? ScannerOwnerAlly.Unknown : ScannerOwnerAlly.Known;
             orbitingState = Orbiting.None;
@@ -247,8 +248,7 @@ namespace CraigStars.Client
                 packetTargetLine.Points = new Vector2[] { Position };
             }
 
-            // TODO: make this work with multiple types
-            if (Planet.OrbitingFleets.Count > 0)
+            if (filteredOrbitingFleets.Count > 0)
             {
                 bool allAllies = true;
                 bool allEnemies = true;

@@ -32,7 +32,7 @@ namespace CraigStars.Client
 
         public void InitPlayersForSinglePlayerGame()
         {
-            Players = PlayersManager.CreatePlayersForNewGame(2);
+            Players = PlayersManager.CreatePlayersForNewGame(3);
             Players[0].Name = Settings.Instance.PlayerName;
 
             Players.ForEach(player =>

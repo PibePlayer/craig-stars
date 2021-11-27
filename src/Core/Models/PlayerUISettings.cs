@@ -38,6 +38,12 @@ namespace CraigStars
         public bool ShowMineFields { get; set; } = true;
 
         /// <summary>
+        /// Toggle to show only idle fleets
+        /// </summary>
+        /// <value></value>
+        public bool ShowIdleFleetsOnly { get; set; } = false;
+
+        /// <summary>
         /// Percent to scale scanner range by (useful for determining cloaked ship scan range)
         /// </summary>
         /// <value></value>

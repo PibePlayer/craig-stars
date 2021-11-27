@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://src/Client/Toolbar.cs" type="Script" id=1]
 [ext_resource path="res://assets/scanner/planet-commanded.png" type="Texture" id=2]
@@ -7,6 +7,7 @@
 [ext_resource path="res://assets/gui/icons/MineralViewState.png" type="Texture" id=5]
 [ext_resource path="res://assets/gui/icons/NormalViewState.png" type="Texture" id=6]
 [ext_resource path="res://assets/gui/icons/MineFields.png" type="Texture" id=7]
+[ext_resource path="res://assets/gui/icons/IdleFleets.png" type="Texture" id=8]
 
 [sub_resource type="ButtonGroup" id=1]
 
@@ -248,6 +249,7 @@ __meta__ = {
 margin_top = 8.0
 margin_right = 40.0
 margin_bottom = 40.0
+hint_tooltip = "Show ship counts"
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -301,6 +303,7 @@ margin_top = 4.0
 margin_right = 36.0
 margin_bottom = 36.0
 rect_min_size = Vector2( 32, 32 )
+hint_tooltip = "Show/Hide Scanners"
 texture = ExtResource( 3 )
 expand = true
 stretch_mode = 1
@@ -341,11 +344,25 @@ margin_top = 4.0
 margin_right = 36.0
 margin_bottom = 36.0
 rect_min_size = Vector2( 32, 32 )
+hint_tooltip = "Show/Hide Mine Fields"
 texture = ExtResource( 7 )
 expand = true
 stretch_mode = 1
 __meta__ = {
 "_edit_use_anchors_": false
+}
+
+[node name="IdleFleetsToolButton" type="ToolButton" parent="Panel/HBoxContainerLeft"]
+margin_left = 474.0
+margin_right = 518.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 40, 40 )
+hint_tooltip = "Show Only Idle Fleets"
+toggle_mode = true
+icon = ExtResource( 8 )
+flat = false
+__meta__ = {
+"_editor_description_": "Normal View"
 }
 
 [node name="HBoxContainerRight" type="HBoxContainer" parent="Panel"]

@@ -195,7 +195,7 @@ namespace CraigStars
         public TechHullComponent GetBestMineRobot(Player player)
         {
             var techs = TechStore.GetTechsByCategory(TechCategory.MineRobot)
-                .Where(t => t is TechHullComponent hc && HasTech(player, hc) && hc.TerraformRate != 0)
+                .Where(t => t is TechHullComponent hc && HasTech(player, hc) && hc.MiningRate != 0)
                 .OrderByDescending(t => t.Ranking);
 
 

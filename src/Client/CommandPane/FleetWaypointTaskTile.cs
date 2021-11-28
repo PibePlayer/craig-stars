@@ -35,6 +35,8 @@ namespace CraigStars.Client
         TransportPlanDetail transportPlanDetail;
 
         RemoteMiningWaypointTaskContainer remoteMiningWaypointTaskContainer;
+        PatrolWaypointTaskContainer patrolWaypointTaskContainer;
+        TransferFleetWaypointTaskContainer transferFleetWaypointTaskContainer;
 
         Control layMineFieldWaypointTaksContainer;
         OptionButton layMineFieldDurationOptionButton;
@@ -67,7 +69,9 @@ namespace CraigStars.Client
             transportPlanDetail = (TransportPlanDetail)FindNode("TransportPlanDetail");
             transportPlanDetail.ShowName = false;
 
-            remoteMiningWaypointTaskContainer = (RemoteMiningWaypointTaskContainer)FindNode("RemoteMiningWaypointTaskContainer");
+            remoteMiningWaypointTaskContainer = GetNode<RemoteMiningWaypointTaskContainer>("VBoxContainer/Controls/RemoteMiningWaypointTaskContainer");
+            patrolWaypointTaskContainer = GetNode<PatrolWaypointTaskContainer>("VBoxContainer/Controls/PatrolWaypointTaskContainer");
+            transferFleetWaypointTaskContainer = GetNode<TransferFleetWaypointTaskContainer>("VBoxContainer/Controls/TransferFleetWaypointTaskContainer");
 
             layMineFieldWaypointTaksContainer = GetNode<Control>("VBoxContainer/Controls/LayMineFieldWaypointTaskContainer");
             layMineFieldDurationOptionButton = GetNode<OptionButton>("VBoxContainer/Controls/LayMineFieldWaypointTaskContainer/LayMineFieldDurationOptionButton");
@@ -165,6 +169,8 @@ namespace CraigStars.Client
                 transportContainer.Visible = false;
                 remoteMiningWaypointTaskContainer.Visible = false;
                 layMineFieldWaypointTaksContainer.Visible = false;
+                patrolWaypointTaskContainer.Visible = false;
+                transferFleetWaypointTaskContainer.Visible = false;
 
                 if (waypointTask != null && wp != null)
                 {
@@ -210,6 +216,16 @@ namespace CraigStars.Client
                             minesLaid += entry.Value;
                         }
                         minesLaidPerYearLabel.Text = $"This fleet can lay {minesLaid} mines per year";
+                    }
+                    else if (wp.Task == WaypointTask.Patrol)
+                    {
+                        patrolWaypointTaskContainer.Visible = true;
+                        patrolWaypointTaskContainer.Waypoint = wp;
+                    }
+                    else if (wp.Task == WaypointTask.TransferFleet)
+                    {
+                        transferFleetWaypointTaskContainer.Visible = true;
+                        transferFleetWaypointTaskContainer.Waypoint = wp;
                     }
                 }
 

@@ -47,6 +47,9 @@ namespace CraigStars
         [Export]
         public Color BaseColorOverride { get; set; } = Colors.Fuchsia;
 
+        [Export]
+        public string StoppedText { get; set; } = "Stopped!";
+
         Panel panel;
         Label label;
         StyleBoxFlat panelStyleBox;
@@ -118,9 +121,9 @@ namespace CraigStars
                 }
                 else if (WarpSpeed == 0)
                 {
-                    label.Text = $"Stopped!";
+                    label.Text = StoppedText;
                 }
-                
+
                 if (WarpSpeed == StargateWarpFactor && HasStargate)
                 {
                     label.Text = $"Use Stargate";
@@ -130,11 +133,15 @@ namespace CraigStars
                 // get the width of our rectangle
                 // it's a percentage of the speed, minus the line widths
                 float width = panel.RectSize.x * ((float)WarpSpeed / (float)MaxWarpFactor);
-                DrawRect(new Rect2(
-                    new Vector2(panel.RectPosition.x + borderWidth / 2, panel.RectPosition.y + borderHeight / 2),
-                    new Vector2(width - borderWidth, panel.RectSize.y - (borderHeight))),
-                    color
-                );
+                if (width > 0)
+                {
+
+                    DrawRect(new Rect2(
+                        new Vector2(panel.RectPosition.x + borderWidth / 2, panel.RectPosition.y + borderHeight / 2),
+                        new Vector2(width - borderWidth, panel.RectSize.y - (borderHeight))),
+                        color
+                    );
+                }
             }
             else
             {

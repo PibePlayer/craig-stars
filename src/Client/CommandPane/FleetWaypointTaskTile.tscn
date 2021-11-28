@@ -1,10 +1,12 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://src/Client/CommandPane/Tile.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/Client/CommandPane/FleetWaypointTaskTile.cs" type="Script" id=2]
 [ext_resource path="res://assets/gui/icons/Close.svg" type="Texture" id=3]
 [ext_resource path="res://src/Client/Dialogs/TransportPlans/TransportPlanDetail.tscn" type="PackedScene" id=4]
 [ext_resource path="res://src/Client/CommandPane/RemoteMiningWaypointTaskContainer.tscn" type="PackedScene" id=5]
+[ext_resource path="res://src/Client/CommandPane/PatrolWaypointTaskContainer.tscn" type="PackedScene" id=6]
+[ext_resource path="res://src/Client/CommandPane/TransferFleetWaypointTaskContainer.tscn" type="PackedScene" id=7]
 
 [node name="FleetWaypointTaskTile" instance=ExtResource( 1 )]
 script = ExtResource( 2 )
@@ -163,7 +165,30 @@ text = "Edit"
 [node name="RemoteMiningWaypointTaskContainer" parent="VBoxContainer/Controls" index="2" instance=ExtResource( 5 )]
 visible = false
 
-[node name="TransportPlanEditPopupPanel" type="PopupPanel" parent="VBoxContainer/Controls" index="3"]
+[node name="LayMineFieldWaypointTaskContainer" type="VBoxContainer" parent="VBoxContainer/Controls" index="3"]
+visible = false
+margin_top = 24.0
+margin_right = 180.0
+margin_bottom = 79.0
+
+[node name="LayMineFieldDurationOptionButton" type="OptionButton" parent="VBoxContainer/Controls/LayMineFieldWaypointTaskContainer" index="0"]
+margin_right = 180.0
+margin_bottom = 20.0
+
+[node name="MinesLaidPerYearLabel" type="Label" parent="VBoxContainer/Controls/LayMineFieldWaypointTaskContainer" index="1"]
+self_modulate = Color( 1, 0, 0, 1 )
+margin_top = 24.0
+margin_right = 180.0
+margin_bottom = 55.0
+text = "This fleet can lay 320 mines per year"
+autowrap = true
+
+[node name="PatrolWaypointTaskContainer" parent="VBoxContainer/Controls" index="4" instance=ExtResource( 6 )]
+
+[node name="TransferFleetWaypointTaskContainer" parent="VBoxContainer/Controls" index="5" instance=ExtResource( 7 )]
+visible = false
+
+[node name="TransportPlanEditPopupPanel" type="PopupPanel" parent="VBoxContainer/Controls" index="6"]
 margin_top = -18.0
 margin_right = 358.0
 margin_bottom = 178.0
@@ -186,21 +211,3 @@ margin_top = 168.0
 margin_right = 271.0
 margin_bottom = 188.0
 text = "OK"
-
-[node name="LayMineFieldWaypointTaskContainer" type="VBoxContainer" parent="VBoxContainer/Controls" index="4"]
-visible = false
-margin_top = 24.0
-margin_right = 180.0
-margin_bottom = 79.0
-
-[node name="LayMineFieldDurationOptionButton" type="OptionButton" parent="VBoxContainer/Controls/LayMineFieldWaypointTaskContainer" index="0"]
-margin_right = 180.0
-margin_bottom = 20.0
-
-[node name="MinesLaidPerYearLabel" type="Label" parent="VBoxContainer/Controls/LayMineFieldWaypointTaskContainer" index="1"]
-self_modulate = Color( 1, 0, 0, 1 )
-margin_top = 24.0
-margin_right = 180.0
-margin_bottom = 55.0
-text = "This fleet can lay 320 mines per year"
-autowrap = true

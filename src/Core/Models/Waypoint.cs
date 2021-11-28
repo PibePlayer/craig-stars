@@ -10,6 +10,8 @@ namespace CraigStars
     {
         public const int StargateWarpFactor = 11;
         public const int Indefinite = -1;
+        public const int PatrolWarpFactorAutomatic = -1;
+        public const int PatrolRangeInfinite = -1;
 
         [JsonProperty(IsReference = true)]
         public MapObject Target
@@ -50,14 +52,48 @@ namespace CraigStars
 
         public WaypointTransportTasks TransportTasks { get; set; }
 
+        /// <summary>
+        /// The duration, in years, to lay mines before moving on to the next waypoint
+        /// </summary>
+        /// <value></value>
         [DefaultValue(Indefinite)]
         public int LayMineFieldDuration { get; set; } = Indefinite;
+
+        /// <summary>
+        /// The range, in light years, to intercept ships
+        /// </summary>
+        /// <value></value>
+        [DefaultValue(50)]
+        public int PatrolRange { get; set; } = 50;
+
+        /// <summary>
+        /// The warp factor to use when intercepting ships
+        /// </summary>
+        /// <value></value>
+        [DefaultValue(PatrolWarpFactorAutomatic)]
+        public int PatrolWarpFactor { get; set; } = PatrolWarpFactorAutomatic;
+
+        /// <summary>
+        /// The player number to transfer this fleet to
+        /// </summary>
+        /// <value></value>
+        public int TransferToPlayer { get; set; }
 
         public bool TaskComplete { get; set; }
 
         public Waypoint() { }
 
-        public Waypoint(MapObject target, Vector2 position, int warpFactor = 5, WaypointTask task = WaypointTask.None, WaypointTransportTasks transportTasks = new WaypointTransportTasks(), int layMineFieldDuration = Indefinite)
+        public Waypoint(
+            MapObject target,
+            Vector2 position,
+            int warpFactor = 5,
+            WaypointTask task = WaypointTask.None,
+            WaypointTransportTasks transportTasks = new WaypointTransportTasks(),
+            int layMineFieldDuration = Indefinite,
+            int patrolRange = 50,
+            int patrolWarpFactor = PatrolWarpFactorAutomatic,
+            int transferToPlayer = -1
+            )
         {
             this.target = target;
             if (target != null)
@@ -72,6 +108,9 @@ namespace CraigStars
             }
             TransportTasks = transportTasks;
             LayMineFieldDuration = layMineFieldDuration;
+            PatrolRange = patrolRange;
+            PatrolWarpFactor = patrolWarpFactor;
+            TransferToPlayer = transferToPlayer;
             WarpFactor = warpFactor;
             Task = task;
         }
@@ -88,18 +127,40 @@ namespace CraigStars
                 Position = Position,
                 WarpFactor = WarpFactor,
                 Task = Task,
-                TransportTasks = TransportTasks
+                TransportTasks = TransportTasks,
+                LayMineFieldDuration = LayMineFieldDuration,
+                PatrolRange = PatrolRange,
+                PatrolWarpFactor = PatrolWarpFactor,
+                TransferToPlayer = TransferToPlayer,
             };
         }
 
-        public static Waypoint TargetWaypoint(MapObject target, int warpFactor = 5, WaypointTask task = WaypointTask.None, WaypointTransportTasks? transportTasks = null, int layMineFieldDuration = Indefinite)
+        public static Waypoint TargetWaypoint(
+            MapObject target,
+            int warpFactor = 5,
+            WaypointTask task = WaypointTask.None,
+            WaypointTransportTasks? transportTasks = null,
+            int layMineFieldDuration = Indefinite,
+            int patrolRange = 50,
+            int patrolWarpFactor = PatrolWarpFactorAutomatic,
+            int transferToPlayer = -1
+            )
         {
-            return new Waypoint(target, Vector2.Zero, warpFactor, task, transportTasks == null ? new WaypointTransportTasks() : transportTasks.Value);
+            return new Waypoint(target, Vector2.Zero, warpFactor, task, transportTasks == null ? new WaypointTransportTasks() : transportTasks.Value, layMineFieldDuration, patrolRange, patrolWarpFactor, transferToPlayer);
         }
 
-        public static Waypoint PositionWaypoint(Vector2 position, int warpFactor = 5, WaypointTask task = WaypointTask.None, WaypointTransportTasks? transportTasks = null, int layMineFieldDuration = Indefinite)
+        public static Waypoint PositionWaypoint(
+            Vector2 position,
+            int warpFactor = 5,
+            WaypointTask task = WaypointTask.None,
+            WaypointTransportTasks? transportTasks = null,
+            int layMineFieldDuration = Indefinite,
+            int patrolRange = 50,
+            int patrolWarpFactor = PatrolWarpFactorAutomatic,
+            int transferToPlayer = -1
+        )
         {
-            return new Waypoint(null, position, warpFactor, task, transportTasks == null ? new WaypointTransportTasks() : transportTasks.Value);
+            return new Waypoint(null, position, warpFactor, task, transportTasks == null ? new WaypointTransportTasks() : transportTasks.Value, layMineFieldDuration, patrolRange, patrolWarpFactor, transferToPlayer);
         }
 
         /// <summary>

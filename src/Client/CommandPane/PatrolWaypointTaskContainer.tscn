@@ -1,0 +1,47 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://src/Client/CommandPane/WarpFactor.tscn" type="PackedScene" id=1]
+[ext_resource path="res://src/Client/CommandPane/PatrolWaypointTaskContainer.cs" type="Script" id=2]
+
+[node name="PatrolWaypointTaskContainer" type="VBoxContainer"]
+visible = false
+margin_top = 24.0
+margin_right = 184.0
+margin_bottom = 68.0
+script = ExtResource( 2 )
+
+[node name="GridContainer" type="GridContainer" parent="."]
+margin_right = 184.0
+margin_bottom = 44.0
+columns = 2
+
+[node name="PatrolRangeLabel" type="Label" parent="GridContainer"]
+margin_top = 3.0
+margin_right = 80.0
+margin_bottom = 17.0
+text = "Intercept:"
+align = 2
+
+[node name="PatrolRangeOptionButton" type="OptionButton" parent="GridContainer"]
+margin_left = 84.0
+margin_right = 184.0
+margin_bottom = 20.0
+size_flags_horizontal = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PatrolWarpFactorLabel" type="Label" parent="GridContainer"]
+margin_top = 27.0
+margin_right = 80.0
+margin_bottom = 41.0
+text = "Warp Factor:"
+align = 2
+
+[node name="PatrolWarpFactor" parent="GridContainer" instance=ExtResource( 1 )]
+margin_left = 84.0
+margin_top = 24.0
+margin_right = 184.0
+margin_bottom = 44.0
+WarpSpeed = 0
+StoppedText = "Automatic"

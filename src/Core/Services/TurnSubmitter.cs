@@ -135,7 +135,7 @@ namespace CraigStars
                                 {
                                     log.Debug($"{game.Year}: Adding player defined waypoint for {fleet.Name} to {playerWaypoint.TargetName} -> Task: {playerWaypoint.Task}");
                                     // add the server side version of this planet as a waypoint
-                                    fleet.Waypoints.Add(Waypoint.TargetWaypoint(gameMapObject, playerWaypoint.WarpFactor, playerWaypoint.Task, playerWaypoint.TransportTasks));
+                                    fleet.Waypoints.Add(Waypoint.TargetWaypoint(gameMapObject, playerWaypoint.WarpFactor, playerWaypoint.Task, playerWaypoint.TransportTasks, playerWaypoint.LayMineFieldDuration, playerWaypoint.PatrolRange, playerWaypoint.PatrolWarpFactor, playerWaypoint.TransferToPlayer));
                                 }
                                 else
                                 {

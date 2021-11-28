@@ -118,7 +118,7 @@ namespace CraigStars.Singletons
                 raceFile.Open(path, File.ModeFlags.Write);
                 try
                 {
-                    log.Debug($"Saving Race: PRT: ${race.PRT}, {json}");
+                    log.Debug($"Saving Race: PRT: {race.PRT}, {json}");
                     raceFile.StoreString(json);
                     Client.EventManager.PublishRaceSavedEvent(race, filename);
                 }

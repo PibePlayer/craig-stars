@@ -30,6 +30,7 @@ namespace CraigStars.Singletons
         public event Action<PublicPlayerInfo> PlayerDataRequestedEvent;
         public event Action<Player> SubmitTurnRequestedEvent;
         public event Action<PublicPlayerInfo> UnsubmitTurnRequestedEvent;
+        public event Action<PublicGameInfo, Player> GenerateTurnRequestedEvent;
 
         public event Action<Player, Race> RaceUpdatedEvent;
         public event Action AddAIPlayerEvent;
@@ -297,8 +298,41 @@ namespace CraigStars.Singletons
             {
                 log.Error($"Player for token: {token} not found");
             }
-
         }
+
+        /// <summary>
+        /// This is called by clients to unsubmit turns to the server
+        /// </summary>
+        /// <param name="player">The player (probably PlayersManager.Me) submitting the turn</param>
+        public void SendUnsubmitTurn(PublicGameInfo gameInfo, Player player)
+        {
+            var settings = Serializers.CreatePlayerSettings(TechStore.Instance);
+            log.Info($"Client: Unsubmitting turn to server");
+            var playerJson = Serializers.Serialize(player, settings);
+            RpcId(1, nameof(TurnUnsubmitRequested), player.Token, Serializers.Serialize(gameInfo), playerJson);
+        }
+
+        [Remote]
+        void TurnUnsubmitRequested(string token, string gameInfoJson, string playerJson)
+        {
+            // find the network player by this number
+            var gameInfo = Serializers.DeserializeObject<PublicGameInfo>(gameInfoJson);
+            var player = Players.Find(player => player.Token == token);
+            if (player != null)
+            {
+                // load the actual player from JSON
+                log.Info($"Server: {player} unsubmitted turn");
+                player = Serializers.DeserializeObject<Player>(playerJson, Serializers.CreatePlayerSettings(TechStore.Instance));
+
+                // submit this player's turn to the server
+                UnsubmitTurnRequestedEvent?.Invoke(player);
+            }
+            else
+            {
+                log.Error($"Player for token: {token} not found");
+            }
+        }
+
 
         /// <summary>
         /// This is called by clients to submit turns to the server
@@ -334,5 +368,43 @@ namespace CraigStars.Singletons
 
         }
 
+        /// <summary>
+        /// This is called by clients to submit turns to the server
+        /// </summary>
+        /// <param name="player">The player (probably PlayersManager.Me) submitting the turn</param>
+        public void SendGenerateTurn(PublicGameInfo gameInfo, Player player)
+        {
+            log.Info($"Client: Sending Generate Turn to server");
+            var playerJson = Serializers.Serialize(player);
+            RpcId(1, nameof(GenerateTurnRequested), player.Token, Serializers.Serialize(gameInfo));
+        }
+
+        [Remote]
+        void GenerateTurnRequested(string token, string gameInfoJson)
+        {
+            // find the network player by this number
+            var gameInfo = Serializers.DeserializeObject<PublicGameInfo>(gameInfoJson);
+            var player = Players.Find(player => player.Token == token);
+            if (player != null)
+            {
+                if (player.Host)
+                {
+                    // load the actual player from JSON
+                    log.Info($"Server: {player} forcing turn generation");
+
+                    // submit this player's turn to the server
+                    GenerateTurnRequestedEvent?.Invoke(gameInfo, player);
+                }
+                else
+                {
+                    log.Warn($"{player} tried to force generate turn, but was not the host.");
+                }
+            }
+            else
+            {
+                log.Error($"Player for token: {token} not found");
+            }
+
+        }
     }
 }

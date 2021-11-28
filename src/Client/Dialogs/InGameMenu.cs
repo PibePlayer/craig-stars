@@ -117,7 +117,7 @@ namespace CraigStars.Client
                 CSConfirmDialog.Show("Some players have not submitted their turns, are you sure you want to force turn generation?",
                 () =>
                 {
-                    // EventManager.PublishGenerateTurnEvent();
+                    EventManager.PublishGenerateTurnRequestedEvent(GameInfo);
                 });
             }
         }

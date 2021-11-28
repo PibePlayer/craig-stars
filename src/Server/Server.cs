@@ -65,6 +65,7 @@ namespace CraigStars.Server
             clientEventPublisher.ContinueGameRequestedEvent += OnContinueGameRequested;
             clientEventPublisher.SubmitTurnRequestedEvent += OnSubmitTurnRequested;
             clientEventPublisher.UnsubmitTurnRequestedEvent += OnUnsubmitTurnRequested;
+            clientEventPublisher.GenerateTurnRequestedEvent += OnGenerateTurnRequested;
 
         }
 
@@ -86,6 +87,7 @@ namespace CraigStars.Server
                 clientEventPublisher.ContinueGameRequestedEvent -= OnContinueGameRequested;
                 clientEventPublisher.SubmitTurnRequestedEvent -= OnSubmitTurnRequested;
                 clientEventPublisher.UnsubmitTurnRequestedEvent -= OnUnsubmitTurnRequested;
+                clientEventPublisher.GenerateTurnRequestedEvent -= OnGenerateTurnRequested;
             }
         }
 
@@ -224,9 +226,6 @@ namespace CraigStars.Server
 
                     if (Game.AllPlayersSubmitted())
                     {
-                        Game.GameInfo.State = GameState.GeneratingTurn;
-                        await GodotTaskFactory.StartNew(() => PublishTurnGeneratingEvent());
-
                         // once everyone is submitted, generate a new turn
                         GenerateNewTurn();
                     }
@@ -268,11 +267,24 @@ namespace CraigStars.Server
         #region Turn Generation
 
         /// <summary>
+        /// The host can force generate a turn
+        /// </summary>
+        /// <param name="gameInfo"></param>
+        /// <param name="player"></param>
+        void OnGenerateTurnRequested(PublicGameInfo gameInfo, Player player)
+        {
+            GenerateNewTurn();
+        }
+
+        /// <summary>
         /// Generate a new turn
         /// </summary>
         /// <returns></returns>
         public async void GenerateNewTurn()
         {
+            Game.GameInfo.State = GameState.GeneratingTurn;
+            await GodotTaskFactory.StartNew(() => PublishTurnGeneratingEvent());
+
             GameRunner.TurnGeneratorAdvancedEvent += OnTurnGeneratorAdvanced;
 
             await Task.Run(() =>

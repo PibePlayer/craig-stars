@@ -54,6 +54,8 @@ namespace CraigStars.Client
             EventManager.GameStartedEvent += OnGameStarted;
             EventManager.GameContinuedEvent += OnGameContinued;
             EventManager.SubmitTurnRequestedEvent += OnSubmitTurnRequested;
+            EventManager.UnsubmitTurnRequestedEvent += OnUnsubmitTurnRequested;
+            EventManager.GenerateTurnRequestedEvent += OnGenerateTurnRequested;
             EventManager.PlayTurnRequestedEvent += OnPlayTurnRequested;
             EventManager.PlayerDataEvent += OnPlayerData;
             EventManager.TurnSubmittedEvent += OnTurnSubmitted;
@@ -100,7 +102,9 @@ namespace CraigStars.Client
             {
                 EventManager.GameStartedEvent -= OnGameStarted;
                 EventManager.SubmitTurnRequestedEvent -= OnSubmitTurnRequested;
+                EventManager.UnsubmitTurnRequestedEvent -= OnUnsubmitTurnRequested;
                 EventManager.PlayTurnRequestedEvent -= OnPlayTurnRequested;
+                EventManager.GenerateTurnRequestedEvent -= OnGenerateTurnRequested;
                 EventManager.PlayerDataEvent -= OnPlayerData;
                 EventManager.TurnSubmittedEvent -= OnTurnSubmitted;
                 EventManager.TurnUnsubmittedEvent -= OnTurnUnsubmitted;
@@ -225,6 +229,26 @@ namespace CraigStars.Client
             }
         }
 
+        void OnUnsubmitTurnRequested(PublicPlayerInfo player)
+        {
+            var gameInfo = PlayersManager.GameInfo;
+            player.SubmittedTurn = true;
+            if (this.IsMultiplayer())
+            {
+                // make sure we are unsubmitting ourself
+                var localPlayer = LocalPlayers.Find(p => p.Num == player.Num);
+                if (localPlayer != null)
+                {
+                    // unsubmit our turn to the server
+                    NetworkClient.Instance.UnsubmitTurnToServer(PlayersManager.GameInfo, localPlayer);
+                }
+                else
+                {
+                    log.Error($"Cannot unsubmit {player}, they are not a LocalPlayer.");
+                }
+            }
+        }
+
         async void OnTurnSubmitted(PublicGameInfo gameInfo, PublicPlayerInfo player)
         {
             PlayersManager.GameInfo = GameInfo = gameInfo;
@@ -278,8 +302,28 @@ namespace CraigStars.Client
             }
         }
 
+        void OnGenerateTurnRequested(PublicGameInfo gameInfo)
+        {
+            if (this.IsMultiplayer())
+            {
+                // make sure we are unsubmitting ourself
+                var localPlayer = LocalPlayers.FirstOrDefault();
+                if (localPlayer != null && localPlayer.Host)
+                {
+                    // unsubmit our turn to the server
+                    NetworkClient.Instance.GenerateTurn(PlayersManager.GameInfo, localPlayer);
+                }
+                else
+                {
+                    log.Error($"Cannot force generate turn, we are not the host.");
+                }
+            }
+        }
+
         void OnTurnGenerating()
         {
+            PlayersManager.Me = null;
+            
             // we just submitted our turn, remove the game view and show this container
             RemoveGameViewAndShowTurnGeneration();
 

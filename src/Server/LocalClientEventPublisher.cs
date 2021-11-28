@@ -15,6 +15,7 @@ namespace CraigStars.Server
         public event Action<Player> SubmitTurnRequestedEvent;
         public event Action<PublicPlayerInfo> UnsubmitTurnRequestedEvent;
         public event Action<PublicPlayerInfo> PlayerDataRequestedEvent;
+        public event Action<PublicGameInfo, Player> GenerateTurnRequestedEvent;
 
         public LocalClientEventPublisher()
         {
@@ -23,8 +24,8 @@ namespace CraigStars.Server
             Client.EventManager.SubmitTurnRequestedEvent += OnSubmitTurnRequested;
             Client.EventManager.UnsubmitTurnRequestedEvent += OnUnsubmitTurnRequested;
             Client.EventManager.PlayerDataRequestedEvent += OnPlayerDataRequested;
+            Client.EventManager.GenerateTurnRequestedEvent += OnGenerateTurnRequested;
         }
-
 
         ~LocalClientEventPublisher()
         {
@@ -33,6 +34,7 @@ namespace CraigStars.Server
             Client.EventManager.SubmitTurnRequestedEvent -= OnSubmitTurnRequested;
             Client.EventManager.UnsubmitTurnRequestedEvent -= OnUnsubmitTurnRequested;
             Client.EventManager.PlayerDataRequestedEvent -= OnPlayerDataRequested;
+            Client.EventManager.GenerateTurnRequestedEvent -= OnGenerateTurnRequested;
         }
 
         void OnStartNewGameRequested(GameSettings<Player> settings)
@@ -59,5 +61,11 @@ namespace CraigStars.Server
         {
             UnsubmitTurnRequestedEvent?.Invoke(player);
         }
+
+        void OnGenerateTurnRequested(PublicGameInfo gameInfo)
+        {
+            GenerateTurnRequestedEvent?.Invoke(gameInfo, null);
+        }
+
     }
 }

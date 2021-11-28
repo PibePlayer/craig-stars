@@ -189,6 +189,16 @@ namespace CraigStars.Client
         }
 
         /// <summary>
+        /// Unsubmit a turn to the server
+        /// </summary>
+        /// <param name="player"></param>
+        public void UnsubmitTurnToServer(PublicGameInfo gameInfo, Player player)
+        {
+            // tell the server we submitted our turn
+            rpc.SendUnsubmitTurn(gameInfo, player);
+        }
+
+        /// <summary>
         /// Submit a race to the server
         /// </summary>
         /// <param name="player"></param>
@@ -216,6 +226,16 @@ namespace CraigStars.Client
         {
             // tell the server we submitted our turn
             rpc.SendKickPlayer(playerNum);
+        }
+
+        /// <summary>
+        /// Submit a turn to the server
+        /// </summary>
+        /// <param name="player"></param>
+        public void GenerateTurn(PublicGameInfo gameInfo, Player player)
+        {
+            // tell the server we submitted our turn
+            rpc.SendGenerateTurn(gameInfo, player);
         }
 
     }

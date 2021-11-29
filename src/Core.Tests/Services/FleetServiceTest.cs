@@ -30,7 +30,6 @@ namespace CraigStars.Tests
             {
                 Id = 1,
                 BaseName = "Long Range Scout",
-                Name = "Long Range Scout #1",
                 PlayerNum = player.Num,
                 Tokens = new List<ShipToken>() {
                   new ShipToken(design, 3)

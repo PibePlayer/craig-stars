@@ -74,7 +74,6 @@ namespace CraigStars.UniverseGeneration
                 Id = id
             };
             fleet.BaseName = $"{playerDesign.Name}";
-            fleet.Name = $"{fleet.BaseName} #{fleet.Id}";
             fleet.BattlePlan = player.BattlePlans[0];
             player.Stats.NumFleetsBuilt++;
             fleet.Tokens.Add(

@@ -93,6 +93,7 @@ namespace CraigStars
                 log.Debug($"{game.Year}: Updating Fleet Actions for {playerFleet.PlayerNum} - {playerFleet.Name}");
                 if (game.FleetsByGuid.TryGetValue(playerFleet.Guid, out var fleet) && fleet.PlayerNum == player.Num)
                 {
+                    fleet.BaseName = playerFleet.BaseName;
                     fleet.BattlePlan = playerFleet.BattlePlan.Clone();
                     fleet.RepeatOrders = playerFleet.RepeatOrders;
                     // Keep waypoint 0 so the client can't move the fleet

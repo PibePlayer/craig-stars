@@ -23,7 +23,16 @@ namespace CraigStars
         /// This is the base name without the id number
         /// </summary>
         /// <value></value>
-        public string BaseName { get; set; }
+        public string BaseName
+        {
+            get => baseName;
+            set
+            {
+                baseName = value;
+                Name = $"{baseName} #{Id}";
+            }
+        }
+        string baseName;
 
         #region Stats
 

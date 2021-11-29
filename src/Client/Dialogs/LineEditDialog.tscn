@@ -1,0 +1,36 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://src/Client/Dialogs/LineEditDialog.cs" type="Script" id=1]
+[ext_resource path="res://src/Client/Dialogs/GameViewDialog.tscn" type="PackedScene" id=2]
+
+[node name="LineEditDialog" instance=ExtResource( 2 )]
+margin_right = 384.0
+margin_bottom = 62.0
+window_title = "Rename Fleet"
+script = ExtResource( 1 )
+
+[node name="VBoxContainer" parent="MarginContainer" index="0"]
+margin_right = 374.0
+margin_bottom = 57.0
+
+[node name="ContentContainer" parent="MarginContainer/VBoxContainer" index="0"]
+margin_right = 364.0
+margin_bottom = 28.0
+
+[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/ContentContainer" index="0"]
+margin_right = 364.0
+margin_bottom = 24.0
+size_flags_vertical = 0
+
+[node name="HBoxContainerButtons" parent="MarginContainer/VBoxContainer" index="1"]
+margin_top = 32.0
+margin_right = 364.0
+margin_bottom = 52.0
+
+[node name="HBoxContainerOKButton" parent="MarginContainer/VBoxContainer/HBoxContainerButtons" index="0"]
+margin_right = 364.0
+
+[node name="OKButton" parent="MarginContainer/VBoxContainer/HBoxContainerButtons/HBoxContainerOKButton" index="0"]
+margin_left = 274.0
+margin_right = 364.0
+rect_min_size = Vector2( 90, 0 )

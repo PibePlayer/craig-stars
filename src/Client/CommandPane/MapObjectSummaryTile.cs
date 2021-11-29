@@ -10,7 +10,8 @@ namespace CraigStars.Client
     {
         public MapObjectSprite CommandedMapObject
         {
-            get => mapObject; set
+            get => mapObject;
+            set
             {
                 mapObject = value;
                 UpdateControls();
@@ -23,6 +24,7 @@ namespace CraigStars.Client
         Button nextButton;
         Button prevButton;
         Button renameButton;
+        LineEditDialog lineEditDialog;
 
         public override void _Ready()
         {
@@ -31,6 +33,7 @@ namespace CraigStars.Client
             nextButton = (Button)FindNode("NextButton");
             prevButton = (Button)FindNode("PrevButton");
             renameButton = (Button)FindNode("RenameButton");
+            lineEditDialog = GetNode<LineEditDialog>("CanvasLayer/LineEditDialog");
 
             nextButton.Connect("pressed", this, nameof(OnNextButtonPressed));
             prevButton.Connect("pressed", this, nameof(OnPrevButtonPressed));
@@ -62,7 +65,11 @@ namespace CraigStars.Client
         {
             if (CommandedMapObject is FleetSprite fleetSprite)
             {
-                EventManager.PublishRenameFleetDialogRequestedEvent(fleetSprite);
+                lineEditDialog.PopupCentered(fleetSprite.Fleet.BaseName, (text) =>
+                {
+                    fleetSprite.Fleet.BaseName = text;
+                    titleLabel.Text = CommandedMapObject.ObjectName;
+                });
             }
         }
 
@@ -75,13 +82,15 @@ namespace CraigStars.Client
         {
             if (CommandedMapObject != null)
             {
-                titleLabel.Text = mapObject.ObjectName;
+                renameButton.Visible = false;
+                titleLabel.Text = CommandedMapObject.ObjectName;
                 if (CommandedMapObject is PlanetSprite planetSprite)
                 {
                     textureRect.Texture = TextureLoader.Instance.FindTexture(planetSprite.Planet);
                 }
                 else if (CommandedMapObject is FleetSprite fleetSprite)
                 {
+                    renameButton.Visible = true;
                     textureRect.Texture = TextureLoader.Instance.FindTexture(fleetSprite.Fleet.Tokens[0].Design);
                 }
             }

@@ -109,7 +109,6 @@ namespace CraigStars
                             Id = id,
                             PlayerNum = player.Num,
                             BaseName = fleet.BaseName,
-                            Name = $"{fleet.BaseName} #{id}",
                             Orbiting = fleet.Orbiting,
                             Position = fleet.Position,
                             Tokens = new List<ShipToken>() { new ShipToken() {
@@ -177,7 +176,6 @@ namespace CraigStars
                 fleet.Cargo = fleet.Cargo * cargoPercent;
             }
             fleet.Fuel = (int)(fleet.Spec.FuelCapacity * fuelPercent);
-            fleet.Name = $"{fleet.BaseName} #{fleet.Id}";
             fleet.OtherFleets.AddRange(newFleets);
 
             return newFleets;

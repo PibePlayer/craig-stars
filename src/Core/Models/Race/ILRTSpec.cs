@@ -16,6 +16,12 @@ namespace CraigStars
         TechLevel StartingTechLevels { get; set; }
 
         /// <summary>
+        /// The cost factor this rate applies to various TechCategories
+        /// </summary>
+        /// <returns></returns>
+        Dictionary<TechCategory, float> TechCostOffset { get; set; }
+
+        /// <summary>
         /// How much do new techs we just researched cost? 
         /// </summary>
         float NewTechCostFactor { get; set; }
@@ -121,12 +127,6 @@ namespace CraigStars
         /// </summary>
         /// <value></value>
         float ShieldRegenerationRate { get; set; }
-
-        /// <summary>
-        /// Factor to multiply cost of engines by
-        /// </summary>
-        /// <value></value>
-        float EngineCostFactor { get; set; }
 
         /// <summary>
         /// The rate at which engines fail, i.e. .1 is 10%

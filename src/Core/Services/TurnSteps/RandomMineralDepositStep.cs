@@ -23,7 +23,7 @@ namespace CraigStars
             // give each player a chance to discover a random deposit on one of their planets
             HashSet<int> blessedPlayers = new();
             var depositDiscoveryChance = Rules.RandomEventChances[RandomEventType.MineralDeposit];
-            foreach (var planet in OwnedPlanets.Where(planet => !blessedPlayers.Contains(planet.PlayerNum) && depositDiscoveryChance >= Rules.Random.NextDouble()))
+            foreach (var planet in OwnedPlanets.Where(planet => !blessedPlayers.Contains(planet.PlayerNum) && depositDiscoveryChance >= (float)Rules.Random.NextDouble()))
             {
                 var player = Game.Players[planet.PlayerNum];
                 blessedPlayers.Add(player.Num);

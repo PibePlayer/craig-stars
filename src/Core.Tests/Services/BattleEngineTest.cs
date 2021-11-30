@@ -135,6 +135,45 @@ namespace CraigStars.Tests
         }
 
         [Test]
+        public void TestRegenerateShields()
+        {
+            // create a new battle from two test fleets
+            var game = TestBattleUtils.GetGameWithSimpleBattle();
+            var battleEngine = new BattleEngine(game, fleetService, designDiscover);
+            var battle = battleEngine.BuildBattle(game.Fleets);
+            var token = battle.Tokens[0];
+            var player = game.Players[token.Fleet.PlayerNum];
+
+            // should not regenerate
+            player.Race.Spec.ShieldRegenerationRate = 0f;
+            token.TotalShields = 100;
+            token.Shields = 10;
+
+            battleEngine.RegenerateShields(battle, token);
+
+            // should not regenerate, no regenerating shields racial spec
+            Assert.AreEqual(10, token.Shields);
+
+            player.Race.Spec.ShieldRegenerationRate = .1f; // should regenerate 10% of our shields each round
+            token.TotalShields = 100;
+            token.Shields = 10;
+
+            battleEngine.RegenerateShields(battle, token);
+
+            // should regenerate 10% (10 points)
+            Assert.AreEqual(20, token.Shields);
+
+            player.Race.Spec.ShieldRegenerationRate = .1f; // should regenerate 10% of our shields each round
+            token.TotalShields = 100;
+            token.Shields = 0;
+
+            battleEngine.RegenerateShields(battle, token);
+
+            // should not regenerate once we are at 0
+            Assert.AreEqual(0, token.Shields);
+        }
+
+        [Test]
         public void TestMaximizeDamage()
         {
             // create a new battle from two test fleets

@@ -261,17 +261,17 @@ namespace CraigStars.Tests
 
             // add a 250 ly stargate
             var planet1 = game.Planets[0];
-            planet1.Starbase.Design.Slots.Add(new ShipDesignSlot(Techs.Stargate100_250, 0, 1));
+            planet1.Starbase.Design.Slots.Add(new ShipDesignSlot(Techs.Stargate100_250, 1, 1));
 
             // add a stargate to detect
             var planet2 = game.Planets[1];
-            planet2.Starbase.Design.Slots.Add(new ShipDesignSlot(Techs.Stargate100_250, 0, 1));
+            planet2.Starbase.Design.Slots.Add(new ShipDesignSlot(Techs.Stargate100_250, 1, 1));
 
             // move the planet in range
             planet2.Position = new Vector2(250, 0);
 
             game.UpdateInternalDictionaries();
-            gameRunner.ComputeSpecs();
+            gameRunner.ComputeSpecs(recompute: true);
 
             // we should discover this fleet
             var scanStep = new PlayerScanStep(gameRunner.GameProvider, rulesProvider, playerIntel, playerTechService, fleetSpecService);

@@ -29,7 +29,7 @@ namespace CraigStars
             new StartingPlanet(25000)
         };
 
-        public Dictionary<TechCategory, float> TechCostFactor { get; set; } = new();
+        public Dictionary<TechCategory, float> TechCostOffset { get; set; } = new();
 
         [DefaultValue(100)]
         public int MineralsPerSingleMineralPacket { get; set; } = 100;

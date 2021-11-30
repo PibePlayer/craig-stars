@@ -63,6 +63,11 @@ namespace CraigStars
         /// </summary>
         internal int Shields;
 
+        /// <summary>
+        /// The remaining shields for this stack, computed at the beginning of battle
+        /// </summary>
+        internal int TotalShields;
+
         public override string ToString()
         {
             return $"{Fleet.RaceName} {Token.Design.Name} ({Token.Quantity})";

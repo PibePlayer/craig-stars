@@ -197,7 +197,7 @@ namespace CraigStars.Tests
             player1.Race.PRT = PRT.PP;
 
             // compute spec for this starbase so the receiver is up to date
-            gameRunner.ComputeSpecs();
+            gameRunner.ComputeSpecs(recompute: true);
 
             // create a 1000kT packet
             MineralPacket packet = new MineralPacket()

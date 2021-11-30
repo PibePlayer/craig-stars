@@ -102,5 +102,35 @@ namespace CraigStars.Tests
             // 20 for us, 5 stolen ... from ourselves!
             Assert.AreEqual(25, player2.TechLevelsSpent[TechField.Electronics]);
         }
+
+        [Test]
+        public void GRResearchTest()
+        {
+            var player = game.Players[0];
+            var planet = game.Planets[0];
+
+            // research with 100 resources to make the math easy
+            planet.Population = 100_000; // 100 resources
+            planet.Factories = 0; // 0 resources
+            player.ResearchAmount = 100;
+            player.Researching = TechField.Energy;
+
+            // add GR trait and make energy expensive (so our level doesn't go up)
+            player.Race.LRTs.Add(LRT.GR);
+            player.Race.ResearchCost[TechField.Energy] = ResearchCostLevel.Extra;
+            player.Researching = TechField.Energy;
+            gameRunner.ComputeSpecs(recompute: true);
+
+            step.Execute(new TurnGenerationContext(), game.OwnedPlanets.ToList());
+
+            // should spend half on the primary field
+            Assert.AreEqual(50, player.TechLevelsSpent[TechField.Energy]);
+            // 15% on other fields
+            Assert.AreEqual(15, player.TechLevelsSpent[TechField.Weapons]);
+            Assert.AreEqual(15, player.TechLevelsSpent[TechField.Propulsion]);
+            Assert.AreEqual(15, player.TechLevelsSpent[TechField.Construction]);
+            Assert.AreEqual(15, player.TechLevelsSpent[TechField.Electronics]);
+            Assert.AreEqual(15, player.TechLevelsSpent[TechField.Biotechnology]);
+        }
     }
 }

@@ -58,7 +58,7 @@ namespace CraigStars
         public static LRTSpec GR = new LRTSpec(LRT.GR, 0)
         {
             ResearchFactor = .5f,
-            ResearchSplashDamage = .2f
+            ResearchSplashDamage = .15f
         };
 
         public static LRTSpec UR = new LRTSpec(LRT.UR, 0)
@@ -110,7 +110,11 @@ namespace CraigStars
         public static LRTSpec CE = new LRTSpec(LRT.CE, 0)
         {
             StartingTechLevels = new TechLevel(propulsion: 1),
-            EngineCostFactor = .5f,
+
+            TechCostOffset = new Dictionary<TechCategory, float>() {
+                { TechCategory.Engine, -.5f }, // engines cost 50% less
+            },
+
             EngineFailureRate = .1f,
             EngineReliableSpeed = 6
         };

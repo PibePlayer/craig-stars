@@ -90,6 +90,15 @@ namespace CraigStars
                     }
                 }
             }
+
+            // deterraform planets
+            if (planet.Population > 0 && planet.BaseHab != planet.Hab)
+            {
+                foreach (var playerNum in orbitingPlayerNums)
+                {
+                    RetroBombPlanet(planet, Game.Players[planet.PlayerNum], Game.Players[playerNum], enemyBombers.Where(fleet => fleet.PlayerNum == playerNum));
+                }
+            }
         }
 
         /// <summary>
@@ -179,6 +188,77 @@ namespace CraigStars
                 }
             }
 
+        }
+
+        /// <summary>
+        /// Bomb a planet with normal bombs
+        /// </summary>
+        /// <param name="planet"></param>
+        /// <param name="attacker"></param>
+        /// <param name="bombers"></param>
+        void RetroBombPlanet(Planet planet, Player defender, Player attacker, IEnumerable<Fleet> bombers)
+        {
+            // do all retro bombs
+            foreach (var fleet in bombers)
+            {
+                if (fleet.Spec.RetroBombs.Count > 0)
+                {
+                    // sum up all the unterraforming
+                    int retroBombAmount = fleet.Spec.RetroBombs.Sum(bomb => bomb.UnterraformRate * bomb.Quantity);
+                    Hab unterraformAmount = GetUnterraformAmount(retroBombAmount, planet.BaseHab.Value, planet.Hab.Value);
+
+                    if (unterraformAmount.AbsSum > 0)
+                    {
+                        // apply the unterraform amount
+                        planet.Hab += unterraformAmount;
+
+                        // update planet spec
+                        planet.Spec = planetService.ComputePlanetSpec(planet, defender);
+
+                        // let each player know a bombing happened
+                        Message.PlanetRetroBombed(attacker, planet, fleet, unterraformAmount);
+                        Message.PlanetRetroBombed(defender, planet, fleet, unterraformAmount);
+                    }
+
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// Get the amount we should unterraform
+        /// </summary>
+        /// <param name="retroBombAmount"></param>
+        /// <param name="baseHab"></param>
+        /// <param name="hab"></param>
+        /// <returns></returns>
+        internal Hab GetUnterraformAmount(int retroBombAmount, Hab baseHab, Hab hab)
+        {
+            var unterraformAmount = new Hab();
+            for (int i = 0; i < retroBombAmount; i++)
+            {
+                // find the current diff based on the unterraforming we've done so far
+                var habDiff = hab - baseHab + unterraformAmount;
+                if (habDiff.AbsSum > 0)
+                {
+                    HabType largestTerraformHab = HabType.Gravity;
+                    int largestTerraformAmount = 0;
+                    foreach (HabType habType in Enum.GetValues(typeof(HabType)))
+                    {
+                        if (Math.Abs(habDiff[habType]) > Math.Abs(largestTerraformAmount))
+                        {
+                            largestTerraformAmount = habDiff[habType];
+                            largestTerraformHab = habType;
+                        }
+                    }
+
+                    // apply an unterraform amount in whatever direction we are going, to the largest terraform hab
+                    var direction = largestTerraformAmount > 0 ? -1 : 1;
+                    unterraformAmount = unterraformAmount.WithType(largestTerraformHab, unterraformAmount[largestTerraformHab] + direction);
+                }
+            }
+
+            return unterraformAmount;
         }
 
         /// <summary>

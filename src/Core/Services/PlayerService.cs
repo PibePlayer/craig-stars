@@ -54,7 +54,7 @@ namespace CraigStars
             Cost cost = tech.Cost;
 
             // see if this race has any discounts for this category
-            float factor = player.Race.Spec.TechCostFactor.TryGetValue(tech.Category, out factor) ? factor : 1f;
+            float factor = player.Race.Spec.TechCostOffset.TryGetValue(tech.Category, out factor) ? 1 + factor : 1f;
 
             cost *= factor;
 

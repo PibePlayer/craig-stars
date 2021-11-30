@@ -31,7 +31,7 @@ namespace CraigStars
         /// The cost factor this rate applies to various TechCategories
         /// </summary>
         /// <returns></returns>
-        public Dictionary<TechCategory, float> TechCostFactor { get; set; } = new();
+        public Dictionary<TechCategory, float> TechCostOffset { get; set; } = new();
 
         /// <summary>
         /// The race computed costs of various item types like mines, packets, etc
@@ -405,12 +405,6 @@ namespace CraigStars
         /// </summary>
         /// <value></value>
         public float ShieldRegenerationRate { get; set; } = 0f;
-
-        /// <summary>
-        /// Factor to multiply cost of engines by
-        /// </summary>
-        /// <value></value>
-        public float EngineCostFactor { get; set; } = 1f;
 
         /// <summary>
         /// The rate at which engines fail, i.e. .1 is 10%

@@ -49,6 +49,7 @@ namespace CraigStars
         public bool Bomber { get; set; }
         public List<Bomb> Bombs { get; set; } = new List<Bomb>();
         public List<Bomb> SmartBombs { get; set; } = new List<Bomb>();
+        public List<Bomb> RetroBombs { get; set; } = new List<Bomb>();
 
         /// <summary>
         /// Does this design have any weapons?

@@ -10,6 +10,7 @@ using log4net.Core;
 using log4net.Repository.Hierarchy;
 using System.Threading.Tasks;
 using System.Linq;
+using FakeItEasy;
 
 namespace CraigStars.Tests
 {
@@ -18,10 +19,62 @@ namespace CraigStars.Tests
     {
         static CSLog log = LogProvider.GetLogger(typeof(FleetMoveStepTest));
 
+        IRulesProvider rulesProvider = new TestRulesProvider();
         PlayerService playerService = TestUtils.TestContainer.GetInstance<PlayerService>();
         MineFieldDamager mineFieldDamager = TestUtils.TestContainer.GetInstance<MineFieldDamager>();
         ShipDesignDiscoverer designDiscoverer = TestUtils.TestContainer.GetInstance<ShipDesignDiscoverer>();
         FleetService fleetService = TestUtils.TestContainer.GetInstance<FleetService>();
+
+        [Test]
+        public void TestMove()
+        {
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
+            var fleet = game.Fleets[0];
+
+            // move along the x axis
+            fleet.Position = new Vector2(0, 0);
+            fleet.Waypoints.Add(Waypoint.PositionWaypoint(new Vector2(100, 0), warpFactor: 5));
+
+            FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, rulesProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
+
+            step.Execute(new(), game.OwnedPlanets.ToList());
+
+            // move at warp 5, use some fuel
+            Assert.AreEqual(new Vector2(25, 0), fleet.Position);
+            Assert.AreEqual(fleet.FuelCapacity - 4, fleet.Fuel);
+        }
+
+        [Test]
+        public void TestMoveEngineFailure()
+        {
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
+            var fleet = game.Fleets[0];
+            var player = game.Players[0];
+
+            player.Race.LRTs.Add(LRT.CE);
+            gameRunner.ComputeSpecs(true);
+
+            // make sure our random number generator returns "yes, fail engines"
+            IRulesProvider mockRulesProvider = A.Fake<IRulesProvider>();
+            var mockRules = A.Fake<Rules>();
+            var random = A.Fake<Random>();
+            A.CallTo(() => mockRulesProvider.Rules).Returns(mockRules);
+            mockRules.Random = random;
+
+            // move along the x axis
+            fleet.Position = new Vector2(0, 0);
+            fleet.Waypoints.Add(Waypoint.PositionWaypoint(new Vector2(100, 0), warpFactor: 7));
+
+            // make the engine fail
+            A.CallTo(() => random.NextDouble()).Returns(.1);
+            FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, mockRulesProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
+
+            step.Execute(new(), game.OwnedPlanets.ToList());
+
+            // move at warp 5, shouldn't move at all
+            Assert.AreEqual(new Vector2(0, 0), fleet.Position);
+            Assert.AreEqual(MessageType.FleetEngineFailure, player.Messages[0].Type);
+        }
 
         [Test]
         public void TestCheckForMineFieldHitSpeed()
@@ -56,7 +109,7 @@ namespace CraigStars.Tests
             game.Fleets.Add(fleet);
             gameRunner.ComputeSpecs(recompute: true);
 
-            FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
+            FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, rulesProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
 
             // make the speed minefield allow speed 5, 25% hit chance per warp
             // we'll go warp 9 to guarantee a hit
@@ -123,7 +176,7 @@ namespace CraigStars.Tests
             game.Rules.MineFieldStatsByType[MineFieldType.Standard].MaxSpeed = 5;
             game.Rules.MineFieldStatsByType[MineFieldType.Standard].ChanceOfHit = .25f;
 
-            FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
+            FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, rulesProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
 
             // send the fleet at warp 9, straight up, should miss minefield
             var dest = new Waypoint() { Position = new Vector2(-15, 20), WarpFactor = 9 };

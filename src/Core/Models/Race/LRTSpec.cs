@@ -18,6 +18,8 @@ namespace CraigStars
         public int PointCost { get; set; }
 
         public TechLevel StartingTechLevels { get; set; } = new();
+        public Dictionary<TechCategory, float> TechCostOffset { get; set; } = new();
+
         public float NewTechCostFactor { get; set; } = 1f;
         public float MiniaturizationMax { get; set; } = .75f;
         public float MiniaturizationPerLevel { get; set; } = .04f;
@@ -37,7 +39,6 @@ namespace CraigStars
         public float ResearchSplashDamage { get; set; } = 0f;
         public float ShieldStrengthFactor { get; set; } = 1f;
         public float ShieldRegenerationRate { get; set; } = 0f;
-        public float EngineCostFactor { get; set; } = 1f;
         public float EngineFailureRate { get; set; } = 0f;
         public float EngineReliableSpeed { get; set; } = 10;
     }

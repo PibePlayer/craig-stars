@@ -9,9 +9,9 @@ using CraigStars.Singletons;
 namespace CraigStars.Tests
 {
     [TestFixture]
-    public class PlanetBombStepTest
+    public class FleetBombStepTest
     {
-        FleetBombStep planetBomber;
+        FleetBombStep step;
         Game game;
         GameRunner gameRunner;
 
@@ -19,8 +19,8 @@ namespace CraigStars.Tests
         public void SetUp()
         {
             PlanetService planetService = TestUtils.TestContainer.GetInstance<PlanetService>();
-            (game, gameRunner) = TestUtils.GetSingleUnitGame();
-            planetBomber = new FleetBombStep(gameRunner.GameProvider, planetService);
+            (game, gameRunner) = TestUtils.GetTwoPlayerGame();
+            step = new FleetBombStep(gameRunner.GameProvider, planetService);
         }
 
         [Test]
@@ -34,11 +34,38 @@ namespace CraigStars.Tests
             var defenseCoverage = 0f;
 
             // no defense, 10 bombs should kill 25%
-            Assert.AreEqual(2500, planetBomber.GetColonistsKilled(10000, defenseCoverage, killRate, quantity));
+            Assert.AreEqual(2500, step.GetColonistsKilled(10000, defenseCoverage, killRate, quantity));
 
             // 100 nuetron defs, 10 bombs should kill ~100 rounded up
             defenseCoverage = .9792f;
-            Assert.AreEqual(52, planetBomber.GetColonistsKilled(10000, defenseCoverage, killRate, quantity), .1f);
+            Assert.AreEqual(52, step.GetColonistsKilled(10000, defenseCoverage, killRate, quantity), .1f);
+        }
+
+        [Test]
+        public void TestGetUnterraformAmount()
+        {
+            var baseHab = new Hab(20, 70, 40);
+            var hab = new Hab(50, 50, 50);
+
+            // should unterraform 1 gravity because it's 30 points from the base
+            Assert.AreEqual(new Hab(-1, 0, 0), step.GetUnterraformAmount(1, baseHab, hab));
+
+            // if we bomb for -30 terraform points, we should equalize between the two highest
+            Assert.AreEqual(new Hab(-20, 10, 0), step.GetUnterraformAmount(30, baseHab, hab));
+
+            // if we bomb for -36 terraform points, we should equalize between all three
+            Assert.AreEqual(new Hab(-22, 12, -2), step.GetUnterraformAmount(36, baseHab, hab));
+
+            // no unterraform, planet isn't terraformed
+            baseHab = new Hab(50, 50, 50);
+            hab = new Hab(50, 50, 50);
+            Assert.AreEqual(new Hab(0, 0, 0), step.GetUnterraformAmount(10, baseHab, hab));
+
+            // unterraform by one, even though we bombed with 10
+            baseHab = new Hab(50, 50, 50);
+            hab = new Hab(50, 51, 50);
+            Assert.AreEqual(new Hab(0, -1, 0), step.GetUnterraformAmount(10, baseHab, hab));
+
         }
 
         [Test]
@@ -52,7 +79,7 @@ namespace CraigStars.Tests
 
             var defenseCoverage = .9792f;
 
-            Assert.AreEqual(64.48f, planetBomber.GetColonistsKilled(10000, defenseCoverage, bombs), .1f);
+            Assert.AreEqual(64.48f, step.GetColonistsKilled(10000, defenseCoverage, bombs), .1f);
         }
 
         [Test]
@@ -66,7 +93,7 @@ namespace CraigStars.Tests
 
             var defenseCoverage = .8524f;
 
-            Assert.AreEqual(837, planetBomber.GetColonistsKilledWithSmartBombs(10000, defenseCoverage, bombs), .2f);
+            Assert.AreEqual(837, step.GetColonistsKilledWithSmartBombs(10000, defenseCoverage, bombs), .2f);
         }
 
         [Test]
@@ -80,32 +107,25 @@ namespace CraigStars.Tests
 
             var defenseCoverage = .9792f;
 
-            Assert.AreEqual(66f, planetBomber.GetStructuresDestroyed(defenseCoverage, bombs), .5f);
+            Assert.AreEqual(66f, step.GetStructuresDestroyed(defenseCoverage, bombs), .5f);
         }
 
         [Test]
         public void TestBombPlanet()
         {
-            var planetOwner = new Player()
-            {
-                Num = 0
-            };
-            var fleetOwner = new Player()
-            {
-                Num = 1
-            };
+            var planet = game.Planets[0];
+            var planetOwner = game.Players[0];
+            var fleetOwner = game.Players[1];
 
-            game.Players = new() { planetOwner, fleetOwner };
+            // create a terraformed planet
+            planet.Population = 10_000;
 
-            var planet = new Planet()
-            {
-                Name = "Brin",
-                PlayerNum = planetOwner.Num,
-                Population = 10000,
-                Mines = 100,
-                Factories = 100,
-                Defenses = 10,
-            };
+            planet.Name = "Brin";
+            planet.PlayerNum = planetOwner.Num;
+            planet.Population = 10000;
+            planet.Mines = 100;
+            planet.Factories = 100;
+            planet.Defenses = 10;
 
             // one mini-bomber
             var fleet = new Fleet()
@@ -135,7 +155,7 @@ namespace CraigStars.Tests
             fleet.Orbiting = planet;
             planet.OrbitingFleets.Add(fleet);
 
-            planetBomber.BombPlanet(planet);
+            step.BombPlanet(planet);
 
             Assert.AreEqual(1, planetOwner.Messages.Count);
             Assert.AreEqual(1, fleetOwner.Messages.Count);
@@ -148,26 +168,19 @@ namespace CraigStars.Tests
         [Test]
         public void TestBombPlanet2()
         {
-            var planetOwner = new Player()
-            {
-                Num = 0
-            };
-            var fleetOwner = new Player()
-            {
-                Num = 1
-            };
+            var planet = game.Planets[0];
+            var planetOwner = game.Players[0];
+            var fleetOwner = game.Players[1];
 
-            game.Players = new() { planetOwner, fleetOwner };
+            // create a terraformed planet
+            planet.Population = 10_000;
 
-            var planet = new Planet()
-            {
-                Name = "Brin",
-                PlayerNum = planetOwner.Num,
-                Population = 10000,
-                Mines = 100,
-                Factories = 100,
-                Defenses = 10,
-            };
+            planet.Name = "Brin";
+            planet.PlayerNum = planetOwner.Num;
+            planet.Population = 10000;
+            planet.Mines = 100;
+            planet.Factories = 100;
+            planet.Defenses = 10;
 
             // one mini-bomber
             var fleet1 = new Fleet()
@@ -191,7 +204,6 @@ namespace CraigStars.Tests
 
             game.Designs.Add(fleet1.Tokens[0].Design);
             game.Fleets.Add(fleet1);
-            game.Planets.Add(planet);
 
             // one mini-bomber with smart bombs
             var fleet2 = new Fleet()
@@ -222,7 +234,7 @@ namespace CraigStars.Tests
             planet.OrbitingFleets.Add(fleet1);
             planet.OrbitingFleets.Add(fleet2);
 
-            planetBomber.BombPlanet(planet);
+            step.BombPlanet(planet);
 
             // bomb with smart bombs
             Assert.AreEqual(2, planetOwner.Messages.Count);
@@ -231,6 +243,57 @@ namespace CraigStars.Tests
             Assert.AreEqual(98, planet.Factories);
             Assert.AreEqual(9, planet.Defenses);
             Assert.AreEqual(9300, planet.Population);
+        }
+
+
+        [Test]
+        public void TestRetroBombPlanet()
+        {
+            var planet = game.Planets[0];
+            var planetOwner = game.Players[0];
+            var fleetOwner = game.Players[1];
+
+            // create a terraformed planet
+            planet.Population = 10_000;
+            planet.BaseHab = new Hab(47, 50, 50);
+            planet.Hab = new Hab(50, 50, 50);
+            planet.TerraformedAmount = new Hab(3, 0, 0);
+
+
+            // one mini-bomber
+            var fleet = new Fleet()
+            {
+                PlayerNum = fleetOwner.Num,
+                Name = "Mini-Bomber #1",
+                Tokens = new List<ShipToken>() {
+                    new ShipToken() {
+                        Design = new ShipDesign() {
+                            PlayerNum = fleetOwner.Num,
+                            Hull = Techs.MiniBomber,
+                            Slots = new List<ShipDesignSlot>() {
+                                new ShipDesignSlot(Techs.QuickJump5, 1, 1),
+                                new ShipDesignSlot(Techs.RetroBomb, 2, 2),
+                            },
+                        },
+                        Quantity = 1
+                    }
+                },
+                Orbiting = planet,
+                Position = planet.Position
+            };
+            planet.OrbitingFleets.Add(fleet);
+
+            game.Designs.Add(fleet.Tokens[0].Design);
+            game.Fleets.Add(fleet);
+
+            gameRunner.ComputeSpecs(recompute: true);
+
+
+            step.BombPlanet(planet);
+
+            Assert.AreEqual(new Hab(48, 50, 50), planet.Hab);
+            Assert.AreEqual(1, planetOwner.Messages.Count);
+            Assert.AreEqual(1, fleetOwner.Messages.Count);
         }
     }
 }

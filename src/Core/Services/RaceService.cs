@@ -46,7 +46,7 @@ namespace CraigStars
             // copy all PRT specs over
             spec.StartingFleets = new(prtSpec.StartingFleets);
             spec.StartingPlanets = new(prtSpec.StartingPlanets);
-            spec.TechCostFactor = new(prtSpec.TechCostFactor);
+            spec.TechCostOffset = new(prtSpec.TechCostOffset);
 
             // PP
             spec.MineralsPerSingleMineralPacket = prtSpec.MineralsPerSingleMineralPacket;
@@ -128,8 +128,20 @@ namespace CraigStars
                 var lrtSpec = Rules.LRTSpecs[lrt];
                 spec.StartingTechLevels += lrtSpec.StartingTechLevels;
 
-                spec.NewTechCostFactor *= lrtSpec.NewTechCostFactor;
+                // add any tech cost offsets to this
+                foreach (var entry in lrtSpec.TechCostOffset)
+                {
+                    if (spec.TechCostOffset.ContainsKey(entry.Key))
+                    {
+                        spec.TechCostOffset[entry.Key] += entry.Value;
+                    }
+                    else
+                    {
+                        spec.TechCostOffset[entry.Key] = entry.Value;
+                    }
+                }
 
+                spec.NewTechCostFactor *= lrtSpec.NewTechCostFactor;
                 spec.MiniaturizationMax *= lrtSpec.MiniaturizationMax;
                 spec.MiniaturizationPerLevel = Math.Max(spec.MiniaturizationPerLevel, lrtSpec.MiniaturizationPerLevel);
                 spec.NoAdvancedScanners = spec.NoAdvancedScanners || lrtSpec.NoAdvancedScanners;
@@ -149,7 +161,6 @@ namespace CraigStars
                 spec.ResearchSplashDamage += lrtSpec.ResearchSplashDamage;
                 spec.ShieldStrengthFactor *= lrtSpec.ShieldStrengthFactor;
                 spec.ShieldRegenerationRate += lrtSpec.ShieldRegenerationRate;
-                spec.EngineCostFactor *= lrtSpec.EngineCostFactor;
                 spec.EngineFailureRate += lrtSpec.EngineFailureRate;
                 spec.EngineReliableSpeed = Math.Min(spec.EngineReliableSpeed, lrtSpec.EngineReliableSpeed);
 

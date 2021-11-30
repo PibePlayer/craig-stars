@@ -232,6 +232,7 @@ namespace CraigStars
                         Fleet = fleet,
                         Token = token,
                         Shields = token.Quantity * token.Design.Spec.Shield,
+                        TotalShields = token.Quantity * token.Design.Spec.Shield,
                         Attributes = GetTokenAttributes(token)
                     }, game)
                 )
@@ -382,6 +383,12 @@ namespace CraigStars
                         // find all available targets for this weapon
                         FindTargets(battle, weaponSlot);
                         FireWeaponSlot(battle, weaponSlot);
+                    }
+
+                    // at the end of this round, regenerate shields
+                    foreach (BattleToken token in battle.Tokens.Where(token => !token.Destroyed && !token.RanAway && token.Shields > 0))
+                    {
+                        RegenerateShields(battle, token);
                     }
                 }
                 else
@@ -758,6 +765,22 @@ namespace CraigStars
                 case BattleTactic.MaximizeDamage:
                     MaximizeDamage(battle, token);
                     break;
+            }
+        }
+
+        /// <summary>
+        /// If this token has shields and this player regenerates shields, regenerate them.
+        /// </summary>
+        /// <param name="battle"></param>
+        /// <param name="token"></param>
+        internal void RegenerateShields(Battle battle, BattleToken token)
+        {
+            var player = game.Players[token.PlayerNum];
+
+            if (player.Race.Spec.ShieldRegenerationRate > 0 && token.Shields > 0)
+            {
+                var regenerationAmount = token.TotalShields * player.Race.Spec.ShieldRegenerationRate + .5f;
+                token.Shields = (int)Mathf.Clamp(token.Shields + regenerationAmount, 0, token.TotalShields);
             }
         }
 

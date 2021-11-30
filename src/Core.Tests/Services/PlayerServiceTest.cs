@@ -126,6 +126,26 @@ namespace CraigStars.Tests
             player.Race.Spec = raceService.ComputeRaceSpecs(player.Race);
             Assert.AreEqual(75, playerService.GetTechCost(player, tech).Ironium);
         }
+
+        [Test]
+        public void TestGetTechCostCE()
+        {
+            // a 100 ironium, 1 energy tech cost 100 at 1 energy level
+            var tech = new TechHullComponent()
+            {
+                Category = TechCategory.Engine,
+                Cost = new Cost(ironium: 100)
+            };
+
+            var player = new Player();
+            player.Race.Spec = raceService.ComputeRaceSpecs(player.Race);
+            Assert.AreEqual(100, playerService.GetTechCost(player, tech).Ironium);
+
+            // Warmongers get cheaper weapons
+            player.Race.LRTs.Add(LRT.CE);
+            player.Race.Spec = raceService.ComputeRaceSpecs(player.Race);
+            Assert.AreEqual(50, playerService.GetTechCost(player, tech).Ironium);
+        }
     }
 
 }

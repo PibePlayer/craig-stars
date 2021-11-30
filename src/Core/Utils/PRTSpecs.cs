@@ -65,10 +65,10 @@ namespace CraigStars
                 new StartingFleet("Santa Maria", Techs.ColonyShip.Name, ShipDesignPurpose.Colonizer),
                 new StartingFleet("Armed Probe", Techs.Scout.Name, ShipDesignPurpose.FighterScout),
             },
-            TechCostFactor = new Dictionary<TechCategory, float>() {
-                { TechCategory.BeamWeapon, .75f }, // weapons cost 25% less
-                { TechCategory.Torpedo, .75f }, // weapons cost 25% less
-                { TechCategory.Bomb, .75f }, // weapons cost 25% less
+            TechCostOffset = new Dictionary<TechCategory, float>() {
+                { TechCategory.BeamWeapon, -.25f }, // weapons cost 25% less
+                { TechCategory.Torpedo, -.25f }, // weapons cost 25% less
+                { TechCategory.Bomb, -.25f }, // weapons cost 25% less
             },
             DiscoverDesignOnScan = true,
             InvasionAttackBonus = 1.65f,
@@ -96,11 +96,11 @@ namespace CraigStars
                 new StartingFleet("Long Range Scout", Techs.Scout.Name, ShipDesignPurpose.Scout),
                 new StartingFleet("Santa Maria", Techs.ColonyShip.Name, ShipDesignPurpose.Colonizer),
             },
-            TechCostFactor = new Dictionary<TechCategory, float>() {
-                { TechCategory.PlanetaryDefense, .6f }, // defenses cost 40% less
-                { TechCategory.BeamWeapon, 1.25f }, // weapons cost 25% less
-                { TechCategory.Torpedo, 1.25f }, // weapons cost 25% less
-                { TechCategory.Bomb, 1.25f }, // weapons cost 25% less
+            TechCostOffset = new Dictionary<TechCategory, float>() {
+                { TechCategory.PlanetaryDefense, -.4f }, // defenses cost 40% less
+                { TechCategory.BeamWeapon, .25f }, // weapons cost 25% less
+                { TechCategory.Torpedo, .25f }, // weapons cost 25% less
+                { TechCategory.Bomb, .25f }, // weapons cost 25% less
             },
             FreighterGrowthFactor = .5f,
             InvasionDefendBonus = 2f,

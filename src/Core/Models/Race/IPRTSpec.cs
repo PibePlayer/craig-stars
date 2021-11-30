@@ -29,7 +29,7 @@ namespace CraigStars
         /// The cost factor this rate applies to various TechCategories
         /// </summary>
         /// <returns></returns>
-        Dictionary<TechCategory, float> TechCostFactor { get; set; }
+        Dictionary<TechCategory, float> TechCostOffset { get; set; }
 
         /// <summary>
         /// The amount of minerals in a single ironium, boranium, or germanium packet

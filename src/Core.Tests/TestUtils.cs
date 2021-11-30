@@ -136,6 +136,9 @@ namespace CraigStars.Tests
             gameRunner.ComputeSpecs();
             gameRunner.AfterTurnGeneration();
 
+            // fill er' up
+            fleet.Fuel = fleet.FuelCapacity;
+
             return (game, gameRunner);
         }
 
@@ -281,8 +284,12 @@ namespace CraigStars.Tests
 
             player1.SetupMapObjectMappings();
             player2.SetupMapObjectMappings();
-            game.UpdateInternalDictionaries();
+            gameRunner.ComputeSpecs();
             gameRunner.AfterTurnGeneration();
+
+            // fill er' up
+            fleet1.Fuel = fleet1.FuelCapacity;
+            fleet2.Fuel = fleet2.FuelCapacity;
 
             return (game, gameRunner);
         }

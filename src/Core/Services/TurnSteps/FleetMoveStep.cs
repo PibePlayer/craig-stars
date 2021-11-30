@@ -10,13 +10,17 @@ namespace CraigStars
     /// </summary>
     public class FleetMoveStep : TurnGenerationStep
     {
+        private readonly IRulesProvider rulesProvider;
         private readonly MineFieldDamager mineFieldDamager;
         private readonly ShipDesignDiscoverer designDiscoverer;
         private readonly FleetService fleetService;
         private readonly PlayerService playerService;
 
-        public FleetMoveStep(IProvider<Game> gameProvider, MineFieldDamager mineFieldDamager, ShipDesignDiscoverer designDiscoverer, FleetService fleetService, PlayerService playerService) : base(gameProvider, TurnGenerationState.FleetMoveStep)
+        private Rules Rules => rulesProvider.Rules;
+
+        public FleetMoveStep(IProvider<Game> gameProvider, IRulesProvider rulesProvider, MineFieldDamager mineFieldDamager, ShipDesignDiscoverer designDiscoverer, FleetService fleetService, PlayerService playerService) : base(gameProvider, TurnGenerationState.FleetMoveStep)
         {
+            this.rulesProvider = rulesProvider;
             this.mineFieldDamager = mineFieldDamager;
             this.designDiscoverer = designDiscoverer;
             this.fleetService = fleetService;
@@ -155,6 +159,14 @@ namespace CraigStars
         {
             fleet.PreviousPosition = wp0.Position;
             float dist = wp1.WarpFactor * wp1.WarpFactor;
+
+            // check for CE engine failure
+            if (player.Race.Spec.EngineFailureRate > 0 && wp1.WarpFactor > player.Race.Spec.EngineReliableSpeed
+                && player.Race.Spec.EngineFailureRate >= (float)Rules.Random.NextDouble())
+            {
+                Message.FleetEngineFailure(player, fleet);
+                return;
+            }
 
             // go with the lower
             if (totalDist < dist)

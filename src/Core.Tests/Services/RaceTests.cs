@@ -47,7 +47,7 @@ namespace CraigStars.Tests
             var (game, gameRunner) = TestUtils.GetTwoPlayerGame();
             var player = game.Players[0];
             player.Race.PRT = PRT.SS;
-            gameRunner.ComputeSpecs();
+            gameRunner.ComputeSpecs(recompute: true);
 
             // 75% built in cloaking
             var fleet = game.Fleets[0];
@@ -61,7 +61,7 @@ namespace CraigStars.Tests
                     new ShipToken(TestUtils.CreateDesign(game, player, ShipDesigns.Starbase.Clone(player)), 1)
                 }
             };
-            gameRunner.ComputeSpecs();
+            gameRunner.ComputeSpecs(recompute: true);
             Assert.AreEqual(75, planet.Starbase.Spec.CloakPercent);
 
             // travel through minefields at 1 warp better

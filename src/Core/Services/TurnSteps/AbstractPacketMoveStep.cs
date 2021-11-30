@@ -221,7 +221,7 @@ namespace CraigStars
                 // check twice
                 for (int uncaughtCheck = player.Race.Spec.PacketPermaTerraformSizeUnit; uncaughtCheck <= uncaught; uncaughtCheck += player.Race.Spec.PacketPermaTerraformSizeUnit)
                 {
-                    if (player.Race.Spec.PacketTerraformChance >= Rules.Random.NextDouble())
+                    if (player.Race.Spec.PacketTerraformChance >= (float)Rules.Random.NextDouble())
                     {
                         // terraform one at a time to ensure the best things get terraformed
                         var result = planetService.TerraformOneStep(planet, player);
@@ -249,7 +249,7 @@ namespace CraigStars
                 // check twice
                 for (int uncaughtCheck = player.Race.Spec.PacketPermaTerraformSizeUnit; uncaughtCheck <= uncaught; uncaughtCheck += player.Race.Spec.PacketPermaTerraformSizeUnit)
                 {
-                    if (player.Race.Spec.PacketPermaformChance >= Rules.Random.NextDouble())
+                    if (player.Race.Spec.PacketPermaformChance >= (float)Rules.Random.NextDouble())
                     {
                         // terraform one at a time to ensure the best things get terraformed
                         HabType habType = (HabType)Rules.Random.Next(3);

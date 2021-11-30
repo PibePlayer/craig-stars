@@ -119,7 +119,7 @@ namespace CraigStars
                         // armor is heavy though, so don't use it on freighters.
                         if (numShields >= numArmor && purpose != ShipDesignPurpose.Colonizer && purpose != ShipDesignPurpose.Freighter && purpose != ShipDesignPurpose.FuelFreighter)
                         {
-                            slot.HullComponent = playerTechService.GetBestArmor(player);
+                            slot.HullComponent = GetBestShieldOrArmor(player);
                         }
                         else
                         {
@@ -213,6 +213,19 @@ namespace CraigStars
             // A new design needs new values
             fleetSpecService.ComputeDesignSpec(player, design);
             return design;
+        }
+
+        /// <summary>
+        /// Get the highest ranked shield or armor
+        /// </summary>
+        /// <param name="player"></param>
+        /// <returns></returns>
+        TechHullComponent GetBestShieldOrArmor(Player player)
+        {
+            var bestArmor = playerTechService.GetBestArmor(player);
+            var bestShield = playerTechService.GetBestShield(player);
+
+            return bestArmor.Ranking >= bestShield.Ranking ? bestArmor : bestShield;
         }
     }
 }

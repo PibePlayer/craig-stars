@@ -127,8 +127,11 @@ namespace CraigStars
         /// <param name="player"></param>
         /// <param name="resourcesToSpend"></param>
         /// <param name="field"></param>
-        public void Research(Player player, int resourcesToSpend, TechField field)
+        /// <returns>The amount of resources spent on each field</returns>
+        public TechLevel Research(Player player, int resourcesToSpend, TechField field, TechLevel spent = null)
         {
+            spent ??= new TechLevel();
+
             // don't research more than the max on this level
             var level = player.TechLevels[field];
 
@@ -140,6 +143,7 @@ namespace CraigStars
 
             if (spentOnCurrentLevel >= totalCost)
             {
+                spent[field] += totalCost;
                 // increase a level
                 player.TechLevels[field]++;
                 int newLevel = player.TechLevels[field];
@@ -157,9 +161,15 @@ namespace CraigStars
                 {
                     // we have leftover resources, so call ourselves again
                     // to apply them to the next level
-                    Research(player, leftoverResources, field);
+                    Research(player, leftoverResources, field, spent);
                 }
             }
+            else
+            {
+                spent[field] += resourcesToSpend;
+            }
+
+            return spent;
         }
 
         /// <summary>

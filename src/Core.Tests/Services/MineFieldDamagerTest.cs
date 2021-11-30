@@ -18,6 +18,7 @@ namespace CraigStars.Tests
     {
         static CSLog log = LogProvider.GetLogger(typeof(MineFieldDamagerTest));
 
+        IRulesProvider rulesProvider = new TestRulesProvider();
         PlayerService playerService = TestUtils.TestContainer.GetInstance<PlayerService>();
         MineFieldDamager mineFieldDamager = TestUtils.TestContainer.GetInstance<MineFieldDamager>();
         ShipDesignDiscoverer designDiscoverer = TestUtils.TestContainer.GetInstance<ShipDesignDiscoverer>();
@@ -53,7 +54,7 @@ namespace CraigStars.Tests
             game.Fleets.Add(fleet);
             gameRunner.ComputeSpecs(recompute: true);
 
-            FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
+            FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, rulesProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
 
             MineFieldStats stats = new MineFieldStats()
             {
@@ -116,7 +117,7 @@ namespace CraigStars.Tests
             game.Fleets.Add(fleet);
             gameRunner.ComputeSpecs(recompute: true);
 
-            FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
+            FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, rulesProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
 
             MineFieldStats stats = new MineFieldStats()
             {
@@ -172,7 +173,7 @@ namespace CraigStars.Tests
             game.Fleets.Add(fleet);
             gameRunner.ComputeSpecs(recompute: true);
 
-            FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
+            FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, rulesProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
 
             MineFieldStats stats = new MineFieldStats()
             {

@@ -230,6 +230,12 @@ namespace CraigStars
             player.Messages.Add(new Message(MessageType.PlanetColonized, text, planet));
         }
 
+        public static void FleetEngineFailure(Player player, Fleet fleet)
+        {
+            var text = $"{fleet.Name} was unable to engage it's engines due to balky equipment. Engineers think they have the problem fixed for the time being.";
+            player.Messages.Add(new Message(MessageType.FleetEngineFailure, text, fleet));
+        }
+
         public static void FleetOutOfFuel(Player player, Fleet fleet, int warpFactor)
         {
             string text = $"{fleet.Name} has run out of fuel. The fleet's speed has been decreased to Warp {warpFactor}.";
@@ -565,6 +571,22 @@ namespace CraigStars
                     text = $"{fleet.RaceName} {fleet.Name} has bombed your {planet.Name} with smart bombs killing {colonistsKilled:n0} colonists.";
                 }
                 player.Messages.Add(new Message(MessageType.MyPlanetBombed, text, planet));
+            }
+        }
+
+        public static void PlanetRetroBombed(Player player, Planet planet, Fleet fleet, Hab unterraformAmount)
+        {
+            string text;
+
+            if (player.Num == fleet.PlayerNum)
+            {
+                text = $"Your fleet {fleet.Name} has retro-bombed {planet.RaceName} planet {planet.Name}, undoing {unterraformAmount.AbsSum}% of its terraforming.";
+                player.Messages.Add(new Message(MessageType.EnemyPlanetRetroBombed, text, planet));
+            }
+            else
+            {
+                text = $"{fleet.RaceName} {fleet.Name} has retro-bombed your {planet.Name}, undoing {unterraformAmount.AbsSum}% of its terraforming.";
+                player.Messages.Add(new Message(MessageType.MyPlanetRetroBombed, text, planet));
             }
         }
 

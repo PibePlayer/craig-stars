@@ -132,8 +132,13 @@ namespace CraigStars
                             KillRate = slot.HullComponent.KillRate,
                             MinKillRate = slot.HullComponent.MinKillRate,
                             StructureDestroyRate = slot.HullComponent.StructureDestroyRate,
+                            UnterraformRate = slot.HullComponent.UnterraformRate
                         };
-                        if (slot.HullComponent.Smart)
+                        if (slot.HullComponent.UnterraformRate > 0)
+                        {
+                            spec.RetroBombs.Add(bomb);
+                        }
+                        else if (slot.HullComponent.Smart)
                         {
                             spec.SmartBombs.Add(bomb);
                         }
@@ -420,6 +425,7 @@ namespace CraigStars
                 spec.Bomber = token.Design.Spec.Bomber ? true : spec.Bomber;
                 spec.Bombs.AddRange(token.Design.Spec.Bombs);
                 spec.SmartBombs.AddRange(token.Design.Spec.SmartBombs);
+                spec.RetroBombs.AddRange(token.Design.Spec.RetroBombs);
 
                 // check if any tokens have weapons
                 // we process weapon slots per stack, so we don't need to spec all

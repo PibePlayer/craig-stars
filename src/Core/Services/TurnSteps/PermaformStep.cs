@@ -43,7 +43,7 @@ namespace CraigStars
             }
 
             // see if we permaform
-            if (adjustedPermaformChance >= Rules.Random.NextDouble())
+            if (adjustedPermaformChance >= (float)Rules.Random.NextDouble())
             {
                 HabType habType = (HabType)Rules.Random.Next(3);
                 var result = planetService.PermaformOneStep(planet, player, habType);

@@ -27,7 +27,7 @@ namespace CraigStars.Tests
 
             // should be the same as a default
             var spec = service.ComputeRaceSpecs(race);
-            Assert.AreEqual(1, spec.EngineCostFactor);
+            Assert.AreEqual(0, spec.TechCostOffset.Count);
             Assert.AreEqual(0, spec.EngineFailureRate);
             Assert.AreEqual(new TechLevel(), spec.StartingTechLevels);
 
@@ -42,7 +42,7 @@ namespace CraigStars.Tests
 
             spec = service.ComputeRaceSpecs(race);
             // check some specs
-            Assert.AreEqual(.5f, spec.EngineCostFactor);
+            Assert.AreEqual(-.5f, spec.TechCostOffset[TechCategory.Engine]);
             Assert.AreEqual(.1f, spec.EngineFailureRate);
 
             // PRT HE + OBRM means we have -40% growth rate
@@ -106,7 +106,7 @@ namespace CraigStars.Tests
         {
             // empty race, should be default 
             Race race = new Race();
-            var spec = service.ComputeRaceSpecs(race);            
+            var spec = service.ComputeRaceSpecs(race);
             Assert.AreEqual(1f, spec.StarbaseCostFactor);
 
             // should be .8f for AR

@@ -36,7 +36,28 @@ namespace CraigStars
 
                 // research for this player
                 player.ResearchSpentLastYear = resourcesToSpend;
-                totalSpent += researcher.ResearchNextLevel(player, resourcesToSpend);
+
+                if (resourcesToSpend > 0)
+                {
+                    // apply GR research halving
+                    var primaryField = player.Researching;
+                    var primaryResearchResources = (int)(resourcesToSpend * player.Race.Spec.ResearchFactor + .5f);
+                    totalSpent += researcher.ResearchNextLevel(player, primaryResearchResources);
+
+                    // apply GR research splash damage
+                    if (player.Race.Spec.ResearchSplashDamage > 0)
+                    {
+                        var resourcesToSpendOnOtherFields = (int)(resourcesToSpend * player.Race.Spec.ResearchSplashDamage + .5f);
+                        foreach (TechField field in Enum.GetValues(typeof(TechField)))
+                        {
+                            if (field != primaryField)
+                            {
+                                totalSpent += researcher.Research(player, resourcesToSpendOnOtherFields, field);
+                            }
+                        }
+                    }
+                }
+
             }
 
 

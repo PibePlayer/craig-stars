@@ -55,9 +55,9 @@ namespace CraigStars
 
         internal void BombPlanet(Planet planet)
         {
-            if (!planet.Owned || planet.Population == 0)
+            if (!planet.Owned || planet.Population == 0 || planet.HasStarbase || Game.Players[planet.PlayerNum].Race.Spec.LivesOnStarbases)
             {
-                // can't bomb uninhabited planets
+                // can't bomb uninhabited planets, planets with starbases, or planets that are owned by AR races
                 return;
             }
 

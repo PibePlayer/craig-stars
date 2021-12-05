@@ -1,10 +1,9 @@
-using Godot;
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
-
 using CraigStars;
 using CraigStars.Singletons;
+using Godot;
+using NUnit.Framework;
 
 namespace CraigStars.Tests
 {
@@ -126,6 +125,7 @@ namespace CraigStars.Tests
             planet.Mines = 100;
             planet.Factories = 100;
             planet.Defenses = 10;
+            planet.Starbase = null;
 
             // one mini-bomber
             var fleet = new Fleet()
@@ -181,6 +181,7 @@ namespace CraigStars.Tests
             planet.Mines = 100;
             planet.Factories = 100;
             planet.Defenses = 10;
+            planet.Starbase = null;
 
             // one mini-bomber
             var fleet1 = new Fleet()
@@ -258,6 +259,7 @@ namespace CraigStars.Tests
             planet.BaseHab = new Hab(47, 50, 50);
             planet.Hab = new Hab(50, 50, 50);
             planet.TerraformedAmount = new Hab(3, 0, 0);
+            planet.Starbase = null;
 
             // one mini-bomber
             var fleet = new Fleet()
@@ -294,6 +296,52 @@ namespace CraigStars.Tests
             Assert.AreEqual(new Hab(1, 0, 0), planet.TerraformedAmount);
             Assert.AreEqual(1, planetOwner.Messages.Count);
             Assert.AreEqual(1, fleetOwner.Messages.Count);
+        }
+
+        [Test]
+        public void TestOrbitalConstructionModuleBombPlanet()
+        {
+            var planet = game.Planets[0];
+            var planetOwner = game.Players[0];
+            var fleetOwner = game.Players[1];
+
+            // create a terraformed planet
+            planet.Population = 10_000;
+
+            planet.Name = "Brin";
+            planet.PlayerNum = planetOwner.Num;
+            planet.Population = 10000;
+            planet.Mines = 100;
+            planet.Factories = 100;
+            planet.Defenses = 10;
+            planet.Starbase = null;
+
+            // one colonizer with orbital construction module
+            var colonizer = TestUtils.CreateDesign(game, fleetOwner, ShipDesigns.SantaMaria);
+            colonizer.Slots[1].HullComponent = Techs.OrbitalConstructionModule;
+            var fleet = new Fleet()
+            {
+                PlayerNum = fleetOwner.Num,
+                Tokens = new List<ShipToken>() {
+                    new ShipToken(colonizer, 1)
+                },
+                Cargo = new Cargo(colonists: 25)
+            };
+            game.Fleets.Add(fleet);
+
+            gameRunner.ComputeSpecs(recompute: true);
+
+            fleet.Orbiting = planet;
+            planet.OrbitingFleets.Add(fleet);
+
+            step.BombPlanet(planet);
+
+            Assert.AreEqual(1, planetOwner.Messages.Count);
+            Assert.AreEqual(1, fleetOwner.Messages.Count);
+            Assert.AreEqual(8200, planet.Population);
+            Assert.AreEqual(100, planet.Mines);
+            Assert.AreEqual(100, planet.Factories);
+            Assert.AreEqual(10, planet.Defenses);
         }
     }
 }

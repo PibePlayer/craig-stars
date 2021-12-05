@@ -125,7 +125,7 @@ namespace CraigStars
                     spec.TorpedoInaccuracyFactor *= (float)Math.Pow((1 - slot.HullComponent.TorpedoBonus), slot.Quantity);
 
                     // if this slot has a bomb, this design is a bomber
-                    if (slot.HullComponent.HullSlotType == HullSlotType.Bomb)
+                    if (slot.HullComponent.HullSlotType == HullSlotType.Bomb || slot.HullComponent.MinKillRate > 0)
                     {
                         spec.Bomber = true;
                         var bomb = new Bomb()

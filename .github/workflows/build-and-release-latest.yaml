@@ -24,7 +24,7 @@ jobs:
       with:
         lfs: true
 
-    - name: Setup .NET 5
+    - name: Setup .NET 6
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 6.0.x
@@ -117,7 +117,7 @@ jobs:
               echo "::set-output name=name::${EXPORT_NAME}${FILE_EXTENSION}"
           fi
 
-      - name: Setup .NET 5
+      - name: Setup .NET 6
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 6.0.x

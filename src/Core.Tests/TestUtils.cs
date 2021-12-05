@@ -79,7 +79,7 @@ namespace CraigStars.Tests
             var starbase = CreateDesign(game, player, ShipDesigns.Starbase.Clone(player));
             var planet = new Planet()
             {
-                Name = "Planet 1",
+                Name = "Brin",
                 Cargo = new Cargo(),
                 MineYears = new Mineral(),
                 BaseHab = new Hab(50, 50, 50),
@@ -114,7 +114,7 @@ namespace CraigStars.Tests
             var fleet = new Fleet()
             {
                 PlayerNum = player.Num,
-                Name = "Fleet 1",
+                Name = "Long Range Scout #1",
                 Tokens = new List<ShipToken>(new ShipToken[] {
                     new ShipToken()
                     {
@@ -175,7 +175,7 @@ namespace CraigStars.Tests
             // create empty planets and have the players discover them
             var planet1 = new Planet()
             {
-                Name = "Planet 1",
+                Name = "Brin",
                 Position = new Vector2(0, 0),
                 Cargo = new Cargo(),
                 MineYears = new Mineral(),
@@ -196,7 +196,7 @@ namespace CraigStars.Tests
             planet1.Starbase.Orbiting = planet1;
             var planet2 = new Planet()
             {
-                Name = "Planet 2",
+                Name = "Bob",
                 Position = new Vector2(200, 200),
                 Cargo = new Cargo(),
                 MineYears = new Mineral(),
@@ -244,7 +244,7 @@ namespace CraigStars.Tests
             var fleet1 = new Fleet()
             {
                 PlayerNum = player1.Num,
-                Name = "Fleet 1",
+                Name = "Long Range Scout #1",
                 Position = planet1.Position,
                 Tokens = new List<ShipToken>(new ShipToken[] {
                     new ShipToken()
@@ -262,7 +262,7 @@ namespace CraigStars.Tests
             var fleet2 = new Fleet()
             {
                 PlayerNum = player2.Num,
-                Name = "Fleet 2",
+                Name = "Peepers #1",
                 Position = planet2.Position,
                 Tokens = new List<ShipToken>(new ShipToken[] {
                     new ShipToken()

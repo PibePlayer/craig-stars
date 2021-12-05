@@ -110,45 +110,67 @@ namespace CraigStars.Tests
         }
 
         [Test]
+        public void TestWillNotBombPlanet()
+        {
+            var planet = game.Planets[0];
+            var planetOwner = game.Players[0];
+            var fleetOwner = game.Players[1];
+
+            planet.Population = 10_000;
+            planet.Mines = 100;
+            planet.Factories = 100;
+            planet.Defenses = 10;
+
+            // one mini-bomber
+            var design = TestUtils.CreateDesign(game, fleetOwner, ShipDesigns.MiniBomber);
+            var fleet = new Fleet()
+            {
+                PlayerNum = fleetOwner.Num,
+                Name = "Mini-Bomber #2",
+                Tokens = new List<ShipToken>() {
+                    new ShipToken(design, 1)
+                }
+            };
+            game.Fleets.Add(fleet);
+
+            gameRunner.ComputeSpecs(recompute: true);
+
+            fleet.Orbiting = planet;
+            planet.OrbitingFleets.Add(fleet);
+
+            step.BombPlanet(planet);
+
+            Assert.AreEqual(10000, planet.Population);
+            Assert.AreEqual(100, planet.Mines);
+            Assert.AreEqual(100, planet.Factories);
+            Assert.AreEqual(10, planet.Defenses);
+        }
+
+        [Test]
         public void TestBombPlanet()
         {
             var planet = game.Planets[0];
             var planetOwner = game.Players[0];
             var fleetOwner = game.Players[1];
 
-            // create a terraformed planet
-            planet.Population = 10_000;
 
-            planet.Name = "Brin";
-            planet.PlayerNum = planetOwner.Num;
-            planet.Population = 10000;
+            planet.Population = 10_000;
             planet.Mines = 100;
             planet.Factories = 100;
             planet.Defenses = 10;
             planet.Starbase = null;
 
             // one mini-bomber
+            var design = TestUtils.CreateDesign(game, fleetOwner, ShipDesigns.MiniBomber);
             var fleet = new Fleet()
             {
                 PlayerNum = fleetOwner.Num,
-                Name = "Mini-Bomber #1",
+                Name = "Mini-Bomber #2",
                 Tokens = new List<ShipToken>() {
-                    new ShipToken() {
-                        Design = new ShipDesign() {
-                            PlayerNum = fleetOwner.Num,
-                            Hull = Techs.MiniBomber,
-                            Slots = new List<ShipDesignSlot>() {
-                                new ShipDesignSlot(Techs.QuickJump5, 1, 1),
-                                new ShipDesignSlot(Techs.LadyFingerBomb, 2, 2),
-                            },
-                        },
-                        Quantity = 1
-                    }
+                    new ShipToken(design, 1)
                 }
             };
-            game.Designs.Add(fleet.Tokens[0].Design);
             game.Fleets.Add(fleet);
-            game.Planets.Add(planet);
 
             gameRunner.ComputeSpecs(recompute: true);
 
@@ -172,38 +194,23 @@ namespace CraigStars.Tests
             var planetOwner = game.Players[0];
             var fleetOwner = game.Players[1];
 
-            // create a terraformed planet
-            planet.Population = 10_000;
 
-            planet.Name = "Brin";
-            planet.PlayerNum = planetOwner.Num;
-            planet.Population = 10000;
+            planet.Population = 10_000;
             planet.Mines = 100;
             planet.Factories = 100;
             planet.Defenses = 10;
             planet.Starbase = null;
 
             // one mini-bomber
+            var design = TestUtils.CreateDesign(game, fleetOwner, ShipDesigns.MiniBomber);
             var fleet1 = new Fleet()
             {
                 PlayerNum = fleetOwner.Num,
-                Name = "Mini-Bomber #1",
+                Name = "Mini-Bomber #2",
                 Tokens = new List<ShipToken>() {
-                    new ShipToken() {
-                        Design = new ShipDesign() {
-                            PlayerNum = fleetOwner.Num,
-                            Hull = Techs.MiniBomber,
-                            Slots = new List<ShipDesignSlot>() {
-                                new ShipDesignSlot(Techs.QuickJump5, 1, 1),
-                                new ShipDesignSlot(Techs.LadyFingerBomb, 2, 2),
-                            },
-                        },
-                        Quantity = 1
-                    }
+                    new ShipToken(design, 1)
                 }
             };
-
-            game.Designs.Add(fleet1.Tokens[0].Design);
             game.Fleets.Add(fleet1);
 
             // one mini-bomber with smart bombs
@@ -261,7 +268,7 @@ namespace CraigStars.Tests
             planet.TerraformedAmount = new Hab(3, 0, 0);
             planet.Starbase = null;
 
-            // one mini-bomber
+            // one mini-bomber with retro-bomb
             var fleet = new Fleet()
             {
                 PlayerNum = fleetOwner.Num,
@@ -305,12 +312,7 @@ namespace CraigStars.Tests
             var planetOwner = game.Players[0];
             var fleetOwner = game.Players[1];
 
-            // create a terraformed planet
             planet.Population = 10_000;
-
-            planet.Name = "Brin";
-            planet.PlayerNum = planetOwner.Num;
-            planet.Population = 10000;
             planet.Mines = 100;
             planet.Factories = 100;
             planet.Defenses = 10;

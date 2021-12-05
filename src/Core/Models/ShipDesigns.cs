@@ -88,6 +88,20 @@ namespace CraigStars
             }
         };
 
+        public static ShipDesign OrbitalAdjuster = new ShipDesign()
+        {
+            Name = "Orbital Adjuster",
+            Hull = Techs.MiniMiner,
+            HullSetNumber = 0,
+            Slots = new List<ShipDesignSlot>()
+            {
+                new ShipDesignSlot(Techs.LongHump6, 1, 1),
+                new ShipDesignSlot(Techs.RhinoScanner, 2, 1),
+                new ShipDesignSlot(Techs.OrbitalAdjuster, 3, 1),
+                new ShipDesignSlot(Techs.OrbitalAdjuster, 4, 1),
+            }
+        };
+
         public static ShipDesign StalwartDefender = new ShipDesign()
         {
             Name = "Stalwart Defender",

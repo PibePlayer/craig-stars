@@ -7,19 +7,6 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/src/Core.Tests/Core.Tests.csproj",
-                "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
-            ],
-            "problemMatcher": "$msCompile"
-        },
-        {
-            "label": "publish",
-            "command": "dotnet",
-            "type": "process",
-            "args": [
-                "publish",
-                "${workspaceFolder}/src/Core.Tests/Core.Tests.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -38,5 +25,6 @@
             ],
             "problemMatcher": "$msCompile"
         },
+
     ]
 }

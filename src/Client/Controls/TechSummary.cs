@@ -321,7 +321,7 @@ namespace CraigStars.Client
 
                     if (hullComponent.UnterraformRate > 0)
                     {
-                        AddDescription($"This bomb does not kill colonists or destroy installations. This bomb 'unterraforms' planets toward their original state up to {hullComponent.TerraformRate}% per variable per bombing run. Planetary defenses have no effect on this bomb.");
+                        AddDescription($"This bomb does not kill colonists or destroy installations. This bomb 'unterraforms' planets toward their original state up to {hullComponent.UnterraformRate}% per variable per bombing run. Planetary defenses have no effect on this bomb.");
                     }
 
                     if (hullComponent.CloakUnits > 0 && hullComponent.TerraformRate == 0)

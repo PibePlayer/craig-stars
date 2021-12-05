@@ -211,6 +211,7 @@ namespace CraigStars
                     {
                         // apply the unterraform amount
                         planet.Hab += unterraformAmount;
+                        planet.TerraformedAmount += unterraformAmount;
 
                         // update planet spec
                         planet.Spec = planetService.ComputePlanetSpec(planet, defender);

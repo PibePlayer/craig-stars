@@ -6,230 +6,229 @@ using System.Collections.Generic;
 
 namespace CraigStars.Client
 {
-    public class MainMenu : MarginContainer
-    {
-        static CSLog log = LogProvider.GetLogger(typeof(MainMenu));
+	public class MainMenu : MarginContainer
+	{
+		static CSLog log = LogProvider.GetLogger(typeof(MainMenu));
 
-        WindowDialog hostWindow;
-        WindowDialog joinWindow;
-        LineEdit joinHostEdit;
-        LineEdit hostPortEdit;
-        LineEdit joinPortEdit;
+		WindowDialog hostWindow;
+		WindowDialog joinWindow;
+		LineEdit joinHostEdit;
+		LineEdit hostPortEdit;
+		LineEdit joinPortEdit;
 
-        Control continueGameInfo;
-        Button continueGameButton;
-        Label continueGameNameLabel;
-        SpinBox continueGameYearSpinBox;
+		Control continueGameInfo;
+		Button continueGameButton;
+		Label continueGameNameLabel;
+		SpinBox continueGameYearSpinBox;
 
-        List<PlayerMessage> Messages { get; } = new List<PlayerMessage>();
-        ClientRPC clientRPC;
+		List<PlayerMessage> Messages { get; } = new List<PlayerMessage>();
+		ClientRPC clientRPC;
 
-        private bool joining = false;
+		private bool joining = false;
 
-        public override void _Ready()
-        {
-            hostWindow = GetNode<WindowDialog>("HostWindow");
-            joinWindow = GetNode<WindowDialog>("JoinWindow");
-            hostPortEdit = (LineEdit)hostWindow.FindNode("PortEdit");
-            joinHostEdit = (LineEdit)joinWindow.FindNode("HostEdit");
-            joinPortEdit = (LineEdit)joinWindow.FindNode("PortEdit");
+		public override void _Ready()
+		{
+			hostWindow = GetNode<WindowDialog>("HostWindow");
+			joinWindow = GetNode<WindowDialog>("JoinWindow");
+			hostPortEdit = (LineEdit)hostWindow.FindNode("PortEdit");
+			joinHostEdit = (LineEdit)joinWindow.FindNode("HostEdit");
+			joinPortEdit = (LineEdit)joinWindow.FindNode("PortEdit");
 
-            continueGameInfo = (Control)FindNode("ContinueGameInfo");
-            continueGameButton = (Button)FindNode("ContinueGameButton");
-            continueGameNameLabel = (Label)FindNode("ContinueGameNameLabel");
-            continueGameYearSpinBox = (SpinBox)FindNode("ContinueGameYearSpinBox");
+			continueGameInfo = (Control)FindNode("ContinueGameInfo");
+			continueGameButton = (Button)FindNode("ContinueGameButton");
+			continueGameNameLabel = (Label)FindNode("ContinueGameNameLabel");
+			continueGameYearSpinBox = (SpinBox)FindNode("ContinueGameYearSpinBox");
 
-            hostPortEdit.Text = Settings.Instance.ServerPort.ToString();
-            joinHostEdit.Text = Settings.Instance.ClientHost;
-            joinPortEdit.Text = Settings.Instance.ClientPort.ToString();
+			hostPortEdit.Text = Settings.Instance.ServerPort.ToString();
+			joinHostEdit.Text = Settings.Instance.ClientHost;
+			joinPortEdit.Text = Settings.Instance.ClientPort.ToString();
 
+			if (Settings.Instance.ContinueGame != null)
+			{
+				continueGameButton.Visible = continueGameInfo.Visible = true;
+				continueGameNameLabel.Text = Settings.Instance.ContinueGame;
+				continueGameYearSpinBox.Value = Settings.Instance.ContinueYear;
+				continueGameYearSpinBox.MaxValue = Settings.Instance.ContinueYear;
+				var minSizeRect = continueGameYearSpinBox.RectMinSize;
+				minSizeRect.x = continueGameYearSpinBox.GetFont("").GetStringSize("2400").x;
+				continueGameYearSpinBox.RectMinSize = minSizeRect;
 
-            if (Settings.Instance.ContinueGame != null)
-            {
-                continueGameButton.Visible = continueGameInfo.Visible = true;
-                continueGameNameLabel.Text = Settings.Instance.ContinueGame;
-                continueGameYearSpinBox.Value = Settings.Instance.ContinueYear;
-                continueGameYearSpinBox.MaxValue = Settings.Instance.ContinueYear;
-                var minSizeRect = continueGameYearSpinBox.RectMinSize;
-                minSizeRect.x = continueGameYearSpinBox.GetFont("").GetStringSize("2400").x;
-                continueGameYearSpinBox.RectMinSize = minSizeRect;
+				continueGameButton.Connect("pressed", this, nameof(OnContinueGameButtonPressed));
+			}
 
-                continueGameButton.Connect("pressed", this, nameof(OnContinueGameButtonPressed));
-            }
+			((CSButton)FindNode("NewGameButton")).GrabFocus();
+			((CSButton)FindNode("ExitButton")).OnPressed((b) => GetTree().Quit());
+			((CSButton)FindNode("SettingsButton")).OnPressed((b) => GetTree().ChangeScene("res://src/Client/MenuScreens/SettingsMenu.tscn"));
+			((CSButton)FindNode("NewGameButton")).OnPressed((b) => GetTree().ChangeScene("res://src/Client/MenuScreens/NewGameMenu.tscn"));
+			((CSButton)FindNode("LoadGameButton")).OnPressed((b) => GetTree().ChangeScene("res://src/Client/MenuScreens/LoadGameMenu.tscn"));
+			((CSButton)FindNode("CustomRacesButton")).OnPressed((b) => GetTree().ChangeScene("res://src/Client/MenuScreens/CustomRacesMenu.tscn"));
+			FindNode("HostGameButton").Connect("pressed", this, nameof(OnHostGameButtonPressed));
+			FindNode("JoinGameButton").Connect("pressed", this, nameof(OnJoinGameButtonPressed));
 
-            ((CSButton)FindNode("NewGameButton")).GrabFocus();
-            ((CSButton)FindNode("ExitButton")).OnPressed((b) => GetTree().Quit());
-            ((CSButton)FindNode("SettingsButton")).OnPressed((b) => GetTree().ChangeScene("res://src/Client/MenuScreens/SettingsMenu.tscn"));
-            ((CSButton)FindNode("NewGameButton")).OnPressed((b) => GetTree().ChangeScene("res://src/Client/MenuScreens/NewGameMenu.tscn"));
-            ((CSButton)FindNode("LoadGameButton")).OnPressed((b) => GetTree().ChangeScene("res://src/Client/MenuScreens/LoadGameMenu.tscn"));
-            ((CSButton)FindNode("CustomRacesButton")).OnPressed((b) => GetTree().ChangeScene("res://src/Client/MenuScreens/CustomRacesMenu.tscn"));
-            FindNode("HostGameButton").Connect("pressed", this, nameof(OnHostGameButtonPressed));
-            FindNode("JoinGameButton").Connect("pressed", this, nameof(OnJoinGameButtonPressed));
+			joinWindow.Connect("popup_hide", this, nameof(OnJoinWindoPopupHide));
+			joinWindow.FindNode("CancelButton").Connect("pressed", this, nameof(OnJoinWindowCancelButtonPressed));
+			joinWindow.FindNode("JoinButton").Connect("pressed", this, nameof(OnJoinWindowJoinButtonPressed));
+			hostWindow.Connect("popup_hide", this, nameof(OnHostWindowPopupHide));
+			hostWindow.FindNode("HostButton").Connect("pressed", this, nameof(OnHostWindowHostButtonPressed));
 
-            joinWindow.Connect("popup_hide", this, nameof(OnJoinWindoPopupHide));
-            joinWindow.FindNode("CancelButton").Connect("pressed", this, nameof(OnJoinWindowCancelButtonPressed));
-            joinWindow.FindNode("JoinButton").Connect("pressed", this, nameof(OnJoinWindowJoinButtonPressed));
-            hostWindow.Connect("popup_hide", this, nameof(OnHostWindowPopupHide));
-            hostWindow.FindNode("HostButton").Connect("pressed", this, nameof(OnHostWindowHostButtonPressed));
+			clientRPC = ClientRPC.Instance(GetTree());
+			clientRPC.PlayerJoinedNewGameEvent += OnPlayerJoinedNewGame;
+			clientRPC.PlayerJoinedExistingGameEvent += OnPlayerJoinedExistingGame;
+			clientRPC.PlayerMessageEvent += OnPlayerMessage;
 
-            clientRPC = ClientRPC.Instance(GetTree());
-            clientRPC.PlayerJoinedNewGameEvent += OnPlayerJoinedNewGame;
-            clientRPC.PlayerJoinedExistingGameEvent += OnPlayerJoinedExistingGame;
-            clientRPC.PlayerMessageEvent += OnPlayerMessage;
+			EventManager.GameStartingEvent += OnGameStarting;
+			GetTree().Connect("server_disconnected", this, nameof(OnServerDisconnected));
+			GetTree().Connect("connection_failed", this, nameof(OnConnectionFailed));
 
-            EventManager.GameStartingEvent += OnGameStarting;
-            GetTree().Connect("server_disconnected", this, nameof(OnServerDisconnected));
-            GetTree().Connect("connection_failed", this, nameof(OnConnectionFailed));
+		}
 
-        }
-
-        public override void _Notification(int what)
-        {
-            base._Notification(what);
-            if (what == NotificationPredelete)
-            {
-                clientRPC.PlayerJoinedNewGameEvent -= OnPlayerJoinedNewGame;
-                clientRPC.PlayerJoinedExistingGameEvent -= OnPlayerJoinedExistingGame;
-                clientRPC.PlayerMessageEvent -= OnPlayerMessage;
-                EventManager.GameStartingEvent -= OnGameStarting;
-            }
-        }
-
-
-        void OnJoinWindowCancelButtonPressed()
-        {
-            joining = false;
-            NetworkClient.Instance.CloseConnection();
-            ((Button)joinWindow.FindNode("CancelButton")).Disabled = true;
-            ((Button)joinWindow.FindNode("JoinButton")).Text = "Join";
-        }
-
-        void OnJoinWindowJoinButtonPressed()
-        {
-            joining = true;
-            ((Button)joinWindow.FindNode("CancelButton")).Disabled = false;
-            ((Button)joinWindow.FindNode("JoinButton")).Text = "Joining...";
-            var host = ((LineEdit)joinWindow.FindNode("HostEdit")).Text;
-            var port = int.Parse(((LineEdit)joinWindow.FindNode("PortEdit")).Text);
-            Settings.Instance.ClientHost = host;
-            Settings.Instance.ClientPort = port;
-            NetworkClient.Instance.JoinNewGame(host, port);
-        }
-
-        void OnContinueGameButtonPressed()
-        {
-            var (gameInfo, players) = ServerManager.Instance.ContinueGame(Settings.Instance.ContinueGame, (int)continueGameYearSpinBox.Value);
-            this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (clientView) =>
-            {
-                clientView.GameInfo = gameInfo;
-                clientView.LocalPlayers = players;
-            });
-        }
-
-        void OnHostGameButtonPressed()
-        {
-            // skip the host view and just go to lobby
-            // we'll move the port to settings
-            OnHostWindowHostButtonPressed();
-            // Hide();
-            // hostWindow.PopupCentered();
-        }
-
-        void OnJoinGameButtonPressed()
-        {
-            Hide();
-            joinWindow.PopupCentered();
-        }
-
-        void OnJoinWindoPopupHide()
-        {
-            Show();
-        }
-
-        void OnHostWindowPopupHide()
-        {
-            Show();
-        }
-
-        void OnHostWindowHostButtonPressed()
-        {
-            PlayersManager.Reset();
-            Settings.Instance.ServerPort = int.Parse(hostPortEdit.Text);
-            ServerManager.Instance.HostGame(port: Settings.Instance.ServerPort);
-
-            // join the server we just created
-            CallDeferred(nameof(HostJoinNewlyHostedGame));
-
-            this.ChangeSceneTo<LobbyMenu>("res://src/Client/MenuScreens/LobbyMenu.tscn", (instance) =>
-            {
-                instance.IsHost = true;
-            });
-        }
-
-        /// <summary>
-        /// Join our own newly hosted game
-        /// </summary>
-        void HostJoinNewlyHostedGame()
-        {
-            NetworkClient.Instance.JoinNewGame("localhost", Settings.Instance.ServerPort);
-        }
-
-        #region Joining Network Games
-
-        public void OnServerDisconnected()
-        {
-            joining = false;
-        }
-
-        public void OnConnectionFailed()
-        {
-            joining = false;
-        }
+		public override void _Notification(int what)
+		{
+			base._Notification(what);
+			if (what == NotificationPredelete)
+			{
+				clientRPC.PlayerJoinedNewGameEvent -= OnPlayerJoinedNewGame;
+				clientRPC.PlayerJoinedExistingGameEvent -= OnPlayerJoinedExistingGame;
+				clientRPC.PlayerMessageEvent -= OnPlayerMessage;
+				EventManager.GameStartingEvent -= OnGameStarting;
+			}
+		}
 
 
-        void OnPlayerMessage(PlayerMessage message)
-        {
-            Messages.Add(message);
-        }
+		void OnJoinWindowCancelButtonPressed()
+		{
+			joining = false;
+			NetworkClient.Instance.CloseConnection();
+			((Button)joinWindow.FindNode("CancelButton")).Disabled = true;
+			((Button)joinWindow.FindNode("JoinButton")).Text = "Join";
+		}
 
-        void OnPlayerJoinedNewGame(PublicPlayerInfo player)
-        {
-            // once our player is updated from the server, go to the lobby
-            if (joining && this.IsClient() && player.NetworkId == this.GetNetworkId())
-            {
-                this.ChangeSceneTo<LobbyMenu>("res://src/Client/MenuScreens/LobbyMenu.tscn", (instance) =>
-                {
-                    instance.InitialMessages.AddRange(Messages);
-                    instance.PlayerName = Settings.Instance.PlayerName;
-                });
-            }
-        }
+		void OnJoinWindowJoinButtonPressed()
+		{
+			joining = true;
+			((Button)joinWindow.FindNode("CancelButton")).Disabled = false;
+			((Button)joinWindow.FindNode("JoinButton")).Text = "Joining...";
+			var host = ((LineEdit)joinWindow.FindNode("HostEdit")).Text;
+			var port = int.Parse(((LineEdit)joinWindow.FindNode("PortEdit")).Text);
+			Settings.Instance.ClientHost = host;
+			Settings.Instance.ClientPort = port;
+			NetworkClient.Instance.JoinNewGame(host, port);
+		}
 
-        void OnPlayerJoinedExistingGame(PublicGameInfo gameInfo)
-        {
-            // once our player is updated from the server, go to the lobby
-            if (this.IsClient())
-            {
-                this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (clientView) =>
-                {
-                    clientView.GameInfo = gameInfo;
-                    clientView.PlayerName = Settings.Instance.PlayerName;
-                });
-            }
-        }
+		void OnContinueGameButtonPressed()
+		{
+			var (gameInfo, players) = ServerManager.Instance.ContinueGame(Settings.Instance.ContinueGame, (int)continueGameYearSpinBox.Value);
+			this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (clientView) =>
+			{
+				clientView.GameInfo = gameInfo;
+				clientView.LocalPlayers = players;
+			});
+		}
 
-        #endregion
+		void OnHostGameButtonPressed()
+		{
+			// skip the host view and just go to lobby
+			// we'll move the port to settings
+			OnHostWindowHostButtonPressed();
+			// Hide();
+			// hostWindow.PopupCentered();
+		}
 
-        /// <summary>
-        /// The server will notify us when the game is ready
-        /// </summary>
-        /// <param name="gameInfo"></param>
-        void OnGameStarting(PublicGameInfo gameInfo)
-        {
-            this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (clientView) =>
-            {
-                clientView.GameInfo = gameInfo;
-            });
-        }
-    }
+		void OnJoinGameButtonPressed()
+		{
+			Hide();
+			joinWindow.PopupCentered();
+		}
+
+		void OnJoinWindoPopupHide()
+		{
+			Show();
+		}
+
+		void OnHostWindowPopupHide()
+		{
+			Show();
+		}
+
+		void OnHostWindowHostButtonPressed()
+		{
+			PlayersManager.Reset();
+			Settings.Instance.ServerPort = int.Parse(hostPortEdit.Text);
+			ServerManager.Instance.HostGame(port: Settings.Instance.ServerPort);
+
+			// join the server we just created
+			CallDeferred(nameof(HostJoinNewlyHostedGame));
+
+			this.ChangeSceneTo<LobbyMenu>("res://src/Client/MenuScreens/LobbyMenu.tscn", (instance) =>
+			{
+				instance.IsHost = true;
+			});
+		}
+
+		/// <summary>
+		/// Join our own newly hosted game
+		/// </summary>
+		void HostJoinNewlyHostedGame()
+		{
+			NetworkClient.Instance.JoinNewGame("localhost", Settings.Instance.ServerPort);
+		}
+
+		#region Joining Network Games
+
+		public void OnServerDisconnected()
+		{
+			joining = false;
+		}
+
+		public void OnConnectionFailed()
+		{
+			joining = false;
+		}
+
+
+		void OnPlayerMessage(PlayerMessage message)
+		{
+			Messages.Add(message);
+		}
+
+		void OnPlayerJoinedNewGame(PublicPlayerInfo player)
+		{
+			// once our player is updated from the server, go to the lobby
+			if (joining && this.IsClient() && player.NetworkId == this.GetNetworkId())
+			{
+				this.ChangeSceneTo<LobbyMenu>("res://src/Client/MenuScreens/LobbyMenu.tscn", (instance) =>
+				{
+					instance.InitialMessages.AddRange(Messages);
+					instance.PlayerName = Settings.Instance.PlayerName;
+				});
+			}
+		}
+
+		void OnPlayerJoinedExistingGame(PublicGameInfo gameInfo)
+		{
+			// once our player is updated from the server, go to the lobby
+			if (this.IsClient())
+			{
+				this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (clientView) =>
+				{
+					clientView.GameInfo = gameInfo;
+					clientView.PlayerName = Settings.Instance.PlayerName;
+				});
+			}
+		}
+
+		#endregion
+
+		/// <summary>
+		/// The server will notify us when the game is ready
+		/// </summary>
+		/// <param name="gameInfo"></param>
+		void OnGameStarting(PublicGameInfo gameInfo)
+		{
+			this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (clientView) =>
+			{
+				clientView.GameInfo = gameInfo;
+			});
+		}
+	}
 }

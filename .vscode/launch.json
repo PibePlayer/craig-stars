@@ -5,24 +5,6 @@
    "version": "0.2.0",
    "configurations": [
     {
-        "name": "Play Main Scene In Editor",
-        "type": "godot-mono",
-        "mode": "playInEditor",
-        "request": "launch"
-    },
-    {
-        "name": "Build & Launch",
-        "type": "godot-mono",
-        "request": "launch",
-        "mode": "executable",
-        "executable": "/Applications/Godot_mono.app/Contents/MacOS/Godot", 
-        "executableArguments": [
-            "--path",
-            "${workspaceRoot}"
-        ],
-        "preLaunchTask": "build",
-    },
-    {
         "name": "Launch Unit Tests",
         "type": "coreclr",
         "request": "launch",
@@ -32,6 +14,48 @@
         "cwd": "${workspaceFolder}/src/Core.Tests",
         "stopAtEntry": false,
         "console": "internalConsole"
+    },
+    {
+        "name": "Play in Editor",
+        "type": "godot-mono",
+        "mode": "playInEditor",
+        "request": "launch"
+    },
+    {
+        "name": "Launch",
+        "type": "godot-mono",
+        "request": "launch",
+        "mode": "executable",
+        "preLaunchTask": "build",
+        "executable": "/Applications/Godot_mono.app/Contents/MacOS/Godot",
+        // See which arguments are available here:
+        // https://docs.godotengine.org/en/stable/getting_started/editor/command_line_tutorial.html
+        "executableArguments": [
+            "--path",
+            "${workspaceRoot}"
+        ]
+    },
+    {
+        "name": "Launch (Select Scene)",
+        "type": "godot-mono",
+        "request": "launch",
+        "mode": "executable",
+        "preLaunchTask": "build",
+        "executable": "/Applications/Godot_mono.app/Contents/MacOS/Godot",
+        // See which arguments are available here:
+        // https://docs.godotengine.org/en/stable/getting_started/editor/command_line_tutorial.html
+        "executableArguments": [
+            "--path",
+            "${workspaceRoot}",
+            "${command:SelectLaunchScene}"
+        ]
+    },
+    {
+        "name": "Attach",
+        "type": "godot-mono",
+        "request": "attach",
+        "address": "localhost",
+        "port": 23685
     }
     ]
 }

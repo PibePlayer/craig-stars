@@ -19,19 +19,18 @@ godot ([issue #51550](https://github.com/godotengine/godot/pull/51550)).
 
 This clone is done using the [Godot](https://godotengine.org) game engine. To launch this project, install Godot Mono 3.3 or greater (and [the required .net sdks](https://docs.godotengine.org/en/latest/tutorials/scripting/c_sharp/c_sharp_basics.html#setting-up-c-for-godot)), open project.godot in the editor and click the Play button.
 
-To run unit Core.Tests, install [.NET Core 5](https://dotnet.microsoft.com/download).
+To run unit Core.Tests, install [.NET Core 6](https://dotnet.microsoft.com/download).
 
 ## VS Code Extensions:
 
 -   [C#](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csharp)
--   [Mono Debug](https://marketplace.visualstudio.com/items?itemName=ms-vscode.mono-debug)
 -   [C# Tools for Godot](https://marketplace.visualstudio.com/items?itemName=neikeq.godot-csharp-vscode)
--   [godot-tools](https://marketplace.visualstudio.com/items?itemName=geequlim.godot-tools)
--   [Test Explorer UI](https://marketplace.visualstudio.com/items?itemName=hbenl.vscode-test-explorer)
 -   [.Net Core Test Explorer](https://marketplace.visualstudio.com/items?itemName=derivitec-ltd.vscode-dotnet-adapter)
 -   [Prettier - Code formatter](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
 -   [C# Xml Documentation Comments](https://marketplace.visualstudio.com/items?itemName=k--kato.docomment)
--   C# FixFormat Fixed
+
+### Debugging in VS Code
+If you are running on macOS (or linux, probably) and you want to debug in VS Code using the C# Tools for Godot, you have to install mono and msbuild. The easiest way to do this is to install Visual Studio Community edition. This comes with all that setup. You may have to reinstlal dotnet 6 afterwards to fix all the paths Visual Studio breaks. Hopefully this requirement will go away when godot 4.1 comes out and supports .net 6 instead of mono.
 
 _... More to come on setting up a dev environment_
 

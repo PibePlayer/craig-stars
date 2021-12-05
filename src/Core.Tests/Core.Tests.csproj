@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>netcoreapp5</TargetFramework>
+        <TargetFramework>netcoreapp6</TargetFramework>
         <RootNamespace>CraigStars.Tests</RootNamespace>
         <IsTestProject>true</IsTestProject>
         <GenerateProgramFile>false</GenerateProgramFile>

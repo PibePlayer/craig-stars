@@ -254,6 +254,46 @@ namespace CraigStars.Tests
         }
 
         [Test]
+        public void TestGetTerraformAmountTerraformer()
+        {
+            // Create a basic player a 50,50,50 best hab
+            var player = new Player()
+            {
+                Race = new Race()
+                {
+                    HabLow = new Hab(15, 15, 15),
+                    HabHigh = new Hab(85, 85, 85),
+                },
+            };
+
+            // Create a terraformer player with tech levels for Gravity3 terraform
+            var terraformer = new Player()
+            {
+                Race = new Race(),
+                TechLevels = new TechLevel(propulsion: 1, biotechnology: 1),
+            };
+
+            // create a perfect planet
+            var planet = new Planet()
+            {
+                PlayerNum = player.Num,
+                Hab = new Hab(50, 50, 50),
+                BaseHab = new Hab(50, 50, 50),
+                TerraformedAmount = new Hab(),
+            };
+
+            terraformer.PlayerRelations.Add(new PlayerRelationship(player.Num, PlayerRelation.Friend));
+
+            // won't deterraform friends
+            Assert.AreEqual(new Hab(), service.GetTerraformAmount(planet, player, terraformer));
+
+            // will deterraform enemies
+            terraformer.PlayerRelations[0].Relation = PlayerRelation.Enemy;
+            Assert.AreEqual(new Hab(3, 0, 0), service.GetTerraformAmount(planet, player, terraformer));
+
+        }
+
+        [Test]
         public void TestGetMinTerraformAmount()
         {
             // Create a basic player with tech levels for Gravity3 terraform
@@ -359,6 +399,66 @@ namespace CraigStars.Tests
             planet.TerraformedAmount = new Hab();
             Assert.AreEqual(HabType.Gravity, service.GetBestTerraform(planet, player));
 
+        }
+
+        [Test]
+        public void TestGetWorstTerraform()
+        {
+            // Create a basic player with humanoid hab
+            var player1 = new Player()
+            {
+                Race = new Race()
+                {
+                    HabLow = new Hab(15, 15, 15),
+                    HabHigh = new Hab(85, 85, 85),
+                },
+            };
+
+            // Create a unterraformer with total terraform 3
+            var terraformer = new Player()
+            {
+                Race = new Race()
+                {
+                    LRTs = new HashSet<LRT>() { LRT.TT }
+                },
+            };
+
+            // create a perfect planet
+            var planet = new Planet()
+            {
+                BaseHab = new Hab(50, 50, 50),
+                PlayerNum = player1.Num
+            };
+
+            // can't terraform past our abilities
+            planet.Hab = new Hab(47, 47, 47);
+            planet.TerraformedAmount = new Hab(-3, -3, -3);
+            Assert.AreEqual(null, service.GetWorstTerraform(planet, player1, terraformer));
+            planet.Hab = new Hab(53, 53, 53);
+            planet.TerraformedAmount = new Hab(3, 3, 3);
+            Assert.AreEqual(null, service.GetWorstTerraform(planet, player1, terraformer));
+
+            // we can terraform temp
+            planet.Hab = new Hab(47, 48, 47);
+            planet.TerraformedAmount = new Hab(-3, -2, -3);
+            Assert.AreEqual(HabType.Temperature, service.GetWorstTerraform(planet, player1, terraformer));
+            planet.Hab = new Hab(53, 52, 53);
+            planet.TerraformedAmount = new Hab(3, 2, 3);
+            Assert.AreEqual(HabType.Temperature, service.GetWorstTerraform(planet, player1, terraformer));
+
+            // Get the farthest from ideal habType so we push this planet into the
+            // red
+            planet.Hab = new Hab(50, 52, 50);
+            planet.TerraformedAmount = new Hab(0, 2, 0);
+            Assert.AreEqual(HabType.Temperature, service.GetWorstTerraform(planet, player1, terraformer));
+            planet.Hab = new Hab(50, 48, 50);
+            planet.TerraformedAmount = new Hab(0, -2, 0);
+            Assert.AreEqual(HabType.Temperature, service.GetWorstTerraform(planet, player1, terraformer));
+
+            // for a perfect planet (for the player) the terraformer just picks the first one
+            planet.Hab = new Hab(50, 50, 50);
+            planet.TerraformedAmount = new Hab(0, 0, 0);
+            Assert.AreEqual(HabType.Gravity, service.GetWorstTerraform(planet, player1, terraformer));
         }
 
         [Test]

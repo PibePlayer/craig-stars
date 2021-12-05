@@ -153,11 +153,42 @@ namespace CraigStars
             );
         }
 
+        public static Hab operator -(Hab a)
+        {
+            return new Hab(
+                -a.grav,
+                -a.temp,
+                -a.rad
+            );
+        }
+
         /// <summary>
         /// Sum of all absolute values. Used for terraforming
         /// </summary>
         /// <returns></returns>
         [JsonIgnore] public int AbsSum { get => Math.Abs(grav) + Math.Abs(temp) + Math.Abs(rad); }
+
+        /// <summary>
+        /// Get the largest hab type. This is usually used in terraforming when Hab is the amoount
+        /// the player can terraform, or the amount that has been terraformed, rather than an actual planet hab
+        /// </summary>
+        /// <returns></returns>
+        public HabType AbsLargest()
+        {
+            int largest = 0;
+            HabType largestHabType = HabType.Gravity;
+            foreach (HabType habType in Enum.GetValues(typeof(HabType)))
+            {
+                if (Math.Abs(this[habType]) > Math.Abs(largest))
+                {
+                    largest = this[habType];
+                    largestHabType = habType;
+                }
+            }
+
+            return largestHabType;
+        }
+
 
     }
 }

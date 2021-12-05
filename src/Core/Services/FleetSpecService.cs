@@ -62,6 +62,7 @@ namespace CraigStars
             spec.NumEngines = 0;
             spec.MineLayingRateByMineType = new Dictionary<MineFieldType, int>();
             spec.MiningRate = 0;
+            spec.TerraformRate = 0;
             spec.ImmuneToOwnDetonation = hull.ImmuneToOwnDetonation;
             spec.OrbitalConstructionModule = false;
             spec.RepairBonus = hull.RepairBonus;
@@ -103,6 +104,7 @@ namespace CraigStars
                     spec.Initiative += slot.HullComponent.InitiativeBonus;
                     spec.Movement += slot.HullComponent.MovementBonus * slot.Quantity;
                     spec.MiningRate += slot.HullComponent.MiningRate * slot.Quantity;
+                    spec.TerraformRate += slot.HullComponent.TerraformRate * slot.Quantity;
                     spec.OrbitalConstructionModule = spec.OrbitalConstructionModule || slot.HullComponent.OrbitalConstructionModule;
 
                     // Add this mine type to the layers this design has
@@ -342,6 +344,7 @@ namespace CraigStars
             spec.Engine = null;
             spec.MineSweep = 0;
             spec.MiningRate = 0;
+            spec.TerraformRate = 0;
 
             // Some races cloak cargo for free, otherwise
             // cloaking cargo comes at a penalty
@@ -394,6 +397,9 @@ namespace CraigStars
 
                 // remote mining
                 spec.MiningRate += token.Design.Spec.MiningRate * token.Quantity;
+
+                // remote terraforming
+                spec.TerraformRate += token.Design.Spec.TerraformRate * token.Quantity;
 
                 // colonization
                 spec.Colonizer = spec.Colonizer || token.Design.Spec.Colonizer;

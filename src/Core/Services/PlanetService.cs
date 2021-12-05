@@ -360,12 +360,46 @@ namespace CraigStars
         #region Terraforming
 
         /// <summary>
+        /// Get the terraform ability of a player taking into account total terraform and hav terraform
+        /// </summary>
+        /// <param name="player"></param>
+        /// <returns></returns>
+        public Hab GetTerraformAbility(Player player)
+        {
+            TechTerraform bestTotalTerraform = playerTechService.GetBestTerraform(player, TerraformHabType.All);
+            int totalTerraformAbility = bestTotalTerraform == null ? 0 : bestTotalTerraform.Ability;
+
+            Hab terraformAbility = new Hab(totalTerraformAbility, totalTerraformAbility, totalTerraformAbility);
+
+            foreach (HabType habType in Enum.GetValues(typeof(HabType)))
+            {
+                // get the two ways we can terraform
+                TechTerraform bestHabTerraform = playerTechService.GetBestTerraform(player, (TerraformHabType)habType);
+
+                // find out which terraform tech has the greater terraform ability
+                int ability = totalTerraformAbility;
+                if (bestHabTerraform != null)
+                {
+                    ability = Mathf.Max(ability, bestHabTerraform.Ability);
+                    terraformAbility = terraformAbility.WithType(habType, ability);
+                }
+
+                if (ability == 0)
+                {
+                    continue;
+                }
+            }
+
+            return terraformAbility;
+        }
+
+        /// <summary>
         /// Get the total amount we can terraform this planet
         /// </summary>
         /// <param name="planet">The planet to check for tarraformability</param>
         /// <param name="player">The player to check terraformability for. If not set this function uses the planet owner</param>
         /// <returns></returns>
-        Hab GetTerraformAmount(Planet planet, Player player)
+        public Hab GetTerraformAmount(Planet planet, Player player, Player terraformer = null)
         {
             Hab terraformAmount = new Hab();
             if (player == null)
@@ -374,20 +408,15 @@ namespace CraigStars
                 return terraformAmount;
             }
 
-            var bestTotalTerraform = playerTechService.GetBestTerraform(player, TerraformHabType.All);
-            var totalTerraformAbility = bestTotalTerraform == null ? 0 : bestTotalTerraform.Ability;
+            // default the terraformer to the player
+            terraformer ??= player;
+
+            Hab terraformAbility = GetTerraformAbility(terraformer);
+            bool enemy = terraformer.IsEnemy(player.Num);
 
             foreach (HabType habType in Enum.GetValues(typeof(HabType)))
             {
-                // get the two ways we can terraform
-                var bestHabTerraform = playerTechService.GetBestTerraform(player, (TerraformHabType)habType);
-
-                // find out which terraform tech has the greater terraform ability
-                var ability = 0;
-                if (bestHabTerraform != null)
-                {
-                    ability = Mathf.Max(bestHabTerraform.Ability, totalTerraformAbility);
-                }
+                var ability = terraformAbility[habType];
 
                 if (ability == 0)
                 {
@@ -405,16 +434,37 @@ namespace CraigStars
                 {
                     // i.e. our ideal is 50 and the planet hab is 47
 
-                    // we can either terrform up to our full ability, or however much
-                    // we have left to terraform on this
-                    var alreadyTerraformed = (fromIdealBase - fromIdeal);
-                    terraformAmount = terraformAmount.WithType(habType, Math.Min(ability - alreadyTerraformed, fromIdeal));
+                    if (enemy)
+                    {
+                        var alreadyTerraformed = (fromIdealBase - fromIdeal);
+                        terraformAmount = terraformAmount.WithType(habType, Math.Min(-(ability - alreadyTerraformed), -fromIdeal));
+                    }
+                    else
+                    {
+                        // we can either terrform up to our full ability, or however much
+                        // we have left to terraform on this
+                        var alreadyTerraformed = (fromIdealBase - fromIdeal);
+                        terraformAmount = terraformAmount.WithType(habType, Math.Min(ability - alreadyTerraformed, fromIdeal));
+                    }
                 }
                 else if (fromIdeal < 0)
                 {
-                    // i.e. our ideal is 50 and the planet hab is 53
-                    var alreadyTerraformed = (fromIdeal - fromIdealBase);
-                    terraformAmount = terraformAmount.WithType(habType, Math.Max(-(ability - alreadyTerraformed), fromIdeal));
+                    if (enemy)
+                    {
+                        var alreadyTerraformed = (fromIdeal - fromIdealBase);
+                        terraformAmount = terraformAmount.WithType(habType, Math.Max((ability - alreadyTerraformed), -fromIdeal));
+                    }
+                    else
+                    {
+                        // i.e. our ideal is 50 and the planet hab is 53
+                        var alreadyTerraformed = (fromIdeal - fromIdealBase);
+                        terraformAmount = terraformAmount.WithType(habType, Math.Max(-(ability - alreadyTerraformed), fromIdeal));
+                    }
+                }
+                else if (enemy)
+                {
+                    // the terrformer is enemies with the player, terraform away from ideal
+                    terraformAmount = terraformAbility.WithType(habType, ability);
                 }
             }
 
@@ -427,7 +477,7 @@ namespace CraigStars
         /// <param name="planet">The planet to check for tarraformability</param>
         /// <param name="player">The player to check terraformability for. If not set this function uses the planet owner</param>
         /// <returns></returns>
-        public Hab GetMinTerraformAmount(Planet planet, Player player)
+        public Hab GetMinTerraformAmount(Planet planet, Player player, Player terraformer = null)
         {
             Hab terraformAmount = new Hab();
             if (player == null || planet.Hab == null)
@@ -436,20 +486,15 @@ namespace CraigStars
                 return terraformAmount;
             }
 
-            var bestTotalTerraform = playerTechService.GetBestTerraform(player, TerraformHabType.All);
-            var totalTerraformAbility = bestTotalTerraform == null ? 0 : bestTotalTerraform.Ability;
+            // default the terraformer to the player
+            terraformer ??= player;
+
+            // get how much this player can terraform each hab
+            Hab terraformAbility = GetTerraformAbility(terraformer);
 
             foreach (HabType habType in Enum.GetValues(typeof(HabType)))
             {
-                // get the two ways we can terraform
-                var bestHabTerraform = playerTechService.GetBestTerraform(player, (TerraformHabType)habType);
-
-                // find out which terraform tech has the greater terraform ability
-                var ability = totalTerraformAbility;
-                if (bestHabTerraform != null)
-                {
-                    ability = Mathf.Max(ability, bestHabTerraform.Ability);
-                }
+                var ability = terraformAbility[habType];
 
                 if (ability == 0)
                 {
@@ -510,7 +555,7 @@ namespace CraigStars
         /// </summary>
         /// <param name="planet"></param>
         /// <returns></returns>
-        public HabType? GetBestTerraform(Planet planet, Player player)
+        public HabType? GetBestTerraform(Planet planet, Player player, Player terraformer = null)
         {
             if (player == null)
             {
@@ -520,20 +565,15 @@ namespace CraigStars
             var largestDistance = 0;
             HabType? bestHabType = null;
 
-            TechTerraform bestTotalTerraform = playerTechService.GetBestTerraform(player, TerraformHabType.All);
-            int totalTerraformAbility = bestTotalTerraform == null ? 0 : bestTotalTerraform.Ability;
+            // default the terraformer to the player
+            terraformer ??= player;
+
+            // get how much this player can terraform each hab
+            Hab terraformAbility = GetTerraformAbility(terraformer);
 
             foreach (HabType habType in Enum.GetValues(typeof(HabType)))
             {
-                // get the two ways we can terraform
-                TechTerraform bestHabTerraform = playerTechService.GetBestTerraform(player, (TerraformHabType)habType);
-
-                // find out which terraform tech has the greater terraform ability
-                int ability = totalTerraformAbility;
-                if (bestHabTerraform != null)
-                {
-                    ability = Mathf.Max(ability, bestHabTerraform.Ability);
-                }
+                var ability = terraformAbility[habType];
 
                 if (ability == 0)
                 {
@@ -572,14 +612,58 @@ namespace CraigStars
         }
 
         /// <summary>
-        /// Terraform this planet one step in whatever the best option is
+        /// Get the worst hab to terraform, or return null if we can't make this planet worse
         /// </summary>
         /// <param name="planet"></param>
         /// <param name="player"></param>
-        /// <returns>The habtype and direction the terraforming took place</returns>
-        public TerraformResult TerraformOneStep(Planet planet, Player player)
+        /// <param name="terraformer"></param>
+        /// <returns></returns>
+        public HabType? GetWorstTerraform(Planet planet, Player player, Player terraformer)
         {
-            var bestHab = GetBestTerraform(planet, player);
+            var terraformAbility = GetTerraformAbility(terraformer);
+            HabType? farthest = null;
+            int farthestAmount = int.MinValue;
+            foreach (HabType habType in Enum.GetValues(typeof(HabType)))
+            {
+                int fromIdeal = player.Race.HabCenter[habType] - planet.Hab.Value[habType];
+                int terraformedAlready = Math.Abs(planet.TerraformedAmount.Value[habType]);
+
+                // if we can terraform this at all
+                if (Math.Abs(terraformedAlready) < terraformAbility[habType])
+                {
+                    // pick the farthest from ideal
+                    if (Math.Abs(fromIdeal) > farthestAmount)
+                    {
+                        farthestAmount = Math.Abs(fromIdeal);
+                        farthest = habType;
+                    }
+                }
+            }
+
+            return farthest;
+        }
+
+        /// <summary>
+        /// Terraform this planet one step in whatever the best option is
+        /// If reverse is true, this will terraform in the opposite direction making the planet less habitable
+        /// </summary>
+        /// <param name="planet">The planet to terraform</param>
+        /// <param name="player">The player living on the planet</param>
+        /// <param name="terraformer">The player performing the terraforming (in case of Orbital Adjusters)</param>
+        /// <param name="reverse">Are we terraforming or anti-terraforming?</param>
+        /// <returns></returns>
+        public TerraformResult TerraformOneStep(Planet planet, Player player, Player terraformer = null, bool reverse = false)
+        {
+
+            HabType? bestHab = null;
+            if (!reverse || terraformer == null)
+            {
+                bestHab = GetBestTerraform(planet, player, terraformer);
+            }
+            else
+            {
+                bestHab = GetWorstTerraform(planet, player, terraformer);
+            }
 
             if (bestHab.HasValue)
             {
@@ -587,19 +671,30 @@ namespace CraigStars
                 int fromIdeal = player.Race.HabCenter[habType] - planet.Hab.Value[habType];
                 if (fromIdeal > 0)
                 {
-                    // for example, the planet has Grav 49, but our player wants Grav 50 
-                    planet.Hab = planet.Hab.Value.WithType(habType, planet.Hab.Value[habType] + 1);
-                    planet.TerraformedAmount = planet.TerraformedAmount.Value.WithType(habType, planet.TerraformedAmount.Value[habType] + 1);
+                    // for example, the planet has Grav 49, but our player wants Grav 50
+                    int direction = reverse ? -1 : 1;
+                    planet.Hab = planet.Hab.Value.WithType(habType, planet.Hab.Value[habType] + direction);
+                    planet.TerraformedAmount = planet.TerraformedAmount.Value.WithType(habType, planet.TerraformedAmount.Value[habType] + direction);
                     planet.Spec = ComputePlanetSpec(planet, player);
-                    return new TerraformResult(habType, 1);
+                    return new TerraformResult(habType, direction);
                 }
                 else if (fromIdeal < 0)
                 {
                     // for example, the planet has Grav 51, but our player wants Grav 50 
-                    planet.Hab = planet.Hab.Value.WithType(habType, planet.Hab.Value[habType] - 1);
-                    planet.TerraformedAmount = planet.TerraformedAmount.Value.WithType(habType, planet.TerraformedAmount.Value[habType] - 1);
+                    int direction = reverse ? 1 : -1;
+                    planet.Hab = planet.Hab.Value.WithType(habType, planet.Hab.Value[habType] + direction);
+                    planet.TerraformedAmount = planet.TerraformedAmount.Value.WithType(habType, planet.TerraformedAmount.Value[habType] + direction);
                     planet.Spec = ComputePlanetSpec(planet, player);
-                    return new TerraformResult(habType, -1);
+                    return new TerraformResult(habType, direction);
+                }
+                else if (fromIdeal == 0 && reverse)
+                {
+                    // this is a perfect planet, just make it hotter, higher rad, etc
+                    int direction = 1;
+                    planet.Hab = planet.Hab.Value.WithType(habType, planet.Hab.Value[habType] + direction);
+                    planet.TerraformedAmount = planet.TerraformedAmount.Value.WithType(habType, planet.TerraformedAmount.Value[habType] + direction);
+                    planet.Spec = ComputePlanetSpec(planet, player);
+                    return new TerraformResult(habType, direction);
                 }
             }
             return new TerraformResult();
@@ -610,6 +705,9 @@ namespace CraigStars
         /// This adjusts the BaseHab as well as the hab
         /// </summary>
         /// <param name="planet"></param>
+        /// <param name="player"></param>
+        /// <param name="habType"></param>
+        /// <returns></returns>
         public TerraformResult PermaformOneStep(Planet planet, Player player, HabType habType)
         {
             int direction = 0;

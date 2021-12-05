@@ -259,7 +259,6 @@ namespace CraigStars.Tests
             planet.Hab = new Hab(50, 50, 50);
             planet.TerraformedAmount = new Hab(3, 0, 0);
 
-
             // one mini-bomber
             var fleet = new Fleet()
             {
@@ -292,6 +291,7 @@ namespace CraigStars.Tests
             step.BombPlanet(planet);
 
             Assert.AreEqual(new Hab(48, 50, 50), planet.Hab);
+            Assert.AreEqual(new Hab(1, 0, 0), planet.TerraformedAmount);
             Assert.AreEqual(1, planetOwner.Messages.Count);
             Assert.AreEqual(1, fleetOwner.Messages.Count);
         }

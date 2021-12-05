@@ -97,7 +97,7 @@ namespace CraigStars.Tests
 
             var settings = Serializers.CreatePlayerSettings(StaticTechStore.Instance);
             var json = Serializers.Serialize(player, settings);
-            log.Info(json);
+            // log.Info(json);
 
             // populate this player object
             var loadedPlayer = new Player();

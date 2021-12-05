@@ -26,6 +26,7 @@ namespace CraigStars
         public bool Colonizer { get; set; }
         public int SpaceDock { get; set; }
         public int MiningRate { get; set; }
+        public int TerraformRate { get; set; }
         public float RepairBonus { get; set; }
 
         public int MineSweep { get; set; }

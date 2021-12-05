@@ -1,6 +1,6 @@
 using Godot;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class GUIColors : Resource
     {

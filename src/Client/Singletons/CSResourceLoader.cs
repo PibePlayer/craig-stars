@@ -1,8 +1,8 @@
-using CraigStars.Client;
-using Godot;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CraigStars.Client;
+using Godot;
 
 namespace CraigStars.Singletons
 {
@@ -18,6 +18,8 @@ namespace CraigStars.Singletons
 
         static List<string> packedScenePaths = new()
         {
+            "res://addons/CraigStarsComponents/src/PlayerSavesColumnHeader.tscn",
+            "res://addons/CraigStarsComponents/src/PublicGameInfosColumnHeader.tscn",
             "res://src/Client/GameView.tscn",
             "res://src/Client/CommandPane/FleetCompositionTileTokensRow.tscn",
             "res://src/Client/Scanner/WaypointArea.tscn",
@@ -34,8 +36,8 @@ namespace CraigStars.Singletons
 
         static List<string> texturePaths = new()
         {
-            "res://assets/gui/icons/ArrowUp.svg",
-            "res://assets/gui/icons/ArrowDown.svg",
+            // "res://assets/gui/icons/ArrowUp.svg",
+            // "res://assets/gui/icons/ArrowDown.svg",
             "res://assets/gui/icons/Close.svg",
         };
         static Dictionary<string, PackedScene> PackedScenes { get; set; } = new();

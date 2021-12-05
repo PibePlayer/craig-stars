@@ -1,8 +1,8 @@
-using Godot;
 using System;
 using CraigStars.Utils;
+using Godot;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     /// <summary>
     /// Allows control over a WaypointTransportTask changing fields based on CargoType and action

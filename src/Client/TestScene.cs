@@ -1,10 +1,10 @@
+using System;
+using System.Collections.Generic;
 using CraigStars.Singletons;
 using CraigStarsTable;
 using Godot;
-using System;
-using System.Collections.Generic;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class TestScene : Node2D
     {

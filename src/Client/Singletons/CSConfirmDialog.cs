@@ -1,7 +1,7 @@
 using System;
 using Godot;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     /// <summary>
     /// Helper class to make working with ConfirmationDialogs easier to use.

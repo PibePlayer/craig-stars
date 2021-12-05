@@ -1,9 +1,9 @@
-using Godot;
-using Newtonsoft.Json;
 using System;
 using System.Runtime.InteropServices;
+using Godot;
+using Newtonsoft.Json;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public readonly struct DraggableTech
     {

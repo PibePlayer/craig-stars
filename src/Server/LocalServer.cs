@@ -65,7 +65,7 @@ namespace CraigStars.Server
         {
             log.Debug($"Creating clone of {player} for GameStartedEvent.");
             var playerJson = Serializers.Serialize(player, playerSerializerSettings);
-            log.Debug($"Player json: \n {playerJson}");
+            // log.Debug($"Player json: \n {playerJson}");
             var playerClone = Serializers.DeserializeObject<Player>(playerJson, playerSerializerSettings);
             return playerClone;
         }

@@ -24,6 +24,12 @@ namespace CraigStars.Client
         // whether we are dragging the viewport around
         bool dragging = false;
 
+        public override void _Ready()
+        {
+            base._Ready();
+            SetProcess(false);
+        }
+
         public override void _UnhandledInput(InputEvent @event)
         {
             if (DialogManager.DialogRefCount > 0)
@@ -62,6 +68,35 @@ namespace CraigStars.Client
             {
                 dragging = eventMouseButton.Pressed;
             }
+
+            // turn on processing if we are moving the camera
+            if (Input.IsActionJustPressed("up")
+                || Input.IsActionJustPressed("down")
+                || Input.IsActionJustPressed("left")
+                || Input.IsActionJustPressed("right")
+                || Input.IsActionPressed("up")
+                || Input.IsActionPressed("down")
+                || Input.IsActionPressed("left")
+                || Input.IsActionPressed("right")
+                )
+            {
+                SetProcess(true);
+            }
+            else if (Input.IsActionJustReleased("up")
+                || Input.IsActionJustReleased("down")
+                || Input.IsActionJustReleased("left")
+                || Input.IsActionJustReleased("right")
+                && !(
+                Input.IsActionPressed("up")
+                || Input.IsActionPressed("down")
+                || Input.IsActionPressed("left")
+                || Input.IsActionPressed("right")
+                )
+            )
+            {
+                // turn off processing if we released a map move button and we aren't holding it down anymore
+                SetProcess(false);
+            }
         }
 
         /// <summary>
@@ -95,6 +130,7 @@ namespace CraigStars.Client
         {
             if (DialogManager.DialogRefCount > 0)
             {
+                SetProcess(false);
                 return;
             }
             var scrollAmount = ScrollConstant * Zoom.x;

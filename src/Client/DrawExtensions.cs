@@ -1,6 +1,6 @@
 using Godot;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public static class DrawExtensions
     {
@@ -28,7 +28,8 @@ namespace CraigStars
             }, new Color[] { color });
         }
 
-        public static void DrawCross(this Control control, Vector2 position, float size, Color color) {
+        public static void DrawCross(this Control control, Vector2 position, float size, Color color)
+        {
             // draw a cross
             control.DrawLine(
                 new Vector2(position.x - size / 2, position.y),

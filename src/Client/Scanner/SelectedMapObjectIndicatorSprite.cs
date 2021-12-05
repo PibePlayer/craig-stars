@@ -1,7 +1,7 @@
-using Godot;
 using System;
+using Godot;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     public class SelectedMapObjectIndicatorSprite : Node2D
     {

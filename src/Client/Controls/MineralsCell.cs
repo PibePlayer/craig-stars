@@ -1,8 +1,8 @@
+using System;
 using CraigStarsTable;
 using Godot;
-using System;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     [Tool]
     public class MineralsCell : CSCellControl

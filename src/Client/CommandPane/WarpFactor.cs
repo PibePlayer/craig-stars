@@ -1,8 +1,8 @@
+using System;
 using CraigStars.Singletons;
 using Godot;
-using System;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     [Tool]
     public class WarpFactor : Control

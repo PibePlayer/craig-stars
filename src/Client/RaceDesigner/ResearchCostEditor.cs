@@ -1,7 +1,7 @@
-using Godot;
 using System;
+using Godot;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     [Tool]
     public class ResearchCostEditor : Panel

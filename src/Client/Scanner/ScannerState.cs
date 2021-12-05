@@ -1,4 +1,4 @@
-namespace CraigStars
+namespace CraigStars.Client
 {
     public enum ScannerState
     {

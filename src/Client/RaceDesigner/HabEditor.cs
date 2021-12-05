@@ -1,9 +1,9 @@
+using System;
 using CraigStars.Singletons;
 using CraigStars.Utils;
 using Godot;
-using System;
 
-namespace CraigStars
+namespace CraigStars.Client
 {
     [Tool]
     public class HabEditor : HBoxContainer

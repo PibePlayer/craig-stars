@@ -88,21 +88,26 @@ namespace CraigStars
         /// </summary>
         /// <param name="index">The index of the hab, 0 == gravity, 1 == temp, 2 == radiation</param>
         /// <returns>Whether this race is immune to the specific hab type.</returns>
-        public bool IsImmune(int index)
+        public bool IsImmune(int index) => index switch
         {
-            switch (index)
-            {
-                case 0:
-                    return ImmuneGrav;
-                case 1:
-                    return ImmuneTemp;
-                case 2:
-                    return ImmuneRad;
-                default:
-                    throw new IndexOutOfRangeException($"Index {index} out of range for {this.GetType().ToString()}");
-            }
+            0 => ImmuneGrav,
+            1 => ImmuneTemp,
+            2 => ImmuneRad,
+            _ => throw new IndexOutOfRangeException($"Index {index} out of range for {this.GetType().ToString()}")
+        };
 
-        }
+        /// <summary>
+        /// Return whether this race is immune to a specific hab, by index
+        /// </summary>
+        /// <param name="index">The index of the hab, 0 == gravity, 1 == temp, 2 == radiation</param>
+        /// <returns>Whether this race is immune to the specific hab type.</returns>
+        public bool IsImmune(HabType habType) => habType switch
+        {
+            HabType.Gravity => ImmuneGrav,
+            HabType.Temperature => ImmuneTemp,
+            HabType.Radiation => ImmuneRad,
+            _ => throw new IndexOutOfRangeException($"{habType} out of range for {this.GetType().ToString()}")
+        };
 
         /// <summary>
         /// Get the habitability of this race for a given planet's hab value

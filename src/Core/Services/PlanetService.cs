@@ -416,8 +416,12 @@ namespace CraigStars
 
             foreach (HabType habType in Enum.GetValues(typeof(HabType)))
             {
-                var ability = terraformAbility[habType];
+                if (player.Race.IsImmune(habType))
+                {
+                    continue;
+                }
 
+                var ability = terraformAbility[habType];
                 if (ability == 0)
                 {
                     continue;
@@ -494,6 +498,11 @@ namespace CraigStars
 
             foreach (HabType habType in Enum.GetValues(typeof(HabType)))
             {
+                if (player.Race.IsImmune(habType))
+                {
+                    continue;
+                }
+
                 var ability = terraformAbility[habType];
 
                 if (ability == 0)
@@ -573,8 +582,12 @@ namespace CraigStars
 
             foreach (HabType habType in Enum.GetValues(typeof(HabType)))
             {
-                var ability = terraformAbility[habType];
+                if (player.Race.IsImmune(habType))
+                {
+                    continue;
+                }
 
+                var ability = terraformAbility[habType];
                 if (ability == 0)
                 {
                     continue;
@@ -625,6 +638,11 @@ namespace CraigStars
             int farthestAmount = int.MinValue;
             foreach (HabType habType in Enum.GetValues(typeof(HabType)))
             {
+                if (player.Race.IsImmune(habType))
+                {
+                    continue;
+                }
+
                 int fromIdeal = player.Race.HabCenter[habType] - planet.Hab.Value[habType];
                 int terraformedAlready = Math.Abs(planet.TerraformedAmount.Value[habType]);
 

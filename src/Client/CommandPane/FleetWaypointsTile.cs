@@ -1,6 +1,7 @@
-using Godot;
 using System;
 using CraigStars.Singletons;
+using CraigStars.Utils;
+using Godot;
 
 namespace CraigStars.Client
 {
@@ -21,6 +22,7 @@ namespace CraigStars.Client
         Label estimatedFuelUsage;
         Label estimatedFuelUsageLabel;
         CheckBox repeatOrdersCheckBox;
+        OtherWaypointTargetsPopupMenu otherWaypointTargetsPopupMenu;
 
         public override void _Ready()
         {
@@ -39,11 +41,13 @@ namespace CraigStars.Client
             travelTimeLabel = (Label)FindNode("TravelTimeLabel");
             estimatedFuelUsageLabel = (Label)FindNode("EstimatedFuelUsageLabel");
             repeatOrdersCheckBox = (CheckBox)FindNode("RepeatOrdersCheckBox");
+            otherWaypointTargetsPopupMenu = GetNode<OtherWaypointTargetsPopupMenu>("CanvasLayer/OtherWaypointTargetsPopupMenu");
 
             selectedWaypointGrid.Visible = false;
             base._Ready();
 
             waypoints.Connect("item_selected", this, nameof(OnItemSelected));
+            waypoints.Connect("gui_input", this, nameof(OnWaypointsGUIInput));
             repeatOrdersCheckBox.Connect("toggled", this, nameof(OnRepeatOrdersCheckBoxToggled));
             warpFactor.WarpSpeedChangedEvent += OnWarpSpeedChanged;
             EventManager.WaypointMovedEvent += OnWaypointMoved;
@@ -96,7 +100,25 @@ namespace CraigStars.Client
 
         string GetItemText(Waypoint waypoint)
         {
-            return waypoint.Target != null ? waypoint.Target.Name : $"Space: ({waypoint.Position.x}, {waypoint.Position.y})";
+            var text = waypoint.Target != null ? waypoint.Target.Name : $"Space: ({waypoint.Position.x}, {waypoint.Position.y})";
+
+            return text;
+        }
+
+        void UpdateItemText(int index, Waypoint waypoint)
+        {
+            var text = GetItemText(waypoint);
+            if (Me.MapObjectsByLocation.TryGetValue(waypoint.Position, out var mapObjectsAtLocation) && mapObjectsAtLocation.Count > 1)
+            {
+                waypoints.SetItemTooltipEnabled(index, true);
+                waypoints.SetItemTooltip(index, @"Other units at this location. \nRight click to target a differnent fleet, planet, or other target.");
+                waypoints.SetItemText(index, text + "*");
+            }
+            else
+            {
+                waypoints.SetItemTooltipEnabled(index, false);
+                waypoints.SetItemText(index, text);
+            }
         }
 
         void OnWaypointMoved(Fleet fleet, Waypoint waypoint)
@@ -104,8 +126,31 @@ namespace CraigStars.Client
             var selectedIndices = waypoints.GetSelectedItems();
             if (selectedIndices.Length > 0 && selectedIndices[0] > 0 && selectedIndices[0] < waypoints.GetItemCount())
             {
-                waypoints.SetItemText(selectedIndices[0], GetItemText(waypoint));
+                UpdateItemText(selectedIndices[0], waypoint);
             }
+        }
+
+        void OnWaypointsGUIInput(InputEvent @event)
+        {
+            if (CommandedFleet != null && @event.IsActionPressed("viewport_alternate_select"))
+            {
+                GetTree().SetInputAsHandled();
+                otherWaypointTargetsPopupMenu.Show(CommandedFleet, ActiveWaypoint, (target) =>
+                {
+                    ActiveWaypoint.Target = target;
+                    UpdateControls();
+                });
+            }
+            else if (@event.IsActionReleased("viewport_alternate_select"))
+            {
+                otherWaypointTargetsPopupMenu.Hide();
+            }
+
+        }
+
+        void OnOtherWaypointTargetsPopupMenuIdPressed(int id)
+        {
+
         }
 
         protected override void UpdateControls()
@@ -119,6 +164,8 @@ namespace CraigStars.Client
                 foreach (var wp in CommandedFleet.Fleet.Waypoints)
                 {
                     waypoints.AddItem(GetItemText(wp));
+                    UpdateItemText(index, wp);
+
                     if (ActiveWaypoint == wp)
                     {
                         selectedIndex = index;
@@ -141,7 +188,7 @@ namespace CraigStars.Client
                     var hasStargate = CommandedFleet?.Fleet?.Orbiting?.HasStargate;
                     warpFactor.HasStargate = hasStargate.HasValue && hasStargate.Value;
                     warpFactor.MaxWarpFactor = warpFactor.HasStargate ? 11 : 10;
-                    
+
                     travelTime.Visible = true;
                     selectedWaypointGrid.Visible = true;
                     estimatedFuelUsage.Visible = true;

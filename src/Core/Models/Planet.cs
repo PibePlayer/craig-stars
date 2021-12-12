@@ -13,7 +13,6 @@ namespace CraigStars
     public class Planet : MapObject, SerializableMapObject, ICargoHolder
     {
         static CSLog log = LogProvider.GetLogger(typeof(Planet));
-        public const int UnlimitedFuel = -1;
 
         #region Scannable Stats
 
@@ -40,6 +39,9 @@ namespace CraigStars
         [JsonProperty(IsReference = true)]
         public Planet PacketTarget { get; set; }
 
+        [JsonProperty(IsReference = true)]
+        public Planet RouteTarget { get; set; }
+
         [JsonIgnore] public bool HasStarbase { get => Starbase != null; }
         [JsonIgnore] public bool HasMassDriver { get => Starbase != null && Starbase.Spec.HasMassDriver; }
         [JsonIgnore] public bool HasStargate { get => Starbase != null && Starbase.Spec.HasStargate; }
@@ -57,12 +59,16 @@ namespace CraigStars
         [JsonIgnore]
         public int Fuel
         {
-            get => Starbase != null ? UnlimitedFuel : 0;
+            get => Starbase != null ? MapObject.Infinite : 0;
             set
             {
                 // ignore setting fuel on a planet
             }
         }
+
+        [JsonIgnore]
+        public int FuelCapacity { get => Starbase != null ? MapObject.Infinite : 0; }
+
         public ProductionQueue ProductionQueue { get; set; }
 
         public int Mines { get; set; }

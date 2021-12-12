@@ -62,7 +62,8 @@ namespace CraigStars
                 var randomPopulationError = Rules.Random.NextDouble() * (Rules.PopulationScannerError - (-Rules.PopulationScannerError)) - Rules.PopulationScannerError;
 
                 // if we remote mine a planet, we discover its surface minerals, otherwise we don't know
-                if (itemReport.RemoteMined)
+                // this is done in a separate discover step
+                if (!itemReport.RemoteMined)
                 {
                     itemReport.Cargo = Cargo.Empty;
                 }

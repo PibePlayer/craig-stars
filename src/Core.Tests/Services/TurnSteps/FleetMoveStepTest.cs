@@ -1,16 +1,15 @@
-using Godot;
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
-
-using CraigStars.Singletons;
-using log4net;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using CraigStars.Singletons;
+using FakeItEasy;
+using Godot;
+using log4net;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
-using System.Threading.Tasks;
-using System.Linq;
-using FakeItEasy;
+using NUnit.Framework;
 
 namespace CraigStars.Tests
 {
@@ -42,6 +41,98 @@ namespace CraigStars.Tests
             // move at warp 5, use some fuel
             Assert.AreEqual(new Vector2(25, 0), fleet.Position);
             Assert.AreEqual(fleet.FuelCapacity - 4, fleet.Fuel);
+        }
+
+        /// <summary>
+        /// Make sure we arrive at a planet when we complete a move
+        /// </summary>
+        [Test]
+        public void TestMoveComplete()
+        {
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
+            var fleet = game.Fleets[0];
+
+            var planet = new Planet()
+            {
+                Name = "Destination",
+                Position = new Vector2(10, 10),
+            };
+            planet.InitEmptyPlanet();
+            game.Planets.Add(planet);
+
+            // move towards a nearby planet
+            fleet.Position = new Vector2(0, 0);
+            fleet.Waypoints.Add(Waypoint.TargetWaypoint(planet, warpFactor: 6));
+
+            FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, rulesProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
+
+            step.Execute(new(), game.OwnedPlanets.ToList());
+
+            // move at warp 6 so we overshoot, use some fuel
+            Assert.AreEqual(new Vector2(10, 10), fleet.Position);
+            Assert.AreEqual(planet, fleet.Orbiting);
+            Assert.True(planet.OrbitingFleets.Contains(fleet));
+            Assert.AreEqual(1, fleet.Waypoints.Count);
+
+            // make sure the fleet has one waypoint at this planet
+            Assert.AreEqual(planet, fleet.Waypoints[0].Target);
+            Assert.AreEqual(WaypointTask.None, fleet.Waypoints[0].Task);
+            Assert.AreEqual(planet.Position, fleet.Waypoints[0].Position);
+
+            // the fleet should have used some fuel
+            Assert.AreEqual(fleet.FuelCapacity - 2, fleet.Fuel);
+        }
+
+        /// <summary>
+        /// Make sure we arrive at a planet when we complete a move targetting a fleet orbiting a planet
+        /// </summary>
+        [Test]
+        public void TestMoveCompleteTargetFleetOrbitingPlanet()
+        {
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
+            var player = game.Players[0];
+            var fleet = game.Fleets[0];
+
+            var planet = new Planet()
+            {
+                Name = "Destination",
+                Position = new Vector2(10, 10),
+            };
+            planet.InitEmptyPlanet();
+            game.Planets.Add(planet);
+
+            var fleet2 = new Fleet()
+            {
+                PlayerNum = player.Num,
+                Orbiting = planet,
+                Position = planet.Position,
+                Waypoints = new List<Waypoint>() {
+                    Waypoint.TargetWaypoint(planet)
+                }
+            };
+            planet.OrbitingFleets.Add(fleet2);
+
+            // move towards this fleet
+            fleet.Position = new Vector2(0, 0);
+            fleet.Waypoints.Add(Waypoint.TargetWaypoint(fleet2, warpFactor: 6));
+
+            FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, rulesProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
+
+            step.Execute(new(), game.OwnedPlanets.ToList());
+
+            // move at warp 6 so we overshoot, use some fuel
+            Assert.AreEqual(new Vector2(10, 10), fleet.Position);
+            Assert.AreEqual(planet, fleet.Orbiting);
+            Assert.True(planet.OrbitingFleets.Contains(fleet));
+            Assert.AreEqual(1, fleet.Waypoints.Count);
+
+            // make sure the fleet has one waypoint at this planet
+            Assert.AreEqual(fleet2, fleet.Waypoints[0].Target);
+            Assert.AreEqual(WaypointTask.None, fleet.Waypoints[0].Task);
+            Assert.AreEqual(planet.Position, fleet.Waypoints[0].Position);
+
+            // the fleet should have used some fuel
+            Assert.AreEqual(fleet.FuelCapacity - 2, fleet.Fuel);
         }
 
         [Test]

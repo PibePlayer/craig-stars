@@ -68,7 +68,16 @@ namespace CraigStars.Client
                 Clear();
                 otherObjectsAtLocation.Clear();
                 otherObjectsAtLocation.AddRange(mapObjects);
-                otherObjectsAtLocation.Each((mo, index) => AddItem(mo.Name, index));
+
+                for (int i = 0; i < otherObjectsAtLocation.Count; i++)
+                {
+                    var mo = otherObjectsAtLocation[i];
+                    if (i > 0 && otherObjectsAtLocation[i - 1].GetType() != mo.GetType())
+                    {
+                        AddSeparator();
+                    }
+                    AddItem(mo.Name, i);
+                }                
                 RectGlobalPosition = GetGlobalMousePosition();
                 log.Debug($"Showing Other Objects Popup with {otherObjectsAtLocation.Count} items.");
                 ShowModal();

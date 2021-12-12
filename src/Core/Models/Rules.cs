@@ -63,7 +63,7 @@ namespace CraigStars
         public int MinStartingMineralSurface { get; set; } = 300;
 
         [DefaultValue(1500000)]
-        public int MineralDecayFactor { get; set; } = 1500000;
+        public int MineralDecayFactor { get; set; } = 1_500_000;
 
         // Bulding rules
         [DefaultValue(10)]

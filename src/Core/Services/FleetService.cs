@@ -30,9 +30,9 @@ namespace CraigStars
             // build a dictionary of tokens by design
             var tokenByDesign = fleet.Tokens.ToLookup(token => token.Design).ToDictionary(lookup => lookup.Key, lookup => lookup.ToList()[0]);
 
-            foreach (var mergedFleet in order.MergingFleets)
+            foreach (var mergingFleet in order.MergingFleets)
             {
-                foreach (var token in mergedFleet.Tokens)
+                foreach (var token in mergingFleet.Tokens)
                 {
                     // if we already have this design in our 
                     if (tokenByDesign.TryGetValue(token.Design, out var existingToken))
@@ -59,13 +59,13 @@ namespace CraigStars
                         tokenByDesign[token.Design] = token;
                     }
                 }
-                fleet.Cargo += mergedFleet.Cargo;
-                fleet.Fuel += mergedFleet.Fuel;
+                fleet.Cargo += mergingFleet.Cargo;
+                fleet.Fuel += mergingFleet.Fuel;
 
                 // remove this merged fleet from our OtherFleets list and the OtherFleets
                 // list of every other fleet that considers it an OtherFleet
-                fleet.OtherFleets.Remove(mergedFleet);
-                mergedFleet.OtherFleets.ForEach(otherFleet => otherFleet.OtherFleets.Remove(mergedFleet));
+                fleet.OtherFleets.Remove(mergingFleet);
+                mergingFleet.OtherFleets.ForEach(otherFleet => otherFleet.OtherFleets.Remove(mergingFleet));
             }
 
             fleetSpecService.ComputeFleetSpec(player, fleet, recompute: true);

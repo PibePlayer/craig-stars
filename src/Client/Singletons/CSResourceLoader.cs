@@ -36,8 +36,8 @@ namespace CraigStars.Singletons
 
         static List<string> texturePaths = new()
         {
-            // "res://assets/gui/icons/ArrowUp.svg",
-            // "res://assets/gui/icons/ArrowDown.svg",
+            "res://assets/gui/icons/ArrowUp.svg",
+            "res://assets/gui/icons/ArrowDown.svg",
             "res://assets/gui/icons/Close.svg",
         };
         static Dictionary<string, PackedScene> PackedScenes { get; set; } = new();

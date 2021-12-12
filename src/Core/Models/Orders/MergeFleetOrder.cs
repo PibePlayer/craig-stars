@@ -11,6 +11,14 @@ namespace CraigStars
     public class MergeFleetOrder : FleetOrder
     {
         [JsonProperty(ItemIsReference = true)]
-        public List<Fleet> MergingFleets { get; set; }
+        public List<Fleet> MergingFleets { get; set; } = new();
+
+        public MergeFleetOrder() { }
+
+        public MergeFleetOrder(params Fleet[] fleets)
+        {
+            MergingFleets.AddRange(fleets);
+        }
+
     }
 }

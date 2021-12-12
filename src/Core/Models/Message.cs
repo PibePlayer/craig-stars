@@ -248,10 +248,28 @@ namespace CraigStars
             player.Messages.Add(new Message(MessageType.FleetGeneratedFuel, text, fleet));
         }
 
-        public static void fleetScrapped(Player player, Fleet fleet, int num_minerals, Planet planet)
+        public static void FleetScrapped(Player player, Fleet fleet, int num_minerals, Planet planet)
         {
             string text = $"{fleet.Name} has been dismantled for {num_minerals}kT of minerals which have been deposited on {planet.Name}.";
             player.Messages.Add(new Message(MessageType.FleetScrapped, text, planet));
+        }
+
+        public static void FleetMerged(Player player, Fleet fleet, Fleet mergedInto)
+        {
+            string text = $"{fleet.Name} has been merged into {mergedInto}.";
+            player.Messages.Add(new Message(MessageType.FleetMerged, text, mergedInto));
+        }
+
+        public static void FleetInvalidMergeNotFleet(Player player, Fleet fleet)
+        {
+            string text = $"{fleet.Name} was unable to complete it's merge orders as the waypoint destination wasn't a fleet.";
+            player.Messages.Add(new Message(MessageType.FleetInvalidMergeNotFleet, text, fleet));
+        }
+
+        public static void FleetInvalidMergeNotOwned(Player player, Fleet fleet)
+        {
+            string text = $"{fleet.Name} was unable to complete it's merge orders as the destination fleet wasn't one of yours.";
+            player.Messages.Add(new Message(MessageType.FleetInvalidMergeUnowned, text, fleet));
         }
 
         public static void FleetBuilt(Player player, ShipDesign design, Fleet fleet, int numBuilt)
@@ -405,32 +423,32 @@ namespace CraigStars
 
         }
 
-        public static void FleetTransportedCargo(Player player, Fleet fleet, CargoType cargoType, ICargoHolder cargoTarget, int transferAmount)
+        public static void FleetTransportedCargo(Player player, Fleet source, CargoType cargoType, ICargoHolder dest, int transferAmount)
         {
             string text = "";
             if (cargoType == CargoType.Colonists)
             {
                 if (transferAmount < 0)
                 {
-                    text = $"{fleet.Name} has beamed {-transferAmount * 100} {cargoType} from {cargoTarget.Name}";
+                    text = $"{source.Name} has beamed {-transferAmount * 100} {cargoType} from {dest.Name}";
                 }
                 else
                 {
-                    text = $"{fleet.Name} has beamed {transferAmount * 100} {cargoType} to {cargoTarget.Name}";
+                    text = $"{source.Name} has beamed {transferAmount * 100} {cargoType} to {dest.Name}";
                 }
             }
             else
             {
                 if (transferAmount < 0)
                 {
-                    text = $"{fleet.Name} has unloaded {-transferAmount} {cargoType} from {cargoTarget.Name}";
+                    text = $"{source.Name} has loaded {-transferAmount} {cargoType} from {dest.Name}";
                 }
                 else
                 {
-                    text = $"{fleet.Name} has loaded {transferAmount} {cargoType} from {cargoTarget.Name}";
+                    text = $"{source.Name} has unloaded {transferAmount} {cargoType} to {dest.Name}";
                 }
             }
-            player.Messages.Add(new Message(MessageType.CargoTransferred, text, fleet));
+            player.Messages.Add(new Message(MessageType.CargoTransferred, text, source));
         }
 
         public static void RemoteMineNoMiners(Player player, Fleet fleet, Planet planet)

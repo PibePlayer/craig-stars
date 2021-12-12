@@ -208,7 +208,10 @@ namespace CraigStars
                 player.SubmittedTurn = false;
                 player.PlanetaryScanner = playerTechService.GetBestPlanetaryScanner(player);
                 fleetSpecService.ComputePlayerFleetSpecs(player, recompute: true);
-                player.Planets.ForEach(planet => planet.Spec = planetService.ComputePlanetSpec(planet, player));
+                player.AllPlanets
+                    .Where(planet => planet.Explored)
+                    .ToList()
+                    .ForEach(planet => planet.Spec = planetService.ComputePlanetSpec(planet, player));
                 player.SetupMapObjectMappings();
                 player.UpdateMessageTargets();
             });

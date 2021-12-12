@@ -81,6 +81,10 @@ namespace CraigStars.Client
                 {
                     remoteMiningLabel.Text = "Warning: This fleet contains no ships with remote mining modules.";
                 }
+                else if (Planet == null)
+                {
+                    remoteMiningLabel.Text = "Warning: Can only remote mine planets.";
+                }
                 else
                 {
                     remoteMiningLabel.Text = "Warning: Something went wrong.";

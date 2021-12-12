@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://src/Client/CommandPane/Tile.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/Client/CommandPane/FleetWaypointsTile.cs" type="Script" id=2]
 [ext_resource path="res://src/Client/CommandPane/WarpFactor.tscn" type="PackedScene" id=3]
+[ext_resource path="res://src/Client/CommandPane/OtherWaypointTargetsPopupMenu.tscn" type="PackedScene" id=4]
 
 [node name="FleetWaypointsTile" instance=ExtResource( 1 )]
 script = ExtResource( 2 )
@@ -144,3 +145,7 @@ margin_top = 198.0
 margin_right = 197.0
 margin_bottom = 222.0
 text = "Repeat Orders"
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." index="2"]
+
+[node name="OtherWaypointTargetsPopupMenu" parent="CanvasLayer" index="0" instance=ExtResource( 4 )]

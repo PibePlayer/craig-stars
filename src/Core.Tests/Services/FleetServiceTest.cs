@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Godot;
 using NUnit.Framework;
@@ -22,9 +23,8 @@ namespace CraigStars.Tests
         [Test]
         public void TestSplit()
         {
-            var player = new Player();
-            var design = ShipDesigns.LongRangeScount.Clone();
-            design.PlayerNum = player.Num;
+            var player = new Player() { Num = 0 };
+            var design = ShipDesigns.LongRangeScount.Clone(player);
 
             var fleet = new Fleet()
             {
@@ -52,6 +52,46 @@ namespace CraigStars.Tests
             Assert.AreEqual(design, splitFleets[0].Tokens[0].Design);
             Assert.AreEqual(design, splitFleets[1].Tokens[0].Design);
         }
+
+        [Test]
+        public void TestMerge()
+        {
+            var player = new Player() { Num = 0 };
+            var design1 = ShipDesigns.LongRangeScount.Clone(player);
+            var design2 = ShipDesigns.SantaMaria.Clone(player);
+
+            var fleet1 = new Fleet()
+            {
+                Id = 1,
+                BaseName = "Long Range Scout",
+                PlayerNum = player.Num,
+                Tokens = new List<ShipToken>() {
+                  new ShipToken(design1, 1)
+                }
+            };
+
+            var fleet2 = new Fleet()
+            {
+                Id = 2,
+                BaseName = "Scout and Colonizer",
+                PlayerNum = player.Num,
+                Tokens = new List<ShipToken>() {
+                  new ShipToken(design1, 1),
+                  new ShipToken(design2, 1)
+                }
+            };
+
+            var order = new MergeFleetOrder(fleet2);
+            service.Merge(fleet1, player, order);
+
+            // we should get two more fleets with incremented ids
+            Assert.AreEqual(2, fleet1.Tokens.Count);
+            Assert.AreEqual("Long Range Scout #1", fleet1.Name);
+
+            Assert.AreEqual(design1, fleet1.Tokens[0].Design);
+            Assert.AreEqual(design2, fleet1.Tokens[1].Design);
+        }
+
 
         [Test]
         public void TestGetBestWarpFactor()

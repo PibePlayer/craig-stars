@@ -101,24 +101,45 @@ namespace CraigStars
                     fleet.Waypoints.RemoveRange(1, fleet.Waypoints.Count - 1);
                     if (playerFleet.Waypoints != null && playerFleet.Waypoints.Count > 0)
                     {
-                        // copy player waypoint data, but reset the target/position
+                        // copy player waypoint data, but make sure the target/position for wp0 is actually at our position
                         var wp0 = fleet.Waypoints[0];
-                        wp0.Target = fleet.Orbiting;
-                        wp0.OriginalTarget = fleet.Waypoints[0].OriginalTarget;
-                        wp0.OriginalPosition = fleet.Waypoints[0].OriginalPosition;
-                        if (wp0.Target == null)
-                        {
-                            wp0.Position = fleet.Position;
-                        }
                         var playerWp0 = playerFleet.Waypoints[0];
+                        wp0.Target = fleet.Orbiting; // default to null target, or whatever the fleet is orbiting
+                        wp0.Position = fleet.Position;
+                        if (playerWp0.Target != null)
+                        {
+                            if (game.MapObjectsByGuid.TryGetValue(playerWp0.Target.Guid, out var gameTarget))
+                            {
+                                // make sure this wp0 target is actually at the same position as the fleet
+                                if (gameTarget.Position == fleet.Position)
+                                {
+                                    wp0.Target = gameTarget;
+                                }
+                                else
+                                {
+                                    log.Error($"{game.Year}: Player waypoint0 Target {playerWp0.Target} was not found at the same location as the fleet (fleet: {fleet.Position}, wp0Target: {gameTarget.Position}).");
+                                }
+                            }
+                            else
+                            {
+                                log.Error($"{game.Year}: Player waypoint0 Target {wp0.Target} was not found in Game MapObjects.");
+                            }
+                        }
+
                         if (wp0.Task != playerWp0.Task)
                         {
                             log.Debug($"{game.Year}: Updating waypoint task for {fleet.Name} to {playerWp0.TargetName} -> {playerWp0.Task}");
                         }
+
+                        wp0.OriginalTarget = fleet.Waypoints[0].OriginalTarget;
+                        wp0.OriginalPosition = fleet.Waypoints[0].OriginalPosition;
                         wp0.Task = playerWp0.Task;
                         wp0.WarpFactor = playerWp0.WarpFactor;
                         wp0.TransportTasks = playerWp0.TransportTasks;
                         wp0.LayMineFieldDuration = playerWp0.LayMineFieldDuration;
+                        wp0.PatrolRange = playerWp0.PatrolRange;
+                        wp0.PatrolWarpFactor = playerWp0.PatrolWarpFactor;
+                        wp0.TransferToPlayer = playerWp0.TransferToPlayer;
 
                         var index = 1;
 

@@ -1,12 +1,12 @@
-using Godot;
-using log4net;
-using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using Godot;
+using log4net;
+using Newtonsoft.Json;
 
 namespace CraigStars
 {
@@ -213,6 +213,21 @@ namespace CraigStars
         internal void OnDeserialized(StreamingContext context)
         {
             SetupMapObjectMappings();
+
+            foreach (var fleet in Fleets)
+            {
+                foreach (var waypoint in fleet.Waypoints)
+                {
+                    if (waypoint.TargetGuid.HasValue && MapObjectsByGuid.TryGetValue(waypoint.TargetGuid.Value, out var target))
+                    {
+                        waypoint.Target = target;
+                    }
+                    if (waypoint.OriginalTargetGuid.HasValue && MapObjectsByGuid.TryGetValue(waypoint.OriginalTargetGuid.Value, out var origintalTarget))
+                    {
+                        waypoint.OriginalTarget = origintalTarget;
+                    }
+                }
+            }
         }
 
         public void SetupMapObjectMappings()
@@ -267,7 +282,7 @@ namespace CraigStars
         public bool IsEnemy(int playerNum)
         {
             // either they are explicit enemies or not friends
-            return playerNum >= 0 && playerNum < PlayerRelations.Count
+            return playerNum != Num && playerNum >= 0 && playerNum < PlayerRelations.Count
                 && PlayerRelations[playerNum].Relation == PlayerRelation.Enemy || (!IsFriend(playerNum) && !IsNeutral(playerNum));
         }
 

@@ -7,7 +7,7 @@ namespace CraigStars
     /// all unloads, then all colonizations, etc. The FleetWaypoint
     /// is used in processing
     /// </summary>
-    internal class FleetWaypoint
+    public class FleetWaypointProcessTask
     {
         public Fleet Fleet { get; set; }
         public Waypoint Waypoint { get; set; }
@@ -19,25 +19,40 @@ namespace CraigStars
         /// </summary>
         /// <typeparam name="WaypointTransportTask"></typeparam>
         /// <returns></returns>
-        public List<FleetWaypointTransportTask> Tasks { get; set; } = new List<FleetWaypointTransportTask>();
+        public List<FleetWaypointTransportTask> TransportTasks { get; set; } = new List<FleetWaypointTransportTask>();
 
-        public FleetWaypoint(Fleet fleet, Waypoint waypoint, Player player)
+        public FleetWaypointProcessTask(Fleet fleet, Waypoint waypoint, Player player)
         {
             Fleet = fleet;
             Waypoint = waypoint;
             Player = player;
         }
 
-        public FleetWaypoint(Fleet fleet, Waypoint waypoint, List<FleetWaypointTransportTask> tasks)
+        public FleetWaypointProcessTask(Fleet fleet, Waypoint waypoint, List<FleetWaypointTransportTask> tasks)
         {
             Fleet = fleet;
             Waypoint = waypoint;
-            Tasks = tasks;
+            TransportTasks = tasks;
+        }
+
+        public void Deconstruct(out Fleet fleet, out Waypoint waypoint, out Player player)
+        {
+            fleet = Fleet;
+            waypoint = Waypoint;
+            player = Player;
+        }
+
+        public void Deconstruct(out Fleet fleet, out Waypoint waypoint, out Player player, out List<FleetWaypointTransportTask> tasks)
+        {
+            fleet = Fleet;
+            waypoint = Waypoint;
+            player = Player;
+            tasks = TransportTasks;
         }
 
         public void AddTask(WaypointTransportTask task, CargoType cargoType)
         {
-            Tasks.Add(new FleetWaypointTransportTask(task.action, task.amount, cargoType));
+            TransportTasks.Add(new FleetWaypointTransportTask(task.action, task.amount, cargoType));
         }
 
     }

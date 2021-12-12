@@ -245,11 +245,14 @@ namespace CraigStars.Tests
             planet.Spec = service.ComputePlanetSpec(planet, player);
             Assert.AreEqual(new Hab(), planet.Spec.TerraformAmount);
 
-            // this is off by 10, we've already terraformed 2, so we can do one more
-            planet.BaseHab = new Hab(37, 50, 50);
-            planet.Hab = new Hab(39, 50, 50);
+            // This is a planet in game I generated that was reporting some crazy terraform values
+            // the player should have 3,3,3 terraforming
+            planet.BaseHab = new Hab(48, 95, 34);
+            planet.Hab = new Hab(48, 95, 34);
+            player.TechLevels = new TechLevel(3, 3, 3, 3, 3, 3);
+            player.Race.Spec = raceService.ComputeRaceSpecs(player.Race);
             planet.Spec = service.ComputePlanetSpec(planet, player);
-            Assert.AreEqual(new Hab(grav: 1), planet.Spec.TerraformAmount);
+            Assert.AreEqual(new Hab(grav: +2, temp: -3, rad: +3), planet.Spec.TerraformAmount);
 
         }
 
@@ -269,6 +272,7 @@ namespace CraigStars.Tests
             // Create a terraformer player with tech levels for Gravity3 terraform
             var terraformer = new Player()
             {
+                Num = 1,
                 Race = new Race(),
                 TechLevels = new TechLevel(propulsion: 1, biotechnology: 1),
             };
@@ -291,6 +295,15 @@ namespace CraigStars.Tests
             terraformer.PlayerRelations[0].Relation = PlayerRelation.Enemy;
             Assert.AreEqual(new Hab(3, 0, 0), service.GetTerraformAmount(planet, player, terraformer));
 
+            // check hab that is -40 away from ideal
+            // we are enemies so we should terraform it more negative
+            planet.Hab = planet.BaseHab = new Hab(10, 10, 10);
+            Assert.AreEqual(new Hab(-3, 0, 0), service.GetTerraformAmount(planet, player, terraformer));
+
+            // check hab that is +40 away from ideal
+            // we are enemies so we should terraform it more positive
+            planet.Hab = planet.BaseHab = new Hab(90, 90, 90);
+            Assert.AreEqual(new Hab(3, 0, 0), service.GetTerraformAmount(planet, player, terraformer));
         }
 
         [Test]

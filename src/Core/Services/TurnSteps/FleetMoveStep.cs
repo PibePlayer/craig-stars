@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
-using static CraigStars.Utils.Utils;
 using Godot;
+using static CraigStars.Utils.Utils;
 
 namespace CraigStars
 {
@@ -260,13 +260,26 @@ namespace CraigStars
             {
                 sourcePlanet.OrbitingFleets.Remove(fleet);
             }
+            else if (wp0.Target is Fleet sourceFleet && sourceFleet.Orbiting != null)
+            {
+                sourceFleet.Orbiting.OrbitingFleets.Remove(fleet);
+            }
 
             fleet.Position = wp1.Position;
-            if (wp1.Target is Planet planet)
+
+            // find out if we arrived at a planet, either by reaching our target fleet 
+            // or reaching a planet
+            Planet targetPlanet = wp1.Target as Planet;
+            if (targetPlanet == null && wp1.Target is Fleet targetFleet && targetFleet.Orbiting != null)
             {
-                fleet.Orbiting = planet;
-                planet.OrbitingFleets.Add(fleet);
-                if (fleet.PlayerNum == planet.PlayerNum && planet.HasStarbase)
+                targetPlanet = targetFleet.Orbiting;
+            }
+
+            if (targetPlanet != null)
+            {
+                fleet.Orbiting = targetPlanet;
+                targetPlanet.OrbitingFleets.Add(fleet);
+                if (fleet.PlayerNum == targetPlanet.PlayerNum && targetPlanet.HasStarbase)
                 {
                     // refuel at starbases
                     fleet.Fuel = fleet.Spec.FuelCapacity;
@@ -287,7 +300,7 @@ namespace CraigStars
                 fleet.Waypoints.Add(wpToRepeat);
             }
 
-            if (wp0.TaskComplete)
+            if (!wp0.WaitAtWaypoint)
             {
                 fleet.Waypoints.RemoveAt(0);
             }

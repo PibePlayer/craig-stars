@@ -19,10 +19,18 @@ namespace CraigStars
 
             // Separate our waypoint tasks into groups
             foreach (var fleet in Game.Fleets.Where(fleet =>
-                fleet.Spec.CanLayMines &&
                 fleet.Waypoints[0].Task == WaypointTask.LayMineField))
             {
-                LayMineField(fleet, Game.Players[fleet.PlayerNum]);
+                var player = Game.Players[fleet.PlayerNum];
+                if (!fleet.Spec.CanLayMines)
+                {
+                    fleet.Waypoints[0].Task = WaypointTask.None;
+                    Message.MinesLaidFailed(player, fleet);
+                }
+                else
+                {
+                    LayMineField(fleet, player);
+                }
             }
         }
 

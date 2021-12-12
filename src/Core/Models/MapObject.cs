@@ -16,6 +16,7 @@ namespace CraigStars
         /// </summary>
         public const int Unexplored = -1;
         public const int Unowned = -1;
+        public const int Infinite = -1;
 
         public long Id { get; set; }
         public Guid Guid { get; set; } = Guid.NewGuid();
@@ -26,7 +27,7 @@ namespace CraigStars
 
         [DefaultValue(Unowned)]
         public int PlayerNum { get; set; } = Unowned;
-        
+
         [JsonIgnore]
         public bool Owned { get => PlayerNum != Unowned; }
 

@@ -1,8 +1,8 @@
-using Godot;
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using System.ComponentModel;
+using Godot;
+using Newtonsoft.Json;
 
 namespace CraigStars
 {
@@ -13,7 +13,11 @@ namespace CraigStars
         public const int PatrolWarpFactorAutomatic = -1;
         public const int PatrolRangeInfinite = -1;
 
-        [JsonProperty(IsReference = true)]
+        /// <summary>
+        /// Waypoints can target positions or other mapobjects. If a fleet is targetting a mapobject, it would go here
+        /// </summary>
+        /// <value></value>
+        [JsonIgnore]
         public MapObject Target
         {
             get => target;
@@ -23,12 +27,23 @@ namespace CraigStars
                 if (target != null)
                 {
                     Position = target.Position;
+                    TargetGuid = target.Guid;
+                }
+                else
+                {
+                    TargetGuid = null;
                 }
             }
         }
         MapObject target;
 
-        [JsonProperty(IsReference = true)]
+        /// <summary>
+        /// During serialization, this is used to lookup targets from the player or game MapObjects
+        /// </summary>
+        /// <value></value>
+        public Guid? TargetGuid { get; set; }
+
+        [JsonIgnore]
         public MapObject OriginalTarget
         {
             get => originalTarget;
@@ -38,10 +53,22 @@ namespace CraigStars
                 if (originalTarget != null)
                 {
                     Position = originalTarget.Position;
+                    OriginalTargetGuid = originalTarget.Guid;
+                }
+                else
+                {
+                    OriginalTargetGuid = null;
                 }
             }
         }
         MapObject originalTarget;
+
+        /// <summary>
+        /// During serialization, this is used to lookup targets from the player or game MapObjects
+        /// </summary>
+        /// <value></value>
+        public Guid? OriginalTargetGuid { get; set; }
+
 
         public Vector2 Position { get; set; }
         public Vector2 OriginalPosition { get; set; }
@@ -77,9 +104,14 @@ namespace CraigStars
         /// The player number to transfer this fleet to
         /// </summary>
         /// <value></value>
-        public int TransferToPlayer { get; set; }
+        public int TransferToPlayer { get; set; } = -1;
 
-        public bool TaskComplete { get; set; }
+        /// <summary>
+        /// Set to true if the currently processed waypoint task should cause the fleet to wait at
+        /// this waypoint
+        /// </summary>
+        /// <value></value>
+        public bool WaitAtWaypoint { get; set; }
 
         public Waypoint() { }
 
@@ -99,12 +131,14 @@ namespace CraigStars
             if (target != null)
             {
                 Position = target.Position;
+                TargetGuid = target.Guid;
             }
             else
             {
                 // note: we must have a position or a target
                 // TODO: throw an exception here?
                 Position = position;
+                TargetGuid = null;
             }
             TransportTasks = transportTasks;
             LayMineFieldDuration = layMineFieldDuration;

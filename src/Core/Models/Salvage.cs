@@ -17,6 +17,9 @@ namespace CraigStars
         [JsonIgnore]
         public int Fuel { get => 0; set { } }
 
+        [JsonIgnore]
+        public int FuelCapacity { get => 0; }
+
         public bool AttemptTransfer(Cargo transfer, int fuel = 0)
         {
             if (fuel > 0 || fuel < 0)

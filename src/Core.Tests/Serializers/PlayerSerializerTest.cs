@@ -130,6 +130,66 @@ namespace CraigStars.Tests
 
         }
 
+        [Test]
+        public void TestSerializeWaypoints()
+        {
+            var player = new Player()
+            {
+                Name = "Bob",
+                Num = 0,
+                BattlePlans = new List<BattlePlan>() { new BattlePlan("Default") }
+            };
+
+            player.Designs.Add(
+                new ShipDesign()
+                {
+                    PlayerNum = player.Num,
+                    Name = "Design 1",
+                    Hull = Techs.Scout,
+                    Slots = new List<ShipDesignSlot>() {
+                        new ShipDesignSlot(Techs.QuickJump5, 1, 1)
+                    },
+                }
+            );
+
+            // add some fleets
+            var fleet1 = new Fleet()
+            {
+                Name = "Fleet 1",
+                PlayerNum = player.Num,
+                Tokens = new List<ShipToken>() {
+                    new ShipToken(player.Designs[0], 1)
+                },
+                BattlePlan = player.BattlePlans[0]
+            };
+
+            var fleet2 = new Fleet()
+            {
+                Name = "Fleet 2",
+                PlayerNum = player.Num,
+                Tokens = new List<ShipToken>() {
+                    new ShipToken(player.Designs[0], 1)
+                },
+                BattlePlan = player.BattlePlans[0]
+            };
+
+            fleet1.Waypoints.Add(Waypoint.TargetWaypoint(fleet2));
+
+            player.Fleets.Add(fleet1);
+            player.Fleets.Add(fleet2);
+
+            var settings = Serializers.CreatePlayerSettings(StaticTechStore.Instance);
+            var json = Serializers.Serialize(player, settings);
+            log.Info(json);
+
+            // populate this player object
+            var loadedPlayer = new Player();
+            var loadSettings = Serializers.CreatePlayerSettings(StaticTechStore.Instance);
+            loadedPlayer = Serializers.DeserializeObject<Player>(json, loadSettings);
+
+            // we should be targeting this fleet
+            Assert.AreEqual(loadedPlayer.Fleets[0].Waypoints[0].Target, loadedPlayer.Fleets[1]);
+        }
     }
 
 }

@@ -78,6 +78,21 @@ namespace CraigStars
 
             // Update the Game dictionaries used for lookups, like PlanetsByGuid, FleetsByGuid, etc.
             UpdateInternalDictionaries();
+
+            foreach (var fleet in Fleets)
+            {
+                foreach (var waypoint in fleet.Waypoints)
+                {
+                    if (waypoint.TargetGuid.HasValue && MapObjectsByGuid.TryGetValue(waypoint.TargetGuid.Value, out var target))
+                    {
+                        waypoint.Target = target;
+                    }
+                    if (waypoint.OriginalTargetGuid.HasValue && MapObjectsByGuid.TryGetValue(waypoint.OriginalTargetGuid.Value, out var origintalTarget))
+                    {
+                        waypoint.OriginalTarget = origintalTarget;
+                    }
+                }
+            }
         }
 
         /// <summary>

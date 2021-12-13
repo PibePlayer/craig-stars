@@ -42,7 +42,7 @@ namespace CraigStars
             {
                 Waypoint wp0 = fleet.Waypoints[0];
                 Waypoint wp1 = fleet.Waypoints[1];
-                float totalDist = wp0.Position.DistanceTo(wp1.Position);
+                float totalDist = fleet.Position.DistanceTo(wp1.Position);
 
                 if (wp1.WarpFactor == Waypoint.StargateWarpFactor)
                 {
@@ -157,7 +157,7 @@ namespace CraigStars
         /// <param name="totalDist"></param>
         internal void MoveFleet(Fleet fleet, Player player, Waypoint wp0, Waypoint wp1, float totalDist)
         {
-            fleet.PreviousPosition = wp0.Position;
+            fleet.PreviousPosition = fleet.Position;
             float dist = wp1.WarpFactor * wp1.WarpFactor;
 
             // check for CE engine failure
@@ -227,6 +227,12 @@ namespace CraigStars
                 fleet.Orbiting = null;
             }
 
+            if (wp0.OriginalTarget == null || !wp0.OriginalPosition.HasValue)
+            {
+                wp0.OriginalTarget = wp0.Target;
+                wp0.OriginalPosition = fleet.Position;
+            }
+
             if (totalDist == dist)
             {
                 CompleteMove(fleet, wp0, wp1);
@@ -236,11 +242,6 @@ namespace CraigStars
                 // move this fleet closer to the next waypoint
                 fleet.WarpSpeed = wp1.WarpFactor;
                 fleet.Heading = (wp1.Position - fleet.Position).Normalized();
-                if (wp0.OriginalTarget == null || wp0.OriginalPosition == Vector2.Zero)
-                {
-                    wp0.OriginalTarget = wp0.Target;
-                    wp0.OriginalPosition = wp0.Position;
-                }
                 wp0.Target = null;
 
                 fleet.Position += fleet.Heading * dist;

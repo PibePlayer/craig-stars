@@ -109,6 +109,9 @@ namespace CraigStars.Client
             // select the top of the queue on startup
             queuedItems.SelectedItemIndex = 0;
 
+            // this gets stuck sometimes. not sure why
+            quantityModifier = 1;
+
             availableItems.Planet = Planet;
             queuedItems.Planet = Planet;
 

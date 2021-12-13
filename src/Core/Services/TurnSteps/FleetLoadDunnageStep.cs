@@ -64,11 +64,6 @@ namespace CraigStars
                                 Transfer(source, target, transportTask.cargoType, -transferAmount);
                             }
                             break;
-                        case WaypointTaskTransportAction.None:
-                            break;
-                        default:
-                            log.Error($"{Game.Year}: {source.PlayerNum} {source.Name} Trying to process an unsupported unload task action: {transportTask.action}");
-                            break;
                     }
                 }
             }

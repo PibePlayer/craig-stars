@@ -7,13 +7,13 @@ namespace CraigStars
     public class FleetColonize0Step : FleetColonizeStep
     {
         public FleetColonize0Step(IProvider<Game> gameProvider, IRulesProvider rulesProvider, PlanetService planetService, FleetSpecService fleetSpecService)
-            : base(gameProvider, rulesProvider, planetService, fleetSpecService, TurnGenerationState.FleetMerge0Step) { }
+            : base(gameProvider, rulesProvider, planetService, fleetSpecService, TurnGenerationState.FleetColonize0Step) { }
     }
 
     public class FleetColonize1Step : FleetColonizeStep
     {
         public FleetColonize1Step(IProvider<Game> gameProvider, IRulesProvider rulesProvider, PlanetService planetService, FleetSpecService fleetSpecService)
-            : base(gameProvider, rulesProvider, planetService, fleetSpecService, TurnGenerationState.FleetMerge1Step) { }
+            : base(gameProvider, rulesProvider, planetService, fleetSpecService, TurnGenerationState.FleetColonize1Step) { }
     }
 
     /// <summary>

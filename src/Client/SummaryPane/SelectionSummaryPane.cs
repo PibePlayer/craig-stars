@@ -76,6 +76,7 @@ namespace CraigStars.Client
                     {
                         // select the first orbiting fleet
                         EventManager.PublishCommandMapObjectEvent(mapObject);
+                        EventManager.PublishSelectMapObjectEvent(mapObject);
                     }
                     else
                     {

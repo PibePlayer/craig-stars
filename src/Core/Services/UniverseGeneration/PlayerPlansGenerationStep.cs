@@ -77,9 +77,9 @@ namespace CraigStars.UniverseGeneration
                 new ProductionPlan("Default")
                 {
                     Items = {
-                        new ProductionQueueItem(QueueItemType.AutoMaxTerraform, 1),
-                        new ProductionQueueItem(QueueItemType.AutoFactories, 5),
-                        new ProductionQueueItem(QueueItemType.AutoMines, 5),
+                        new ProductionQueueItem(QueueItemType.AutoMinTerraform, 1),
+                        new ProductionQueueItem(QueueItemType.AutoFactories, 10),
+                        new ProductionQueueItem(QueueItemType.AutoMines, 10),
                     }
                 }
             };

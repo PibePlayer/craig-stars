@@ -136,6 +136,122 @@ namespace CraigStars.Tests
         }
 
         [Test]
+        public void TestMoveCompleteRepeatOrders()
+        {
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
+            var fleet = game.Fleets[0];
+            var sourcePlanet = game.Planets[0];
+
+            var destPlanet = new Planet()
+            {
+                Name = "Destination",
+                Position = new Vector2(10, 10),
+            };
+            destPlanet.InitEmptyPlanet();
+            game.Planets.Add(destPlanet);
+
+            // start us at the source planet
+            fleet.Position = sourcePlanet.Position;
+            fleet.Orbiting = sourcePlanet;
+            sourcePlanet.OrbitingFleets.Add(fleet);
+
+            // give directions to bounce back and forth and repeat
+            fleet.Waypoints = new List<Waypoint>() {
+                Waypoint.TargetWaypoint(sourcePlanet, warpFactor: 6),
+                Waypoint.TargetWaypoint(destPlanet, warpFactor: 6),
+            };
+            fleet.RepeatOrders = true;
+
+            FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, rulesProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
+            step.Execute(new(), game.OwnedPlanets.ToList());
+
+            // move to the destPlanet
+            Assert.AreEqual(destPlanet.Position, fleet.Position);
+            Assert.AreEqual(destPlanet, fleet.Orbiting);
+            Assert.True(destPlanet.OrbitingFleets.Contains(fleet));
+
+            // we should still have 2 waypoints because of repeating orders
+            Assert.AreEqual(2, fleet.Waypoints.Count);
+
+            // make sure the fleet is targeting the destPlanet for waypoint0
+            Assert.AreEqual(destPlanet, fleet.Waypoints[0].Target);
+            Assert.AreEqual(WaypointTask.None, fleet.Waypoints[0].Task);
+            Assert.AreEqual(destPlanet.Position, fleet.Waypoints[0].Position);
+
+            // make sure the fleet is targeting the original sourcePlanet for waypoint1
+            Assert.AreEqual(sourcePlanet, fleet.Waypoints[1].Target);
+            Assert.AreEqual(WaypointTask.None, fleet.Waypoints[1].Task);
+            Assert.AreEqual(sourcePlanet.Position, fleet.Waypoints[1].Position);
+        }
+
+        [Test]
+        public void TestMovePartialRepeatOrders()
+        {
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
+            var fleet = game.Fleets[0];
+            var sourcePlanet = game.Planets[0];
+
+            // create a planet that is 2 years away at warp 5
+            var destPlanet = new Planet()
+            {
+                Name = "Destination",
+                Position = new Vector2(0, 26),
+            };
+            destPlanet.InitEmptyPlanet();
+            game.Planets.Add(destPlanet);
+
+            // start us at the source planet
+            fleet.Position = sourcePlanet.Position;
+            fleet.Orbiting = sourcePlanet;
+            sourcePlanet.OrbitingFleets.Add(fleet);
+
+            // give directions to bounce back and forth and repeat
+            fleet.Waypoints = new List<Waypoint>() {
+                Waypoint.TargetWaypoint(sourcePlanet, warpFactor: 5),
+                Waypoint.TargetWaypoint(destPlanet, warpFactor: 5),
+            };
+            fleet.RepeatOrders = true;
+
+            // run one execution
+            FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, rulesProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
+            step.Execute(new(), game.OwnedPlanets.ToList());
+
+            // move towards the destPlanet, away from the sourcePlanet
+            Assert.AreEqual(new Vector2(0, 25), fleet.Position);
+            Assert.AreEqual(null, fleet.Orbiting);
+            Assert.AreEqual(null, fleet.Waypoints[0].Target);
+            Assert.AreEqual(sourcePlanet, fleet.Waypoints[0].OriginalTarget);
+            Assert.AreEqual(sourcePlanet.Position, fleet.Waypoints[0].OriginalPosition);
+
+            // make sure the fleet is targeting the destPlanet for waypoint1
+            Assert.AreEqual(destPlanet, fleet.Waypoints[1].Target);
+            Assert.AreEqual(WaypointTask.None, fleet.Waypoints[1].Task);
+            Assert.AreEqual(destPlanet.Position, fleet.Waypoints[1].Position);
+
+            // run the second execution
+            step = new FleetMoveStep(gameRunner.GameProvider, rulesProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
+            step.Execute(new(), game.OwnedPlanets.ToList());
+
+            // we should have arrived at the destPlanet
+            Assert.AreEqual(destPlanet.Position, fleet.Position);
+            Assert.AreEqual(destPlanet, fleet.Orbiting);
+            Assert.True(destPlanet.OrbitingFleets.Contains(fleet));
+
+            // we should still have 2 waypoints because of repeating orders
+            Assert.AreEqual(2, fleet.Waypoints.Count);
+
+            // make sure the fleet is targeting the destPlanet for waypoint0
+            Assert.AreEqual(destPlanet, fleet.Waypoints[0].Target);
+            Assert.AreEqual(WaypointTask.None, fleet.Waypoints[0].Task);
+            Assert.AreEqual(destPlanet.Position, fleet.Waypoints[0].Position);
+
+            // make sure the fleet is targeting the original sourcePlanet for waypoint1
+            Assert.AreEqual(sourcePlanet, fleet.Waypoints[1].Target);
+            Assert.AreEqual(WaypointTask.None, fleet.Waypoints[1].Task);
+            Assert.AreEqual(sourcePlanet.Position, fleet.Waypoints[1].Position);
+        }
+
+        [Test]
         public void TestMoveEngineFailure()
         {
             var (game, gameRunner) = TestUtils.GetSingleUnitGame();

@@ -71,7 +71,7 @@ namespace CraigStars
 
 
         public Vector2 Position { get; set; }
-        public Vector2 OriginalPosition { get; set; }
+        public Vector2? OriginalPosition { get; set; }
 
         public int WarpFactor { get; set; }
 

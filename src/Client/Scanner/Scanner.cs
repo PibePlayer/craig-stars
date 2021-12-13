@@ -1,9 +1,9 @@
-using Godot;
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using CraigStars.Singletons;
 using CraigStars.Utils;
+using Godot;
 
 namespace CraigStars.Client
 {
@@ -257,7 +257,7 @@ namespace CraigStars.Client
             transientMapObjects.AddRange(AddMapObjectsToViewport<MineralPacket, MineralPacketSprite>(Me.AllMineralPackets, mineralPacketScene, GetNode("MineralPackets")));
 
             GetNode<Node2D>("MineFields").Visible = Me.UISettings.ShowMineFields;
-            
+
             mapObjects.Clear();
             mapObjects.AddRange(Planets);
             mapObjects.AddRange(transientMapObjects);
@@ -793,18 +793,24 @@ namespace CraigStars.Client
             }
 
             commandedMapObject.Command();
+            bool selectedPlanet = false;
             foreach (var peer in mapObjectsAtLocation)
             {
                 if (peer is PlanetSprite planet)
                 {
                     planet.HasCommandedPeer = true;
                     planet.UpdateSprite();
+                    SelectMapObject(planet);
+                    selectedPlanet = true;
                 }
+            }
+            if (!selectedPlanet)
+            {
+                SelectMapObject(mapObject);
             }
             commandedMapObject.UpdateSprite();
             EventManager.PublishMapObjectCommandedEvent(mapObject);
 
-            SelectMapObject(mapObject);
             UpdateSelectedMapObjectIndicator();
         }
 

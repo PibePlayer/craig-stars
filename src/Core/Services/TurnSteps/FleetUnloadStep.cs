@@ -47,7 +47,6 @@ namespace CraigStars
 
             if (wp.Target is ICargoHolder dest)
             {
-                Cargo cargoToUnload;
                 foreach (var transportTask in task.TransportTasks)
                 {
                     int availableToUnload = transportTask.cargoType == CargoType.Fuel ? source.Fuel : source.Cargo[transportTask.cargoType];
@@ -81,15 +80,9 @@ namespace CraigStars
                                 }
                             }
                             break;
-                        case WaypointTaskTransportAction.None:
-                            break;
-                        default:
-                            log.Error($"{Game.Year}: {source.PlayerNum} {source.Name} Trying to process an unsupported unload task action: {transportTask.action}");
-                            cargoToUnload = Cargo.Empty;
-                            break;
                     }
 
-                    if (transferAmount > 0)
+                    if (transferAmount != 0)
                     {
                         // we are unloading so add cargo to the destination
                         Message.FleetTransportedCargo(task.Player, source, transportTask.cargoType, dest, transferAmount);

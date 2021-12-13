@@ -268,7 +268,7 @@ namespace CraigStars
         public int GetBestWarpFactor(Fleet fleet, Player player, Waypoint wp0, Waypoint wp1)
         {
             // if our waypoint is 48 ly away, ideally we want warp 7 to make it in 1 year (7 *7 = 49)
-            var distance = wp0.Position.DistanceTo(wp1.Position);
+            var distance = fleet.Position.DistanceTo(wp1.Position);
             var idealWarp = Mathf.Clamp((int)Math.Ceiling(Math.Sqrt(distance)), 1, 9);
 
             var fuelUsage = GetFuelCost(fleet, player, idealWarp, distance);

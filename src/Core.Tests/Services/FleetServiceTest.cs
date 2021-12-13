@@ -92,7 +92,23 @@ namespace CraigStars.Tests
             Assert.AreEqual(design2, fleet1.Tokens[1].Design);
         }
 
+        [Test]
+        public void TestGetDefaultWarpFactor()
+        {
+            var player = new Player();
+            var fleet = TestUtils.GetLongRangeScout(player);
 
+            // should be 6 with the longhump 6
+            Assert.AreEqual(6, service.GetDefaultWarpFactor(fleet, player));
+
+            fleet.Tokens[0].Design.Slots[0].HullComponent = Techs.DaddyLongLegs7;
+
+            // should use 7, the ideal engine speed of the Daddy Long Legs 7
+            fleetSpecService.ComputeDesignSpec(player, fleet.Tokens[0].Design, recompute: true);
+            fleetSpecService.ComputeFleetSpec(player, fleet, recompute: true);
+            Assert.AreEqual(7, service.GetDefaultWarpFactor(fleet, player));
+        }
+        
         [Test]
         public void TestGetBestWarpFactor()
         {

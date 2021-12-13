@@ -71,7 +71,7 @@ namespace CraigStars
                                 var wp0 = source.Waypoints[0];
                                 foreach (var wpNext in source.Waypoints.Skip(1))
                                 {
-                                    fuelRequiredForNextWaypoint += fleetService.GetFuelCost(source, player, wpNext.WarpFactor, wp0.Position.DistanceTo(wpNext.Position));
+                                    fuelRequiredForNextWaypoint += fleetService.GetFuelCost(source, player, wpNext.WarpFactor, source.Position.DistanceTo(wpNext.Position));
                                 }
 
                                 int leftoverFuel = source.Fuel - fuelRequiredForNextWaypoint;
@@ -128,11 +128,6 @@ namespace CraigStars
                                     wp.WaitAtWaypoint = true;
                                 }
                             }
-                            break;
-                        case WaypointTaskTransportAction.None:
-                            break;
-                        default:
-                            log.Error($"{Game.Year}: {source.PlayerNum} {source.Name} Trying to process an unsupported unload task action: {transportTask.action}");
                             break;
                     }
 

@@ -1,8 +1,8 @@
-using CraigStars.Utils;
-using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CraigStars.Utils;
+using Godot;
 
 namespace CraigStars.Client
 {
@@ -67,6 +67,16 @@ namespace CraigStars.Client
         public override void _Input(InputEvent @event)
         {
             quantityModifier = this.UpdateQuantityModifer(@event, quantityModifier);
+        }
+
+        protected override void OnVisibilityChanged()
+        {
+            base.OnVisibilityChanged();
+            if (IsVisibleInTree())
+            {
+                // this gets stuck sometimes. not sure why
+                quantityModifier = 1;
+            }
         }
 
         /// <summary>

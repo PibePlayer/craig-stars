@@ -1,6 +1,6 @@
 # craig-stars
 
-![screenshot](docs/screenshots/screenshot3.png)
+![screenshot](docs/screenshots/screenshot4.png)
 
 A clone of the 4X game Stars!
 
@@ -17,7 +17,7 @@ godot ([issue #51550](https://github.com/godotengine/godot/pull/51550)).
 
 # Development
 
-This clone is done using the [Godot](https://godotengine.org) game engine. To launch this project, install Godot Mono 3.3 or greater (and [the required .net sdks](https://docs.godotengine.org/en/latest/tutorials/scripting/c_sharp/c_sharp_basics.html#setting-up-c-for-godot)), open project.godot in the editor and click the Play button.
+This clone is done using the [Godot](https://godotengine.org) game engine. To launch this project, install Godot Mono 3.4 or greater (and [the required .net sdks](https://docs.godotengine.org/en/latest/tutorials/scripting/c_sharp/c_sharp_basics.html#setting-up-c-for-godot)), open project.godot in the editor and click the Play button.
 
 To run unit Core.Tests, install [.NET Core 6](https://dotnet.microsoft.com/download).
 

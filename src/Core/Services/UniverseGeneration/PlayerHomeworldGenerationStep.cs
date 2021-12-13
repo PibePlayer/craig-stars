@@ -1,10 +1,10 @@
-using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using CraigStars;
-using static CraigStars.Utils.Utils;
+using Godot;
 using log4net;
+using static CraigStars.Utils.Utils;
 
 namespace CraigStars.UniverseGeneration
 {
@@ -125,7 +125,9 @@ namespace CraigStars.UniverseGeneration
             var design = Game.DesignsByGuid[player.GetLatestDesign(ShipDesignPurpose.Starbase).Guid];
             CreateStarbaseOnPlanet(player, planet, design);
 
+            // apply the default plan, but remove the terraforming item because our homeworld is perfect
             planetService.ApplyProductionPlan(planet.ProductionQueue.Items, player, player.ProductionPlans[0]);
+            planet.ProductionQueue.Items = planet.ProductionQueue.Items.Where(item => !item.IsTerraform).ToList();
 
             Message.HomePlanet(player, planet);
         }

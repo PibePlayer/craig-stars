@@ -370,7 +370,7 @@ namespace CraigStars
                 fleet.Tokens.Add(new ShipToken(item.Design, item.Quantity));
                 fleetSpecService.ComputeFleetSpec(player, fleet);
                 fleet.Fuel = fleet.Spec.FuelCapacity;
-                fleet.Waypoints.Add(Waypoint.TargetWaypoint(planet));
+                fleet.Waypoints.Add(Waypoint.TargetWaypoint(planet, warpFactor: fleet.Spec.Engine.IdealSpeed));
                 planet.OrbitingFleets.Add(fleet);
 
                 Message.FleetBuilt(player, item.Design, fleet, numBuilt);

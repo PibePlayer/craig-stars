@@ -272,6 +272,35 @@ namespace CraigStars
             player.Messages.Add(new Message(MessageType.FleetInvalidMergeUnowned, text, fleet));
         }
 
+        public static void FleetPatrolTargeted(Player player, Fleet fleet, Fleet target)
+        {
+            player.Messages.Add(new Message(MessageType.FleetPatrolTargeted, $"Your patrolling {fleet.Name} has targeted {target.Name} for intercept.", fleet));
+        }
+
+        public static void FleetInvalidRouteNotPlanet(Player player, Fleet fleet)
+        {
+            string text = $"{fleet.Name} could not be routed because it is not at a planet.";
+            player.Messages.Add(new Message(MessageType.FleetInvalidRouteNotPlanet, text, fleet));
+        }
+
+        public static void FleetInvalidRouteNotFriendlyPlanet(Player player, Fleet fleet, Planet planet)
+        {
+            string text = $"{fleet.Name} could not be routed because you are not friends with the owners of {planet.Name}";
+            player.Messages.Add(new Message(MessageType.FleetInvalidRouteNotFriendlyPlanet, text, fleet));
+        }
+
+        public static void FleetInvalidRouteNoRouteTarget(Player player, Fleet fleet, Planet planet)
+        {
+            string text = $"{fleet.Name} could not be routed because {planet.Name} has no route set.";
+            player.Messages.Add(new Message(MessageType.FleetInvalidRouteNoRouteTarget, text, fleet));
+        }
+
+        public static void FleetRouted(Player player, Fleet fleet, Planet planet, MapObject routeTarget)
+        {
+            string text = $"{fleet.Name} has been routed by the citizens of {planet.Name} to {routeTarget.Name}";
+            player.Messages.Add(new Message(MessageType.FleetRoute, text, fleet));
+        }
+
         public static void FleetBuilt(Player player, ShipDesign design, Fleet fleet, int numBuilt)
         {
             string text;

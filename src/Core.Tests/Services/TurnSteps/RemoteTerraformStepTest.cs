@@ -35,8 +35,8 @@ namespace CraigStars.Tests
             var player2 = game.Players[1];
 
             // make them buds (we have to be buds with ourselves as well)
-            terraformer.PlayerRelations.Add(new PlayerRelationship(terraformer.Num, PlayerRelation.Friend));
-            terraformer.PlayerRelations.Add(new PlayerRelationship(player2.Num, PlayerRelation.Friend));
+            terraformer.PlayerRelations[terraformer.Num].Relation = PlayerRelation.Friend;
+            terraformer.PlayerRelations[player2.Num].Relation = PlayerRelation.Friend;
 
             // allow TT 
             terraformer.Race.LRTs.Add(LRT.TT);
@@ -71,6 +71,9 @@ namespace CraigStars.Tests
         {
             var player1 = game.Players[0];
             var player2 = game.Players[1];
+
+            player1.PlayerRelations[player1.Num].Relation = PlayerRelation.Friend;
+            player1.PlayerRelations[player2.Num].Relation = PlayerRelation.Enemy;
 
             // allow TT 
             player1.Race.LRTs.Add(LRT.TT);

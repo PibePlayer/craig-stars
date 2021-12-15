@@ -166,11 +166,29 @@ namespace CraigStars.Tests
                     new BattlePlan("Default")
                 }
             };
+            player1.PlayerRelations.AddRange(
+                new List<PlayerRelationship>()
+                {
+                    new PlayerRelationship(player1.Num, PlayerRelation.Friend),
+                    new PlayerRelationship(player2.Num, PlayerRelation.Neutral),
+                }
+            );
+            player2.PlayerRelations.AddRange(
+                new List<PlayerRelationship>()
+                {
+                    new PlayerRelationship(player1.Num, PlayerRelation.Neutral),
+                    new PlayerRelationship(player2.Num, PlayerRelation.Friend),
+                }
+            );
             game.Players.Add(player1);
             game.Players.Add(player2);
 
             var starbase1 = CreateDesign(game, player1, ShipDesigns.Starbase.Clone(player1));
             var starbase2 = CreateDesign(game, player2, ShipDesigns.Starbase.Clone(player2));
+
+            var playerIntel = TestContainer.GetInstance<PlayerIntel>();
+            playerIntel.Discover(player1, starbase1);
+            playerIntel.Discover(player2, starbase2);
 
             // create empty planets and have the players discover them
             var planet1 = new Planet()
@@ -217,8 +235,7 @@ namespace CraigStars.Tests
             planet2.Starbase.Orbiting = planet2;
             game.Planets.Add(planet1);
             game.Planets.Add(planet2);
-
-            var playerIntel = TestContainer.GetInstance<PlayerIntel>();
+            
             game.Planets.ForEach(planet =>
             {
                 playerIntel.Discover(player1, planet);
@@ -240,6 +257,9 @@ namespace CraigStars.Tests
             var design2 = ShipDesigns.StalwartDefender.Clone(player2);
             game.Designs.Add(design1);
             game.Designs.Add(design2);
+
+            playerIntel.Discover(player1, design1);
+            playerIntel.Discover(player2, design2);
 
             var fleet1 = new Fleet()
             {

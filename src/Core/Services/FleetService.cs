@@ -271,8 +271,10 @@ namespace CraigStars
             var distance = fleet.Position.DistanceTo(wp1.Position);
             var idealWarp = Mathf.Clamp((int)Math.Ceiling(Math.Sqrt(distance)), 1, 9);
 
+            var fuelUsageAtIdealEngineSpeed = GetFuelCost(fleet, player, fleet.Spec.Engine.IdealSpeed, distance);
             var fuelUsage = GetFuelCost(fleet, player, idealWarp, distance);
-            while (fuelUsage > fleet.Fuel && idealWarp > 1)
+            while ((fuelUsageAtIdealEngineSpeed >= fuelUsage * 2 || fuelUsage > fleet.Fuel)
+             && idealWarp > 1)
             {
                 idealWarp--;
                 fuelUsage = GetFuelCost(fleet, player, idealWarp, distance);

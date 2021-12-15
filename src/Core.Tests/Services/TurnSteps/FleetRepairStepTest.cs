@@ -1,15 +1,14 @@
-using Godot;
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
-
-using CraigStars.Singletons;
-using log4net;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using CraigStars.Singletons;
+using Godot;
+using log4net;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
-using System.Threading.Tasks;
-using System.Linq;
+using NUnit.Framework;
 
 namespace CraigStars.Tests
 {
@@ -74,7 +73,9 @@ namespace CraigStars.Tests
 
             var bombingFleet = game.Fleets[0];
             var bombingPlayer = game.Players[0];
-            var defendingPalnet = game.Planets[1];
+            var defendingPlanet = game.Planets[1];
+
+            bombingPlayer.PlayerRelations[defendingPlanet.PlayerNum].Relation = PlayerRelation.Enemy;
 
             bombingFleet.Tokens.Add(new ShipToken()
             {
@@ -93,16 +94,15 @@ namespace CraigStars.Tests
 
             gameRunner.ComputeSpecs(recompute: true);
 
-            bombingFleet.Orbiting = defendingPalnet;
-            defendingPalnet.OrbitingFleets.Add(bombingFleet);
+            bombingFleet.Orbiting = defendingPlanet;
+            defendingPlanet.OrbitingFleets.Add(bombingFleet);
 
             bombingFleet.Spec.Armor = 100;
             bombingFleet.Damage = 10;
-            step.RepairFleet(bombingFleet, bombingPlayer, defendingPalnet);
+            step.RepairFleet(bombingFleet, bombingPlayer, defendingPlanet);
 
             // shouldn't repair at all while bombing
             Assert.AreEqual(10, bombingFleet.Damage);
-
         }
 
         [Test]

@@ -19,6 +19,9 @@ namespace CraigStars.Tests
         {
             PlanetService planetService = TestUtils.TestContainer.GetInstance<PlanetService>();
             (game, gameRunner) = TestUtils.GetTwoPlayerGame();
+            var fleetOwner = game.Players[1];
+            fleetOwner.PlayerRelations[0].Relation = PlayerRelation.Enemy;
+
             step = new FleetBombStep(gameRunner.GameProvider, planetService);
         }
 

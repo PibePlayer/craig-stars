@@ -44,23 +44,23 @@ namespace CraigStars
             var target = wp.Target as Planet;
             if (target == null)
             {
-                // Message.FleetInvalidRouteNotPlanet(player, fleet);
+                Message.FleetInvalidRouteNotPlanet(player, fleet);
             }
             else if (target is Planet planet)
             {
                 if (!player.IsFriend(planet.PlayerNum))
                 {
-                    // Message.FleetInvalidRouteNotFriendlyPlanet(player, fleet, planet);
+                    Message.FleetInvalidRouteNotFriendlyPlanet(player, fleet, planet);
                 }
                 else if (planet.RouteTarget != null)
                 {
                     // route!
                     wp.Target = planet.RouteTarget;
-                    // Message.FleetRoute(player, fleet, planet, planet.RouteTarget);
+                    Message.FleetRouted(player, fleet, planet, planet.RouteTarget);
                 }
                 else
                 {
-                    // Message.FleetInvalidRouteNoRouteTarget(player, fleet, planet);
+                    Message.FleetInvalidRouteNoRouteTarget(player, fleet, planet);
                 }
             }
 

@@ -40,9 +40,11 @@ margin_bottom = 401.0
 
 [node name="NewGameOptions" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/TabContainer/Game/VBoxContainer" index="0" instance=ExtResource( 6 )]
 margin_right = 472.0
+margin_bottom = 96.0
 size_flags_horizontal = 3
 
 [node name="NewGamePlayers" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/TabContainer/Game/VBoxContainer" index="1" instance=ExtResource( 4 )]
+margin_top = 100.0
 margin_right = 472.0
 margin_bottom = 352.0
 

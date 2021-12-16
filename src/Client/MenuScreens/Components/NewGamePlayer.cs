@@ -134,7 +134,8 @@ namespace CraigStars.Client
                 if (Player.AIControlled)
                 {
                     raceOptionsHBoxContainer.Visible = false;
-                    aiHBoxContainer.Visible = true;
+                    // TODO: uncomment this when AIs actually have difficulty. Until then, leave it out of the UI
+                    // aiHBoxContainer.Visible = true;
                     aiDifficultyOptionButton.Select((int)Player.AIDifficulty);
                 }
                 else

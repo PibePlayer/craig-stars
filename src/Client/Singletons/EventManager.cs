@@ -68,12 +68,13 @@ namespace CraigStars.Client
         public static event Action<MapObjectSprite> MapObjectHighlightedEvent;
         public static event Action<MapObjectSprite> MapObjectSelectedEvent;
         public static event Action<MapObjectSprite> MapObjectCommandedEvent;
-        public static event Action<MapObject> CommandMapObjectEvent;
-        public static event Action<MapObject> SelectMapObjectEvent;
+        public static event Action<MapObject, bool> CommandMapObjectEvent;
+        public static event Action<MapObject, bool> SelectMapObjectEvent;
         public static event Action CommandNextMapObjectEvent;
         public static event Action CommandPrevMapObjectEvent;
         public static event Action<MapObjectSprite> GotoMapObjectSpriteEvent;
         public static event Action<MapObject> GotoMapObjectEvent;
+        public static event Action<MapObject> CenterViewOnMapObjectEvent;
 
         #endregion
 
@@ -105,12 +106,13 @@ namespace CraigStars.Client
         public static void PublishMapObjectHightlightedEvent(MapObjectSprite mapObjectSprite) => MapObjectHighlightedEvent?.Invoke(mapObjectSprite);
         public static void PublishMapObjectSelectedEvent(MapObjectSprite mapObjectSprite) => MapObjectSelectedEvent?.Invoke(mapObjectSprite);
         public static void PublishMapObjectCommandedEvent(MapObjectSprite mapObjectSprite) => MapObjectCommandedEvent?.Invoke(mapObjectSprite);
-        public static void PublishCommandMapObjectEvent(MapObject mapObject) => CommandMapObjectEvent?.Invoke(mapObject);
-        public static void PublishSelectMapObjectEvent(MapObject mapObject) => SelectMapObjectEvent?.Invoke(mapObject);
+        public static void PublishCommandMapObjectEvent(MapObject mapObject, bool centerView = false) => CommandMapObjectEvent?.Invoke(mapObject, centerView);
+        public static void PublishSelectMapObjectEvent(MapObject mapObject, bool centerView = false) => SelectMapObjectEvent?.Invoke(mapObject, centerView);
         public static void PublishCommandNextMapObjectEvent() => CommandNextMapObjectEvent?.Invoke();
         public static void PublishCommandPrevMapObjectEvent() => CommandPrevMapObjectEvent?.Invoke();
         public static void PublishGotoMapObjectEvent(MapObjectSprite mapObjectSprite) => GotoMapObjectSpriteEvent?.Invoke(mapObjectSprite);
         public static void PublishGotoMapObjectEvent(MapObject mapObject) => GotoMapObjectEvent?.Invoke(mapObject);
+        public static void PublishCenterViewOnMapObjectEvent(MapObject mapObject) => CenterViewOnMapObjectEvent?.Invoke(mapObject);
 
         #endregion
 

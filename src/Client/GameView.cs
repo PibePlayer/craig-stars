@@ -20,6 +20,7 @@ namespace CraigStars.Client
         /// </summary>
         Scanner scanner;
         Control gui;
+        Viewport viewport;
 
         ProductionQueueDialog productionQueueDialog;
         CargoTransferDialog cargoTransferDialog;
@@ -41,6 +42,7 @@ namespace CraigStars.Client
             this.ResolveDependencies();
             gui = FindNode("GUI") as Control;
             scanner = FindNode("Scanner") as Scanner;
+            viewport = FindNode("Viewport") as Viewport;
             productionQueueDialog = GetNode<ProductionQueueDialog>("CanvasLayer/ProductionQueueDialog");
             cargoTransferDialog = GetNode<CargoTransferDialog>("CanvasLayer/CargoTransferDialog");
             researchDialog = GetNode<ResearchDialog>("CanvasLayer/ResearchDialog");
@@ -84,10 +86,10 @@ namespace CraigStars.Client
                 turnProcessorRunner.RunTurnProcessors(PlayersManager.GameInfo, PlayersManager.Me, TurnProcessorManager.Instance);
                 // add the universe to the viewport
                 gui.Visible = true;
-                RemoveChild(scanner);
+                viewport.RemoveChild(scanner);
                 scannerInitTask = Task.Run(() => scanner.Init());
                 await scannerInitTask;
-                AddChild(scanner);
+                viewport.AddChild(scanner);
                 CallDeferred(nameof(AfterScannerInit));
 
                 DialogManager.DialogRefCount = 0;

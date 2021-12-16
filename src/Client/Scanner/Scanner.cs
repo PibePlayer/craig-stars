@@ -138,6 +138,18 @@ namespace CraigStars.Client
             }
         }
 
+        // Leave this commented out in case I need to debug the universe area/camera again
+        // public override void _Draw()
+        // {
+        //     base._Draw();
+        //     if (GameInfo != null)
+        //     {
+        //         var area = GameInfo.Rules.GetArea(GameInfo.Size);
+        //         DrawRect(new Rect2(0, 0, area, area), Colors.Green, false, width: 2);
+        //         DrawRect(new Rect2(-50, -50, area + 50 * 2, area + 50 * 2), Colors.Yellow, false, width: 2);
+        //     }
+        // }
+
         /// <summary>
         /// Return any pooled resources to the node pool
         /// </summary>
@@ -404,7 +416,7 @@ namespace CraigStars.Client
             if (homeworld != null)
             {
                 selectedWaypoint = null;
-                CommandMapObject(homeworld);
+                CommandMapObject(homeworld, true);
 
                 SelectHomeworld();
             }
@@ -618,11 +630,11 @@ namespace CraigStars.Client
         {
             if (mapObject.OwnedByMe)
             {
-                CommandMapObject(mapObject);
+                CommandMapObject(mapObject, true);
             }
             else
             {
-                SelectMapObject(mapObject);
+                SelectMapObject(mapObject, true);
             }
         }
 
@@ -634,11 +646,11 @@ namespace CraigStars.Client
             {
                 if (mapObjectSprite.OwnedByMe)
                 {
-                    CommandMapObject(mapObjectSprite);
+                    CommandMapObject(mapObjectSprite, true);
                 }
                 else
                 {
-                    SelectMapObject(mapObjectSprite);
+                    SelectMapObject(mapObjectSprite, true);
                 }
             }
         }
@@ -658,7 +670,7 @@ namespace CraigStars.Client
             // activate this object
             if (mapObjectToActivate != null && mapObjectToActivate != CommandedPlanet && mapObjectToActivate != CommandedFleet)
             {
-                CommandMapObject(mapObjectToActivate);
+                CommandMapObject(mapObjectToActivate, true);
             }
         }
 
@@ -677,7 +689,7 @@ namespace CraigStars.Client
             // activate this object
             if (mapObjectToActivate != null && mapObjectToActivate != CommandedPlanet && mapObjectToActivate != CommandedFleet)
             {
-                CommandMapObject(mapObjectToActivate);
+                CommandMapObject(mapObjectToActivate, true);
             }
         }
 
@@ -686,14 +698,14 @@ namespace CraigStars.Client
         /// This is published by the Reports dialog
         /// </summary>
         /// <param name="mapObject"></param>
-        void OnCommandMapObject(MapObject mapObject)
+        void OnCommandMapObject(MapObject mapObject, bool centerView)
         {
             MapObjectsByGuid.TryGetValue(mapObject.Guid, out var mapObjectSprite);
 
             // activate this object
             if (mapObjectSprite != null)
             {
-                CommandMapObject(mapObjectSprite);
+                CommandMapObject(mapObjectSprite, centerView);
             }
         }
 
@@ -702,14 +714,14 @@ namespace CraigStars.Client
         /// This is published by the Reports dialog
         /// </summary>
         /// <param name="mapObject"></param>
-        void OnSelectMapObject(MapObject mapObject)
+        void OnSelectMapObject(MapObject mapObject, bool centerView)
         {
             MapObjectsByGuid.TryGetValue(mapObject.Guid, out var mapObjectSprite);
 
             // activate this object
             if (mapObjectSprite != null)
             {
-                SelectMapObject(mapObjectSprite);
+                SelectMapObject(mapObjectSprite, centerView);
             }
         }
 
@@ -718,7 +730,7 @@ namespace CraigStars.Client
         /// if necessary
         /// </summary>
         /// <param name="mapObject"></param>
-        void SelectMapObject(MapObjectSprite mapObject)
+        void SelectMapObject(MapObjectSprite mapObject, bool centerView)
         {
             // don't deselect the commanded map object in case we selected something else
             if (selectedMapObject != null && selectedMapObject != commandedMapObject)
@@ -750,6 +762,10 @@ namespace CraigStars.Client
             }
 
             EventManager.PublishMapObjectSelectedEvent(mapObject);
+            if (centerView)
+            {
+                EventManager.PublishCenterViewOnMapObjectEvent(mapObject.MapObject);
+            }
             UpdateSelectedMapObjectIndicator();
         }
 
@@ -757,7 +773,7 @@ namespace CraigStars.Client
         /// Command this mapObject, deselecting the previous commandedMapObject if necessary 
         /// </summary>
         /// <param name="mapObject"></param>
-        void CommandMapObject(MapObjectSprite mapObject)
+        void CommandMapObject(MapObjectSprite mapObject, bool centerView)
         {
             if (mapObject == null || !mapObject.Commandable)
             {
@@ -800,16 +816,20 @@ namespace CraigStars.Client
                 {
                     planet.HasCommandedPeer = true;
                     planet.UpdateSprite();
-                    SelectMapObject(planet);
+                    SelectMapObject(planet, false);
                     selectedPlanet = true;
                 }
             }
             if (!selectedPlanet)
             {
-                SelectMapObject(mapObject);
+                SelectMapObject(mapObject, false);
             }
             commandedMapObject.UpdateSprite();
             EventManager.PublishMapObjectCommandedEvent(mapObject);
+            if (centerView)
+            {
+                EventManager.PublishCenterViewOnMapObjectEvent(mapObject.MapObject);
+            }
 
             UpdateSelectedMapObjectIndicator();
         }
@@ -1081,7 +1101,7 @@ namespace CraigStars.Client
                             {
                                 var newCommandedMapObject = mapObjectsAtLocation[commandedMapObjectIndex];
                                 log.Debug($"Commanding MapObject {newCommandedMapObject} (index {commandedMapObjectIndex})");
-                                EventManager.PublishCommandMapObjectEvent(newCommandedMapObject.MapObject);
+                                EventManager.PublishCommandMapObjectEvent(newCommandedMapObject.MapObject, centerView: false);
                             }
                             else
                             {
@@ -1093,7 +1113,7 @@ namespace CraigStars.Client
                             var newCommandedMapObject = selectedMapObject;
                             commandedMapObjectIndex = 0;
                             log.Debug($"Commanding MapObject {newCommandedMapObject} (index 0)");
-                            EventManager.PublishCommandMapObjectEvent(newCommandedMapObject.MapObject);
+                            EventManager.PublishCommandMapObjectEvent(newCommandedMapObject.MapObject, centerView: false);
                         }
                         else if (selectedMapObject == mapObject && !selectedMapObject.OwnedByMe && mapObjectsAtLocation.Count > 1)
                         {
@@ -1106,7 +1126,7 @@ namespace CraigStars.Client
                                     var newCommandedMapObject = otherMapObject;
                                     commandedMapObjectIndex = i;
                                     log.Debug($"Commanding MapObject {newCommandedMapObject} (index 0)");
-                                    EventManager.PublishCommandMapObjectEvent(newCommandedMapObject.MapObject);
+                                    EventManager.PublishCommandMapObjectEvent(newCommandedMapObject.MapObject, centerView: false);
                                 }
                             }
                         }
@@ -1116,7 +1136,7 @@ namespace CraigStars.Client
                         var newSelectedMapObject = mapObject;
                         selectedMapObjectIndex = 0;
                         log.Debug($"Selecting MapObject {newSelectedMapObject} (index 0)");
-                        EventManager.PublishSelectMapObjectEvent(newSelectedMapObject.MapObject);
+                        EventManager.PublishSelectMapObjectEvent(newSelectedMapObject.MapObject, centerView: false);
                     }
                 }
 

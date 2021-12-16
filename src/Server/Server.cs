@@ -1,10 +1,10 @@
-using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CraigStars.Singletons;
 using CraigStars.Utils;
-using System.Threading.Tasks;
+using Godot;
 using Newtonsoft.Json;
 
 namespace CraigStars.Server
@@ -52,6 +52,8 @@ namespace CraigStars.Server
         protected IClientEventPublisher clientEventPublisher;
 
         protected System.Threading.Mutex saveGameMutex = new System.Threading.Mutex();
+
+        Task continueGameTask;
 
         public override void _Ready()
         {
@@ -159,7 +161,7 @@ namespace CraigStars.Server
 
         public async Task ContinueGame(string gameName, int year)
         {
-            await Task.Run(() =>
+            continueGameTask = Task.Run(() =>
             {
                 try
                 {
@@ -179,6 +181,7 @@ namespace CraigStars.Server
                 }
             });
 
+            await continueGameTask;
             await GodotTaskFactory.StartNew(() => PublishGameContinuedEvent());
 
             // submit the AI player turns
@@ -245,6 +248,11 @@ namespace CraigStars.Server
         protected async virtual void OnUnsubmitTurnRequested(PublicPlayerInfo player)
         {
             player.SubmittedTurn = false;
+            if (continueGameTask != null)
+            {
+                await continueGameTask;
+            }
+            
             await Task.Run(() =>
             {
                 try
@@ -254,6 +262,7 @@ namespace CraigStars.Server
                 }
                 catch (Exception e)
                 {
+                    // TODO: this is happening because ContinueGame isn't finished by the time the user clicks the Unsubmit button. Weird.
                     log.Error($"Failed to unsubmit turn for {player}", e);
                     throw e;
                 }

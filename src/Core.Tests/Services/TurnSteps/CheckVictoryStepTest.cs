@@ -35,9 +35,7 @@ namespace CraigStars.Tests
             // we must own >= 51% of the planets
             game.VictoryConditions.OwnPlanets = 51;
 
-            // this player owns all planets
-            // Discover this planet so our score calculation is aware of it
-            playerIntel.Discover(player, game.Planets[0]);
+            // this player owns all planets (1)
             var step = new CheckVictoryStep(gameRunner.GameProvider, planetService);
             step.CheckOwnPlanets(player);
 

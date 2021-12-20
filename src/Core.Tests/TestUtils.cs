@@ -83,28 +83,20 @@ namespace CraigStars.Tests
             var planet = new Planet()
             {
                 Name = "Brin",
-                PlayerNum = player.Num,
                 Cargo = new Cargo(),
                 MineYears = new Mineral(),
                 BaseHab = new Hab(50, 50, 50),
                 Hab = new Hab(50, 50, 50),
                 TerraformedAmount = new Hab(),
                 MineralConcentration = new Mineral(100, 100, 100),
-                ProductionQueue = new ProductionQueue(),
-                Starbase = new Starbase()
-                {
-                    PlayerNum = player.Num,
-                    Tokens = new List<ShipToken>()
-                    {
-                        new ShipToken(starbase, 1),
-                    },
-                    BattlePlan = player.BattlePlans[0],
-                }
             };
             game.Planets.Add(planet);
 
+            // we have to discover this planet first as empty, then a second item as owned
+            // because that's how the universe generation works. We do some logic on
+            // switching planets from foreign to owned that could probably be improved
+            // but we need this until then
             var playerIntel = TestContainer.GetInstance<PlayerIntel>();
-            playerIntel.Discover(player, starbase);
             playerIntel.Discover(player, planet);
 
             // take ownership of this planet
@@ -112,6 +104,19 @@ namespace CraigStars.Tests
             planet.Scanner = true;
             planet.PlayerNum = player.Num;
             planet.Population = 25000;
+            planet.Starbase = new Starbase()
+            {
+                PlayerNum = player.Num,
+                Tokens = new List<ShipToken>()
+                    {
+                        new ShipToken(starbase, 1),
+                    },
+                BattlePlan = player.BattlePlans[0],
+            };
+
+            playerIntel.Discover(player, starbase);
+            playerIntel.Discover(player, planet);
+
 
             var design = ShipDesigns.LongRangeScount.Clone(player);
             game.Designs.Add(design);

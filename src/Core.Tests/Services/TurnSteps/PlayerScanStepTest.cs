@@ -80,7 +80,7 @@ namespace CraigStars.Tests
             playerIntel.Discover(player, planet2);
 
             // we shouldn't know the hab yet
-            var playerPlanet = player.ForeignPlanets[1];
+            var playerPlanet = player.ForeignPlanets[0];
             Assert.IsNull(playerPlanet.Hab);
 
             var scanStep = new PlayerScanStep(gameRunner.GameProvider, rulesProvider, playerIntel, playerTechService, fleetSpecService);
@@ -124,7 +124,7 @@ namespace CraigStars.Tests
             playerIntel.Discover(player, planet2);
 
             // we shouldn't know the hab yet
-            var playerPlanet = player.ForeignPlanets[1];
+            var playerPlanet = player.ForeignPlanets[0];
             Assert.IsNull(playerPlanet.Hab);
 
             // simulate this fleet moving past the planet and out of scan range

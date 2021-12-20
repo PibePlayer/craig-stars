@@ -401,7 +401,7 @@ namespace CraigStars.Tests
 
             var originalOrbitingFleets = planet.OrbitingFleets.Count;
 
-            ProductionQueueItem item = new(QueueItemType.ShipToken, 1, player.Designs[1]);
+            ProductionQueueItem item = new(QueueItemType.ShipToken, 1, game.Designs[1]);
 
             Fleet builtFleet = null;
 

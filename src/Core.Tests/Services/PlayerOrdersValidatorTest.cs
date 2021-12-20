@@ -74,15 +74,16 @@ namespace CraigStars.Tests
         public void TestValidateFleetOrders()
         {
             // create a new planet to target
-            var newPlanet = new Planet() { Position = new Vector2(100, 100) };
+            var newPlanet = new Planet() { Name = "New Planet", Position = new Vector2(100, 100) };
             newPlanet.InitEmptyPlanet();
             game.Planets.Add(newPlanet);
+            game.UpdateInternalDictionaries();
             var playerIntel = TestUtils.TestContainer.GetInstance<PlayerIntel>();
             playerIntel.Discover(player, newPlanet);
 
             var fleet = player.Fleets[0];
             fleet.Waypoints.Add(Waypoint.PositionWaypoint(new Vector2(100, 0)));
-            fleet.Waypoints.Add(Waypoint.TargetWaypoint(player.Planets[1]));
+            fleet.Waypoints.Add(Waypoint.TargetWaypoint(player.ForeignPlanets[0]));
 
             var orders = player.GetOrders();
             var validator = new PlayerOrdersValidator(game);

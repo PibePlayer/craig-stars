@@ -2,8 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.Serialization;
+using CraigStars.Utils;
 using Godot;
 using log4net;
 using Newtonsoft.Json;
@@ -59,9 +61,11 @@ namespace CraigStars
         /// The percentage of resources to spend on research
         /// </summary>
         /// <value></value>
+        [DefaultValue(15)]
         public int ResearchAmount { get; set; } = 15;
         public int ResearchSpentLastYear { get; set; } = 0;
         public TechField Researching { get; set; } = TechField.Energy;
+        [DefaultValue(NextResearchField.LowestField)]
         public NextResearchField NextResearchField { get; set; } = NextResearchField.LowestField;
         [JsonIgnore] public int LeftoverResources { get; set; }
 
@@ -100,9 +104,6 @@ namespace CraigStars
         [JsonIgnore] public List<ShipDesign> ForeignDesigns { get => DesignIntel.Foriegn; }
         [JsonIgnore] public IEnumerable<ShipDesign> AllDesigns { get => DesignIntel.All; }
         [JsonIgnore] public Dictionary<Guid, ShipDesign> DesignsByGuid { get => DesignIntel.ItemsByGuid; }
-
-        [JsonProperty(ItemIsReference = true)]
-        public List<ShipDesign> DeletedDesigns { get; set; } = new();
 
         #endregion
 
@@ -186,7 +187,38 @@ namespace CraigStars
         public List<SplitAllFleetOrder> SplitFleetOrders { get; set; } = new List<SplitAllFleetOrder>();
 
         [JsonProperty(ItemIsReference = true)]
-        public List<FleetOrder> FleetOrders { get; set; } = new List<FleetOrder>();
+        public List<FleetOrder> ImmediateFleetOrders { get; set; } = new List<FleetOrder>();
+
+        /// <summary>
+        /// Get the orders for this player for turn submittal
+        /// </summary>
+        /// <returns></returns>
+        public PlayerOrders GetOrders()
+        {
+            return new PlayerOrders()
+            {
+                PlayerNum = Num,
+                Token = Token,
+                UISettings = UISettings,
+                Settings = Settings,
+                PlayerRelations = new(PlayerRelations),
+                Research = new PlayerResearchOrder()
+                {
+                    ResearchAmount = ResearchAmount,
+                    Researching = Researching,
+                    NextResearchField = NextResearchField,
+                },
+
+                FleetOrders = Fleets.Select(fleet => fleet.GetOrders()).ToList(),
+                PlanetProductionOrders = Planets.Select(planet => planet.GetOrders()).ToList(),
+                ShipDesigns = new(Designs),
+                BattlePlans = new(BattlePlans),
+                TransportPlans = new(TransportPlans),
+                ProductionPlans = new(ProductionPlans),
+                FleetCompositions = new(FleetCompositions),
+                ImmedateFleetOrders = new(ImmediateFleetOrders),
+            };
+        }
 
         #endregion
 
@@ -228,6 +260,15 @@ namespace CraigStars
                     }
                 }
             }
+
+            foreach (var planet in Planets)
+            {
+                foreach (var item in planet.ProductionQueue.Items.Where(item => item.DesignGuid.HasValue))
+                {
+                    item.Design = DesignsByGuid[item.DesignGuid.Value];
+                }
+            }
+
         }
 
         public void SetupMapObjectMappings()
@@ -240,14 +281,9 @@ namespace CraigStars
             SalvageIntel.SetupItemsByGuid();
             WormholeIntel.SetupItemsByGuid();
             MysteryTraderIntel.SetupItemsByGuid();
-            BattlePlansByGuid = BattlePlans.ToLookup(plan => plan.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
-            TransportPlansByGuid = TransportPlans.ToLookup(plan => plan.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
-            ProductionPlansByGuid = ProductionPlans.ToLookup(plan => plan.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
-            BattlesByGuid = Battles.ToLookup(battle => battle.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
+            BattlesByGuid = Battles.ToGuidDictionary(battle => battle.Guid);
 
-            FleetCompositionsByGuid = FleetCompositions.ToLookup(fc => fc.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
-            FleetCompositionsByType = FleetCompositions.ToLookup(fc => fc.Type).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
-
+            SetupPlanMappings();
 
             List<MapObject> mapObjects = new List<MapObject>();
             mapObjects.AddRange(PlanetIntel.All);
@@ -257,8 +293,8 @@ namespace CraigStars
             mapObjects.AddRange(SalvageIntel.All);
             mapObjects.AddRange(WormholeIntel.All);
             mapObjects.AddRange(MysteryTraderIntel.All);
+            MapObjectsByGuid = mapObjects.ToGuidDictionary(mo => mo.Guid);
             MapObjectsByLocation = mapObjects.ToLookup(mo => mo.Position).ToDictionary(lookup => lookup.Key, lookup => lookup.ToList());
-            MapObjectsByGuid = mapObjects.ToLookup(mo => mo.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
 
             Fleets.ForEach(fleet =>
             {
@@ -270,6 +306,15 @@ namespace CraigStars
                     }
                 }
             });
+        }
+
+        public void SetupPlanMappings()
+        {
+            BattlePlansByGuid = BattlePlans.ToGuidDictionary(_ => _.Guid);
+            TransportPlansByGuid = TransportPlans.ToGuidDictionary(_ => _.Guid);
+            ProductionPlansByGuid = ProductionPlans.ToGuidDictionary(_ => _.Guid);
+            FleetCompositionsByGuid = FleetCompositions.ToGuidDictionary(_ => _.Guid);
+            FleetCompositionsByType = FleetCompositions.ToSingleDictionary(fc => fc.Type);
         }
 
         #endregion
@@ -316,8 +361,7 @@ namespace CraigStars
         {
             var designIndex = Designs.FindIndex(d => d == design);
 
-            DeletedDesigns.Add(Designs[designIndex]);
-            Designs.RemoveAt(designIndex);
+            Designs[designIndex].Status = ShipDesign.DesignStatus.Deleted;
 
             foreach (var fleet in Fleets)
             {
@@ -337,12 +381,15 @@ namespace CraigStars
 
         public ShipDesign GetDesign(string name)
         {
-            return Designs.Find(d => d.Name == name);
+            return Designs.Find(d => !d.Deleted && d.Name == name);
         }
 
         public ShipDesign GetLatestDesign(ShipDesignPurpose purpose)
         {
-            return Designs.Where(d => d.Purpose == purpose).OrderByDescending(d => d.Version).FirstOrDefault();
+            return Designs
+                .Where(d => !d.Deleted && d.Purpose == purpose)
+                .OrderByDescending(d => d.Version)
+                .FirstOrDefault();
         }
 
         /// <summary>

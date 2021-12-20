@@ -28,7 +28,7 @@ namespace CraigStars.Singletons
         public event Action<string, int> ContinueGameRequestedEvent;
         public event PlayerRejoinedGameDelegate PlayerRejoinedGameEvent;
         public event Action<PublicPlayerInfo> PlayerDataRequestedEvent;
-        public event Action<Player> SubmitTurnRequestedEvent;
+        public event Action<PlayerOrders> SubmitTurnRequestedEvent;
         public event Action<PublicPlayerInfo> UnsubmitTurnRequestedEvent;
         public event Action<PublicGameInfo, Player> GenerateTurnRequestedEvent;
 
@@ -271,16 +271,15 @@ namespace CraigStars.Singletons
         /// This is called by clients to submit turns to the server
         /// </summary>
         /// <param name="player">The player (probably PlayersManager.Me) submitting the turn</param>
-        public void SendSubmitTurn(PublicGameInfo gameInfo, Player player)
+        public void SendSubmitTurn(string token, PublicGameInfo gameInfo, PlayerOrders orders)
         {
-            var settings = Serializers.CreatePlayerSettings(TechStore.Instance);
             log.Info($"Client: Submitting turn to server");
-            var playerJson = Serializers.Serialize(player, settings);
-            RpcId(1, nameof(TurnSubmitRequested), player.Token, Serializers.Serialize(gameInfo), playerJson);
+            var playerJson = Serializers.Serialize(orders, TechStore.Instance);
+            RpcId(1, nameof(TurnSubmitRequested), token, Serializers.Serialize(gameInfo), playerJson);
         }
 
         [Remote]
-        void TurnSubmitRequested(string token, string gameInfoJson, string playerJson)
+        void TurnSubmitRequested(string token, string gameInfoJson, string ordersJson)
         {
             // find the network player by this number
             var gameInfo = Serializers.DeserializeObject<PublicGameInfo>(gameInfoJson);
@@ -289,10 +288,10 @@ namespace CraigStars.Singletons
             {
                 // load the actual player from JSON
                 log.Info($"Server: {player} submitted turn");
-                player = Serializers.DeserializeObject<Player>(playerJson, Serializers.CreatePlayerSettings(TechStore.Instance));
+                var orders = Serializers.DeserializeObject<PlayerOrders>(ordersJson, Serializers.CreatePlayerSettings(TechStore.Instance));
 
                 // submit this player's turn to the server
-                SubmitTurnRequestedEvent?.Invoke(player);
+                SubmitTurnRequestedEvent?.Invoke(orders);
             }
             else
             {

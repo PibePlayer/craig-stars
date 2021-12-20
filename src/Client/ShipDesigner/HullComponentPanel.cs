@@ -1,6 +1,6 @@
-using Godot;
 using System;
 using CraigStars.Singletons;
+using Godot;
 
 namespace CraigStars.Client
 {
@@ -224,6 +224,8 @@ namespace CraigStars.Client
 
         /// <summary>
         /// This is called when this hull component is dropped after being drug somewhere
+        /// Note: This will be called after DropData if you drag an item onto itself... which means
+        /// we end up with an empty hull component. hmmm...
         /// </summary>
         void OnThisComponentDropped()
         {

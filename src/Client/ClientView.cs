@@ -205,17 +205,17 @@ namespace CraigStars.Client
         }
 
 
-        void OnSubmitTurnRequested(Player player)
+        void OnSubmitTurnRequested(PlayerOrders orders)
         {
             // we submitted our turn, switch to turn submitter view
-            if (player.Num == PlayersManager.Me.Num)
+            if (orders.PlayerNum == PlayersManager.Me.Num)
             {
                 var gameInfo = PlayersManager.GameInfo;
-                player.SubmittedTurn = true;
+                PlayersManager.Me.SubmittedTurn = true;
                 if (this.IsMultiplayer())
                 {
                     // submit our turn to the server
-                    NetworkClient.Instance.SubmitTurnToServer(PlayersManager.GameInfo, player);
+                    NetworkClient.Instance.SubmitTurnToServer(PlayersManager.Me.Token, PlayersManager.GameInfo, orders);
                 }
 
                 // we just submitted our turn, remove the game view and show this container
@@ -225,7 +225,7 @@ namespace CraigStars.Client
                 inGameMenu.Visible = true;
 
                 // save our game
-                var _ = GamesManager.Instance.SavePlayer(gameInfo, player);
+                var _ = GamesManager.Instance.SavePlayer(gameInfo, PlayersManager.Me);
             }
         }
 

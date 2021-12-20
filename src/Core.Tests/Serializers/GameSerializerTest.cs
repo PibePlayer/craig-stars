@@ -51,6 +51,7 @@ namespace CraigStars.Tests
             {
                 Name = "Planet 1",
                 PlayerNum = player.Num,
+                ProductionQueue = new(),
                 Homeworld = true,
             };
             planet1.InitEmptyPlanet();
@@ -61,7 +62,9 @@ namespace CraigStars.Tests
             {
                 Name = "Planet 2",
                 PlayerNum = otherPlayer.Num,
+                ProductionQueue = new(),
             };
+            planet2.InitEmptyPlanet();
 
             player.Planets.Add(planet1);
             player.Planets.Add(planet2);

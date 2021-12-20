@@ -23,7 +23,7 @@ namespace CraigStars.Utils
             };
 
             player.CargoTransferOrders.Add(order);
-            player.FleetOrders.Add(order);
+            player.ImmediateFleetOrders.Add(order);
         }
     }
 }

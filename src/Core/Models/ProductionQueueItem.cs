@@ -27,8 +27,26 @@ namespace CraigStars
         /// If this is a ship building item, this is the design to build
         /// </summary>
         /// <value></value>
-        [JsonProperty(IsReference = true)]
-        public ShipDesign Design { get; set; }
+        [JsonIgnore]
+        public ShipDesign Design
+        {
+            get => design;
+            set
+            {
+                design = value;
+                if (design != null)
+                {
+                    DesignGuid = design.Guid;
+                }
+                else
+                {
+                    DesignGuid = null;
+                }
+            }
+        }
+        ShipDesign design;
+
+        public Guid? DesignGuid { get; set; }
 
         /// <summary>
         /// The name of the fleet to place this item into
@@ -127,7 +145,7 @@ namespace CraigStars
                 {
                     case QueueItemType.Starbase:
                     case QueueItemType.ShipToken:
-                        return Design.Name;
+                        return Design?.Name;
                     case QueueItemType.TerraformEnvironment:
                         return "Terraform Environment";
                     case QueueItemType.AutoMines:
@@ -156,7 +174,7 @@ namespace CraigStars
                 {
                     case QueueItemType.Starbase:
                     case QueueItemType.ShipToken:
-                        return $"{Design.Name} v{Design.Version}";
+                        return $"{Design?.Name} v{Design?.Version}";
                     case QueueItemType.AutoMineralAlchemy:
                         return "Alchemy (Auto Build)";
                     case QueueItemType.AutoMines:

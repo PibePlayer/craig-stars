@@ -15,10 +15,10 @@ namespace CraigStars.Tests
             var player3 = new Player() { Num = 2 };
             var player4 = new Player() { Num = 3 };
 
-            player1.PlayerRelations.Add(new PlayerRelationship(player1.Num, PlayerRelation.Friend));
-            player1.PlayerRelations.Add(new PlayerRelationship(player2.Num, PlayerRelation.Friend));
-            player1.PlayerRelations.Add(new PlayerRelationship(player3.Num, PlayerRelation.Neutral));
-            player1.PlayerRelations.Add(new PlayerRelationship(player4.Num, PlayerRelation.Enemy));
+            player1.PlayerRelations.Add(new PlayerRelationship(PlayerRelation.Friend));
+            player1.PlayerRelations.Add(new PlayerRelationship(PlayerRelation.Friend));
+            player1.PlayerRelations.Add(new PlayerRelationship(PlayerRelation.Neutral));
+            player1.PlayerRelations.Add(new PlayerRelationship(PlayerRelation.Enemy));
 
             // not enemies or neutral with self, friends
             Assert.IsTrue(player1.IsFriend(player1.Num));

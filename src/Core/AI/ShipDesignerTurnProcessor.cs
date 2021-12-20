@@ -82,7 +82,7 @@ namespace CraigStars
 
             player.Designs.AddRange(newDesigns);
             newDesigns.ForEach(design => { player.DesignsByGuid[design.Guid] = design; fleetSpecService.ComputeDesignSpec(player, design); });
-            deletedDesigns.ForEach(design => player.DeletedDesigns.Add(design));
+            deletedDesigns.ForEach(design => design.Status = ShipDesign.DesignStatus.Deleted);
 
         }
 

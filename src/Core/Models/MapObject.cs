@@ -31,6 +31,11 @@ namespace CraigStars
         [JsonIgnore]
         public bool Owned { get => PlayerNum != Unowned; }
 
+        /// <summary>
+        /// Allow players and AIs to tag map objects 
+        /// </summary>
+        public Dictionary<string, string> Tags { get; set; } = new();
+
         public MapObject()
         {
         }

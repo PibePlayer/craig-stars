@@ -46,6 +46,30 @@ namespace CraigStars.Utils
         }
 
         /// <summary>
+        /// Convert a list of items with a Guid to a Guid dictionary
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="keyLookup"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static Dictionary<Guid, T> ToGuidDictionary<T>(this IEnumerable<T> list, Func<T, Guid> keyLookup)
+        {
+            return ToSingleDictionary<Guid, T>(list, keyLookup);
+        }
+
+        /// <summary>
+        /// Convert a list of items with a Guid to a Guid dictionary
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="keyLookup"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static Dictionary<TKey, T> ToSingleDictionary<TKey, T>(this IEnumerable<T> list, Func<T, TKey> keyLookup)
+        {
+            return list.ToLookup<T, TKey>(keyLookup).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
+        }
+
+        /// <summary>
         /// Helper function to round to the nearest 100 (by default)
         /// This is used to ensure we have colonists in counts of 100 after bombings, invasions, etc
         /// </summary>

@@ -92,6 +92,23 @@ namespace CraigStars
         #endregion
 
         /// <summary>
+        /// Get the orders for this fleet
+        /// </summary>
+        /// <returns></returns>
+        public FleetWaypointsOrders GetOrders()
+        {
+            return new FleetWaypointsOrders()
+            {
+                Guid = Guid,
+                Tags = new(Tags),
+                Waypoints = new(Waypoints),
+                RepeatOrders = RepeatOrders,
+                BaseName = BaseName,
+                BattlePlanGuid = BattlePlan.Guid
+            };
+        }
+
+        /// <summary>
         /// Get the primary shipToken, i.e. the one that is most powerful
         /// </summary>
         /// <returns></returns>

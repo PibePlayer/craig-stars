@@ -19,10 +19,12 @@ namespace CraigStars
         JsonSerializerSettings gameSerializerSettings;
         JsonSerializerSettings playerSerializerSettings;
         Game game;
+        ITechStore techStore;
 
         public GameSerializer(Game game, ITechStore techStore)
         {
             this.game = game;
+            this.techStore = techStore;
             playerSerializerSettings = Serializers.CreatePlayerSettings(techStore);
             gameSerializerSettings = Serializers.CreateGameSettings(techStore);
         }
@@ -66,6 +68,31 @@ namespace CraigStars
                 {
                     var json = Serializers.Serialize(player, playerSerializerSettings);
                     gameJson.Players[playerNum] = json;
+                }
+            }
+
+            for (int i = 0; i < game.PlayerOrders.Length; i++)
+            {
+                var orders = game.PlayerOrders[i];
+
+                // if the player has submitted orders, serialize it
+                // otherwise we don't do anything
+                if (orders != null)
+                {
+                    var playerNum = i;
+                    if (multithreaded)
+                    {
+                        saveTasks.Add(Task.Run(() =>
+                            {
+                                var json = Serializers.Serialize(orders, techStore);
+                                gameJson.PlayerOrders[playerNum] = json;
+                            }));
+                    }
+                    else
+                    {
+                        var json = Serializers.Serialize(orders, techStore);
+                        gameJson.PlayerOrders[playerNum] = json;
+                    }
                 }
             }
 

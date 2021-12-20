@@ -1,10 +1,10 @@
-using CraigStars.Singletons;
-using CraigStars.Utils;
-using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CraigStars.Singletons;
+using CraigStars.Utils;
+using Godot;
 
 namespace CraigStars.Client
 {
@@ -40,7 +40,7 @@ namespace CraigStars.Client
             // add each design
             if (Planet.HasStarbase && Planet.Starbase.DockCapacity > 0)
             {
-                Me.Designs.ForEach(design =>
+                foreach (var design in Me.Designs.Where(design => !design.Deleted))
                 {
                     if (planetService.CanBuild(Planet, Me, design.Spec.Mass))
                     {
@@ -53,7 +53,7 @@ namespace CraigStars.Client
                             AddAvailableItem(new ProductionQueueItem(QueueItemType.ShipToken, design: design));
                         }
                     }
-                });
+                };
 
                 if (Planet.HasMassDriver)
                 {

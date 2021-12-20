@@ -125,66 +125,72 @@ namespace CraigStars
             var cargo = packet.Cargo;
             var weight = packet.Cargo.Total;
 
-            var planet = packet.Target;
-
-            int uncaught = 0;
-
-            if (packet.Target.HasMassDriver && planet.Starbase.Spec.SafePacketSpeed >= packet.WarpFactor)
+            if (packet.Target is Planet planet)
             {
-                // caught packet successfully, transfer cargo
-                packet.Target.AttemptTransfer(cargo);
-                Message.MineralPacketCaught(Game.Players[packet.Target.PlayerNum], packet.Target, packet);
-            }
-            else if (!planet.Owned)
-            {
-                packet.Target.AttemptTransfer(cargo);
+                int uncaught = 0;
 
-                // all uncaught
-                uncaught = weight;
-            }
-            else if (planet.Owned)
-            {
-                var planetPlayer = Game.Players[planet.PlayerNum];
-                // uh oh, this packet is going to fast and we'll take damage
-                var receiverDriverSpeed = planet.HasStarbase ? planet.Starbase.Spec.SafePacketSpeed : 0;
-
-                var speedOfPacket = packet.WarpFactor * packet.WarpFactor;
-                var speedOfReceiver = receiverDriverSpeed * receiverDriverSpeed;
-                var percentCaughtSafely = (float)speedOfReceiver / speedOfPacket;
-                uncaught = (int)((1f - percentCaughtSafely) * weight);
-                var mineralsRecovered = weight * percentCaughtSafely + weight * (1 / 3f) * (1 - percentCaughtSafely);
-                var rawDamage = (speedOfPacket - speedOfReceiver) * weight / 160f;
-                var damageWithDefenses = rawDamage * (1 - planet.Spec.DefenseCoverage);
-                var colonistsKilled = RoundToNearest(Math.Max(damageWithDefenses * planet.Population / 1000f, damageWithDefenses * 100));
-                var defensesDestroyed = (int)Math.Max(planet.Defenses * damageWithDefenses / 1000, damageWithDefenses / 20);
-
-                // kill off colonists and defenses
-                planet.Population = RoundToNearest(Mathf.Clamp(planet.Population - colonistsKilled, 0, planet.Population));
-                planet.Defenses = Mathf.Clamp(planet.Defenses - (int)defensesDestroyed, 0, planet.Defenses);
-
-                Message.MineralPacketDamage(planetPlayer, planet, packet, colonistsKilled, defensesDestroyed);
-                if (planet.Population == 0)
+                if (planet.HasMassDriver && planet.Starbase.Spec.SafePacketSpeed >= packet.WarpFactor)
                 {
-                    EventManager.PublishPlanetPopulationEmptiedEvent(planet);
+                    // caught packet successfully, transfer cargo
+                    planet.AttemptTransfer(cargo);
+                    Message.MineralPacketCaught(Game.Players[packet.Target.PlayerNum], planet, packet);
                 }
-            }
-
-            // if we didn't recieve this planet, notify the sender
-            if (planet.PlayerNum != packet.PlayerNum)
-            {
-                if (player.Race.Spec.DetectPacketDestinationStarbases && planet.HasStarbase)
+                else if (!planet.Owned)
                 {
-                    // discover the receiving planet's starbase design
-                    designDiscoverer.Discover(player, planet.Starbase.Design, true);
+                    planet.AttemptTransfer(cargo);
+
+                    // all uncaught
+                    uncaught = weight;
+                }
+                else if (planet.Owned)
+                {
+                    var planetPlayer = Game.Players[planet.PlayerNum];
+                    // uh oh, this packet is going to fast and we'll take damage
+                    var receiverDriverSpeed = planet.HasStarbase ? planet.Starbase.Spec.SafePacketSpeed : 0;
+
+                    var speedOfPacket = packet.WarpFactor * packet.WarpFactor;
+                    var speedOfReceiver = receiverDriverSpeed * receiverDriverSpeed;
+                    var percentCaughtSafely = (float)speedOfReceiver / speedOfPacket;
+                    uncaught = (int)((1f - percentCaughtSafely) * weight);
+                    var mineralsRecovered = weight * percentCaughtSafely + weight * (1 / 3f) * (1 - percentCaughtSafely);
+                    var rawDamage = (speedOfPacket - speedOfReceiver) * weight / 160f;
+                    var damageWithDefenses = rawDamage * (1 - planet.Spec.DefenseCoverage);
+                    var colonistsKilled = RoundToNearest(Math.Max(damageWithDefenses * planet.Population / 1000f, damageWithDefenses * 100));
+                    var defensesDestroyed = (int)Math.Max(planet.Defenses * damageWithDefenses / 1000, damageWithDefenses / 20);
+
+                    // kill off colonists and defenses
+                    planet.Population = RoundToNearest(Mathf.Clamp(planet.Population - colonistsKilled, 0, planet.Population));
+                    planet.Defenses = Mathf.Clamp(planet.Defenses - (int)defensesDestroyed, 0, planet.Defenses);
+
+                    Message.MineralPacketDamage(planetPlayer, planet, packet, colonistsKilled, defensesDestroyed);
+                    if (planet.Population == 0)
+                    {
+                        EventManager.PublishPlanetPopulationEmptiedEvent(planet);
+                    }
                 }
 
-                Message.MineralPacketArrived(player, planet, packet);
-            }
+                // if we didn't recieve this planet, notify the sender
+                if (planet.PlayerNum != packet.PlayerNum)
+                {
+                    if (player.Race.Spec.DetectPacketDestinationStarbases && planet.HasStarbase)
+                    {
+                        // discover the receiving planet's starbase design
+                        designDiscoverer.Discover(player, planet.Starbase.Design, true);
+                    }
 
-            if (uncaught > 0)
+                    Message.MineralPacketArrived(player, planet, packet);
+                }
+
+                if (uncaught > 0)
+                {
+                    CheckTerraform(packet, player, planet, uncaught);
+                    CheckPermaform(packet, player, planet, uncaught);
+                }
+            }
+            else
             {
-                CheckTerraform(packet, player, planet, uncaught);
-                CheckPermaform(packet, player, planet, uncaught);
+                // TODO: if we want to support non-plaent targets, do it here
+                // for now we just ignore and delete it
             }
 
             // delete the packet

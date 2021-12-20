@@ -37,7 +37,8 @@ namespace CraigStars
         private readonly RaceService raceService;
         private readonly UniverseGenerator universeGenerator;
         private readonly TurnGenerator turnGenerator;
-        private readonly TurnSubmitter turnSubmitter;
+        private readonly PlayerOrdersValidator playerOrdersValidator;
+        private readonly PlayerOrdersConsumer playerOrdersConsumer;
         private readonly PlayerScanStep playerScanStep;
         private readonly PlanetService planetService;
         private readonly PlayerTechService playerTechService;
@@ -50,7 +51,8 @@ namespace CraigStars
             IProvider<Game> gameProvider,
             RaceService raceService,
             UniverseGenerator universeGenerator,
-            TurnSubmitter turnSubmitter,
+            PlayerOrdersValidator playerOrdersValidator,
+            PlayerOrdersConsumer playerOrdersConsumer,
             TurnGenerator turnGenerator,
             PlayerScanStep playerScanStep,
             PlanetService planetService,
@@ -61,7 +63,8 @@ namespace CraigStars
             this.raceService = raceService;
             this.universeGenerator = universeGenerator;
             this.turnGenerator = turnGenerator;
-            this.turnSubmitter = turnSubmitter;
+            this.playerOrdersValidator = playerOrdersValidator;
+            this.playerOrdersConsumer = playerOrdersConsumer;
             this.playerScanStep = playerScanStep;
             this.planetService = planetService;
             this.playerTechService = playerTechService;
@@ -111,19 +114,27 @@ namespace CraigStars
             AfterTurnGeneration();
         }
 
-        public void SubmitTurn(Player player)
+        public PlayerOrdersValidatorResult SubmitTurn(PlayerOrders orders)
         {
-            if (player.Num >= 0 && player.Num < Game.Players.Count)
+            var result = ValidatePlayerOrders(orders);
+            if (result.IsValid)
             {
+                // save the orders for turn generation
+                Game.PlayerOrders[orders.PlayerNum] = orders;
+
+                // update info about this player to indicate they have submitted their turn
+                var player = Game.Players[orders.PlayerNum];
                 log.Info($"{Game.Year}: {player} submitted turn");
-                Game.Players[player.Num] = player;
-                Game.Players[player.Num].SubmittedTurn = true;
-                Game.GameInfo.Players[player.Num].SubmittedTurn = true;
+                Game.Players[orders.PlayerNum].SubmittedTurn = true;
+                Game.GameInfo.Players[orders.PlayerNum].SubmittedTurn = true;
+
             }
             else
             {
-                log.Error($"{player} not found in game.");
+                log.Error($"{orders.PlayerNum} turn submit failed.");
             }
+
+            return result;
         }
 
         public void UnsubmitTurn(PublicPlayerInfo player)
@@ -163,6 +174,26 @@ namespace CraigStars
         }
 
         /// <summary>
+        /// Validate a player's orders
+        /// </summary>
+        /// <param name="orders"></param>
+        /// <returns></returns>
+        public PlayerOrdersValidatorResult ValidatePlayerOrders(PlayerOrders orders)
+        {
+            return playerOrdersValidator.Validate(orders);
+        }
+
+        /// <summary>
+        /// Take a player's orders and update the Player for the orders
+        /// </summary>
+        /// <param name="orders"></param>
+        /// <returns></returns>
+        public void ConsumePlayerOrders(PlayerOrders orders)
+        {
+            playerOrdersConsumer.ConsumeOrders(orders);
+        }
+
+        /// <summary>
         /// Generate a new turn
         /// </summary>
         public void GenerateTurn()
@@ -170,8 +201,17 @@ namespace CraigStars
             Game.GameInfo.State = GameState.GeneratingTurn;
             log.Info($"{Game.Year} Generating new turn");
 
-            // submit these actions to the actual game objects
-            Game.Players.ForEach(player => turnSubmitter.SubmitTurn(player));
+            // consume each player's orders before generating the turn
+            Game.Players.ForEach(player =>
+            {
+                if (Game.PlayerOrders[player.Num] != null)
+                {
+                    ConsumePlayerOrders(Game.PlayerOrders[player.Num]);
+                }
+            });
+
+            // purge any deleted fleets from fleet merges
+            OnPurgeDeletedMapObjects();
 
             // after new player actions and designs are submitted, we need
             // to compute specs for fleets and designs
@@ -220,6 +260,8 @@ namespace CraigStars
             {
                 player.SubmittedTurn = false;
             });
+            // clear out the player orders so new ones can be submitted
+            Game.PlayerOrders = new PlayerOrders[Game.Players.Count];
         }
 
         /// <summary>

@@ -1,10 +1,10 @@
-using System.Collections.Generic;
-using System.Linq;
 using System;
-using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using Godot;
 using log4net;
-using System.ComponentModel;
+using Newtonsoft.Json;
 using static CraigStars.Utils.Utils;
 
 namespace CraigStars
@@ -36,11 +36,13 @@ namespace CraigStars
 
         public Starbase Starbase { get; set; }
         public int PacketSpeed { get; set; } = 0;
+
+        // TODO: make these JSONIgnores, they won't work right now.
         [JsonProperty(IsReference = true)]
-        public Planet PacketTarget { get; set; }
+        public MapObject PacketTarget { get; set; }
 
         [JsonProperty(IsReference = true)]
-        public Planet RouteTarget { get; set; }
+        public MapObject RouteTarget { get; set; }
 
         [JsonIgnore] public bool HasStarbase { get => Starbase != null; }
         [JsonIgnore] public bool HasMassDriver { get => Starbase != null && Starbase.Spec.HasMassDriver; }
@@ -92,6 +94,26 @@ namespace CraigStars
         public PlanetSpec Spec = new();
 
         #endregion
+
+        /// <summary>
+        /// Get the orders for this planet
+        /// </summary>
+        /// <returns></returns>
+        public PlanetProductionOrder GetOrders()
+        {
+            return new PlanetProductionOrder()
+            {
+                Guid = Guid,
+                Tags = new(Tags),
+                ContributesOnlyLeftoverToResearch = ContributesOnlyLeftoverToResearch,
+                StarbaseBattlePlanGuid = Starbase?.BattlePlan?.Guid,
+                PacketTarget = PacketTarget?.Guid,
+                PacketSpeed = PacketSpeed,
+                RouteTarget = RouteTarget?.Guid,
+                Items = new(ProductionQueue.Items)
+            };
+        }
+
 
         /// <summary>
         /// The client has null values for these, but the server needs to start with

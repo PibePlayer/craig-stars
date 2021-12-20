@@ -165,6 +165,7 @@ namespace CraigStars.Client
             fleetSpecService.ComputeDesignSpec(PlayersManager.Me, designerHullSummary.ShipDesign, true);
             if (EditingExisting)
             {
+                designerHullSummary.ShipDesign.Status = ShipDesign.DesignStatus.Current;
                 // remove the old design and add the new one
                 var designs = PlayersManager.Me.Designs;
                 int index = designs.FindIndex(sd => sd == SourceShipDesign);
@@ -173,6 +174,7 @@ namespace CraigStars.Client
             }
             else
             {
+                designerHullSummary.ShipDesign.Status = ShipDesign.DesignStatus.New;
                 PlayersManager.Me.Designs.Add(designerHullSummary.ShipDesign);
             }
             saveDesignButton.Text = "Saved";
@@ -201,6 +203,7 @@ namespace CraigStars.Client
             var nameAlreadyExists = PlayersManager.Me.Designs
                 // If we are not editing existing, check all ship designs for name conflicts
                 // if we ARE editing an existing design, remove it from the ships to check for name conflicts
+                .Where(sd => !sd.Deleted)
                 .Where(sd => !EditingExisting || sd != SourceShipDesign)
                 .Any(sd => sd.Name == name && sd.Version == version);
             designNameLineEdit.Modulate = Colors.White;

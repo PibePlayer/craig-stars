@@ -44,7 +44,7 @@ namespace CraigStars.Tests
             gameRunner.GenerateUniverse();
 
             // submit the player
-            gameRunner.SubmitTurn(player);
+            gameRunner.SubmitTurn(player.GetOrders());
 
             // generate the turn
             gameRunner.GenerateTurn();
@@ -92,7 +92,7 @@ namespace CraigStars.Tests
                 aiTurnSubmitter.SubmitAITurns(game);
 
                 // submit the player
-                gameRunner.SubmitTurn(player);
+                gameRunner.SubmitTurn(player.GetOrders());
 
                 // generate the turn
                 gameRunner.GenerateTurn();

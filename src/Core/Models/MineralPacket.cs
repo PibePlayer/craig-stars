@@ -10,7 +10,7 @@ namespace CraigStars
     public class MineralPacket : MapObject, ICargoHolder
     {
         [JsonProperty(IsReference = true)]
-        public Planet Target { get; set; }
+        public MapObject Target { get; set; }
         public Cargo Cargo { get; set; }
         public int SafeWarpSpeed { get; set; }
         public int WarpFactor { get; set; }

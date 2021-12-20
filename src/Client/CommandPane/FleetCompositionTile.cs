@@ -54,7 +54,7 @@ namespace CraigStars.Client
         {
             var order = new SplitAllFleetOrder() { Source = CommandedFleet.Fleet };
             Me.SplitFleetOrders.Add(order);
-            Me.FleetOrders.Add(order);
+            Me.ImmediateFleetOrders.Add(order);
 
             // Execute this fleet order and then add it to our player's
             // list of fleets so they can be commanded.

@@ -22,19 +22,15 @@ namespace CraigStars.Server
         /// Override OnSubmitTurnRequested to clone the player
         /// </summary>
         /// <param name="player"></param>
-        protected override void OnSubmitTurnRequested(Player player)
+        protected override void OnSubmitTurnRequested(PlayerOrders orders)
         {
-            if (player.AIControlled)
+            if (orders.PlayerNum >= 0 && orders.PlayerNum < Game.Players.Count && Game.Players[orders.PlayerNum].AIControlled)
             {
-                base.OnSubmitTurnRequested(player);
+                base.OnSubmitTurnRequested(orders);
             }
             else
             {
-                // before submitting this turn to the server, clone the player
-                var playerJson = Serializers.Serialize(player, playerSerializerSettings);
-                var clone = Serializers.DeserializeObject<Player>(playerJson, playerSerializerSettings);
-
-                base.OnSubmitTurnRequested(clone);
+                base.OnSubmitTurnRequested(orders);
             }
         }
 

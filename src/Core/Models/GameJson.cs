@@ -13,6 +13,7 @@ namespace CraigStars
             this.Name = name;
             this.Year = year;
             Players = new string[numPlayers];
+            PlayerOrders = new string[numPlayers];
         }
 
         public string Name { get; private set; }
@@ -20,5 +21,6 @@ namespace CraigStars
         public string GameInfo { get; set; }
         public string Game { get; set; }
         public string[] Players { get; set; }
+        public string[] PlayerOrders { get; set; }
     }
 }

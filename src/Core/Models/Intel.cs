@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using CraigStars.Utils;
 
 namespace CraigStars
 {
@@ -32,7 +33,7 @@ namespace CraigStars
         /// </summary>
         public void SetupItemsByGuid()
         {
-            ItemsByGuid = All.ToLookup(item => item.Guid).ToDictionary(lookup => lookup.Key, lookup => lookup.ToArray()[0]);
+            ItemsByGuid = All.ToGuidDictionary(item => item.Guid);
         }
 
         /// <summary>

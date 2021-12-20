@@ -200,7 +200,7 @@ namespace CraigStars.Client
                 };
 
                 Me.CargoTransferOrders.Add(order);
-                Me.FleetOrders.Add(order);
+                Me.ImmediateFleetOrders.Add(order);
 
                 // update the spec for the source fleet
                 fleetSpecService.ComputeFleetSpec(Me, source, recompute: true);

@@ -26,7 +26,8 @@ namespace CraigStars
             container.Register<RaceService>(Lifestyle.Singleton);
             container.Register<UniverseGenerator>(Lifestyle.Singleton);
             container.Register<TurnGenerator>(Lifestyle.Singleton);
-            container.Register<TurnSubmitter>(Lifestyle.Singleton);
+            container.Register<PlayerOrdersValidator>(Lifestyle.Singleton);
+            container.Register<PlayerOrdersConsumer>(Lifestyle.Singleton);
             container.Register<PlanetService>(Lifestyle.Singleton);
             container.Register<PlayerService>(Lifestyle.Singleton);
             container.Register<FleetService>(Lifestyle.Singleton);

@@ -10,10 +10,13 @@ namespace CraigStars
     [JsonObject(IsReference = true)]
     public class ShipDesign : IDiscoverable
     {
+        public enum DesignStatus { Current, New, Deleted }
+
         static CSLog log = LogProvider.GetLogger(typeof(ShipDesign));
         public string Name { get; set; }
         public int Version { get; set; } = 1;
         public Guid Guid { get; set; } = Guid.NewGuid();
+        public DesignStatus Status { get; set; }
 
         [DefaultValue(MapObject.Unowned)]
         public int PlayerNum { get; set; } = MapObject.Unowned;
@@ -27,6 +30,8 @@ namespace CraigStars
 
         [JsonIgnore]
         public bool InUse { get => NumInUse > 0; }
+        [JsonIgnore]
+        public bool Deleted { get => Status == ShipDesign.DesignStatus.Deleted; }
         public int NumInUse { get; set; }
         public int NumBuilt { get; set; }
 

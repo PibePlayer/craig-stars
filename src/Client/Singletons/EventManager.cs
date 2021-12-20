@@ -19,7 +19,7 @@ namespace CraigStars.Client
         public static event Action<PublicGameInfo> GameContinuedEvent;
         public static event Action<PublicGameInfo> GameExitingEvent;
         public static event Action<PublicPlayerInfo> PlayerDataRequestedEvent;
-        public static event Action<Player> SubmitTurnRequestedEvent;
+        public static event Action<PlayerOrders> SubmitTurnRequestedEvent;
         public static event Action<PublicGameInfo, PublicPlayerInfo> TurnSubmittedEvent;
         public static event Action<PublicPlayerInfo> UnsubmitTurnRequestedEvent;
         public static event Action<PublicGameInfo, PublicPlayerInfo> TurnUnsubmittedEvent;
@@ -40,7 +40,7 @@ namespace CraigStars.Client
         public static void PublishGameExitingEvent(PublicGameInfo gameInfo) => GameExitingEvent?.Invoke(gameInfo);
         public static void PublishGameStartedEvent(PublicGameInfo gameInfo, Player player) => GameStartedEvent?.Invoke(gameInfo, player);
         public static void PublishGameContinuedEvent(PublicGameInfo gameInfo) => GameContinuedEvent?.Invoke(gameInfo);
-        public static void PublishSubmitTurnRequestedEvent(Player player) => SubmitTurnRequestedEvent?.Invoke(player);
+        public static void PublishSubmitTurnRequestedEvent(PlayerOrders orders) => SubmitTurnRequestedEvent?.Invoke(orders);
         public static void PublishTurnSubmittedEvent(PublicGameInfo gameInfo, PublicPlayerInfo player) => TurnSubmittedEvent?.Invoke(gameInfo, player);
         public static void PublishUnsubmitTurnRequestedEvent(PublicPlayerInfo player) => UnsubmitTurnRequestedEvent?.Invoke(player);
         public static void PublishTurnUnsubmittedEvent(PublicGameInfo gameInfo, PublicPlayerInfo player) => TurnUnsubmittedEvent?.Invoke(gameInfo, player);

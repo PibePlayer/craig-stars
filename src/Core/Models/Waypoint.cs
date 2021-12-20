@@ -111,6 +111,7 @@ namespace CraigStars
         /// this waypoint
         /// </summary>
         /// <value></value>
+        [JsonIgnore]
         public bool WaitAtWaypoint { get; set; }
 
         public Waypoint() { }

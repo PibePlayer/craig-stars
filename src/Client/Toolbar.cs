@@ -218,7 +218,7 @@ namespace CraigStars.Client
         {
             submitTurnButton.Disabled = true;
             PlayersManager.Me.SubmittedTurn = true;
-            EventManager.PublishSubmitTurnRequestedEvent(PlayersManager.Me);
+            EventManager.PublishSubmitTurnRequestedEvent(PlayersManager.Me.GetOrders());
         }
 
         public override void _Input(InputEvent @event)

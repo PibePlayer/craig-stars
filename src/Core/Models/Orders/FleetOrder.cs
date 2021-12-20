@@ -15,6 +15,5 @@ namespace CraigStars
         /// <value></value>
         [JsonProperty(IsReference = true)]
         public Fleet Source { get; set; }
-
     }
 }

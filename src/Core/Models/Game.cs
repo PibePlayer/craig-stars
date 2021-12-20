@@ -44,6 +44,14 @@ namespace CraigStars
         [JsonProperty(ItemConverterType = typeof(PublicPlayerInfoConverter))]
         public List<Player> Players { get; set; } = new List<Player>();
 
+        /// <summary>
+        /// This is an array of player orders. If null, it means the player
+        /// hasn't submitted the order yet
+        /// </summary>
+        /// <typeparam name="ShipDesign"></typeparam>
+        /// <returns></returns>
+        [JsonIgnore] public PlayerOrders[] PlayerOrders { get; set; }
+
         public List<ShipDesign> Designs { get; set; } = new List<ShipDesign>();
         public List<Planet> Planets { get; set; } = new List<Planet>();
         public List<Fleet> Fleets { get; set; } = new List<Fleet>();
@@ -76,6 +84,9 @@ namespace CraigStars
             GameInfo.Players.Clear();
             GameInfo.Players.AddRange(Players.Cast<PublicPlayerInfo>());
 
+            // init this as an empty array
+            PlayerOrders = new PlayerOrders[Players.Count];
+
             // Update the Game dictionaries used for lookups, like PlanetsByGuid, FleetsByGuid, etc.
             UpdateInternalDictionaries();
 
@@ -91,6 +102,14 @@ namespace CraigStars
                     {
                         waypoint.OriginalTarget = origintalTarget;
                     }
+                }
+            }
+
+            foreach (var planet in OwnedPlanets)
+            {
+                foreach (var item in planet.ProductionQueue.Items.Where(item => item.DesignGuid.HasValue))
+                {
+                    item.Design = DesignsByGuid[item.DesignGuid.Value];
                 }
             }
         }
@@ -118,6 +137,9 @@ namespace CraigStars
             Players.AddRange(players);
             GameInfo.Players.Clear();
             GameInfo.Players.AddRange(Players.Cast<PublicPlayerInfo>());
+
+            // init this as an empty array
+            PlayerOrders = new PlayerOrders[Players.Count];
 
             Rules = rules;
         }

@@ -99,7 +99,7 @@ namespace CraigStars
         static public string Serialize<T>(T item, ITechStore techStore)
         {
             var json = JsonConvert.SerializeObject(item, CreatePlayerSettings(techStore));
-            log.Debug($"Serializing {item.GetType().Name}: \n{json}");
+            // log.Debug($"Serializing {item.GetType().Name}: \n{json}");
             return json;
         }
 

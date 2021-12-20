@@ -68,7 +68,7 @@ namespace CraigStars.Client
                     MergingFleets = fleetsToMerge
                 };
                 Me.MergeFleetOrders.Add(order);
-                Me.FleetOrders.Add(order);
+                Me.ImmediateFleetOrders.Add(order);
 
                 // merge the fleet on the client
                 fleetService.Merge(SourceFleet.Fleet, Me, order);

@@ -198,10 +198,10 @@ namespace CraigStars.Server
         /// 
         /// </summary>
         /// <param name="player"></param>
-        protected virtual void OnAITurnSubmitRequested(Player player)
+        protected virtual void OnAITurnSubmitRequested(PlayerOrders orders)
         {
             // AI players don't need to save the game
-            SubmitTurn(player, saveGame: false);
+            SubmitTurn(orders, saveGame: false);
         }
 
         /// <summary>
@@ -209,28 +209,36 @@ namespace CraigStars.Server
         /// Copy any data from this to the main game
         /// </summary>
         /// <param name="player"></param>
-        protected virtual void OnSubmitTurnRequested(Player player)
+        protected virtual void OnSubmitTurnRequested(PlayerOrders orders)
         {
-            SubmitTurn(player, saveGame: true);
+            SubmitTurn(orders, saveGame: true);
         }
 
-        private void SubmitTurn(Player player, bool saveGame)
+        private void SubmitTurn(PlayerOrders orders, bool saveGame)
         {
             Task.Run(async () =>
             {
                 try
                 {
-                    log.Debug($"{Game.Year}: Submitting turn for {player}");
-                    player.SubmittedTurn = true;
-                    GameRunner.SubmitTurn(player);
-                    await GodotTaskFactory.StartNew(() => PublishTurnSubmittedEvent(Game.GameInfo, player));
-
-                    SaveGame(Game);
-
-                    if (Game.AllPlayersSubmitted())
+                    log.Debug($"{Game.Year}: Submitting turn for player {orders.PlayerNum}");
+                    var result = GameRunner.SubmitTurn(orders);
+                    if (result.IsValid)
                     {
-                        // once everyone is submitted, generate a new turn
-                        GenerateNewTurn();
+                        await GodotTaskFactory.StartNew(() => PublishTurnSubmittedEvent(Game.GameInfo, Game.GameInfo.Players[orders.PlayerNum]));
+
+                        SaveGame(Game);
+
+                        if (Game.AllPlayersSubmitted())
+                        {
+                            // once everyone is submitted, generate a new turn
+                            GenerateNewTurn();
+                        }
+                    }
+                    else
+                    {
+                        // TODO: notify the clients that we had an invalid turn submit
+                        // await GodotTaskFactory.StartNew(() => PublishTurnSubmittedInvalidEvent(Game.GameInfo, Game.GameInfo.Players[orders.PlayerNum], result));
+
                     }
                 }
                 catch (Exception e)
@@ -252,7 +260,7 @@ namespace CraigStars.Server
             {
                 await continueGameTask;
             }
-            
+
             await Task.Run(() =>
             {
                 try
@@ -262,7 +270,6 @@ namespace CraigStars.Server
                 }
                 catch (Exception e)
                 {
-                    // TODO: this is happening because ContinueGame isn't finished by the time the user clicks the Unsubmit button. Weird.
                     log.Error($"Failed to unsubmit turn for {player}", e);
                     throw e;
                 }

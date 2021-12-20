@@ -286,7 +286,7 @@ namespace CraigStars.Tests
                 TerraformedAmount = new Hab(),
             };
 
-            terraformer.PlayerRelations.Add(new PlayerRelationship(player.Num, PlayerRelation.Friend));
+            terraformer.PlayerRelations.Add(new PlayerRelationship(PlayerRelation.Friend));
 
             // won't deterraform friends
             Assert.AreEqual(new Hab(), service.GetTerraformAmount(planet, player, terraformer));

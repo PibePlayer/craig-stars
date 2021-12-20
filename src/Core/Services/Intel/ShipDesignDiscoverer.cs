@@ -25,6 +25,8 @@ namespace CraigStars
                 // by default, we don't know about design slots unless we pen scan
                 itemReport.Slots.Clear();
             }
+
+            player.DesignsByGuid[item.Guid] = itemReport;
         }
 
         protected override void DiscoverForeign(Player player, ShipDesign item, ShipDesign itemReport, bool penScanned)
@@ -52,6 +54,9 @@ namespace CraigStars
             itemReport.HullSetNumber = item.HullSetNumber;
             itemReport.Purpose = item.Purpose;
             itemReport.CanDelete = item.CanDelete;
+
+            // any of our own designs that are discovered are now "current"
+            itemReport.Status = ShipDesign.DesignStatus.Current;
         }
     }
 }

@@ -68,17 +68,14 @@ namespace CraigStars.Client
 
         public void UpdateTreeItems()
         {
-            List<ShipDesign> designsToShow = Me.Designs;
+            var designsToShow = Me.Designs.Where(design => !design.Deleted);
             switch (ShowDesigns)
             {
                 case DesignsToShow.Ships:
-                    designsToShow = Me.Designs.Where(design => !design.Hull.Starbase).ToList();
+                    designsToShow = designsToShow.Where(design => !design.Hull.Starbase).ToList();
                     break;
                 case DesignsToShow.Starbases:
-                    designsToShow = Me.Designs.Where(design => design.Hull.Starbase).ToList();
-                    break;
-                default:
-                    designsToShow = Me.Designs;
+                    designsToShow = designsToShow.Where(design => design.Hull.Starbase).ToList();
                     break;
             }
 
@@ -90,7 +87,7 @@ namespace CraigStars.Client
             }
 
             ClearTree();
-            AddDesignsToTree(designsToShow);
+            AddDesignsToTree(designsToShow.ToList());
         }
 
         /// <summary>

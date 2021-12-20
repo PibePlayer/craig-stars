@@ -23,9 +23,9 @@ namespace CraigStars
         /// The client allows various immediate orders like cargo transfers and merge/split operations.
         /// We process those like WP0 tasks
         /// </summary>
-        public void ExecuteFleetOrders(Player player)
+        public void ExecuteFleetOrders(Player player, List<FleetOrder> immediateFleetOrders)
         {
-            player.FleetOrders.ForEach(order =>
+            immediateFleetOrders.ForEach(order =>
             {
                 if (order is CargoTransferOrder cargoTransferOrder)
                 {
@@ -41,7 +41,7 @@ namespace CraigStars
                 }
             });
 
-            player.FleetOrders.Clear();
+            player.ImmediateFleetOrders.Clear();
             player.CargoTransferOrders.Clear();
             player.MergeFleetOrders.Clear();
             player.SplitFleetOrders.Clear();

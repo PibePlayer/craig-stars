@@ -69,6 +69,11 @@ namespace CraigStars.Singletons
             return $"{GetSaveGameYearFolder(gameName, year)}/game-player-{playerNum}.json";
         }
 
+        public static string GetSaveGamePlayerOrderPath(string gameName, int year, int playerNum)
+        {
+            return $"{GetSaveGameYearFolder(gameName, year)}/game-player-orders-{playerNum}.json";
+        }
+
         public static string GetSavePlayerPath(string gameName, int year, int playerNum)
         {
             return $"{GetSaveGameYearFolder(gameName, year)}/player-{playerNum}.json";
@@ -387,7 +392,16 @@ namespace CraigStars.Singletons
             {
                 var json = FileUtils.ReadFile(GetSaveGamePlayerPath(name, year, playerNum));
                 game.Players[playerNum] = Serializers.DeserializeObject<Player>(json, settings);
+
+                // if we have orders for a player for this turn, load it from disk as well
+                var ordersFilePath = GetSaveGamePlayerOrderPath(name, year, playerNum);
+                if (FileExists(ordersFilePath))
+                {
+                    var ordersJson = FileUtils.ReadFile(ordersFilePath);
+                    game.PlayerOrders[playerNum] = Serializers.DeserializeObject<PlayerOrders>(ordersJson, gameSerializerSettings);
+                }
             }
+
 
             return game;
 
@@ -454,6 +468,24 @@ namespace CraigStars.Singletons
                 else
                 {
                     FileUtils.SaveFile(GetSaveGamePlayerPath(gameJson.Name, gameJson.Year, playerNum), playerJson);
+                }
+            }
+
+            for (int i = 0; i < gameJson.PlayerOrders.Length; i++)
+            {
+                // all these saves can happen in parallel
+                var orderJson = gameJson.PlayerOrders[i];
+                var playerNum = i;
+                if (multithreaded)
+                {
+                    saveTasks.Add(Task.Run(() =>
+                    {
+                        FileUtils.SaveFile(GetSaveGamePlayerOrderPath(gameJson.Name, gameJson.Year, playerNum), orderJson);
+                    }));
+                }
+                else
+                {
+                    FileUtils.SaveFile(GetSaveGamePlayerOrderPath(gameJson.Name, gameJson.Year, playerNum), orderJson);
                 }
             }
 

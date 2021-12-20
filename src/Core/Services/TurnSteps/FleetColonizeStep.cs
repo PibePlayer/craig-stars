@@ -65,6 +65,7 @@ namespace CraigStars
                     {
                         // apply the default production plan
                         planetService.ApplyProductionPlan(planet.ProductionQueue.Items, task.Player, task.Player.ProductionPlans[0]);
+                        planet.ContributesOnlyLeftoverToResearch = task.Player.ProductionPlans[0].ContributesOnlyLeftoverToResearch;
                     }
                     planet.Population = fleet.Cargo.Colonists * 100;
                     planet.Mines = player.Race.Spec.InnateMining ? planetService.GetInnateMines(planet, player) : 0;

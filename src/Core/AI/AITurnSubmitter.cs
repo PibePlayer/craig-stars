@@ -12,7 +12,7 @@ namespace CraigStars
     {
         static CSLog log = LogProvider.GetLogger(typeof(AITurnSubmitter));
 
-        public event Action<Player> TurnSubmitRequestedEvent;
+        public event Action<PlayerOrders> TurnSubmitRequestedEvent;
 
         ITurnProcessorManager turnProcessorManager;
 
@@ -40,7 +40,7 @@ namespace CraigStars
                             processor.Process(game.GameInfo, player);
                         }
                         // We are done processing, submit a turn
-                        TurnSubmitRequestedEvent?.Invoke(player);
+                        TurnSubmitRequestedEvent?.Invoke(player.GetOrders());
                     }
                     catch (Exception e)
                     {

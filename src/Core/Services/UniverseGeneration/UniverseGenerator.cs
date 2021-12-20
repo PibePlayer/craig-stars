@@ -34,7 +34,7 @@ namespace CraigStars.UniverseGeneration
             Game.Players.ForEach(player =>
             {
                 // setup initial player relationships
-                player.PlayerRelations = Game.Players.Select(p => new PlayerRelationship(p.Num, PlayerRelation.Enemy)).ToList();
+                player.PlayerRelations = Game.Players.Select(p => new PlayerRelationship(p.Num == player.Num ? PlayerRelation.Friend : PlayerRelation.Enemy)).ToList();
 
                 // setup player's object mappings
                 player.SetupMapObjectMappings();

@@ -44,7 +44,6 @@ namespace CraigStars.UniverseGeneration
         {
             var homeworld = FindHomeworld();
 
-            player.Homeworld = homeworld;
             InitHomeworld(player, homeworld);
             planetDiscoverer.Discover(player, homeworld);
 
@@ -57,8 +56,8 @@ namespace CraigStars.UniverseGeneration
                     // extra planet! woo!
                     var planet = Game.Planets.FirstOrDefault(
                         p => !p.Owned &&
-                        p.Position.DistanceTo(player.Homeworld.Position) <= Game.Rules.MaxExtraWorldDistance &&
-                        p.Position.DistanceTo(player.Homeworld.Position) >= Game.Rules.MinExtraWorldDistance);
+                        p.Position.DistanceTo(homeworld.Position) <= Game.Rules.MaxExtraWorldDistance &&
+                        p.Position.DistanceTo(homeworld.Position) >= Game.Rules.MinExtraWorldDistance);
                     if (planet != null)
                     {
                         InitExtraWorld(player, planet, extraPlanet);
@@ -188,17 +187,13 @@ namespace CraigStars.UniverseGeneration
                 Position = planet.Position,
                 Orbiting = planet,
                 BattlePlan = player.BattlePlans[0],
-                Waypoints = new List<Waypoint>
-            {
-                Waypoint.TargetWaypoint(planet)
-            },
                 Tokens = new List<ShipToken>
-            {
-                new ShipToken() {
-                    Design = design,
-                    Quantity = 1,
+                {
+                    new ShipToken() {
+                        Design = design,
+                        Quantity = 1,
+                    }
                 }
-            }
             };
             fleetSpecService.ComputeDesignSpec(player, planet.Starbase.Design);
             fleetSpecService.ComputeFleetSpec(player, planet.Starbase);

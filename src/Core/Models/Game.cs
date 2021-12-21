@@ -107,6 +107,8 @@ namespace CraigStars
 
             foreach (var planet in OwnedPlanets)
             {
+                planet.PacketTarget = planet.PacketTargetGuid.HasValue ? MapObjectsByGuid[planet.PacketTargetGuid.Value] : null;
+                planet.RouteTarget = planet.RouteTargetGuid.HasValue ? MapObjectsByGuid[planet.RouteTargetGuid.Value] : null;
                 foreach (var item in planet.ProductionQueue.Items.Where(item => item.DesignGuid.HasValue))
                 {
                     item.Design = DesignsByGuid[item.DesignGuid.Value];

@@ -145,7 +145,7 @@ namespace CraigStars
                 {
                     case QueueItemType.Starbase:
                     case QueueItemType.ShipToken:
-                        return Design?.Name;
+                        return Design.Name;
                     case QueueItemType.TerraformEnvironment:
                         return "Terraform Environment";
                     case QueueItemType.AutoMines:

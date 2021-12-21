@@ -176,9 +176,6 @@ namespace CraigStars
         public List<Message> Messages { get; set; } = new();
         [JsonIgnore] public IEnumerable<Message> FilteredMessages { get => Messages.Where(m => !UISettings.MessageTypeFilter.Contains(m.Type)); }
 
-        [JsonProperty(IsReference = true)]
-        public Planet Homeworld { get; set; }
-
         #region Turn Actions
 
         public List<FleetComposition> FleetCompositions { get; set; } = new List<FleetComposition>();
@@ -263,6 +260,8 @@ namespace CraigStars
 
             foreach (var planet in Planets)
             {
+                planet.PacketTarget = planet.PacketTargetGuid.HasValue ? MapObjectsByGuid[planet.PacketTargetGuid.Value] : null;
+                planet.RouteTarget = planet.RouteTargetGuid.HasValue ? MapObjectsByGuid[planet.RouteTargetGuid.Value] : null;
                 foreach (var item in planet.ProductionQueue.Items.Where(item => item.DesignGuid.HasValue))
                 {
                     item.Design = DesignsByGuid[item.DesignGuid.Value];

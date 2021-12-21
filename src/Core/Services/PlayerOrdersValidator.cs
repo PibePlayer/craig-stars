@@ -312,6 +312,19 @@ namespace CraigStars
                 {
                     context.DesignsByGuid.Remove(design.Guid);
                 }
+                else if (design.Status == ShipDesign.DesignStatus.New)
+                {
+                    // check this design for validity (i.e. it has all required slots)
+                    if (design.IsValid())
+                    {
+                        // make sure this new design is in our context, in case it's new
+                        context.DesignsByGuid[design.Guid] = design;
+                    }
+                    else
+                    {
+                        result.AddError($"{game.Name}:{game.Year} Player {orders.PlayerNum} design {design.Name} is invalid.");
+                    }
+                }
                 else if (context.DesignsByGuid.TryGetValue(design.Guid, out var gameDesign))
                 {
                     // make sure the player can modify this design

@@ -60,6 +60,7 @@ namespace CraigStars
                 {
                     saveTasks.Add(Task.Run(() =>
                         {
+                            log.Debug($"{game.Year} Serializing player to JSON: {playerNum}.");
                             var json = Serializers.Serialize(player, playerSerializerSettings);
                             gameJson.Players[playerNum] = json;
                         }));
@@ -84,6 +85,7 @@ namespace CraigStars
                     {
                         saveTasks.Add(Task.Run(() =>
                             {
+                                log.Debug($"{game.Year} Serializing player orders to JSON: {playerNum}.");
                                 var json = Serializers.Serialize(orders, techStore);
                                 gameJson.PlayerOrders[playerNum] = json;
                             }));

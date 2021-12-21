@@ -55,7 +55,6 @@ namespace CraigStars.Tests
                 Homeworld = true,
             };
             planet1.InitEmptyPlanet();
-            player.Homeworld = planet1;
 
             // create an unowned and unknown planet
             var planet2 = new Planet()

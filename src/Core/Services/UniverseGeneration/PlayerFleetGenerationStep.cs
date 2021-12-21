@@ -27,7 +27,8 @@ namespace CraigStars.UniverseGeneration
         {
             Game.Players.ForEach(player =>
             {
-                Game.Fleets.AddRange(GenerateFleets(player, player.Homeworld));
+                var homeworld = Game.OwnedPlanets.Where(planet => planet.OwnedBy(player) && planet.Homeworld).First();
+                Game.Fleets.AddRange(GenerateFleets(player, homeworld));
             });
         }
 

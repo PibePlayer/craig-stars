@@ -51,8 +51,8 @@ namespace CraigStars.Tests
             gameRunner.ComputeSpecs();
 
             // make sure our turn was generated and the player's report was updated
-            Assert.Greater(player.Homeworld.Population, 25000);
-            Assert.AreEqual(0, player.Homeworld.ReportAge);
+            Assert.Greater(game.Planets[0].Population, 25000);
+            Assert.AreEqual(0, player.Planets[0].ReportAge);
         }
 
         /// <summary>
@@ -104,8 +104,8 @@ namespace CraigStars.Tests
             log.Debug($"Generated {numTurns} turns in {stopwatch.ElapsedMilliseconds / 1000.0f} seconds");
 
             // make sure our turn was generated and the player's report was updated
-            Assert.Greater(player.Homeworld.Population, 25000);
-            Assert.AreEqual(0, player.Homeworld.ReportAge);
+            Assert.Greater(player.Planets[0].Population, 25000);
+            Assert.AreEqual(0, player.Planets[0].ReportAge);
             Assert.AreEqual(rules.StartingYear + numTurns, game.Year);
         }
 

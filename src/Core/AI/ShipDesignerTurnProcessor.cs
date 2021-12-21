@@ -81,7 +81,7 @@ namespace CraigStars
             }
 
             player.Designs.AddRange(newDesigns);
-            newDesigns.ForEach(design => { player.DesignsByGuid[design.Guid] = design; fleetSpecService.ComputeDesignSpec(player, design); });
+            newDesigns.ForEach(design => { player.DesignsByGuid[design.Guid] = design; design.Status = ShipDesign.DesignStatus.New; fleetSpecService.ComputeDesignSpec(player, design); });
             deletedDesigns.ForEach(design => design.Status = ShipDesign.DesignStatus.Deleted);
 
         }
@@ -121,12 +121,14 @@ namespace CraigStars
                 {
                     design.Version = latestVersionDesignByHull.Version + 1;
                     log.Debug($"{player} has updated design {design.Name} v{design.Version}.");
+                    design.Status = ShipDesign.DesignStatus.New;
                     player.Designs.Add(design);
                 }
             }
             else
             {
                 log.Debug($"{player} has created a new design {design.Name} v{design.Version}.");
+                design.Status = ShipDesign.DesignStatus.New;
                 player.Designs.Add(design);
             }
 

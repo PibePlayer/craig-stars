@@ -31,18 +31,50 @@ namespace CraigStars
             }
         }
 
-
         [JsonIgnore] public List<Fleet> OrbitingFleets { get; set; } = new List<Fleet>();
 
         public Starbase Starbase { get; set; }
         public int PacketSpeed { get; set; } = 0;
 
-        // TODO: make these JSONIgnores, they won't work right now.
-        [JsonProperty(IsReference = true)]
-        public MapObject PacketTarget { get; set; }
+        [JsonIgnore]
+        public MapObject PacketTarget
+        {
+            get => packetTarget;
+            set
+            {
+                packetTarget = value;
+                if (packetTarget != null)
+                {
+                    PacketTargetGuid = packetTarget.Guid;
+                }
+                else
+                {
+                    PacketTargetGuid = null;
+                }
+            }
+        }
+        MapObject packetTarget;
+        public Guid? PacketTargetGuid { get; set; }
 
-        [JsonProperty(IsReference = true)]
-        public MapObject RouteTarget { get; set; }
+        [JsonIgnore]
+        public MapObject RouteTarget
+        {
+            get => routeTarget;
+            set
+            {
+                routeTarget = value;
+                if (routeTarget != null)
+                {
+                    RouteTargetGuid = routeTarget.Guid;
+                }
+                else
+                {
+                    RouteTargetGuid = null;
+                }
+            }
+        }
+        MapObject routeTarget;
+        public Guid? RouteTargetGuid { get; set; }
 
         [JsonIgnore] public bool HasStarbase { get => Starbase != null; }
         [JsonIgnore] public bool HasMassDriver { get => Starbase != null && Starbase.Spec.HasMassDriver; }

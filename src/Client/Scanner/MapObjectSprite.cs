@@ -1,9 +1,8 @@
-using Godot;
 using System;
-using System.Linq;
 using System.Collections.Generic;
-
+using System.Linq;
 using CraigStars.Singletons;
+using Godot;
 
 namespace CraigStars.Client
 {
@@ -11,7 +10,7 @@ namespace CraigStars.Client
     {
         public MapObject MapObject { get; set; }
         public string ObjectName { get => MapObject != null ? MapObject.Name : "Unknown"; }
-        
+
         protected Player Me { get => PlayersManager.Me; }
         protected PublicGameInfo GameInfo { get => PlayersManager.GameInfo; }
 
@@ -57,6 +56,15 @@ namespace CraigStars.Client
         {
             return $"{GetType().Name}: {ObjectName}";
         }
+
+        public override void _ExitTree()
+        {
+            base._ExitTree();
+            State = ScannerState.None;
+            OwnerAllyState = ScannerOwnerAlly.Unknown;
+            MapObject = null;
+        }
+
 
         /// <summary>
         /// Update the sprite of this MapObject to the latest image

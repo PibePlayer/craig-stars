@@ -1,5 +1,5 @@
-using Godot;
 using System;
+using Godot;
 
 namespace CraigStars.Client
 {
@@ -27,6 +27,13 @@ namespace CraigStars.Client
         {
             // hook up mouse events to our area
             EventManager.WaypointDeletedEvent += OnWaypointDeleted;
+        }
+
+        public override void _ExitTree()
+        {
+            base._ExitTree();
+            Waypoint = null;
+            Fleet = null;
         }
 
         void OnWaypointDeleted(Waypoint waypoint)

@@ -6,9 +6,6 @@ namespace CraigStars.Client
 
     public class MineralPacketSprite : MapObjectSprite
     {
-        [Export]
-        public GUIColors GUIColors { get; set; } = new GUIColors();
-
         /// <summary>
         /// Convenience method so the code looks like MineralPacket.Something instead of MapObject.Something
         /// </summary>

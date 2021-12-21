@@ -1,9 +1,9 @@
-using CraigStars.Singletons;
-using Godot;
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using CraigStars.Singletons;
 using CraigStars.Utils;
+using Godot;
 
 namespace CraigStars.Client
 {
@@ -92,6 +92,13 @@ namespace CraigStars.Client
             waypointsLine = GetNode<Line2D>("Waypoints");
             UpdateWaypointsLine();
             UpdateSprite();
+        }
+
+        public override void _ExitTree()
+        {
+            base._ExitTree();
+            OtherFleets.Clear();
+            Orbiting = null;
         }
 
         public override void _Draw()

@@ -96,6 +96,14 @@ namespace CraigStars.Client
             UpdateSprite();
         }
 
+        public override void _ExitTree()
+        {
+            base._ExitTree();
+            OrbitingFleets.Clear();
+            PacketTarget = null;
+            HasCommandedPeer = false;
+        }
+
         public override void _Draw()
         {
             if (!IsInstanceValid(this))

@@ -535,6 +535,7 @@ namespace CraigStars.Client
             }
             scanner.ScanRange = range;
             scanner.Pen = pen;
+            scanner.Update();
             Scanners.Add(scanner);
         }
 

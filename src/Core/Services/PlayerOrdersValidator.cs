@@ -271,7 +271,9 @@ namespace CraigStars
                         {
                             if (!context.MapObjectsByGuid.TryGetValue(wp.TargetGuid.Value, out var targetMapObject))
                             {
-                                result.AddError($"{game.Name}:{game.Year} No MapObject found for waypoint target {wp.TargetGuid} - {wp.TargetName}");
+                                // it's possible this target was scrapped, so revisit this...
+                                // for now we do a TryGetValue on the consumer, so it shouldn't fail
+                                // result.AddError($"{game.Name}:{game.Year} No MapObject found for waypoint target {wp.TargetGuid} - {wp.TargetName}");
                             }
                             else
                             {
@@ -286,7 +288,7 @@ namespace CraigStars
                         {
                             if (!context.MapObjectsByGuid.TryGetValue(wp.OriginalTargetGuid.Value, out var targetMapObject))
                             {
-                                result.AddError($"{game.Name}:{game.Year} No MapObject found for waypoint original target {wp.OriginalTargetGuid}");
+                                // result.AddError($"{game.Name}:{game.Year} No MapObject found for waypoint original target {wp.OriginalTargetGuid}");
                             }
                         }
                     });

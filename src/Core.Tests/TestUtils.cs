@@ -140,6 +140,9 @@ namespace CraigStars.Tests
             };
             game.Fleets.Add(fleet);
             planet.OrbitingFleets.Add(fleet);
+
+            // setup mappings for the planet guids
+            player.SetupMapObjectMappings();
             playerIntel.Discover(player, design);
             playerIntel.Discover(player, fleet);
 

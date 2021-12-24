@@ -36,7 +36,7 @@ namespace CraigStars.Client
         }
 
 
-        public static void Show(string text, Action okAction, Action cancelAction = null)
+        public static void Show(string text, Action okAction = null, Action cancelAction = null)
         {
             onOk = okAction;
             onCancel = cancelAction;

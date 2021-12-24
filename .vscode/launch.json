@@ -28,13 +28,37 @@
         "mode": "executable",
         "preLaunchTask": "build",
         "executable": "/Applications/Godot_mono.app/Contents/MacOS/Godot",
-        // See which arguments are available here:
-        // https://docs.godotengine.org/en/stable/getting_started/editor/command_line_tutorial.html
         "executableArguments": [
             "--path",
-            "${workspaceRoot}"
+            "${workspaceRoot}",
         ]
     },
+    {
+        "name": "Launch - continue",
+        "type": "godot-mono",
+        "request": "launch",
+        "mode": "executable",
+        "preLaunchTask": "build",
+        "executable": "/Applications/Godot_mono.app/Contents/MacOS/Godot",
+        "executableArguments": [
+            "--path",
+            "${workspaceRoot}",
+            "--continue",
+        ]
+    },    
+    {
+        "name": "Launch - Quick Start",
+        "type": "godot-mono",
+        "request": "launch",
+        "mode": "executable",
+        "preLaunchTask": "build",
+        "executable": "/Applications/Godot_mono.app/Contents/MacOS/Godot",
+        "executableArguments": [
+            "--path",
+            "${workspaceRoot}",
+            "--quick-start",
+        ]
+    },    
     {
         "name": "Launch (Select Scene)",
         "type": "godot-mono",

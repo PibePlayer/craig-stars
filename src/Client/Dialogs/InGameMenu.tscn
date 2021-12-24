@@ -5,7 +5,6 @@
 
 [node name="InGameMenu" type="WindowDialog"]
 pause_mode = 2
-visible = true
 margin_right = 557.0
 margin_bottom = 341.0
 window_title = "Menu"

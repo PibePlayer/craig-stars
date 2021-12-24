@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace CraigStars.Client
 {
+    /// <summary>
+    /// The main view for the a Client playing the game. This view loads the GameView into and out of the tree and updates the current Player.
+    /// </summary>
     public class ClientView : Node
     {
         static CSLog log = LogProvider.GetLogger(typeof(ClientView));
@@ -39,7 +42,6 @@ namespace CraigStars.Client
         PackedScene gameViewScene;
         string projectName;
         GameView gameView;
-        ResourceInteractiveLoader loader;
 
         public override void _Ready()
         {
@@ -119,10 +121,11 @@ namespace CraigStars.Client
         /// Every time we create a new game, load a game, or generate a new turn we "reload" the game view as a new scene object
         /// This allows us to update our progress bar
         /// </summary>
-        void LoadGameView()
+        async void LoadGameView()
         {
             log.Debug("Reloading GameView");
             inGameMenu.PopupCentered();
+            await CSResourceLoader.Instance.PreloadTask;
             gameViewScene = CSResourceLoader.GetPackedScene("GameView.tscn");
             CallDeferred(nameof(SetNewGameView));
         }

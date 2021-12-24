@@ -44,6 +44,14 @@ namespace CraigStars.Singletons
 
         public static string SaveDirPath { get => $"user://saves"; }
 
+        /// <summary>
+        /// Pattern matching player-1.json or player-1-game-info.json
+        /// </summary>
+        /// <param name="RegexOptions.IgnoreCase"></param>
+        /// <returns></returns>
+        readonly Regex playerSavePattern = new Regex(@"^player-(\d+)\.json$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        readonly Regex playerSaveGameInfoPattern = new Regex(@"^player-(\d+)-game-info\.json$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
         public static string GetSaveGameFolder(string gameName)
         {
             return $"{SaveDirPath}/{gameName}";
@@ -158,9 +166,9 @@ namespace CraigStars.Singletons
         /// <summary>
         /// Get a list of all year folders for a game
         /// </summary>
-        /// <param name="playerSaves">True to load player years for player saves only</param>
+        /// <param name="gameName">The game to load</param>
         /// <returns>A list of year folders for a game</returns>
-        public List<int> GetSavedGameYears(string gameName)
+        public List<int> GetPlayerSaveYears(string gameName)
         {
             List<int> gameYears = new List<int>();
             using (var directory = new Directory())
@@ -176,15 +184,18 @@ namespace CraigStars.Singletons
                     }
                     if (directory.CurrentIsDir() && int.TryParse(file, out var year))
                     {
-                        // if (playerSaves && Exists(GetSavePlayerGameInfoPath(gameName, year, playerNum)))
-                        // {
-                        //     gameYears.Add(year);
-                        // }
-                        // else if (!playerSaves && Exists(GetSaveGameInfoFile(gameName, year)))
-                        // {
-                        // add all years 
-                        gameYears.Add(year);
-                        // }
+                        // make sure we have player save files in this folder
+                        var playerSaveFiles = ListFiles(GetSaveGameYearFolder(gameName, year), playerSavePattern);
+                        var playerSaveGameInfoFiles = ListFiles(GetSaveGameYearFolder(gameName, year), playerSaveGameInfoPattern);
+                        // make sure we have player saves and an equal number of player saves and player game-info files
+                        if (playerSaveFiles.Count > 0 && playerSaveFiles.Count == playerSaveGameInfoFiles.Count)
+                        {
+                            gameYears.Add(year);
+                        }
+                        else
+                        {
+                            log.Error($"Invalid player save files in {GetSaveGameYearFolder(gameName, year)}");
+                        }
                     }
                 }
             }
@@ -198,21 +209,25 @@ namespace CraigStars.Singletons
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public List<string> ListFiles(string path)
+        public List<string> ListFiles(string path, Regex pattern = null)
         {
-            List<string> files = new();
-            using (var directory = new Directory())
+            var files = new List<string>();
+            if (!DirExists(path)) { return files; }
+
+            using var directory = new Directory();
+            directory.Open(path).ThrowOnError();
+            directory.ListDirBegin(skipHidden: true);
+
+            while (true)
             {
-                directory.Open(path).ThrowOnError();
-                directory.ListDirBegin(skipHidden: true);
-                while (true)
+                string file = directory.GetNext();
+                if (file == null || file.Empty())
                 {
-                    string file = directory.GetNext();
-                    if (file == null || file.Empty())
-                    {
-                        break;
-                    }
-                    if (!directory.CurrentIsDir())
+                    break;
+                }
+                if (!directory.CurrentIsDir())
+                {
+                    if (pattern == null || pattern.IsMatch(file))
                     {
                         files.Add(file);
                     }
@@ -260,6 +275,19 @@ namespace CraigStars.Singletons
             }
         }
 
+        /// <summary>
+        /// Return true if a files at this path exists
+        /// </summary>
+        /// <param name="gameName"></param>
+        /// <returns></returns>
+        public bool DirExists(string path)
+        {
+            using (var directory = new Directory())
+            {
+                return directory.DirExists(path);
+            }
+        }
+
         public void DeleteGame(string gameName)
         {
             if (gameName == null && gameName.Empty())
@@ -300,7 +328,7 @@ namespace CraigStars.Singletons
             List<PlayerSave> playerSaves = new();
             if (year == -1)
             {
-                var years = GetSavedGameYears(name);
+                var years = GetPlayerSaveYears(name);
                 year = years[years.Count - 1];
             }
             // match player-0-game-info.json, player-1-game-info.json
@@ -332,6 +360,18 @@ namespace CraigStars.Singletons
         }
 
         /// <summary>
+        /// Validate that this player save is valid
+        /// </summary>
+        /// <param name="gameName"></param>
+        /// <param name="year"></param>
+        /// <param name="playerNum"></param>
+        /// <returns></returns>
+        public bool ValidatePlayerSave(string gameName, int year, int playerNum)
+        {
+            return FileExists(GetSavePlayerPath(gameName, year, playerNum)) && FileExists(GetSavePlayerGameInfoPath(gameName, year, playerNum));
+        }
+
+        /// <summary>
         /// Load a player PublicGameInfo from disk.
         /// 
         /// TODO: This doesn't really work if we aren't player 0. I need to rethink this multiplayer file stuff..
@@ -345,7 +385,7 @@ namespace CraigStars.Singletons
             PublicGameInfo gameInfo;
             if (year == -1)
             {
-                var years = GetSavedGameYears(name);
+                var years = GetPlayerSaveYears(name);
                 year = years[years.Count - 1];
             }
             var path = GetSavePlayerGameInfoPath(name, year, playerNum);

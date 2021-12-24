@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CraigStars.Client;
 using Godot;
@@ -15,12 +17,12 @@ namespace CraigStars.Singletons
 
         public static event Action SceneLoadCompeteEvent;
         public static event Action SpriteLoadCompeteEvent;
+        public static event Action<string> ResourceLoadingEvent;
 
-        static List<string> packedScenePaths = new()
+        static List<string> preloadPackedScenePaths = new()
         {
             "res://addons/CraigStarsComponents/src/PlayerSavesColumnHeader.tscn",
             "res://addons/CraigStarsComponents/src/PublicGameInfosColumnHeader.tscn",
-            "res://src/Client/GameView.tscn",
             "res://src/Client/CommandPane/FleetCompositionTileTokensRow.tscn",
             "res://src/Client/Scanner/WaypointArea.tscn",
             "res://src/Client/Scanner/ScannerCoverage.tscn",
@@ -31,65 +33,41 @@ namespace CraigStars.Singletons
             "res://src/Client/Scanner/MineralPacketSprite.tscn",
             "res://src/Client/Scanner/WormholeSprite.tscn",
             "res://src/Client/Controls/MineralsCell.tscn",
-            "res://src/Client/Controls/CargoCell.tscn"
+            "res://src/Client/Controls/CargoCell.tscn",
+            "res://src/Client/GameView.tscn",
         };
 
-        static List<string> texturePaths = new()
+        static List<string> preloadTexturePaths = new()
         {
             "res://assets/gui/icons/ArrowUp.svg",
             "res://assets/gui/icons/ArrowDown.svg",
             "res://assets/gui/icons/Close.svg",
         };
-        static Dictionary<string, PackedScene> PackedScenes { get; set; } = new();
-        static Dictionary<string, Texture> Textures { get; set; } = new();
-        public static int TotalResources { get; set; }
+        static ConcurrentDictionary<string, PackedScene> PreloadPackedScenes { get; set; } = new();
+        static ConcurrentDictionary<string, Texture> PreloadTextures { get; set; } = new();
+        static HashSet<string> PreloadPackedSceneFilenames { get; set; } = preloadPackedScenePaths.Select(it => it.GetFile()).ToHashSet();
+        public static int PreloadedSprites { get; set; } = 128;
+        public static int TotalResources { get; set; } = preloadPackedScenePaths.Count + preloadTexturePaths.Count + PreloadedSprites;
         public static int Loaded { get; set; }
 
-
-        static Task sceneLoadTask;
-        static Task spriteLoadTask;
-
-        public async override void _Ready()
+        /// <summary>
+        /// PlayersManager is a singleton
+        /// </summary>
+        private static CSResourceLoader instance;
+        public static CSResourceLoader Instance
         {
-            int preloadedSprites = 128;
-            TotalResources = packedScenePaths.Count + texturePaths.Count + preloadedSprites;
-
-            log.Debug("Loading scenes");
-            sceneLoadTask = Task.Run(() =>
+            get
             {
-                packedScenePaths.ForEach(path =>
-                {
-                    log.Debug($"Preloading {path}");
-                    PackedScenes.Add(path.GetFile(), ResourceLoader.Load<PackedScene>(path));
-                    Loaded++;
-                });
-                texturePaths.ForEach(path =>
-                {
-                    log.Debug($"Preloading {path}");
-                    Textures.Add(path.GetFile(), ResourceLoader.Load<Texture>(path));
-                    Loaded++;
-                });
-            });
+                return instance;
+            }
+        }
 
-            await sceneLoadTask;
-            SceneLoadCompeteEvent?.Invoke();
-            log.Debug("Populating NodePool with sprites");
-            spriteLoadTask = Task.Run(() =>
-            {
-                // pre-instantiate some planets
-                var planetScene = PackedScenes["PlanetSprite.tscn"];
-                var fleetScene = PackedScenes["FleetSprite.tscn"];
-                var scannerCoverageScene = PackedScenes["ScannerCoverage.tscn"];
-                for (int i = 0; i < preloadedSprites; i++)
-                {
-                    NodePool.Return<PlanetSprite>(planetScene.Instance<PlanetSprite>());
-                    NodePool.Return<ScannerCoverage>(scannerCoverageScene.Instance<ScannerCoverage>());
-                    NodePool.Return<FleetSprite>(fleetScene.Instance<FleetSprite>());
-                    Loaded++;
-                }
-            });
-            log.Debug("Done populating NodePool with sprites");
-            SpriteLoadCompeteEvent?.Invoke();
+        public Task PreloadTask { get; set; }
+
+        public override void _EnterTree()
+        {
+            base._EnterTree();
+            instance = this;
         }
 
         public override void _Notification(int what)
@@ -107,10 +85,76 @@ namespace CraigStars.Singletons
             }
         }
 
+        /// <summary>
+        /// Start tasks to preload resources
+        /// </summary>
+        /// <returns></returns>
+        public void StartPreload()
+        {
+            PreloadTask = Task.Run(async () =>
+            {
+                log.Debug("Loading scenes");
+                var sceneLoadTask = Task.Run(async () =>
+                {
+                    try
+                    {
+                        preloadPackedScenePaths.ForEach(path =>
+                        {
+                            log.Debug($"Preloading {path}");
+                            ResourceLoadingEvent?.Invoke(path);
+                            PreloadPackedScenes.TryAdd(path.GetFile(), ResourceLoader.Load<PackedScene>(path));
+                            Loaded++;
+                        });
+                        preloadTexturePaths.ForEach(path =>
+                        {
+                            log.Debug($"Preloading {path}");
+                            ResourceLoadingEvent?.Invoke(path);
+                            PreloadTextures.TryAdd(path.GetFile(), ResourceLoader.Load<Texture>(path));
+                            Loaded++;
+                        });
+                    }
+                    catch (Exception e)
+                    {
+                        log.Error("Failed to preload scenes", e);
+                    }
+                });
+
+                await sceneLoadTask;
+                SceneLoadCompeteEvent?.Invoke();
+                log.Debug("Populating NodePool with sprites");
+                var spriteLoadTask = Task.Run(() =>
+                {
+                    try
+                    {
+                        // pre-instantiate some planets
+                        var planetScene = PreloadPackedScenes["PlanetSprite.tscn"];
+                        var fleetScene = PreloadPackedScenes["FleetSprite.tscn"];
+                        var scannerCoverageScene = PreloadPackedScenes["ScannerCoverage.tscn"];
+                        for (int i = 0; i < PreloadedSprites; i++)
+                        {
+                            ResourceLoadingEvent?.Invoke($"sprite {i}");
+                            NodePool.Return<PlanetSprite>(planetScene.Instance<PlanetSprite>());
+                            NodePool.Return<ScannerCoverage>(scannerCoverageScene.Instance<ScannerCoverage>());
+                            NodePool.Return<FleetSprite>(fleetScene.Instance<FleetSprite>());
+                            Loaded++;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        log.Error("Failed to preload sprites", e);
+                    }
+                });
+                await spriteLoadTask;
+                log.Debug("Done populating NodePool with sprites");
+                SpriteLoadCompeteEvent?.Invoke();
+            });
+
+        }
+
         public static PackedScene GetPackedScene(string filename)
         {
-            sceneLoadTask.Wait();
-            if (PackedScenes.TryGetValue(filename, out PackedScene resource))
+            Instance.PreloadTask.Wait();
+            if (PreloadPackedScenes.TryGetValue(filename, out PackedScene resource))
             {
                 return resource;
             }
@@ -120,8 +164,8 @@ namespace CraigStars.Singletons
 
         public static Texture GetTexture(string filename)
         {
-            sceneLoadTask.Wait();
-            if (Textures.TryGetValue(filename, out Texture resource))
+            Instance.PreloadTask.Wait();
+            if (PreloadTextures.TryGetValue(filename, out Texture resource))
             {
                 return resource;
             }

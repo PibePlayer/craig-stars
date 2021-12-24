@@ -26,7 +26,7 @@ Display=8
 [application]
 
 config/name="craig-stars"
-run/main_scene="res://src/Client/MainMenu.tscn"
+run/main_scene="res://src/Client/Launcher.tscn"
 run/flush_stdout_on_print=true
 run/low_processor_mode=true
 config/icon="res://icon.png"

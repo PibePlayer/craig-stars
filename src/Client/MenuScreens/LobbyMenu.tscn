@@ -48,10 +48,8 @@ margin_right = 1435.0
 margin_bottom = 795.0
 
 [node name="MenuButtons" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer" index="0"]
-margin_left = 0.0
 margin_right = 1430.0
 margin_bottom = 790.0
-size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons" index="0"]
@@ -96,12 +94,13 @@ size_flags_horizontal = 3
 
 [node name="NewGameOptions" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer/PlayerReadyContainer" index="0" instance=ExtResource( 4 )]
 margin_right = 713.0
+margin_bottom = 96.0
 GameName = "A Multiplayer Barefoot Jaywalk"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer/PlayerReadyContainer" index="1"]
-margin_top = 76.0
+margin_top = 100.0
 margin_right = 713.0
-margin_bottom = 96.0
+margin_bottom = 120.0
 
 [node name="PlayersLabel" type="Label" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer/PlayerReadyContainer/HBoxContainer" index="0"]
 margin_top = 3.0
@@ -117,7 +116,7 @@ margin_bottom = 20.0
 text = "Add Player +"
 
 [node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer/PlayerReadyContainer" index="2"]
-margin_top = 100.0
+margin_top = 124.0
 margin_right = 713.0
 margin_bottom = 502.0
 size_flags_vertical = 3
@@ -133,7 +132,7 @@ __meta__ = {
 margin_left = 10.0
 margin_top = 5.0
 margin_right = 703.0
-margin_bottom = 397.0
+margin_bottom = 373.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -142,8 +141,8 @@ __meta__ = {
 margin_right = 693.0
 margin_bottom = 32.0
 rect_rotation = 0.0
-Ready = false
 PlayerNum = 0
+Ready = false
 
 [node name="LobbyButtons" type="HBoxContainer" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer/PlayerReadyContainer" index="3"]
 margin_top = 506.0

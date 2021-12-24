@@ -38,11 +38,24 @@ namespace CraigStarsTable
         static Task sceneLoadTask;
         static Task spriteLoadTask;
 
-        public override void _Ready()
+        public override void _EnterTree()
         {
-            base._Ready();
+            base._EnterTree();
             instance = this;
+        }
 
+        public override void _Notification(int what)
+        {
+            base._Notification(what);
+            if (what == NotificationPredelete)
+            {
+                CSTableNodePool.FreeAll<CSLabelCell>();
+                CSTableNodePool.FreeAll<ColumnHeader>();
+            }
+        }
+
+        public void StartPreLoad()
+        {
             int numCells = 10 * 50;
             int numHeaders = 10;
 
@@ -68,17 +81,6 @@ namespace CraigStarsTable
                     Loaded++;
                 }
             });
-
-        }
-
-        public override void _Notification(int what)
-        {
-            base._Notification(what);
-            if (what == NotificationPredelete)
-            {
-                CSTableNodePool.FreeAll<CSLabelCell>();
-                CSTableNodePool.FreeAll<ColumnHeader>();
-            }
         }
 
     }

@@ -1,14 +1,16 @@
-using Godot;
 using System;
-using CraigStars.Singletons;
-using CraigStars.Utils;
 using System.Collections.Generic;
 using System.Linq;
+using CraigStars.Singletons;
+using CraigStars.Utils;
+using Godot;
 
 namespace CraigStars.Client
 {
     public class NewGameMenu : MarginContainer
     {
+        public bool QuickStart { get; set; }
+
         CheckButton fastHotseatCheckButton;
         Button startButton;
         Button backButton;
@@ -40,6 +42,11 @@ namespace CraigStars.Client
             newGamePlayers.InitPlayersForSinglePlayerGame();
 
             EventManager.GameStartingEvent += OnGameStarting;
+
+            if (QuickStart)
+            {
+                CallDeferred(nameof(OnStartPressed));
+            }
         }
 
         public override void _Notification(int what)
@@ -78,12 +85,21 @@ namespace CraigStars.Client
 
             if (GamesManager.Instance.GameExists(settings.Name))
             {
-                CSConfirmDialog.Show($"A game named {settings.Name} already exists. Are you sure you want to overwrite it?", () =>
+                if (QuickStart)
                 {
                     // delete the existing game
                     GamesManager.Instance.DeleteGame(settings.Name);
                     startGame.Invoke();
-                });
+                }
+                else
+                {
+                    CSConfirmDialog.Show($"A game named {settings.Name} already exists. Are you sure you want to overwrite it?", () =>
+                    {
+                        // delete the existing game
+                        GamesManager.Instance.DeleteGame(settings.Name);
+                        startGame.Invoke();
+                    });
+                }
             }
             else
             {

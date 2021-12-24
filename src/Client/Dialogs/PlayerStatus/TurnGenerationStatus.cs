@@ -1,8 +1,8 @@
+using System;
+using System.Linq;
 using CraigStars.Singletons;
 using CraigStarsTable;
 using Godot;
-using System;
-using System.Linq;
 
 namespace CraigStars.Client
 {
@@ -56,6 +56,8 @@ namespace CraigStars.Client
             EventManager.TurnGeneratorAdvancedEvent += OnTurnGeneratorAdvanced;
             EventManager.UniverseGeneratorAdvancedEvent += OnUniverseGeneratorAdvanced;
 
+            CSResourceLoader.ResourceLoadingEvent += OnResourceLoading;
+
         }
 
         public override void _Notification(int what)
@@ -71,6 +73,7 @@ namespace CraigStars.Client
                 EventManager.TurnGeneratingEvent -= OnTurnGenerating;
                 EventManager.TurnGeneratorAdvancedEvent -= OnTurnGeneratorAdvanced;
                 EventManager.UniverseGeneratorAdvancedEvent -= OnUniverseGeneratorAdvanced;
+                CSResourceLoader.ResourceLoadingEvent -= OnResourceLoading;
             }
         }
 
@@ -161,6 +164,15 @@ namespace CraigStars.Client
             progressStatus.ProgressLabel = "Generating Universe";
             progressStatus.ProgressSubLabel = state.ToString();
         }
+
+        private void OnResourceLoading(string resource)
+        {
+            progressStatus.Visible = true;
+            progressStatus.ProgressSubLabel = $"Loading {resource}";
+            progressStatus.Progress = (float)CSResourceLoader.Loaded / CSResourceLoader.TotalResources;
+        }
+
+
 
         /// <summary>
         /// Update the player statuses in the dialog

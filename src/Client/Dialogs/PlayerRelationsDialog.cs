@@ -1,8 +1,8 @@
-using CraigStarsTable;
-using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CraigStarsTable;
+using Godot;
 
 namespace CraigStars.Client
 {

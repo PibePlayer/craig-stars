@@ -1,6 +1,6 @@
-using Godot;
 using System;
 using CraigStars.Utils;
+using Godot;
 
 namespace CraigStars.Client
 {

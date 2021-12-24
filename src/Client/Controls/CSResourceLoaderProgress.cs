@@ -1,7 +1,7 @@
+using System;
 using CraigStars.Singletons;
 using CraigStarsTable;
 using Godot;
-using System;
 namespace CraigStars.Client
 {
     public class CSResourceLoaderProgress : MarginContainer

@@ -1,8 +1,8 @@
+using System;
+using System.Linq;
 using CraigStars.Singletons;
 using CraigStars.Utils;
 using Godot;
-using System;
-using System.Linq;
 
 namespace CraigStars.Client
 {

@@ -1,7 +1,7 @@
-using CraigStars.Utils;
-using Godot;
 using System;
 using System.Collections.Generic;
+using CraigStars.Utils;
+using Godot;
 
 namespace CraigStars.Client
 {
@@ -130,7 +130,7 @@ namespace CraigStars.Client
                 detailPlanNameLabel.Text = selectedPlan.Name;
                 nameLineEdit.Text = selectedPlan.Name;
                 nameLineEdit.Editable = index != 0;
-                
+
                 OnPlanSelected(newPlan, previousPlan);
             }
         }

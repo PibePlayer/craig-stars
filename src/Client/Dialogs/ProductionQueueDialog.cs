@@ -1,5 +1,5 @@
-using Godot;
 using CraigStars.Utils;
+using Godot;
 
 namespace CraigStars.Client
 {

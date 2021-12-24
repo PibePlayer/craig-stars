@@ -1,11 +1,11 @@
-using CraigStars.Singletons;
-using CraigStars.Utils;
-using CraigStarsTable;
-using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CraigStars.Singletons;
+using CraigStars.Utils;
+using CraigStarsTable;
+using Godot;
 
 namespace CraigStars.Client
 {

@@ -1,8 +1,8 @@
+using System;
+using System.Collections.Generic;
 using CraigStars.Singletons;
 using CraigStars.Utils;
 using Godot;
-using System;
-using System.Collections.Generic;
 
 namespace CraigStars.Client
 {
@@ -77,7 +77,7 @@ namespace CraigStars.Client
                         AddSeparator();
                     }
                     AddItem(mo.Name, i);
-                }                
+                }
                 RectGlobalPosition = GetGlobalMousePosition();
                 log.Debug($"Showing Other Objects Popup with {otherObjectsAtLocation.Count} items.");
                 ShowModal();

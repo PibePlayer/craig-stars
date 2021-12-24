@@ -1,7 +1,7 @@
+using System;
 using CraigStars.Singletons;
 using CraigStars.Utils;
 using Godot;
-using System;
 
 namespace CraigStars.Client
 {
@@ -209,7 +209,9 @@ namespace CraigStars.Client
                 {
                     // if the dest is also a fleet, update its spec with a new mass
                     fleetSpecService.ComputeFleetSpec(Me, fleet, recompute: true);
-                } else if (dest is Planet planet) {
+                }
+                else if (dest is Planet planet)
+                {
                     planet.Spec = planetService.ComputePlanetSpec(planet, base.Me);
                 }
                 log.Info($"{Me.Name} made immediate transfer from {source.Name} to {dest.Name} for {netCargoDiff} cargo and {netFuelDiff} fuel");

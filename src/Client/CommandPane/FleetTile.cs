@@ -1,9 +1,9 @@
-using Godot;
 using System;
-using CraigStars.Singletons;
-using CraigStars;
 using System.Collections.Generic;
+using CraigStars;
+using CraigStars.Singletons;
 using CraigStars.Utils;
+using Godot;
 
 namespace CraigStars.Client
 {
@@ -15,7 +15,7 @@ namespace CraigStars.Client
         public override void _Ready()
         {
             this.ResolveDependencies();
-            
+
             base._Ready();
             titleLabel = (Label)FindNode("TitleLabel");
         }

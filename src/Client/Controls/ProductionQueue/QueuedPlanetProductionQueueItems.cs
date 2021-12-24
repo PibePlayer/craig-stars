@@ -1,11 +1,11 @@
-using CraigStars.Singletons;
-using CraigStars.Utils;
-using CraigStarsTable;
-using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CraigStars.Singletons;
+using CraigStars.Utils;
+using CraigStarsTable;
+using Godot;
 
 namespace CraigStars.Client
 {
@@ -25,7 +25,7 @@ namespace CraigStars.Client
         public override void _Ready()
         {
             this.ResolveDependencies();
-            
+
             base._Ready();
 
             table.Data.AddColumn("Item");

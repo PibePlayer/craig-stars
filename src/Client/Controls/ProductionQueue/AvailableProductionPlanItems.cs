@@ -1,9 +1,9 @@
-using CraigStars.Singletons;
-using CraigStarsTable;
-using Godot;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CraigStars.Singletons;
+using CraigStarsTable;
+using Godot;
 
 namespace CraigStars.Client
 {

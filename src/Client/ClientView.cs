@@ -1,10 +1,10 @@
-using Godot;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CraigStars.Singletons;
 using CraigStars.Utils;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using Godot;
 
 namespace CraigStars.Client
 {
@@ -326,7 +326,7 @@ namespace CraigStars.Client
         void OnTurnGenerating()
         {
             PlayersManager.Me = null;
-            
+
             // we just submitted our turn, remove the game view and show this container
             RemoveGameViewAndShowTurnGeneration();
 

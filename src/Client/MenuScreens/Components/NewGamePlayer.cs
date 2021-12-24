@@ -172,17 +172,21 @@ namespace CraigStars.Client
         void OnNewRaceButtonPressed()
         {
             raceDesignerDialog.Race = new Race();
-            raceDesignerDialog.PopupCentered();
+            raceDesignerDialog.PopupCentered(() =>
+            {
+                Player.Race = raceDesignerDialog.Race;
+            });
         }
 
         void OnEditRaceButtonPressed()
         {
             var selectedRace = RacesManager.LoadRace(raceOptionButton.GetItemText(raceOptionButton.Selected));
             raceDesignerDialog.Race = selectedRace;
-            raceDesignerDialog.PopupCentered();
+            raceDesignerDialog.PopupCentered(() =>
+            {
+                Player.Race = raceDesignerDialog.Race;
+            });
         }
-
-
 
         void UpdateRaceFiles(string selected = null)
         {

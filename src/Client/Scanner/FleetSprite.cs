@@ -94,9 +94,9 @@ namespace CraigStars.Client
             UpdateSprite();
         }
 
-        public override void _ExitTree()
+        public override void Returned()
         {
-            base._ExitTree();
+            base.Returned();
             OtherFleets.Clear();
             Orbiting = null;
         }

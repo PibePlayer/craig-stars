@@ -15,7 +15,14 @@ namespace CraigStars.Client
             set
             {
                 waypoint = value;
-                Position = waypoint.Position;
+                if (waypoint != null)
+                {
+                    Position = waypoint.Position;
+                }
+                else
+                {
+                    Position = new Vector2();
+                }
             }
         }
         Waypoint waypoint;
@@ -27,13 +34,6 @@ namespace CraigStars.Client
         {
             // hook up mouse events to our area
             EventManager.WaypointDeletedEvent += OnWaypointDeleted;
-        }
-
-        public override void _ExitTree()
-        {
-            base._ExitTree();
-            Waypoint = null;
-            Fleet = null;
         }
 
         void OnWaypointDeleted(Waypoint waypoint)

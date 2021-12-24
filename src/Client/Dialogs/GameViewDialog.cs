@@ -12,6 +12,7 @@ namespace CraigStars.Client
         protected Player Me { get => PlayersManager.Me; }
         protected PublicGameInfo GameInfo { get => PlayersManager.GameInfo; }
         protected Button okButton;
+        Action onOk;
 
         public override void _Ready()
         {
@@ -40,19 +41,24 @@ namespace CraigStars.Client
             }
         }
 
+        public virtual void PopupCentered(Action onOk = null)
+        {
+            this.onOk = onOk;
+            base.PopupCentered();
+        }
+
         /// <summary>
         /// Just hide the dialog on ok
         /// </summary>
         protected virtual void OnOk()
         {
             Hide();
+            onOk?.Invoke();
         }
 
         void DecrementDialogRefCount()
         {
             DialogManager.DialogRefCount--;
         }
-
-
     }
 }

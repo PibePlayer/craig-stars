@@ -6,7 +6,7 @@ using Godot;
 
 namespace CraigStars.Client
 {
-    public abstract class MapObjectSprite : Area2D
+    public abstract class MapObjectSprite : Area2D, INodePoolNode
     {
         public MapObject MapObject { get; set; }
         public string ObjectName { get => MapObject != null ? MapObject.Name : "Unknown"; }
@@ -57,9 +57,8 @@ namespace CraigStars.Client
             return $"{GetType().Name}: {ObjectName}";
         }
 
-        public override void _ExitTree()
+        public virtual void Returned()
         {
-            base._ExitTree();
             State = ScannerState.None;
             OwnerAllyState = ScannerOwnerAlly.Unknown;
             MapObject = null;

@@ -8,12 +8,12 @@ namespace CraigStars.Singletons
     public static class NodePool
     {
         static CSLog log = LogProvider.GetLogger(typeof(NodePool));
-        static class PerType<T> where T : Node
+        static class PerType<T> where T : Node, INodePoolNode
         {
             public static ConcurrentBag<T> bag = new ConcurrentBag<T>();
         }
 
-        public static T Get<T>(PackedScene packedScene) where T : Node
+        public static T Get<T>(PackedScene packedScene) where T : Node, INodePoolNode
         {
             var bag = PerType<T>.bag;
             if (bag.TryTake(out T item))
@@ -27,7 +27,7 @@ namespace CraigStars.Singletons
             }
         }
 
-        public static void Return<T>(T item, Action<T> onReturn = null) where T : Node
+        public static void Return<T>(T item, Action<T> onReturn = null) where T : Node, INodePoolNode
         {
             var bag = PerType<T>.bag;
             onReturn?.Invoke(item);
@@ -35,12 +35,13 @@ namespace CraigStars.Singletons
 
             // make sure this item isn't cleaned up when the parent goes away
             // it will be freed in CSResourceLoader
+            item.Returned();
             item.GetParent()?.RemoveChild(item);
 
             // log.Debug($"Returned NodePool resource {typeof(T)} {item} to pool.");
         }
 
-        public static void FreeAll<T>() where T : Node
+        public static void FreeAll<T>() where T : Node, INodePoolNode
         {
             var bag = PerType<T>.bag;
             while (bag.TryTake(out T item))

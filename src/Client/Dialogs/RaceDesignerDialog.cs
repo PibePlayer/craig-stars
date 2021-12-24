@@ -387,18 +387,18 @@ namespace CraigStars.Client
                         () =>
                         {
                             RacesManager.SaveRace(Race, filename.Text);
-                            Hide();
+                            base.OnOk();
                         });
                 }
                 else
                 {
                     RacesManager.SaveRace(Race, filename.Text);
-                    Hide();
+                    base.OnOk();
                 }
             }
             else
             {
-                // all done
+                // hide without saving or calling our OnOk callback
                 Hide();
             }
         }

@@ -38,10 +38,6 @@ namespace CraigStars
                 {
                     DesignGuid = design.Guid;
                 }
-                else
-                {
-                    DesignGuid = null;
-                }
             }
         }
         ShipDesign design;
@@ -70,18 +66,19 @@ namespace CraigStars
         public float percentComplete { get; set; } = 0;
 
         [JsonConstructor]
-        public ProductionQueueItem(QueueItemType type, int quantity = 0, ShipDesign design = null, string fleetName = null, Cost allocated = new Cost())
+        public ProductionQueueItem(QueueItemType type, int quantity = 0, ShipDesign design = null, Guid? designGuid = null, string fleetName = null, Cost allocated = new Cost())
         {
             Type = type;
             Quantity = quantity;
             Design = design;
+            DesignGuid = design == null ? designGuid : design.Guid;
             FleetName = fleetName;
             Allocated = allocated;
         }
 
         public ProductionQueueItem Clone()
         {
-            return new ProductionQueueItem(Type, Quantity, Design, FleetName, Allocated);
+            return new ProductionQueueItem(Type, Quantity, Design, DesignGuid, FleetName, Allocated);
         }
 
         public override string ToString()
@@ -136,7 +133,7 @@ namespace CraigStars
 
         public static bool operator !=(ProductionQueueItem lhs, ProductionQueueItem rhs) => !(lhs == rhs);
 
-
+        [JsonIgnore]
         public string ShortName
         {
             get

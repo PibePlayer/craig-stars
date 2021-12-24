@@ -8,7 +8,7 @@ namespace CraigStars.Client
     /// This represents the coverage of a scanner, either penetrating or regular
     /// We separate pen from regular because we draw all regular, and then all pen scanners
     /// </summary>
-    public class ScannerCoverage : Node2D
+    public class ScannerCoverage : Node2D, INodePoolNode
     {
         protected Player Me { get => PlayersManager.Me; }
 
@@ -43,6 +43,12 @@ namespace CraigStars.Client
             {
                 EventManager.ScannerScaleUpdatedEvent -= OnScannerScaleUpdated;
             }
+        }
+
+        public void Returned()
+        {
+            ScanRange = 0;
+            Pen = false;
         }
 
         /// <summary>

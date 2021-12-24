@@ -96,9 +96,9 @@ namespace CraigStars.Client
             UpdateSprite();
         }
 
-        public override void _ExitTree()
+        public override void Returned()
         {
-            base._ExitTree();
+            base.Returned();
             OrbitingFleets.Clear();
             PacketTarget = null;
             HasCommandedPeer = false;
@@ -236,7 +236,7 @@ namespace CraigStars.Client
 
             nameLabel.Text = Planet.Name;
             nameLabel.Visible = Me.UISettings.ShowPlanetNames;
-            var filteredOrbitingFleets = OrbitingFleets.Where(fleet => !fleet.FilteredOut).ToList();
+            var filteredOrbitingFleets = OrbitingFleets.Where(fleet => !fleet.FilteredOut && fleet.Fleet != null).ToList();
             countLabel.Visible = filteredOrbitingFleets.Count > 0 && Me.UISettings.ShowFleetTokenCounts;
             countLabel.Text = $"{filteredOrbitingFleets.Sum(fleet => fleet.Fleet.Tokens.Sum(token => token.Quantity))}";
 

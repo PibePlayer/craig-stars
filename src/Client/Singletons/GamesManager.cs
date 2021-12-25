@@ -51,6 +51,7 @@ namespace CraigStars.Singletons
         /// <returns></returns>
         readonly Regex playerSavePattern = new Regex(@"^player-(\d+)\.json$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         readonly Regex playerSaveGameInfoPattern = new Regex(@"^player-(\d+)-game-info\.json$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        readonly Regex gameSavePattern = new Regex(@"^game.json$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         public static string GetSaveGameFolder(string gameName)
         {
@@ -128,7 +129,7 @@ namespace CraigStars.Singletons
         }
 
         /// <summary>
-        /// Get a list of all game folders
+        /// Get a list of all Player saved games
         /// </summary>
         /// <returns>A list of game folders</returns>
         public List<PlayerSave> GetPlayerSaves()
@@ -195,6 +196,46 @@ namespace CraigStars.Singletons
                         else
                         {
                             log.Error($"Invalid player save files in {GetSaveGameYearFolder(gameName, year)}");
+                        }
+                    }
+                }
+            }
+
+            gameYears.Sort();
+            return gameYears;
+        }
+
+        /// <summary>
+        /// Get a list of all year folders for a game
+        /// </summary>
+        /// <param name="gameName">The game to load</param>
+        /// <returns>A list of year folders for a game</returns>
+        public List<int> GetGameSaveYears(string gameName)
+        {
+            List<int> gameYears = new List<int>();
+            using (var directory = new Directory())
+            {
+                directory.Open(GetSaveGameFolder(gameName)).ThrowOnError();
+                directory.ListDirBegin(skipHidden: true);
+                while (true)
+                {
+                    string file = directory.GetNext();
+                    if (file == null || file.Empty())
+                    {
+                        break;
+                    }
+                    if (directory.CurrentIsDir() && int.TryParse(file, out var year))
+                    {
+                        // make sure we have player save files in this folder
+                        var gameSaveFiles = ListFiles(GetSaveGameYearFolder(gameName, year), gameSavePattern);
+                        // make sure we have player saves and an equal number of player saves and player game-info files
+                        if (gameSaveFiles.Count > 0)
+                        {
+                            gameYears.Add(year);
+                        }
+                        else
+                        {
+                            log.Error($"Invalid game save files in {GetSaveGameYearFolder(gameName, year)}");
                         }
                     }
                 }
@@ -593,6 +634,29 @@ namespace CraigStars.Singletons
         {
             // return all players that have save game files on disk
             return gameInfo.Players.Where(player => FileExists(GetSavePlayerPath(gameInfo.Name, gameInfo.Year, player.Num))).ToList();
+        }
+
+        /// <summary>
+        /// Find the latest player save for a game
+        /// </summary>
+        /// <param name="gameName"></param>
+        /// <returns></returns>
+        public Player LoadPlayerSave(string gameName)
+        {
+            var years = GetPlayerSaveYears(gameName);
+            var year = years[years.Count - 1];
+            var playerSaves = ListFiles(GetSaveGameYearFolder(gameName, year), playerSavePattern);
+            if (playerSaves.Count > 0)
+            {
+                var match = playerSavePattern.Match(playerSaves[0]);
+                if (match.Success && int.TryParse(match.Groups[1].Value, out int playerNum))
+                {
+                    var json = FileUtils.ReadFile(GetSavePlayerPath(gameName, year, playerNum));
+                    return Serializers.DeserializeObject<Player>(json, Serializers.CreatePlayerSettings(TechStore.Instance));
+                }
+            }
+
+            return null;
         }
 
         /// <summary>

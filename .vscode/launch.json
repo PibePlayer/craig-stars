@@ -45,6 +45,38 @@
             "${workspaceRoot}",
             "--continue",
         ]
+    },
+    {
+        "name": "Launch - join",
+        "type": "godot-mono",
+        "request": "launch",
+        "mode": "executable",
+        "preLaunchTask": "build",
+        "executable": "/Applications/Godot_mono.app/Contents/MacOS/Godot",
+        "executableArguments": [
+            "--path",
+            "${workspaceRoot}",
+            "--join-server",
+            "localhost",
+            "--game",
+            "A Multiplayer Barefoot Jaywalk",
+        ]
+    },
+    {
+        "name": "Launch - server",
+        "type": "godot-mono",
+        "request": "launch",
+        "mode": "executable",
+        "preLaunchTask": "build",
+        "executable": "/Applications/Godot_mono.app/Contents/MacOS/Godot",
+        "executableArguments": [
+            "--no-window",
+            "--path",
+            "${workspaceRoot}",
+            "--start-server",
+            "--game",
+            "A Multiplayer Barefoot Jaywalk",
+        ]
     },    
     {
         "name": "Launch - Quick Start",

@@ -20,16 +20,28 @@ namespace CraigStars.Client
         public bool Continue { get; set; }
 
         /// <summary>
-        /// The year to continue, or -1 for the latest year
+        /// The Game to load or continue
         /// </summary>
         /// <value></value>
-        public string ContinueGame { get; set; }
+        public string GameName { get; set; }
 
         /// <summary>
         /// The year to continue, or -1 for the latest year
         /// </summary>
         /// <value></value>
-        public int ContinueYear { get; set; } = -1;
+        public int Year { get; set; } = -1;
+
+        /// <summary>
+        /// The server address to join
+        /// </summary>
+        /// <value></value>
+        public string JoinServer { get; set; }
+
+        /// <summary>
+        /// The server address to join
+        /// </summary>
+        /// <value></value>
+        public int Port { get; set; } = 3000;
 
         #endregion
 
@@ -44,6 +56,7 @@ namespace CraigStars.Client
         Label continueGameNameLabel;
         SpinBox continueGameYearSpinBox;
 
+        Player player;
         List<PlayerMessage> Messages { get; } = new List<PlayerMessage>();
         ClientRPC clientRPC;
 
@@ -92,26 +105,26 @@ namespace CraigStars.Client
 
             // setup continue game settings
             // we either get them as args to this scene from the Launcher
-            ContinueGame ??= Settings.Instance.ContinueGame;
-            ContinueYear = ContinueYear == -1 ? Settings.Instance.ContinueYear : ContinueYear;
+            GameName ??= Settings.Instance.ContinueGame;
+            Year = Year == -1 ? Settings.Instance.ContinueYear : Year;
 
-            if (ContinueGame != null)
+            if (GameName != null)
             {
                 continueGameButton.Visible = continueGameInfo.Visible = true;
-                continueGameNameLabel.Text = ContinueGame;
+                continueGameNameLabel.Text = GameName;
 
                 // either use the continue year from our settings, or the latest
                 // valid year in case we are missing files
-                var validYears = GamesManager.Instance.GetPlayerSaveYears(ContinueGame);
-                if (!validYears.Contains(ContinueYear))
+                var validYears = GamesManager.Instance.GetPlayerSaveYears(GameName);
+                if (!validYears.Contains(Year))
                 {
                     var year = validYears[validYears.Count - 1];
-                    log.Error($"Invalid ContinueYear {ContinueYear}, resetting to {year}");
-                    ContinueYear = year;
+                    log.Error($"Invalid ContinueYear {Year}, resetting to {year}");
+                    Year = year;
                 }
 
-                continueGameYearSpinBox.Value = ContinueYear;
-                continueGameYearSpinBox.MaxValue = ContinueYear;
+                continueGameYearSpinBox.Value = Year;
+                continueGameYearSpinBox.MaxValue = Year;
 
 
                 var minSizeRect = continueGameYearSpinBox.RectMinSize;
@@ -119,11 +132,26 @@ namespace CraigStars.Client
                 continueGameYearSpinBox.RectMinSize = minSizeRect;
 
                 continueGameButton.Connect("pressed", this, nameof(OnContinueGameButtonPressed));
+            }
 
-                // we were launched with --continue
-                if (Continue)
+
+            // we were launched with --continue
+            if (Continue)
+            {
+                CallDeferred(nameof(OnContinueGameButtonPressed));
+            }
+            else if (JoinServer != null && GameName != null)
+            {
+                player = GamesManager.Instance.LoadPlayerSave(GameName);
+                if (player != null)
                 {
-                    CallDeferred(nameof(OnContinueGameButtonPressed));
+                    PlayersManager.Me = player;
+                    PlayersManager.GameInfo = GamesManager.Instance.LoadPlayerGameInfo(GameName);
+                    NetworkClient.Instance.JoinExistingGame(JoinServer, Port, player);
+                }
+                else
+                {
+                    CSConfirmDialog.Show($"No local player save found for game {GameName}");
                 }
             }
         }
@@ -165,7 +193,7 @@ namespace CraigStars.Client
         {
             try
             {
-                var (gameInfo, players) = ServerManager.Instance.ContinueGame(ContinueGame, (int)continueGameYearSpinBox.Value);
+                var (gameInfo, players) = ServerManager.Instance.ContinueGame(GameName, (int)continueGameYearSpinBox.Value);
                 this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (clientView) =>
                 {
                     clientView.GameInfo = gameInfo;
@@ -174,8 +202,8 @@ namespace CraigStars.Client
             }
             catch (Exception e)
             {
-                log.Error($"Failed to continue game {ContinueGame}: {continueGameYearSpinBox.Value}", e);
-                CSConfirmDialog.Show($"Failed to load game {ContinueGame}: {continueGameYearSpinBox.Value}");
+                log.Error($"Failed to continue game {GameName}: {continueGameYearSpinBox.Value}", e);
+                CSConfirmDialog.Show($"Failed to load game {GameName}: {continueGameYearSpinBox.Value}");
             }
         }
 
@@ -266,7 +294,7 @@ namespace CraigStars.Client
                 this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (clientView) =>
                 {
                     clientView.GameInfo = gameInfo;
-                    clientView.PlayerName = Settings.Instance.PlayerName;
+                    clientView.LocalPlayers.Add(player);
                 });
             }
         }

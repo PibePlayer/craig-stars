@@ -62,6 +62,10 @@ namespace CraigStars.Singletons
                 serverTree?.Free();
                 serverTree = null;
             }
+            else if (what == NotificationWmQuitRequest)
+            {
+                ExitGame();
+            }
         }
 
         #region Single Player

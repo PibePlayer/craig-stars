@@ -25,8 +25,6 @@ namespace CraigStars.Client
         /// <value></value>
         public PublicGameInfo GameInfo { get; set; }
 
-        public string PlayerName { get; set; }
-
         /// <summary>
         /// Set to true to automatically try and become the player that matches your name
         /// </summary>
@@ -51,7 +49,6 @@ namespace CraigStars.Client
             inGameMenu = GetNode<InGameMenu>("CanvasLayer/InGameMenu");
 
             projectName = ProjectSettings.GetSetting("application/config/name").ToString();
-            PlayerName ??= Settings.Instance.PlayerName;
 
             EventManager.GameStartedEvent += OnGameStarted;
             EventManager.GameContinuedEvent += OnGameContinued;
@@ -367,6 +364,10 @@ namespace CraigStars.Client
                 PlayersManager.Me.SubmittedTurn = false;
                 RemoveGameViewAndShowTurnGeneration();
                 CallDeferred(nameof(LoadGameView));
+            }
+            else
+            {
+                log.Error($"Player {playerNum} not found in LocalPlayers list.");
             }
         }
 

@@ -131,6 +131,7 @@ namespace CraigStars.Server
                 {
                     log.Info($"Player {game.Players[networkPlayer.playerNum]} rejoined with new networkId: {networkPlayer.networkId}");
                     game.Players[networkPlayer.playerNum].NetworkId = networkPlayer.networkId;
+                    serverRPC.Players = new(game.Players);
                 }
                 else
                 {
@@ -238,7 +239,12 @@ namespace CraigStars.Server
             // remove the player from our list
             var player = serverRPC.Players.Find(player => player.NetworkId == networkId);
             serverRPC.Players.Remove(player);
-            serverRPC.Players.Each((player, index) => player.Num = index);
+
+            // if we haven't started a game yet, rearrange the player numbers
+            if (Game == null)
+            {
+                serverRPC.Players.Each((player, index) => player.Num = index);
+            }
 
             // remove this player from our list of networkPlayers, if we have it
             networkPlayers.RemoveAll(np => np.networkId == networkId);
@@ -256,7 +262,12 @@ namespace CraigStars.Server
             // remove the player from our list
             var player = serverRPC.Players.Find(player => player.Num == playerNum);
             serverRPC.Players.Remove(player);
-            serverRPC.Players.Each((player, index) => player.Num = index);
+
+            // if we haven't started a game yet, rearrange the player numbers
+            if (Game == null)
+            {
+                serverRPC.Players.Each((player, index) => player.Num = index);
+            }
 
             if (player.NetworkId != 0)
             {

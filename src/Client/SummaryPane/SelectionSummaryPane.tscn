@@ -1,11 +1,10 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://src/Client/SummaryPane/FleetSummaryContainer.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/Client/TileTheme.tres" type="Theme" id=2]
 [ext_resource path="res://src/Client/SummaryPane/SelectionSummaryPane.cs" type="Script" id=3]
 [ext_resource path="res://assets/gui/vector_whiteIcons.svg" type="Texture" id=4]
 [ext_resource path="res://src/Client/SummaryPane/PlanetSummaryContainer.tscn" type="PackedScene" id=5]
-[ext_resource path="res://src/Client/GUIColors.tres" type="Resource" id=6]
 [ext_resource path="res://assets/gui/icons/OtherFleets.svg" type="Texture" id=7]
 [ext_resource path="res://src/Client/SummaryPane/SalvageSummaryContainer.tscn" type="PackedScene" id=8]
 [ext_resource path="res://src/Client/SummaryPane/WormholeSummaryContainer.tscn" type="PackedScene" id=9]
@@ -19,7 +18,7 @@ region = Rect2( 230, 76, 10, 17 )
 [node name="SelectionSummaryPane" type="MarginContainer"]
 margin_right = 400.0
 margin_bottom = 206.0
-rect_min_size = Vector2( 400, 190 )
+rect_min_size = Vector2( 400, 240 )
 theme = ExtResource( 2 )
 custom_constants/margin_right = 10
 custom_constants/margin_top = 10
@@ -29,13 +28,12 @@ script = ExtResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
-GUIColors = ExtResource( 6 )
 
 [node name="Panel" type="Panel" parent="."]
 margin_left = 10.0
 margin_top = 10.0
 margin_right = 390.0
-margin_bottom = 196.0
+margin_bottom = 230.0
 theme = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -45,7 +43,7 @@ __meta__ = {
 margin_left = 10.0
 margin_top = 10.0
 margin_right = 390.0
-margin_bottom = 196.0
+margin_bottom = 230.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -70,7 +68,7 @@ icon = ExtResource( 7 )
 
 [node name="PlanetSummaryContainer" parent="VBoxContainer" instance=ExtResource( 5 )]
 margin_top = 26.0
-margin_bottom = 186.0
+margin_bottom = 220.0
 
 [node name="FleetSummaryContainer" parent="VBoxContainer" instance=ExtResource( 1 )]
 visible = false
@@ -79,9 +77,9 @@ margin_bottom = 302.0
 
 [node name="UnknownPlanetContainer" type="CenterContainer" parent="VBoxContainer"]
 visible = false
-margin_top = 190.0
+margin_top = 224.0
 margin_right = 380.0
-margin_bottom = 207.0
+margin_bottom = 241.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 

@@ -5,8 +5,8 @@
 
 [node name="MessagesPane" type="MarginContainer"]
 margin_right = 400.0
-margin_bottom = 148.0
-rect_min_size = Vector2( 400, 100 )
+margin_bottom = 128.0
+rect_min_size = Vector2( 400, 128 )
 theme = ExtResource( 1 )
 custom_constants/margin_right = 10
 custom_constants/margin_top = 10
@@ -21,7 +21,7 @@ __meta__ = {
 margin_left = 10.0
 margin_top = 10.0
 margin_right = 390.0
-margin_bottom = 138.0
+margin_bottom = 128.0
 theme = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -31,7 +31,7 @@ __meta__ = {
 margin_left = 10.0
 margin_top = 10.0
 margin_right = 390.0
-margin_bottom = 138.0
+margin_bottom = 128.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -65,12 +65,12 @@ text = "Filter"
 [node name="MessageContainer" type="HBoxContainer" parent="VBoxContainer"]
 margin_top = 28.0
 margin_right = 380.0
-margin_bottom = 128.0
+margin_bottom = 118.0
 
 [node name="MessageText" type="TextEdit" parent="VBoxContainer/MessageContainer"]
 margin_right = 333.0
-margin_bottom = 100.0
-rect_min_size = Vector2( 0, 100 )
+margin_bottom = 90.0
+rect_min_size = Vector2( 0, 90 )
 size_flags_horizontal = 3
 readonly = true
 wrap_enabled = true
@@ -78,23 +78,23 @@ wrap_enabled = true
 [node name="Buttons" type="VBoxContainer" parent="VBoxContainer/MessageContainer"]
 margin_left = 337.0
 margin_right = 380.0
-margin_bottom = 100.0
+margin_bottom = 90.0
 alignment = 1
 
 [node name="PrevButton" type="Button" parent="VBoxContainer/MessageContainer/Buttons"]
-margin_top = 16.0
+margin_top = 11.0
 margin_right = 43.0
-margin_bottom = 36.0
+margin_bottom = 31.0
 text = "Prev"
 
 [node name="GotoButton" type="Button" parent="VBoxContainer/MessageContainer/Buttons"]
-margin_top = 40.0
+margin_top = 35.0
 margin_right = 43.0
-margin_bottom = 60.0
+margin_bottom = 55.0
 text = "Goto"
 
 [node name="NextButton" type="Button" parent="VBoxContainer/MessageContainer/Buttons"]
-margin_top = 64.0
+margin_top = 59.0
 margin_right = 43.0
-margin_bottom = 84.0
+margin_bottom = 79.0
 text = "Next"

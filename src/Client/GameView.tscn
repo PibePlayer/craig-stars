@@ -84,7 +84,7 @@ __meta__ = {
 }
 
 [node name="Controls" type="MarginContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer"]
-margin_right = 526.0
+margin_right = 514.0
 margin_bottom = 900.0
 rect_min_size = Vector2( 500, 0 )
 size_flags_vertical = 3
@@ -96,7 +96,7 @@ custom_constants/margin_bottom = 5
 [node name="Panel" type="Panel" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls"]
 margin_left = 5.0
 margin_top = 5.0
-margin_right = 521.0
+margin_right = 509.0
 margin_bottom = 895.0
 custom_styles/panel = SubResource( 1 )
 __meta__ = {
@@ -106,23 +106,23 @@ __meta__ = {
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls"]
 margin_left = 5.0
 margin_top = 5.0
-margin_right = 521.0
+margin_right = 509.0
 margin_bottom = 895.0
 
 [node name="ScrollContainer" type="ScrollContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer"]
-margin_right = 516.0
-margin_bottom = 494.0
+margin_right = 504.0
+margin_bottom = 514.0
 size_flags_vertical = 3
 scroll_horizontal_enabled = false
 
 [node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer"]
 margin_right = 504.0
-margin_bottom = 500.0
+margin_bottom = 514.0
 size_flags_vertical = 3
 
 [node name="LeftCommandPane" type="VBoxContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer"]
 margin_right = 250.0
-margin_bottom = 500.0
+margin_bottom = 514.0
 rect_min_size = Vector2( 250, 0 )
 
 [node name="MapObjectSummaryTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 10 )]
@@ -154,7 +154,7 @@ margin_bottom = 500.0
 [node name="RightCommandPange" type="VBoxContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer"]
 margin_left = 254.0
 margin_right = 504.0
-margin_bottom = 500.0
+margin_bottom = 514.0
 rect_min_size = Vector2( 250, 0 )
 
 [node name="PlanetProductionTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 9 )]
@@ -197,19 +197,19 @@ margin_right = 250.0
 margin_bottom = 706.0
 
 [node name="MessagesPane" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer" instance=ExtResource( 8 )]
-margin_top = 498.0
-margin_right = 516.0
+margin_top = 518.0
+margin_right = 504.0
 margin_bottom = 646.0
+rect_min_size = Vector2( 400, 80 )
 
 [node name="SelectionSummaryPane" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer" instance=ExtResource( 11 )]
 margin_top = 650.0
-margin_right = 516.0
+margin_right = 504.0
 margin_bottom = 890.0
-rect_min_size = Vector2( 400, 206 )
 theme = null
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer"]
-margin_left = 526.0
+margin_left = 514.0
 margin_right = 1440.0
 margin_bottom = 900.0
 mouse_filter = 2
@@ -217,23 +217,23 @@ size_flags_horizontal = 3
 
 [node name="Toolbar" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/VBoxContainer" instance=ExtResource( 16 )]
 anchor_right = 0.0
-margin_right = 914.0
+margin_right = 926.0
 
 [node name="Center" type="MarginContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/VBoxContainer"]
 margin_top = 44.0
-margin_right = 914.0
+margin_right = 926.0
 margin_bottom = 844.0
 mouse_filter = 2
 size_flags_vertical = 3
 
 [node name="ViewportContainer" type="ViewportContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/VBoxContainer/Center"]
-margin_right = 914.0
+margin_right = 926.0
 margin_bottom = 800.0
 mouse_filter = 2
 stretch = true
 
 [node name="Viewport" type="Viewport" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/VBoxContainer/Center/ViewportContainer"]
-size = Vector2( 914, 800 )
+size = Vector2( 926, 800 )
 handle_input_locally = false
 usage = 0
 debug_draw = 3
@@ -244,7 +244,6 @@ physics_object_picking = true
 
 [node name="ScannerSelectedStats" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/VBoxContainer" instance=ExtResource( 2 )]
 margin_top = 848.0
-margin_right = 914.0
 
 [node name="ReportsDialog" parent="CanvasLayer" instance=ExtResource( 21 )]
 

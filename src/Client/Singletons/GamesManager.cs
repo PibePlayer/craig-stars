@@ -172,6 +172,10 @@ namespace CraigStars.Singletons
         public List<int> GetPlayerSaveYears(string gameName)
         {
             List<int> gameYears = new List<int>();
+            
+            // no years if it doesn't exist
+            if (!DirExists(GetSaveGameFolder(gameName))) return gameYears;
+
             using (var directory = new Directory())
             {
                 directory.Open(GetSaveGameFolder(gameName)).ThrowOnError();

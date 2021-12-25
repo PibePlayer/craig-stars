@@ -116,22 +116,29 @@ namespace CraigStars.Client
                 // either use the continue year from our settings, or the latest
                 // valid year in case we are missing files
                 var validYears = GamesManager.Instance.GetPlayerSaveYears(GameName);
-                if (!validYears.Contains(Year))
+                if (validYears.Count > 0)
                 {
-                    var year = validYears[validYears.Count - 1];
-                    log.Error($"Invalid ContinueYear {Year}, resetting to {year}");
-                    Year = year;
+                    if (!validYears.Contains(Year) && validYears.Count > 0)
+                    {
+                        var year = validYears[validYears.Count - 1];
+                        log.Error($"Invalid ContinueYear {Year}, resetting to {year}");
+                        Year = year;
+                    }
+
+                    continueGameYearSpinBox.Value = Year;
+                    continueGameYearSpinBox.MaxValue = Year;
+
+
+                    var minSizeRect = continueGameYearSpinBox.RectMinSize;
+                    minSizeRect.x = continueGameYearSpinBox.GetFont("").GetStringSize("2400").x;
+                    continueGameYearSpinBox.RectMinSize = minSizeRect;
+
+                    continueGameButton.Connect("pressed", this, nameof(OnContinueGameButtonPressed));
                 }
-
-                continueGameYearSpinBox.Value = Year;
-                continueGameYearSpinBox.MaxValue = Year;
-
-
-                var minSizeRect = continueGameYearSpinBox.RectMinSize;
-                minSizeRect.x = continueGameYearSpinBox.GetFont("").GetStringSize("2400").x;
-                continueGameYearSpinBox.RectMinSize = minSizeRect;
-
-                continueGameButton.Connect("pressed", this, nameof(OnContinueGameButtonPressed));
+                else
+                {
+                    continueGameButton.Visible = continueGameInfo.Visible = false;
+                }
             }
 
 

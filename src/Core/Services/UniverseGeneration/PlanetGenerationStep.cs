@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CraigStars;
 using static CraigStars.Utils.Utils;
+using CraigStars.Utils;
 
 namespace CraigStars.UniverseGeneration
 {
@@ -22,8 +23,9 @@ namespace CraigStars.UniverseGeneration
         public List<Planet> GeneratePlanets(Rules rules)
         {
             var planets = new List<Planet>();
-            int width, height;
-            width = height = rules.GetArea(Game.Size);
+            var area = rules.GetArea(Game.Size);
+            int width = (int)area.x;
+            int height = (int)area.y;
 
             var numPlanets = rules.GetNumPlanets(Game.Size, Game.Density);
             var ng = new NameGenerator();

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Godot;
 using Newtonsoft.Json;
 
 namespace CraigStars
@@ -231,10 +232,15 @@ namespace CraigStars
         /// </summary>
         public Dictionary<Size, int> WormholePairsForSize = new Dictionary<Size, int>() {
             { Size.Tiny, 1},
+            { Size.TinyWide, 1},
             { Size.Small, 3},
+            { Size.SmallWide, 3},
             { Size.Medium, 4},
+            { Size.MediumWide, 4},
             { Size.Large, 5},
+            { Size.LargeWide, 5},
             { Size.Huge, 6},
+            { Size.HugeWide, 6},
         };
 
         /// <summary>
@@ -291,13 +297,18 @@ namespace CraigStars
         /// Get the Area of the universe
         /// </summary>
         /// <value></value>
-        public int GetArea(Size size) => size switch
+        public Vector2 GetArea(Size size) => size switch
         {
-            Size.Tiny => 400,
-            Size.Small => 800,
-            Size.Medium => 1200,
-            Size.Large => 1600,
-            Size.Huge => 2000,
+            Size.Tiny => new Vector2(400, 400),
+            Size.TinyWide => new Vector2(500, 300),
+            Size.Small => new Vector2(800, 800),
+            Size.SmallWide => new Vector2(1000, 600),
+            Size.Medium => new Vector2(1200, 1200),
+            Size.MediumWide => new Vector2(1500, 900),
+            Size.Large => new Vector2(1600, 1600),
+            Size.LargeWide => new Vector2(2000, 1200),
+            Size.Huge => new Vector2(2000, 2000),
+            Size.HugeWide => new Vector2(2500, 1500),
             _ => throw new System.ArgumentException("Unknown Size=>  " + size),
         };
 
@@ -307,7 +318,7 @@ namespace CraigStars
         /// <value></value>
         public int GetNumPlanets(Size size, Density density) => size switch
         {
-            Size.Huge => density switch
+            >= Size.Huge => density switch
             {
                 Density.Sparse => 600,
                 Density.Normal => 800,
@@ -315,7 +326,7 @@ namespace CraigStars
                 Density.Packed => 945,
                 _ => throw new System.ArgumentException($"Unknown Size {size} or Density {density}")
             },
-            Size.Large => density switch
+            >= Size.Large => density switch
             {
                 Density.Sparse => 384,
                 Density.Normal => 512,
@@ -323,7 +334,7 @@ namespace CraigStars
                 Density.Packed => 910,
                 _ => throw new System.ArgumentException($"Unknown Size {size} or Density {density}")
             },
-            Size.Medium => density switch
+            >= Size.Medium => density switch
             {
                 Density.Sparse => 216,
                 Density.Normal => 288,
@@ -331,7 +342,7 @@ namespace CraigStars
                 Density.Packed => 540,
                 _ => throw new System.ArgumentException($"Unknown Size {size} or Density {density}")
             },
-            Size.Small => density switch
+            >= Size.Small => density switch
             {
                 Density.Sparse => 96,
                 Density.Normal => 128,
@@ -339,7 +350,7 @@ namespace CraigStars
                 Density.Packed => 240,
                 _ => throw new System.ArgumentException($"Unknown Size {size} or Density {density}")
             },
-            Size.Tiny => density switch
+            >= Size.Tiny => density switch
             {
 
                 Density.Sparse => 24,

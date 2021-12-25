@@ -1,8 +1,8 @@
-using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using CraigStars;
+using Godot;
 using static CraigStars.Utils.Utils;
 
 namespace CraigStars.UniverseGeneration
@@ -24,8 +24,7 @@ namespace CraigStars.UniverseGeneration
             var wormholes = new List<Wormhole>();
             int numPairs = rules.WormholePairsForSize[Game.Size];
 
-            int width, height;
-            width = height = rules.GetArea(Game.Size);
+             var (width, height) = rules.GetArea(Game.Size);
 
             // create a set of locations with planets
             var planetPositions = planets.Select(planet => planet.Position).ToHashSet();
@@ -53,7 +52,9 @@ namespace CraigStars.UniverseGeneration
         public Wormhole GenerateWormhole(Rules rules, HashSet<Vector2> planetPositions, HashSet<Vector2> wormholePositions)
         {
             int width, height;
-            width = height = rules.GetArea(Game.Size);
+            var area = rules.GetArea(Game.Size);
+            width = (int)area.x;
+            height = (int)area.y;
 
             var random = rules.Random;
 
@@ -63,12 +64,19 @@ namespace CraigStars.UniverseGeneration
             // make sure this location is ok
             // it must be away from planets and at least 1/4 the universe away
             // from other wormholes
+            int count = 0;
             while (
-                !IsLocationValid(loc, wormholePositions, width / 4) ||
+                !IsLocationValid(loc, wormholePositions, (height + width) / 2 / 4) ||
                 !IsLocationValid(loc, planetPositions, rules.WormholeMinDistance)
                 )
             {
                 loc = new Vector2(random.Next(width), random.Next(height));
+                count++;
+                if (count > 100)
+                {
+                    // give up
+                    break;
+                }
             }
             var wormhole = new Wormhole()
             {

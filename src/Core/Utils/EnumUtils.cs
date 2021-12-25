@@ -5,6 +5,18 @@ namespace CraigStars.Utils
 {
     public static class EnumUtils
     {
+
+        public static string GetLabelForSize(Size value) => value switch
+        {
+            Size.TinyWide => "Tiny (Wide)",
+            Size.SmallWide => "Small (Wide)",
+            Size.MediumWide => "Medium (Wide)",
+            Size.LargeWide => "Large (Wide)",
+            Size.HugeWide => "Huge (Wide)",
+            _ => value.ToString(),
+        };
+
+
         public static string GetLabelForMineFieldType(MineFieldType type) => type switch
         {
             MineFieldType.SpeedBump => "Speed Bump",

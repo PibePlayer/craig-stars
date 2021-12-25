@@ -66,7 +66,7 @@ namespace CraigStars.Client
             if (IsVisibleInTree() && PlayersManager.GameInfo != null)
             {
                 var area = PlayersManager.GameInfo.Rules.GetArea(PlayersManager.GameInfo.Size);
-                UniverseBounds = new Rect2(0, 0, area, area);
+                UniverseBounds = new Rect2(0, 0, area);
             }
         }
 

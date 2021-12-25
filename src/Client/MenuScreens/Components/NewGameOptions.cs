@@ -13,7 +13,7 @@ namespace CraigStars.Client
         public string GameName { get; set; } = "A Barefoot Jaywalk";
 
         [Export]
-        public Size Size { get; set; } = Size.Small;
+        public Size Size { get; set; } = Size.SmallWide;
 
         [Export]
         public Density Density { get; set; } = Density.Normal;
@@ -33,7 +33,7 @@ namespace CraigStars.Client
             densityOptionButton = GetNode<OptionButton>("DensityOptionButton");
             playerPositionsOptionButton = GetNode<OptionButton>("PlayerPositionsOptionButton");
 
-            sizeOptionButton.PopulateOptionButton<Size>();
+            sizeOptionButton.PopulateOptionButton<Size>((value) => EnumUtils.GetLabelForSize(value));
             densityOptionButton.PopulateOptionButton<Density>();
             playerPositionsOptionButton.PopulateOptionButton<PlayerPositions>();
 

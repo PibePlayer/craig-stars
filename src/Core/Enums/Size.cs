@@ -6,9 +6,14 @@ namespace CraigStars
     public enum Size
     {
         Tiny, 
+        TinyWide, 
         Small, 
+        SmallWide, 
         Medium, 
+        MediumWide, 
         Large, 
-        Huge
+        LargeWide, 
+        Huge,
+        HugeWide,
     }
 }

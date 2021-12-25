@@ -47,7 +47,7 @@ namespace CraigStars
         public Guid Guid { get; set; } = Guid.NewGuid();
         public string Name { get; set; } = "A Barefoot Jaywalk";
         public int QuickStartTurns { get; set; } = 0;
-        public Size Size { get; set; } = Size.Small;
+        public Size Size { get; set; } = Size.SmallWide;
         public Density Density { get; set; } = Density.Normal;
         public PlayerPositions PlayerPositions { get; set; } = PlayerPositions.Moderate;
         public bool RandomEvents { get; set; } = true;

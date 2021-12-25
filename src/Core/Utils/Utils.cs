@@ -7,6 +7,18 @@ namespace CraigStars.Utils
 {
     public static class Utils
     {
+        /// <summary>
+        /// Helper to deconstruct a Vector2 into components for things like
+        /// var (width, height) = someVector;
+        /// </summary>
+        /// <param name="vector2"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        public static void Deconstruct(this Vector2 vector2, out float x, out float y)
+        {
+            x = vector2.x;
+            y = vector2.y;
+        }
 
         public static void Shuffle<T>(this Random rng, T[] array)
         {

@@ -47,7 +47,7 @@ namespace CraigStars.UniverseGeneration
             InitHomeworld(player, homeworld);
             planetDiscoverer.Discover(player, homeworld);
 
-            if (Game.Size > Size.Tiny)
+            if (Game.Size > Size.TinyWide)
             {
                 for (int i = 1; i < player.Race.Spec.StartingPlanets.Count; i++)
                 {
@@ -80,7 +80,8 @@ namespace CraigStars.UniverseGeneration
         internal Planet FindHomeworld()
         {
             var area = Game.Rules.GetArea(Game.Size);
-            return Game.Planets.Find(p => !p.Owned && (ownedPlanets.Count == 0 || ShortestDistanceToPlanets(p, ownedPlanets) > area / Game.Players.Count));
+            var minPlayerDistance = (area.x + area.y) / 2f / Game.Players.Count;
+            return Game.Planets.Find(p => !p.Owned && (ownedPlanets.Count == 0 || ShortestDistanceToPlanets(p, ownedPlanets) > minPlayerDistance));
         }
 
         void InitHomeworld(Player player, Planet planet)

@@ -49,6 +49,18 @@ namespace CraigStars.Client
         }
         int continueYear = 2400;
 
+        public int ContinuePlayerNum
+        {
+            get => continuePlayerNum;
+            set
+            {
+                continuePlayerNum = value;
+                config?.SetValue("game", "continue_player_num", continuePlayerNum);
+                Save();
+            }
+        }
+        int continuePlayerNum = 0;
+
         public bool FastHotseat
         {
             get => fastHotseat;
@@ -198,6 +210,7 @@ namespace CraigStars.Client
             {
                 ContinueGame = gameInfo.Name;
                 ContinueYear = gameInfo.Year;
+                ContinuePlayerNum = player.Num;
             }
         }
 
@@ -206,6 +219,7 @@ namespace CraigStars.Client
             if (SaveToDisk)
             {
                 ContinueYear = gameInfo.Year;
+                ContinuePlayerNum = player.Num;
             }
         }
 

@@ -9,7 +9,23 @@ namespace CraigStars.Client
     {
         static CSLog log = LogProvider.GetLogger(typeof(LobbyMenu));
 
+        /// <summary>
+        /// True if this server is being hosted by the Host (vs a dedicated server)
+        /// </summary>
+        /// <value></value>
+        public bool Hosted { get; set; }
+
+        /// <summary>
+        /// Is the current player the host? The player that clicks "Host Game" is automatically the host, otherwise
+        /// player #1 is the host.
+        /// </summary>
+        /// <value></value>
         public bool IsHost { get; set; }
+
+        /// <summary>
+        /// The name of the current player in the lobby
+        /// </summary>
+        /// <value></value>
         public string PlayerName { get; set; }
 
         TextEdit chat;
@@ -20,7 +36,6 @@ namespace CraigStars.Client
         NewGameOptions newGameOptions;
 
         Player me;
-
 
         List<PublicPlayerInfo> joinedPlayers = new List<PublicPlayerInfo>();
         List<PlayerChooser> playerChoosers = new List<PlayerChooser>();
@@ -66,19 +81,7 @@ namespace CraigStars.Client
                 child.QueueFree();
             }
 
-            if (IsHost)
-            {
-                newGameOptions.Visible = true;
-                startGameButton.Visible = true;
-                addPlayerButton.Visible = true;
-                CheckStartGameButton();
-            }
-            else
-            {
-                newGameOptions.Visible = false;
-                startGameButton.Visible = false;
-                addPlayerButton.Visible = false;
-            }
+            UpdateHostControls();
 
             PlayerName ??= Settings.Instance.PlayerName;
         }
@@ -98,6 +101,34 @@ namespace CraigStars.Client
             }
         }
 
+        void UpdateHostControls()
+        {
+            if (IsHost)
+            {
+                newGameOptions.Visible = true;
+                startGameButton.Visible = true;
+                addPlayerButton.Visible = true;
+
+                foreach (var playerChooser in playerChoosers)
+                {
+                    playerChooser.ShowRemoveButton = true;
+                }
+
+                CheckStartGameButton();
+            }
+            else
+            {
+                newGameOptions.Visible = false;
+                startGameButton.Visible = false;
+                addPlayerButton.Visible = false;
+
+                foreach (var playerChooser in playerChoosers)
+                {
+                    playerChooser.ShowRemoveButton = false;
+                }
+            }
+        }
+
         void OnServerPlayerData(PublicGameInfo gameInfo, Player player)
         {
             if (player.NetworkId == GetTree().GetNetworkUniqueId() || player.AIControlled)
@@ -106,6 +137,8 @@ namespace CraigStars.Client
                 {
                     me = player;
                     me.Name = PlayerName;
+                    IsHost = IsHost || me.Num == 0;
+                    UpdateHostControls();
                 }
                 Node previousPlayerNode = (Node)playerReadyContainers.GetChildren()[player.Num];
 
@@ -260,8 +293,8 @@ namespace CraigStars.Client
             // update our player number if it changed
             var myNewPlayerNum = remainingPlayers.Find(p => p.NetworkId == GetTree().GetNetworkUniqueId()).Num;
             me.Num = myNewPlayerNum;
-
-
+            IsHost = IsHost || me.Num == 0;
+            UpdateHostControls();
         }
 
         void OnRemoveAIPlayer(PlayerChooser<Player> playerChooser, Player player)
@@ -319,7 +352,7 @@ namespace CraigStars.Client
             log.Info("Host: All players ready, starting the game!");
 
             GameSettings<Player> settings = newGameOptions.GetGameSettings();
-            settings.Mode = GameMode.NetworkedMultiPlayer;
+            settings.Mode = Hosted ? GameMode.HostedMultiplayer : GameMode.DedicatedServerMultiplayer;
 
             if (GamesManager.Instance.GameExists(settings.Name))
             {

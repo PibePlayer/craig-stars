@@ -85,7 +85,7 @@ namespace CraigStars.Client
             {
                 foreach (var save in saves)
                 {
-                    if (save.GameInfo.Mode == GameMode.Hotseat && save.PlayerNum != 0)
+                    if (save.GameInfo.Mode == GameMode.HotseatMultiplayer && save.PlayerNum != 0)
                     {
                         // only show the first hotseat player
                         continue;
@@ -93,7 +93,7 @@ namespace CraigStars.Client
                     savesTable.Data.AddRowAdvanced(save, Colors.White, false,
                         save.GameInfo.Name,
                         save.GameInfo.Mode.ToString(),
-                        save.GameInfo.Size.ToString(),
+                        EnumUtils.GetLabelForSize(save.GameInfo.Size),
                         save.GameInfo.Year,
                         save.GameInfo.Players[save.PlayerNum].Name,
                         save.GameInfo.Players.Count
@@ -113,23 +113,26 @@ namespace CraigStars.Client
         {
             if (selectedSave != null)
             {
-                Settings.Instance.ContinueGame = selectedSave.GameInfo.Name;
-                Settings.Instance.ContinueYear = selectedSave.GameInfo.Year;
-
                 loadButton.Disabled = backButton.Disabled = true;
 
-                // for multiplayer games, load only our player save.
-                // For singleplayer/hotseat games, load all players
-                var (gameInfo, players) = ServerManager.Instance.ContinueGame(
-                    selectedSave.GameInfo.Name,
-                    selectedSave.GameInfo.Year,
-                    selectedSave.GameInfo.Mode == GameMode.NetworkedMultiPlayer ? selectedSave.PlayerNum : -1
-                );
-                this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (clientView) =>
+                var gameInfo = selectedSave.GameInfo;
+                var playerNum = selectedSave.PlayerNum;
+
+                try
                 {
-                    clientView.GameInfo = gameInfo;
-                    clientView.LocalPlayers = players;
-                });
+                    var continuer = GetNode<Continuer>("Continuer");
+
+                    continuer.Continue(gameInfo.Name, gameInfo.Year, playerNum);
+
+                    Settings.Instance.ContinueGame = gameInfo.Name;
+                    Settings.Instance.ContinueYear = gameInfo.Year;
+                    Settings.Instance.ContinuePlayerNum = playerNum;
+                }
+                catch (Exception e)
+                {
+                    log.Error($"Failed to continue game {gameInfo.Name}: {gameInfo.Year}", e);
+                    CSConfirmDialog.Show($"Failed to load game {gameInfo.Name}: {gameInfo.Year}");
+                }
             }
         }
 

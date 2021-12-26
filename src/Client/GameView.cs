@@ -73,12 +73,12 @@ namespace CraigStars.Client
             Client.EventManager.MergeFleetsDialogRequestedEvent += OnMergeFleetsDialogRequested;
             Client.EventManager.BattleViewerDialogRequestedEvent += OnBattleViewerDialogRequested;
 
-            Connect("visibility_changed", this, nameof(OnVisibilityChangedAsync));
+            Connect("visibility_changed", this, nameof(OnVisibilityChanged));
         }
 
         Task scannerInitTask;
 
-        async void OnVisibilityChangedAsync()
+        async void OnVisibilityChanged()
         {
             if (IsVisibleInTree())
             {

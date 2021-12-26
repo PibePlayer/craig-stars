@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://src/Client/MenuScreens/LoadGameMenu.cs" type="Script" id=1]
 [ext_resource path="res://src/Client/MenuScreens/BaseMenu.tscn" type="PackedScene" id=2]
 [ext_resource path="res://addons/CraigStarsComponents/src/PlayerSavesTable.cs" type="Script" id=3]
+[ext_resource path="res://src/Client/Continuer.tscn" type="PackedScene" id=4]
 
 [node name="LoadGameMenu" instance=ExtResource( 2 )]
 script = ExtResource( 1 )
@@ -68,3 +69,5 @@ __meta__ = {
 margin_top = 470.0
 margin_right = 790.0
 margin_bottom = 490.0
+
+[node name="Continuer" parent="." index="1" instance=ExtResource( 4 )]

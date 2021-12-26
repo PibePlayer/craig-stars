@@ -72,7 +72,7 @@ namespace CraigStars.Client
         {
             GameSettings<Player> settings = newGameOptions.GetGameSettings();
             settings.Players = newGamePlayers.Players;
-            settings.Mode = settings.Players.Where(p => !p.AIControlled).Count() > 1 ? GameMode.Hotseat : GameMode.SinglePlayer;
+            settings.Mode = settings.Players.Where(p => !p.AIControlled).Count() > 1 ? GameMode.HotseatMultiplayer : GameMode.SinglePlayer;
             settings.VictoryConditions = victoryConditionsOptions.GetVictoryConditions();
 
             // start a new game and change to the client view

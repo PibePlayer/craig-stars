@@ -6,12 +6,14 @@ namespace CraigStars.Client
 {
     /// <summary>
     /// A client to connect to servers
+    /// This client will automatically try and reconnect if the connection with the server is lost
     /// </summary>
     public class NetworkClient : Node
     {
         static CSLog log = LogProvider.GetLogger(typeof(NetworkClient));
 
         public event Action ServerDisconnectedEvent;
+        public event Action ServerConnectedEvent;
         public event Action<PublicPlayerInfo> PlayerUpdatedEvent;
 
         /// <summary>
@@ -19,6 +21,13 @@ namespace CraigStars.Client
         /// </summary>
         /// <value></value>
         public Player Player { get; set; }
+
+        public String Host { get; set; }
+        public int Port { get; set; }
+
+        public bool Connected { get; set; }
+
+        public Timer reconnectTimer;
 
         ServerRPC rpc;
 
@@ -42,8 +51,10 @@ namespace CraigStars.Client
         // Called when the node enters the scene tree for the first time.
         public override void _Ready()
         {
+            base._Ready();
             rpc = ServerRPC.Instance(GetTree());
-
+            reconnectTimer = GetNode<Timer>("ReconnectTimer");
+            reconnectTimer.Connect("timeout", this, nameof(OnReconnectTimerTimeout));
         }
 
         /// <summary>
@@ -52,12 +63,16 @@ namespace CraigStars.Client
         public void OnConnectedToServer()
         {
             log.Info("Connected to server");
+            reconnectTimer.Stop();
             if (Player != null)
             {
                 // we have connected to this server
                 // make sure the server updates our records
                 rpc.SendPlayerRejoinedGame(Player);
             }
+
+            Connected = true;
+            ServerConnectedEvent?.Invoke();
         }
 
         /// <summary>
@@ -66,7 +81,20 @@ namespace CraigStars.Client
         public void OnServerDisconnected()
         {
             log.Info("Server disconnected");
+            Connected = false;
             ServerDisconnectedEvent?.Invoke();
+
+            // try and reconnect every 5 seconds (configured in the Godot editor)
+            reconnectTimer.Start();
+        }
+
+        /// <summary>
+        /// If we lose connection to the server, try and reconnect
+        /// </summary>
+        void OnReconnectTimerTimeout()
+        {
+            // try and connect again
+            ConnectToServer(Host, Port);
         }
 
         /// <summary>
@@ -75,11 +103,20 @@ namespace CraigStars.Client
         public void OnConnectionFailed()
         {
             log.Info("Connecting to server failed");
+            reconnectTimer.Start();
         }
 
-        void ConnectToServer(string address, int port)
+        /// <summary>
+        /// Connect up to a remote server
+        /// </summary>
+        /// <param name="host"></param>
+        /// <param name="port"></param>
+        void ConnectToServer(string host, int port)
         {
             CloseConnection();
+
+            Host = host;
+            Port = port;
 
             // hook up to networkclient specific network events
             GetTree().Connect("server_disconnected", this, nameof(OnServerDisconnected));
@@ -87,39 +124,39 @@ namespace CraigStars.Client
             GetTree().Connect("connection_failed", this, nameof(OnConnectionFailed));
 
             var peer = new NetworkedMultiplayerENet();
-            var error = peer.CreateClient(address, port);
+            var error = peer.CreateClient(host, port);
 
             if (error != Error.Ok)
             {
-                log.Error($"Failed to connect to server: {address}:{port} Error: {error.ToString()}");
+                log.Error($"Failed to connect to server: {host}:{port} Error: {error.ToString()}");
                 return;
             }
             GetTree().NetworkPeer = peer;
 
-            log.Info($"Joined game (as {GetTree().GetNetworkUniqueId()}) at {address}:{port}");
+            log.Info($"Joined game (as {GetTree().GetNetworkUniqueId()}) at {host}:{port}");
 
         }
 
         /// <summary>
         /// Join an existing game by address and port
         /// </summary>
-        /// <param name="address"></param>
+        /// <param name="host"></param>
         /// <param name="port"></param>
-        public void JoinNewGame(string address, int port)
+        public void JoinNewGame(string host, int port)
         {
-            ConnectToServer(address, port);
+            ConnectToServer(host, port);
         }
 
         /// <summary>
         /// Join an existing game by address and port
         /// </summary>
-        /// <param name="address"></param>
+        /// <param name="host"></param>
         /// <param name="port"></param>
-        public void JoinExistingGame(string address, int port, Player player)
+        public void JoinExistingGame(string host, int port, Player player)
         {
             // on connection, we tell the server we are resuming play as a player
             Player = player;
-            ConnectToServer(address, port);
+            ConnectToServer(host, port);
         }
 
 

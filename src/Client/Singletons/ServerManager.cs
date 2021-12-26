@@ -90,56 +90,20 @@ namespace CraigStars.Singletons
 
         List<Player> continuePlayers;
 
-        /// <summary>
-        /// Create a new single player server and load a saved game game
-        /// </summary>
-        /// <param name="settings"></param>
-        /// <returns></returns>
-        public (PublicGameInfo, List<Player>) ContinueGame(string gameName, int year, int playerNum = -1)
+        public void ContinueLocalGame(PublicGameInfo gameInfo, int year)
         {
-            continuePlayers = new List<Player>();
-            gameInfo = GamesManager.Instance.LoadPlayerGameInfo(gameName, year);
-            if (playerNum == -1)
-            {
-                var playersWithSaves = GamesManager.Instance.GetPlayerSaves(gameInfo);
-                if (playersWithSaves.Count > 0)
-                {
-                    playersWithSaves.ForEach(player =>
-                    {
-                        continuePlayers.Add(GamesManager.Instance.LoadPlayerSave(gameInfo, player.Num));
-                    });
-                    log.Info($"Loading player save for player {playerNum}");
-                }
-                else
-                {
-                    throw new System.IO.FileNotFoundException($"Could not find a player save for game: {gameInfo}.");
-                }
-            }
-            else
-            {
-                continuePlayers.Add(GamesManager.Instance.LoadPlayerSave(gameInfo, playerNum));
-            }
+            server = ResourceLoader.Load<PackedScene>("res://src/Server/LocalServer.tscn").Instance<LocalServer>();
+            server.Init(GodotTaskFactory, GamesManager.Instance, TurnProcessorManager.Instance);
+            AddChild((Node)server);
 
-            if (gameInfo.Mode == GameMode.NetworkedMultiPlayer && continuePlayers.Any(p => p.Host))
-            {
-                HostGame(continueGameName: gameInfo.Name, continueGameYear: gameInfo.Year);
-            }
-            else
-            {
-                server = ResourceLoader.Load<PackedScene>("res://src/Server/LocalServer.tscn").Instance<LocalServer>();
-                server.Init(GodotTaskFactory, GamesManager.Instance, TurnProcessorManager.Instance);
-                AddChild((Node)server);
-
-                CallDeferred(nameof(PublishLocalContinueGameRequest), gameInfo.Name, gameInfo.Year);
-            }
-
-            return (gameInfo, continuePlayers);
+            CallDeferred(nameof(PublishLocalContinueGameRequest), gameInfo.Name, gameInfo.Year);
         }
 
         public void ExitGame()
         {
             if (server != null)
             {
+                CloseConnection();
                 server.GetParent()?.RemoveChild(server);
                 server.QueueFree();
                 server = null;

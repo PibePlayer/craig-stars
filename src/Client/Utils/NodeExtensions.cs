@@ -59,10 +59,15 @@ namespace CraigStars.Utils
             // create a host specific lobby scene
             var tree = node.GetTree();
             var root = tree.Root;
+            var topParent = node;
+            while (topParent.GetParent() != root)
+            {
+                topParent = topParent.GetParent();
+            }
             var sceneInstance = ResourceLoader.Load<PackedScene>(nodePath).Instance<T>();
             initCallback?.Invoke(sceneInstance);
-            root.RemoveChild(node);
-            node.QueueFree();
+            root.RemoveChild(topParent);
+            topParent.QueueFree();
 
             // go to the lobby
             root.AddChild(sceneInstance);

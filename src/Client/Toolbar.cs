@@ -1,5 +1,6 @@
 using System;
 using CraigStars.Singletons;
+using CraigStars.Utils;
 using Godot;
 
 namespace CraigStars.Client
@@ -19,6 +20,8 @@ namespace CraigStars.Client
         ToolButton mineFieldsToolButton;
         ToolButton idleFleetsToolButton;
         SpinBox scannerSpinBox;
+
+        ToolButton networkStatusToolButton;
 
         PopupMenu commandsMenu;
         PopupMenu plansMenu;
@@ -55,6 +58,7 @@ namespace CraigStars.Client
             mineFieldsToolButton = GetNode<ToolButton>("Panel/HBoxContainerLeft/MineFieldsToolButton");
             idleFleetsToolButton = GetNode<ToolButton>("Panel/HBoxContainerLeft/IdleFleetsToolButton");
             scannerSpinBox = GetNode<SpinBox>("Panel/HBoxContainerLeft/ScannerSpinBox");
+            networkStatusToolButton = GetNode<ToolButton>("Panel/HBoxContainerRight/NetworkStatusToolButton");
 
             reportsButton = (Button)FindNode("ReportsButton");
             submitTurnButton = (Button)FindNode("SubmitTurnButton");
@@ -89,6 +93,8 @@ namespace CraigStars.Client
             infoMenu.Connect("id_pressed", this, nameof(OnMenuItemIdPressed));
 
             EventManager.GameViewResetEvent += OnGameViewReset;
+            NetworkClient.Instance.ServerDisconnectedEvent += OnServerDisconnected;
+            NetworkClient.Instance.ServerConnectedEvent += OnServerConnected;
         }
 
         public override void _Notification(int what)
@@ -97,6 +103,8 @@ namespace CraigStars.Client
             if (what == NotificationPredelete)
             {
                 EventManager.GameViewResetEvent -= OnGameViewReset;
+                NetworkClient.Instance.ServerDisconnectedEvent -= OnServerDisconnected;
+                NetworkClient.Instance.ServerConnectedEvent -= OnServerConnected;
             }
         }
 
@@ -114,6 +122,26 @@ namespace CraigStars.Client
             mineFieldsToolButton.Pressed = Me.UISettings.ShowMineFields;
             idleFleetsToolButton.Pressed = Me.UISettings.ShowIdleFleetsOnly;
             scannerSpinBox.Value = Me.UISettings.ScannerPercent;
+
+            // TODO: make this colorblind friendly
+            networkStatusToolButton.Visible = this.IsMultiplayer();
+            submitTurnButton.Disabled = !NetworkClient.Instance.Connected;
+            networkStatusToolButton.HintTooltip = NetworkClient.Instance.Connected ? "Server connected" : "Server disconnected";
+            networkStatusToolButton.Modulate = NetworkClient.Instance.Connected ? Colors.Green : Colors.Red;
+        }
+
+        void OnServerDisconnected()
+        {
+            networkStatusToolButton.Modulate = Colors.Red;
+            networkStatusToolButton.HintTooltip = "Server disconnected";
+            submitTurnButton.Disabled = true;
+        }
+
+        void OnServerConnected()
+        {
+            networkStatusToolButton.Modulate = Colors.Green;
+            networkStatusToolButton.HintTooltip = "Server connected";
+            submitTurnButton.Disabled = false;
         }
 
         void OnMenuItemIdPressed(int id)

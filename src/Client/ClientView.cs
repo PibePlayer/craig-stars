@@ -70,7 +70,7 @@ namespace CraigStars.Client
                 // if we are starting with a player preloaded, go right into the game
                 PlayersManager.Me = LocalPlayers[0];
 
-                if (GameInfo.Mode == GameMode.NetworkedMultiPlayer)
+                if (GameInfo.Mode == GameMode.HostedMultiplayer || GameInfo.Mode == GameMode.DedicatedServerMultiplayer)
                 {
                     NetworkClient.Instance.JoinExistingGame(Settings.Instance.ClientHost, Settings.Instance.ClientPort, PlayersManager.Me);
                 }

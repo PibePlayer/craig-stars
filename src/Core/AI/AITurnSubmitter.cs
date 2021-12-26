@@ -31,21 +31,28 @@ namespace CraigStars
             var aiPlayers = game.Players.Where(player => player.AIControlled && !player.SubmittedTurn).ToList();
             Task.Run(() =>
             {
-                foreach (var player in aiPlayers)
+                try
                 {
-                    try
+                    foreach (var player in aiPlayers)
                     {
-                        foreach (var processor in turnProcessorManager.TurnProcessors)
+                        try
                         {
-                            processor.Process(game.GameInfo, player);
+                            foreach (var processor in turnProcessorManager.TurnProcessors)
+                            {
+                                processor.Process(game.GameInfo, player);
+                            }
+                            // We are done processing, submit a turn
+                            TurnSubmitRequestedEvent?.Invoke(player.GetOrders());
                         }
-                        // We are done processing, submit a turn
-                        TurnSubmitRequestedEvent?.Invoke(player.GetOrders());
+                        catch (Exception e)
+                        {
+                            log.Error($"Failed to submit AI turn {player}", e);
+                        }
                     }
-                    catch (Exception e)
-                    {
-                        log.Error($"Failed to submit AI turn {player}", e);
-                    }
+                }
+                catch (Exception e)
+                {
+                    log.Error($"Failed to submit AI turns", e);
                 }
             }).Wait();
         }

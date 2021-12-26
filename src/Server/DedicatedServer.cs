@@ -6,6 +6,7 @@ namespace CraigStars
 {
     public class DedicatedServer : Node
     {
+        public bool CreateNew { get; set; } = false;
         public int Port { get; set; } = 3000;
         public string GameName { get; set; }
         public int Year { get; set; } = -1;
@@ -14,13 +15,20 @@ namespace CraigStars
         {
             base._Ready();
 
-            // if we didn't specify a year, get the latest
-            if (Year == -1)
+            if (CreateNew)
             {
-                var years = GamesManager.Instance.GetGameSaveYears(GameName);
-                Year = years[years.Count - 1];
+                ServerManager.Instance.HostGame(Port);
             }
-            ServerManager.Instance.HostGame(Port, GameName, Year);
+            else
+            {
+                // if we didn't specify a year, get the latest
+                if (Year == -1)
+                {
+                    var years = GamesManager.Instance.GetGameSaveYears(GameName);
+                    Year = years[years.Count - 1];
+                }
+                ServerManager.Instance.HostGame(Port, GameName, Year);
+            }
         }
 
         public override void _Notification(int what)

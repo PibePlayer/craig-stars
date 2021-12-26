@@ -228,7 +228,7 @@ namespace CraigStars.Client
 
         public override void UpdateSprite()
         {
-            if (!IsInstanceValid(this) || nameLabel == null)
+            if (!IsInstanceValid(this) || nameLabel == null || Me == null)
             {
                 return;
             }

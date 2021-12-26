@@ -28,6 +28,9 @@ namespace CraigStars.Client
             [Option("start-server", Required = false, HelpText = "Start a dedicated server.")]
             public bool StartServer { get; set; }
 
+            [Option("create-new", Required = false, HelpText = "Create a new game (for dedicated servers)")]
+            public bool CreateNew { get; set; }
+
             [Option("join-server", Required = false, HelpText = "Join a multiplayer server by ip or address.")]
             public string JoinServer { get; set; }
 
@@ -47,9 +50,6 @@ namespace CraigStars.Client
                 .WithParsed<Options>(o =>
                 {
                     options = o;
-                    o.PlayerName = o.PlayerName ?? Settings.Instance.PlayerName;
-                    log.Info($"Setting PlayerName to {o.PlayerName}");
-
                     CallDeferred(nameof(ChangeScene));
                 })
                 .WithNotParsed<Options>(o =>
@@ -79,6 +79,7 @@ namespace CraigStars.Client
                     node.GameName = options.GameName;
                     node.Year = options.Year;
                     node.Port = options.Port;
+                    node.CreateNew = options.CreateNew;
                 });
             }
             else
@@ -89,6 +90,7 @@ namespace CraigStars.Client
                 this.ChangeSceneTo<MainMenu>("res://src/Client/MainMenu.tscn", (node) =>
                 {
                     node.Continue = options.Continue;
+                    node.PlayerName = options.PlayerName;
                     node.GameName = options.GameName;
                     node.Year = options.Year;
                     node.JoinServer = options.JoinServer;

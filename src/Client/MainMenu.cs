@@ -26,6 +26,12 @@ namespace CraigStars.Client
         public string GameName { get; set; }
 
         /// <summary>
+        /// The Name of the player, if joining a new game.
+        /// </summary>
+        /// <value></value>
+        public string PlayerName { get; set; }
+
+        /// <summary>
         /// The year to continue, or -1 for the latest year
         /// </summary>
         /// <value></value>
@@ -105,28 +111,26 @@ namespace CraigStars.Client
 
             // setup continue game settings
             // we either get them as args to this scene from the Launcher
-            GameName ??= Settings.Instance.ContinueGame;
-            Year = Year == -1 ? Settings.Instance.ContinueYear : Year;
 
-            if (GameName != null)
+            if (Settings.Instance.ContinueGame != null)
             {
                 continueGameButton.Visible = continueGameInfo.Visible = true;
-                continueGameNameLabel.Text = GameName;
+                continueGameNameLabel.Text = Settings.Instance.ContinueGame;
 
                 // either use the continue year from our settings, or the latest
                 // valid year in case we are missing files
-                var validYears = GamesManager.Instance.GetPlayerSaveYears(GameName);
+                var validYears = GamesManager.Instance.GetPlayerSaveYears(Settings.Instance.ContinueGame);
                 if (validYears.Count > 0)
                 {
-                    if (!validYears.Contains(Year) && validYears.Count > 0)
+                    if (!validYears.Contains(Settings.Instance.ContinueYear) && validYears.Count > 0)
                     {
                         var year = validYears[validYears.Count - 1];
-                        log.Error($"Invalid ContinueYear {Year}, resetting to {year}");
-                        Year = year;
+                        log.Error($"Invalid ContinueYear {Settings.Instance.ContinueYear}, resetting to {year}");
+                        Settings.Instance.ContinueYear = year;
                     }
 
-                    continueGameYearSpinBox.Value = Year;
-                    continueGameYearSpinBox.MaxValue = Year;
+                    continueGameYearSpinBox.Value = Settings.Instance.ContinueYear;
+                    continueGameYearSpinBox.MaxValue = Settings.Instance.ContinueYear;
 
 
                     var minSizeRect = continueGameYearSpinBox.RectMinSize;
@@ -137,28 +141,38 @@ namespace CraigStars.Client
                 }
                 else
                 {
+                    joining = true;
                     continueGameButton.Visible = continueGameInfo.Visible = false;
                 }
             }
-
 
             // we were launched with --continue
             if (Continue)
             {
                 CallDeferred(nameof(OnContinueGameButtonPressed));
             }
-            else if (JoinServer != null && GameName != null)
+            else if (JoinServer != null)
             {
-                player = GamesManager.Instance.LoadPlayerSave(GameName);
-                if (player != null)
+                if (GameName != null)
                 {
-                    PlayersManager.Me = player;
-                    PlayersManager.GameInfo = GamesManager.Instance.LoadPlayerGameInfo(GameName);
-                    NetworkClient.Instance.JoinExistingGame(JoinServer, Port, player);
+                    player = GamesManager.Instance.LoadPlayerSave(GameName);
+                    if (player != null)
+                    {
+                        log.Info($"Joining existing game {GameName} on {JoinServer}:{Port} as {player}");
+                        PlayersManager.Me = player;
+                        PlayersManager.GameInfo = GamesManager.Instance.LoadPlayerGameInfo(GameName);
+                        NetworkClient.Instance.JoinExistingGame(JoinServer, Port, player);
+                    }
+                    else
+                    {
+                        CSConfirmDialog.Show($"No local player save found for game {GameName}");
+                    }
                 }
                 else
                 {
-                    CSConfirmDialog.Show($"No local player save found for game {GameName}");
+                    log.Info($"Joining new game {JoinServer}:{Port} as {PlayerName}");
+                    joining = true;
+                    NetworkClient.Instance.JoinNewGame(JoinServer, Port);
                 }
             }
         }
@@ -198,20 +212,21 @@ namespace CraigStars.Client
 
         void OnContinueGameButtonPressed()
         {
+            // use the GameName and Year passed in from the launcher, or default to whatever is in settings
+            GameName ??= Settings.Instance.ContinueGame;
+            Year = Year == -1 ? Settings.Instance.ContinueYear : Year;
+
             try
             {
-                var (gameInfo, players) = ServerManager.Instance.ContinueGame(GameName, (int)continueGameYearSpinBox.Value);
-                this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (clientView) =>
-                {
-                    clientView.GameInfo = gameInfo;
-                    clientView.LocalPlayers = players;
-                });
+                var continuer = GetNode<Continuer>("Continuer");
+                continuer.Continue(GameName, Year, Settings.Instance.ContinuePlayerNum);
             }
             catch (Exception e)
             {
-                log.Error($"Failed to continue game {GameName}: {continueGameYearSpinBox.Value}", e);
-                CSConfirmDialog.Show($"Failed to load game {GameName}: {continueGameYearSpinBox.Value}");
+                log.Error($"Failed to continue game {GameName}: {Year}", e);
+                CSConfirmDialog.Show($"Failed to load game {GameName}: {Year}");
             }
+
         }
 
         void OnHostGameButtonPressed()
@@ -250,6 +265,8 @@ namespace CraigStars.Client
 
             this.ChangeSceneTo<LobbyMenu>("res://src/Client/MenuScreens/LobbyMenu.tscn", (instance) =>
             {
+                // we are the host, and this is a hosted multiplayer game (as opposed to dedicated server)
+                instance.Hosted = true;
                 instance.IsHost = true;
             });
         }
@@ -288,7 +305,10 @@ namespace CraigStars.Client
                 this.ChangeSceneTo<LobbyMenu>("res://src/Client/MenuScreens/LobbyMenu.tscn", (instance) =>
                 {
                     instance.InitialMessages.AddRange(Messages);
-                    instance.PlayerName = Settings.Instance.PlayerName;
+
+                    // join as a player, depending on our settings
+                    var playerName = PlayerName != null ? PlayerName : Settings.Instance.PlayerName;
+                    instance.PlayerName = playerName;
                 });
             }
         }
@@ -298,11 +318,24 @@ namespace CraigStars.Client
             // once our player is updated from the server, go to the lobby
             if (this.IsClient())
             {
-                this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (clientView) =>
+                if (player == null)
                 {
-                    clientView.GameInfo = gameInfo;
-                    clientView.LocalPlayers.Add(player);
-                });
+                    player = GamesManager.Instance.LoadPlayerSave(gameInfo.Name);
+                }
+
+                if (player != null)
+                {
+                    this.ChangeSceneTo<ClientView>("res://src/Client/ClientView.tscn", (clientView) =>
+                    {
+                        clientView.GameInfo = gameInfo;
+                        clientView.LocalPlayers.Add(player);
+                    });
+                }
+                else
+                {
+                    CSConfirmDialog.Show($"This server is running the game {gameInfo.Name}, but there are no local player saves for that game. Disconnecting.");
+                    NetworkClient.Instance.CloseConnection();
+                }
             }
         }
 

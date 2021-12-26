@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://src/Client/Toolbar.cs" type="Script" id=1]
 [ext_resource path="res://assets/scanner/planet-commanded.png" type="Texture" id=2]
@@ -8,6 +8,7 @@
 [ext_resource path="res://assets/gui/icons/NormalViewState.png" type="Texture" id=6]
 [ext_resource path="res://assets/gui/icons/MineFields.png" type="Texture" id=7]
 [ext_resource path="res://assets/gui/icons/IdleFleets.png" type="Texture" id=8]
+[ext_resource path="res://assets/gui/icons/NetworkStatus.svg" type="Texture" id=9]
 
 [sub_resource type="ButtonGroup" id=1]
 
@@ -28,7 +29,7 @@ margin_bottom = 40.0
 mouse_filter = 1
 
 [node name="HBoxContainerLeft" type="HBoxContainer" parent="Panel"]
-margin_right = 188.0
+margin_right = 518.0
 margin_bottom = 40.0
 __meta__ = {
 "_edit_use_anchors_": false
@@ -368,15 +369,16 @@ __meta__ = {
 [node name="HBoxContainerRight" type="HBoxContainer" parent="Panel"]
 anchor_left = 1.0
 anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = -301.0
+margin_left = -333.0
+margin_bottom = 40.0
 alignment = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="CommandsMenuButton" type="MenuButton" parent="Panel/HBoxContainerRight"]
-margin_right = 84.0
+margin_left = 32.0
+margin_right = 116.0
 margin_bottom = 40.0
 focus_mode = 2
 group = SubResource( 2 )
@@ -386,8 +388,8 @@ __meta__ = {
 }
 
 [node name="PlansMenuButton" type="MenuButton" parent="Panel/HBoxContainerRight"]
-margin_left = 88.0
-margin_right = 134.0
+margin_left = 120.0
+margin_right = 166.0
 margin_bottom = 40.0
 focus_mode = 2
 group = SubResource( 2 )
@@ -397,8 +399,8 @@ __meta__ = {
 }
 
 [node name="InfoMenuButton" type="MenuButton" parent="Panel/HBoxContainerRight"]
-margin_left = 138.0
-margin_right = 175.0
+margin_left = 170.0
+margin_right = 207.0
 margin_bottom = 40.0
 focus_mode = 2
 group = SubResource( 2 )
@@ -407,15 +409,22 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="ReportsButton" type="Button" parent="Panel/HBoxContainerRight"]
+[node name="NetworkStatusToolButton" type="ToolButton" parent="Panel/HBoxContainerRight"]
+visible = false
 margin_left = 179.0
-margin_right = 240.0
+margin_right = 207.0
+margin_bottom = 40.0
+icon = ExtResource( 9 )
+
+[node name="ReportsButton" type="Button" parent="Panel/HBoxContainerRight"]
+margin_left = 211.0
+margin_right = 272.0
 margin_bottom = 40.0
 size_flags_horizontal = 0
 text = "Reports"
 
 [node name="SubmitTurnButton" type="Button" parent="Panel/HBoxContainerRight"]
-margin_left = 244.0
-margin_right = 301.0
+margin_left = 276.0
+margin_right = 333.0
 margin_bottom = 40.0
 text = "Submit"

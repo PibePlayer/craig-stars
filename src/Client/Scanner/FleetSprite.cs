@@ -232,7 +232,7 @@ namespace CraigStars.Client
 
         public override void UpdateSprite()
         {
-            if (!IsInstanceValid(this) || waypointsLine == null)
+            if (!IsInstanceValid(this) || waypointsLine == null || Me == null)
             {
                 return;
             }

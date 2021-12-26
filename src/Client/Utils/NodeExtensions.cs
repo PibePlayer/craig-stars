@@ -93,6 +93,20 @@ namespace CraigStars.Utils
         }
 
         /// <summary>
+        /// Helper to clear all child nodes from a node
+        /// </summary>
+        /// <param name="node"></param>
+        public static void ClearChildren(this Node node)
+        {
+            foreach (Node child in node.GetChildren())
+            {
+                node.RemoveChild(child);
+                child.QueueFree();
+            }
+        }
+
+
+        /// <summary>
         /// Helper function to convert a Tech into a DraggableTech
         /// </summary>
         /// <param name="tech"></param>

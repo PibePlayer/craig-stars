@@ -13,41 +13,21 @@ namespace CraigStars.Client
     {
         static CSLog log = LogProvider.GetLogger(typeof(LoadGameMenu));
 
-        Button loadButton;
-        Button backButton;
-        Button deleteButton;
+        List<string> gameNames;
+        ItemList itemList;
+        PublicGameInfoDetail publicGameInfoDetail;
 
-        PlayerSavesTable savesTable;
-
-        PlayerSave selectedSave;
-
-        List<PlayerSave> saves;
-
-        public override async void _Ready()
+        public override void _Ready()
         {
             base._Ready();
-            loadButton = GetNode<Button>("VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer/LoadButton");
-            loadButton.GrabFocus();
-            deleteButton = (Button)FindNode("DeleteButton");
-            savesTable = (PlayerSavesTable)FindNode("SavesTable");
-            backButton = GetNode<Button>("VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/BackButton");
+            ((Button)FindNode("BackButton")).Connect("pressed", this, nameof(OnBackPressed));
 
-            backButton.Connect("pressed", this, nameof(OnBackPressed));
+            itemList = GetNode<ItemList>("VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer/VBoxContainerList/ItemList");
+            publicGameInfoDetail = GetNode<PublicGameInfoDetail>("VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer/PublicGameInfoDetail");
 
-            loadButton.Connect("pressed", this, nameof(OnLoadButtonPressed));
-            deleteButton.Connect("pressed", this, nameof(OnDeleteButtonPressed));
+            itemList.Connect("item_selected", this, nameof(OnGameSelected));
 
-            savesTable.Data.AddColumn("Name");
-            savesTable.Data.AddColumn("Mode");
-            savesTable.Data.AddColumn("Size");
-            savesTable.Data.AddColumn("Year");
-            savesTable.Data.AddColumn("Player");
-            savesTable.Data.AddColumn("Players", align: Label.AlignEnum.Right);
-
-            // load the full games and update the UI
-            await Task.Run(() => saves = GamesManager.Instance.GetPlayerSaves());
-            savesTable.RowSelectedEvent += OnRowSelected;
-            savesTable.RowActivatedEvent += OnRowActivated;
+            publicGameInfoDetail.OnDeleted += OnGameDeleted;
             UpdateItemList();
         }
 
@@ -56,97 +36,37 @@ namespace CraigStars.Client
             base._Notification(what);
             if (what == NotificationPredelete)
             {
-                savesTable.RowSelectedEvent -= OnRowSelected;
+                publicGameInfoDetail.OnDeleted -= OnGameDeleted;
             }
         }
 
-        void OnRowSelected(int rowIndex, int colIndex, Cell cell, PlayerSave metadata)
+        void OnGameSelected(int index)
         {
-            selectedSave = metadata;
+            // var gameInfo = GamesManager.Instance.LoadPlayerGameInfo(gameNames[index]);
+            var playerSaves = GamesManager.Instance.LoadPlayerSaves(gameNames[index]);
+            publicGameInfoDetail.PlayerSaves = playerSaves;
+            publicGameInfoDetail.UpdateControls();
         }
 
-        void OnRowActivated(int rowIndex, int colIndex, Cell cell, PlayerSave metadata)
-        {
-            selectedSave = metadata;
-            OnLoadButtonPressed();
-        }
-
-
-        void OnGameSaved(Game game, string filename)
+        void OnGameDeleted(PublicGameInfoDetail gameInfoDetail)
         {
             UpdateItemList();
         }
 
         void UpdateItemList()
         {
-            savesTable.Data.ClearRows();
-            selectedSave = null;
-            if (saves != null)
+            itemList.Clear();
+            gameNames = GamesManager.Instance.GetSavedGames();
+            if (gameNames != null && gameNames.Count > 0)
             {
-                foreach (var save in saves)
-                {
-                    if (save.GameInfo.Mode == GameMode.HotseatMultiplayer && save.PlayerNum != 0)
-                    {
-                        // only show the first hotseat player
-                        continue;
-                    }
-                    savesTable.Data.AddRowAdvanced(save, Colors.White, false,
-                        save.GameInfo.Name,
-                        save.GameInfo.Mode.ToString(),
-                        EnumUtils.GetLabelForSize(save.GameInfo.Size),
-                        save.GameInfo.Year,
-                        save.GameInfo.Players[save.PlayerNum].Name,
-                        save.GameInfo.Players.Count
-                    );
-                }
+                publicGameInfoDetail.Visible = true;
+                gameNames.ForEach(gameName => itemList.AddItem(gameName));
+                itemList.Select(0);
+                OnGameSelected(0);
             }
-
-            savesTable.ResetTable();
-        }
-
-        void OnGameListItemActivated(int index)
-        {
-            OnLoadButtonPressed();
-        }
-
-        void OnLoadButtonPressed()
-        {
-            if (selectedSave != null)
+            else
             {
-                loadButton.Disabled = backButton.Disabled = true;
-
-                var gameInfo = selectedSave.GameInfo;
-                var playerNum = selectedSave.PlayerNum;
-
-                try
-                {
-                    var continuer = GetNode<Continuer>("Continuer");
-
-                    continuer.Continue(gameInfo.Name, gameInfo.Year, playerNum);
-
-                    Settings.Instance.ContinueGame = gameInfo.Name;
-                    Settings.Instance.ContinueYear = gameInfo.Year;
-                    Settings.Instance.ContinuePlayerNum = playerNum;
-                }
-                catch (Exception e)
-                {
-                    log.Error($"Failed to continue game {gameInfo.Name}: {gameInfo.Year}", e);
-                    CSConfirmDialog.Show($"Failed to load game {gameInfo.Name}: {gameInfo.Year}");
-                }
-            }
-        }
-
-        void OnDeleteButtonPressed()
-        {
-            if (selectedSave != null)
-            {
-                GamesManager.Instance.DeleteGame(selectedSave.GameInfo.Name);
-                CSConfirmDialog.Show($"Are you sure you want to delete the game {selectedSave.GameInfo.Name}?",
-                () =>
-                {
-                    GamesManager.Instance.DeleteGame(selectedSave.GameInfo.Name);
-                    UpdateItemList();
-                });
+                publicGameInfoDetail.Visible = false;
             }
         }
 

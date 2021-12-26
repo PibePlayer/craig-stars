@@ -1,0 +1,120 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://src/Client/MenuScreens/Components/PublicGameInfoDetail.cs" type="Script" id=1]
+[ext_resource path="res://assets/gui/OpenSans-Bold.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://addons/CraigStarsComponents/src/CSButton.cs" type="Script" id=3]
+
+[sub_resource type="DynamicFont" id=1]
+font_data = ExtResource( 2 )
+
+[node name="PublicGameInfoDetail" type="VBoxContainer"]
+margin_right = 486.0
+margin_bottom = 210.0
+size_flags_horizontal = 3
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="DetailNameLabel" type="Label" parent="."]
+margin_right = 486.0
+margin_bottom = 23.0
+custom_fonts/font = SubResource( 1 )
+text = "A Barefoot Jaywalk"
+align = 2
+
+[node name="InfoGridContainer" type="GridContainer" parent="."]
+margin_top = 27.0
+margin_right = 486.0
+margin_bottom = 95.0
+columns = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ModeLabel" type="Label" parent="InfoGridContainer"]
+margin_right = 241.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+text = "Mode:"
+align = 2
+
+[node name="ModeValueLabel" type="Label" parent="InfoGridContainer"]
+margin_left = 245.0
+margin_right = 486.0
+margin_bottom = 14.0
+text = "Single Player"
+align = 2
+
+[node name="SizeLabel" type="Label" parent="InfoGridContainer"]
+margin_top = 18.0
+margin_right = 241.0
+margin_bottom = 32.0
+size_flags_horizontal = 3
+text = "Size:"
+align = 2
+
+[node name="SizeValueLabel" type="Label" parent="InfoGridContainer"]
+margin_left = 245.0
+margin_top = 18.0
+margin_right = 486.0
+margin_bottom = 32.0
+size_flags_horizontal = 3
+text = "Tiny"
+align = 2
+
+[node name="DensityLabel" type="Label" parent="InfoGridContainer"]
+margin_top = 36.0
+margin_right = 241.0
+margin_bottom = 50.0
+size_flags_horizontal = 3
+text = "Density:"
+align = 2
+
+[node name="DensityValueLabel" type="Label" parent="InfoGridContainer"]
+margin_left = 245.0
+margin_top = 36.0
+margin_right = 486.0
+margin_bottom = 50.0
+text = "Sparse"
+align = 2
+
+[node name="PlayersLabel" type="Label" parent="InfoGridContainer"]
+margin_top = 54.0
+margin_right = 241.0
+margin_bottom = 68.0
+size_flags_horizontal = 3
+text = "Players:"
+align = 2
+
+[node name="PlayersValueLabel" type="Label" parent="InfoGridContainer"]
+margin_left = 245.0
+margin_top = 54.0
+margin_right = 486.0
+margin_bottom = 68.0
+size_flags_horizontal = 3
+text = "1"
+align = 2
+
+[node name="PlayersGridContainer" type="GridContainer" parent="."]
+margin_top = 99.0
+margin_right = 486.0
+margin_bottom = 99.0
+columns = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ButtonsHBoxContainer" type="HBoxContainer" parent="."]
+margin_top = 103.0
+margin_right = 486.0
+margin_bottom = 123.0
+alignment = 2
+
+[node name="DeleteButton" type="Button" parent="ButtonsHBoxContainer"]
+margin_left = 406.0
+margin_right = 486.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 80, 0 )
+text = "Delete"
+script = ExtResource( 3 )

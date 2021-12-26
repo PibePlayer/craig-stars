@@ -2,8 +2,8 @@
 
 [ext_resource path="res://src/Client/MenuScreens/LoadGameMenu.cs" type="Script" id=1]
 [ext_resource path="res://src/Client/MenuScreens/BaseMenu.tscn" type="PackedScene" id=2]
-[ext_resource path="res://addons/CraigStarsComponents/src/PlayerSavesTable.cs" type="Script" id=3]
 [ext_resource path="res://src/Client/Continuer.tscn" type="PackedScene" id=4]
+[ext_resource path="res://src/Client/MenuScreens/Components/PublicGameInfoDetail.tscn" type="PackedScene" id=5]
 
 [node name="LoadGameMenu" instance=ExtResource( 2 )]
 script = ExtResource( 1 )
@@ -22,50 +22,38 @@ margin_right = 795.0
 [node name="MenuButtons" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer" index="0"]
 margin_right = 790.0
 
-[node name="TitleLabel" type="Label" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons" index="0"]
-margin_right = 790.0
-margin_bottom = 14.0
-text = "Games"
-
-[node name="SavesTable" type="MarginContainer" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons" index="1"]
-margin_top = 18.0
-margin_right = 790.0
-margin_bottom = 442.0
-size_flags_horizontal = 3
-size_flags_vertical = 3
-custom_constants/margin_right = 0
-custom_constants/margin_top = 0
-custom_constants/margin_left = 0
-custom_constants/margin_bottom = 0
-script = ExtResource( 3 )
-
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons" index="2"]
-margin_top = 446.0
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons" index="0"]
 margin_right = 790.0
 margin_bottom = 466.0
-alignment = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
-[node name="LoadButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer" index="0"]
-margin_left = 636.0
-margin_right = 711.0
-margin_bottom = 20.0
-rect_min_size = Vector2( 75, 0 )
-text = "Load"
+[node name="VBoxContainerList" type="VBoxContainer" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer" index="0"]
+margin_right = 300.0
+margin_bottom = 466.0
+rect_min_size = Vector2( 300, 0 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="DeleteButton" type="Button" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer" index="1"]
-margin_left = 715.0
-margin_right = 790.0
-margin_bottom = 20.0
-rect_min_size = Vector2( 75, 0 )
-text = "Delete"
+[node name="Label" type="Label" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer/VBoxContainerList" index="0"]
+margin_right = 300.0
+margin_bottom = 14.0
+text = "Games"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="BackButton" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons" index="3"]
+[node name="ItemList" type="ItemList" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer/VBoxContainerList" index="1"]
+margin_top = 18.0
+margin_right = 300.0
+margin_bottom = 466.0
+size_flags_vertical = 3
+
+[node name="PublicGameInfoDetail" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer" index="1" instance=ExtResource( 5 )]
+margin_bottom = 466.0
+
+[node name="BackButton" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons" index="1"]
 margin_top = 470.0
 margin_right = 790.0
 margin_bottom = 490.0

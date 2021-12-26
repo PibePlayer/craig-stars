@@ -16,6 +16,14 @@ namespace CraigStars.Utils
             _ => value.ToString(),
         };
 
+        public static string GetLabelForGameMode(GameMode value) => value switch
+        {
+            GameMode.SinglePlayer => "Single Player",
+            GameMode.HostedMultiplayer => "Hosted Multiplayer",
+            GameMode.DedicatedServerMultiplayer => "Dedicated Server Multiplayer",
+            GameMode.HotseatMultiplayer => "Hotseat",
+            _ => value.ToString(),
+        };
 
         public static string GetLabelForMineFieldType(MineFieldType type) => type switch
         {

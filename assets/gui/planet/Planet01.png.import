@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Small Freighter0003.jpg-5eef08fe4d8a59b688b5cf20065bdc67.stex"
+path="res://.import/Planet01.png-10b853ab29422b840335058731bad637.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/gui/tech/ShipHull/Small Freighter0003.jpg"
-dest_files=[ "res://.import/Small Freighter0003.jpg-5eef08fe4d8a59b688b5cf20065bdc67.stex" ]
+source_file="res://assets/gui/planet/Planet01.png"
+dest_files=[ "res://.import/Planet01.png-10b853ab29422b840335058731bad637.stex" ]
 
 [params]
 

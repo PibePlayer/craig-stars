@@ -2,7 +2,7 @@
 
 [ext_resource path="res://src/Client/CommandPane/Tile.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/Client/CommandPane/MapObjectSummaryTile.cs" type="Script" id=2]
-[ext_resource path="res://assets/gui/planet/Planet01.jpg" type="Texture" id=3]
+[ext_resource path="res://assets/gui/planet/Planet01.png" type="Texture" id=3]
 [ext_resource path="res://src/Client/Dialogs/LineEditDialog.tscn" type="PackedScene" id=4]
 
 [sub_resource type="StyleBoxFlat" id=1]

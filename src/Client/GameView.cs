@@ -110,6 +110,7 @@ namespace CraigStars.Client
             await scannerInitTask;
             scanner.UpdateSprites();
             scanner.FocusHomeworld();
+            scanner.AfterScannerReady();
         }
 
         public override void _Notification(int what)

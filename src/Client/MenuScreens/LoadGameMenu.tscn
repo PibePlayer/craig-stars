@@ -51,6 +51,8 @@ margin_bottom = 466.0
 size_flags_vertical = 3
 
 [node name="PublicGameInfoDetail" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons/HBoxContainer" index="1" instance=ExtResource( 5 )]
+margin_left = 304.0
+margin_right = 790.0
 margin_bottom = 466.0
 
 [node name="BackButton" parent="VBoxContainer/CenterContainer/Panel/MarginContainer/HBoxContainer/MenuButtons" index="1"]

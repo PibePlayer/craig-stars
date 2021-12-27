@@ -121,13 +121,13 @@ namespace CraigStars.Tests
             // we should be able to make this at warp 7
             Assert.AreEqual(7, service.GetBestWarpFactor(fleet, player, wp0, wp1));
 
-            // max out our warp if we are far away
+            // don't go above 2x fuel usage
             wp1 = Waypoint.PositionWaypoint(new Vector2(100, 0));
-            Assert.AreEqual(9, service.GetBestWarpFactor(fleet, player, wp0, wp1));
+            Assert.AreEqual(7, service.GetBestWarpFactor(fleet, player, wp0, wp1));
 
             // ensure we make it if we are REALLY far away
             wp1 = Waypoint.PositionWaypoint(new Vector2(500, 0));
-            Assert.AreEqual(8, service.GetBestWarpFactor(fleet, player, wp0, wp1));
+            Assert.AreEqual(7, service.GetBestWarpFactor(fleet, player, wp0, wp1));
         }
 
         [Test]

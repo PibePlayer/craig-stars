@@ -105,9 +105,10 @@ namespace CraigStars.Client
 
         async void OnSaveTurnButtonPressed()
         {
+            EventManager.PublishSaveScreenshotEvent();
+            EventManager.PublishPlayerDirtyEvent();
             await GamesManager.Instance.SavePlayer(GameInfo, Me);
             Me.Dirty = false;
-            EventManager.PublishPlayerDirtyEvent();
         }
 
         void OnGenerateTurnButtonPressed()
@@ -149,6 +150,7 @@ namespace CraigStars.Client
                 {
                     EventManager.PublishGameExitingEvent(PlayersManager.GameInfo);
                     ServerManager.Instance.ExitGame();
+                    NetworkClient.Instance.CloseConnection();
                     GetTree().ChangeScene("res://src/Client/MainMenu.tscn");
                 });
             }
@@ -156,6 +158,7 @@ namespace CraigStars.Client
             {
                 EventManager.PublishGameExitingEvent(PlayersManager.GameInfo);
                 ServerManager.Instance.ExitGame();
+                NetworkClient.Instance.CloseConnection();
                 GetTree().ChangeScene("res://src/Client/MainMenu.tscn");
             }
         }

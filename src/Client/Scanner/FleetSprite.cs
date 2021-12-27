@@ -160,7 +160,7 @@ namespace CraigStars.Client
 
             Fleet.Waypoints.Insert(index + 1, waypoint);
             // TODO: make this better, my fleets keep running out of fuel.
-            // waypoint.WarpFactor = fleetService.GetBestWarpFactor(Fleet, Me, Fleet.Waypoints[index], waypoint);
+            waypoint.WarpFactor = fleetService.GetBestWarpFactor(Fleet, Me, Fleet.Waypoints[index], waypoint);
 
             UpdateWaypointsLine();
 
@@ -194,7 +194,7 @@ namespace CraigStars.Client
 
 
             Fleet.Waypoints.Insert(index + 1, waypoint);
-            // waypoint.WarpFactor = fleetService.GetBestWarpFactor(Fleet, Me, Fleet.Waypoints[index], waypoint);
+            waypoint.WarpFactor = fleetService.GetBestWarpFactor(Fleet, Me, Fleet.Waypoints[index], waypoint);
 
             UpdateWaypointsLine();
 

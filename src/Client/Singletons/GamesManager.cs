@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -76,6 +77,11 @@ namespace CraigStars.Singletons
         public static string GetSaveGamePlayerPath(string gameName, int year, int playerNum)
         {
             return $"{GetSaveGameYearFolder(gameName, year)}/game-player-{playerNum}.json";
+        }
+
+        public static string GetSavePlayerScreenshotPath(string gameName, int year, int playerNum)
+        {
+            return $"{GetSaveGameYearFolder(gameName, year)}/player-{playerNum}.png";
         }
 
         public static string GetSaveGamePlayerOrderPath(string gameName, int year, int playerNum)
@@ -247,6 +253,56 @@ namespace CraigStars.Singletons
 
             gameYears.Sort();
             return gameYears;
+        }
+
+        /// <summary>
+        /// Save a player screenshot for the preview page
+        /// </summary>
+        /// <param name="gameName"></param>
+        /// <param name="year"></param>
+        /// <param name="playerNum"></param>
+        /// <param name="size"></param>
+        public void SavePlayerScreenshot(Viewport viewport, string gameName, int year, int playerNum, float size)
+        {
+            var img = viewport.GetTexture().GetData();
+            img.FlipY();
+            float widthRatio = size / img.GetWidth();
+            img.Resize((int)size, (int)(widthRatio * img.GetHeight()));
+            var path = GetSavePlayerScreenshotPath(gameName, year, playerNum);
+            log.Info($"Saving screenshot to {path}");
+            img.SavePng(path);
+        }
+
+        /// <summary>
+        /// Get a texture for the player screenshot, or null if it doesn't exist
+        /// </summary>
+        /// <param name="gameName"></param>
+        /// <param name="year"></param>
+        /// <param name="playerNum"></param>
+        /// <returns></returns>
+        public Texture GetPlayerScreenshot(string gameName, int year, int playerNum)
+        {
+            string path = GetSavePlayerScreenshotPath(gameName, year, playerNum);
+            if (FileExists(path))
+            {
+                try
+                {
+                    var img = new Image();
+                    img.Load(path).ThrowOnError();
+                    var texture = new ImageTexture();
+                    texture.CreateFromImage(img);
+                    return texture;
+                }
+                catch (Exception e)
+                {
+                    log.Error($"Failed to load player screenshot from {path}", e);
+                    return null;
+                }
+            }
+            else
+            {
+                return null;
+            }
         }
 
         /// <summary>

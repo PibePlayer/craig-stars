@@ -51,7 +51,7 @@ namespace CraigStars.Client
             }
             if (mapObject != null)
             {
-                if (mapObject is PlanetSprite planet)
+                if (mapObject is PlanetSprite planet && planet.Planet != null)
                 {
                     idLabel.Visible = true;
                     idLabel.Text = $"ID: #{planet.Planet.Id}";

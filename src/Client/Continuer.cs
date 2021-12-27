@@ -33,7 +33,7 @@ namespace CraigStars.Client
                 // start hosting this game
                 ServerManager.Instance.HostGame(Settings.Instance.ServerPort, gameInfo.Name, gameInfo.Year);
             }
-            else if (gameInfo.Mode == GameMode.HotseatMultiplayer)
+            else if (gameInfo.Mode == GameMode.HotseatMultiplayer || gameInfo.Mode == GameMode.SinglePlayer)
             {
                 var playersWithSaves = GamesManager.Instance.GetPlayerSaves(gameInfo);
                 playersWithSaves.ForEach(playerWithSave =>
@@ -44,6 +44,9 @@ namespace CraigStars.Client
                         players.Add(GamesManager.Instance.LoadPlayerSave(gameInfo, playerWithSave.Num));
                     }
                 });
+
+                // startup the local server
+                ServerManager.Instance.ContinueLocalGame(gameInfo, gameInfo.Year);
             }
 
             // for multiplayer games, load only our player save.

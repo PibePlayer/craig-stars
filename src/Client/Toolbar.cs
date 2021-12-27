@@ -124,10 +124,18 @@ namespace CraigStars.Client
             scannerSpinBox.Value = Me.UISettings.ScannerPercent;
 
             // TODO: make this colorblind friendly
-            networkStatusToolButton.Visible = this.IsMultiplayer();
-            submitTurnButton.Disabled = !NetworkClient.Instance.Connected;
-            networkStatusToolButton.HintTooltip = NetworkClient.Instance.Connected ? "Server connected" : "Server disconnected";
-            networkStatusToolButton.Modulate = NetworkClient.Instance.Connected ? Colors.Green : Colors.Red;
+            if (this.IsMultiplayer())
+            {
+                networkStatusToolButton.Visible = true;
+                submitTurnButton.Disabled = !NetworkClient.Instance.Connected;
+                networkStatusToolButton.HintTooltip = NetworkClient.Instance.Connected ? "Server connected" : "Server disconnected";
+                networkStatusToolButton.Modulate = NetworkClient.Instance.Connected ? Colors.Green : Colors.Red;
+            }
+            else
+            {
+                networkStatusToolButton.Visible = false;
+                submitTurnButton.Disabled = false;
+            }
         }
 
         void OnServerDisconnected()

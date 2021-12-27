@@ -269,18 +269,21 @@ namespace CraigStars
         {
             // if our waypoint is 48 ly away, ideally we want warp 7 to make it in 1 year (7 *7 = 49)
             var distance = fleet.Position.DistanceTo(wp1.Position);
-            var idealWarp = Mathf.Clamp((int)Math.Ceiling(Math.Sqrt(distance)), 1, 9);
+            var bestWarp = Mathf.Clamp((int)Math.Ceiling(Math.Sqrt(distance)), 1, 9);
 
             var fuelUsageAtIdealEngineSpeed = GetFuelCost(fleet, player, fleet.Spec.Engine.IdealSpeed, distance);
-            var fuelUsage = GetFuelCost(fleet, player, idealWarp, distance);
-            while ((fuelUsageAtIdealEngineSpeed >= fuelUsage * 2 || fuelUsage > fleet.Fuel)
-             && idealWarp > 1)
+            var fuelUsage = GetFuelCost(fleet, player, bestWarp, distance);
+
+            // reduce the warp if our fuel usage is >2x the normal usage or if we won't make it
+            // at this current warp
+            while ((fuelUsage >= fuelUsageAtIdealEngineSpeed * 2 || fuelUsage > fleet.Fuel)
+             && bestWarp > 1)
             {
-                idealWarp--;
-                fuelUsage = GetFuelCost(fleet, player, idealWarp, distance);
+                bestWarp--;
+                fuelUsage = GetFuelCost(fleet, player, bestWarp, distance);
             }
 
-            return idealWarp;
+            return bestWarp;
         }
 
 

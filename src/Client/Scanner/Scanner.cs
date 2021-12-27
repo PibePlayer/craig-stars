@@ -11,8 +11,16 @@ namespace CraigStars.Client
     {
         static CSLog log = LogProvider.GetLogger(typeof(Scanner));
 
+        [Export]
+        public int ScreenshotSize { get; set; } = 256;
+
         protected Player Me { get => PlayersManager.Me; }
         protected PublicGameInfo GameInfo { get => PlayersManager.GameInfo; }
+
+        /// <summary>
+        /// Queue a screenshot for the next time we are visible
+        /// </summary>
+        bool queueScreenshot;
 
         PackedScene waypointAreaScene;
         PackedScene scannerCoverageScene;
@@ -111,6 +119,7 @@ namespace CraigStars.Client
             EventManager.ViewStateUpdatedEvent += OnViewStateUpdated;
             EventManager.PacketDestinationToggleEvent += OnPacketDestinationToggle;
             EventManager.GameExitingEvent += OnGameExiting;
+            EventManager.SaveScreenshotEvent += OnSaveScreenshot;
         }
 
         public override void _Notification(int what)
@@ -135,6 +144,33 @@ namespace CraigStars.Client
                 EventManager.ViewStateUpdatedEvent -= OnViewStateUpdated;
                 EventManager.PacketDestinationToggleEvent -= OnPacketDestinationToggle;
                 EventManager.GameExitingEvent -= OnGameExiting;
+                EventManager.SaveScreenshotEvent -= OnSaveScreenshot;
+            }
+        }
+
+        async void OnSaveScreenshot()
+        {
+            queueScreenshot = true;
+            if (GameInfo != null && Me != null)
+            {
+                var viewport = GetViewport();
+                if (viewport != null)
+                {
+                    await ToSignal(VisualServer.Singleton, "frame_post_draw");
+                    GamesManager.Instance.SavePlayerScreenshot(viewport, GameInfo.Name, GameInfo.Year, PlayersManager.Me.Num, ScreenshotSize);
+                    queueScreenshot = false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Called after the scanner is initialized
+        /// </summary>
+        public void AfterScannerReady()
+        {
+            if (queueScreenshot)
+            {
+                CallDeferred(nameof(OnSaveScreenshot));
             }
         }
 

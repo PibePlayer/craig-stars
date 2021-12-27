@@ -81,6 +81,7 @@ namespace CraigStars.Client
         #region UI State Change Events
 
         public static event Action PlayerDirtyChangedEvent;
+        public static event Action SaveScreenshotEvent;
         public static event Action PlanetViewStateUpdatedEvent;
         public static event Action FleetViewStateUpdatedEvent;
         public static event Action ScannerScaleUpdatedEvent;
@@ -88,6 +89,7 @@ namespace CraigStars.Client
         public static event Action<Planet> ProductionQueueChangedEvent;
 
         public static void PublishPlayerDirtyEvent() => PlayerDirtyChangedEvent?.Invoke();
+        public static void PublishSaveScreenshotEvent() => SaveScreenshotEvent?.Invoke();
         public static void PublishPlanetViewStateUpdatedEvent() => PlanetViewStateUpdatedEvent?.Invoke();
         public static void PublishFleetViewStateUpdatedEvent() => FleetViewStateUpdatedEvent?.Invoke();
         public static void PublishScannerScaleUpdatedEvent() => ScannerScaleUpdatedEvent?.Invoke();

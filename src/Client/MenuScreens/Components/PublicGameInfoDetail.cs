@@ -30,6 +30,7 @@ namespace CraigStars
 
         GridContainer playersGridContainer;
         Continuer continuer;
+        TextureRect textureRect;
         CSButton deleteButton;
 
         public override void _Ready()
@@ -39,8 +40,9 @@ namespace CraigStars
             modeValueLabel = GetNode<Label>("InfoGridContainer/ModeValueLabel");
             densityValueLabel = GetNode<Label>("InfoGridContainer/DensityValueLabel");
             playersValueLabel = GetNode<Label>("InfoGridContainer/PlayersValueLabel");
-            playersGridContainer = GetNode<GridContainer>("PlayersGridContainer");
-            deleteButton = GetNode<CSButton>("ButtonsHBoxContainer/DeleteButton");
+            playersGridContainer = GetNode<GridContainer>("ScrollContainer/VBoxContainer/PlayersGridContainer");
+            textureRect = GetNode<TextureRect>("ScrollContainer/VBoxContainer/ScreenshotHBoxContainer/TextureRect");
+            deleteButton = GetNode<CSButton>("ScrollContainer/VBoxContainer/ButtonsHBoxContainer/DeleteButton");
 
             // we'll use this later if a game is loaded
             continuer = new Continuer();
@@ -59,6 +61,9 @@ namespace CraigStars
                 sizeValueLabel.Text = EnumUtils.GetLabelForSize(gameInfo.Size);
                 densityValueLabel.Text = gameInfo.Density.ToString();
                 playersValueLabel.Text = $"{gameInfo.Players.Count}";
+
+                var screenshot = GamesManager.Instance.GetPlayerScreenshot(gameInfo.Name, gameInfo.Year, PlayerSaves[0].PlayerNum);
+                textureRect.Texture = screenshot;
 
                 playersGridContainer.ClearChildren();
 

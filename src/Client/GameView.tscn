@@ -111,18 +111,18 @@ margin_bottom = 895.0
 
 [node name="ScrollContainer" type="ScrollContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer"]
 margin_right = 504.0
-margin_bottom = 514.0
+margin_bottom = 504.0
 size_flags_vertical = 3
 scroll_horizontal_enabled = false
 
 [node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer"]
 margin_right = 504.0
-margin_bottom = 514.0
+margin_bottom = 504.0
 size_flags_vertical = 3
 
 [node name="LeftCommandPane" type="VBoxContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer"]
 margin_right = 250.0
-margin_bottom = 514.0
+margin_bottom = 504.0
 rect_min_size = Vector2( 250, 0 )
 
 [node name="MapObjectSummaryTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/LeftCommandPane" instance=ExtResource( 10 )]
@@ -154,7 +154,7 @@ margin_bottom = 500.0
 [node name="RightCommandPange" type="VBoxContainer" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer"]
 margin_left = 254.0
 margin_right = 504.0
-margin_bottom = 514.0
+margin_bottom = 504.0
 rect_min_size = Vector2( 250, 0 )
 
 [node name="PlanetProductionTile" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer/ScrollContainer/HBoxContainer/RightCommandPange" instance=ExtResource( 9 )]
@@ -197,7 +197,7 @@ margin_right = 250.0
 margin_bottom = 706.0
 
 [node name="MessagesPane" parent="CanvasLayer/GUI/VBoxContainer/HBoxContainer/Controls/VBoxContainer" instance=ExtResource( 8 )]
-margin_top = 518.0
+margin_top = 508.0
 margin_right = 504.0
 margin_bottom = 646.0
 rect_min_size = Vector2( 400, 80 )

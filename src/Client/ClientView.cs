@@ -78,7 +78,7 @@ namespace CraigStars.Client
                 // don't show the game if we already submitted
                 if (!PlayersManager.Me.SubmittedTurn)
                 {
-                    CallDeferred(nameof(LoadGameView));
+                    CallDeferred(nameof(LoadGameView), false);
                 }
 
             }
@@ -118,13 +118,13 @@ namespace CraigStars.Client
         /// Every time we create a new game, load a game, or generate a new turn we "reload" the game view as a new scene object
         /// This allows us to update our progress bar
         /// </summary>
-        async void LoadGameView()
+        async void LoadGameView(bool queueScreenshot)
         {
             log.Debug("Reloading GameView");
             inGameMenu.PopupCentered();
             await CSResourceLoader.Instance.PreloadTask;
             gameViewScene = CSResourceLoader.GetPackedScene("GameView.tscn");
-            CallDeferred(nameof(SetNewGameView));
+            CallDeferred(nameof(SetNewGameView), queueScreenshot);
         }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace CraigStars.Client
         /// When a new gameview is loaded, show it
         /// </summary>
         /// <param name="scene"></param>
-        void SetNewGameView()
+        void SetNewGameView(bool queueScreenshot)
         {
             log.Debug("Setting new GameView and hiding turn generation view");
 
@@ -166,6 +166,19 @@ namespace CraigStars.Client
             inGameMenu.Visible = false;
 
             EventManager.PublishGameViewResetEvent(GameInfo);
+
+            if (queueScreenshot)
+            {
+                CallDeferred(nameof(SaveScreenshot));
+            }
+        }
+
+        /// <summary>
+        /// Deferrable save screenshot call
+        /// </summary>
+        void SaveScreenshot()
+        {
+            EventManager.PublishSaveScreenshotEvent();
         }
 
         #endregion
@@ -187,15 +200,13 @@ namespace CraigStars.Client
             PlayersManager.GameInfo = GameInfo = gameInfo;
             PlayersManager.GameInfo.Players.ForEach(p => log.Debug($"{PlayersManager.GameInfo}: Player: {p}, Submitted: {p.SubmittedTurn}"));
             var _ = GamesManager.Instance.SavePlayer(gameInfo, player);
+
             if (PlayersManager.Me == null)
             {
                 PlayersManager.Me = player;
-                CallDeferred(nameof(LoadGameView));
             }
-            else
-            {
-                CallDeferred(nameof(LoadGameView));
-            }
+
+            CallDeferred(nameof(LoadGameView), true);
         }
 
         void OnGameContinued(PublicGameInfo gameInfo)
@@ -204,7 +215,6 @@ namespace CraigStars.Client
             PlayersManager.GameInfo = GameInfo = gameInfo;
         }
 
-
         void OnSubmitTurnRequested(PlayerOrders orders)
         {
             // we submitted our turn, switch to turn submitter view
@@ -212,20 +222,24 @@ namespace CraigStars.Client
             {
                 var gameInfo = PlayersManager.GameInfo;
                 PlayersManager.Me.SubmittedTurn = true;
+
                 if (this.IsMultiplayer())
                 {
                     // submit our turn to the server
                     NetworkClient.Instance.SubmitTurnToServer(PlayersManager.Me.Token, PlayersManager.GameInfo, orders);
                 }
 
+                // save our game
+                var _ = GamesManager.Instance.SavePlayer(gameInfo, PlayersManager.Me);
+
+                // save a screenshot before we change the view
+                EventManager.PublishSaveScreenshotEvent();
+
                 // we just submitted our turn, remove the game view and show this container
                 RemoveGameViewAndShowTurnGeneration();
 
                 // this was us, show the dialog
                 inGameMenu.Visible = true;
-
-                // save our game
-                var _ = GamesManager.Instance.SavePlayer(gameInfo, PlayersManager.Me);
             }
         }
 
@@ -347,7 +361,7 @@ namespace CraigStars.Client
                 PlayersManager.Me = player;
                 turnProcessorRunner.RunTurnProcessors(PlayersManager.GameInfo, PlayersManager.Me, TurnProcessorManager.Instance);
                 OS.SetWindowTitle($"{projectName} - {gameInfo.Name}: Year {gameInfo.Year}");
-                LoadGameView();
+                LoadGameView(true);
             }
         }
 
@@ -363,7 +377,7 @@ namespace CraigStars.Client
                 PlayersManager.Me = player;
                 PlayersManager.Me.SubmittedTurn = false;
                 RemoveGameViewAndShowTurnGeneration();
-                CallDeferred(nameof(LoadGameView));
+                CallDeferred(nameof(LoadGameView), false);
             }
             else
             {
@@ -387,7 +401,7 @@ namespace CraigStars.Client
                 PlayersManager.Me = player;
                 turnProcessorRunner.RunTurnProcessors(PlayersManager.GameInfo, PlayersManager.Me, TurnProcessorManager.Instance);
                 OS.SetWindowTitle($"{projectName} - {gameInfo.Name}: Year {gameInfo.Year}");
-                LoadGameView();
+                LoadGameView(false);
             }
         }
 

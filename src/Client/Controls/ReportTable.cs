@@ -15,6 +15,7 @@ namespace CraigStars.Client
     {
         static CSLog log = LogProvider.GetLogger(typeof(ReportTable<T>));
 
+        protected Player Me { get => PlayersManager.Me; }
         protected PublicGameInfo GameInfo { get => PlayersManager.GameInfo; }
 
         protected CSTable table;

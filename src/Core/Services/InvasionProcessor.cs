@@ -73,8 +73,8 @@ namespace CraigStars
                 // take over the planet.
                 // empty this planet
                 planet.PlayerNum = attacker.Num;
-                planet.RaceName = attacker.RaceName;
-                planet.RacePluralName = attacker.RacePluralName;
+                planet.RaceName = attacker.Race.Name;
+                planet.RacePluralName = attacker.Race.PluralName;
                 planet.Starbase = null;
                 planet.Scanner = false;
                 planet.Defenses = 0; // defenses are destroyed during invasion

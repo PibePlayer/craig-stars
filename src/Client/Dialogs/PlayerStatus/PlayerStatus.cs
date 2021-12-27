@@ -36,9 +36,9 @@ namespace CraigStars.Client
 
             // add the empty column for score type
             scoreTable.Data.AddColumn("", false, align: Label.AlignEnum.Right);
-            gameInfo.Players.ForEach(player =>
+            Me.PlayerInfoIntel.ForEach(player =>
             {
-                scoreTable.Data.AddColumn(player.RacePluralName, false, align: Label.AlignEnum.Right);
+                scoreTable.Data.AddColumn(player.KnownName, false, align: Label.AlignEnum.Right);
             });
 
             int numPlayers = gameInfo.Players.Count;
@@ -114,9 +114,9 @@ namespace CraigStars.Client
 
             // add the empty column for victory condition description
             victoryTable.Data.AddColumn("", false, align: Label.AlignEnum.Right);
-            gameInfo.Players.ForEach(player =>
+            Me.PlayerInfoIntel.ForEach(player =>
             {
-                victoryTable.Data.AddColumn(player.RacePluralName, false, align: Label.AlignEnum.Right);
+                victoryTable.Data.AddColumn(player.KnownName, false, align: Label.AlignEnum.Right);
             });
 
             int numPlayers = gameInfo.Players.Count;

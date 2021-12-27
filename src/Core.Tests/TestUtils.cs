@@ -42,8 +42,9 @@ namespace CraigStars.Tests
             TestContainer.Register<ProductionQueueEstimator>(Lifestyle.Singleton);
 
             // register player intel and all discoverers
-            TestContainer.Register<PlayerIntel>(Lifestyle.Singleton);
+            TestContainer.Register<PlayerIntelDiscoverer>(Lifestyle.Singleton);
 
+            TestContainer.Register<PlayerInfoDiscoverer>(Lifestyle.Singleton);
             TestContainer.Register<PlanetDiscoverer>(Lifestyle.Singleton);
             TestContainer.Register<FleetDiscoverer>(Lifestyle.Singleton);
             TestContainer.Register<ShipDesignDiscoverer>(Lifestyle.Singleton);
@@ -96,8 +97,8 @@ namespace CraigStars.Tests
             // because that's how the universe generation works. We do some logic on
             // switching planets from foreign to owned that could probably be improved
             // but we need this until then
-            var playerIntel = TestContainer.GetInstance<PlayerIntel>();
-            playerIntel.Discover(player, planet);
+            var playerIntelDiscoverer = TestContainer.GetInstance<PlayerIntelDiscoverer>();
+            playerIntelDiscoverer.Discover(player, planet);
 
             // take ownership of this planet
             planet.ProductionQueue = new ProductionQueue();
@@ -114,8 +115,8 @@ namespace CraigStars.Tests
                 BattlePlan = player.BattlePlans[0],
             };
 
-            playerIntel.Discover(player, starbase);
-            playerIntel.Discover(player, planet);
+            playerIntelDiscoverer.Discover(player, starbase);
+            playerIntelDiscoverer.Discover(player, planet);
 
 
             var design = ShipDesigns.LongRangeScount.Clone(player);
@@ -143,8 +144,8 @@ namespace CraigStars.Tests
 
             // setup mappings for the planet guids
             player.SetupMapObjectMappings();
-            playerIntel.Discover(player, design);
-            playerIntel.Discover(player, fleet);
+            playerIntelDiscoverer.Discover(player, design);
+            playerIntelDiscoverer.Discover(player, fleet);
 
             player.SetupMapObjectMappings();
             game.UpdateInternalDictionaries();
@@ -201,9 +202,9 @@ namespace CraigStars.Tests
             var starbase1 = CreateDesign(game, player1, ShipDesigns.Starbase.Clone(player1));
             var starbase2 = CreateDesign(game, player2, ShipDesigns.Starbase.Clone(player2));
 
-            var playerIntel = TestContainer.GetInstance<PlayerIntel>();
-            playerIntel.Discover(player1, starbase1);
-            playerIntel.Discover(player2, starbase2);
+            var playerIntelDiscoverer = TestContainer.GetInstance<PlayerIntelDiscoverer>();
+            playerIntelDiscoverer.Discover(player1, starbase1);
+            playerIntelDiscoverer.Discover(player2, starbase2);
 
             // create empty planets and have the players discover them
             var planet1 = new Planet()
@@ -253,8 +254,8 @@ namespace CraigStars.Tests
 
             game.Planets.ForEach(planet =>
             {
-                playerIntel.Discover(player1, planet);
-                playerIntel.Discover(player2, planet);
+                playerIntelDiscoverer.Discover(player1, planet);
+                playerIntelDiscoverer.Discover(player2, planet);
             });
 
             // take ownership of this planet
@@ -273,8 +274,8 @@ namespace CraigStars.Tests
             game.Designs.Add(design1);
             game.Designs.Add(design2);
 
-            playerIntel.Discover(player1, design1);
-            playerIntel.Discover(player2, design2);
+            playerIntelDiscoverer.Discover(player1, design1);
+            playerIntelDiscoverer.Discover(player2, design2);
 
             var fleet1 = new Fleet()
             {

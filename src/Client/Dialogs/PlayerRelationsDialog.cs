@@ -9,7 +9,7 @@ namespace CraigStars.Client
 
     public class PlayerRelationsDialog : GameViewDialog
     {
-        PlayersTable playersTable;
+        PlayerInfosTable playersTable;
         CheckBox friendCheckBox;
         CheckBox neutralCheckBox;
         CheckBox enemyCheckBox;
@@ -22,7 +22,7 @@ namespace CraigStars.Client
         {
             base._Ready();
 
-            playersTable = GetNode<PlayersTable>("MarginContainer/VBoxContainer/ContentContainer/HBoxContainer/PlayersVBoxContainer/PlayersTable");
+            playersTable = GetNode<PlayerInfosTable>("MarginContainer/VBoxContainer/ContentContainer/HBoxContainer/PlayersVBoxContainer/PlayersTable");
             friendCheckBox = GetNode<CheckBox>("MarginContainer/VBoxContainer/ContentContainer/HBoxContainer/Relation/VBoxContainer/FriendCheckBox");
             neutralCheckBox = GetNode<CheckBox>("MarginContainer/VBoxContainer/ContentContainer/HBoxContainer/Relation/VBoxContainer/NeutralCheckBox");
             enemyCheckBox = GetNode<CheckBox>("MarginContainer/VBoxContainer/ContentContainer/HBoxContainer/Relation/VBoxContainer/EnemyCheckBox");
@@ -38,7 +38,7 @@ namespace CraigStars.Client
 
         }
 
-        void OnPlayerStatusRowSelected(int rowIndex, int colIndex, Cell cell, PublicPlayerInfo player)
+        void OnPlayerStatusRowSelected(int rowIndex, int colIndex, Cell cell, PlayerInfo player)
         {
             // default to neutral
             currentPlayer = -1;
@@ -80,16 +80,16 @@ namespace CraigStars.Client
                 PlayerRelations = new List<PlayerRelationship>(Me.PlayerRelations);
 
                 // draw the table
-                var otherPlayers = GameInfo.Players.Where(p => p.Num != Me.Num).ToList();
+                var otherPlayers = Me.PlayerInfoIntel.Where(p => p.Num != Me.Num).ToList();
                 var firstPlayer = otherPlayers.FirstOrDefault();
                 bool resetTable = playersTable.Data.Rows.Count() != otherPlayers.Count;
                 playersTable.Data.ClearRows();
-                otherPlayers.ForEach(player =>
+                otherPlayers.ForEach(otherPlayer =>
                 {
-                    playersTable.Data.AddRowAdvanced(metadata: player, color: Colors.White, italic: false,
+                    playersTable.Data.AddRowAdvanced(metadata: otherPlayer, color: Colors.White, italic: false,
 
-                        player.Name,
-                        player.RacePluralName
+                        otherPlayer.Name,
+                        otherPlayer.Seen ? otherPlayer.RacePluralName : "Unknown"
                     );
                 });
 

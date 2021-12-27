@@ -17,13 +17,13 @@ namespace CraigStars.Tests
     public class CheckVictoryStepTest
     {
         PlanetService planetService;
-        PlayerIntel playerIntel;
+        PlayerIntelDiscoverer playerIntelDiscoverer;
 
         [SetUp]
         public void SetUp()
         {
             planetService = TestUtils.TestContainer.GetInstance<PlanetService>();
-            playerIntel = TestUtils.TestContainer.GetInstance<PlayerIntel>();
+            playerIntelDiscoverer = TestUtils.TestContainer.GetInstance<PlayerIntelDiscoverer>();
         }
 
         [Test]

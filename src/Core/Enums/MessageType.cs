@@ -11,6 +11,7 @@ namespace CraigStars
         None = 0,
         Info,
         HomePlanet,
+        PlayerDiscovery,
         PlanetDiscovery,
         PlanetProductionQueueEmpty,
         PlanetProductionQueueComplete,

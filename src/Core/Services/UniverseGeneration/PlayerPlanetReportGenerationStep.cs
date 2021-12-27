@@ -1,8 +1,8 @@
-using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using CraigStars;
+using Godot;
 using static CraigStars.Utils.Utils;
 
 namespace CraigStars.UniverseGeneration
@@ -12,11 +12,11 @@ namespace CraigStars.UniverseGeneration
     /// </summary>
     public class PlayerPlanetReportGenerationStep : UniverseGenerationStep
     {
-        private readonly PlayerIntel playerIntel;
+        private readonly PlayerIntelDiscoverer playerIntelDiscoverer;
 
-        public PlayerPlanetReportGenerationStep(IProvider<Game> gameProvider, PlayerIntel playerIntel) : base(gameProvider, UniverseGenerationState.PlanetReports)
+        public PlayerPlanetReportGenerationStep(IProvider<Game> gameProvider, PlayerIntelDiscoverer playerIntelDiscoverer) : base(gameProvider, UniverseGenerationState.PlanetReports)
         {
-            this.playerIntel = playerIntel;
+            this.playerIntelDiscoverer = playerIntelDiscoverer;
         }
 
         public override void Process()
@@ -25,7 +25,7 @@ namespace CraigStars.UniverseGeneration
             {
                 Game.Players.ForEach(player =>
                 {
-                    playerIntel.Discover(player, planet);
+                    playerIntelDiscoverer.Discover(player, planet);
                 });
             });
         }

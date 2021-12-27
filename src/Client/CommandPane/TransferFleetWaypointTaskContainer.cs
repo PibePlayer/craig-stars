@@ -27,10 +27,10 @@ namespace CraigStars.Client
             transferFleetToOptionButton.Connect("item_selected", this, nameof(OnTransferFleetToOptionButtonItemSelected));
 
             playerNums.Clear();
-            foreach (var player in GameInfo.Players.Where(player => player.Num != Me.Num))
+            foreach (var playerInfo in Me.PlayerInfoIntel.Where(player => player.Num != Me.Num))
             {
-                transferFleetToOptionButton.AddItem($"The {player.RacePluralName}");
-                playerNums.Add(player.Num);
+                transferFleetToOptionButton.AddItem($"The {playerInfo.KnownName}");
+                playerNums.Add(playerInfo.Num);
             }
 
             UpdateControls();

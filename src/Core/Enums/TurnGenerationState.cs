@@ -52,6 +52,7 @@ namespace CraigStars
         FleetRepairStep = 440,
         RemoteTerraformStep = 450,
         PlayerScanStep = 460,
+        PlayerInfoDiscovererStep = 460,
         FleetPatrolStep = 470,
         FleetNotifyIdleStep = 480,
         CalculateScoreStep = 490,

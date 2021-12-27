@@ -16,16 +16,16 @@ namespace CraigStars
         static CSLog log = LogProvider.GetLogger(typeof(PlayerScanStep));
 
         private readonly IRulesProvider rulesProvider;
-        private readonly PlayerIntel playerIntel;
+        private readonly PlayerIntelDiscoverer playerIntelDiscoverer;
         private readonly PlayerTechService playerTechService;
         private readonly FleetSpecService fleetSpecService;
 
         Rules Rules { get => rulesProvider.Rules; }
 
-        public PlayerScanStep(IProvider<Game> gameProvider, IRulesProvider rulesProvider, PlayerIntel playerIntel, PlayerTechService playerTechService, FleetSpecService fleetSpecService) : base(gameProvider, TurnGenerationState.PlayerScanStep)
+        public PlayerScanStep(IProvider<Game> gameProvider, IRulesProvider rulesProvider, PlayerIntelDiscoverer playerIntel, PlayerTechService playerTechService, FleetSpecService fleetSpecService) : base(gameProvider, TurnGenerationState.PlayerScanStep)
         {
             this.rulesProvider = rulesProvider;
-            this.playerIntel = playerIntel;
+            this.playerIntelDiscoverer = playerIntel;
             this.playerTechService = playerTechService;
             this.fleetSpecService = fleetSpecService;
         }
@@ -108,7 +108,7 @@ namespace CraigStars
             // clear out old fleets
             // we rebuild this list each turn
             log.Debug($"{Game.Year}: {player} Clearing Transient Reports");
-            playerIntel.ClearTransientReports(player);
+            playerIntelDiscoverer.ClearTransientReports(player);
 
             foreach (var planet in player.AllPlanets)
             {
@@ -172,7 +172,7 @@ namespace CraigStars
             log.Debug($"{Game.Year}: {player} Discovering player designs (from {Game.Designs.Count} total designs)");
             foreach (var design in Game.Designs.Where(d => d.PlayerNum == player.Num))
             {
-                playerIntel.Discover(player, design, true);
+                playerIntelDiscoverer.Discover(player, design, true);
             }
 
             // go through each planet and update its report if
@@ -183,7 +183,7 @@ namespace CraigStars
                 // we own this planet, update the report
                 if (planet.PlayerNum == player.Num)
                 {
-                    playerIntel.Discover(player, planet, true);
+                    playerIntelDiscoverer.Discover(player, planet, true);
                     continue;
                 }
 
@@ -198,13 +198,13 @@ namespace CraigStars
                         var closestPointToScanCapsule = GetClosestPointToSegment2D(planet.Position, scanner.PreviousPosition, scanner.Position);
                         if (scanner.RangePen >= closestPointToScanCapsule.DistanceSquaredTo(planet.Position))
                         {
-                            playerIntel.Discover(player, planet, true);
+                            playerIntelDiscoverer.Discover(player, planet, true);
                             break;
                         }
                     }
                     else if (scanner.RangePen >= scanner.Position.DistanceSquaredTo(planet.Position))
                     {
-                        playerIntel.Discover(player, planet, true);
+                        playerIntelDiscoverer.Discover(player, planet, true);
                         break;
                     }
                 }
@@ -229,7 +229,7 @@ namespace CraigStars
                 if (mineField.PlayerNum == player.Num)
                 {
                     // discover our own minefields
-                    playerIntel.Discover(player, mineField, true);
+                    playerIntelDiscoverer.Discover(player, mineField, true);
                     continue;
                 }
 
@@ -249,14 +249,14 @@ namespace CraigStars
                     if (scanner.RangePen * (cloakFactor * scanner.CloakReduction) >= distance - (mineField.Radius * mineField.Radius))
                     {
                         // update the fleet report with pen scanners
-                        playerIntel.Discover(player, mineField, true);
+                        playerIntelDiscoverer.Discover(player, mineField, true);
                         break;
                     }
 
                     // if we aren't orbiting a planet, we can be seen with regular scanners
                     if (scanner.Range * (cloakFactor - scanner.CloakReduction) >= distance - (mineField.Radius * mineField.Radius))
                     {
-                        playerIntel.Discover(player, mineField, false);
+                        playerIntelDiscoverer.Discover(player, mineField, false);
                         break;
                     }
                 }
@@ -270,7 +270,7 @@ namespace CraigStars
                     // if we aren't orbiting a planet, we can be seen with regular scanners
                     if (scanner.Range >= scanner.Position.DistanceSquaredTo(salvage.Position))
                     {
-                        playerIntel.Discover(player, salvage, false);
+                        playerIntelDiscoverer.Discover(player, salvage, false);
                         break;
                     }
                 }
@@ -281,14 +281,14 @@ namespace CraigStars
             {
                 if (packet.PlayerNum == player.Num)
                 {
-                    playerIntel.Discover(player, packet, true);
+                    playerIntelDiscoverer.Discover(player, packet, true);
                     continue;
                 }
 
                 // PP races detect all packets in flight
                 if (player.Race.Spec.DetectAllPackets)
                 {
-                    playerIntel.Discover(player, packet, false);
+                    playerIntelDiscoverer.Discover(player, packet, false);
                     continue;
                 }
 
@@ -297,7 +297,7 @@ namespace CraigStars
                     // if we aren't orbiting a planet, we can be seen with regular scanners
                     if (scanner.Range >= scanner.Position.DistanceSquaredTo(packet.Position))
                     {
-                        playerIntel.Discover(player, packet, false);
+                        playerIntelDiscoverer.Discover(player, packet, false);
                         break;
                     }
                 }
@@ -330,7 +330,7 @@ namespace CraigStars
                     // we only care about regular scanners for wormholes
                     if (scanner.Range * cloakFactor >= scanner.Position.DistanceSquaredTo(wormhole.Position))
                     {
-                        playerIntel.Discover(player, wormhole, false);
+                        playerIntelDiscoverer.Discover(player, wormhole, false);
                         break;
                     }
                 }
@@ -344,7 +344,7 @@ namespace CraigStars
                     // we only careabout regular scanners for mysteryTraders
                     if (scanner.Range >= scanner.Position.DistanceSquaredTo(mysterytrader.Position))
                     {
-                        playerIntel.Discover(player, mysterytrader, false);
+                        playerIntelDiscoverer.Discover(player, mysterytrader, false);
                         break;
                     }
                 }
@@ -371,7 +371,7 @@ namespace CraigStars
                 // we own this fleet, update the report
                 if (fleet.PlayerNum == player.Num)
                 {
-                    playerIntel.Discover(player, fleet, true);
+                    playerIntelDiscoverer.Discover(player, fleet, true);
                     continue;
                 }
 
@@ -399,7 +399,7 @@ namespace CraigStars
 
             }
             log.Debug($"{Game.Year}: {player} Discovering {fleetsToDiscover.Count} foreign fleets.");
-            fleetsToDiscover.ForEach(fleet => playerIntel.Discover(player, fleet, player.Race.Spec.DiscoverDesignOnScan));
+            fleetsToDiscover.ForEach(fleet => playerIntelDiscoverer.Discover(player, fleet, player.Race.Spec.DiscoverDesignOnScan));
         }
 
         /// <summary>
@@ -416,7 +416,7 @@ namespace CraigStars
                     var range = playerStargatePlanet.Starbase.Spec.Stargate.SafeRange * playerStargatePlanet.Starbase.Spec.Stargate.SafeRange;
                     if (planet.Position.DistanceSquaredTo(playerStargatePlanet.Position) <= range)
                     {
-                        playerIntel.Discover(player, planet, true);
+                        playerIntelDiscoverer.Discover(player, planet, true);
                         // go on to the next planet
                         break;
                     }

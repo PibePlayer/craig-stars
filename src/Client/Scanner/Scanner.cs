@@ -299,7 +299,7 @@ namespace CraigStars.Client
             transientMapObjects.Clear();
             transientMapObjects.AddRange(AddFleetsToViewport());
             log.Debug($"{GameInfo.Year} Refreshed Fleets.");
-            transientMapObjects.AddRange(AddMapObjectsToViewport<Salvage, SalvageSprite>(Me.Salvage, salvageScene, GetNode("Salvage")));
+            transientMapObjects.AddRange(AddMapObjectsToViewport<Salvage, SalvageSprite>(Me.AllSalvage, salvageScene, GetNode("Salvage")));
             transientMapObjects.AddRange(AddMapObjectsToViewport<Wormhole, WormholeSprite>(Me.Wormholes, wormholeScene, GetNode("Wormholes")));
             transientMapObjects.AddRange(AddMapObjectsToViewport<MineField, MineFieldSprite>(Me.AllMineFields, mineFieldScene, GetNode("MineFields")));
             transientMapObjects.AddRange(AddMapObjectsToViewport<MineralPacket, MineralPacketSprite>(Me.AllMineralPackets, mineralPacketScene, GetNode("MineralPackets")));

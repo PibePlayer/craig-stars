@@ -15,7 +15,7 @@ namespace CraigStars.Tests
         Planet playerPlanet;
         Fleet playerFleet;
 
-        PlayerIntel playerIntel;
+        PlayerIntelDiscoverer playerIntelDiscoverer;
 
         [SetUp]
         public void SetUp()
@@ -27,7 +27,7 @@ namespace CraigStars.Tests
 
             fleetOrderExecutor = new FleetOrderExecutor(game, TestUtils.TestContainer.GetInstance<FleetService>());
             fleetSpecService = TestUtils.TestContainer.GetInstance<FleetSpecService>();
-            playerIntel = TestUtils.TestContainer.GetInstance<PlayerIntel>();
+            playerIntelDiscoverer = TestUtils.TestContainer.GetInstance<PlayerIntelDiscoverer>();
         }
 
         [Test]
@@ -40,7 +40,7 @@ namespace CraigStars.Tests
             newPlanet.InitEmptyPlanet();
             game.Planets.Add(newPlanet);
             game.UpdateInternalDictionaries();
-            playerIntel.Discover(player, newPlanet);
+            playerIntelDiscoverer.Discover(player, newPlanet);
             player.SetupMapObjectMappings();
 
             var newDesign = ShipDesigns.ArmoredProbe.Clone(player);

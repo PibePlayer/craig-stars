@@ -1,9 +1,9 @@
-using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using CraigStars;
 using CraigStars.Utils;
+using Godot;
 
 namespace CraigStars.UniverseGeneration
 {
@@ -33,8 +33,14 @@ namespace CraigStars.UniverseGeneration
 
             Game.Players.ForEach(player =>
             {
-                // setup initial player relationships
+                // setup initial player relationships and info
                 player.PlayerRelations = Game.Players.Select(p => new PlayerRelationship(p.Num == player.Num ? PlayerRelation.Friend : PlayerRelation.Enemy)).ToList();
+                player.PlayerInfoIntel = Game.Players.Select(p => new PlayerInfo(p.Num, p.Name)).ToList();
+                
+                // know thyself
+                player.PlayerInfoIntel[player.Num].Seen = true;
+                player.PlayerInfoIntel[player.Num].RaceName = player.Race.Name;
+                player.PlayerInfoIntel[player.Num].RacePluralName = player.Race.PluralName;
 
                 // setup player's object mappings
                 player.SetupMapObjectMappings();

@@ -38,9 +38,14 @@ namespace CraigStars
 
         public static void HomePlanet(Player player, Planet planet)
         {
-            string text = $"Your home planet is {planet.Name}.  Your people are ready to leave the nest and explore the universe.  Good luck.";
+            string text = $"Your home planet is {planet.Name}. Your people are ready to leave the nest and explore the universe.  Good luck.";
             player.Messages.Add(new Message(MessageType.HomePlanet, text, planet));
+        }
 
+        public static void PlayerDiscovered(Player player, Player otherPlayer)
+        {
+            string text = $"You have discovered a new species, the {otherPlayer.Race.PluralName}. You are not alone in the universe!";
+            player.Messages.Insert(0, new Message(MessageType.PlayerDiscovery, text));
         }
 
         public static void Mine(Player player, Planet planet, int numMines)
@@ -816,7 +821,7 @@ namespace CraigStars
             }
             else
             {
-                text = $"The forces of {player.RacePluralName} have been declared the winner of this game. You are advised to accept their supremacy, though you may continue the fight.";
+                text = $"The forces of {player.Race.PluralName} have been declared the winner of this game. You are advised to accept their supremacy, though you may continue the fight.";
             }
             // victory messages are always the first message of the year
             player.Messages.Insert(0, new Message(MessageType.Victor, text));

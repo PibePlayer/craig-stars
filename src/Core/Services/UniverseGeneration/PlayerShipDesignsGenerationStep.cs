@@ -13,14 +13,14 @@ namespace CraigStars.UniverseGeneration
     public class PlayerShipDesignsGenerationStep : UniverseGenerationStep
     {
         private readonly ITechStore techStore;
-        private readonly PlayerIntel playerIntel;
+        private readonly PlayerIntelDiscoverer playerIntelDiscoverer;
         private readonly ShipDesignGenerator designer;
         private readonly FleetSpecService fleetSpecService;
 
-        public PlayerShipDesignsGenerationStep(IProvider<Game> gameProvider, ITechStore techStore, PlayerIntel playerIntel, ShipDesignGenerator designer, FleetSpecService fleetSpecService) : base(gameProvider, UniverseGenerationState.ShipDesigns)
+        public PlayerShipDesignsGenerationStep(IProvider<Game> gameProvider, ITechStore techStore, PlayerIntelDiscoverer playerIntel, ShipDesignGenerator designer, FleetSpecService fleetSpecService) : base(gameProvider, UniverseGenerationState.ShipDesigns)
         {
             this.techStore = techStore;
-            this.playerIntel = playerIntel;
+            this.playerIntelDiscoverer = playerIntel;
             this.designer = designer;
             this.fleetSpecService = fleetSpecService;
         }
@@ -41,7 +41,7 @@ namespace CraigStars.UniverseGeneration
                 fleetSpecService.ComputeDesignSpec(player, design);
 
                 // let the player know about their new design
-                playerIntel.Discover(player, design, true);
+                playerIntelDiscoverer.Discover(player, design, true);
             });
         }
 

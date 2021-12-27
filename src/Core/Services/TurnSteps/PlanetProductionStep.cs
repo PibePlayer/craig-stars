@@ -361,6 +361,8 @@ namespace CraigStars
                 {
                     BaseName = name,
                     Name = $"{name} #{id}",
+                    RaceName = player.Race.Name,
+                    RacePluralName = player.Race.PluralName,
                     PlayerNum = planet.PlayerNum,
                     Orbiting = planet,
                     Position = planet.Position,

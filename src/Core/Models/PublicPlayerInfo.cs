@@ -12,8 +12,6 @@ namespace CraigStars
         public int NetworkId { get; set; }
         public int Num { get; set; }
         public string Name { get; set; }
-        public virtual string RaceName { get; set; }
-        public virtual string RacePluralName { get; set; }
         public Boolean Host { get; set; } = false;
         public Boolean Ready { get; set; } = false;
         public Boolean AIControlled { get; set; }
@@ -43,8 +41,6 @@ namespace CraigStars
             NetworkId = playerInfo.NetworkId;
             Num = playerInfo.Num;
             Name = playerInfo.Name;
-            RaceName = playerInfo.RaceName;
-            RacePluralName = playerInfo.RacePluralName;
             Host = playerInfo.Host;
             Ready = playerInfo.Ready;
             AIControlled = playerInfo.AIControlled;

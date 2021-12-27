@@ -94,6 +94,8 @@ namespace CraigStars.UniverseGeneration
 
             // own this planet
             planet.PlayerNum = player.Num;
+            planet.RaceName = player.Race.Name;
+            planet.RacePluralName = player.Race.PluralName;
             planet.ProductionQueue = new ProductionQueue();
             planet.ReportAge = 0;
 
@@ -140,6 +142,8 @@ namespace CraigStars.UniverseGeneration
 
             // own this planet
             planet.PlayerNum = player.Num;
+            planet.RaceName = player.Race.Name;
+            planet.RacePluralName = player.Race.PluralName;
             planet.ProductionQueue = new ProductionQueue();
             planet.ReportAge = 0;
 

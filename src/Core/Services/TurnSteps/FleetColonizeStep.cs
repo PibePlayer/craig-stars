@@ -59,7 +59,9 @@ namespace CraigStars
                 else
                 {
                     // we own this planet now, yay!
-                    planet.PlayerNum = fleet.PlayerNum;
+                    planet.PlayerNum = player.Num;
+                    planet.RaceName = player.Race.Name;
+                    planet.RacePluralName = player.Race.PluralName;
                     planet.ProductionQueue = new ProductionQueue();
                     if (task.Player.ProductionPlans.Count > 0)
                     {

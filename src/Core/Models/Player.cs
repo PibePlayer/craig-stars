@@ -28,9 +28,6 @@ namespace CraigStars
         /// <value></value>
         [JsonIgnore] public bool Dirty { get; set; }
 
-        public override string RaceName { get => Race.Name; }
-        public override string RacePluralName { get => Race.PluralName; }
-
         public Race Race { get; set; } = new();
         public int DefaultHullSet { get; set; } = 0;
         public PlayerStats Stats { get; set; } = new();
@@ -40,6 +37,7 @@ namespace CraigStars
         #region Diplomacy
 
         public List<PlayerRelationship> PlayerRelations { get; set; } = new();
+        public List<PlayerInfo> PlayerInfoIntel { get; set; } = new();
 
         #endregion
 
@@ -119,7 +117,9 @@ namespace CraigStars
         [JsonIgnore] public IEnumerable<Planet> AllPlanets { get => PlanetIntel.All; }
         [JsonIgnore] public Dictionary<Guid, Planet> PlanetsByGuid { get => PlanetIntel.ItemsByGuid; }
 
-        [JsonIgnore] public List<Salvage> Salvage { get => SalvageIntel.Foriegn; }
+        [JsonIgnore] public List<Salvage> Salvage { get => SalvageIntel.Owned; }
+        [JsonIgnore] public List<Salvage> ForeignSalvage { get => SalvageIntel.Foriegn; }
+        [JsonIgnore] public IEnumerable<Salvage> AllSalvage { get => SalvageIntel.All; }
         [JsonIgnore] public Dictionary<Guid, Salvage> SalvageByGuid { get => SalvageIntel.ItemsByGuid; }
 
         [JsonIgnore] public List<Wormhole> Wormholes { get => WormholeIntel.Foriegn; }
@@ -142,6 +142,20 @@ namespace CraigStars
         [JsonIgnore] public List<Fleet> ForeignFleets { get => FleetIntel.Foriegn; }
         [JsonIgnore] public IEnumerable<Fleet> AllFleets { get => FleetIntel.All; }
         [JsonIgnore] public Dictionary<Guid, Fleet> FleetsByGuid { get => FleetIntel.ItemsByGuid; }
+
+        [JsonIgnore]
+        public IEnumerable<MapObject> AllMapObjects
+        {
+            get => AllPlanets
+                .Cast<MapObject>()
+                .Concat(AllSalvage)
+                .Concat(AllMineFields)
+                .Concat(AllMineralPackets)
+                .Concat(AllFleets)
+                .Concat(WormholeIntel.All)
+                .Concat(MysteryTraderIntel.All);
+        }
+
 
         /// <summary>
         /// All map objects by their guid, for lookups

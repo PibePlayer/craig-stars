@@ -26,7 +26,7 @@ namespace CraigStars.Client
             progressStatus = GetNode<ProgressStatus>("VBoxContainer/ProgressStatus");
 
             playerStatusTable.Data.Clear();
-            playerStatusTable.Data.AddColumns("Num", "Name", "Race");
+            playerStatusTable.Data.AddColumns("Num", "Name");
             playerStatusTable.Data.AddColumn(new Column<PublicPlayerInfo>("Status")
             {
                 CellProvider = (col, cell, row) => new PlayerStatusButtonCell(col, cell, row,
@@ -204,8 +204,7 @@ namespace CraigStars.Client
                 playerStatusTable.Data.AddRowAdvanced(metadata: player, color: Colors.White, italic: false,
 
                     player.Num + 1,
-                    player.Name,
-                    player.RacePluralName,
+                    $"{player.Name}{(player.AIControlled ? " (AI)" : "")}",
                     player.SubmittedTurn ? "Submitted" : "Waiting to Submit"
                 );
             });

@@ -78,8 +78,8 @@ namespace CraigStars.Tests
             newPlanet.InitEmptyPlanet();
             game.Planets.Add(newPlanet);
             game.UpdateInternalDictionaries();
-            var playerIntel = TestUtils.TestContainer.GetInstance<PlayerIntel>();
-            playerIntel.Discover(player, newPlanet);
+            var playerIntelDiscoverer = TestUtils.TestContainer.GetInstance<PlayerIntelDiscoverer>();
+            playerIntelDiscoverer.Discover(player, newPlanet);
 
             var fleet = player.Fleets[0];
             fleet.Waypoints.Add(Waypoint.PositionWaypoint(new Vector2(100, 0)));

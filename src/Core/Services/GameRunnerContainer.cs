@@ -43,8 +43,9 @@ namespace CraigStars
             container.Register<ProductionQueueEstimator>(Lifestyle.Singleton);
 
             // register player intel and all discoverers
-            container.Register<PlayerIntel>(Lifestyle.Singleton);
+            container.Register<PlayerIntelDiscoverer>(Lifestyle.Singleton);
 
+            container.Register<PlayerInfoDiscoverer>(Lifestyle.Singleton);
             container.Register<PlanetDiscoverer>(Lifestyle.Singleton);
             container.Register<FleetDiscoverer>(Lifestyle.Singleton);
             container.Register<ShipDesignDiscoverer>(Lifestyle.Singleton);
@@ -121,6 +122,7 @@ namespace CraigStars
                 typeof(FleetRepairStep),
                 typeof(RemoteTerraformStep),
                 typeof(PlayerScanStep),
+                typeof(PlayerInfoDiscoverStep),
                 typeof(FleetPatrolStep),
                 typeof(CalculateScoreStep),
                 // typeof(UpdatingPlayers),

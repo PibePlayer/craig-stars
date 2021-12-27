@@ -7,10 +7,11 @@ namespace CraigStars
     /// <summary>
     /// Service for player's discovering map objects and updating their intel
     /// </summary>
-    public class PlayerIntel
+    public class PlayerIntelDiscoverer
     {
-        static CSLog log = LogProvider.GetLogger(typeof(PlayerIntel));
+        static CSLog log = LogProvider.GetLogger(typeof(PlayerIntelDiscoverer));
 
+        private readonly PlayerInfoDiscoverer playerInfoDiscoverer;
         private readonly PlanetDiscoverer planetDiscoverer;
         private readonly FleetDiscoverer fleetDiscoverer;
         private readonly ShipDesignDiscoverer designDiscoverer;
@@ -20,7 +21,8 @@ namespace CraigStars
         private readonly WormholeDiscoverer wormholeDiscoverer;
         private readonly MysteryTraderDiscoverer mysterytraderDiscoverer;
 
-        public PlayerIntel(
+        public PlayerIntelDiscoverer(
+            PlayerInfoDiscoverer playerInfoDiscoverer,
             PlanetDiscoverer planetDiscoverer,
             FleetDiscoverer fleetDiscoverer,
             ShipDesignDiscoverer designDiscoverer,
@@ -31,6 +33,7 @@ namespace CraigStars
             MysteryTraderDiscoverer mysterytraderDiscoverer
         )
         {
+            this.playerInfoDiscoverer = playerInfoDiscoverer;
             this.planetDiscoverer = planetDiscoverer;
             this.fleetDiscoverer = fleetDiscoverer;
             this.designDiscoverer = designDiscoverer;
@@ -41,13 +44,22 @@ namespace CraigStars
             this.mysterytraderDiscoverer = mysterytraderDiscoverer;
         }
 
+        /// <summary>
+        /// Discover another player
+        /// </summary>
+        /// <param name="player">The discovering player</param>
+        /// <param name="otherPlayer">The player being discovered</param>
+        public void Discover(Player player, Player otherPlayer)
+        {
+            playerInfoDiscoverer.Discover(player, otherPlayer);
+        }
 
         /// <summary>
         /// Discover a new planet. This is called when the universe is being setup with penScanned = false
         /// so we generate a bunch of empty planet reports.
         /// When we later scan a planet, it'll be called with penScanned = true
         /// </summary>
-        /// <param name="player"></param>
+        /// <param name="player">The discovering player</param>
         /// <param name="planet"></param>
         /// <param name="penScanned"></param>
         public void Discover(Player player, Planet planet, bool penScanned = false)
@@ -58,7 +70,7 @@ namespace CraigStars
         /// <summary>
         /// Discover a new fleet. Pen Scanned fleets show tokens and designs
         /// </summary>
-        /// <param name="player"></param>
+        /// <param name="player">The discovering player</param>
         /// <param name="fleet"></param>
         /// <param name="penScanned"></param>
         public void Discover(Player player, Fleet fleet, bool penScanned = false)
@@ -69,7 +81,7 @@ namespace CraigStars
         /// <summary>
         /// Discover a new ShipDesign
         /// </summary>
-        /// <param name="player"></param>
+        /// <param name="player">The discovering player</param>
         /// <param name="design"></param>
         /// <param name="inBattle">Pen Scanned designs show hull components</param>
         public void Discover(Player player, ShipDesign design, bool inBattle = false)
@@ -80,7 +92,7 @@ namespace CraigStars
         /// <summary>
         /// Discover a minefield
         /// </summary>
-        /// <param name="player"></param>
+        /// <param name="player">The discovering player</param>
         /// <param name="mineField"></param>
         /// <param name="penScanned"></param>
         public void Discover(Player player, MineField mineField, bool penScanned = false)
@@ -91,7 +103,7 @@ namespace CraigStars
         /// <summary>
         /// Discover a mineral pacaket
         /// </summary>
-        /// <param name="player"></param>
+        /// <param name="player">The discovering player</param>
         /// <param name="mineralPacket"></param>
         /// <param name="penScanned"></param>
         public void Discover(Player player, MineralPacket mineralPacket, bool penScanned = false)
@@ -102,7 +114,7 @@ namespace CraigStars
         /// <summary>
         /// Discover salvage
         /// </summary>
-        /// <param name="player"></param>
+        /// <param name="player">The discovering player</param>
         /// <param name="salvage"></param>
         /// <param name="penScanned"></param>
         public void Discover(Player player, Salvage salvage, bool penScanned = false)
@@ -113,7 +125,7 @@ namespace CraigStars
         /// <summary>
         /// Discover a wormhole
         /// </summary>
-        /// <param name="player"></param>
+        /// <param name="player">The discovering player</param>
         /// <param name="wormhole"></param>
         /// <param name="penScanned"></param>
         public void Discover(Player player, Wormhole wormhole, bool penScanned = false)
@@ -124,7 +136,7 @@ namespace CraigStars
         /// <summary>
         /// Discover a mysterytrader
         /// </summary>
-        /// <param name="player"></param>
+        /// <param name="player">The discovering player</param>
         /// <param name="mysterytrader"></param>
         /// <param name="penScanned"></param>
         public void Discover(Player player, MysteryTrader mysterytrader, bool penScanned = false)
@@ -136,7 +148,7 @@ namespace CraigStars
         /// Players are only aware of fleets/salvage/etc if they are actively scanning. 
         /// We remove all transient report data at the beginning of a turn
         /// </summary>
-        /// <param name="player"></param>
+        /// <param name="player">The discovering player</param>
         public void ClearTransientReports(Player player)
         {
             player.SalvageIntel.Clear();

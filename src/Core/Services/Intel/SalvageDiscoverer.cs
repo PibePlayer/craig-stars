@@ -32,7 +32,7 @@ namespace CraigStars
 
         protected override void DiscoverOwn(Player player, Salvage item, Salvage itemReport)
         {
-            throw new NotSupportedException("Salvage can't be owned by anyone.");
+            itemReport.Cargo = item.Cargo;
         }
     }
 }

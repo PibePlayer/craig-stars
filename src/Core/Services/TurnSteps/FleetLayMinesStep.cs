@@ -56,7 +56,7 @@ namespace CraigStars
                 {
                     mineField = new MineField()
                     {
-                        Name = $"{player.RaceName} {EnumUtils.GetLabelForMineFieldType(entry.Key)} Mine Field",
+                        Name = $"{player.Race.Name} {EnumUtils.GetLabelForMineFieldType(entry.Key)} Mine Field",
                         PlayerNum = player.Num,
                         Position = fleet.Position,
                         Type = entry.Key

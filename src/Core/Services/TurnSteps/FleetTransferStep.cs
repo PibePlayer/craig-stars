@@ -35,6 +35,8 @@ namespace CraigStars
                 var targetPlayer = Game.Players[targetPlayerNum];
                 // transfer to the player and recompute the spec
                 fleet.PlayerNum = targetPlayerNum;
+                fleet.RaceName = targetPlayer.Race.Name;
+                fleet.RacePluralName = targetPlayer.Race.PluralName;
                 fleetSpecService.ComputeFleetSpec(targetPlayer, fleet, recompute: true);
 
                 return true;

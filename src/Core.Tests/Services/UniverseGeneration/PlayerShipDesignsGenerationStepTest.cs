@@ -11,7 +11,7 @@ namespace CraigStars.Tests
     {
 
         PlayerTechService playerTechService;
-        PlayerIntel playerIntel;
+        PlayerIntelDiscoverer playerIntelDiscoverer;
         ShipDesignGenerator designGenerator;
         FleetSpecService fleetSpecService;
 
@@ -19,7 +19,7 @@ namespace CraigStars.Tests
         public void SetUp()
         {
             playerTechService = TestUtils.TestContainer.GetInstance<PlayerTechService>();
-            playerIntel = TestUtils.TestContainer.GetInstance<PlayerIntel>();
+            playerIntelDiscoverer = TestUtils.TestContainer.GetInstance<PlayerIntelDiscoverer>();
             designGenerator = TestUtils.TestContainer.GetInstance<ShipDesignGenerator>();
             fleetSpecService = TestUtils.TestContainer.GetInstance<FleetSpecService>();
         }
@@ -33,7 +33,7 @@ namespace CraigStars.Tests
             PlayerShipDesignsGenerationStep step = new PlayerShipDesignsGenerationStep(
                 new Provider<Game>(game),
                 StaticTechStore.Instance,
-                playerIntel,
+                playerIntelDiscoverer,
                 designGenerator,
                 fleetSpecService
             );

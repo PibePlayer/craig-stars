@@ -237,7 +237,7 @@ namespace CraigStars.Server
                     else
                     {
                         // TODO: notify the clients that we had an invalid turn submit
-                        // await GodotTaskFactory.StartNew(() => PublishTurnSubmittedInvalidEvent(Game.GameInfo, Game.GameInfo.Players[orders.PlayerNum], result));
+                        // await GodotTaskFactory.StartNew(() => PublishTurnSubmittedInvalidEvent(Game.GameInfo, Game.Me.PlayerInfoIntel[orders.PlayerNum], result));
 
                     }
                 }

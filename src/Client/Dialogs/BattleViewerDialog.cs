@@ -246,8 +246,8 @@ namespace CraigStars.Client
                 actionLabel.Text = $"Action {currentAction + 1} of {BattleRecord.ActionsPerRound[currentRound].Count}";
 
                 var action = BattleRecord.ActionsPerRound[currentRound][currentAction];
-                var tokenPlayer = GameInfo.Players[action.Token.PlayerNum];
-                actionRaceLabel.Text = tokenPlayer.RacePluralName;
+                var tokenPlayer = Me.PlayerInfoIntel[action.Token.PlayerNum];
+                actionRaceLabel.Text = tokenPlayer.KnownName;
                 actionDesignLabel.Text = action.Token.Token.Design.Name;
 
                 actionMoveLabel.Visible = false;
@@ -261,8 +261,8 @@ namespace CraigStars.Client
                 else if (action is BattleRecordTokenBeamFire beamFire)
                 {
                     actionAttackLabelContainer.Visible = true;
-                    var targetPlayer = GameInfo.Players[beamFire.Target.PlayerNum];
-                    actionAttackLabel.Text = $"attacks the {targetPlayer.RacePluralName}";
+                    var targetPlayer = Me.PlayerInfoIntel[beamFire.Target.PlayerNum];
+                    actionAttackLabel.Text = $"attacks the {targetPlayer.KnownName}";
                     actionAttackTargetLabel.Text = $"{beamFire.Target.Token.Design.Name} * {beamFire.Target.Token.Quantity - beamFire.TokensDestroyed}";
                     actionAttackLocationLabel.Text = $"at ({beamFire.To.x + 1}, {beamFire.To.y + 1}) doing";
                     if (beamFire.DamageDoneShields > 0 && beamFire.DamageDoneArmor > 0)
@@ -282,8 +282,8 @@ namespace CraigStars.Client
                 else if (action is BattleRecordTokenTorpedoFire torpedoFire)
                 {
                     actionAttackLabelContainer.Visible = true;
-                    var targetPlayer = GameInfo.Players[torpedoFire.Target.PlayerNum];
-                    actionAttackLabel.Text = $"attacks the {targetPlayer.RacePluralName}";
+                    var targetPlayer = Me.PlayerInfoIntel[torpedoFire.Target.PlayerNum];
+                    actionAttackLabel.Text = $"attacks the {targetPlayer.KnownName}";
                     actionAttackTargetLabel.Text = $"{torpedoFire.Target.Token.Design.Name} * {torpedoFire.Target.Token.Quantity - torpedoFire.TokensDestroyed}";
                     actionAttackLocationLabel.Text = $"at ({torpedoFire.To.x + 1}, {torpedoFire.To.y + 1}) doing";
                     if (torpedoFire.DamageDoneShields > 0 && torpedoFire.DamageDoneArmor > 0)
@@ -309,8 +309,8 @@ namespace CraigStars.Client
                 if (selectedGridToken != null)
                 {
                     var selectedToken = selectedGridToken.Token;
-                    var tokenPlayer = GameInfo.Players[selectedToken.PlayerNum];
-                    selectionRaceLabel.Text = tokenPlayer.RacePluralName;
+                    var tokenPlayer = Me.PlayerInfoIntel[selectedToken.PlayerNum];
+                    selectionRaceLabel.Text = tokenPlayer.KnownName;
 
                     var design = selectedToken.Token.Design;
                     selectionDesignLabel.Text = design.Name;

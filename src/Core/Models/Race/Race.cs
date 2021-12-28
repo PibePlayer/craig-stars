@@ -16,10 +16,10 @@ namespace CraigStars
         public PRT PRT { get; set; } = PRT.JoaT;
         public HashSet<LRT> LRTs { get; set; } = new HashSet<LRT>();
 
-        public Hab HabLow { get => habLow; set { habLow = value; habCenter = null; } }
+        public Hab HabLow { get => habLow; set { habLow = value; habCenter = null; habWidth = null; } }
         Hab habLow = new Hab(15, 15, 15);
 
-        public Hab HabHigh { get => habHigh; set { habHigh = value; habCenter = null; } }
+        public Hab HabHigh { get => habHigh; set { habHigh = value; habCenter = null; habWidth = null; } }
         Hab habHigh = new Hab(85, 85, 85);
 
         [JsonIgnore]
@@ -43,7 +43,7 @@ namespace CraigStars
             {
                 if (habWidth == null)
                 {
-                    habWidth = new Hab((HabHigh.grav - HabLow.grav) / 2, (HabHigh.temp - HabLow.temp), (HabHigh.rad - HabLow.rad) / 2);
+                    habWidth = new Hab((HabHigh.grav - HabLow.grav) / 2, (HabHigh.temp - HabLow.temp) / 2, (HabHigh.rad - HabLow.rad) / 2);
                 }
                 return habWidth.Value;
             }
@@ -108,6 +108,20 @@ namespace CraigStars
             HabType.Radiation => ImmuneRad,
             _ => throw new IndexOutOfRangeException($"{habType} out of range for {this.GetType().ToString()}")
         };
+
+        /// <summary>
+        /// Get th
+        /// </summary>
+        /// <returns></returns>
+        public double GetHabChance()
+        {
+            // do a straight calc of hab width, so if we have a hab with widths of 50, 50% of planets will be habitable
+            // so we get (.5 * .5 * .5) = .125, or 1 in 8 planets
+            var gravChance = ImmuneGrav ? 1.0 : (HabWidth.grav * 2 / 100.0);
+            var tempChance = ImmuneTemp ? 1.0 : (HabWidth.temp * 2 / 100.0);
+            var radChance = ImmuneRad ? 1.0 : (HabWidth.rad * 2 / 100.0);
+            return gravChance * tempChance * radChance;
+        }
 
         /// <summary>
         /// Get the habitability of this race for a given planet's hab value

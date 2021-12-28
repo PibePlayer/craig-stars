@@ -73,7 +73,7 @@ namespace CraigStars.Client
         HabEditor tempHabEditor;
         HabEditor radHabEditor;
         SpinBox growthRate;
-        Label growthRateDescription;
+        Label habChancesDescriptionLabel;
 
         Control annualResourcesContainer;
         SpinBox annualResourcesSpinBox;
@@ -144,7 +144,7 @@ namespace CraigStars.Client
             tempHabEditor = (HabEditor)FindNode("TempHabEditor");
             radHabEditor = (HabEditor)FindNode("RadHabEditor");
             growthRate = (SpinBox)FindNode("GrowthRateSpinBox");
-            growthRateDescription = (Label)FindNode("GrowthRateDescription");
+            habChancesDescriptionLabel = (Label)FindNode("HabChancesDescriptionLabel");
 
             // production
             annualResourcesContainer = (Control)FindNode("AnnualResourcesContainer");
@@ -258,7 +258,26 @@ namespace CraigStars.Client
                     break;
             }
 
+            UpdateHabChancesDescription();
             UpdateAdvantagePoints();
+        }
+
+        void UpdateHabChancesDescription()
+        {
+            double habChance = updatedRace.GetHabChance();
+            int approximateHabitablePlanetRatio = (int)(1d / habChance);
+            if (habChance == 1)
+            {
+                habChancesDescriptionLabel.Text = $"All planets will be habitable to your race.";
+            }
+            else if (approximateHabitablePlanetRatio == 1)
+            {
+                habChancesDescriptionLabel.Text = $"Virtually all planets will be habitable to your race.";
+            }
+            else
+            {
+                habChancesDescriptionLabel.Text = $"You can expect that 1 in {approximateHabitablePlanetRatio} planets will be habitable to your race.";
+            }
         }
 
         void PopulateSpendLeftover()
@@ -345,8 +364,18 @@ namespace CraigStars.Client
                 ceCheckBox.Pressed = Race.HasLRT(LRT.CE);
 
                 // growth
+                gravHabEditor.Low = Race.HabLow.grav;
+                gravHabEditor.High = Race.HabHigh.grav;
+                gravHabEditor.Immune = Race.ImmuneGrav;
+                tempHabEditor.Low = Race.HabLow.temp;
+                tempHabEditor.High = Race.HabHigh.temp;
+                tempHabEditor.Immune = Race.ImmuneGrav;
+                radHabEditor.Low = Race.HabLow.rad;
+                radHabEditor.High = Race.HabHigh.rad;
+                radHabEditor.Immune = Race.ImmuneGrav;
+
                 growthRate.Value = Race.GrowthRate;
-                // TODO: update growthRateDescription
+                UpdateHabChancesDescription();
 
                 // production
                 colonistsPerResourceSpinBox.Value = Race.PopEfficiency * 100;

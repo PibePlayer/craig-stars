@@ -7,9 +7,9 @@ namespace CraigStars.Tests
     /// This class holds tests to make sure all the PRT functionality is implemented
     /// </summary>
     [TestFixture]
-    public class RaceTests
+    public class RaceTest
     {
-        static CSLog log = LogProvider.GetLogger(typeof(RaceTests));
+        static CSLog log = LogProvider.GetLogger(typeof(RaceTest));
 
         Rules rules = new Rules(0);
         PlanetService planetService = new PlanetService(
@@ -19,6 +19,21 @@ namespace CraigStars.Tests
         );
 
         RaceService raceService = new RaceService(new TestRulesProvider());
+
+        [Test]
+        public void TestGetHabChance()
+        {
+            Race race = new Race() { HabLow = new Hab(25, 25, 25), HabHigh = new Hab(75, 75, 75) };
+
+            // 1/8ths
+            Assert.AreEqual(.125, race.GetHabChance());
+            
+            race.ImmuneGrav = true;
+            Assert.AreEqual(.25, race.GetHabChance());
+
+            race.ImmuneTemp = true;
+            Assert.AreEqual(.5, race.GetHabChance());
+        }
 
         [Test]
         public void TestHE()

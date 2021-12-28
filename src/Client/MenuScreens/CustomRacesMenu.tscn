@@ -64,6 +64,5 @@ margin_top = 408.0
 margin_bottom = 428.0
 
 [node name="RaceDesignerDialog" parent="." index="1" instance=ExtResource( 3 )]
-visible = false
 margin_right = 1920.0
 margin_bottom = 1080.0

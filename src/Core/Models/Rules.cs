@@ -51,11 +51,17 @@ namespace CraigStars
         [DefaultValue(1)]
         public int MinMineralConcentration { get; set; } = 1;
 
-        [DefaultValue(3)]
-        public int MinStartingMineralConcentration { get; set; } = 3;
+        [DefaultValue(1)]
+        public int MinStartingMineralConcentration { get; set; } = 1;
 
         [DefaultValue(100)]
         public int MaxStartingMineralConcentration { get; set; } = 100;
+
+        [DefaultValue(5)]
+        public int HighRadGermaniumBonus { get; set; } = 5;
+
+        [DefaultValue(85)]
+        public int HighRadGermaniumBonusThreshold { get; set; } = 85;
 
         [DefaultValue(1000)]
         public int MaxStartingMineralSurface { get; set; } = 1000;

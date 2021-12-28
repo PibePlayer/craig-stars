@@ -1,10 +1,11 @@
-using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CasualGodComplex;
 using CraigStars;
-using static CraigStars.Utils.Utils;
 using CraigStars.Utils;
+using Godot;
+using static CraigStars.Utils.Utils;
 
 namespace CraigStars.UniverseGeneration
 {
@@ -71,36 +72,32 @@ namespace CraigStars.UniverseGeneration
 
             int minConc = rules.MinMineralConcentration;
             int maxConc = rules.MaxStartingMineralConcentration;
-            planet.MineralConcentration = new Mineral(
-                random.Next(maxConc) + minConc,
-                random.Next(maxConc) + minConc,
-                random.Next(maxConc) + minConc
+
+            // from @edmundmk on the Stars! discord, this is
+            //  Generate mineral concentration.  There is a 30% chance of a
+            //  concentration between 1 and 30.  Higher concentrations have a
+            //  distribution centred on 75, minimum 31 and maximum 199.
+            //  x = random 1 to 100 inclusive
+            //  if x > 30 then
+            //     x = 30 + random 0 to 44 inclusive + random 0 to 44 inclusive
+            //  end
+            //  return x
+            Mineral conc = new Mineral(
+                random.Next(minConc, maxConc + 1),
+                random.Next(minConc, maxConc + 1),
+                random.Next(minConc, maxConc + 1)
             );
 
-            // generate hab range of this planet
-            int grav = random.Next(100);
-            if (grav > 1)
-            {
-                // this is a "normal" planet, so put it in the 10 to 89 range
-                grav = random.Next(89) + 10;
-            }
-            else
-            {
-                grav = (int)(11 - (float)(random.Next(100)) / 100.0 * 10.0);
-            }
+            planet.MineralConcentration = new Mineral(
+                conc[0] > 30 ? 30 + random.Next(0, 45) + random.Next(0, 45) : conc[0],
+                conc[1] > 30 ? 30 + random.Next(0, 45) + random.Next(0, 45) : conc[1],
+                conc[2] > 30 ? 30 + random.Next(0, 45) + random.Next(0, 45) : conc[2]
+            );
 
-            int temp = random.Next(100);
-            if (temp > 1)
-            {
-                // this is a "normal" planet, so put it in the 10 to 89 range
-                temp = random.Next(89) + 10;
-            }
-            else
-            {
-                temp = (int)(11 - (float)(random.Next(100)) / 100.0 * 10.0);
-            }
-
-            int rad = random.Next(98) + 1;
+            // From @SuicideJunkie's tests, this is a flat random from 0 to 100
+            int grav = random.Next(0, 101);
+            int temp = random.Next(0, 101);
+            int rad = random.Next(0, 101);
 
             planet.Hab = new Hab(
                 grav,

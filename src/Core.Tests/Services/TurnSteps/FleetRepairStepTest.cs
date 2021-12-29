@@ -95,7 +95,6 @@ namespace CraigStars.Tests
             gameRunner.ComputeSpecs(recompute: true);
 
             bombingFleet.Orbiting = defendingPlanet;
-            defendingPlanet.OrbitingFleets.Add(bombingFleet);
 
             bombingFleet.Spec.Armor = 100;
             bombingFleet.Damage = 10;

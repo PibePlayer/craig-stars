@@ -80,16 +80,6 @@ namespace CraigStars
 
         #endregion
 
-        #region Serializer callbacks
-
-        [OnDeserialized]
-        internal void OnDeserialized(StreamingContext context)
-        {
-            Orbiting?.OrbitingFleets.Add(this);
-        }
-
-        #endregion
-
         /// <summary>
         /// Get the orders for this fleet
         /// </summary>

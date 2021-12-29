@@ -326,8 +326,8 @@ namespace CraigStars
             player.Stats.NumTokensBuilt += numBuilt;
             var id = player.Stats.NumFleetsBuilt;
             string name = item.FleetName != null ? item.FleetName : item.Design.Name;
-            var existingFleetByName = planet.OrbitingFleets.Where(f => f.Name == name);
-            var existingFleetsRequiringTokens = planet.OrbitingFleets.Where(f => !f.Spec.FleetCompositionComplete).ToList();
+            var existingFleetByName = Game.MapObjectsByLocation[planet.Position].Where(mo => mo is Fleet f && f.Name == name);
+            var existingFleetsRequiringTokens = Game.MapObjectsByLocation[planet.Position].Where(mo => mo is Fleet f && !f.Spec.FleetCompositionComplete).ToList();
 
             bool foundFleet = false;
             if (existingFleetsRequiringTokens.Count > 0)
@@ -373,7 +373,6 @@ namespace CraigStars
                 fleetSpecService.ComputeFleetSpec(player, fleet);
                 fleet.Fuel = fleet.Spec.FuelCapacity;
                 fleet.Waypoints.Add(Waypoint.TargetWaypoint(planet, warpFactor: fleet.Spec.Engine.IdealSpeed));
-                planet.OrbitingFleets.Add(fleet);
 
                 Message.FleetBuilt(player, item.Design, fleet, numBuilt);
                 EventManager.PublishMapObjectCreatedEvent(fleet);

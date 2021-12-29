@@ -1,15 +1,14 @@
-using Godot;
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
-
-using CraigStars.Singletons;
-using log4net;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using CraigStars.Singletons;
+using Godot;
+using log4net;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
-using System.Threading.Tasks;
-using System.Linq;
+using NUnit.Framework;
 
 namespace CraigStars.Tests
 {
@@ -47,9 +46,7 @@ namespace CraigStars.Tests
                 Position = player2Planet.Position,
                 Orbiting = player2Planet,
             };
-            game.Fleets.Add(attacker);
-
-            player2Planet.OrbitingFleets.Add(attacker);
+            game.AddMapObject(attacker);
 
             gameRunner.ComputeSpecs();
 
@@ -92,9 +89,7 @@ namespace CraigStars.Tests
                 Position = player2Planet.Position,
                 Orbiting = player2Planet,
             };
-            game.Fleets.Add(attacker);
-
-            player2Planet.OrbitingFleets.Add(attacker);
+            game.AddMapObject(attacker);
 
             // make player2 AR
             var player2 = game.Players[1];

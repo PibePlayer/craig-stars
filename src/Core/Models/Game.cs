@@ -188,11 +188,19 @@ namespace CraigStars
             Salvage.ForEach(s => CargoHoldersByGuid[s.Guid] = s);
         }
 
-        void CreateMapObject<T>(T mapObject, List<T> items, Dictionary<Guid, T> itemsByGuid) where T : MapObject
+        void AddMapObject<T>(T mapObject, List<T> items, Dictionary<Guid, T> itemsByGuid) where T : MapObject
         {
             items.Add(mapObject);
             itemsByGuid[mapObject.Guid] = mapObject;
             MapObjectsByGuid[mapObject.Guid] = mapObject;
+
+            if (!MapObjectsByLocation.TryGetValue(mapObject.Position, out var mapObjectsAtLocation))
+            {
+                mapObjectsAtLocation = new List<MapObject>();
+                MapObjectsByLocation[mapObject.Position] = mapObjectsAtLocation;
+            }
+            mapObjectsAtLocation.Add(mapObject);
+
             if (mapObject is ICargoHolder cargoHolder)
             {
                 CargoHoldersByGuid[cargoHolder.Guid] = cargoHolder;
@@ -201,40 +209,64 @@ namespace CraigStars
             log.Debug($"Created new {typeof(T)} {mapObject.Name} - {mapObject.Guid}");
         }
 
-
-        public void CreateMapObject(MapObject mapObject)
+        public void AddMapObject(MapObject mapObject)
         {
-            if (mapObject is Fleet fleet)
+            if (mapObject is Planet planet)
             {
-                CreateMapObject(fleet, Fleets, FleetsByGuid);
+                AddMapObject(planet, Planets, PlanetsByGuid);
+            }
+            else if (mapObject is Fleet fleet)
+            {
+                AddMapObject(fleet, Fleets, FleetsByGuid);
             }
             else if (mapObject is MineField mineField)
             {
-                CreateMapObject(mineField, MineFields, MineFieldsByGuid);
+                AddMapObject(mineField, MineFields, MineFieldsByGuid);
             }
             else if (mapObject is MineralPacket mineralPacket)
             {
-                CreateMapObject(mineralPacket, MineralPackets, MineralPacketsByGuid);
+                AddMapObject(mineralPacket, MineralPackets, MineralPacketsByGuid);
             }
             else if (mapObject is Salvage salvage)
             {
-                CreateMapObject(salvage, Salvage, SalvageByGuid);
+                AddMapObject(salvage, Salvage, SalvageByGuid);
             }
             else if (mapObject is Wormhole wormhole)
             {
-                CreateMapObject(wormhole, Wormholes, WormholesByGuid);
+                AddMapObject(wormhole, Wormholes, WormholesByGuid);
             }
             else if (mapObject is MysteryTrader mysteryTrader)
             {
-                CreateMapObject(mysteryTrader, MysteryTraders, MysteryTradersByGuid);
+                AddMapObject(mysteryTrader, MysteryTraders, MysteryTradersByGuid);
             }
         }
 
-        void DeleteMapObject<T>(T mapObject, List<T> items, Dictionary<Guid, T> itemsByGuid) where T : MapObject
+        public void MoveMapObject(MapObject mapObject, Vector2 originalPosition, Vector2 newPosition)
+        {
+            if (MapObjectsByLocation.TryGetValue(originalPosition, out var mapObjectsAtOriginalLocation))
+            {
+                mapObjectsAtOriginalLocation.Remove(mapObject);
+            }
+            else
+            {
+                log.Warn($"Tried to move {mapObject} from {originalPosition} to {newPosition}, but it wasn't found at {originalPosition}");
+            }
+
+            if (!MapObjectsByLocation.TryGetValue(newPosition, out var mapObjectsAtLocation))
+            {
+                mapObjectsAtLocation = new List<MapObject>();
+                MapObjectsByLocation[newPosition] = mapObjectsAtLocation;
+            }
+            mapObjectsAtLocation.Add(mapObject);
+            mapObject.Position = newPosition;
+        }
+
+        void RemoveMapObject<T>(T mapObject, List<T> items, Dictionary<Guid, T> itemsByGuid) where T : MapObject
         {
             items.Remove(mapObject);
             itemsByGuid.Remove(mapObject.Guid);
             MapObjectsByGuid.Remove(mapObject.Guid);
+            MapObjectsByLocation[mapObject.Position].Remove(mapObject);
 
             if (mapObject is ICargoHolder cargoHolder)
             {
@@ -244,32 +276,28 @@ namespace CraigStars
             log.Debug($"Deleted {typeof(T)} {mapObject.Name} - {mapObject.Guid}");
         }
 
-        public void DeleteMapObject(MapObject mapObject)
+        public void RemoveMapObject(MapObject mapObject)
         {
+
             if (mapObject is Fleet fleet)
             {
-                if (fleet.Orbiting != null)
-                {
-                    fleet.Orbiting.OrbitingFleets.Remove(fleet);
-                }
-
-                DeleteMapObject(fleet, Fleets, FleetsByGuid);
+                RemoveMapObject(fleet, Fleets, FleetsByGuid);
             }
             else if (mapObject is MineField mineField)
             {
-                DeleteMapObject(mineField, MineFields, MineFieldsByGuid);
+                RemoveMapObject(mineField, MineFields, MineFieldsByGuid);
             }
             else if (mapObject is Salvage salvage)
             {
-                DeleteMapObject(salvage, Salvage, SalvageByGuid);
+                RemoveMapObject(salvage, Salvage, SalvageByGuid);
             }
             else if (mapObject is MineralPacket packet)
             {
-                DeleteMapObject(packet, MineralPackets, MineralPacketsByGuid);
+                RemoveMapObject(packet, MineralPackets, MineralPacketsByGuid);
             }
             else if (mapObject is Wormhole wormhole)
             {
-                DeleteMapObject(wormhole, Wormholes, WormholesByGuid);
+                RemoveMapObject(wormhole, Wormholes, WormholesByGuid);
                 Players.ForEach(player =>
                 {
                     if (player.WormholesByGuid.TryGetValue(wormhole.Guid, out var playerWormhole))
@@ -285,7 +313,7 @@ namespace CraigStars
             }
             else if (mapObject is MysteryTrader mysteryTrader)
             {
-                DeleteMapObject(mysteryTrader, MysteryTraders, MysteryTradersByGuid);
+                RemoveMapObject(mysteryTrader, MysteryTraders, MysteryTradersByGuid);
             }
         }
 

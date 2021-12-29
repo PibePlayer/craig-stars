@@ -154,10 +154,6 @@ namespace CraigStars
             player.SalvageIntel.Clear();
             player.FleetIntel.Clear();
             player.MineralPacketIntel.Clear();
-            foreach (var planet in player.AllPlanets)
-            {
-                planet.OrbitingFleets.Clear();
-            }
         }
 
     }

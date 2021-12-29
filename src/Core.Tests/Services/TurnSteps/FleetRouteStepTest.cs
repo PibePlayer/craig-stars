@@ -34,7 +34,7 @@ namespace CraigStars.Tests
 
             var routeTargetPlanet = new Planet();
             routeTargetPlanet.InitEmptyPlanet();
-            game.Planets.Add(routeTargetPlanet);
+            game.AddMapObject(routeTargetPlanet);
 
             routePlanet.RouteTarget = routeTargetPlanet;
 

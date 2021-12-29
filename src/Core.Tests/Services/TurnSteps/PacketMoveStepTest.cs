@@ -1,16 +1,15 @@
-using Godot;
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
-
-using CraigStars.Singletons;
-using log4net;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using CraigStars.Singletons;
+using FakeItEasy;
+using Godot;
+using log4net;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
-using System.Threading.Tasks;
-using System.Linq;
-using FakeItEasy;
+using NUnit.Framework;
 
 namespace CraigStars.Tests
 {
@@ -56,7 +55,7 @@ namespace CraigStars.Tests
             };
 
             // compute spec for this starbase so the receiver is up to date
-            game.Planets.Add(planet2);
+            game.AddMapObject(planet2);
             gameRunner.ComputeSpecs();
 
             // create a 1000kT packet
@@ -113,7 +112,7 @@ namespace CraigStars.Tests
             };
 
             // compute spec for this starbase so the receiver is up to date
-            game.Planets.Add(planet2);
+            game.AddMapObject(planet2);
             gameRunner.ComputeSpecs();
 
             // create a 1000kT packet
@@ -284,7 +283,7 @@ namespace CraigStars.Tests
             Assert.AreEqual(new Hab(47, 50, 50), planet2.BaseHab);
             Assert.AreEqual(new Hab(2, 0, 0), planet2.TerraformedAmount);
 
-        }        
+        }
 
         [Test]
         public void TestPermaform()

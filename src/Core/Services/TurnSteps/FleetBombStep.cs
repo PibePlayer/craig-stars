@@ -64,7 +64,9 @@ namespace CraigStars
             // get a list of all players orbiting the planet
 
             // find any enemy bombers orbiting this planet
-            var enemyBombers = planet.OrbitingFleets.Where(fleet => fleet.Spec.Bomber && Game.Players[fleet.PlayerNum].IsEnemy(planet.PlayerNum));
+            var enemyBombers = Game.MapObjectsByLocation[planet.Position]
+                .Where(mo => mo is Fleet fleet && fleet.Spec.Bomber && Game.Players[fleet.PlayerNum].IsEnemy(planet.PlayerNum))
+                .Cast<Fleet>();
 
             var orbitingPlayerNums = enemyBombers.Select(fleet => fleet.PlayerNum).ToHashSet();
 

@@ -25,7 +25,7 @@ namespace CraigStars.Tests
             var fleet2 = game.Fleets[1];
 
             // position fleet2 50 ly away
-            fleet2.Position = new Vector2(30, 40);
+            game.MoveMapObject(fleet2, fleet2.Position, new Vector2(30, 40));
 
             // make sure we know about this fleet
             FleetDiscoverer fleetDiscoverer = TestUtils.TestContainer.GetInstance<FleetDiscoverer>();
@@ -56,7 +56,7 @@ namespace CraigStars.Tests
             var fleet2 = game.Fleets[1];
 
             // position fleet2 > 50 ly away
-            fleet2.Position = new Vector2(50, 50);
+            game.MoveMapObject(fleet2, fleet2.Position, new Vector2(50, 50));
 
             // make sure we know about this fleet
             FleetDiscoverer fleetDiscoverer = TestUtils.TestContainer.GetInstance<FleetDiscoverer>();
@@ -85,7 +85,7 @@ namespace CraigStars.Tests
             var fleet2 = game.Fleets[1];
 
             // position fleet2 50 ly away
-            fleet2.Position = new Vector2(30, 40);
+            game.MoveMapObject(fleet2, fleet2.Position, new Vector2(30, 40));
 
             // make sure we know about this fleet
             FleetDiscoverer fleetDiscoverer = TestUtils.TestContainer.GetInstance<FleetDiscoverer>();

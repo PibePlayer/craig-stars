@@ -35,7 +35,7 @@ namespace CraigStars.Client
                 if (value != null && nameLabel != null)
                 {
                     nameLabel.Text = Planet.Name;
-                    countLabel.Text = $"{Planet.OrbitingFleets.Sum(fleet => fleet.Tokens.Sum(token => token.Quantity))}";
+                    countLabel.Text = $"{OrbitingFleets.Sum(fleet => fleet.Fleet.Tokens.Sum(token => token.Quantity))}";
                 }
             }
         }
@@ -259,9 +259,9 @@ namespace CraigStars.Client
             {
                 bool allAllies = true;
                 bool allEnemies = true;
-                Planet.OrbitingFleets.ForEach(fleet =>
+                OrbitingFleets.ForEach(fleet =>
                 {
-                    if (fleet.OwnedBy(Me))
+                    if (fleet.Fleet.OwnedBy(Me))
                     {
                         allEnemies = false;
                     }

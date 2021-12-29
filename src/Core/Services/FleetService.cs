@@ -140,11 +140,6 @@ namespace CraigStars
                             newFleet.Waypoints.Add(wp.Clone());
                         });
 
-                        if (fleet.Orbiting != null)
-                        {
-                            fleet.Orbiting.OrbitingFleets.Add(newFleet);
-                        }
-
                         if (split.NewFleetGuids.Count > i)
                         {
                             newFleet.Guid = split.NewFleetGuids[i];

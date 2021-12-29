@@ -31,7 +31,7 @@ namespace CraigStars.Tests
             var fleet = game.Fleets[0];
 
             // move along the x axis
-            fleet.Position = new Vector2(0, 0);
+            game.MoveMapObject(fleet, fleet.Position, new Vector2(0, 0));
             fleet.Waypoints.Add(Waypoint.PositionWaypoint(new Vector2(100, 0), warpFactor: 5));
 
             FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, rulesProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
@@ -58,10 +58,10 @@ namespace CraigStars.Tests
                 Position = new Vector2(10, 10),
             };
             planet.InitEmptyPlanet();
-            game.Planets.Add(planet);
+            game.AddMapObject(planet);
 
             // move towards a nearby planet
-            fleet.Position = new Vector2(0, 0);
+            game.MoveMapObject(fleet, fleet.Position, new Vector2(0, 0));
             fleet.Waypoints.Add(Waypoint.TargetWaypoint(planet, warpFactor: 6));
 
             FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, rulesProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
@@ -71,7 +71,6 @@ namespace CraigStars.Tests
             // move at warp 6 so we overshoot, use some fuel
             Assert.AreEqual(new Vector2(10, 10), fleet.Position);
             Assert.AreEqual(planet, fleet.Orbiting);
-            Assert.True(planet.OrbitingFleets.Contains(fleet));
             Assert.AreEqual(1, fleet.Waypoints.Count);
 
             // make sure the fleet has one waypoint at this planet
@@ -99,7 +98,7 @@ namespace CraigStars.Tests
                 Position = new Vector2(10, 10),
             };
             planet.InitEmptyPlanet();
-            game.Planets.Add(planet);
+            game.AddMapObject(planet);
 
             var fleet2 = new Fleet()
             {
@@ -110,10 +109,9 @@ namespace CraigStars.Tests
                     Waypoint.TargetWaypoint(planet)
                 }
             };
-            planet.OrbitingFleets.Add(fleet2);
 
             // move towards this fleet
-            fleet.Position = new Vector2(0, 0);
+            game.MoveMapObject(fleet, fleet.Position, new Vector2(0, 0));
             fleet.Waypoints.Add(Waypoint.TargetWaypoint(fleet2, warpFactor: 6));
 
             FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, rulesProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
@@ -123,7 +121,6 @@ namespace CraigStars.Tests
             // move at warp 6 so we overshoot, use some fuel
             Assert.AreEqual(new Vector2(10, 10), fleet.Position);
             Assert.AreEqual(planet, fleet.Orbiting);
-            Assert.True(planet.OrbitingFleets.Contains(fleet));
             Assert.AreEqual(1, fleet.Waypoints.Count);
 
             // make sure the fleet has one waypoint at this planet
@@ -148,12 +145,11 @@ namespace CraigStars.Tests
                 Position = new Vector2(10, 10),
             };
             destPlanet.InitEmptyPlanet();
-            game.Planets.Add(destPlanet);
+            game.AddMapObject(destPlanet);
 
             // start us at the source planet
-            fleet.Position = sourcePlanet.Position;
+            game.MoveMapObject(fleet, fleet.Position, sourcePlanet.Position);
             fleet.Orbiting = sourcePlanet;
-            sourcePlanet.OrbitingFleets.Add(fleet);
 
             // give directions to bounce back and forth and repeat
             fleet.Waypoints = new List<Waypoint>() {
@@ -168,7 +164,6 @@ namespace CraigStars.Tests
             // move to the destPlanet
             Assert.AreEqual(destPlanet.Position, fleet.Position);
             Assert.AreEqual(destPlanet, fleet.Orbiting);
-            Assert.True(destPlanet.OrbitingFleets.Contains(fleet));
 
             // we should still have 2 waypoints because of repeating orders
             Assert.AreEqual(2, fleet.Waypoints.Count);
@@ -198,12 +193,11 @@ namespace CraigStars.Tests
                 Position = new Vector2(0, 26),
             };
             destPlanet.InitEmptyPlanet();
-            game.Planets.Add(destPlanet);
+            game.AddMapObject(destPlanet);
 
             // start us at the source planet
-            fleet.Position = sourcePlanet.Position;
+            game.MoveMapObject(fleet, fleet.Position, sourcePlanet.Position);
             fleet.Orbiting = sourcePlanet;
-            sourcePlanet.OrbitingFleets.Add(fleet);
 
             // give directions to bounce back and forth and repeat
             fleet.Waypoints = new List<Waypoint>() {
@@ -235,7 +229,6 @@ namespace CraigStars.Tests
             // we should have arrived at the destPlanet
             Assert.AreEqual(destPlanet.Position, fleet.Position);
             Assert.AreEqual(destPlanet, fleet.Orbiting);
-            Assert.True(destPlanet.OrbitingFleets.Contains(fleet));
 
             // we should still have 2 waypoints because of repeating orders
             Assert.AreEqual(2, fleet.Waypoints.Count);
@@ -269,7 +262,7 @@ namespace CraigStars.Tests
             mockRules.Random = random;
 
             // move along the x axis
-            fleet.Position = new Vector2(0, 0);
+            game.MoveMapObject(fleet, fleet.Position, new Vector2(0, 0));
             fleet.Waypoints.Add(Waypoint.PositionWaypoint(new Vector2(100, 0), warpFactor: 7));
 
             // make the engine fail
@@ -293,7 +286,7 @@ namespace CraigStars.Tests
             // test a 10 ly radius field at 0, 0
             var radius = 10;
 
-            game.MineFields.Add(new MineField()
+            game.AddMapObject(new MineField()
             {
                 PlayerNum = player2.Num,
                 Type = MineFieldType.SpeedBump,
@@ -313,7 +306,7 @@ namespace CraigStars.Tests
                 },
                 Position = new Vector2(-15, 0)
             };
-            game.Fleets.Add(fleet);
+            game.AddMapObject(fleet);
             gameRunner.ComputeSpecs(recompute: true);
 
             FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, rulesProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
@@ -358,7 +351,7 @@ namespace CraigStars.Tests
             // test a 10 ly radius field at 0, 0
             var radius = 10;
 
-            game.MineFields.Add(new MineField()
+            game.AddMapObject(new MineField()
             {
                 PlayerNum = player2.Num,
                 Position = new Vector2(0, 0),
@@ -396,7 +389,7 @@ namespace CraigStars.Tests
             Assert.AreEqual(0, fleet.Tokens[0].QuantityDamaged);
 
             // send the fleet at warp 5, through the minefield, should fly without hitting
-            fleet.Position = new Vector2(-10, 0);
+            game.MoveMapObject(fleet, fleet.Position, new Vector2(-10, 0));
             dest = new Waypoint() { Position = new Vector2(15, 0), WarpFactor = 5 };
             dist = dest.WarpFactor * dest.WarpFactor;
             actualDist = step.CheckForMineFields(fleet, player1, dest, dist);

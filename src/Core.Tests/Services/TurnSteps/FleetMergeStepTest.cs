@@ -43,7 +43,7 @@ namespace CraigStars.Tests
                 },
                 Cargo = new Cargo(colonists: 25)
             };
-            game.Fleets.Add(mergeTarget);
+            game.AddMapObject(mergeTarget);
 
             fleet.Waypoints[0] = Waypoint.TargetWaypoint(mergeTarget, task: WaypointTask.MergeWithFleet);
 

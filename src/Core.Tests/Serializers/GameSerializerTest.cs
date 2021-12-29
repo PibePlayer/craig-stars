@@ -79,7 +79,6 @@ namespace CraigStars.Tests
                 },
                 BattlePlan = player.BattlePlans[0]
             };
-            planet1.OrbitingFleets.Add(fleet1);
 
             var fleet2 = new Fleet()
             {

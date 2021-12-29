@@ -44,7 +44,7 @@ namespace CraigStars.Tests
                 Cargo = new Cargo(),
             };
 
-            game.Planets.Add(planet);
+            game.AddMapObject(planet);
 
             // build a colony fleet
             var colonizer = TestUtils.CreateDesign(game, player, ShipDesigns.SantaMaria);
@@ -56,9 +56,8 @@ namespace CraigStars.Tests
                 },
                 Cargo = new Cargo(colonists: 25)
             };
-            game.Fleets.Add(fleet);
+            game.AddMapObject(fleet);
 
-            planet.OrbitingFleets.Add(fleet);
             fleet.Orbiting = planet;
             fleet.Waypoints.Add(Waypoint.TargetWaypoint(planet, task: WaypointTask.Colonize));
 
@@ -89,7 +88,7 @@ namespace CraigStars.Tests
                 Cargo = new Cargo(),
             };
 
-            game.Planets.Add(planet);
+            game.AddMapObject(planet);
 
             // build a colony fleet with an orbital construction module
             var colonizer = TestUtils.CreateDesign(game, player, ShipDesigns.SantaMaria);
@@ -102,9 +101,8 @@ namespace CraigStars.Tests
                 },
                 Cargo = new Cargo(colonists: 25)
             };
-            game.Fleets.Add(fleet);
+            game.AddMapObject(fleet);
 
-            planet.OrbitingFleets.Add(fleet);
             fleet.Orbiting = planet;
             fleet.Waypoints.Add(Waypoint.TargetWaypoint(planet, task: WaypointTask.Colonize));
 

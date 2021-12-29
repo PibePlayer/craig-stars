@@ -17,7 +17,7 @@ namespace CraigStars.UniverseGeneration
 
         public override void Process()
         {
-            Game.Planets = GeneratePlanets(Game.Rules);
+            GeneratePlanets(Game.Rules).ForEach(planet => Game.AddMapObject(planet));
         }
 
         public List<Planet> GeneratePlanets(Rules rules)

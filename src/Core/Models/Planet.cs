@@ -31,8 +31,6 @@ namespace CraigStars
             }
         }
 
-        [JsonIgnore] public List<Fleet> OrbitingFleets { get; set; } = new List<Fleet>();
-
         public Starbase Starbase { get; set; }
         public int PacketSpeed { get; set; } = 0;
 

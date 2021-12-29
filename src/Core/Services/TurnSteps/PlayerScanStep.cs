@@ -112,7 +112,6 @@ namespace CraigStars
 
             foreach (var planet in player.AllPlanets)
             {
-                planet.OrbitingFleets.Clear();
                 if (planet.ReportAge != MapObject.Unexplored)
                 {
                     // increase the report age. We'll reset it to 0
@@ -129,11 +128,16 @@ namespace CraigStars
             {
                 // find the best scanner at this location, whether fleet or planet
                 var scanner = new Scanner(planet.Position, (int)(planet.Spec.ScanRange), planet.Spec.ScanRangePen);
-                foreach (var fleet in planet.OrbitingFleets.Where(f => f.PlayerNum == player.Num && f.Spec.Scanner))
+                if (Game.MapObjectsByLocation.TryGetValue(planet.Position, out var mapObjectsAtLocation))
                 {
-                    scanner.Range = Math.Max(scanner.Range, fleet.Spec.ScanRange);
-                    scanner.RangePen = Math.Max(scanner.RangePen, fleet.Spec.ScanRangePen);
-                    scanner.CloakReduction = Math.Max(scanner.CloakReduction, fleet.Spec.ReduceCloaking);
+                    foreach (var fleet in mapObjectsAtLocation
+                        .Where(mo => mo is Fleet f && f.PlayerNum == player.Num && f.Spec.Scanner)
+                        .Cast<Fleet>())
+                    {
+                        scanner.Range = Math.Max(scanner.Range, fleet.Spec.ScanRange);
+                        scanner.RangePen = Math.Max(scanner.RangePen, fleet.Spec.ScanRangePen);
+                        scanner.CloakReduction = Math.Max(scanner.CloakReduction, fleet.Spec.ReduceCloaking);
+                    }
                 }
                 // square these ranges, because we are using
                 // the faster DistanceSquaredTo method to compare distances

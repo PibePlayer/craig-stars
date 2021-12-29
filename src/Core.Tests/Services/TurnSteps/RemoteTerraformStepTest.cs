@@ -50,14 +50,14 @@ namespace CraigStars.Tests
             var design = TestUtils.CreateDesign(game, terraformer, ShipDesigns.OrbitalAdjuster);
             var fleet = new Fleet()
             {
+                Position = planet.Position,
                 PlayerNum = terraformer.Num,
                 Tokens = new List<ShipToken>() {
                     new ShipToken(design, 1)
                 },
                 Orbiting = planet,
             };
-            planet.OrbitingFleets.Add(fleet);
-            game.Fleets.Add(fleet);
+            game.AddMapObject(fleet);
 
             gameRunner.ComputeSpecs(recompute: true);
 
@@ -93,8 +93,7 @@ namespace CraigStars.Tests
                 },
                 Orbiting = planet,
             };
-            planet.OrbitingFleets.Add(fleet);
-            game.Fleets.Add(fleet);
+            game.AddMapObject(fleet);
 
             gameRunner.ComputeSpecs(recompute: true);
 

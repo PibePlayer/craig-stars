@@ -1,15 +1,14 @@
-using Godot;
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
-
-using CraigStars.Singletons;
-using log4net;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using CraigStars.Singletons;
+using Godot;
+using log4net;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
-using System.Threading.Tasks;
-using System.Linq;
+using NUnit.Framework;
 
 namespace CraigStars.Tests
 {
@@ -42,7 +41,7 @@ namespace CraigStars.Tests
             Assert.IsTrue(player.AchievedVictoryConditions.Contains(VictoryConditionType.OwnPlanets));
 
             // add a planet, now our player only owns half the planets
-            game.Planets.Add(new Planet() { Name = "Planet 2" });
+            game.AddMapObject(new Planet() { Name = "Planet 2" });
             player.AchievedVictoryConditions.Clear();
             step.CheckOwnPlanets(player);
             Assert.IsFalse(player.AchievedVictoryConditions.Contains(VictoryConditionType.OwnPlanets));

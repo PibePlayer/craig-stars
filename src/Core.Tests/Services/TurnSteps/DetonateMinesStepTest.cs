@@ -1,15 +1,14 @@
-using Godot;
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
-
-using CraigStars.Singletons;
-using log4net;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using CraigStars.Singletons;
+using Godot;
+using log4net;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
-using System.Threading.Tasks;
-using System.Linq;
+using NUnit.Framework;
 
 namespace CraigStars.Tests
 {
@@ -31,7 +30,7 @@ namespace CraigStars.Tests
                 Type = MineFieldType.Standard,
                 Position = new Vector2(0, 0),
             };
-            game.MineFields.Add(mineField);
+            game.AddMapObject(mineField);
             gameRunner.ComputeSpecs();
 
             DetonateMinesStep step = new DetonateMinesStep(gameRunner.GameProvider, mineFieldDamager);
@@ -52,7 +51,7 @@ namespace CraigStars.Tests
         public void DetonateSafeFleetTest()
         {
             var (game, gameRunner) = TestUtils.GetSingleUnitGame();
-            game.Fleets[0].Position = new Vector2(100, 100); // out of the blast radius
+            game.MoveMapObject(game.Fleets[0], game.Fleets[0].Position, new Vector2(100, 100)); // out of the blast radius
             var player = game.Players[0];
             var mineField = new MineField()
             {
@@ -60,7 +59,7 @@ namespace CraigStars.Tests
                 Type = MineFieldType.Standard,
                 Position = new Vector2(0, 0),
             };
-            game.MineFields.Add(mineField);
+            game.AddMapObject(mineField);
             gameRunner.ComputeSpecs();
 
             DetonateMinesStep step = new DetonateMinesStep(gameRunner.GameProvider, mineFieldDamager);
@@ -92,7 +91,7 @@ namespace CraigStars.Tests
                 NumMines = 320,
                 Detonate = true,
             };
-            game.MineFields.Add(mineField);
+            game.AddMapObject(mineField);
 
             // make a new fleet with 10 stalwart defenders (350 armor each)
             var design = TestUtils.CreateDesign(game, player, ShipDesigns.LittleHen.Clone(player));
@@ -103,7 +102,7 @@ namespace CraigStars.Tests
                     new ShipToken(design, 1)
                 },
             };
-            game.Fleets.Add(fleet);
+            game.AddMapObject(fleet);
             gameRunner.ComputeSpecs(recompute: true);
 
             Assert.AreEqual(2, game.Fleets.Count);

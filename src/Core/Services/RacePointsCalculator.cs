@@ -5,6 +5,8 @@ namespace CraigStars
 {
     public class RacePointsCalculator
     {
+        static CSLog log = LogProvider.GetLogger(typeof(RacePointsCalculator));
+
         // The 'cost' in points of each LRT. A good LRT costs negative, a bad LRT is positive
         static Dictionary<LRT, int> lrtPointCost = new Dictionary<LRT, int>()
         {
@@ -507,6 +509,7 @@ namespace CraigStars
                         for (int iterationRad = 0; iterationRad < numIterationsRad; iterationRad++)
                         {
                             tmpHab = GetPlanetHabForHabIndex(race, iterationRad, 2, loopIndex, numIterationsRad, testHabStart[2], testHabWidth[2], terraformOffset, ttCorrectionFactor);
+
                             testPlanetHab = testPlanetHab.WithRad(tmpHab);
 
                             planetDesirability = race.GetPlanetHabitability(testPlanetHab);
@@ -537,6 +540,8 @@ namespace CraigStars
                             }
 
                             radiationSum += planetDesirability;
+
+                            // log.Debug($"Hab: {testPlanetHab}, desirability: {planetDesirability}, sums: ({gravitySum}, {temperatureSum}, {radiationSum}) ");
                         }
 
                         // The radiationSum is the sum of the planetDesirability for each iteration in numIterationsRad

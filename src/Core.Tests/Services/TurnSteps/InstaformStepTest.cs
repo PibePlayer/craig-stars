@@ -1,15 +1,14 @@
-using Godot;
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
-
-using CraigStars.Singletons;
-using log4net;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using CraigStars.Singletons;
+using Godot;
+using log4net;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
-using System.Threading.Tasks;
-using System.Linq;
+using NUnit.Framework;
 
 namespace CraigStars.Tests
 {
@@ -46,7 +45,7 @@ namespace CraigStars.Tests
                 TerraformedAmount = new Hab(),
             };
 
-            game.Planets.Add(planet);
+            game.AddMapObject(planet);
             gameRunner.ComputeSpecs();
 
             // should terraform 3 grav points

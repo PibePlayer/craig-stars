@@ -49,17 +49,19 @@ namespace CraigStars
 
             // don't infinite jiggle
             int jiggleCount = 0;
+            var originalPosition = wormhole.Position;
+            Vector2 newPosition;
             do
             {
-                var originalPosition = wormhole.Position;
-                wormhole.Position = new Vector2(
+                newPosition = new Vector2(
                     wormhole.Position.x + Game.Rules.Random.Next(-stats.jiggleDistance / 2, stats.jiggleDistance / 2),
                     wormhole.Position.y + Game.Rules.Random.Next(-stats.jiggleDistance / 2, stats.jiggleDistance / 2)
                 );
                 log.Debug($"{Game.Year} Wormhole {TextUtils.GetPositionString(originalPosition)} jiggled to {wormhole.Position}");
                 jiggleCount++;
-            } while (Game.MapObjectsByLocation.ContainsKey(wormhole.Position) && jiggleCount < 100);
+            } while (Game.MapObjectsByLocation.ContainsKey(newPosition) && jiggleCount < 100);
 
+            Game.MoveMapObject(wormhole, originalPosition, newPosition);
         }
 
         internal void Degrade(Wormhole wormhole)

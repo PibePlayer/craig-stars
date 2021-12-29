@@ -6,7 +6,6 @@ using System.Collections.Generic;
 
 namespace CraigStars
 {
-    // [JsonObject(IsReference = true)]
     public class PublicPlayerInfo
     {
         public int NetworkId { get; set; }

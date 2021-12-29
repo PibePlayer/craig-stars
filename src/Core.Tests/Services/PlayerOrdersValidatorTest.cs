@@ -76,7 +76,7 @@ namespace CraigStars.Tests
             // create a new planet to target
             var newPlanet = new Planet() { Name = "New Planet", Position = new Vector2(100, 100) };
             newPlanet.InitEmptyPlanet();
-            game.Planets.Add(newPlanet);
+            game.AddMapObject(newPlanet);
             game.UpdateInternalDictionaries();
             var playerIntelDiscoverer = TestUtils.TestContainer.GetInstance<PlayerIntelDiscoverer>();
             playerIntelDiscoverer.Discover(player, newPlanet);

@@ -1,15 +1,14 @@
-using Godot;
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
-
-using CraigStars.Singletons;
-using log4net;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using CraigStars.Singletons;
+using Godot;
+using log4net;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
-using System.Threading.Tasks;
-using System.Linq;
+using NUnit.Framework;
 
 namespace CraigStars.Tests
 {
@@ -399,8 +398,6 @@ namespace CraigStars.Tests
             var planet = game.Planets[0];
             var player = game.Players[0];
 
-            var originalOrbitingFleets = planet.OrbitingFleets.Count;
-
             ProductionQueueItem item = new(QueueItemType.ShipToken, 1, game.Designs[1]);
 
             Fleet builtFleet = null;
@@ -414,9 +411,8 @@ namespace CraigStars.Tests
             step.BuildFleet(planet, player, item, 1);
             EventManager.MapObjectCreatedEvent -= onFleetBuilt;
 
-            Assert.AreEqual(originalOrbitingFleets + 1, planet.OrbitingFleets.Count);
             Assert.NotNull(builtFleet);
-            Assert.Contains(builtFleet, planet.OrbitingFleets);
+            Assert.AreEqual(builtFleet.Position, planet.Position);
         }
 
         [Test]
@@ -477,7 +473,7 @@ namespace CraigStars.Tests
                 Position = new Vector2(100, 100),
                 Name = "Target Planet",
             };
-            game.Planets.Add(target);
+            game.AddMapObject(target);
 
             planet.PacketTarget = target;
 

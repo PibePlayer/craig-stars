@@ -1298,12 +1298,6 @@ namespace CraigStars.Client
             Me.MapObjectsByLocation[fleet.Position].Remove(fleet);
             mapObjectsByLocation[fleet.Position].Remove(fleetSprite);
 
-            // make sure any planets we are orbiting don't know about us anymore
-            if (fleet.Orbiting != null)
-            {
-                fleet.Orbiting.OrbitingFleets.Remove(fleet);
-            }
-
             // Goto the homeworld if the current fleet is commanded
             if (fleetSprite == CommandedFleet)
             {

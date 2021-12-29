@@ -290,14 +290,14 @@ namespace CraigStars
         {
             deletedMapObjects.ForEach(mapObject =>
             {
-                Game.DeleteMapObject(mapObject);
+                Game.RemoveMapObject(mapObject);
             });
             deletedMapObjects.Clear();
         }
 
         void OnMapObjectCreated(MapObject mapObject)
         {
-            Game.CreateMapObject(mapObject);
+            Game.AddMapObject(mapObject);
         }
 
         void OnMapObjectDeleted(MapObject mapObject)

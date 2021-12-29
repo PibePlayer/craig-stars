@@ -1,16 +1,15 @@
-using Godot;
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
-
-using CraigStars.Singletons;
-using log4net;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using CraigStars.Singletons;
+using CraigStars.UniverseGeneration;
+using Godot;
+using log4net;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
-using System.Threading.Tasks;
-using System.Linq;
-using CraigStars.UniverseGeneration;
+using NUnit.Framework;
 
 namespace CraigStars.Tests
 {
@@ -74,7 +73,7 @@ namespace CraigStars.Tests
                 MineralConcentration = new Mineral(4, 5, 6),
             };
 
-            game.Planets.Add(planet2);
+            game.AddMapObject(planet2);
 
             // discover the basics about this planet
             playerIntelDiscoverer.Discover(player, planet2);
@@ -118,7 +117,7 @@ namespace CraigStars.Tests
                 MineralConcentration = new Mineral(4, 5, 6),
             };
 
-            game.Planets.Add(planet2);
+            game.AddMapObject(planet2);
 
             // discover the basics about this planet
             playerIntelDiscoverer.Discover(player, planet2);
@@ -129,7 +128,7 @@ namespace CraigStars.Tests
 
             // simulate this fleet moving past the planet and out of scan range
             fleet.PreviousPosition = new Vector2();
-            fleet.Position = new Vector2(scanRangePen * 2 + 2, 0);
+            game.MoveMapObject(fleet, fleet.Position, new Vector2(scanRangePen * 2 + 2, 0));
 
             var scanStep = new PlayerScanStep(gameRunner.GameProvider, rulesProvider, playerIntelDiscoverer, playerTechService, fleetSpecService);
             scanStep.Execute(new TurnGenerationContext(), game.OwnedPlanets.ToList());
@@ -204,7 +203,7 @@ namespace CraigStars.Tests
                         isOrbiting ? Waypoint.TargetWaypoint(planet) : Waypoint.PositionWaypoint(position1)
                     }
                 };
-                game.Fleets.Add(fleet1);
+                game.AddMapObject(fleet1);
                 game.Designs.Add(design1);
 
                 var position2 = isOrbiting ? planet.Position : new Vector2(random.Next(1000), random.Next(1000));
@@ -224,7 +223,7 @@ namespace CraigStars.Tests
                         isOrbiting ? Waypoint.TargetWaypoint(planet) : Waypoint.PositionWaypoint(position2)
                     }
                 };
-                game.Fleets.Add(fleet2);
+                game.AddMapObject(fleet2);
                 game.Designs.Add(design2);
 
 
@@ -268,7 +267,7 @@ namespace CraigStars.Tests
             planet2.Starbase.Design.Slots.Add(new ShipDesignSlot(Techs.Stargate100_250, 1, 1));
 
             // move the planet in range
-            planet2.Position = new Vector2(250, 0);
+            game.MoveMapObject(planet2, planet2.Position, new Vector2(250, 0));
 
             game.UpdateInternalDictionaries();
             gameRunner.ComputeSpecs(recompute: true);
@@ -308,7 +307,7 @@ namespace CraigStars.Tests
             var player1 = game.Players[0];
             var player2 = game.Players[1];
 
-            game.MineralPackets.Add(new MineralPacket()
+            game.AddMapObject(new MineralPacket()
             {
                 PlayerNum = player2.Num,
                 Position = new Vector2(1000, 1000),

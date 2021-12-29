@@ -87,7 +87,6 @@ namespace CraigStars.UniverseGeneration
             fleet.Position = planet.Position;
             fleet.Orbiting = planet;
             fleet.Waypoints.Add(Waypoint.TargetWaypoint(fleet.Orbiting));
-            planet.OrbitingFleets.Add(fleet);
             fleet.PlayerNum = player.Num;
             fleet.RaceName = player.Race.Name;
             fleet.RacePluralName = player.Race.PluralName;

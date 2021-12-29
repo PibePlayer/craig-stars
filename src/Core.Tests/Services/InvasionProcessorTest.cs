@@ -54,7 +54,6 @@ namespace CraigStars.Tests
             };
 
             fleet.Orbiting = planet;
-            planet.OrbitingFleets.Add(fleet);
 
             // 10000 attackers for 10000 undefended defenders, attacker wins
             int attackers = 10000;
@@ -100,7 +99,6 @@ namespace CraigStars.Tests
             };
 
             fleet.Orbiting = planet;
-            planet.OrbitingFleets.Add(fleet);
 
             // 5000 attackers for 10000 undefended defenders, defenders win
             int attackers = 5000;
@@ -145,7 +143,6 @@ namespace CraigStars.Tests
             };
 
             fleet.Orbiting = planet;
-            planet.OrbitingFleets.Add(fleet);
             planet.Spec = planetService.ComputePlanetSpec(planet, planetOwner);
 
             // 100,000 attackers for 100,000 well defended defenders, defenders win

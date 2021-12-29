@@ -45,7 +45,6 @@ namespace CraigStars
             {
                 var orbitingPlanetReport = player.PlanetsByGuid[item.Orbiting.Guid];
                 itemReport.Orbiting = orbitingPlanetReport;
-                itemReport.Orbiting.OrbitingFleets.Add(itemReport);
             }
         }
 

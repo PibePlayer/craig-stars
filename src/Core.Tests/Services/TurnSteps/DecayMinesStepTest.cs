@@ -1,15 +1,14 @@
-using Godot;
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
-
-using CraigStars.Singletons;
-using log4net;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using CraigStars.Singletons;
+using Godot;
+using log4net;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
-using System.Threading.Tasks;
-using System.Linq;
+using NUnit.Framework;
 
 namespace CraigStars.Tests
 {
@@ -29,7 +28,7 @@ namespace CraigStars.Tests
                 Type = MineFieldType.Standard,
                 Position = new Vector2(100, 100), // move it away from the planet
             };
-            game.MineFields.Add(mineField);
+            game.AddMapObject(mineField);
 
             DecayMinesStep step = new DecayMinesStep(gameRunner.GameProvider, TestUtils.TestContainer.GetInstance<MineFieldDecayer>());
 
@@ -47,7 +46,7 @@ namespace CraigStars.Tests
 
             // decay rate is -4% per planet
             mineField.NumMines = 1000;
-            mineField.Position = new Vector2(0, 0);
+            game.MoveMapObject(mineField, mineField.Position, new Vector2(0, 0));
             step.Decay(mineField);
             Assert.AreEqual(940, mineField.NumMines);
             Assert.AreEqual(1, game.MineFields.Count);

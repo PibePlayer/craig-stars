@@ -49,8 +49,7 @@ namespace CraigStars.Tests
             var fleet = game.Fleets[0];
 
             // move teh fleet into deep space
-            fleet.Position = new Vector2(10, 10);
-            fleet.Orbiting.OrbitingFleets.Remove(fleet);
+            game.MoveMapObject(fleet, fleet.Position, new Vector2(10, 10));
             fleet.Orbiting = null;
 
             fleet.Waypoints[0] = Waypoint.PositionWaypoint(fleet.Position, task: WaypointTask.ScrapFleet);

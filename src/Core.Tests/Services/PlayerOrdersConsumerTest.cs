@@ -38,7 +38,7 @@ namespace CraigStars.Tests
             // create a new planet for a fleet target
             var newPlanet = new Planet() { Name = "Planet 2" };
             newPlanet.InitEmptyPlanet();
-            game.Planets.Add(newPlanet);
+            game.AddMapObject(newPlanet);
             game.UpdateInternalDictionaries();
             playerIntelDiscoverer.Discover(player, newPlanet);
             player.SetupMapObjectMappings();

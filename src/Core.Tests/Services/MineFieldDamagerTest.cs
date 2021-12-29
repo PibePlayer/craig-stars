@@ -1,15 +1,14 @@
-using Godot;
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
-
-using CraigStars.Singletons;
-using log4net;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using CraigStars.Singletons;
+using Godot;
+using log4net;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
-using System.Threading.Tasks;
-using System.Linq;
+using NUnit.Framework;
 
 namespace CraigStars.Tests
 {
@@ -32,7 +31,7 @@ namespace CraigStars.Tests
             var player1 = game.Players[0];
             var player2 = game.Players[1];
 
-            game.MineFields.Add(new MineField()
+            game.AddMapObject(new MineField()
             {
                 PlayerNum = player2.Num,
                 Type = MineFieldType.Standard,
@@ -51,7 +50,7 @@ namespace CraigStars.Tests
                     new ShipToken(design, 10)
                 },
             };
-            game.Fleets.Add(fleet);
+            game.AddMapObject(fleet);
             gameRunner.ComputeSpecs(recompute: true);
 
             FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, rulesProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
@@ -95,7 +94,7 @@ namespace CraigStars.Tests
             var player1 = game.Players[0];
             var player2 = game.Players[1];
 
-            game.MineFields.Add(new MineField()
+            game.AddMapObject(new MineField()
             {
                 PlayerNum = player2.Num,
                 Type = MineFieldType.Standard,
@@ -114,7 +113,7 @@ namespace CraigStars.Tests
                     new ShipToken(design, 1)
                 },
             };
-            game.Fleets.Add(fleet);
+            game.AddMapObject(fleet);
             gameRunner.ComputeSpecs(recompute: true);
 
             FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, rulesProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
@@ -139,7 +138,7 @@ namespace CraigStars.Tests
             var player1 = game.Players[0];
             var player2 = game.Players[1];
 
-            game.MineFields.Add(new MineField()
+            game.AddMapObject(new MineField()
             {
                 PlayerNum = player2.Num,
                 Type = MineFieldType.Standard,
@@ -170,7 +169,7 @@ namespace CraigStars.Tests
                     new ShipToken(largeFrieghter, 1)
                 },
             };
-            game.Fleets.Add(fleet);
+            game.AddMapObject(fleet);
             gameRunner.ComputeSpecs(recompute: true);
 
             FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, rulesProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);

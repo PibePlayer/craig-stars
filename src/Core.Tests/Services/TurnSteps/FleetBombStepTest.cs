@@ -134,12 +134,11 @@ namespace CraigStars.Tests
                     new ShipToken(design, 1)
                 }
             };
-            game.Fleets.Add(fleet);
+            game.AddMapObject(fleet);
 
             gameRunner.ComputeSpecs(recompute: true);
 
             fleet.Orbiting = planet;
-            planet.OrbitingFleets.Add(fleet);
 
             step.BombPlanet(planet);
 
@@ -173,12 +172,11 @@ namespace CraigStars.Tests
                     new ShipToken(design, 1)
                 }
             };
-            game.Fleets.Add(fleet);
+            game.AddMapObject(fleet);
 
             gameRunner.ComputeSpecs(recompute: true);
 
             fleet.Orbiting = planet;
-            planet.OrbitingFleets.Add(fleet);
 
             step.BombPlanet(planet);
 
@@ -214,7 +212,7 @@ namespace CraigStars.Tests
                     new ShipToken(design, 1)
                 }
             };
-            game.Fleets.Add(fleet1);
+            game.AddMapObject(fleet1);
 
             // one mini-bomber with smart bombs
             var fleet2 = new Fleet()
@@ -237,13 +235,11 @@ namespace CraigStars.Tests
             };
 
             game.Designs.Add(fleet2.Tokens[0].Design);
-            game.Fleets.Add(fleet2);
+            game.AddMapObject(fleet2);
             gameRunner.ComputeSpecs(recompute: true);
 
             fleet1.Orbiting = planet;
             fleet2.Orbiting = planet;
-            planet.OrbitingFleets.Add(fleet1);
-            planet.OrbitingFleets.Add(fleet2);
 
             step.BombPlanet(planet);
 
@@ -292,10 +288,9 @@ namespace CraigStars.Tests
                 Orbiting = planet,
                 Position = planet.Position
             };
-            planet.OrbitingFleets.Add(fleet);
 
             game.Designs.Add(fleet.Tokens[0].Design);
-            game.Fleets.Add(fleet);
+            game.AddMapObject(fleet);
 
             gameRunner.ComputeSpecs(recompute: true);
 
@@ -332,12 +327,11 @@ namespace CraigStars.Tests
                 },
                 Cargo = new Cargo(colonists: 25)
             };
-            game.Fleets.Add(fleet);
+            game.AddMapObject(fleet);
 
             gameRunner.ComputeSpecs(recompute: true);
 
             fleet.Orbiting = planet;
-            planet.OrbitingFleets.Add(fleet);
 
             step.BombPlanet(planet);
 

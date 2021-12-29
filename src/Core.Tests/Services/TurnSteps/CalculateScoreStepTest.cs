@@ -1,15 +1,14 @@
-using Godot;
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
-
-using CraigStars.Singletons;
-using log4net;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using CraigStars.Singletons;
+using Godot;
+using log4net;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
-using System.Threading.Tasks;
-using System.Linq;
+using NUnit.Framework;
 
 namespace CraigStars.Tests
 {
@@ -68,16 +67,16 @@ namespace CraigStars.Tests
 
             // should be 1 more point for an extra planet, and this planet 
             // generates 7 pts for 210 resources
-            game.Planets.Add(new Planet()
+            game.AddMapObject(new Planet()
             {
                 PlayerNum = player.Num,
                 Population = 210000,  // should be 2 points for population, 210 resources for 7 more points
             });
-            game.Fleets.Add(game.Fleets[0]);
+            game.AddMapObject(game.Fleets[0]);
             game.Fleets[0].Tokens[0].Quantity = 2; // should be one point for 2 small tokens
 
             // add a capital ship for 5 points (with 2 planets) (8 * 2 / 3)
-            game.Fleets.Add(new Fleet()
+            game.AddMapObject(new Fleet()
             {
                 PlayerNum = player.Num,
                 Tokens = new List<ShipToken>() {

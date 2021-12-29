@@ -91,7 +91,7 @@ namespace CraigStars.Tests
                 TerraformedAmount = new Hab(),
                 MineralConcentration = new Mineral(100, 100, 100),
             };
-            game.Planets.Add(planet);
+            game.AddMapObject(planet);
 
             // we have to discover this planet first as empty, then a second item as owned
             // because that's how the universe generation works. We do some logic on
@@ -139,8 +139,7 @@ namespace CraigStars.Tests
                     Waypoint.TargetWaypoint(planet)
                 }
             };
-            game.Fleets.Add(fleet);
-            planet.OrbitingFleets.Add(fleet);
+            game.AddMapObject(fleet);
 
             // setup mappings for the planet guids
             player.SetupMapObjectMappings();
@@ -249,8 +248,8 @@ namespace CraigStars.Tests
                 }
             };
             planet2.Starbase.Orbiting = planet2;
-            game.Planets.Add(planet1);
-            game.Planets.Add(planet2);
+            game.AddMapObject(planet1);
+            game.AddMapObject(planet2);
 
             game.Planets.ForEach(planet =>
             {
@@ -313,10 +312,8 @@ namespace CraigStars.Tests
                     Waypoint.TargetWaypoint(planet2)
                 }
             };
-            game.Fleets.Add(fleet1);
-            game.Fleets.Add(fleet2);
-            planet1.OrbitingFleets.Add(fleet1);
-            planet2.OrbitingFleets.Add(fleet2);
+            game.AddMapObject(fleet1);
+            game.AddMapObject(fleet2);
 
             player1.SetupMapObjectMappings();
             player2.SetupMapObjectMappings();

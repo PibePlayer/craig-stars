@@ -1,15 +1,14 @@
-using Godot;
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
-
-using CraigStars.Singletons;
-using log4net;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using CraigStars.Singletons;
+using Godot;
+using log4net;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
-using System.Threading.Tasks;
-using System.Linq;
+using NUnit.Framework;
 
 namespace CraigStars.Tests
 {
@@ -34,7 +33,7 @@ namespace CraigStars.Tests
                 PlayerNum = player2.Num,
                 NumMines = 1000,
             };
-            game.MineFields.Add(mineField);
+            game.AddMapObject(mineField);
 
             // should ignore this mineField
             var playerMineField = new MineField()
@@ -43,7 +42,7 @@ namespace CraigStars.Tests
                 PlayerNum = player1.Num,
                 NumMines = 1000
             };
-            game.MineFields.Add(playerMineField);
+            game.AddMapObject(playerMineField);
 
             // make the fleet have a simple scout design with a mine dispenser 50
             fleet.Tokens[0].Design = TestUtils.CreateDesign(game, player1, new ShipDesign()
@@ -56,7 +55,11 @@ namespace CraigStars.Tests
                     new ShipDesignSlot(Techs.MiniGun, 3, 1),
                 }
             });
-            fleet.Position = new Vector2(1000, 1000); // move away from starbase
+
+            // move this fleet
+            game.MoveMapObject(fleet, fleet.Position, new Vector2(1000, 1000)); // move away from starbase
+            game.RemoveMapObject(fleet);
+            game.AddMapObject(fleet);
             gameRunner.ComputeSpecs(recompute: true);
 
             FleetSweepMinesStep step = new FleetSweepMinesStep(gameRunner.GameProvider, fleetService);

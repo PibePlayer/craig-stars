@@ -30,7 +30,7 @@ namespace CraigStars.Tests
                 SafeWarpSpeed = 7,
                 DistanceTravelled = 7 * 7
             };
-            game.MineralPackets.Add(packet);
+            game.AddMapObject(packet);
 
             DecayPacketsStep step = new DecayPacketsStep(gameRunner.GameProvider, new TestRulesProvider());
 

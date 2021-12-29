@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using static CraigStars.Utils.Utils;
@@ -44,6 +45,9 @@ namespace CraigStars
                 Waypoint wp1 = fleet.Waypoints[1];
                 float totalDist = fleet.Position.DistanceTo(wp1.Position);
 
+                // remove the fleet from the list of map objects at it's current location
+                var originalPosition = fleet.Position;
+
                 if (wp1.WarpFactor == Waypoint.StargateWarpFactor)
                 {
                     // yeah, gate!
@@ -54,6 +58,8 @@ namespace CraigStars
                     MoveFleet(fleet, player, wp0, wp1, totalDist);
                 }
 
+                // update the game dictionaries with this fleet's new position
+                Game.MoveMapObject(fleet, originalPosition, fleet.Position);
             }
             else
             {
@@ -223,7 +229,6 @@ namespace CraigStars
             // assuming we move at all, make sure we are no longer orbiting any planets
             if (dist > 0 && fleet.Orbiting != null)
             {
-                fleet.Orbiting.OrbitingFleets.Remove(fleet);
                 fleet.Orbiting = null;
             }
 
@@ -257,15 +262,6 @@ namespace CraigStars
         /// <param name="wp1"></param>
         void CompleteMove(Fleet fleet, Waypoint wp0, Waypoint wp1)
         {
-            if (wp0.Target is Planet sourcePlanet)
-            {
-                sourcePlanet.OrbitingFleets.Remove(fleet);
-            }
-            else if (wp0.Target is Fleet sourceFleet && sourceFleet.Orbiting != null)
-            {
-                sourceFleet.Orbiting.OrbitingFleets.Remove(fleet);
-            }
-
             fleet.Position = wp1.Position;
 
             // find out if we arrived at a planet, either by reaching our target fleet 
@@ -279,7 +275,6 @@ namespace CraigStars
             if (targetPlanet != null)
             {
                 fleet.Orbiting = targetPlanet;
-                targetPlanet.OrbitingFleets.Add(fleet);
                 if (fleet.PlayerNum == targetPlanet.PlayerNum && targetPlanet.HasStarbase)
                 {
                     // refuel at starbases

@@ -10,10 +10,6 @@ namespace CraigStars
     {
         public int DockCapacity { get => Tokens?[0]?.Design?.Hull?.SpaceDock ?? 0; }
 
-        // TODO: maybe it's better to store packet targets with teh starbase? it's doing the flinging...
-        // [JsonProperty(IsReference = true)]
-        // public Planet MassDriverTarget { get; set; }
-
         [JsonIgnore]
         public ShipDesign Design { get => Tokens[0].Design; }
 

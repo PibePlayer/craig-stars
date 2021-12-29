@@ -119,8 +119,7 @@ namespace CraigStars.Tests
                 },
 
             };
-            planetTarget.OrbitingFleets.Add(fleet);
-            game.Fleets.Add(fleet);
+            game.AddMapObject(fleet);
             gameRunner.ComputeSpecs(recompute: true);
 
             // configure this fleet to load optimal fuel to the target

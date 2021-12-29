@@ -44,7 +44,7 @@ namespace CraigStars.Tests
                 Cargo = new Cargo(),
             };
 
-            game.Planets.Add(planet);
+            game.AddMapObject(planet);
 
             // build a remote mining fleet
             var miner = TestUtils.CreateDesign(game, player, ShipDesigns.CottonPicker);
@@ -55,9 +55,8 @@ namespace CraigStars.Tests
                     new ShipToken(miner, 1)
                 },
             };
-            game.Fleets.Add(fleet);
+            game.AddMapObject(fleet);
 
-            planet.OrbitingFleets.Add(fleet);
             fleet.Orbiting = planet;
             fleet.Waypoints.Add(Waypoint.TargetWaypoint(planet, task: WaypointTask.RemoteMining));
 
@@ -86,7 +85,7 @@ namespace CraigStars.Tests
             var player = game.Players[0];
             var planet = game.Planets[0];
             player.Race.PRT = PRT.AR;
-            
+
             // build a remote mining fleet
             var miner = TestUtils.CreateDesign(game, player, ShipDesigns.CottonPicker);
             var fleet = new Fleet()
@@ -96,9 +95,8 @@ namespace CraigStars.Tests
                     new ShipToken(miner, 1)
                 },
             };
-            game.Fleets.Add(fleet);
+            game.AddMapObject(fleet);
 
-            planet.OrbitingFleets.Add(fleet);
             fleet.Orbiting = planet;
             fleet.Waypoints.Add(Waypoint.TargetWaypoint(planet, task: WaypointTask.RemoteMining));
 

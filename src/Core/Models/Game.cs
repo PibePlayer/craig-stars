@@ -186,6 +186,8 @@ namespace CraigStars
             Fleets.ForEach(f => CargoHoldersByGuid[f.Guid] = f);
             MineralPackets.ForEach(mp => CargoHoldersByGuid[mp.Guid] = mp);
             Salvage.ForEach(s => CargoHoldersByGuid[s.Guid] = s);
+
+            UpdateMapObjectsByLocation();
         }
 
         void AddMapObject<T>(T mapObject, List<T> items, Dictionary<Guid, T> itemsByGuid) where T : MapObject

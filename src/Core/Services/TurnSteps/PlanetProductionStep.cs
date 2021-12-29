@@ -326,8 +326,12 @@ namespace CraigStars
             player.Stats.NumTokensBuilt += numBuilt;
             var id = player.Stats.NumFleetsBuilt;
             string name = item.FleetName != null ? item.FleetName : item.Design.Name;
-            var existingFleetByName = Game.MapObjectsByLocation[planet.Position].Where(mo => mo is Fleet f && f.Name == name);
-            var existingFleetsRequiringTokens = Game.MapObjectsByLocation[planet.Position].Where(mo => mo is Fleet f && !f.Spec.FleetCompositionComplete).ToList();
+            if (!Game.MapObjectsByLocation.TryGetValue(planet.Position, out var mapObjectsAtPlanetLocation)) {
+                mapObjectsAtPlanetLocation = new List<MapObject>() { planet };
+                Game.MapObjectsByLocation[planet.Position] = mapObjectsAtPlanetLocation;
+            }
+            var existingFleetByName = mapObjectsAtPlanetLocation.Where(mo => mo is Fleet f && f.Name == name);
+            var existingFleetsRequiringTokens = mapObjectsAtPlanetLocation.Where(mo => mo is Fleet f && !f.Spec.FleetCompositionComplete).ToList();
 
             bool foundFleet = false;
             if (existingFleetsRequiringTokens.Count > 0)

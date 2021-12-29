@@ -46,8 +46,8 @@ namespace CraigStars
         [JsonIgnore] public int FuelMissing { get => Spec.FuelCapacity - Fuel; }
         public int Damage { get; set; }
 
-        [JsonProperty(IsReference = true)]
-        public Planet Orbiting { get; set; }
+        
+        [JsonIgnore] public Planet Orbiting { get; set; }
         [JsonIgnore] public List<Fleet> OtherFleets { get; set; } = new List<Fleet>();
 
         public bool Scrapped { get; set; }

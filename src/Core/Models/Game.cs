@@ -92,6 +92,12 @@ namespace CraigStars
 
             foreach (var fleet in Fleets)
             {
+                // update what planet we are orbiting
+                if (MapObjectsByLocation.TryGetValue(fleet.Position, out var mapObjectsAtLocation))
+                {
+                    var orbiting = mapObjectsAtLocation.FirstOrDefault(mo => mo is Planet) as Planet;
+                    fleet.Orbiting = orbiting;
+                }
                 foreach (var waypoint in fleet.Waypoints)
                 {
                     if (waypoint.TargetGuid.HasValue && MapObjectsByGuid.TryGetValue(waypoint.TargetGuid.Value, out var target))

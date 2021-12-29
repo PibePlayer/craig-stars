@@ -404,29 +404,5 @@ namespace CraigStars
                 .OrderByDescending(d => d.Version)
                 .FirstOrDefault();
         }
-
-        /// <summary>
-        /// Go through each message and update the target to a value from our reports
-        /// </summary>
-        public void UpdateMessageTargets()
-        {
-            foreach (var message in Messages)
-            {
-                if (message.Target != null && MapObjectsByGuid.TryGetValue(message.Target.Guid, out var playerMapObject))
-                {
-                    message.Target = playerMapObject;
-                }
-                else
-                {
-                    // this could be because it's null, or because haven't scanned it, or the target was destroyed
-                    message.Target = null;
-                }
-            }
-        }
-
-        #region Computed Properties
-
-        #endregion
-
     }
 }

@@ -78,18 +78,18 @@ namespace CraigStars.Client
 
         void OnGotoButtonPressed()
         {
-            if (activeMessage != null && activeMessage.Target != null)
+            if (activeMessage != null && activeMessage.TargetGuid.HasValue)
             {
                 if (activeMessage.Type == MessageType.Battle
-                    && selectedMapObject.MapObject == activeMessage.Target
+                    && selectedMapObject.MapObject.Guid == activeMessage.TargetGuid.Value
                     && activeMessage.BattleGuid.HasValue
                     && Me.BattlesByGuid.TryGetValue(activeMessage.BattleGuid.Value, out var battle))
                 {
                     EventManager.PublishBattleViewerDialogRequestedEvent(battle);
                 }
-                else
+                else if (Me.MapObjectsByGuid.TryGetValue(activeMessage.TargetGuid.Value, out var mapObject))
                 {
-                    EventManager.PublishGotoMapObjectEvent(activeMessage.Target);
+                    EventManager.PublishGotoMapObjectEvent(mapObject);
                 }
             }
         }
@@ -160,10 +160,10 @@ namespace CraigStars.Client
                 // disable/enable buttons
                 prevButton.Disabled = messageNum == 0;
                 nextButton.Disabled = messageNum >= messages.Count - 1;
-                if (activeMessage != null && activeMessage.Target != null)
+                if (activeMessage != null && activeMessage.TargetGuid != null)
                 {
                     gotoButton.Disabled = false;
-                    if (activeMessage.Type == MessageType.Battle && selectedMapObject?.MapObject == activeMessage.Target)
+                    if (activeMessage.Type == MessageType.Battle && selectedMapObject?.MapObject?.Guid == activeMessage.TargetGuid)
                     {
                         // switch to a "View" button text
                         gotoButton.Text = "View";

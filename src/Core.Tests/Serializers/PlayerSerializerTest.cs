@@ -118,7 +118,6 @@ namespace CraigStars.Tests
             // make sure our messages came through
             Assert.AreEqual(player.Messages.Count, loadedPlayer.Messages.Count);
             Assert.AreEqual(player.Messages[0].Text, loadedPlayer.Messages[0].Text);
-            Assert.AreEqual(loadedPlayer.Planets[0], loadedPlayer.Messages[0].Target);
 
             // make sure our designs saved
             Assert.AreEqual(player.Designs.Count, loadedPlayer.Designs.Count);

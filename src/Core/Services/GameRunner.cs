@@ -253,7 +253,6 @@ namespace CraigStars
                     .ToList()
                     .ForEach(planet => planet.Spec = planetService.ComputePlanetSpec(planet, player));
                 player.SetupMapObjectMappings();
-                player.UpdateMessageTargets();
             });
 
             Game.GameInfo.Players.ForEach(player =>

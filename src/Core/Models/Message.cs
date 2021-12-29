@@ -11,18 +11,26 @@ namespace CraigStars
         public MessageType Type { get; set; }
         public string Text { get; set; }
 
-        [JsonProperty(IsReference = true)]
-        public MapObject Target { get; set; }
+        public Guid? TargetGuid { get; set; }
 
         public Guid? BattleGuid { get; set; }
 
         public Message() { }
 
+        [JsonConstructor]
+        public Message(MessageType type, string text, Guid? target, Guid? battleGuid)
+        {
+            Type = type;
+            Text = text;
+            TargetGuid = target;
+            BattleGuid = battleGuid;
+        }
+
         public Message(MessageType type, string text, MapObject target)
         {
             Type = type;
             Text = text;
-            Target = target;
+            TargetGuid = target?.Guid;
         }
 
         public Message(MessageType type, string text)

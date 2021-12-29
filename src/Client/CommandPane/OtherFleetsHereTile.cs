@@ -51,7 +51,7 @@ namespace CraigStars.Client
         {
             if (CommandedFleet != null)
             {
-                EventManager.PublishCargoTransferDialogRequestedEvent(CommandedFleet.Fleet, CommandedFleet.Fleet.Orbiting);
+                EventManager.PublishCargoTransferDialogRequestedEvent(CommandedFleet.Fleet, selectedFleet.Fleet);
             }
         }
 

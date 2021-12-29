@@ -130,22 +130,27 @@ namespace CraigStars.Client
             // clear out the cargoDiff
             netCargoDiff = new Cargo();
             netFuelDiff = 0;
+            sourcePlanetCargoTransfer.Visible = sourceFleetCargoTransfer.Visible = destPlanetCargoTransfer.Visible = destFleetCargoTransfer.Visible = false;
             if (Source is Planet)
             {
                 sourceCargoTransfer = sourcePlanetCargoTransfer;
+                sourcePlanetCargoTransfer.Visible = true;
             }
             else if (Source is Fleet)
             {
                 sourceCargoTransfer = sourceFleetCargoTransfer;
+                sourceFleetCargoTransfer.Visible = true;
             }
 
             if (Dest is Planet)
             {
                 destCargoTransfer = destPlanetCargoTransfer;
+                destPlanetCargoTransfer.Visible = true;
             }
             else if (Dest is Fleet)
             {
                 destCargoTransfer = destFleetCargoTransfer;
+                destFleetCargoTransfer.Visible = true;
             }
             else
             {

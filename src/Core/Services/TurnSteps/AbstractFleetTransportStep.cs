@@ -13,14 +13,17 @@ namespace CraigStars
 
         List<PlanetInvasion> invasions = new List<PlanetInvasion>();
 
+        private readonly CargoTransferer cargoTransferer;
         private readonly InvasionProcessor invasionProcessor;
 
         public AbstractFleetTransportStep(
             IProvider<Game> gameProvider,
             IRulesProvider rulesProvider,
+            CargoTransferer cargoTransferer,
             InvasionProcessor invasionProcessor,
             TurnGenerationState state) : base(gameProvider, rulesProvider, state, WaypointTask.Transport)
         {
+            this.cargoTransferer = cargoTransferer;
             this.invasionProcessor = invasionProcessor;
         }
 
@@ -54,9 +57,7 @@ namespace CraigStars
         {
             if (cargoType == CargoType.Fuel)
             {
-                // fuel transfer
-                source.AttemptTransfer(Cargo.Empty, fuelTransfer: -transferAmount);
-                dest.AttemptTransfer(Cargo.Empty, fuel: transferAmount);
+                cargoTransferer.Transfer(source, dest, Cargo.Empty, transferAmount);
             }
             else if (cargoType == CargoType.Colonists)
             {
@@ -89,16 +90,14 @@ namespace CraigStars
                 }
                 else
                 {
-                    // this is just a regular transfer
-                    source.AttemptTransfer(Cargo.OfAmount(cargoType, -transferAmount));
-                    dest.AttemptTransfer(Cargo.OfAmount(cargoType, transferAmount), 0);
+                    cargoTransferer.Transfer(source, dest, Cargo.OfAmount(cargoType, transferAmount), 0);
+
                     log.Debug($"{Game.Year}: {source.PlayerNum} {source.Name} transferred {transferAmount}kT of {cargoType} to {dest.Name}");
                 }
             }
             else
             {
-                source.AttemptTransfer(Cargo.OfAmount(cargoType, -transferAmount), 0);
-                dest.AttemptTransfer(Cargo.OfAmount(cargoType, transferAmount), 0);
+                cargoTransferer.Transfer(source, dest, Cargo.OfAmount(cargoType, transferAmount), 0);
                 log.Debug($"{Game.Year}: {source.PlayerNum} {source.Name} transferred {transferAmount}kT of {cargoType} to {dest.Name}");
             }
         }

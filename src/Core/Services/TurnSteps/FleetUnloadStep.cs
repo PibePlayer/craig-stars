@@ -7,10 +7,11 @@ namespace CraigStars
     public class FleetUnload0Step : FleetUnloadStep
     {
         public FleetUnload0Step(
-                IProvider<Game> gameProvider,
-                IRulesProvider rulesProvider,
-                InvasionProcessor invasionProcessor
-            ) : base(gameProvider, rulesProvider, invasionProcessor, TurnGenerationState.FleetUnload0Step) { }
+            IProvider<Game> gameProvider,
+            IRulesProvider rulesProvider,
+            CargoTransferer cargoTransferer,
+            InvasionProcessor invasionProcessor
+            ) : base(gameProvider, rulesProvider, cargoTransferer, invasionProcessor, TurnGenerationState.FleetUnload0Step) { }
     }
 
     public class FleetUnload1Step : FleetUnloadStep
@@ -18,8 +19,9 @@ namespace CraigStars
         public FleetUnload1Step(
             IProvider<Game> gameProvider,
             IRulesProvider rulesProvider,
+            CargoTransferer cargoTransferer,
             InvasionProcessor invasionProcessor
-        ) : base(gameProvider, rulesProvider, invasionProcessor, TurnGenerationState.FleetUnload1Step) { }
+        ) : base(gameProvider, rulesProvider, cargoTransferer, invasionProcessor, TurnGenerationState.FleetUnload1Step) { }
     }
 
     /// <summary>
@@ -32,9 +34,10 @@ namespace CraigStars
         public FleetUnloadStep(
             IProvider<Game> gameProvider,
             IRulesProvider rulesProvider,
+            CargoTransferer cargoTransferer,
             InvasionProcessor invasionProcessor,
             TurnGenerationState state
-            ) : base(gameProvider, rulesProvider, invasionProcessor, state) { }
+            ) : base(gameProvider, rulesProvider, cargoTransferer, invasionProcessor, state) { }
 
         /// <summary>
         /// Process any unload tasks

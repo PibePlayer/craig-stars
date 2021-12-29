@@ -12,11 +12,13 @@ namespace CraigStars
 
         private readonly Game game;
         private readonly FleetService fleetService;
+        private readonly CargoTransferer cargoTransferer;
 
-        public FleetOrderExecutor(Game game, FleetService fleetService)
+        public FleetOrderExecutor(Game game, FleetService fleetService, CargoTransferer cargoTransferer)
         {
             this.game = game;
             this.fleetService = fleetService;
+            this.cargoTransferer = cargoTransferer;
         }
 
         /// <summary>
@@ -47,28 +49,12 @@ namespace CraigStars
             player.SplitFleetOrders.Clear();
         }
 
-        void ExecuteCargoTransferOrder(Player player, CargoTransferOrder order)
+        internal void ExecuteCargoTransferOrder(Player player, CargoTransferOrder order)
         {
             if (game.CargoHoldersByGuid.TryGetValue(order.Source.Guid, out var source) &&
             game.CargoHoldersByGuid.TryGetValue(order.Dest.Guid, out var dest))
             {
-                // make sure our source can lose the cargo
-                var result = source.AttemptTransfer(order.Transfer, order.FuelTransfer);
-                if (result)
-                {
-                    // make sure our dest can take the cargo
-                    result = dest.AttemptTransfer(-order.Transfer, order.FuelTransfer);
-                    if (!result)
-                    {
-                        // revert the source changes
-                        source.Cargo -= order.Transfer;
-                        log.Error($"Player {player} Failed to transfer {order.Transfer} from {source.Name} to {dest.Name}. {dest.Name} rejected cargo.");
-                    }
-                }
-                else
-                {
-                    log.Error($"Player {player} Failed to transfer {order.Transfer} from {source.Name} to {dest.Name}. {source.Name} rejected cargo.");
-                }
+                cargoTransferer.Transfer(source, dest, order.Transfer, order.FuelTransfer);
             }
         }
 

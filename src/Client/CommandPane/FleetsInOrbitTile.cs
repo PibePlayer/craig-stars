@@ -29,6 +29,7 @@ namespace CraigStars.Client
             gotoButton.Connect("pressed", this, nameof(OnGotoButtonPressed));
 
             cargoBar.ValueUpdatedEvent += OnCargoBarPressed;
+            EventManager.CargoTransferredEvent += OnCargoTransferred;
 
         }
 
@@ -38,8 +39,15 @@ namespace CraigStars.Client
             if (what == NotificationPredelete)
             {
                 cargoBar.ValueUpdatedEvent -= OnCargoBarPressed;
+                EventManager.CargoTransferredEvent -= OnCargoTransferred;
             }
         }
+
+        void OnCargoTransferred(Fleet source, ICargoHolder dest)
+        {
+            UpdateCargoBars();
+        }
+
 
         void OnCargoBarPressed(int newValue)
         {

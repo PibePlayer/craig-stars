@@ -25,7 +25,7 @@ namespace CraigStars.Tests
             playerPlanet = player.PlanetsByGuid[game.Planets[0].Guid];
             playerFleet = player.Fleets[0];
 
-            fleetOrderExecutor = new FleetOrderExecutor(game, TestUtils.TestContainer.GetInstance<FleetService>());
+            fleetOrderExecutor = new FleetOrderExecutor(game, TestUtils.TestContainer.GetInstance<FleetService>(), TestUtils.TestContainer.GetInstance<CargoTransferer>());
             fleetSpecService = TestUtils.TestContainer.GetInstance<FleetSpecService>();
             playerIntelDiscoverer = TestUtils.TestContainer.GetInstance<PlayerIntelDiscoverer>();
         }

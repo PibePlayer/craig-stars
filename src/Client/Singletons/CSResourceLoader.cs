@@ -94,7 +94,7 @@ namespace CraigStars.Singletons
             PreloadTask = Task.Run(async () =>
             {
                 log.Debug("Loading scenes");
-                var sceneLoadTask = Task.Run(async () =>
+                var sceneLoadTask = Task.Run(() =>
                 {
                     try
                     {

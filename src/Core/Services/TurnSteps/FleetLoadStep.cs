@@ -9,9 +9,10 @@ namespace CraigStars
         public FleetLoad0Step(
                 IProvider<Game> gameProvider,
                 IRulesProvider rulesProvider,
+                CargoTransferer cargoTransferer,
                 InvasionProcessor invasionProcessor,
                 FleetService fleetService
-            ) : base(gameProvider, rulesProvider, invasionProcessor, fleetService, TurnGenerationState.FleetLoad0Step) { }
+            ) : base(gameProvider, rulesProvider, cargoTransferer, invasionProcessor, fleetService, TurnGenerationState.FleetLoad0Step) { }
     }
 
     public class FleetLoad1Step : FleetLoadStep
@@ -19,9 +20,10 @@ namespace CraigStars
         public FleetLoad1Step(
             IProvider<Game> gameProvider,
             IRulesProvider rulesProvider,
+            CargoTransferer cargoTransferer,
             InvasionProcessor invasionProcessor,
             FleetService fleetService
-        ) : base(gameProvider, rulesProvider, invasionProcessor, fleetService, TurnGenerationState.FleetLoad1Step) { }
+        ) : base(gameProvider, rulesProvider, cargoTransferer, invasionProcessor, fleetService, TurnGenerationState.FleetLoad1Step) { }
     }
 
     /// <summary>
@@ -36,10 +38,11 @@ namespace CraigStars
         public FleetLoadStep(
             IProvider<Game> gameProvider,
             IRulesProvider rulesProvider,
+            CargoTransferer cargoTransferer,
             InvasionProcessor invasionProcessor,
             FleetService fleetService,
             TurnGenerationState state)
-            : base(gameProvider, rulesProvider, invasionProcessor, state)
+            : base(gameProvider, rulesProvider, cargoTransferer, invasionProcessor, state)
         {
             this.fleetService = fleetService;
         }

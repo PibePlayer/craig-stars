@@ -8,7 +8,7 @@ namespace CraigStars.Tests
     [TestFixture]
     public class FleetServiceTest
     {
-        static CSLog log = LogProvider.GetLogger(typeof(PlanetServiceTest));
+        static CSLog log = LogProvider.GetLogger(typeof(FleetServiceTest));
 
         Rules rules = new Rules(0);
         FleetSpecService fleetSpecService = TestUtils.TestContainer.GetInstance<FleetSpecService>();

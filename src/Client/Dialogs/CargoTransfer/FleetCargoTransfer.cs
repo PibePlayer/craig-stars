@@ -163,7 +163,7 @@ namespace CraigStars.Client
             CargoTransferRequestedEvent?.Invoke(new Cargo(), newFuel);
         }
 
-        internal void UpdateControls()
+        public void UpdateControls()
         {
             nameLabel.Text = Fleet.Name;
             cargoBar.Cargo = Fleet.Cargo;
@@ -181,19 +181,5 @@ namespace CraigStars.Client
             fuelBar.Capacity = Fleet.Spec.FuelCapacity;
         }
 
-        public bool AttemptTransfer(Cargo newCargo, int newFuel)
-        {
-            var cargoResult = Fleet.Cargo + newCargo;
-            var fuelResult = Fleet.Fuel + newFuel;
-            if (cargoResult >= 0 && fuelResult >= 0)
-            {
-                // update the cargo
-                Fleet.Cargo = cargoResult;
-                Fleet.Fuel = fuelResult;
-                UpdateControls();
-                return true;
-            }
-            return false;
-        }
     }
 }

@@ -139,8 +139,8 @@ namespace CraigStars
             if (fleet.Cargo.Total > 0 && !player.Race.Spec.CanGateCargo)
             {
                 Message.FleetStargateDumpedCargo(player, fleet, wp0, wp1, fleet.Cargo);
-                fleet.AttemptTransfer(-fleet.Cargo);
-                sourcePlanet.AttemptTransfer(fleet.Cargo);
+                fleet.Transfer(-fleet.Cargo);
+                sourcePlanet.Transfer(fleet.Cargo);
             }
 
             // apply overgate damage and delete tokens (and possibly the fleet)

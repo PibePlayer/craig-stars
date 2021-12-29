@@ -41,6 +41,7 @@ namespace CraigStars.Client
         /// </summary>
         Cargo netCargoDiff = new Cargo();
         int netFuelDiff = 0;
+        CargoTransferer cargoTransferer = new CargoTransferer();
 
         public override void _Ready()
         {
@@ -100,11 +101,11 @@ namespace CraigStars.Client
         {
             if (type == CargoType.Fuel)
             {
-                AttemptSourceTransfer(Cargo.Empty, -quantityModifier);
+                TransferFromSource(Cargo.Empty, -quantityModifier);
             }
             else
             {
-                AttemptSourceTransfer(Cargo.OfAmount(type, -quantityModifier), 0);
+                TransferFromSource(Cargo.OfAmount(type, -quantityModifier), 0);
             }
         }
 
@@ -112,11 +113,11 @@ namespace CraigStars.Client
         {
             if (type == CargoType.Fuel)
             {
-                AttemptDestTransfer(Cargo.Empty, -quantityModifier);
+                TransferFromDest(Cargo.Empty, -quantityModifier);
             }
             else
             {
-                AttemptDestTransfer(Cargo.OfAmount(type, -quantityModifier), 0);
+                TransferFromDest(Cargo.OfAmount(type, -quantityModifier), 0);
 
             }
         }
@@ -151,6 +152,9 @@ namespace CraigStars.Client
                 // TODO add deep space jettison
             }
 
+            // no fuel transfers for planets
+            fuelDestButton.Disabled = fuelSourceButton.Disabled = (Source is Planet || Dest is Planet);
+
             sourceCargoTransfer.CargoHolder = Source;
             destCargoTransfer.CargoHolder = Dest;
 
@@ -165,6 +169,13 @@ namespace CraigStars.Client
         {
             sourceCargoTransfer.CargoTransferRequestedEvent -= OnSourceCargoTransferRequested;
             destCargoTransfer.CargoTransferRequestedEvent -= OnDestCargoTransferRequested;
+
+            // if we cancelled, revert these transfers
+            Source.Fuel += netFuelDiff;
+            Source.Cargo += netCargoDiff;
+
+            Dest.Fuel -= netFuelDiff;
+            Dest.Cargo -= netCargoDiff;
         }
 
         protected override void OnOk()
@@ -228,40 +239,36 @@ namespace CraigStars.Client
         void OnSourceCargoTransferRequested(Cargo newCargo, int fuel)
         {
             var cargoDiff = sourceCargoTransfer.Cargo - newCargo;
-            AttemptSourceTransfer(cargoDiff, fuel);
+            TransferFromSource(cargoDiff, fuel);
         }
 
-        void AttemptSourceTransfer(Cargo cargoDiff, int fuel)
+        void TransferFromSource(Cargo cargoDiff, int fuel)
         {
-            if (destCargoTransfer.AttemptTransfer(cargoDiff, fuel))
-            {
-                // the cargo transfer was successful, so update the source cargo
-                // with their requested value
-                sourceCargoTransfer.Cargo = sourceCargoTransfer.Cargo - cargoDiff;
-                netCargoDiff -= cargoDiff;
-                netFuelDiff -= fuel;
-            }
+            // transfer from the source to the dest
+            var result = cargoTransferer.Transfer(sourceCargoTransfer.CargoHolder, destCargoTransfer.CargoHolder, cargoDiff, fuel);
+
+            sourceCargoTransfer.UpdateControls();
+            destCargoTransfer.UpdateControls();
+            netCargoDiff -= result.cargo;
+            netFuelDiff -= result.fuel;
         }
 
         void OnDestCargoTransferRequested(Cargo newCargo, int fuel)
         {
             var cargoDiff = destCargoTransfer.Cargo - newCargo;
-            AttemptDestTransfer(cargoDiff, fuel);
+            TransferFromDest(cargoDiff, fuel);
         }
 
-        void AttemptDestTransfer(Cargo cargoDiff, int fuel)
+        void TransferFromDest(Cargo cargoDiff, int fuel)
         {
-            if (sourceCargoTransfer.AttemptTransfer(cargoDiff, fuel))
-            {
-                // the cargo transfer was successful, so update the source cargo
-                // with their requested value
-                destCargoTransfer.Cargo = destCargoTransfer.Cargo - cargoDiff;
-                netCargoDiff += cargoDiff;
-                netFuelDiff += fuel;
-            }
+            // transfer from the dest to the source
+            var result = cargoTransferer.Transfer(destCargoTransfer.CargoHolder, sourceCargoTransfer.CargoHolder, cargoDiff, fuel);
+            sourceCargoTransfer.UpdateControls();
+            destCargoTransfer.UpdateControls();
+
+            netCargoDiff += result.cargo;
+            netFuelDiff += result.fuel;
 
         }
-
-
     }
 }

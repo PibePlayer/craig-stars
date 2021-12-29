@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Godot;
 
 namespace CraigStars
 {
@@ -30,8 +31,8 @@ namespace CraigStars
         {
             // this list of lists of fleets are all the fleets that are in combat
             var fleetsInCombat = new List<List<Fleet>>();
-
-            foreach (var entry in Game.MapObjectsByLocation)
+            Dictionary<Vector2, List<MapObject>> mapObjectsByLocation = new(Game.MapObjectsByLocation);
+            foreach (var entry in mapObjectsByLocation)
             {
                 var fleetsAndStarbases = new List<Fleet>();
                 var players = new HashSet<int>();

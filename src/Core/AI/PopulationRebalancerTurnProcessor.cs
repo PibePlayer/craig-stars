@@ -15,16 +15,18 @@ namespace CraigStars
 
         private readonly PlanetService planetService;
         private readonly FleetService fleetService;
+        private readonly CargoTransferer cargoTransferer;
 
         // the required population density required of a planet in order to suck people off of it
         // setting this to .25 because we don't want to suck people off a planet until it's reached the
         // max of its growth rate (over 1/4 crowded)
         private const float PopulationDensityRequired = .25f;
 
-        public PopulationRebalancerTurnProcessor(PlanetService planetService, FleetService fleetService) : base("Population Rebalancer")
+        public PopulationRebalancerTurnProcessor(PlanetService planetService, FleetService fleetService, CargoTransferer cargoTransferer) : base("Population Rebalancer")
         {
             this.planetService = planetService;
             this.fleetService = fleetService;
+            this.cargoTransferer = cargoTransferer;
         }
 
         /// <summary>
@@ -67,9 +69,12 @@ namespace CraigStars
                     var sourcePlanet = fleet.Orbiting;
                     Cargo colonists = new Cargo(colonists: fleet.AvailableCapacity);
 
-                    if (sourcePlanet.AttemptTransfer(-colonists) && fleet.AttemptTransfer(colonists))
+                    // transfer colonists from the planet to the fleet
+                    var result = cargoTransferer.Transfer(sourcePlanet, fleet, colonists, 0);
+
+                    if (result.cargo > 0)
                     {
-                        CargoTransferUtils.CreateCargoTransferOrder(player, colonists, fleet, sourcePlanet);
+                        CargoTransferUtils.CreateCargoTransferOrder(player, result.cargo, fleet, sourcePlanet);
 
                         // drop off colonists
                         var wp1 = Waypoint.TargetWaypoint(

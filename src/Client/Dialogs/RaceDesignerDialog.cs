@@ -363,7 +363,7 @@ namespace CraigStars.Client
                 maCheckBox.Pressed = Race.HasLRT(LRT.MA);
                 ceCheckBox.Pressed = Race.HasLRT(LRT.CE);
 
-                // growth
+                // hab
                 gravHabEditor.Low = Race.HabLow.grav;
                 gravHabEditor.High = Race.HabHigh.grav;
                 gravHabEditor.Immune = Race.ImmuneGrav;
@@ -374,8 +374,10 @@ namespace CraigStars.Client
                 radHabEditor.High = Race.HabHigh.rad;
                 radHabEditor.Immune = Race.ImmuneGrav;
 
-                growthRate.Value = Race.GrowthRate;
                 UpdateHabChancesDescription();
+
+                // growth
+                growthRate.Value = Race.GrowthRate;
 
                 // production
                 colonistsPerResourceSpinBox.Value = Race.PopEfficiency * 100;

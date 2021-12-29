@@ -248,7 +248,6 @@ margin_top = 848.0
 [node name="ReportsDialog" parent="CanvasLayer" instance=ExtResource( 21 )]
 
 [node name="RaceDesignerDialog" parent="CanvasLayer" instance=ExtResource( 27 )]
-visible = false
 
 [node name="ProductionQueueDialog" parent="CanvasLayer" instance=ExtResource( 13 )]
 

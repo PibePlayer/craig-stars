@@ -132,12 +132,12 @@ namespace CraigStars
                 if (planet.HasMassDriver && planet.Starbase.Spec.SafePacketSpeed >= packet.WarpFactor)
                 {
                     // caught packet successfully, transfer cargo
-                    planet.AttemptTransfer(cargo);
+                    planet.Transfer(cargo);
                     Message.MineralPacketCaught(Game.Players[packet.Target.PlayerNum], planet, packet);
                 }
                 else if (!planet.Owned)
                 {
-                    planet.AttemptTransfer(cargo);
+                    planet.Transfer(cargo);
 
                     // all uncaught
                     uncaught = weight;

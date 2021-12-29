@@ -159,29 +159,27 @@ namespace CraigStars
         }
 
         /// <summary>
-        /// Attempt to transfer cargo to/from this planet
+        /// Transfer cargo to/from the planet. Only allow 
         /// </summary>
-        /// <param name="transfer"></param>
-        /// <returns>true if we have minerals we can transfer</returns>
-        public bool AttemptTransfer(Cargo transfer, int fuel = 0)
+        /// <param name="newCargo"></param>
+        /// <param name="newFuel"></param>
+        /// <returns></returns>
+        public CargoTransferResult Transfer(Cargo newCargo, int newFuel = 0)
         {
-            if (fuel > 0 || fuel < 0 && Starbase == null)
-            {
-                // fleets can't deposit fuel onto a planet, or take fuel from a planet without a starbase
-                return false;
-            }
+            // Planets can hold infinite minerals, but we can only transfer away as much as we have
+            var transfered = new Cargo(
+                Mathf.Clamp(newCargo.Ironium, -Cargo.Ironium, int.MaxValue),
+                Mathf.Clamp(newCargo.Boranium, -Cargo.Boranium, int.MaxValue),
+                Mathf.Clamp(newCargo.Germanium, -Cargo.Germanium, int.MaxValue),
+                Mathf.Clamp(newCargo.Colonists, -Cargo.Colonists, int.MaxValue)
+            );
 
-            var result = Cargo + transfer;
-            if (result >= 0)
-            {
-                // The transfer doesn't leave us with 0 minerals, so allow it
-                Cargo = result;
-                return true;
-            }
-            return false;
+            // transfer the cargo
+            Cargo += transfered;
+
+            // can't transfer for fuel to/from a planet, so it's always 0
+            return new CargoTransferResult(transfered, fuel: 0);
         }
-
-
 
     }
 }

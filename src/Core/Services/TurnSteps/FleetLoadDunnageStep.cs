@@ -9,8 +9,9 @@ namespace CraigStars
         public FleetLoadDunnage0Step(
                 IProvider<Game> gameProvider,
                 IRulesProvider rulesProvider,
+                CargoTransferer cargoTransferer,
                 InvasionProcessor invasionProcessor)
-            : base(gameProvider, rulesProvider, invasionProcessor, TurnGenerationState.FleetLoadDunnage0Step) { }
+            : base(gameProvider, rulesProvider, cargoTransferer, invasionProcessor, TurnGenerationState.FleetLoadDunnage0Step) { }
     }
 
     public class FleetLoadDunnage1Step : FleetLoadDunnageStep
@@ -18,8 +19,9 @@ namespace CraigStars
         public FleetLoadDunnage1Step(
             IProvider<Game> gameProvider,
             IRulesProvider rulesProvider,
+            CargoTransferer cargoTransferer,
             InvasionProcessor invasionProcessor
-        ) : base(gameProvider, rulesProvider, invasionProcessor, TurnGenerationState.FleetLoadDunnage1Step) { }
+        ) : base(gameProvider, rulesProvider, cargoTransferer, invasionProcessor, TurnGenerationState.FleetLoadDunnage1Step) { }
     }
 
     /// <summary>
@@ -36,9 +38,10 @@ namespace CraigStars
         public FleetLoadDunnageStep(
             IProvider<Game> gameProvider,
             IRulesProvider rulesProvider,
+            CargoTransferer cargoTransferer,
             InvasionProcessor invasionProcessor,
             TurnGenerationState state)
-            : base(gameProvider, rulesProvider, invasionProcessor, state) { }
+            : base(gameProvider, rulesProvider, cargoTransferer, invasionProcessor, state) { }
 
         protected override bool ProcessTask(FleetWaypointProcessTask task)
         {

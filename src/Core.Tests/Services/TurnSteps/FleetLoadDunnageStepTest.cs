@@ -16,6 +16,7 @@ namespace CraigStars.Tests
     public class FleetLoadDunnageStepTest
     {
         IRulesProvider rulesProvider;
+        CargoTransferer cargoTransferer;
         InvasionProcessor invasionProcessor;
         FleetService fleetService;
 
@@ -23,6 +24,7 @@ namespace CraigStars.Tests
         public void SetUp()
         {
             rulesProvider = new TestRulesProvider();
+            cargoTransferer = TestUtils.TestContainer.GetInstance<CargoTransferer>();
             invasionProcessor = TestUtils.TestContainer.GetInstance<InvasionProcessor>();
             fleetService = TestUtils.TestContainer.GetInstance<FleetService>();
         }
@@ -45,8 +47,8 @@ namespace CraigStars.Tests
             planet.Cargo = new Cargo(ironium: 100, colonists: 220);
 
             // dunnage takes place after load, so for a good test we'll do a load and then a dunnage load
-            var loadStep = new FleetLoad0Step(gameRunner.GameProvider, rulesProvider, invasionProcessor, fleetService);
-            var step = new FleetLoadDunnage0Step(gameRunner.GameProvider, rulesProvider, invasionProcessor);
+            var loadStep = new FleetLoad0Step(gameRunner.GameProvider, rulesProvider, cargoTransferer, invasionProcessor, fleetService);
+            var step = new FleetLoadDunnage0Step(gameRunner.GameProvider, rulesProvider, cargoTransferer, invasionProcessor);
             loadStep.Process();
             step.Process();
 

@@ -1,10 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System;
-using log4net;
-using Newtonsoft.Json;
 using System.Runtime.Serialization;
 using Godot;
+using log4net;
+using Newtonsoft.Json;
 
 namespace CraigStars
 {
@@ -108,24 +108,29 @@ namespace CraigStars
         }
 
         /// <summary>
-        /// Attempt to transfer cargo to/from this fleet
-        /// This is used to handle both immediate cargo transfers that the player made in the UI, and by the waypoint tasks
+        /// Transfer newCargo and newFuel into the fleet (or out of, if newCargo or newFuel is negative)
         /// </summary>
-        /// <param name="transfer"></param>
+        /// <param name="newCargo">The cargo to transfer in or out of the fleet</param>
+        /// <param name="newFuel"></param>
         /// <returns></returns>
-        public bool AttemptTransfer(Cargo transfer, int fuelTransfer = 0)
+        public CargoTransferResult Transfer(Cargo newCargo, int newFuel = 0)
         {
-            var cargoResult = Cargo + transfer;
-            var fuelResult = Fuel + fuelTransfer;
+            // transfer this new cargo into the fleet, capping at capacity each time
+            Cargo transferResult = new Cargo();
+            // first transfer in/out new Ironium, but don't allow us to remove more ironium than we have, or gain more ironium than we have space for
+            transferResult = transferResult.WithIronium(Mathf.Clamp(newCargo.Ironium, -Cargo.Ironium, Spec.CargoCapacity - (Cargo + transferResult).Total));
+            // do the same for the other cargo, but use our transferResult in the total cargo check so we don't overload our capacity
+            transferResult = transferResult.WithBoranium(Mathf.Clamp(newCargo.Boranium, -Cargo.Boranium, Spec.CargoCapacity - (Cargo + transferResult).Total));
+            transferResult = transferResult.WithGermanium(Mathf.Clamp(newCargo.Germanium, -Cargo.Germanium, Spec.CargoCapacity - (Cargo + transferResult).Total));
+            transferResult = transferResult.WithColonists(Mathf.Clamp(newCargo.Colonists, -Cargo.Colonists, Spec.CargoCapacity - (Cargo + transferResult).Total));
 
-            if (cargoResult >= 0 && cargoResult.Total <= Spec.CargoCapacity && fuelResult <= Spec.FuelCapacity)
-            {
-                // The transfer doesn't leave us with 0 minerals, or with so many minerals and fuel that we can't hold it
-                Cargo = cargoResult;
-                Fuel = fuelResult;
-                return true;
-            }
-            return false;
+            // do the same for fuel
+            var fuelResult = Mathf.Clamp(newFuel, -Fuel, FuelCapacity - Fuel);
+
+            // update the cargo
+            Cargo = Cargo + transferResult;
+            Fuel = Fuel + fuelResult;
+            return new CargoTransferResult(transferResult, fuelResult);
         }
     }
 }

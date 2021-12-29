@@ -26,7 +26,13 @@ namespace CraigStars
         [JsonIgnore]
         public int FuelCapacity { get => 0; }
 
-        public bool AttemptTransfer(Cargo transfer, int fuel = 0)
+        /// <summary>
+        /// Check if this cargo transfer is valid
+        /// </summary>
+        /// <param name="transfer"></param>
+        /// <param name="fuelTransfer"></param>
+        /// <returns></returns>
+        public bool CheckTransfer(Cargo transfer, int fuel = 0)
         {
             if (fuel > 0 || fuel < 0)
             {
@@ -39,14 +45,29 @@ namespace CraigStars
                 return false;
             }
 
-            var result = Cargo + transfer;
-            if (result >= 0)
-            {
-                // The transfer doesn't leave us with less than 0 minerals, so allow it
-                Cargo = result;
-                return true;
-            }
-            return false;
+            return (Cargo + transfer) >= 0;
+        }
+
+        /// <summary>
+        /// Transfer from the cargo (cannot put cargo in salvage or mineral packets)
+        /// </summary>
+        /// <param name="newCargo"></param>
+        /// <param name="newFuel"></param>
+        /// <returns></returns>
+        public CargoTransferResult Transfer(Cargo newCargo, int newFuel = 0)
+        {
+            // we can't transfer to a mineral packet, only away from
+            var transfered = new Cargo(
+                Mathf.Clamp(newCargo.Ironium, -Cargo.Ironium, 0),
+                Mathf.Clamp(newCargo.Boranium, -Cargo.Boranium, 0),
+                Mathf.Clamp(newCargo.Germanium, -Cargo.Germanium, 0),
+                Mathf.Clamp(newCargo.Colonists, -Cargo.Colonists, 0)
+            );
+
+            // transfer the cargo
+            Cargo += transfered;
+
+            return new CargoTransferResult(transfered, 0);
         }
     }
 }

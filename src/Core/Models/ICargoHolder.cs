@@ -40,10 +40,12 @@ namespace CraigStars
         int FuelCapacity { get; }
 
         /// <summary>
-        /// Attempt to transfer cargo from cargoHolder to this object
+        /// Transfer cargo and fuel to/from this cargo holder. If the newCargo/Fuel values are negative, this will
+        /// remove cargo. If positive it will add cargo
         /// </summary>
-        /// <param name="transfer">The cargo to transfer</param>
-        /// <returns></returns>
-        bool AttemptTransfer(Cargo transfer, int fuel = 0);
+        /// <param name="newCargo">The cargo to transfer</param>
+        /// <param name="newFuel">The fuel to transfer</param>
+        /// <returns>The actual amount transferred</returns>
+        CargoTransferResult Transfer(Cargo newCargo, int newFuel = 0);
     }
 }

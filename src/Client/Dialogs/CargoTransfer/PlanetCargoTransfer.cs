@@ -60,7 +60,7 @@ namespace CraigStars.Client
             UpdateControls();
         }
 
-        internal void UpdateControls()
+        public void UpdateControls()
         {
             if (Planet != null)
             {
@@ -72,23 +72,5 @@ namespace CraigStars.Client
             }
         }
 
-        public bool AttemptTransfer(Cargo newCargo, int newFuel)
-        {
-            if (newFuel != 0)
-            {
-                // ignore fuel requests to planets
-                return false;
-            }
-
-            var result = Planet.Cargo + newCargo;
-            if (result >= 0)
-            {
-                // update the cargo
-                Planet.Cargo = result;
-                UpdateControls();
-                return true;
-            }
-            return false;
-        }
     }
 }

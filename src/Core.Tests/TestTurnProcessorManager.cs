@@ -24,6 +24,7 @@ namespace CraigStars.Tests
             var fleetService = new FleetService(fleetSpecService);
             var estimator = new ProductionQueueEstimator(planetService, playerService);
             var shipDesignGenerator = new ShipDesignGenerator(playerTechService, fleetSpecService);
+            var cargoTransferer = new CargoTransferer();
 
             // Register default turn processors
             var shipDesignerTurnProcessor = new ShipDesignerTurnProcessor(shipDesignGenerator, playerTechService, fleetSpecService, techStoreProvider);
@@ -31,10 +32,10 @@ namespace CraigStars.Tests
             RegisterTurnProcessor(new FleetCompositionTurnProcessor());
             RegisterTurnProcessor(new PlanetProductionTurnProcessor(planetService, estimator));
             RegisterTurnProcessor(new ScoutTurnProcessor(planetService, fleetService));
-            RegisterTurnProcessor(new ColonyTurnProcessor(planetService, fleetService, shipDesignerTurnProcessor));
+            RegisterTurnProcessor(new ColonyTurnProcessor(planetService, fleetService, shipDesignerTurnProcessor, cargoTransferer));
             RegisterTurnProcessor(new BomberTurnProcessor(planetService, fleetService));
             RegisterTurnProcessor(new MineLayerTurnProcessor());
-            RegisterTurnProcessor(new PopulationRebalancerTurnProcessor(planetService, fleetService));
+            RegisterTurnProcessor(new PopulationRebalancerTurnProcessor(planetService, fleetService, cargoTransferer));
         }
 
         public void RegisterTurnProcessor(TurnProcessor processor)

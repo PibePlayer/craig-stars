@@ -17,12 +17,14 @@ namespace CraigStars.Tests
     public class FleetUnloadStepTest
     {
         IRulesProvider rulesProvider;
+        CargoTransferer cargoTransferer;
         InvasionProcessor invasionProcessor;
 
         [SetUp]
         public void SetUp()
         {
             rulesProvider = new TestRulesProvider();
+            cargoTransferer = TestUtils.TestContainer.GetInstance<CargoTransferer>();
             invasionProcessor = TestUtils.TestContainer.GetInstance<InvasionProcessor>();
         }
 
@@ -43,7 +45,7 @@ namespace CraigStars.Tests
             fleet.Cargo = fleet.Cargo.WithIronium(100).WithColonists(10);
             planet.Cargo = new Cargo();
 
-            var step = new FleetUnload0Step(gameRunner.GameProvider, rulesProvider, invasionProcessor);
+            var step = new FleetUnload0Step(gameRunner.GameProvider, rulesProvider, cargoTransferer, invasionProcessor);
             step.Process();
 
             Assert.AreEqual(100, planet.Cargo.Ironium);
@@ -70,7 +72,7 @@ namespace CraigStars.Tests
             fleet.Cargo = fleet.Cargo.WithIronium(100);
             planet.Cargo = new Cargo();
 
-            var step = new FleetUnload0Step(gameRunner.GameProvider, rulesProvider, invasionProcessor);
+            var step = new FleetUnload0Step(gameRunner.GameProvider, rulesProvider, cargoTransferer, invasionProcessor);
             step.Process();
 
             // should unload 25 onto the planet, leaving 75 on the ship
@@ -83,7 +85,7 @@ namespace CraigStars.Tests
             fleet.Cargo = fleet.Cargo.WithIronium(20);
             planet.Cargo = new Cargo();
 
-            step = new FleetUnload0Step(gameRunner.GameProvider, rulesProvider, invasionProcessor);
+            step = new FleetUnload0Step(gameRunner.GameProvider, rulesProvider, cargoTransferer, invasionProcessor);
             step.Process();
 
             // should unload 25 onto the planet, leaving 75 on the ship
@@ -109,7 +111,7 @@ namespace CraigStars.Tests
             fleet.Cargo = fleet.Cargo.WithIronium(100);
             planet.Cargo = new Cargo();
 
-            var step = new FleetUnload0Step(gameRunner.GameProvider, rulesProvider, invasionProcessor);
+            var step = new FleetUnload0Step(gameRunner.GameProvider, rulesProvider, cargoTransferer, invasionProcessor);
             step.Process();
 
             // should unload 25 onto the planet, leaving 75 on the ship
@@ -123,7 +125,7 @@ namespace CraigStars.Tests
             fleet.Cargo = fleet.Cargo.WithIronium(20);
             planet.Cargo = new Cargo();
 
-            step = new FleetUnload0Step(gameRunner.GameProvider, rulesProvider, invasionProcessor);
+            step = new FleetUnload0Step(gameRunner.GameProvider, rulesProvider, cargoTransferer, invasionProcessor);
             step.Process();
 
             // should unload 20 onto the planet, leaving 0 on the ship and the fleet should wait

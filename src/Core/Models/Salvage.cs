@@ -1,4 +1,5 @@
 using System;
+using Godot;
 using Newtonsoft.Json;
 
 namespace CraigStars
@@ -20,27 +21,26 @@ namespace CraigStars
         [JsonIgnore]
         public int FuelCapacity { get => 0; }
 
-        public bool AttemptTransfer(Cargo transfer, int fuel = 0)
+        /// <summary>
+        /// Transfer from the cargo (cannot put cargo in salvage or mineral packets)
+        /// </summary>
+        /// <param name="newCargo"></param>
+        /// <param name="newFuel"></param>
+        /// <returns></returns>
+        public CargoTransferResult Transfer(Cargo newCargo, int newFuel = 0)
         {
-            if (fuel > 0 || fuel < 0)
-            {
-                // fleets can't transfer fuel to salvage
-                return false;
-            }
-            if (transfer.Ironium > 0 || transfer.Boranium > 0 || transfer.Germanium > 0 || transfer.Colonists > 0)
-            {
-                // we can't be given cargo, it can only be sucked away
-                return false;
-            }
+            // we can't transfer to a mineral packet, only away from
+            var transfered = new Cargo(
+                Mathf.Clamp(newCargo.Ironium, -Cargo.Ironium, 0),
+                Mathf.Clamp(newCargo.Boranium, -Cargo.Boranium, 0),
+                Mathf.Clamp(newCargo.Germanium, -Cargo.Germanium, 0),
+                Mathf.Clamp(newCargo.Colonists, -Cargo.Colonists, 0)
+            );
 
-            var result = Cargo + transfer;
-            if (result >= 0)
-            {
-                // The transfer doesn't leave us with less than 0 minerals, so allow it
-                Cargo = result;
-                return true;
-            }
-            return false;
+            // transfer the cargo
+            Cargo += transfered;
+
+            return new CargoTransferResult(transfered, 0);
         }
     }
 }

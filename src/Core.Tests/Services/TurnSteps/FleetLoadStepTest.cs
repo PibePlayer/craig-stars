@@ -18,6 +18,7 @@ namespace CraigStars.Tests
         static CSLog log = LogProvider.GetLogger(typeof(FleetLoadStepTest));
 
         IRulesProvider rulesProvider;
+        CargoTransferer cargoTransferer;
         InvasionProcessor invasionProcessor;
         FleetService fleetService;
 
@@ -25,6 +26,7 @@ namespace CraigStars.Tests
         public void SetUp()
         {
             rulesProvider = new TestRulesProvider();
+            cargoTransferer = TestUtils.TestContainer.GetInstance<CargoTransferer>();
             invasionProcessor = TestUtils.TestContainer.GetInstance<InvasionProcessor>();
             fleetService = TestUtils.TestContainer.GetInstance<FleetService>();
         }
@@ -46,7 +48,7 @@ namespace CraigStars.Tests
             fleet.Cargo = new Cargo();
             planet.Cargo = new Cargo(ironium: 100, colonists: 10);
 
-            var step = new FleetLoad0Step(gameRunner.GameProvider, rulesProvider, invasionProcessor, fleetService);
+            var step = new FleetLoad0Step(gameRunner.GameProvider, rulesProvider, cargoTransferer, invasionProcessor, fleetService);
             step.Process();
 
             Assert.AreEqual(0, planet.Cargo.Ironium);
@@ -74,7 +76,7 @@ namespace CraigStars.Tests
             fleet.Cargo = new Cargo();
             planet.Cargo = new Cargo(ironium: 100);
 
-            var step = new FleetLoad0Step(gameRunner.GameProvider, rulesProvider, invasionProcessor, fleetService);
+            var step = new FleetLoad0Step(gameRunner.GameProvider, rulesProvider, cargoTransferer, invasionProcessor, fleetService);
             step.Process();
 
             // should load 25 onto the fleet, leaving 75 on the planet
@@ -87,7 +89,7 @@ namespace CraigStars.Tests
             fleet.Cargo = new Cargo();
             planet.Cargo = new Cargo(ironium: 20);
 
-            step = new FleetLoad0Step(gameRunner.GameProvider, rulesProvider, invasionProcessor, fleetService);
+            step = new FleetLoad0Step(gameRunner.GameProvider, rulesProvider, cargoTransferer, invasionProcessor, fleetService);
             step.Process();
 
             // should load 20 into the fleet leaving 0 on the planet
@@ -133,7 +135,7 @@ namespace CraigStars.Tests
             // set another waypoint 25 l.y. away so we have some estimated fuel usage
             fleet.Waypoints.Add(Waypoint.PositionWaypoint(new Vector2(25, 0)));
 
-            var step = new FleetLoad0Step(gameRunner.GameProvider, rulesProvider, invasionProcessor, fleetService);
+            var step = new FleetLoad0Step(gameRunner.GameProvider, rulesProvider, cargoTransferer, invasionProcessor, fleetService);
             step.Process();
 
             // we are set to load optimal, but we are at a planet, so no need to move any fuel around
@@ -148,7 +150,7 @@ namespace CraigStars.Tests
             fleetTarget.Fuel = 0;
             fleetTarget.Spec.FuelCapacity = 100;
 
-            step = new FleetLoad0Step(gameRunner.GameProvider, rulesProvider, invasionProcessor, fleetService);
+            step = new FleetLoad0Step(gameRunner.GameProvider, rulesProvider, cargoTransferer, invasionProcessor, fleetService);
             step.Process();
 
             // we are set to load optimal and we are only using 17mg of fuel for the next trip, give up 100mg of fuel
@@ -160,7 +162,7 @@ namespace CraigStars.Tests
             fleet.Fuel = 100;
             fleetTarget.Fuel = 0;
 
-            step = new FleetLoad0Step(gameRunner.GameProvider, rulesProvider, invasionProcessor, fleetService);
+            step = new FleetLoad0Step(gameRunner.GameProvider, rulesProvider, cargoTransferer, invasionProcessor, fleetService);
             step.Process();
 
             // we are set to load optimal and we are only using 17mg of fuel for the next trip, give up 100mg of fuel
@@ -186,7 +188,7 @@ namespace CraigStars.Tests
             fleet.Cargo = new Cargo();
             planet.Cargo = new Cargo(ironium: 100);
 
-            var step = new FleetLoad0Step(gameRunner.GameProvider, rulesProvider, invasionProcessor, fleetService);
+            var step = new FleetLoad0Step(gameRunner.GameProvider, rulesProvider, cargoTransferer, invasionProcessor, fleetService);
             step.Process();
 
             // should unload 25 onto the planet, leaving 75 on the ship
@@ -200,7 +202,7 @@ namespace CraigStars.Tests
             fleet.Cargo = new Cargo();
             planet.Cargo = new Cargo(ironium: 20);
 
-            step = new FleetLoad0Step(gameRunner.GameProvider, rulesProvider, invasionProcessor, fleetService);
+            step = new FleetLoad0Step(gameRunner.GameProvider, rulesProvider, cargoTransferer, invasionProcessor, fleetService);
             step.Process();
 
             // should load 20 the ship, leaving 0 on the planet and not completing the task
@@ -229,7 +231,7 @@ namespace CraigStars.Tests
             fleet.Cargo = new Cargo();
             planet.Cargo = new Cargo(ironium: 100);
 
-            var step = new FleetLoad0Step(gameRunner.GameProvider, rulesProvider, invasionProcessor, fleetService);
+            var step = new FleetLoad0Step(gameRunner.GameProvider, rulesProvider, cargoTransferer, invasionProcessor, fleetService);
             step.Process();
 
             // should unload 25 onto the planet, leaving 75 on the ship
@@ -243,7 +245,7 @@ namespace CraigStars.Tests
             fleet.Cargo = new Cargo();
             planet.Cargo = new Cargo(ironium: 20);
 
-            step = new FleetLoad0Step(gameRunner.GameProvider, rulesProvider, invasionProcessor, fleetService);
+            step = new FleetLoad0Step(gameRunner.GameProvider, rulesProvider, cargoTransferer, invasionProcessor, fleetService);
             step.Process();
 
             // should load 20 the ship, leaving 0 on the planet, but moving on
@@ -257,7 +259,7 @@ namespace CraigStars.Tests
             fleet.Cargo = new Cargo();
             planet.Cargo = new Cargo(ironium: 20);
 
-            step = new FleetLoad0Step(gameRunner.GameProvider, rulesProvider, invasionProcessor, fleetService);
+            step = new FleetLoad0Step(gameRunner.GameProvider, rulesProvider, cargoTransferer, invasionProcessor, fleetService);
             step.Process();
 
             // should load 20 the ship, leaving 0 on the planet, and we should wait

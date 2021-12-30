@@ -125,12 +125,12 @@ jobs:
       # copy the godot DLLs where they are expected
       - name: Setup Godot dlls for dotnet Build
         run: |
-          mkdir -p .mono/assemblies/ExportRelease
-          cp /usr/local/bin/GodotSharp/Api/Release/* .mono/assemblies/ExportRelease
+          mkdir -p .mono/assemblies/Release
+          cp /usr/local/bin/GodotSharp/Api/Release/* .mono/assemblies/Release
 
       # build the solution
       - name: dotnet Build
-        run: dotnet build -c ExportRelease
+        run: dotnet build -c Release
 
       - name: Build Export
         id: build

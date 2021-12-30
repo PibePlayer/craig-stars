@@ -8,10 +8,10 @@
 
     <ItemGroup>
         <Reference Include="GodotSharp">
-            <HintPath>..\..\.mono\assemblies\Debug\GodotSharp.dll</HintPath>
+            <HintPath>..\..\.mono\assemblies\$(Configuration)\GodotSharp.dll</HintPath>
         </Reference>
         <Reference Include="GodotSharpEditor">
-            <HintPath>..\..\.mono\assemblies\Debug\GodotSharpEditor.dll</HintPath>
+            <HintPath>..\..\.mono\assemblies\$(Configuration)\GodotSharpEditor.dll</HintPath>
         </Reference>
     </ItemGroup>
     <ItemGroup>

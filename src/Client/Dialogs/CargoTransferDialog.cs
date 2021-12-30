@@ -244,7 +244,7 @@ namespace CraigStars.Client
         void OnSourceCargoTransferRequested(Cargo newCargo, int fuel)
         {
             var cargoDiff = sourceCargoTransfer.Cargo - newCargo;
-            TransferFromSource(cargoDiff, fuel);
+            TransferFromSource(cargoDiff, sourceCargoTransfer.Fuel - fuel);
         }
 
         void TransferFromSource(Cargo cargoDiff, int fuel)
@@ -261,7 +261,7 @@ namespace CraigStars.Client
         void OnDestCargoTransferRequested(Cargo newCargo, int fuel)
         {
             var cargoDiff = destCargoTransfer.Cargo - newCargo;
-            TransferFromDest(cargoDiff, fuel);
+            TransferFromDest(cargoDiff, destCargoTransfer.Fuel - fuel);
         }
 
         void TransferFromDest(Cargo cargoDiff, int fuel)

@@ -65,13 +65,13 @@ namespace CraigStars.Client
                 var order = new MergeFleetOrder()
                 {
                     Guid = SourceFleet.Fleet.Guid,
-                    MergingFleets = fleetsToMerge
+                    MergingFleetGuids = fleetsToMerge.Select(fleet => fleet.Guid).ToList()
                 };
                 Me.MergeFleetOrders.Add(order);
                 Me.ImmediateFleetOrders.Add(order);
 
                 // merge the fleet on the client
-                fleetService.Merge(SourceFleet.Fleet, Me, order);
+                fleetService.Merge(SourceFleet.Fleet, Me, fleetsToMerge);
                 fleetsToMerge.ForEach(f => { Me.Fleets.Remove(f); });
                 fleetSpritesToMerge.ForEach(f => EventManager.PublishFleetDeletedEvent(f.Fleet));
             }

@@ -25,12 +25,12 @@ namespace CraigStars
         /// Merge this fleet with a MergeFleetOrder from the client (or in the UI)
         /// </summary>
         /// <param name="order"></param>
-        public void Merge(Fleet fleet, Player player, MergeFleetOrder order)
+        public void Merge(Fleet fleet, Player player, List<Fleet> mergingFleets)
         {
             // build a dictionary of tokens by design
             var tokenByDesign = fleet.Tokens.ToLookup(token => token.Design).ToDictionary(lookup => lookup.Key, lookup => lookup.ToList()[0]);
 
-            foreach (var mergingFleet in order.MergingFleets)
+            foreach (var mergingFleet in mergingFleets)
             {
                 foreach (var token in mergingFleet.Tokens)
                 {

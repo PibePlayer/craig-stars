@@ -65,9 +65,9 @@ namespace CraigStars
                 if (source.PlayerNum == player.Num)
                 {
                     List<Fleet> mergingFleets = new List<Fleet>();
-                    foreach (var playerFleet in order.MergingFleets)
+                    foreach (var playerFleetGuid in order.MergingFleetGuids)
                     {
-                        if (game.FleetsByGuid.TryGetValue(playerFleet.Guid, out var mergingFleet))
+                        if (game.FleetsByGuid.TryGetValue(playerFleetGuid, out var mergingFleet))
                         {
                             if (mergingFleet.PlayerNum == player.Num)
                             {
@@ -76,23 +76,19 @@ namespace CraigStars
                             }
                             else
                             {
-                                log.Error($"Player {player} tried to merge {playerFleet.Name} into {source.Name}, but they do not own {playerFleet.Name} - {playerFleet.Guid}");
+                                log.Error($"Player {player} tried to merge {mergingFleet} into {source.Name}, but they do not own {mergingFleet} - {playerFleetGuid}");
                             }
                         }
                         else
                         {
-                            log.Error($"Player {player} tried to merge {playerFleet.Name} into {source.Name}, but {playerFleet.Name} - {playerFleet.Guid} doesn't exist");
+                            log.Error($"Player {player} tried to merge {mergingFleet} into {source.Name}, but fleet {playerFleetGuid} doesn't exist");
                         }
 
                     }
 
                     if (mergingFleets.Count > 0)
                     {
-                        fleetService.Merge(source, player, new MergeFleetOrder()
-                        {
-                            Guid = source.Guid,
-                            MergingFleets = mergingFleets
-                        });
+                        fleetService.Merge(source, player, mergingFleets);
 
                         mergingFleets.ForEach(f => EventManager.PublishMapObjectDeletedEvent(f));
                     }

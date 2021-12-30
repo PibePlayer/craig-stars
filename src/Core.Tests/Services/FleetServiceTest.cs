@@ -81,8 +81,8 @@ namespace CraigStars.Tests
                 }
             };
 
-            var order = new MergeFleetOrder(fleet2);
-            service.Merge(fleet1, player, order);
+            var order = new MergeFleetOrder(fleet1.Guid, fleet2);
+            service.Merge(fleet1, player, new List<Fleet>() { fleet2 });
 
             // we should get two more fleets with incremented ids
             Assert.AreEqual(2, fleet1.Tokens.Count);
@@ -108,7 +108,7 @@ namespace CraigStars.Tests
             fleetSpecService.ComputeFleetSpec(player, fleet, recompute: true);
             Assert.AreEqual(7, service.GetDefaultWarpFactor(fleet, player));
         }
-        
+
         [Test]
         public void TestGetBestWarpFactor()
         {

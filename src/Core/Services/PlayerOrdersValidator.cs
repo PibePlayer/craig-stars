@@ -190,9 +190,9 @@ namespace CraigStars
                 if (source.PlayerNum == player.Num)
                 {
                     List<Fleet> mergingFleets = new List<Fleet>();
-                    foreach (var playerFleet in order.MergingFleets)
+                    foreach (var playerFleetGuid in order.MergingFleetGuids)
                     {
-                        if (context.FleetsByGuid.TryGetValue(playerFleet.Guid, out var mergingFleet))
+                        if (context.FleetsByGuid.TryGetValue(playerFleetGuid, out var mergingFleet))
                         {
                             if (mergingFleet.PlayerNum == player.Num)
                             {
@@ -201,12 +201,12 @@ namespace CraigStars
                             }
                             else
                             {
-                                result.AddError($"Player {player} tried to merge {playerFleet.Name} into {source.Name}, but they do not own {playerFleet.Name} - {playerFleet.Guid}");
+                                result.AddError($"Player {player} tried to merge {mergingFleet} into {source.Name}, but they do not own {mergingFleet} - {playerFleetGuid}");
                             }
                         }
                         else
                         {
-                            result.AddError($"Player {player} tried to merge {playerFleet.Name} into {source.Name}, but {playerFleet.Name} - {playerFleet.Guid} doesn't exist");
+                            result.AddError($"Player {player} tried to merge fleet {playerFleetGuid} into {source.Name}, but fleet {playerFleetGuid} doesn't exist");
                         }
 
                     }

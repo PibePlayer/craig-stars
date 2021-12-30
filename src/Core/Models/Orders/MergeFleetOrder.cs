@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace CraigStars
@@ -10,14 +12,14 @@ namespace CraigStars
     [JsonObject(IsReference = true)]
     public class MergeFleetOrder : ImmediateFleetOrder
     {
-        [JsonProperty(ItemIsReference = true)]
-        public List<Fleet> MergingFleets { get; set; } = new();
+        public List<Guid> MergingFleetGuids { get; set; } = new();
 
         public MergeFleetOrder() { }
 
-        public MergeFleetOrder(params Fleet[] fleets)
+        public MergeFleetOrder(Guid guid, params Fleet[] fleets)
         {
-            MergingFleets.AddRange(fleets);
+            Guid = guid;
+            MergingFleetGuids.AddRange(fleets.Select(fleet => fleet.Guid));
         }
 
     }

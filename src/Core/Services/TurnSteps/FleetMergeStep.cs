@@ -58,8 +58,7 @@ namespace CraigStars
                 else
                 {
                     // we're good, merge!
-                    var order = new MergeFleetOrder(fleet);
-                    fleetService.Merge(targetFleet, player, order);
+                    fleetService.Merge(targetFleet, player, new List<Fleet>() { fleet });
                     Message.FleetMerged(player, fleet, targetFleet);
                     EventManager.PublishMapObjectDeletedEvent(fleet);
 

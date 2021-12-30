@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 
 namespace CraigStars
 {
+    [JsonObject(IsReference = true)]
     public class CargoTransferOrder : ImmediateFleetOrder
     {
         public Guid DestGuid { get; set; }

@@ -281,6 +281,7 @@ namespace CraigStars.Client
                     planetSprite.Position = planet.Position;
                     planetSprite.OrbitingFleets.Clear();
                     planetSprite.PacketTarget = null;
+                    planetSprite.UpdateSprite();
                 });
             }
 

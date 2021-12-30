@@ -25,7 +25,7 @@ namespace CraigStars
         /// The client allows various immediate orders like cargo transfers and merge/split operations.
         /// We process those like WP0 tasks
         /// </summary>
-        public void ExecuteFleetOrders(Player player, List<FleetOrder> immediateFleetOrders)
+        public void ExecuteFleetOrders(Player player, List<ImmediateFleetOrder> immediateFleetOrders)
         {
             immediateFleetOrders.ForEach(order =>
             {
@@ -51,8 +51,8 @@ namespace CraigStars
 
         internal void ExecuteCargoTransferOrder(Player player, CargoTransferOrder order)
         {
-            if (game.CargoHoldersByGuid.TryGetValue(order.Source.Guid, out var source) &&
-            game.CargoHoldersByGuid.TryGetValue(order.Dest.Guid, out var dest))
+            if (game.CargoHoldersByGuid.TryGetValue(order.Guid, out var source) &&
+            game.CargoHoldersByGuid.TryGetValue(order.DestGuid, out var dest))
             {
                 cargoTransferer.Transfer(source, dest, order.Transfer, order.FuelTransfer);
             }
@@ -60,7 +60,7 @@ namespace CraigStars
 
         void ExecuteMergeFleetOrder(Player player, MergeFleetOrder order)
         {
-            if (game.FleetsByGuid.TryGetValue(order.Source.Guid, out var source))
+            if (game.FleetsByGuid.TryGetValue(order.Guid, out var source))
             {
                 if (source.PlayerNum == player.Num)
                 {
@@ -90,7 +90,7 @@ namespace CraigStars
                     {
                         fleetService.Merge(source, player, new MergeFleetOrder()
                         {
-                            Source = source,
+                            Guid = source.Guid,
                             MergingFleets = mergingFleets
                         });
 
@@ -99,34 +99,34 @@ namespace CraigStars
                 }
                 else
                 {
-                    log.Error($"Player {player} tried to merge into a fleet that they don't own: {order.Source.Name} - {order.Source.Guid}");
+                    log.Error($"Player {player} tried to merge into a fleet that they don't own: {source.Name} - {source.Guid}");
                 }
             }
             else
             {
-                log.Error($"Player {player} tried to merge into a fleet that doesn't exist: {order.Source.Name} - {order.Source.Guid}");
+                log.Error($"Player {player} tried to merge into a fleet that doesn't exist: {order.Guid}");
             }
         }
 
         void ExecuteSplitAllFleetOrder(Player player, SplitAllFleetOrder order)
         {
-            if (game.FleetsByGuid.TryGetValue(order.Source.Guid, out var source))
+            if (game.FleetsByGuid.TryGetValue(order.Guid, out var source))
             {
                 if (source.PlayerNum == player.Num)
                 {
-                    var newFleets = fleetService.Split(source, player, new SplitAllFleetOrder { Source = source, NewFleetGuids = order.NewFleetGuids });
+                    var newFleets = fleetService.Split(source, player, new SplitAllFleetOrder { Guid = source.Guid, NewFleetGuids = order.NewFleetGuids });
 
                     newFleets.ForEach(f => EventManager.PublishMapObjectCreatedEvent(f));
                     log.Debug($"Executing user SplitAllFleetOrder for {source.Name}");
                 }
                 else
                 {
-                    log.Error($"Player {player} tried to split a fleet that they don't own: {order.Source.Name} - {order.Source.Guid}");
+                    log.Error($"Player {player} tried to split a fleet that they don't own: {source.Name} - {source.Guid}");
                 }
             }
             else
             {
-                log.Error($"Player {player} tried to split a fleet that doesn't exist: {order.Source.Name} - {order.Source.Guid}");
+                log.Error($"Player {player} tried to split a fleet that doesn't exist: {order.Guid}");
             }
 
         }

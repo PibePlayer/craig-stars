@@ -52,7 +52,7 @@ namespace CraigStars.Client
 
         void OnSplitAllButtonPressed()
         {
-            var order = new SplitAllFleetOrder() { Source = CommandedFleet.Fleet };
+            var order = new SplitAllFleetOrder() { Guid = CommandedFleet.Fleet.Guid };
             Me.SplitFleetOrders.Add(order);
             Me.ImmediateFleetOrders.Add(order);
 

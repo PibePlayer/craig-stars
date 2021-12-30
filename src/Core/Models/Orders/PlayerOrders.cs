@@ -24,6 +24,6 @@ namespace CraigStars
         public List<ProductionPlan> ProductionPlans { get; set; } = new();
         public List<FleetComposition> FleetCompositions { get; set; } = new();
 
-        public List<FleetOrder> ImmedateFleetOrders { get; set; } = new();
+        public List<ImmediateFleetOrder> ImmedateFleetOrders { get; set; } = new();
     }
 }

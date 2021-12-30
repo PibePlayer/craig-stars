@@ -209,8 +209,8 @@ namespace CraigStars.Client
 
                 var order = new CargoTransferOrder()
                 {
-                    Source = source,
-                    Dest = dest,
+                    Guid = source.Guid,
+                    DestGuid = dest.Guid,
                     Transfer = netCargoDiff,
                     FuelTransfer = netFuelDiff
                 };

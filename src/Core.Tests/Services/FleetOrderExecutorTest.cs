@@ -37,8 +37,8 @@ namespace CraigStars.Tests
 
             // transfer 50 ironium to the fleet from the planet
             var order = new CargoTransferOrder() {
-                Source = fleet,
-                Dest = planet,
+                Guid = fleet.Guid,
+                DestGuid = planet.Guid,
                 Transfer = new Cargo(ironium: -50)
             };
 
@@ -61,8 +61,8 @@ namespace CraigStars.Tests
 
             // try and transfer 200 ironium to the fleet from the planet
             var order = new CargoTransferOrder() {
-                Source = fleet,
-                Dest = planet,
+                Guid = fleet.Guid,
+                DestGuid = planet.Guid,
                 Transfer = new Cargo(ironium: -200)
             };
 
@@ -85,8 +85,8 @@ namespace CraigStars.Tests
 
             // try and transfer 100 ironium to the fleet with only 50 on the planet
             var order = new CargoTransferOrder() {
-                Source = fleet,
-                Dest = planet,
+                Guid = fleet.Guid,
+                DestGuid = planet.Guid,
                 Transfer = new Cargo(ironium: -100)
             };
 

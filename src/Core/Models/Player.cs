@@ -186,7 +186,6 @@ namespace CraigStars
         [JsonProperty(ItemIsReference = true)]
         public List<Fleet> MergedFleets { get; set; } = new();
 
-        [JsonProperty(ItemIsReference = true)]
         public List<Message> Messages { get; set; } = new();
         [JsonIgnore] public IEnumerable<Message> FilteredMessages { get => Messages.Where(m => !UISettings.MessageTypeFilter.Contains(m.Type)); }
 
@@ -198,7 +197,7 @@ namespace CraigStars
         public List<SplitAllFleetOrder> SplitFleetOrders { get; set; } = new List<SplitAllFleetOrder>();
 
         [JsonProperty(ItemIsReference = true)]
-        public List<FleetOrder> ImmediateFleetOrders { get; set; } = new List<FleetOrder>();
+        public List<ImmediateFleetOrder> ImmediateFleetOrders { get; set; } = new();
 
         /// <summary>
         /// Get the orders for this player for turn submittal

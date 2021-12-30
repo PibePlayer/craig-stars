@@ -11,14 +11,21 @@ namespace CraigStars
 
         public bool IsValid { get; set; } = true;
         public List<string> Errors { get; set; } = new();
+        public List<string> Warnings { get; set; } = new();
 
-        public bool AddError(string error)
+        public void AddError(string error)
         {
             IsValid = false;
             Errors.Add(error);
             log.Error(error);
-            return IsValid;
         }
+
+        public void AddWarning(string error)
+        {
+            Warnings.Add(error);
+            log.Warn(error);
+        }
+
     }
 
     public class PlayerOrdersValidatorContext
@@ -166,19 +173,19 @@ namespace CraigStars
 
         void ValidateCargoTransferOrder(CargoTransferOrder order, PlayerOrdersValidatorContext context, PlayerOrdersValidatorResult result)
         {
-            if (!context.CargoHoldersByGuid.TryGetValue(order.Source.Guid, out var source))
+            if (!context.CargoHoldersByGuid.TryGetValue(order.Guid, out var source))
             {
-                result.AddError($"{game.Name}:{game.Year} CargoTransferOrder source {order.Source.Guid} was not found in game ICargoHolders");
+                result.AddError($"{game.Name}:{game.Year} CargoTransferOrder source {order.Guid} was not found in game ICargoHolders");
             }
-            if (!context.CargoHoldersByGuid.TryGetValue(order.Dest.Guid, out var dest))
+            if (!context.CargoHoldersByGuid.TryGetValue(order.DestGuid, out var dest))
             {
-                result.AddError($"{game.Name}:{game.Year} CargoTransferOrder dest {order.Dest.Guid} was not found in game ICargoHolders");
+                result.AddError($"{game.Name}:{game.Year} CargoTransferOrder dest {order.DestGuid} was not found in game ICargoHolders");
             }
         }
 
         void ValidateMergeFleetOrder(Player player, PlayerOrdersValidatorContext context, MergeFleetOrder order, PlayerOrdersValidatorResult result)
         {
-            if (context.FleetsByGuid.TryGetValue(order.Source.Guid, out var source))
+            if (context.FleetsByGuid.TryGetValue(order.Guid, out var source))
             {
                 if (source.PlayerNum == player.Num)
                 {
@@ -218,22 +225,22 @@ namespace CraigStars
                 }
                 else
                 {
-                    result.AddError($"Player {player} tried to merge into a fleet that they don't own: {order.Source.Name} - {order.Source.Guid}");
+                    result.AddError($"Player {player} tried to merge into a fleet that they don't own: {source.Name} - {order.Guid}");
                 }
             }
             else
             {
-                result.AddError($"Player {player} tried to merge into a fleet that doesn't exist: {order.Source.Name} - {order.Source.Guid}");
+                result.AddError($"Player {player} tried to merge into a fleet that doesn't exist: {order.Guid}");
             }
         }
 
         void ValidateSplitAllFleetOrder(Player player, PlayerOrdersValidatorContext context, SplitAllFleetOrder order, PlayerOrdersValidatorResult result)
         {
-            if (context.FleetsByGuid.TryGetValue(order.Source.Guid, out var source))
+            if (context.FleetsByGuid.TryGetValue(order.Guid, out var source))
             {
                 if (source.PlayerNum == player.Num)
                 {
-                    foreach (var newFleet in order.NewFleetGuids.Select(guid => new Fleet() { Guid = guid, PlayerNum = player.Num }))
+                    foreach (var newFleet in order.NewFleetGuids.Select(guid => new Fleet() { Guid = guid, PlayerNum = player.Num, Position = source.Position }))
                     {
                         context.FleetsByGuid[newFleet.Guid] = newFleet;
                         context.MapObjectsByGuid[newFleet.Guid] = newFleet;
@@ -243,12 +250,12 @@ namespace CraigStars
                 }
                 else
                 {
-                    result.AddError($"Player {player} tried to split a fleet that they don't own: {order.Source.Name} - {order.Source.Guid}");
+                    result.AddError($"Player {player} tried to split a fleet that they don't own: {source.Name} - {order.Guid}");
                 }
             }
             else
             {
-                result.AddError($"Player {player} tried to split a fleet that doesn't exist: {order.Source.Name} - {order.Source.Guid}");
+                result.AddError($"Player {player} tried to split a fleet that doesn't exist: {order.Guid}");
             }
 
         }
@@ -280,7 +287,8 @@ namespace CraigStars
                                 // make sure the wp0 target is actually at the same location as the fleet
                                 if (index == 0 && targetMapObject.Position != fleet.Position)
                                 {
-                                    result.AddError($"{game.Name}:{game.Year} {fleet.Name} wp0 Target {targetMapObject.Name} is at {targetMapObject.Position} but fleet is at {fleet.Position}");
+                                    // this is just a warning
+                                    result.AddWarning($"{game.Name}:{game.Year} {fleet.Name} wp0 Target {targetMapObject.Name} is at {targetMapObject.Position} but fleet is at {fleet.Position}");
                                 }
                             }
                         }
@@ -288,7 +296,7 @@ namespace CraigStars
                         {
                             if (!context.MapObjectsByGuid.TryGetValue(wp.OriginalTargetGuid.Value, out var targetMapObject))
                             {
-                                // result.AddError($"{game.Name}:{game.Year} No MapObject found for waypoint original target {wp.OriginalTargetGuid}");
+                                result.AddWarning($"{game.Name}:{game.Year} No MapObject found for waypoint original target {wp.OriginalTargetGuid}");
                             }
                         }
                     });

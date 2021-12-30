@@ -64,7 +64,7 @@ namespace CraigStars.Client
             {
                 var order = new MergeFleetOrder()
                 {
-                    Source = SourceFleet.Fleet,
+                    Guid = SourceFleet.Fleet.Guid,
                     MergingFleets = fleetsToMerge
                 };
                 Me.MergeFleetOrders.Add(order);

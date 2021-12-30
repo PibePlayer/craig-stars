@@ -1,14 +1,12 @@
+using System;
 using Newtonsoft.Json;
 
 namespace CraigStars
 {
-    [JsonObject(IsReference = true)]
-    public class CargoTransferOrder : FleetOrder
+    public class CargoTransferOrder : ImmediateFleetOrder
     {
-        [JsonProperty(IsReference = true)]
-        public ICargoHolder Dest { get; set; }
+        public Guid DestGuid { get; set; }
         public Cargo Transfer { get; set; }
         public int FuelTransfer { get; set; }
-
     }
 }

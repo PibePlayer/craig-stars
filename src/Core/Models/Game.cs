@@ -120,18 +120,6 @@ namespace CraigStars
                     item.Design = DesignsByGuid[item.DesignGuid.Value];
                 }
             }
-
-            foreach (var order in PlayerOrders.Where(order => order != null))
-            {
-                var player = Players[order.PlayerNum];
-                foreach (var planetOrder in order.PlanetProductionOrders)
-                {
-                    foreach (var item in planetOrder.Items.Where(item => item.DesignGuid.HasValue))
-                    {
-                        item.Design = player.DesignsByGuid[item.DesignGuid.Value];
-                    }
-                }
-            }
         }
 
         /// <summary>

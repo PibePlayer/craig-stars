@@ -17,8 +17,8 @@ namespace CraigStars.Utils
             // make an immediate CargoTransferOrder
             var order = new CargoTransferOrder()
             {
-                Source = source,
-                Dest = dest,
+                Guid = source.Guid,
+                DestGuid = dest.Guid,
                 Transfer = cargo,
             };
 

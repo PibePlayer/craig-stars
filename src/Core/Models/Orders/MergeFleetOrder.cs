@@ -8,7 +8,7 @@ namespace CraigStars
     /// into a source fleet
     /// </summary>
     [JsonObject(IsReference = true)]
-    public class MergeFleetOrder : FleetOrder
+    public class MergeFleetOrder : ImmediateFleetOrder
     {
         [JsonProperty(ItemIsReference = true)]
         public List<Fleet> MergingFleets { get; set; } = new();

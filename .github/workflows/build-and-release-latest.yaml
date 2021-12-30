@@ -130,7 +130,7 @@ jobs:
 
       # build the solution
       - name: dotnet Build
-        run: dotnet build -c Release
+        run: dotnet build -c ExportRelease
 
       - name: Build Export
         id: build

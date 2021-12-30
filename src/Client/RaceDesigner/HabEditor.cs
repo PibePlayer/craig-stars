@@ -180,6 +180,7 @@ namespace CraigStars.Client
             }
 
             habLabel.Text = type.ToString();
+            immuneCheckBox.Pressed = Immune;
             immuneCheckBox.Text = $"Immune to {type.ToString()}";
 
             if (immuneCheckBox.Pressed)

@@ -369,10 +369,10 @@ namespace CraigStars.Client
                 gravHabEditor.Immune = Race.ImmuneGrav;
                 tempHabEditor.Low = Race.HabLow.temp;
                 tempHabEditor.High = Race.HabHigh.temp;
-                tempHabEditor.Immune = Race.ImmuneGrav;
+                tempHabEditor.Immune = Race.ImmuneTemp;
                 radHabEditor.Low = Race.HabLow.rad;
                 radHabEditor.High = Race.HabHigh.rad;
-                radHabEditor.Immune = Race.ImmuneGrav;
+                radHabEditor.Immune = Race.ImmuneRad;
 
                 UpdateHabChancesDescription();
 
@@ -466,6 +466,20 @@ namespace CraigStars.Client
             if (rsCheckBox.Pressed) { race.LRTs.Add(LRT.RS); }
             if (maCheckBox.Pressed) { race.LRTs.Add(LRT.MA); }
             if (ceCheckBox.Pressed) { race.LRTs.Add(LRT.CE); }
+
+            race.HabLow = new Hab(
+                gravHabEditor.Low,
+                tempHabEditor.Low,
+                radHabEditor.Low
+            );
+            race.HabHigh = new Hab(
+                gravHabEditor.High,
+                tempHabEditor.High,
+                radHabEditor.High
+            );
+            race.ImmuneGrav = gravHabEditor.Immune;
+            race.ImmuneTemp = tempHabEditor.Immune;
+            race.ImmuneRad = radHabEditor.Immune;
 
             race.GrowthRate = (int)growthRate.Value;
 

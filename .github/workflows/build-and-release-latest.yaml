@@ -36,7 +36,7 @@ jobs:
     - name: Setup Godot dlls
       run: |
         mkdir -p .mono/assemblies/Debug
-        cp /usr/local/bin/GodotSharp/Api/Release/* .mono/assemblies/Debug
+        cp /usr/local/bin/GodotSharp/Api/Debug/* .mono/assemblies/Debug
 
     # build the solution
     - name: Build
@@ -125,8 +125,12 @@ jobs:
       # copy the godot DLLs where they are expected
       - name: Setup Godot dlls for dotnet Build
         run: |
+          mkdir -p .mono/assemblies/Debug
           mkdir -p .mono/assemblies/Release
+          mkdir -p .mono/assemblies/ExportRelease
+          cp /usr/local/bin/GodotSharp/Api/Debug/* .mono/assemblies/Debug
           cp /usr/local/bin/GodotSharp/Api/Release/* .mono/assemblies/Release
+          cp /usr/local/bin/GodotSharp/Api/Release/* .mono/assemblies/ExportRelease
 
       # build the solution
       - name: dotnet Build

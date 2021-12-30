@@ -176,16 +176,6 @@ namespace CraigStars
         [JsonIgnore] public Dictionary<Guid, FleetComposition> FleetCompositionsByGuid = new();
         [JsonIgnore] public Dictionary<FleetCompositionType, FleetComposition> FleetCompositionsByType = new();
 
-        /// <summary>
-        /// These fleets have been merged into other fleets and no longer exist
-        /// We might not need this field. 
-        /// TODO: Delete this if we don't actually use it
-        /// </summary>
-        /// <typeparam name="Fleet"></typeparam>
-        /// <returns></returns>
-        [JsonProperty(ItemIsReference = true)]
-        public List<Fleet> MergedFleets { get; set; } = new();
-
         public List<Message> Messages { get; set; } = new();
         [JsonIgnore] public IEnumerable<Message> FilteredMessages { get => Messages.Where(m => !UISettings.MessageTypeFilter.Contains(m.Type)); }
 

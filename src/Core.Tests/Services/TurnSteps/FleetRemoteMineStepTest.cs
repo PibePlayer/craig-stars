@@ -50,6 +50,8 @@ namespace CraigStars.Tests
             var miner = TestUtils.CreateDesign(game, player, ShipDesigns.CottonPicker);
             var fleet = new Fleet()
             {
+                Position = new Vector2(),
+                PreviousPosition = new Vector2(),
                 PlayerNum = player.Num,
                 Tokens = new List<ShipToken>() {
                     new ShipToken(miner, 1)
@@ -90,6 +92,8 @@ namespace CraigStars.Tests
             var miner = TestUtils.CreateDesign(game, player, ShipDesigns.CottonPicker);
             var fleet = new Fleet()
             {
+                Position = new Vector2(),
+                PreviousPosition = new Vector2(),
                 PlayerNum = player.Num,
                 Tokens = new List<ShipToken>() {
                     new ShipToken(miner, 1)

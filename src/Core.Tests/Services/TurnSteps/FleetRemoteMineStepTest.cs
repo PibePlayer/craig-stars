@@ -51,7 +51,6 @@ namespace CraigStars.Tests
             var fleet = new Fleet()
             {
                 Position = new Vector2(),
-                PreviousPosition = new Vector2(),
                 PlayerNum = player.Num,
                 Tokens = new List<ShipToken>() {
                     new ShipToken(miner, 1)
@@ -81,6 +80,61 @@ namespace CraigStars.Tests
         }
 
         [Test]
+        public void TestRemoteMineWp1()
+        {
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
+            var player = game.Players[0];
+
+            var planet = new Planet()
+            {
+                Position = new Vector2(10, 0), // somewhere away from us
+                Name = "Planet To Remote Mine",
+                BaseHab = new Hab(50, 50, 50),
+                Hab = new Hab(50, 50, 50),
+                TerraformedAmount = new Hab(),
+                MineralConcentration = new Mineral(100, 100, 100),
+                Cargo = new Cargo(),
+            };
+
+            game.AddMapObject(planet);
+
+            // build a remote mining fleet
+            var miner = TestUtils.CreateDesign(game, player, ShipDesigns.CottonPicker);
+            var fleet = new Fleet()
+            {
+                Position = new Vector2(),
+                PlayerNum = player.Num,
+                Tokens = new List<ShipToken>() {
+                    new ShipToken(miner, 1)
+                },
+            };
+            game.AddMapObject(fleet);
+            gameRunner.ComputeSpecs(recompute: true);
+
+            // Move to this planet
+            fleet.Waypoints.Add(Waypoint.PositionWaypoint(fleet.Position));
+            fleet.Waypoints.Add(Waypoint.TargetWaypoint(planet, task: WaypointTask.RemoteMining));
+
+            // move to the planet
+            FleetMoveStep moveStep = new FleetMoveStep(
+                gameRunner.GameProvider,
+                rulesProvider,
+                TestUtils.TestContainer.GetInstance<MineFieldDamager>(),
+                TestUtils.TestContainer.GetInstance<ShipDesignDiscoverer>(),
+                TestUtils.TestContainer.GetInstance<FleetService>(),
+                TestUtils.TestContainer.GetInstance<PlayerService>()
+            );
+            moveStep.Execute(new(), game.OwnedPlanets.ToList());
+
+            // remote mine
+            var step = new FleetRemoteMine0Step(gameRunner.GameProvider, rulesProvider, planetService, planetDiscover);
+            step.Execute(new(), game.OwnedPlanets.ToList());
+
+            // no mining
+            Assert.AreEqual(new Cargo(), planet.Cargo);
+        }
+
+        [Test]
         public void TestRemoteMineAR()
         {
             var (game, gameRunner) = TestUtils.GetSingleUnitGame();
@@ -93,7 +147,6 @@ namespace CraigStars.Tests
             var fleet = new Fleet()
             {
                 Position = new Vector2(),
-                PreviousPosition = new Vector2(),
                 PlayerNum = player.Num,
                 Tokens = new List<ShipToken>() {
                     new ShipToken(miner, 1)

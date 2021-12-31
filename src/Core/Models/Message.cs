@@ -511,6 +511,13 @@ namespace CraigStars
                 $"Remote mining robots from {fleet.Name} had orders to mine in deep space. The order has been canceled.", fleet));
         }
 
+        public static void RemoteMined(Player player, Fleet fleet, Planet planet, Mineral mineral)
+        {
+            player.Messages.Add(new Message(MessageType.RemoteMined,
+                $"{fleet.Name} has remote mined {planet.Name}, extracting {mineral.Ironium}kT of ironium, {mineral.Boranium}kT of boranium, and {mineral.Germanium}kT of germanium.", fleet));
+        }
+
+
         public static void PlanetDiscovered(Player player, Planet planet, Hab terraformAmount)
         {
             long habValue = player.Race.GetPlanetHabitability(planet.BaseHab.Value);

@@ -61,6 +61,7 @@ namespace CraigStars
         Instaform,
         PacketTerraform,
         PacketPermaform,
+        RemoteMined,
 
     }
 }

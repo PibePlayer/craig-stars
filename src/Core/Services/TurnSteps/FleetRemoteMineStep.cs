@@ -72,14 +72,16 @@ namespace CraigStars
             if (ValidateRemoteMining(fleet, wp, planet))
             {
                 // no remote mining if we moved here this round
-                if (fleet.PreviousPosition == fleet.Position)
+                if (!fleet.PreviousPosition.HasValue || fleet.PreviousPosition.Value == fleet.Position)
                 {
                     // remote mine!
                     int numMines = fleet.Spec.MiningRate;
-                    planet.Cargo += planetService.GetMineralOutput(planet, numMines);
+                    var mineralOutput = planetService.GetMineralOutput(planet, numMines);
+                    planet.Cargo += mineralOutput;
                     planet.MineYears += numMines;
                     planetService.ReduceMineralConcentration(planet);
                     planetDiscoverer.DiscoverRemoteMined(player, planet);
+                    Message.RemoteMined(player, fleet, planet, mineralOutput);
                 }
             }
             else

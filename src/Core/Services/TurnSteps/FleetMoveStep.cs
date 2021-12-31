@@ -63,6 +63,7 @@ namespace CraigStars
             }
             else
             {
+                fleet.PreviousPosition = fleet.Position;
                 fleet.WarpSpeed = 0;
                 fleet.Heading = Vector2.Zero;
             }

@@ -35,14 +35,17 @@ namespace CraigStars
         public override void Process(PublicGameInfo gameInfo, Player player)
         {
             // find the first colony ship design
-            ShipDesign design = player.GetLatestDesign(ShipDesignPurpose.ColonistFreighter);
+            // TODO: support non-radiating colonist freighters somehow...
+            ShipDesign design = player.GetLatestDesign(ShipDesignPurpose.Freighter);
 
             var lowPopPlanets = player.Planets
             .Where(planet => planet.Spec.PopulationDensity < PopulationDensityRequired)
             .OrderBy(planet => planet.Population)
             .ToList();
             var buildablePlanets = player.Planets
-                .Where(planet => planetService.CanBuild(planet, player, design.Spec.Mass) && planet.Spec.PopulationDensity >= PopulationDensityRequired)
+                .Where(planet =>
+                    planetService.CanBuild(planet, player, design.Spec.Mass) && planet.Spec.PopulationDensity >= PopulationDensityRequired
+                )
                 .ToList();
             var fleets = player.Fleets.Where(fleet => fleet.Spec.Purposes.Contains(ShipDesignPurpose.Freighter));
 

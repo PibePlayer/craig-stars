@@ -179,7 +179,18 @@ namespace CraigStars
             }
             if (!context.CargoHoldersByGuid.TryGetValue(order.DestGuid, out var dest))
             {
-                result.AddError($"{game.Name}:{game.Year} CargoTransferOrder dest {order.DestGuid} was not found in game ICargoHolders");
+                if (order.Jettison)
+                {
+                    Salvage salvage = new Salvage()
+                    {
+                        Guid = order.DestGuid
+                    };
+                    context.CargoHoldersByGuid[salvage.Guid] = salvage;
+                }
+                else
+                {
+                    result.AddError($"{game.Name}:{game.Year} CargoTransferOrder dest {order.DestGuid} was not found in game ICargoHolders");
+                }
             }
         }
 
@@ -278,17 +289,17 @@ namespace CraigStars
                         {
                             if (!context.MapObjectsByGuid.TryGetValue(wp.TargetGuid.Value, out var targetMapObject))
                             {
-                                // it's possible this target was scrapped, so revisit this...
-                                // for now we do a TryGetValue on the consumer, so it shouldn't fail
-                                // result.AddError($"{game.Name}:{game.Year} No MapObject found for waypoint target {wp.TargetGuid} - {wp.TargetName}");
-                            }
+                            // it's possible this target was scrapped, so revisit this...
+                            // for now we do a TryGetValue on the consumer, so it shouldn't fail
+                            // result.AddError($"{game.Name}:{game.Year} No MapObject found for waypoint target {wp.TargetGuid} - {wp.TargetName}");
+                        }
                             else
                             {
-                                // make sure the wp0 target is actually at the same location as the fleet
-                                if (index == 0 && targetMapObject.Position != fleet.Position)
+                            // make sure the wp0 target is actually at the same location as the fleet
+                            if (index == 0 && targetMapObject.Position != fleet.Position)
                                 {
-                                    // this is just a warning
-                                    result.AddWarning($"{game.Name}:{game.Year} {fleet.Name} wp0 Target {targetMapObject.Name} is at {targetMapObject.Position} but fleet is at {fleet.Position}");
+                                // this is just a warning
+                                result.AddWarning($"{game.Name}:{game.Year} {fleet.Name} wp0 Target {targetMapObject.Name} is at {targetMapObject.Position} but fleet is at {fleet.Position}");
                                 }
                             }
                         }
@@ -370,29 +381,29 @@ namespace CraigStars
             var player = game.Players[orders.PlayerNum];
             orders.PlanetProductionOrders.ForEach(order =>
             {
-                // validate planet exists and is owned by player
-                if (context.MapObjectsByGuid.TryGetValue(order.Guid, out var source) && source is Planet planet)
+            // validate planet exists and is owned by player
+            if (context.MapObjectsByGuid.TryGetValue(order.Guid, out var source) && source is Planet planet)
                 {
-                    // validate planet ownership
-                    if (!planet.OwnedBy(orders.PlayerNum))
+                // validate planet ownership
+                if (!planet.OwnedBy(orders.PlayerNum))
                     {
                         result.AddError($"{game.Name}:{game.Year} Player {orders.PlayerNum} planet {planet.Name} has orders but is not owned by the Player.");
                     }
 
-                    // validate RouteTarget
-                    if (order.PacketTarget.HasValue && !context.MapObjectsByGuid.TryGetValue(order.PacketTarget.Value, out var packetTarget))
+                // validate RouteTarget
+                if (order.PacketTarget.HasValue && !context.MapObjectsByGuid.TryGetValue(order.PacketTarget.Value, out var packetTarget))
                     {
                         result.AddError($"{game.Name}:{game.Year} Player {orders.PlayerNum} planet {planet.Name} has PacketTarget {order.PacketTarget} that was not found in game.");
                     }
 
-                    // validate PacketTarget
-                    if (order.RouteTarget.HasValue && !context.MapObjectsByGuid.TryGetValue(order.RouteTarget.Value, out var routeTarget))
+                // validate PacketTarget
+                if (order.RouteTarget.HasValue && !context.MapObjectsByGuid.TryGetValue(order.RouteTarget.Value, out var routeTarget))
                     {
                         result.AddError($"{game.Name}:{game.Year} Player {orders.PlayerNum} planet {planet.Name} has RouteTarget {order.RouteTarget} that was not found in game.");
                     }
 
-                    // validate StarbaseBattlePlan
-                    if (order.StarbaseBattlePlanGuid.HasValue)
+                // validate StarbaseBattlePlan
+                if (order.StarbaseBattlePlanGuid.HasValue)
                     {
                         if (!planet.HasStarbase)
                         {

@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://src/Client/Dialogs/CargoTransfer/PlanetCargoTransfer.cs" type="Script" id=1]
+[ext_resource path="res://src/Client/Dialogs/CargoTransfer/SalvageCargoTransfer.cs" type="Script" id=1]
 [ext_resource path="res://src/Client/Dialogs/CargoTransfer/CargoTransfer.tscn" type="PackedScene" id=2]
 
-[node name="PlanetCargoTransfer" instance=ExtResource( 2 )]
+[node name="SalvageCargoTransfer" instance=ExtResource( 2 )]
 script = ExtResource( 1 )

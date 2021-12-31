@@ -111,6 +111,7 @@ namespace CraigStars.Client
             EventManager.SelectMapObjectEvent += OnSelectMapObject;
             EventManager.FleetDeletedEvent += OnFleetDeleted;
             EventManager.FleetsCreatedEvent += OnFleetsCreated;
+            EventManager.SalvageCreatedEvent += OnSalvageCreated;
             EventManager.WaypointAddedEvent += OnWaypointAdded;
             EventManager.WaypointSelectedEvent += OnWaypointSelected;
             EventManager.WaypointDeletedEvent += OnWaypointDeleted;
@@ -136,6 +137,7 @@ namespace CraigStars.Client
                 EventManager.SelectMapObjectEvent -= OnSelectMapObject;
                 EventManager.FleetDeletedEvent -= OnFleetDeleted;
                 EventManager.FleetsCreatedEvent -= OnFleetsCreated;
+                EventManager.SalvageCreatedEvent -= OnSalvageCreated;
                 EventManager.WaypointAddedEvent -= OnWaypointAdded;
                 EventManager.WaypointSelectedEvent -= OnWaypointSelected;
                 EventManager.WaypointDeletedEvent -= OnWaypointDeleted;
@@ -215,6 +217,9 @@ namespace CraigStars.Client
                     break;
                 case WormholeSprite wormholeSprite:
                     NodePool.Return(wormholeSprite);
+                    break;
+                case SalvageSprite salvageSprite:
+                    NodePool.Return(salvageSprite);
                     break;
                 default:
                     value.QueueFree();
@@ -1315,6 +1320,35 @@ namespace CraigStars.Client
             fleetSprite.Disconnect("mouse_entered", this, nameof(OnMouseEntered));
             fleetSprite.Disconnect("mouse_exited", this, nameof(OnMouseExited));
             fleetSprite.QueueFree();
+        }
+
+        void OnSalvageCreated(Salvage salvage)
+        {
+            var sprites = AddMapObjectsToViewport<Salvage, SalvageSprite>(new List<Salvage>() { salvage }, salvageScene, GetNode("Salvage"));
+            mapObjects.AddRange(sprites);
+            if (!mapObjectsByLocation.TryGetValue(salvage.Position, out var mapObjectsAtLocation))
+            {
+                mapObjectsAtLocation = new List<MapObjectSprite>();
+                mapObjectsByLocation[salvage.Position] = mapObjectsAtLocation;
+            }
+
+            if (!Me.MapObjectsByLocation.TryGetValue(salvage.Position, out var myMapObjectsAtLocation))
+            {
+                myMapObjectsAtLocation = new List<MapObject>();
+                Me.MapObjectsByLocation[salvage.Position] = myMapObjectsAtLocation;
+            }
+
+            if (Me.Salvage.Find(s => s.Guid == salvage.Guid) == null)
+            {
+                // make sure we "save" this salvage ot the player data
+                Me.Salvage.Add(salvage);
+            }
+
+            // add the mapobject and the sprite to our "things at this location list"
+            myMapObjectsAtLocation.Add(salvage);
+            mapObjectsAtLocation.AddRange(sprites);
+            transientMapObjects.AddRange(sprites);
+
         }
 
     }

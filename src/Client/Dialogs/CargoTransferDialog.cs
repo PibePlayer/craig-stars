@@ -21,6 +21,7 @@ namespace CraigStars.Client
         PlanetCargoTransfer sourcePlanetCargoTransfer;
         FleetCargoTransfer destFleetCargoTransfer;
         PlanetCargoTransfer destPlanetCargoTransfer;
+        SalvageCargoTransfer destSalvageCargoTransfer;
 
         Button ironiumSourceButton;
         Button boraniumSourceButton;
@@ -41,6 +42,7 @@ namespace CraigStars.Client
         /// </summary>
         Cargo netCargoDiff = new Cargo();
         int netFuelDiff = 0;
+        bool createdNewSalvage;
         CargoTransferer cargoTransferer = new CargoTransferer();
 
         public override void _Ready()
@@ -51,6 +53,7 @@ namespace CraigStars.Client
             sourcePlanetCargoTransfer = FindNode("SourcePlanetCargoTransfer") as PlanetCargoTransfer;
             destFleetCargoTransfer = FindNode("DestFleetCargoTransfer") as FleetCargoTransfer;
             destPlanetCargoTransfer = FindNode("DestPlanetCargoTransfer") as PlanetCargoTransfer;
+            destSalvageCargoTransfer = FindNode("DestSalvageCargoTransfer") as SalvageCargoTransfer;
 
             ironiumSourceButton = FindNode("IroniumSourceButton") as Button;
             boraniumSourceButton = FindNode("BoraniumSourceButton") as Button;
@@ -68,7 +71,7 @@ namespace CraigStars.Client
             {
                 log.Warn("No source specified, probably testing the UI");
                 Source = sourceFleetCargoTransfer.Fleet;
-                Dest = destPlanetCargoTransfer.Planet;
+                Dest = destPlanetCargoTransfer.CargoHolder;
             }
 
             ironiumSourceButton.Connect("pressed", this, nameof(OnSourceButtonPressed), new Godot.Collections.Array() { CargoType.Ironium });
@@ -95,7 +98,6 @@ namespace CraigStars.Client
         {
             quantityModifier = this.UpdateQuantityModifer(@event, quantityModifier);
         }
-
 
         void OnSourceButtonPressed(CargoType type)
         {
@@ -127,10 +129,18 @@ namespace CraigStars.Client
         /// </summary>
         void OnAboutToShow()
         {
+            quantityModifier = 1;
+
             // clear out the cargoDiff
             netCargoDiff = new Cargo();
             netFuelDiff = 0;
-            sourcePlanetCargoTransfer.Visible = sourceFleetCargoTransfer.Visible = destPlanetCargoTransfer.Visible = destFleetCargoTransfer.Visible = false;
+            sourcePlanetCargoTransfer.Visible =
+            sourceFleetCargoTransfer.Visible =
+            destPlanetCargoTransfer.Visible =
+            destFleetCargoTransfer.Visible =
+            destSalvageCargoTransfer.Visible = false;
+            createdNewSalvage = false;
+
             if (Source is Planet)
             {
                 sourceCargoTransfer = sourcePlanetCargoTransfer;
@@ -154,7 +164,21 @@ namespace CraigStars.Client
             }
             else
             {
-                // TODO add deep space jettison
+                // dest is a jettison
+                Salvage salvage = null;
+                if (Me.MapObjectsByLocation.TryGetValue(Source.Position, out var mapObjectsAtLocation))
+                {
+                    // use existing salvage if there is one
+                    salvage = mapObjectsAtLocation.Find(mo => mo is Salvage) as Salvage;
+                }
+                if (salvage == null)
+                {
+                    createdNewSalvage = true;
+                    salvage = new Salvage() { PlayerNum = Me.Num, Position = Source.Position };
+                }
+                Dest = salvage;
+                destCargoTransfer = destSalvageCargoTransfer;
+                destSalvageCargoTransfer.Visible = true;
             }
 
             // no fuel transfers for planets
@@ -181,6 +205,7 @@ namespace CraigStars.Client
 
             Dest.Fuel -= netFuelDiff;
             Dest.Cargo -= netCargoDiff;
+
         }
 
         protected override void OnOk()
@@ -212,7 +237,8 @@ namespace CraigStars.Client
                     Guid = source.Guid,
                     DestGuid = dest.Guid,
                     Transfer = netCargoDiff,
-                    FuelTransfer = netFuelDiff
+                    FuelTransfer = netFuelDiff,
+                    Jettison = dest is Salvage
                 };
 
                 Me.CargoTransferOrders.Add(order);
@@ -229,6 +255,10 @@ namespace CraigStars.Client
                 else if (dest is Planet planet)
                 {
                     planet.Spec = planetService.ComputePlanetSpec(planet, base.Me);
+                }
+                else if (dest is Salvage salvage && createdNewSalvage)
+                {
+                    EventManager.PublishSalvageCreatedEvent(salvage);
                 }
                 log.Info($"{Me.Name} made immediate transfer from {source.Name} to {dest.Name} for {netCargoDiff} cargo and {netFuelDiff} fuel");
 

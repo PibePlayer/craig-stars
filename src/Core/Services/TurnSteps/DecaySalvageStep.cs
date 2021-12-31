@@ -39,7 +39,8 @@ namespace CraigStars
                 (int)Math.Max(0, Math.Min(
                     salvage.Cargo.Germanium - salvage.Cargo.Germanium * Game.Rules.SalvageDecayRate,
                     salvage.Cargo.Germanium - Game.Rules.SalvageDecayMin
-                ))
+                )),
+                0 // alway zero colonists
             );
 
             // remove empty salvage

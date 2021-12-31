@@ -35,7 +35,7 @@ namespace CraigStars.Client
 
         void OnCargoBarPressed(int newValue)
         {
-            if (CommandedFleet?.Fleet != null && CommandedFleet.Fleet.Spec.CargoCapacity > 0 && CommandedFleet?.Fleet?.Orbiting != null)
+            if (CommandedFleet?.Fleet != null && CommandedFleet.Fleet.Spec.CargoCapacity > 0)
             {
                 // trigger a cargo transfer event between this fleet and the planet it is orbiting
                 EventManager.PublishCargoTransferDialogRequestedEvent(CommandedFleet.Fleet, CommandedFleet.Fleet.Orbiting);

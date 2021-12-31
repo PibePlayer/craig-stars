@@ -1,4 +1,5 @@
 using System;
+using Godot;
 
 namespace CraigStars
 {
@@ -15,6 +16,12 @@ namespace CraigStars
         /// </summary>
         /// <value></value>
         string Name { get; set; }
+
+        /// <summary>
+        /// Where this cargo is in space
+        /// </summary>
+        /// <value></value>
+        Vector2 Position { get; set; }
 
         /// <summary>
         /// All cargo holders must have cargo

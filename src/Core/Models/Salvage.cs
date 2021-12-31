@@ -21,8 +21,13 @@ namespace CraigStars
         [JsonIgnore]
         public int FuelCapacity { get => 0; }
 
+        public Salvage()
+        {
+            Name = "Salvage";
+        }
+
         /// <summary>
-        /// Transfer from the cargo (cannot put cargo in salvage or mineral packets)
+        /// Transfer to/from the cargo (no fuel is transferred)
         /// </summary>
         /// <param name="newCargo"></param>
         /// <param name="newFuel"></param>
@@ -31,10 +36,10 @@ namespace CraigStars
         {
             // we can't transfer to a mineral packet, only away from
             var transfered = new Cargo(
-                Mathf.Clamp(newCargo.Ironium, -Cargo.Ironium, 0),
-                Mathf.Clamp(newCargo.Boranium, -Cargo.Boranium, 0),
-                Mathf.Clamp(newCargo.Germanium, -Cargo.Germanium, 0),
-                Mathf.Clamp(newCargo.Colonists, -Cargo.Colonists, 0)
+                Mathf.Clamp(newCargo.Ironium, -Cargo.Ironium, int.MaxValue),
+                Mathf.Clamp(newCargo.Boranium, -Cargo.Boranium, int.MaxValue),
+                Mathf.Clamp(newCargo.Germanium, -Cargo.Germanium, int.MaxValue),
+                Mathf.Clamp(newCargo.Colonists, -Cargo.Colonists, int.MaxValue)
             );
 
             // transfer the cargo

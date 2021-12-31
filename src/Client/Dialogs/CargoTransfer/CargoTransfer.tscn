@@ -1,0 +1,178 @@
+[gd_scene format=2]
+
+[node name="CargoTransfer" type="VBoxContainer"]
+margin_left = 324.0
+margin_right = 577.0
+margin_bottom = 266.0
+size_flags_horizontal = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="NameLabel" type="Label" parent="."]
+margin_right = 253.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 0, 20 )
+text = "Spay"
+align = 1
+
+[node name="GridContainer" type="GridContainer" parent="."]
+margin_top = 24.0
+margin_right = 253.0
+margin_bottom = 164.0
+columns = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SpacerLabel" type="Label" parent="GridContainer"]
+margin_right = 100.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 0, 20 )
+align = 2
+valign = 1
+
+[node name="SpacerLabel2" type="Label" parent="GridContainer"]
+margin_left = 104.0
+margin_right = 253.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 0, 20 )
+align = 2
+valign = 1
+
+[node name="SpacerLabel3" type="Label" parent="GridContainer"]
+margin_top = 24.0
+margin_right = 100.0
+margin_bottom = 44.0
+rect_min_size = Vector2( 0, 20 )
+align = 2
+valign = 1
+
+[node name="SpacerLabel4" type="Label" parent="GridContainer"]
+margin_left = 104.0
+margin_top = 24.0
+margin_right = 253.0
+margin_bottom = 44.0
+rect_min_size = Vector2( 0, 20 )
+align = 2
+valign = 1
+
+[node name="IroniumLabel" type="Label" parent="GridContainer"]
+margin_top = 48.0
+margin_right = 100.0
+margin_bottom = 68.0
+rect_min_size = Vector2( 100, 20 )
+text = "Ironium"
+align = 2
+valign = 1
+
+[node name="IroniumAmountPanel" type="Panel" parent="GridContainer"]
+margin_left = 104.0
+margin_top = 48.0
+margin_right = 253.0
+margin_bottom = 68.0
+size_flags_horizontal = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="IroniumAmountLabel" type="Label" parent="GridContainer/IroniumAmountPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_min_size = Vector2( 100, 20 )
+text = "247kt"
+align = 2
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BoraniumLabel" type="Label" parent="GridContainer"]
+margin_top = 72.0
+margin_right = 100.0
+margin_bottom = 92.0
+rect_min_size = Vector2( 100, 20 )
+text = "Boranium"
+align = 2
+valign = 1
+
+[node name="BoraniumAmountPanel" type="Panel" parent="GridContainer"]
+margin_left = 104.0
+margin_top = 72.0
+margin_right = 253.0
+margin_bottom = 92.0
+size_flags_horizontal = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BoraniumAmountLabel" type="Label" parent="GridContainer/BoraniumAmountPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_min_size = Vector2( 100, 20 )
+text = "123kt"
+align = 2
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="GermaniumLabel" type="Label" parent="GridContainer"]
+margin_top = 96.0
+margin_right = 100.0
+margin_bottom = 116.0
+rect_min_size = Vector2( 100, 20 )
+text = "Germanium"
+align = 2
+valign = 1
+
+[node name="GermaniumAmountPanel" type="Panel" parent="GridContainer"]
+margin_left = 104.0
+margin_top = 96.0
+margin_right = 253.0
+margin_bottom = 116.0
+size_flags_horizontal = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="GermaniumAmountLabel" type="Label" parent="GridContainer/GermaniumAmountPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_min_size = Vector2( 100, 20 )
+text = "123kt"
+align = 2
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="ColonistsLabel" type="Label" parent="GridContainer"]
+margin_top = 120.0
+margin_right = 100.0
+margin_bottom = 140.0
+rect_min_size = Vector2( 100, 20 )
+text = "Colonists"
+align = 2
+valign = 1
+
+[node name="ColonistsAmountPanel" type="Panel" parent="GridContainer"]
+margin_left = 104.0
+margin_top = 120.0
+margin_right = 253.0
+margin_bottom = 140.0
+size_flags_horizontal = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ColonistsAmountLabel" type="Label" parent="GridContainer/ColonistsAmountPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_min_size = Vector2( 100, 20 )
+text = "123kt"
+align = 2
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": true
+}

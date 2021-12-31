@@ -24,6 +24,12 @@ namespace CraigStars.Client
             okButton?.Connect("pressed", this, nameof(OnOk));
 
             Connect("visibility_changed", this, nameof(OnVisibilityChanged));
+
+            // we are debugging, so show the dialog
+            if (GetParent() == GetTree().Root)
+            {
+                PopupCentered();
+            }
         }
 
         /// <summary>

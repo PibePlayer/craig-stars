@@ -3,7 +3,7 @@ using Godot;
 
 namespace CraigStars.Client
 {
-    public class PlanetCargoTransfer : AbstractCargoTransfer<Planet>
+    public class SalvageCargoTransfer : AbstractCargoTransfer<Salvage>
     {
     }
 }

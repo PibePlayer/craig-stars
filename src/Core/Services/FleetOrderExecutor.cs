@@ -51,10 +51,29 @@ namespace CraigStars
 
         internal void ExecuteCargoTransferOrder(Player player, CargoTransferOrder order)
         {
-            if (game.CargoHoldersByGuid.TryGetValue(order.Guid, out var source) &&
-            game.CargoHoldersByGuid.TryGetValue(order.DestGuid, out var dest))
+            if (game.CargoHoldersByGuid.TryGetValue(order.Guid, out var source))
             {
-                cargoTransferer.Transfer(source, dest, order.Transfer, order.FuelTransfer);
+                bool createSalvage = false;
+                if (!game.CargoHoldersByGuid.TryGetValue(order.DestGuid, out var dest) && order.Jettison)
+                {
+                    createSalvage = true;
+                    dest = new Salvage() { PlayerNum = player.Num, Guid = order.DestGuid, Position = source.Position };
+                }
+
+                if (dest != null)
+                {
+                    cargoTransferer.Transfer(source, dest, order.Transfer, order.FuelTransfer);
+
+                    // create salvage if this is jettisoned cargo
+                    if (createSalvage)
+                    {
+                        EventManager.PublishMapObjectCreatedEvent(dest as Salvage);
+                    }
+                }
+                else
+                {
+                    log.Error($"Failed to execute CargoTransferOrder. Destination {order.DestGuid} not found and Jettison not specified.");
+                }
             }
         }
 

@@ -149,7 +149,11 @@ namespace CraigStars.Client
             // we were launched with --continue
             if (Continue)
             {
-                CallDeferred(nameof(OnContinueGameButtonPressed));
+                // use the GameName and Year passed in from the launcher, or default to whatever is in settings
+                GameName ??= Settings.Instance.ContinueGame;
+                Year = Year == -1 ? Settings.Instance.ContinueYear : Year;
+
+                CallDeferred(nameof(ContinueGame), GameName, Year, Settings.Instance.ContinuePlayerNum);
             }
             else if (JoinServer != null)
             {
@@ -210,21 +214,31 @@ namespace CraigStars.Client
             NetworkClient.Instance.JoinNewGame(host, port);
         }
 
+        /// <summary>
+        /// Continue a game from the menu ui when the user presses the button
+        /// </summary>
         void OnContinueGameButtonPressed()
         {
-            // use the GameName and Year passed in from the launcher, or default to whatever is in settings
-            GameName ??= Settings.Instance.ContinueGame;
-            Year = Year == -1 ? Settings.Instance.ContinueYear : Year;
+            ContinueGame(Settings.Instance.ContinueGame, (int)continueGameYearSpinBox.Value, Settings.Instance.ContinuePlayerNum);
+        }
 
+        /// <summary>
+        /// Continue a game
+        /// </summary>
+        /// <param name="gameName"></param>
+        /// <param name="year"></param>
+        /// <param name="playerNum"></param>
+        void ContinueGame(string gameName, int year, int playerNum)
+        {
             try
             {
                 var continuer = GetNode<Continuer>("Continuer");
-                continuer.Continue(GameName, Year, Settings.Instance.ContinuePlayerNum);
+                continuer.Continue(gameName, year, playerNum);
             }
             catch (Exception e)
             {
-                log.Error($"Failed to continue game {GameName}: {Year}", e);
-                CSConfirmDialog.Show($"Failed to load game {GameName}: {Year}");
+                log.Error($"Failed to continue game {gameName}: {year}", e);
+                CSConfirmDialog.Show($"Failed to load game {gameName}: {year}");
             }
 
         }

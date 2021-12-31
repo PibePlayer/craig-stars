@@ -53,27 +53,7 @@ namespace CraigStars
                 1080 // 10
             }
         };
-        public static readonly TechEngine FuelMizer = new TechEngine("Fuel Mizer", new Cost(8, 0, 0, 11), new TechRequirements(propulsion: 2, lrtsRequired: LRT.IFE), 30)
-        {
-            Mass = 6,
-            IdealSpeed = 6,
-            FreeSpeed = 4,
-            FuelUsage = new int[] {
-                0,
-                0,
-                0,
-                0,
-                0,
-                35,
-                120,
-                175,
-                235,
-                360,
-                420
-            }
-
-        };
-        public static readonly TechEngine LongHump6 = new TechEngine("Long Hump 6", new Cost(5, 0, 1, 6), new TechRequirements(propulsion: 3), 40)
+        public static readonly TechEngine LongHump6 = new TechEngine("Long Hump 6", new Cost(5, 0, 1, 6), new TechRequirements(propulsion: 3), 30)
         {
             Mass = 9,
             IdealSpeed = 6,
@@ -91,6 +71,26 @@ namespace CraigStars
                 1080 // 10
             }
         };
+        public static readonly TechEngine FuelMizer = new TechEngine("Fuel Mizer", new Cost(8, 0, 0, 11), new TechRequirements(propulsion: 2, lrtsRequired: LRT.IFE), 40)
+        {
+            Mass = 6,
+            IdealSpeed = 6,
+            FreeSpeed = 4,
+            FuelUsage = new int[] {
+                0, // 0
+                0, // 1
+                0, // 2
+                0, // 3
+                0, // 4
+                35, // 5
+                120, // 6
+                175, // 7
+                235, // 8
+                360, // 9
+                420 // 10
+            }
+
+        };        
         public static readonly TechEngine DaddyLongLegs7 = new TechEngine("Daddy Long Legs 7", new Cost(11, 0, 3, 12), new TechRequirements(propulsion: 5), 50)
         {
             Mass = 13,

@@ -17,8 +17,8 @@ namespace CraigStars.Tests
 
             // can't give a salvage cargo
             var result = salvage.Transfer(new Cargo(ironium: 25), 10);
-            Assert.AreEqual(new CargoTransferResult(new Cargo(ironium: 0), 0), result);
-            Assert.AreEqual(new Cargo(10, 20, 30), salvage.Cargo);
+            Assert.AreEqual(new CargoTransferResult(new Cargo(ironium: 25), 0), result);
+            Assert.AreEqual(new Cargo(35, 20, 30), salvage.Cargo);
 
             // can only take away cargo, but only down to 0
             salvage.Cargo = new Cargo(10, 20, 30);

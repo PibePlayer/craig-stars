@@ -126,9 +126,16 @@ namespace CraigStars
         /// Get the best engine this player has access to
         /// </summary>
         /// <returns></returns>
-        public TechEngine GetBestEngine(Player player)
+        public TechEngine GetBestEngine(Player player, bool colonistTransport = false)
         {
-            return GetBestTech<TechEngine>(player, TechCategory.Engine);
+            var techs = TechStore.GetTechsByCategory(TechCategory.Engine);
+            return techs
+                .Where(t => HasTech(player, t))
+                .Cast<TechEngine>()
+                // if this is a colonist transport and we are damaged by radiation, don't include radiating engines
+                .Where(engine => !colonistTransport || !(engine.Radiating && player.Race.IsDamagedByRadiation))
+                .OrderByDescending(t => t.Ranking)
+                .FirstOrDefault();
         }
 
         /// <summary>
@@ -196,7 +203,8 @@ namespace CraigStars
         {
             var techs = TechStore.GetTechsByCategory(TechCategory.MineRobot)
                 .Where(t => t is TechHullComponent hc && HasTech(player, hc) && hc.MiningRate != 0)
-                .OrderByDescending(t => t.Ranking);
+                .Cast<TechHullComponent>()
+                .OrderByDescending(t => t.MiningRate);
 
 
             return techs.FirstOrDefault() as TechHullComponent;

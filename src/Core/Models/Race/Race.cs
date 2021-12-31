@@ -97,6 +97,12 @@ namespace CraigStars
         };
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [JsonIgnore] public bool IsDamagedByRadiation => !(ImmuneRad || HabWidth.rad == 50);
+
+        /// <summary>
         /// Return whether this race is immune to a specific hab, by index
         /// </summary>
         /// <param name="index">The index of the hab, 0 == gravity, 1 == temp, 2 == radiation</param>

@@ -35,7 +35,7 @@ namespace CraigStars
         public override void Process(PublicGameInfo gameInfo, Player player)
         {
             // find the first colony ship design
-            ShipDesign design = player.GetLatestDesign(ShipDesignPurpose.Freighter);
+            ShipDesign design = player.GetLatestDesign(ShipDesignPurpose.ColonistFreighter);
 
             var lowPopPlanets = player.Planets
             .Where(planet => planet.Spec.PopulationDensity < PopulationDensityRequired)

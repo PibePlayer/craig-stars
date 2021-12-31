@@ -36,6 +36,21 @@ namespace CraigStars.Tests
         }
 
         [Test]
+        public void TestIsDamagedByRadiation()
+        {
+            Race race = new Race();
+            Assert.IsTrue(race.IsDamagedByRadiation);
+
+            race.ImmuneRad = true;
+            Assert.IsFalse(race.IsDamagedByRadiation);
+
+            race.ImmuneRad = false;
+            race.HabLow = new Hab(15, 15, 0);
+            race.HabHigh = new Hab(85, 85, 100);
+            Assert.IsFalse(race.IsDamagedByRadiation);
+        }
+
+        [Test]
         public void TestHE()
         {
             var (game, gameRunner) = TestUtils.GetTwoPlayerGame();

@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using log4net;
-
 using CraigStars.Utils;
+using log4net;
 
 namespace CraigStars
 {
@@ -68,7 +67,7 @@ namespace CraigStars
                 switch (hullSlot.Type)
                 {
                     case HullSlotType.Engine:
-                        slot.HullComponent = playerTechService.GetBestEngine(player);
+                        slot.HullComponent = playerTechService.GetBestEngine(player, colonistTransport: purpose == ShipDesignPurpose.Colonizer || purpose == ShipDesignPurpose.ColonistFreighter);
                         break;
                     case HullSlotType.Electrical:
                         // TODO: use GetBestBattleComputer()/GetBestJammer()

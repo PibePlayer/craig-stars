@@ -28,8 +28,16 @@ namespace CraigStars.Client
             // we are debugging, so show the dialog
             if (GetParent() == GetTree().Root)
             {
-                PopupCentered();
+                PlayersManager.Me = new Player();
+                PlayersManager.GameInfo = new PublicGameInfo();
+
+                CallDeferred(nameof(ShowOnStart));
             }
+        }
+
+        void ShowOnStart()
+        {
+            base.PopupCentered();
         }
 
         /// <summary>

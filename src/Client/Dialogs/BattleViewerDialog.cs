@@ -110,15 +110,13 @@ namespace CraigStars.Client
 
             SetAsMinsize();
 
-            // Uncomment this to debug JUSt the battle editor. This generates a test battle with a couple players
-            // BattleRecord = GenerateTestBattle();
-            // CallDeferred(nameof(TestShow));
-        }
+            // we are debugging, so show the dialog
+            if (GetParent() == GetTree().Root)
+            {
+                BattleRecord = GenerateTestBattle();
+            }
 
-        // void TestShow()
-        // {
-        //     Show();
-        // }
+        }
 
         /// <summary>
         /// When the dialog becomes visible, this will setup the board with whatever information we have in the BattleRecord
@@ -127,25 +125,7 @@ namespace CraigStars.Client
         {
             if (IsVisibleInTree())
             {
-                totalRounds = BattleRecord.ActionsPerRound.Count;
-                totalPhases = BattleRecord.ActionsPerRound.Sum(actionsPerRound => actionsPerRound.Count);
-
-                // clear out previous token nodes
-                Tokens.ForEach(token => token.QueueFree());
-                Tokens.Clear();
-                GridTokensByGuid.Clear();
-
-                // add new tokens
-                BattleRecord.Tokens.ForEach(token =>
-                {
-                    BattleGridToken gridToken = BattleGridTokenScene.Instance() as BattleGridToken;
-                    gridToken.Token = token;
-                    Tokens.Add(gridToken);
-                    GridTokensByGuid[gridToken.Token.Guid] = gridToken;
-                });
-
                 ResetBoard();
-                UpdateDescriptionFields();
             }
         }
 
@@ -209,6 +189,23 @@ namespace CraigStars.Client
             currentAction = -1;
             currentPhase = -1;
 
+            totalRounds = BattleRecord.ActionsPerRound.Count;
+            totalPhases = BattleRecord.ActionsPerRound.Sum(actionsPerRound => actionsPerRound.Count);
+
+            // clear out previous token nodes
+            Tokens.ForEach(token => token.QueueFree());
+            Tokens.Clear();
+            GridTokensByGuid.Clear();
+
+            // add new tokens
+            BattleRecord.Tokens.ForEach(token =>
+            {
+                BattleGridToken gridToken = BattleGridTokenScene.Instance() as BattleGridToken;
+                gridToken.Token = token;
+                Tokens.Add(gridToken);
+                GridTokensByGuid[gridToken.Token.Guid] = gridToken;
+            });
+
             // clear out existing tokens
             for (int y = 0; y < GridSize; y++)
             {
@@ -226,6 +223,8 @@ namespace CraigStars.Client
                 square.AddToken(token);
                 OnBattleGridSquareSelected(square, token);
             }
+
+            UpdateDescriptionFields();
         }
 
         /// <summary>
@@ -560,6 +559,24 @@ namespace CraigStars.Client
             // create a second weaker player
             Player player2 = players[1] as Player;
             player2.TechLevels = new TechLevel(6, 6, 6, 6, 6, 6);
+
+            player1.PlayerInfoIntel = new List<PlayerInfo>() {
+                new PlayerInfo(player1.Num, player1.Name),
+                new PlayerInfo(player2.Num, player2.Name),
+            };
+            player2.PlayerInfoIntel = new List<PlayerInfo>() {
+                new PlayerInfo(player1.Num, player1.Name),
+                new PlayerInfo(player2.Num, player2.Name),
+            };
+
+            player1.PlayerRelations = new List<PlayerRelationship>() {
+                new PlayerRelationship(PlayerRelation.Friend),
+                new PlayerRelationship(PlayerRelation.Enemy),
+            };
+            player2.PlayerRelations = new List<PlayerRelationship>() {
+                new PlayerRelationship(PlayerRelation.Enemy),
+                new PlayerRelationship(PlayerRelation.Friend),
+            };
 
             var game = TestBattleUtils.GetGameWithBattle(
                 player1,

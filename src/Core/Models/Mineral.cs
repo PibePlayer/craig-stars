@@ -24,6 +24,8 @@ namespace CraigStars
         public static implicit operator Mineral(int[] m) => new Mineral(m[0], m[1], m[2]);
         public static implicit operator Mineral(Cost c) => new Mineral(c.Ironium, c.Boranium, c.Germanium);
 
+        public int Total { get => Ironium + Boranium + Germanium; }
+
         public override string ToString()
         {
             return $"Mineral i:{Ironium}, b:{Boranium}, g:{Germanium}";

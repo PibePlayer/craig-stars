@@ -42,7 +42,7 @@ namespace CraigStars
 
             if (planet != null && planet.OwnedBy(player))
             {
-                planetResources = planet.Spec.ResourcesPerYear;
+                planetResources = planet.Spec.ResourcesPerYear + planet.BonusResources;
                 // UR races get resources when scrapping 
                 if (planet.HasStarbase)
                 {
@@ -91,6 +91,8 @@ namespace CraigStars
                 };
                 EventManager.PublishMapObjectCreatedEvent(salvage);
             }
+
+            Message.FleetScrapped(player, fleet, scrappedMinerals.Total, extraResources, planet);
 
             // delete the fleet
             EventManager.PublishMapObjectDeletedEvent(fleet);

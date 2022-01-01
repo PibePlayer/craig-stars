@@ -261,9 +261,30 @@ namespace CraigStars
             player.Messages.Add(new Message(MessageType.FleetGeneratedFuel, text, fleet));
         }
 
-        public static void FleetScrapped(Player player, Fleet fleet, int num_minerals, Planet planet)
+        public static void FleetScrapped(Player player, Fleet fleet, int totalMinerals, int resources, Planet planet)
         {
-            string text = $"{fleet.Name} has been dismantled for {num_minerals}kT of minerals which have been deposited on {planet.Name}.";
+            string text;
+
+            if (planet != null)
+            {
+                if (planet.HasStarbase)
+                {
+                    text = $"{fleet.Name} has been dismantled for {totalMinerals}kT of minerals which have been deposited on {planet.Name}.";
+                }
+                else
+                {
+                    text = $"{fleet.Name} has been dismantled for {totalMinerals}kT of minerals at the starbase orbiting {planet.Name}.";
+                }
+
+                if (resources > 0)
+                {
+                    text += $"  Ultimate recycling has also made {resources} resources available for immediate use (less if other ships were scrapped here this year).";
+                }
+            }
+            else
+            {
+                text = $"{fleet.Name} has been dismantled. The scrap was left in deep space.";
+            }
             player.Messages.Add(new Message(MessageType.FleetScrapped, text, planet));
         }
 

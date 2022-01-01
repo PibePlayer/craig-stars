@@ -33,6 +33,7 @@ namespace CraigStars
             container.Register<PlayerService>(Lifestyle.Singleton);
             container.Register<FleetService>(Lifestyle.Singleton);
             container.Register<FleetSpecService>(Lifestyle.Singleton);
+            container.Register<FleetScrapperService>(Lifestyle.Singleton);
             container.Register<Researcher>(Lifestyle.Singleton);
             container.Register<PlayerTechService>(Lifestyle.Singleton);
             container.Register<ShipDesignGenerator>(Lifestyle.Singleton);

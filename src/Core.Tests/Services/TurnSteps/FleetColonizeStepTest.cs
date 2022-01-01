@@ -19,6 +19,7 @@ namespace CraigStars.Tests
         IRulesProvider rulesProvider;
         PlanetService planetService;
         FleetSpecService fleetSpecService;
+        FleetScrapperService fleetScrapperService;
 
         [SetUp]
         public void SetUp()
@@ -26,6 +27,7 @@ namespace CraigStars.Tests
             rulesProvider = new TestRulesProvider();
             planetService = TestUtils.TestContainer.GetInstance<PlanetService>();
             fleetSpecService = TestUtils.TestContainer.GetInstance<FleetSpecService>();
+            fleetScrapperService = TestUtils.TestContainer.GetInstance<FleetScrapperService>();
         }
 
         [Test]
@@ -63,7 +65,7 @@ namespace CraigStars.Tests
 
             gameRunner.ComputeSpecs(recompute: true);
 
-            var step = new FleetColonize0Step(gameRunner.GameProvider, rulesProvider, planetService, fleetSpecService);
+            var step = new FleetColonize0Step(gameRunner.GameProvider, rulesProvider, planetService, fleetSpecService, fleetScrapperService);
             step.Process();
 
             // we should colonize the planet and have some scrap resources
@@ -120,7 +122,7 @@ namespace CraigStars.Tests
 
             gameRunner.ComputeSpecs(recompute: true);
 
-            var step = new FleetColonize0Step(gameRunner.GameProvider, rulesProvider, planetService, fleetSpecService);
+            var step = new FleetColonize0Step(gameRunner.GameProvider, rulesProvider, planetService, fleetSpecService, fleetScrapperService);
             step.Process();
 
             // we should colonize the planet and have some scrap resources

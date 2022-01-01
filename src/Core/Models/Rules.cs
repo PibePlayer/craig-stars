@@ -87,6 +87,9 @@ namespace CraigStars
         [DefaultValue(1 / 3f)]
         public float ScrapMineralAmount { get; set; } = 1 / 3f;
 
+        [DefaultValue(0)]
+        public float ScrapResourceAmount { get; set; } = 0;
+
         [DefaultValue(4)]
         public int FactoryCostGermanium { get; set; } = 4;
         public Cost DefenseCost { get; set; } = new Cost(5, 5, 5, 15);

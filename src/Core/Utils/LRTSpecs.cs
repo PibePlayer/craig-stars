@@ -65,8 +65,9 @@ namespace CraigStars
         {
             // UR gives us 45% of scrapped minerals and resources, versus 1/3 for races without UR
             ScrapMineralOffset = .45f - (1f / 3f),
-            ScrapMineralOffsetStarbase = .1f,
-            ScrapResources = true,
+            ScrapMineralOffsetStarbase = .9f - (1f / 3f),
+            ScrapResourcesOffset = .35f,
+            ScrapResourcesOffsetStarbase = .7f,
         };
 
         public static LRTSpec NRSE = new LRTSpec(LRT.NRSE, 0)

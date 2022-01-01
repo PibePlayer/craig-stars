@@ -146,6 +146,22 @@ namespace CraigStars
                 a.Resources <= scalar;
         }
 
+        /// <summary>
+        /// Override to add a mineral to this cost
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static Cost operator +(Cost a, Mineral b)
+        {
+            return new Cost(
+                a.Ironium + b.Ironium,
+                a.Boranium + b.Boranium,
+                a.Germanium + b.Germanium,
+                a.Resources
+            );
+        }
+
         public override bool Equals(object obj)
         {
             if (obj is Cost cargo)

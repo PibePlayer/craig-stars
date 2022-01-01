@@ -17,8 +17,7 @@ namespace CraigStars
         protected readonly WaypointTask task;
 
         protected HashSet<Waypoint> processedWaypoints = new HashSet<Waypoint>();
-        protected List<MapObject> deletedMapObjects = new();
-       
+
         protected Rules Rules => rulesProvider.Rules;
 
         public AbstractFleetWaypointProcessStep(IProvider<Game> gameProvider, IRulesProvider rulesProvider, TurnGenerationState state, WaypointTask task) : base(gameProvider, state)
@@ -75,18 +74,6 @@ namespace CraigStars
         {
             base.PostProcess();
             Context.Context[ProcessedWaypointsContextKey] = processedWaypoints;
-
-            // delete any mapobjects that are scheduled for deletion
-            deletedMapObjects.ForEach(mo => EventManager.PublishMapObjectDeletedEvent(mo));
-        }
-
-        /// <summary>
-        /// At the end of processing, tell the game to delete these MapObjects
-        /// </summary>
-        /// <param name="fleet"></param>
-        protected void QueueMapObjectForDeletion(MapObject mapObject)
-        {
-            deletedMapObjects.Add(mapObject);
         }
 
         /// <summary>
@@ -96,43 +83,6 @@ namespace CraigStars
         protected void CompleteWaypointForTurn(Waypoint wp)
         {
             processedWaypoints.Add(wp);
-        }
-
-        /// <summary>
-        /// Helper method to scrap a fleet whether because of colonization or a scrap fleet order
-        /// </summary>
-        /// <param name="fleet"></param>
-        /// <param name="wp"></param>
-        /// <param name="player"></param>
-        protected void ScrapFleet(Fleet fleet, Waypoint wp, Player player)
-        {
-            // create a new cargo instance out of our fleet cost
-            Cargo cargo = fleet.Spec.Cost;
-
-            // TODO: handle starbases and better recycling
-            // this is 1/3rd for normal races, but UR is more efficient and scraps 45%
-            cargo *= Rules.ScrapMineralAmount + player.Race.Spec.ScrapMineralOffset;
-
-            // add in any cargo the fleet was holding
-            cargo += fleet.Cargo;
-            QueueMapObjectForDeletion(fleet);
-
-            if (wp.Target is Planet planet)
-            {
-                planet.Cargo += cargo;
-                fleet.Scrapped = true;
-            }
-            else
-            {
-                var salvage = new Salvage()
-                {
-                    PlayerNum = fleet.PlayerNum,
-                    Name = "Salvage",
-                    Position = wp.Position,
-                    Cargo = cargo
-                };
-                EventManager.PublishMapObjectCreatedEvent(salvage);
-            }
         }
 
         /// <summary>

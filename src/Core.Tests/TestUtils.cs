@@ -34,6 +34,7 @@ namespace CraigStars.Tests
             TestContainer.Register<PlayerService>(Lifestyle.Singleton);
             TestContainer.Register<FleetService>(Lifestyle.Singleton);
             TestContainer.Register<FleetSpecService>(Lifestyle.Singleton);
+            TestContainer.Register<FleetScrapperService>(Lifestyle.Singleton);
             TestContainer.Register<Researcher>(Lifestyle.Singleton);
             TestContainer.Register<PlayerTechService>(Lifestyle.Singleton);
             TestContainer.Register<ShipDesignGenerator>(Lifestyle.Singleton);

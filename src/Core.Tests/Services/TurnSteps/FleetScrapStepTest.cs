@@ -15,6 +15,14 @@ namespace CraigStars.Tests
     [TestFixture]
     public class FleetScrapStepTest
     {
+        FleetScrapperService fleetScrapperService;
+
+        [SetUp]
+        public void SetUp()
+        {
+            fleetScrapperService = TestUtils.TestContainer.GetInstance<FleetScrapperService>();
+        }
+
         /// <summary>
         /// Scrap a fleet over a planet, make sure we get minerals
         /// </summary>
@@ -28,7 +36,7 @@ namespace CraigStars.Tests
 
             fleet.Waypoints[0] = Waypoint.TargetWaypoint(planet, task: WaypointTask.ScrapFleet);
 
-            var step = new FleetScrapStep(gameRunner.GameProvider, new TestRulesProvider());
+            var step = new FleetScrapStep(gameRunner.GameProvider, new TestRulesProvider(), fleetScrapperService);
             step.Execute(new(), game.OwnedPlanets.ToList());
 
             gameRunner.OnPurgeDeletedMapObjects();
@@ -54,7 +62,7 @@ namespace CraigStars.Tests
 
             fleet.Waypoints[0] = Waypoint.PositionWaypoint(fleet.Position, task: WaypointTask.ScrapFleet);
 
-            var step = new FleetScrapStep(gameRunner.GameProvider, new TestRulesProvider());
+            var step = new FleetScrapStep(gameRunner.GameProvider, new TestRulesProvider(), fleetScrapperService);
             step.Execute(new(), game.OwnedPlanets.ToList());
 
             gameRunner.OnPurgeDeletedMapObjects();

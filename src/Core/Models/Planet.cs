@@ -105,11 +105,16 @@ namespace CraigStars
 
         public int Mines { get; set; }
         public int Factories { get; set; }
-
         public int Defenses { get; set; }
         public bool ContributesOnlyLeftoverToResearch { get; set; }
         public bool Homeworld { get; set; }
         public bool Scanner { get; set; }
+
+        /// <summary>
+        /// If a player with UR scraps a fleet, the planet gets bonus resources that turn
+        /// </summary>
+        /// <value></value>
+        [JsonIgnore] public int BonusResources { get; set; }
 
         [DefaultValue(Unexplored)]
         public int ReportAge { get; set; } = Unexplored;

@@ -22,6 +22,7 @@ namespace CraigStars
 
         public static implicit operator int[](Mineral m) => new int[] { m.Ironium, m.Boranium, m.Germanium };
         public static implicit operator Mineral(int[] m) => new Mineral(m[0], m[1], m[2]);
+        public static implicit operator Mineral(Cost c) => new Mineral(c.Ironium, c.Boranium, c.Germanium);
 
         public override string ToString()
         {
@@ -69,6 +70,30 @@ namespace CraigStars
         public static Mineral operator +(Mineral a, int num)
         {
             return new Mineral(a.Ironium + num, a.Boranium + num, a.Germanium + num);
+        }
+
+        public static Mineral operator *(Mineral a, float num)
+        {
+            return new Mineral(
+                (int)(a.Ironium * num),
+                (int)(a.Boranium * num),
+                (int)(a.Germanium * num)
+            );
+        }
+
+        /// <summary>
+        /// Override to add a mineral to this cost
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static Mineral operator +(Mineral a, Cargo b)
+        {
+            return new Mineral(
+                a.Ironium + b.Ironium,
+                a.Boranium + b.Boranium,
+                a.Germanium + b.Germanium
+            );
         }
 
         public void Deconstruct(out int ironium, out int boranium, out int germanium)

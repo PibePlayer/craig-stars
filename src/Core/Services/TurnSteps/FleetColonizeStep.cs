@@ -6,14 +6,14 @@ namespace CraigStars
 {
     public class FleetColonize0Step : FleetColonizeStep
     {
-        public FleetColonize0Step(IProvider<Game> gameProvider, IRulesProvider rulesProvider, PlanetService planetService, FleetSpecService fleetSpecService)
-            : base(gameProvider, rulesProvider, planetService, fleetSpecService, TurnGenerationState.FleetColonize0Step) { }
+        public FleetColonize0Step(IProvider<Game> gameProvider, IRulesProvider rulesProvider, PlanetService planetService, FleetSpecService fleetSpecService, FleetScrapperService fleetScrapperService)
+            : base(gameProvider, rulesProvider, planetService, fleetSpecService, fleetScrapperService, TurnGenerationState.FleetColonize0Step) { }
     }
 
     public class FleetColonize1Step : FleetColonizeStep
     {
-        public FleetColonize1Step(IProvider<Game> gameProvider, IRulesProvider rulesProvider, PlanetService planetService, FleetSpecService fleetSpecService)
-            : base(gameProvider, rulesProvider, planetService, fleetSpecService, TurnGenerationState.FleetColonize1Step) { }
+        public FleetColonize1Step(IProvider<Game> gameProvider, IRulesProvider rulesProvider, PlanetService planetService, FleetSpecService fleetSpecService, FleetScrapperService fleetScrapperService)
+            : base(gameProvider, rulesProvider, planetService, fleetSpecService, fleetScrapperService, TurnGenerationState.FleetColonize1Step) { }
     }
 
     /// <summary>
@@ -25,12 +25,14 @@ namespace CraigStars
 
         private readonly PlanetService planetService;
         private readonly FleetSpecService fleetSpecService;
+        private readonly FleetScrapperService fleetScrapperService;
 
-        public FleetColonizeStep(IProvider<Game> gameProvider, IRulesProvider rulesProvider, PlanetService planetService, FleetSpecService fleetSpecService, TurnGenerationState state)
+        public FleetColonizeStep(IProvider<Game> gameProvider, IRulesProvider rulesProvider, PlanetService planetService, FleetSpecService fleetSpecService, FleetScrapperService fleetScrapperService, TurnGenerationState state)
             : base(gameProvider, rulesProvider, state, WaypointTask.Colonize)
         {
             this.planetService = planetService;
             this.fleetSpecService = fleetSpecService;
+            this.fleetScrapperService = fleetScrapperService;
         }
 
         /// <summary>
@@ -102,7 +104,7 @@ namespace CraigStars
                     planet.Spec = planetService.ComputePlanetSpec(planet, player);
 
                     Message.PlanetColonized(player, planet);
-                    ScrapFleet(task.Fleet, task.Waypoint, task.Player);
+                    fleetScrapperService.ScrapFleet(task.Player, task.Fleet, planet);
                 }
             }
             else

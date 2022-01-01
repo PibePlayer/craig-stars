@@ -63,7 +63,7 @@ namespace CraigStars
         {
             // allocate surface minerals + resources not going to research
             Cost allocated = new Cost(planet.Cargo.Ironium, planet.Cargo.Boranium, planet.Cargo.Germanium,
-                                      planet.Spec.ResourcesPerYearAvailable);
+                                      planet.Spec.ResourcesPerYearAvailable + planet.BonusResources);
 
             // add the production queue's last turn resources
             var queue = planet.ProductionQueue;
@@ -326,7 +326,8 @@ namespace CraigStars
             player.Stats.NumTokensBuilt += numBuilt;
             var id = player.Stats.NumFleetsBuilt;
             string name = item.FleetName != null ? item.FleetName : item.Design.Name;
-            if (!Game.MapObjectsByLocation.TryGetValue(planet.Position, out var mapObjectsAtPlanetLocation)) {
+            if (!Game.MapObjectsByLocation.TryGetValue(planet.Position, out var mapObjectsAtPlanetLocation))
+            {
                 mapObjectsAtPlanetLocation = new List<MapObject>() { planet };
                 Game.MapObjectsByLocation[planet.Position] = mapObjectsAtPlanetLocation;
             }

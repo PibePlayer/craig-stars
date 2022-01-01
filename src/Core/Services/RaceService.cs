@@ -152,7 +152,8 @@ namespace CraigStars
                 spec.MineralAlchemyCostOffset += lrtSpec.MineralAlchemyCostOffset;
                 spec.ScrapMineralOffset += lrtSpec.ScrapMineralOffset;
                 spec.ScrapMineralOffsetStarbase += lrtSpec.ScrapMineralOffsetStarbase;
-                spec.ScrapResources = spec.ScrapResources || lrtSpec.ScrapResources;
+                spec.ScrapResourcesOffset += lrtSpec.ScrapResourcesOffset;
+                spec.ScrapResourcesOffsetStarbase += lrtSpec.ScrapResourcesOffsetStarbase;
                 spec.StartingPopulationFactor *= lrtSpec.StartingPopulationFactor;
                 spec.StarbaseBuiltInCloakUnits += lrtSpec.StarbaseBuiltInCloakUnits;
                 // This only gets set once. This means two LRTs with a StarbaseCostFactor will pick the first one though...

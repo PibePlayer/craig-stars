@@ -329,10 +329,16 @@ namespace CraigStars
         public float ScrapMineralOffsetStarbase { get; set; } = 0f;
 
         /// <summary>
-        /// If true, scrapped fleets will return resources, not just minerals
+        /// The factor of resources recovered when scrapping at a planet
         /// </summary>
         /// <value></value>
-        public bool ScrapResources { get; set; }
+        public float ScrapResourcesOffset { get; set; } = 0f;
+
+        /// <summary>
+        /// The factor of resources recovered when scrapping at a planet with a starbase
+        /// </summary>
+        /// <value></value>
+        public float ScrapResourcesOffsetStarbase { get; set; } = 0f;
 
         /// <summary>
         /// Factor to multiply the starting population of a planet by

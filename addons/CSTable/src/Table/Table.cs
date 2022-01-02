@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Godot;
@@ -506,6 +507,9 @@ namespace CraigStarsTable
             var rows = Data.Rows.ToList();
             var cols = Data.Columns.ToList();
             var numVisibleColumns = Data.VisibleColumns.Count();
+            // GD.Print($"Sorting {rows.Count} rows, {gridContainer.GetChildCount()} cells");
+            // var stopwatch = new Stopwatch();
+            // stopwatch.Start();
             for (int rowIndex = 0; rowIndex < rows.Count; rowIndex++)
             {
                 var row = rows[rowIndex];
@@ -518,21 +522,26 @@ namespace CraigStarsTable
                     }
 
                     // get the control for this cell from our original cellControls list
-                    var node = cellControls[row.Index, columnIndex];
+                    var node = cellControls[rowIndex, columnIndex];
                     node.Visible = row.Visible;
 
-                    // move this cell to its new location
-                    var newIndex = (row.SortIndex + 1) * numVisibleColumns + nonHiddenColumnIndex;
-
-                    gridContainer.MoveChild(node, newIndex);
                     if (node is ICSCellControl<T> cellControl)
                     {
-                        cellControl.Row.Metadata = row.Metadata;
+                        // Move this row/cell data to the current cellControl
+                        cellControl.Row = row;
+                        cellControl.Cell = row.Data[columnIndex];
                         cellControl.UpdateCell();
+                    }
+                    else
+                    {
+                        // move this cell to its new location
+                        var newIndex = (row.SortIndex + 1) * numVisibleColumns + nonHiddenColumnIndex;
+                        gridContainer.MoveChild(node, newIndex);
                     }
                     nonHiddenColumnIndex++;
                 }
             }
+            // GD.Print($"Sort complete in {stopwatch.ElapsedMilliseconds / 1000.0f} seconds");
 
             if (rows.Count > 0)
             {

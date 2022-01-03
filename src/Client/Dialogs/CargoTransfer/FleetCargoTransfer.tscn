@@ -44,6 +44,24 @@ margin_bottom = 20.0
 IsFuel = true
 Unit = "mg"
 
+[node name="NoFuelSpacerLabel" type="Label" parent="GridContainer"]
+visible = false
+margin_top = 24.0
+margin_right = 100.0
+margin_bottom = 44.0
+rect_min_size = Vector2( 0, 20 )
+align = 2
+valign = 1
+
+[node name="NoFuelSpacerLabel2" type="Label" parent="GridContainer"]
+visible = false
+margin_top = 24.0
+margin_right = 124.0
+margin_bottom = 44.0
+rect_min_size = Vector2( 0, 20 )
+align = 2
+valign = 1
+
 [node name="CargoLabel" type="Label" parent="GridContainer"]
 margin_top = 24.0
 margin_right = 100.0
@@ -103,6 +121,24 @@ margin_left = 104.0
 margin_top = 96.0
 margin_right = 252.0
 margin_bottom = 116.0
+
+[node name="NoColonistsSpacerLabel" type="Label" parent="GridContainer"]
+visible = false
+margin_top = 120.0
+margin_right = 100.0
+margin_bottom = 140.0
+rect_min_size = Vector2( 0, 20 )
+align = 2
+valign = 1
+
+[node name="NoColonistsSpacerLabel2" type="Label" parent="GridContainer"]
+visible = false
+margin_top = 120.0
+margin_right = 124.0
+margin_bottom = 140.0
+rect_min_size = Vector2( 0, 20 )
+align = 2
+valign = 1
 
 [node name="ColonistsLabel" type="Label" parent="GridContainer"]
 margin_top = 120.0

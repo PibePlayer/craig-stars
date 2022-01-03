@@ -163,7 +163,7 @@ namespace CraigStars.Client
                         ironiumWidth = panel.RectSize.x * ((float)Cargo.Ironium / (float)Capacity);
                         DrawRect(new Rect2(
                             new Vector2(panel.RectPosition.x + borderWidth / 2, panel.RectPosition.y + borderHeight / 2),
-                            new Vector2(ironiumWidth, panel.RectSize.y - borderHeight)),
+                            new Vector2(ironiumWidth - borderWidth, panel.RectSize.y - borderHeight)),
                             GUIColorsProvider.Colors.IroniumBarColor
                         );
                     }
@@ -172,7 +172,7 @@ namespace CraigStars.Client
                         boraniumWidth = panel.RectSize.x * ((float)Cargo.Boranium / (float)Capacity);
                         DrawRect(new Rect2(
                             new Vector2(panel.RectPosition.x + borderWidth / 2 + ironiumWidth, panel.RectPosition.y + borderHeight / 2),
-                            new Vector2(boraniumWidth, panel.RectSize.y - borderHeight)),
+                            new Vector2(boraniumWidth - borderWidth, panel.RectSize.y - borderHeight)),
                             GUIColorsProvider.Colors.BoraniumBarColor
                         );
                     }
@@ -181,7 +181,7 @@ namespace CraigStars.Client
                         germaniumWidth = panel.RectSize.x * ((float)Cargo.Germanium / (float)Capacity);
                         DrawRect(new Rect2(
                             new Vector2(panel.RectPosition.x + borderWidth / 2 + ironiumWidth + boraniumWidth, panel.RectPosition.y + borderHeight / 2),
-                            new Vector2(germaniumWidth, panel.RectSize.y - borderHeight)),
+                            new Vector2(germaniumWidth - borderWidth, panel.RectSize.y - borderHeight)),
                             GUIColorsProvider.Colors.GermaniumBarColor
                         );
                     }
@@ -190,7 +190,7 @@ namespace CraigStars.Client
                         colonistsWidth = panel.RectSize.x * ((float)Cargo.Colonists / (float)Capacity);
                         DrawRect(new Rect2(
                             new Vector2(panel.RectPosition.x + borderWidth / 2 + ironiumWidth + boraniumWidth + germaniumWidth, panel.RectPosition.y + borderHeight / 2),
-                            new Vector2(colonistsWidth, panel.RectSize.y - borderHeight)),
+                            new Vector2(colonistsWidth - borderWidth, panel.RectSize.y - borderHeight)),
                             Colors.White
                         );
 

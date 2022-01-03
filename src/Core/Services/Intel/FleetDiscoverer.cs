@@ -48,15 +48,48 @@ namespace CraigStars
             }
         }
 
+        /// <summary>
+        /// This special PlanetDiscoverer function is for discovering surface minerals through remote mining
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="item"></param>
+        /// <param name="itemReport"></param>
+        public void DiscoverCargo(Player player, Fleet item)
+        {
+            if (player.FleetsByGuid.TryGetValue(item.Guid, out var itemReport))
+            {
+                itemReport.CargoDiscovered = true;
+                itemReport.Cargo = new Cargo(
+                    item.Cargo.Ironium,
+                    item.Cargo.Boranium,
+                    item.Cargo.Germanium,
+                    itemReport.Cargo.Colonists // we can't discover colonists this way, just use whatever we already know
+                );
+                itemReport.Spec.CargoCapacity = item.Spec.CargoCapacity;
+            }
+        }
+
         protected override void DiscoverForeign(Player player, Fleet item, Fleet itemReport, bool penScanned)
         {
+            if (!itemReport.CargoDiscovered)
+            {
+                itemReport.Cargo = Cargo.Empty;
+            }
+            // if we haven't discovered this fleet's tokens already, discover them now
+            bool addTokens = itemReport.Tokens.Count == 0;
             foreach (var token in item.Tokens)
             {
                 if (!player.DesignsByGuid.TryGetValue(token.Design.Guid, out var existingDesign) || (existingDesign.Slots.Count == 0 && penScanned))
                 {
                     designDiscoverer.Discover(player, token.Design);
                 }
-                itemReport.Tokens.Add(new ShipToken(player.DesignsByGuid[token.Design.Guid], token.Quantity, token.Damage, token.QuantityDamaged));
+
+                // if we discover this once, we don't want to add the tokens a second time
+                // 
+                if (addTokens)
+                {
+                    itemReport.Tokens.Add(new ShipToken(player.DesignsByGuid[token.Design.Guid], token.Quantity, token.Damage, token.QuantityDamaged));
+                }
             }
         }
 

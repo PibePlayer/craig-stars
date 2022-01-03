@@ -464,9 +464,22 @@ namespace CraigStars.Client
                             AddDescription($"This scanner can determine a planet's basic stats from a distance up to {hullComponent.ScanRangePen} light years. The scanner will also spot enemy fleets attempting to hide behind planets within range.");
                         }
 
-                        if (hullComponent.StealCargo)
+                        if (hullComponent.CanStealFleetCargo || hullComponent.CanStealPlanetCargo)
                         {
-                            AddDescription($"This scanner is capable of penetrating the defenses of enemy fleets and planets allowing you to steal their cargo.");
+                            string target = "";
+                            if (hullComponent.CanStealFleetCargo && !hullComponent.CanStealPlanetCargo)
+                            {
+                                target = "fleets";
+                            }
+                            else if (!hullComponent.CanStealFleetCargo && hullComponent.CanStealPlanetCargo)
+                            {
+                                target = "planets";
+                            }
+                            else
+                            {
+                                target = "fleets and planets";
+                            }
+                            AddDescription($"This scanner is capable of penetrating the defenses of enemy {target} allowing you to steal their cargo.");
                         }
                     }
                 }

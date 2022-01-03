@@ -67,6 +67,16 @@ namespace CraigStars
             planetDiscoverer.Discover(player, planet, penScanned);
         }
 
+        public void DiscoverCargo(Player player, Planet planet)
+        {
+            planetDiscoverer.DiscoverCargo(player, planet);
+        }
+
+        public void DiscoverCargo(Player player, Fleet fleet)
+        {
+            fleetDiscoverer.DiscoverCargo(player, fleet);
+        }
+
         /// <summary>
         /// Discover a new fleet. Pen Scanned fleets show tokens and designs
         /// </summary>

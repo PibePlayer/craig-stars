@@ -6,15 +6,15 @@ namespace CraigStars
     /// <summary>
     /// This service executes client side fleet orders on the server
     /// </summary>
-    public class FleetOrderExecutor
+    public class ImmediateFleetOrderExecutor
     {
-        static CSLog log = LogProvider.GetLogger(typeof(FleetOrderExecutor));
+        static CSLog log = LogProvider.GetLogger(typeof(ImmediateFleetOrderExecutor));
 
         private readonly Game game;
         private readonly FleetService fleetService;
         private readonly CargoTransferer cargoTransferer;
 
-        public FleetOrderExecutor(Game game, FleetService fleetService, CargoTransferer cargoTransferer)
+        public ImmediateFleetOrderExecutor(Game game, FleetService fleetService, CargoTransferer cargoTransferer)
         {
             this.game = game;
             this.fleetService = fleetService;
@@ -25,7 +25,7 @@ namespace CraigStars
         /// The client allows various immediate orders like cargo transfers and merge/split operations.
         /// We process those like WP0 tasks
         /// </summary>
-        public void ExecuteFleetOrders(Player player, List<ImmediateFleetOrder> immediateFleetOrders)
+        public void ExecuteImmediateFleetOrders(Player player, List<ImmediateFleetOrder> immediateFleetOrders)
         {
             immediateFleetOrders.ForEach(order =>
             {
@@ -62,12 +62,19 @@ namespace CraigStars
 
                 if (dest != null)
                 {
-                    cargoTransferer.Transfer(source, dest, order.Transfer, order.FuelTransfer);
-
-                    // create salvage if this is jettisoned cargo
-                    if (createSalvage)
+                    if (cargoTransferer.CanTransfer(source, dest, game.MapObjectsByLocation))
                     {
-                        EventManager.PublishMapObjectCreatedEvent(dest as Salvage);
+                        cargoTransferer.Transfer(source, dest, order.Transfer, order.FuelTransfer);
+
+                        // create salvage if this is jettisoned cargo
+                        if (createSalvage)
+                        {
+                            EventManager.PublishMapObjectCreatedEvent(dest as Salvage);
+                        }
+                    }
+                    else
+                    {
+                        log.Error($"{player} tried to transfer cargo from {dest.Name} to {source.Name} but is not allowed.");
                     }
                 }
                 else

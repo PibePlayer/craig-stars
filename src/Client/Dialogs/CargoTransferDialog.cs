@@ -152,15 +152,18 @@ namespace CraigStars.Client
                 sourceFleetCargoTransfer.Visible = true;
             }
 
-            if (Dest is Planet)
+            if (Dest is Planet planet)
             {
                 destCargoTransfer = destPlanetCargoTransfer;
                 destPlanetCargoTransfer.Visible = true;
+                destPlanetCargoTransfer.ShowColonists = planet.OwnedBy(Me);
             }
-            else if (Dest is Fleet)
+            else if (Dest is Fleet fleet)
             {
                 destCargoTransfer = destFleetCargoTransfer;
                 destFleetCargoTransfer.Visible = true;
+                destFleetCargoTransfer.ShowFuel = fleet.OwnedBy(Me);
+                destFleetCargoTransfer.ShowColonists = fleet.OwnedBy(Me);
             }
             else
             {
@@ -181,8 +184,9 @@ namespace CraigStars.Client
                 destSalvageCargoTransfer.Visible = true;
             }
 
-            // no fuel transfers for planets
-            fuelDestButton.Disabled = fuelSourceButton.Disabled = (Source is Planet || Dest is Planet);
+            // no fuel transfers for planets, or stealing cargo
+            fuelDestButton.Disabled = fuelSourceButton.Disabled = (Source is Planet || Dest is Planet || Dest.PlayerNum != Me.Num);
+
 
             sourceCargoTransfer.CargoHolder = Source;
             destCargoTransfer.CargoHolder = Dest;
@@ -247,7 +251,7 @@ namespace CraigStars.Client
                 // update the spec for the source fleet
                 fleetSpecService.ComputeFleetSpec(Me, source, recompute: true);
 
-                if (dest is Fleet fleet)
+                if (dest is Fleet fleet && fleet.OwnedBy(Me))
                 {
                     // if the dest is also a fleet, update its spec with a new mass
                     fleetSpecService.ComputeFleetSpec(Me, fleet, recompute: true);

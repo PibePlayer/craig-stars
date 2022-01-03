@@ -50,6 +50,8 @@ namespace CraigStars
             spec.MineSweep = 0;
 
             spec.CloakUnits = player.Race.Spec.BuiltInCloakUnits;
+            spec.CanStealFleetCargo = false;
+            spec.CanStealPlanetCargo = false;
             spec.ReduceCloaking = 0;
             spec.Bomber = false;
             spec.Bombs.Clear();
@@ -106,6 +108,8 @@ namespace CraigStars
                     spec.MiningRate += slot.HullComponent.MiningRate * slot.Quantity;
                     spec.TerraformRate += slot.HullComponent.TerraformRate * slot.Quantity;
                     spec.OrbitalConstructionModule = spec.OrbitalConstructionModule || slot.HullComponent.OrbitalConstructionModule;
+                    spec.CanStealFleetCargo = spec.CanStealFleetCargo || slot.HullComponent.CanStealFleetCargo;
+                    spec.CanStealPlanetCargo = spec.CanStealPlanetCargo || slot.HullComponent.CanStealPlanetCargo;
 
                     // Add this mine type to the layers this design has
                     if (slot.HullComponent.MineLayingRate > 0)
@@ -352,6 +356,8 @@ namespace CraigStars
             spec.CloakUnits = 0;
             spec.BaseCloakedCargo = 0;
             spec.ReduceCloaking = 0;
+            spec.CanStealFleetCargo = false;
+            spec.CanStealPlanetCargo = false;
 
             spec.Bomber = false;
             spec.Bombs.Clear();
@@ -454,6 +460,9 @@ namespace CraigStars
 
                 // choose the best tachyon detector ship
                 spec.ReduceCloaking = Math.Max(spec.ReduceCloaking, token.Design.Spec.ReduceCloaking);
+
+                spec.CanStealFleetCargo = spec.CanStealFleetCargo || token.Design.Spec.CanStealFleetCargo;
+                spec.CanStealPlanetCargo = spec.CanStealPlanetCargo || token.Design.Spec.CanStealPlanetCargo;
 
             });
 
@@ -642,5 +651,6 @@ namespace CraigStars
         }
 
         #endregion
+
     }
 }

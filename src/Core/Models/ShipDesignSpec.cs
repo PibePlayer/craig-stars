@@ -33,6 +33,8 @@ namespace CraigStars
         public int CloakUnits { get; set; }
         public int CloakPercent { get; set; }
         public float ReduceCloaking { get; set; }
+        public bool CanStealFleetCargo { get; set; }
+        public bool CanStealPlanetCargo { get; set; }
         public float TorpedoInaccuracyFactor { get; set; }
         public bool OrbitalConstructionModule { get; set; }
 

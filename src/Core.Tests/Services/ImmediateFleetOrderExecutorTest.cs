@@ -6,13 +6,11 @@ using NUnit.Framework;
 namespace CraigStars.Tests
 {
     [TestFixture]
-    public class FleetOrderExecutorTest
+    public class ImmediateFleetOrderExecutorTest
     {
-        static CSLog log = LogProvider.GetLogger(typeof(FleetOrderExecutorTest));
-
         FleetService fleetService = TestUtils.TestContainer.GetInstance<FleetService>();
         CargoTransferer cargoTransferer = TestUtils.TestContainer.GetInstance<CargoTransferer>();
-        FleetOrderExecutor orderExecutor;
+        ImmediateFleetOrderExecutor orderExecutor;
         Game game;
         GameRunner gameRunner;
 
@@ -20,7 +18,7 @@ namespace CraigStars.Tests
         public void SetUp()
         {
             (game, gameRunner) = TestUtils.GetSingleUnitGame();
-            orderExecutor = new FleetOrderExecutor(game, fleetService, cargoTransferer);
+            orderExecutor = new ImmediateFleetOrderExecutor(game, fleetService, cargoTransferer);
         }
 
         [Test]
@@ -31,12 +29,13 @@ namespace CraigStars.Tests
             var fleet = game.Fleets[0];
 
             planet.Cargo = new Cargo(ironium: 300);
-            
+
             fleet.Spec.CargoCapacity = 100;
             fleet.Cargo = new Cargo();
 
             // transfer 50 ironium to the fleet from the planet
-            var order = new CargoTransferOrder() {
+            var order = new CargoTransferOrder()
+            {
                 Guid = fleet.Guid,
                 DestGuid = planet.Guid,
                 Transfer = new Cargo(ironium: -50)
@@ -55,12 +54,13 @@ namespace CraigStars.Tests
             var fleet = game.Fleets[0];
 
             planet.Cargo = new Cargo(ironium: 300);
-            
+
             fleet.Spec.CargoCapacity = 100;
             fleet.Cargo = new Cargo();
 
             // try and transfer 200 ironium to the fleet from the planet
-            var order = new CargoTransferOrder() {
+            var order = new CargoTransferOrder()
+            {
                 Guid = fleet.Guid,
                 DestGuid = planet.Guid,
                 Transfer = new Cargo(ironium: -200)
@@ -79,12 +79,13 @@ namespace CraigStars.Tests
             var fleet = game.Fleets[0];
 
             planet.Cargo = new Cargo(ironium: 50);
-            
+
             fleet.Spec.CargoCapacity = 100;
             fleet.Cargo = new Cargo();
 
             // try and transfer 100 ironium to the fleet with only 50 on the planet
-            var order = new CargoTransferOrder() {
+            var order = new CargoTransferOrder()
+            {
                 Guid = fleet.Guid,
                 DestGuid = planet.Guid,
                 Transfer = new Cargo(ironium: -100)
@@ -93,6 +94,6 @@ namespace CraigStars.Tests
             orderExecutor.ExecuteCargoTransferOrder(player, order);
             Assert.AreEqual(new Cargo(ironium: 50), fleet.Cargo);
             Assert.AreEqual(new Cargo(ironium: 0), planet.Cargo);
-        }        
+        }
     }
 }

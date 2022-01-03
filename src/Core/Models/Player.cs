@@ -246,7 +246,7 @@ namespace CraigStars
         {
             SetupMapObjectMappings();
 
-            foreach (var fleet in Fleets)
+            foreach (var fleet in AllFleets)
             {
                 // update what planet we are orbiting
                 if (MapObjectsByLocation.TryGetValue(fleet.Position, out var mapObjectsAtLocation))
@@ -255,15 +255,18 @@ namespace CraigStars
                     fleet.Orbiting = orbiting;
                 }
 
-                foreach (var waypoint in fleet.Waypoints)
+                if (fleet.OwnedBy(Num))
                 {
-                    if (waypoint.TargetGuid.HasValue && MapObjectsByGuid.TryGetValue(waypoint.TargetGuid.Value, out var target))
+                    foreach (var waypoint in fleet.Waypoints)
                     {
-                        waypoint.Target = target;
-                    }
-                    if (waypoint.OriginalTargetGuid.HasValue && MapObjectsByGuid.TryGetValue(waypoint.OriginalTargetGuid.Value, out var origintalTarget))
-                    {
-                        waypoint.OriginalTarget = origintalTarget;
+                        if (waypoint.TargetGuid.HasValue && MapObjectsByGuid.TryGetValue(waypoint.TargetGuid.Value, out var target))
+                        {
+                            waypoint.Target = target;
+                        }
+                        if (waypoint.OriginalTargetGuid.HasValue && MapObjectsByGuid.TryGetValue(waypoint.OriginalTargetGuid.Value, out var origintalTarget))
+                        {
+                            waypoint.OriginalTarget = origintalTarget;
+                        }
                     }
                 }
             }

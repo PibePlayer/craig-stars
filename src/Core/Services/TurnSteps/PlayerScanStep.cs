@@ -39,6 +39,8 @@ namespace CraigStars
             public Vector2 PreviousPosition { get; set; }
             public int Range { get; set; }
             public int RangePen { get; set; }
+            public bool DiscoverFleetCargo { get; set; }
+            public bool DiscoverPlanetCargo { get; set; }
 
             /// <summary>
             /// the amount this scanner reduces enemy cloaking, as a percent
@@ -47,26 +49,29 @@ namespace CraigStars
             /// <value></value>
             public float CloakReduction { get; set; }
 
-            public Scanner(Vector2 position, int range = 0, int rangePen = 0, float cloadReduction = 0)
+            public Scanner(Vector2 position, int range = 0, int rangePen = 0, float cloadReduction = 0, bool discoverFleetCargo = false, bool discoverPlanetCargo = false)
             {
                 Position = position;
                 PreviousPosition = position;
                 Range = range;
                 RangePen = rangePen;
                 CloakReduction = cloadReduction;
+                DiscoverFleetCargo = discoverFleetCargo;
+                DiscoverPlanetCargo = discoverPlanetCargo;
             }
 
-            public Scanner(Vector2 position, Vector2 previousPosition, int range = 0, int rangePen = 0, float cloadReduction = 0)
+            public Scanner(Vector2 position, Vector2 previousPosition, int range = 0, int rangePen = 0, float cloadReduction = 0, bool discoverCargo = false, bool discoverPlanetCargo = false)
             {
                 Position = position;
                 PreviousPosition = previousPosition;
                 Range = range;
                 RangePen = rangePen;
                 CloakReduction = cloadReduction;
+                DiscoverFleetCargo = discoverCargo;
+                DiscoverPlanetCargo = discoverPlanetCargo;
             }
 
         }
-
 
         public override void PreProcess(List<Planet> ownedPlanets)
         {
@@ -122,6 +127,7 @@ namespace CraigStars
 
             // build a list of scanners for this player
             var scanners = new List<Scanner>();
+            var cargoScanners = new List<Scanner>();
 
             log.Debug($"{Game.Year}: {player} Building List of Planet Scanners");
             foreach (var planet in Game.Planets.Where(p => p.PlayerNum == player.Num && p.Scanner))
@@ -134,6 +140,7 @@ namespace CraigStars
                         .Where(mo => mo is Fleet f && f.PlayerNum == player.Num && f.Spec.Scanner)
                         .Cast<Fleet>())
                     {
+
                         scanner.Range = Math.Max(scanner.Range, fleet.Spec.ScanRange);
                         scanner.RangePen = Math.Max(scanner.RangePen, fleet.Spec.ScanRangePen);
                         scanner.CloakReduction = Math.Max(scanner.CloakReduction, fleet.Spec.ReduceCloaking);
@@ -150,7 +157,29 @@ namespace CraigStars
             log.Debug($"{Game.Year}: {player} Building List of Fleet Scanners");
             foreach (var fleet in Game.Fleets.Where(f => f.PlayerNum == player.Num && f.Spec.Scanner))
             {
-                scanners.Add(new Scanner(fleet.Position, fleet.PreviousPosition.GetValueOrDefault(fleet.Position), fleet.Spec.ScanRange * fleet.Spec.ScanRange, fleet.Spec.ScanRangePen * fleet.Spec.ScanRangePen, fleet.Spec.ReduceCloaking));
+                if (fleet.Spec.CanStealFleetCargo || fleet.Spec.CanStealPlanetCargo)
+                {
+                    // cargo stealing scanners scan separately
+                    cargoScanners.Add(new Scanner(
+                        fleet.Position,
+                        fleet.PreviousPosition.GetValueOrDefault(fleet.Position),
+                        fleet.Spec.ScanRange * fleet.Spec.ScanRange,
+                        fleet.Spec.ScanRangePen * fleet.Spec.ScanRangePen,
+                        fleet.Spec.ReduceCloaking,
+                        fleet.Spec.CanStealFleetCargo,
+                        fleet.Spec.CanStealPlanetCargo
+                        ));
+                }
+                else
+                {
+                    scanners.Add(new Scanner(
+                        fleet.Position,
+                        fleet.PreviousPosition.GetValueOrDefault(fleet.Position),
+                        fleet.Spec.ScanRange * fleet.Spec.ScanRange,
+                        fleet.Spec.ScanRangePen * fleet.Spec.ScanRangePen,
+                        fleet.Spec.ReduceCloaking
+                        ));
+                }
             }
 
             // PP players have built in scanners on packets
@@ -191,30 +220,26 @@ namespace CraigStars
                     continue;
                 }
 
+                // scan the planet with normal scanners, stopping if we successfully scan it
                 foreach (var scanner in scanners)
                 {
-                    if (Rules.FleetsScanWhileMoving && scanner.PreviousPosition != scanner.Position)
+                    if (ScanPlanet(player, planet, scanner))
                     {
-                        // this scanner moved, so make sure if we travelled past this planet it is still scanned
-                        // we do this by checking the closest point the planet came to the line the fleet moved on
-                        // if the distance from that point to the planet is less than that scan range, than it was in our
-                        // scanners as we went by
-                        var closestPointToScanCapsule = GetClosestPointToSegment2D(planet.Position, scanner.PreviousPosition, scanner.Position);
-                        if (scanner.RangePen >= closestPointToScanCapsule.DistanceSquaredTo(planet.Position))
-                        {
-                            playerIntelDiscoverer.Discover(player, planet, true);
-                            break;
-                        }
+                        break;
                     }
-                    else if (scanner.RangePen >= scanner.Position.DistanceSquaredTo(planet.Position))
+                }
+
+                // now scan the planet with cargo scanners
+                foreach (var scanner in cargoScanners)
+                {
+                    if (ScanPlanet(player, planet, scanner))
                     {
-                        playerIntelDiscoverer.Discover(player, planet, true);
                         break;
                     }
                 }
             }
 
-            ScanFleets(player, scanners);
+            ScanFleets(player, scanners, cargoScanners);
 
             log.Debug($"{Game.Year}: {player} Scanning {Game.MineFields.Count} minefields.");
             foreach (var mineField in player.AllMineFields)
@@ -362,14 +387,53 @@ namespace CraigStars
         }
 
         /// <summary>
+        /// Scan a planet, returning true if we actually scanned it
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="planet"></param>
+        /// <param name="scanner"></param>
+        /// <returns></returns>
+        internal bool ScanPlanet(Player player, Planet planet, Scanner scanner)
+        {
+            if (Rules.FleetsScanWhileMoving && scanner.PreviousPosition != scanner.Position)
+            {
+                // this scanner moved, so make sure if we travelled past this planet it is still scanned
+                // we do this by checking the closest point the planet came to the line the fleet moved on
+                // if the distance from that point to the planet is less than that scan range, than it was in our
+                // scanners as we went by
+                var closestPointToScanCapsule = GetClosestPointToSegment2D(planet.Position, scanner.PreviousPosition, scanner.Position);
+                if (scanner.RangePen >= closestPointToScanCapsule.DistanceSquaredTo(planet.Position))
+                {
+                    playerIntelDiscoverer.Discover(player, planet, true);
+                    if (scanner.DiscoverPlanetCargo)
+                    {
+                        playerIntelDiscoverer.DiscoverCargo(player, planet);
+                    }
+                    return true;
+                }
+            }
+            else if (scanner.RangePen >= scanner.Position.DistanceSquaredTo(planet.Position))
+            {
+                playerIntelDiscoverer.Discover(player, planet, true);
+                if (scanner.DiscoverPlanetCargo)
+                {
+                    playerIntelDiscoverer.DiscoverCargo(player, planet);
+                }
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Scan all fleets in the game and discover them
         /// </summary>
         /// <param name="player"></param>
         /// <param name="scanners"></param>
-        internal void ScanFleets(Player player, List<Scanner> scanners)
+        internal void ScanFleets(Player player, List<Scanner> scanners, List<Scanner> cargoScanners)
         {
             log.Debug($"{Game.Year}: {player} {scanners.Count} scanners scanning {Game.Fleets.Count} fleets.");
             List<Fleet> fleetsToDiscover = new List<Fleet>();
+            List<Fleet> fleetsToCargoScan = new List<Fleet>();
             foreach (var fleet in Game.Fleets)
             {
                 // we own this fleet, update the report
@@ -379,31 +443,50 @@ namespace CraigStars
                     continue;
                 }
 
-                // only scan this once. If we pen scan it, we break out of the loop
-                // and go to the next fleet
                 foreach (var scanner in scanners)
                 {
-                    var cloakFactor = 1 - (fleet.Spec.CloakPercent * scanner.CloakReduction / 100f);
-                    var distance = scanner.Position.DistanceSquaredTo(fleet.Position);
-                    // if we pen scanned this, update the report
-                    if (scanner.RangePen * cloakFactor >= distance)
-                    {
-                        // update the fleet report with pen scanners
-                        fleetsToDiscover.Add(fleet);
-                        break;
-                    }
-
-                    // if we aren't orbiting a planet, we can be seen with regular scanners
-                    if (fleet.Orbiting == null && scanner.Range * cloakFactor >= distance)
+                    if (ScanFleet(player, fleet, scanner))
                     {
                         fleetsToDiscover.Add(fleet);
                         break;
                     }
                 }
 
+                foreach (var scanner in cargoScanners)
+                {
+                    if (ScanFleet(player, fleet, scanner))
+                    {
+                        fleetsToCargoScan.Add(fleet);
+                        break;
+                    }
+                }
             }
             log.Debug($"{Game.Year}: {player} Discovering {fleetsToDiscover.Count} foreign fleets.");
             fleetsToDiscover.ForEach(fleet => playerIntelDiscoverer.Discover(player, fleet, player.Race.Spec.DiscoverDesignOnScan));
+            fleetsToCargoScan.ForEach(fleet =>
+            {
+                playerIntelDiscoverer.Discover(player, fleet);
+                playerIntelDiscoverer.DiscoverCargo(player, fleet);
+            });
+        }
+
+        bool ScanFleet(Player player, Fleet fleet, Scanner scanner)
+        {
+            var cloakFactor = 1 - (fleet.Spec.CloakPercent * scanner.CloakReduction / 100f);
+            var distance = scanner.Position.DistanceSquaredTo(fleet.Position);
+            // if we pen scanned this, update the report
+            if (scanner.RangePen * cloakFactor >= distance)
+            {
+                // update the fleet report with pen scanners
+                return true;
+            }
+
+            // if we aren't orbiting a planet, we can be seen with regular scanners
+            if (fleet.Orbiting == null && scanner.Range * cloakFactor >= distance)
+            {
+                return true;
+            }
+            return false;
         }
 
         /// <summary>

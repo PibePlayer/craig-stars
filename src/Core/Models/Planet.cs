@@ -118,8 +118,8 @@ namespace CraigStars
 
         [DefaultValue(Unexplored)]
         public int ReportAge { get; set; } = Unexplored;
-        // true if the player has remote mined this planet
-        public bool RemoteMined { get; set; } = false;
+        // true if the player has remote mined this planet or orbited it with a cargo stealer
+        public bool CargoDiscovered { get; set; } = false;
         public bool Explored { get => ReportAge != Unexplored; }
 
         /// <summary>

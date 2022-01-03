@@ -47,7 +47,7 @@ namespace CraigStars
 
         public bool OwnedBy(Player player)
         {
-            return PlayerNum == player.Num;
+            return player != null && PlayerNum == player.Num;
         }
 
         public bool OwnedBy(int playerNum)

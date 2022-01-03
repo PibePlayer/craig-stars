@@ -91,14 +91,28 @@ namespace CraigStars
                 else
                 {
                     cargoTransferer.Transfer(source, dest, Cargo.OfAmount(cargoType, transferAmount), 0);
-
                     log.Debug($"{Game.Year}: {source.PlayerNum} {source.Name} transferred {transferAmount}kT of {cargoType} to {dest.Name}");
                 }
             }
             else
             {
-                cargoTransferer.Transfer(source, dest, Cargo.OfAmount(cargoType, transferAmount), 0);
-                log.Debug($"{Game.Year}: {source.PlayerNum} {source.Name} transferred {transferAmount}kT of {cargoType} to {dest.Name}");
+                // if this is a planet that is owned by someone else and we don't have "steal cargo from planets" ability in this fleet, make sure we are only giving cargo, not taking
+                if (dest is Planet planet && !planet.OwnedBy(source.PlayerNum) && !cargoTransferer.GetCanStealPlanetCargo(source, Game.MapObjectsByLocation))
+                {
+                    transferAmount = Math.Max(0, transferAmount);
+                }
+
+                // if this is a fleet that is owned by someone else and we don't have "steal cargo from fleets" ability in this fleet, make sre we are only giving cargo, not taking it
+                if (dest is Fleet fleet && !fleet.OwnedBy(source.PlayerNum) && !cargoTransferer.GetCanStealFleetCargo(source, Game.MapObjectsByLocation))
+                {
+                    transferAmount = Math.Max(0, transferAmount);
+                }
+
+                if (transferAmount != 0)
+                {
+                    cargoTransferer.Transfer(source, dest, Cargo.OfAmount(cargoType, transferAmount), 0);
+                    log.Debug($"{Game.Year}: {source.PlayerNum} {source.Name} transferred {transferAmount}kT of {cargoType} to {dest.Name}");
+                }
             }
         }
 

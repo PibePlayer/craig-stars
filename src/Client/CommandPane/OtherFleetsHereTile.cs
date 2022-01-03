@@ -18,6 +18,8 @@ namespace CraigStars.Client
 
         FleetSprite selectedFleet;
         List<FleetSprite> otherFleets;
+        bool canStealCargo;
+        CargoTransferer cargoTransferer = new();
 
         public override void _Ready()
         {
@@ -32,6 +34,15 @@ namespace CraigStars.Client
             cargoTransferButton.Connect("pressed", this, nameof(OnCargoTransferButtonPressed));
             otherFleetsOptionButton.Connect("item_selected", this, nameof(OnOtherFleetsOptionItemSelected));
 
+        }
+
+        protected override void OnNewCommandedFleet()
+        {
+            base.OnNewCommandedFleet();
+            if (CommandedFleet != null)
+            {
+                canStealCargo = cargoTransferer.GetCanStealFleetCargo(CommandedFleet.Fleet, Me.MapObjectsByLocation);
+            }
         }
 
         void OnGotoButtonPressed()
@@ -60,6 +71,11 @@ namespace CraigStars.Client
             if (otherFleets.Count > index)
             {
                 selectedFleet = otherFleets[index];
+
+                cargoTransferButton.Disabled = !(selectedFleet.OwnedByMe || canStealCargo);
+                mergeButton.Disabled = !selectedFleet.OwnedByMe;
+                gotoButton.Disabled = !selectedFleet.OwnedByMe;
+
             }
         }
 
@@ -69,18 +85,16 @@ namespace CraigStars.Client
             if (CommandedFleet != null)
             {
                 otherFleetsOptionButton.Clear();
-                otherFleets = CommandedFleet.OtherFleets?.Where(f => f.OwnedByMe).ToList();
+                otherFleets = new List<FleetSprite>(CommandedFleet.OtherFleets);
+
                 if (otherFleets?.Count > 0)
                 {
-                    selectedFleet = otherFleets[0];
-                    cargoTransferButton.Disabled = false;
-                    mergeButton.Disabled = false;
-                    gotoButton.Disabled = false;
-
                     foreach (var fleet in otherFleets)
                     {
                         otherFleetsOptionButton.AddItem(fleet.Fleet.Name);
                     }
+                    // select the first fleet
+                    OnOtherFleetsOptionItemSelected(0);
                 }
                 else
                 {

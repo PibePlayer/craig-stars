@@ -44,12 +44,17 @@ namespace CraigStars
         /// <param name="player"></param>
         /// <param name="item"></param>
         /// <param name="itemReport"></param>
-        public void DiscoverRemoteMined(Player player, Planet item)
+        public void DiscoverCargo(Player player, Planet item)
         {
             if (player.PlanetsByGuid.TryGetValue(item.Guid, out var itemReport))
             {
-                itemReport.RemoteMined = true;
-                itemReport.Cargo = item.Cargo;
+                itemReport.CargoDiscovered = true;
+                itemReport.Cargo = new Cargo(
+                    item.Cargo.Ironium,
+                    item.Cargo.Boranium,
+                    item.Cargo.Germanium,
+                    itemReport.Cargo.Colonists // we can't discover colonists this way, just use whatever we already know
+                );
             }
         }
 
@@ -63,7 +68,7 @@ namespace CraigStars
 
                 // if we remote mine a planet, we discover its surface minerals, otherwise we don't know
                 // this is done in a separate discover step
-                if (!itemReport.RemoteMined)
+                if (!itemReport.CargoDiscovered)
                 {
                     itemReport.Cargo = Cargo.Empty;
                 }

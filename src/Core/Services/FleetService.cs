@@ -108,7 +108,7 @@ namespace CraigStars
                         {
                             Id = id,
                             PlayerNum = player.Num,
-                            BaseName = fleet.BaseName,
+                            BaseName = token.Design.Name,
                             Orbiting = fleet.Orbiting,
                             Position = fleet.Position,
                             Tokens = new List<ShipToken>() { new ShipToken() {

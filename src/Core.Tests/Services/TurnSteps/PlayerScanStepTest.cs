@@ -158,7 +158,7 @@ namespace CraigStars.Tests
 
             // we should discover this fleet
             var scanStep = new PlayerScanStep(gameRunner.GameProvider, rulesProvider, playerIntelDiscoverer, playerTechService, fleetSpecService);
-            scanStep.ScanFleets(player1, scanners);
+            scanStep.ScanFleets(player1, scanners, new());
 
             Assert.AreEqual(1, player1.ForeignFleets.Count);
             Assert.AreEqual(fleet2.Guid, player1.ForeignFleets[0].Guid);

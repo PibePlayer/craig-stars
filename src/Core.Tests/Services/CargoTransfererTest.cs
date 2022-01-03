@@ -93,5 +93,54 @@ namespace CraigStars.Tests
             Assert.AreEqual(new Cargo(80, 170, 260, 370), sourcePlanet.Cargo);
             Assert.AreEqual(new Cargo(-20, -30, -40, -30), result.cargo);
         }
+
+        [Test]
+        public void TestCanTransfer()
+        {
+            var cargoTransferer = new CargoTransferer();
+            var sourceFleet = new Fleet() { PlayerNum = 0 };
+            var destFleetPlayer1 = new Fleet() { PlayerNum = 0 };
+            var destPlanetPlayer1 = new Planet() { PlayerNum = 0 };
+            var destFleetPlayer2 = new Fleet() { PlayerNum = 1 };
+            var destPlanetPlayer2 = new Planet() { PlayerNum = 1 };
+            var destSalvage = new Salvage();
+            var destMineralPacketPlayer2 = new MineralPacket() { PlayerNum = 2 };
+
+            var mapObjectsByLocation = new Dictionary<Vector2, List<MapObject>>();
+
+            // var mapObjectsByLocation = new Dictionary<Vector2, List<MapObject>>() {
+            //     { sourceFleet.Position, new List<MapObject>() {
+            //         sourceFleet,
+            //         destFleetPlayer1
+            //     }}
+            // };
+
+
+            Assert.IsTrue(cargoTransferer.CanTransfer(sourceFleet, destFleetPlayer1, mapObjectsByLocation));
+            Assert.IsTrue(cargoTransferer.CanTransfer(sourceFleet, destPlanetPlayer1, mapObjectsByLocation));
+            Assert.IsFalse(cargoTransferer.CanTransfer(sourceFleet, destFleetPlayer2, mapObjectsByLocation));
+            Assert.IsFalse(cargoTransferer.CanTransfer(sourceFleet, destPlanetPlayer2, mapObjectsByLocation));
+
+            // anyone can transfer from mineral packets
+            Assert.IsTrue(cargoTransferer.CanTransfer(sourceFleet, destSalvage, mapObjectsByLocation));
+            Assert.IsTrue(cargoTransferer.CanTransfer(sourceFleet, destMineralPacketPlayer2, mapObjectsByLocation));
+
+            // if we are in orbit with a cargo stealing fleet, we can steal
+            var cargoStealingFleet = new Fleet() { PlayerNum = 0 };
+            cargoStealingFleet.Spec.CanStealFleetCargo = true;
+            mapObjectsByLocation[sourceFleet.Position] = new List<MapObject>() {
+                sourceFleet,
+                cargoStealingFleet,
+            };
+
+            // check fleet stealer
+            Assert.IsTrue(cargoTransferer.CanTransfer(cargoStealingFleet, destFleetPlayer2, mapObjectsByLocation));
+            Assert.IsFalse(cargoTransferer.CanTransfer(cargoStealingFleet, destPlanetPlayer2, mapObjectsByLocation));
+
+            // check planet stealing
+            cargoStealingFleet.Spec.CanStealPlanetCargo = true;
+            Assert.IsTrue(cargoTransferer.CanTransfer(cargoStealingFleet, destPlanetPlayer2, mapObjectsByLocation));
+
+        }
     }
 }

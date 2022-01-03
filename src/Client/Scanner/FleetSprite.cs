@@ -29,7 +29,7 @@ namespace CraigStars.Client
             }
         }
 
-        public override bool Commandable { get => true; }
+        public override bool Commandable { get => Fleet != null && Fleet.OwnedBy(Me); }
 
         /// <summary>
         /// A planet sprite this fleet is orbiting

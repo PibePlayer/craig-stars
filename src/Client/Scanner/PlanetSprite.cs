@@ -42,7 +42,7 @@ namespace CraigStars.Client
 
         public bool HasCommandedPeer { get; set; }
 
-        public override bool Commandable { get => true; }
+        public override bool Commandable { get => Planet != null && Planet.OwnedBy(Me); }
 
         public List<FleetSprite> OrbitingFleets { get; set; } = new List<FleetSprite>();
         public PlanetSprite PacketTarget { get; set; }

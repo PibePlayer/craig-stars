@@ -46,7 +46,17 @@ namespace CraigStars.Client
             }
         }
 
+        public bool ShowFuel { get; set; } = true;
+        public bool ShowColonists { get; set; } = true;
+
         Label nameLabel;
+        Label fuelLabel;
+        Label colonistsLabel;
+        Label noColonistsSpacerLabel;
+        Label noColonistsSpacerLabel2;
+        Label noFuelSpacerLabel;
+        Label noFuelSpacerLabel2;
+
         CargoBar fuelBar;
         CargoBar cargoBar;
         CargoBar ironiumBar;
@@ -60,13 +70,20 @@ namespace CraigStars.Client
             // for testing, update the spec
             Fleet.Spec.CargoCapacity = Fleet.Cargo.Total * 2;
             Fleet.Spec.FuelCapacity = Fleet.Fuel;
-            nameLabel = FindNode("NameLabel") as Label;
-            fuelBar = FindNode("FuelBar") as CargoBar;
-            cargoBar = FindNode("CargoBar") as CargoBar;
-            ironiumBar = FindNode("IroniumBar") as CargoBar;
-            boraniumBar = FindNode("BoraniumBar") as CargoBar;
-            germaniumBar = FindNode("GermaniumBar") as CargoBar;
-            colonistsBar = FindNode("ColonistsBar") as CargoBar;
+            nameLabel = GetNode<Label>("NameLabel");
+            fuelLabel = GetNode<Label>("GridContainer/FuelLabel");
+            colonistsLabel = GetNode<Label>("GridContainer/ColonistsLabel");
+            fuelBar = GetNode<CargoBar>("GridContainer/FuelBar");
+            cargoBar = GetNode<CargoBar>("GridContainer/CargoBar");
+            ironiumBar = GetNode<CargoBar>("GridContainer/IroniumBar");
+            boraniumBar = GetNode<CargoBar>("GridContainer/BoraniumBar");
+            germaniumBar = GetNode<CargoBar>("GridContainer/GermaniumBar");
+            colonistsBar = GetNode<CargoBar>("GridContainer/ColonistsBar");
+
+            noColonistsSpacerLabel = GetNode<Label>("GridContainer/NoColonistsSpacerLabel");
+            noColonistsSpacerLabel2 = GetNode<Label>("GridContainer/NoColonistsSpacerLabel2");
+            noFuelSpacerLabel = GetNode<Label>("GridContainer/NoFuelSpacerLabel");
+            noFuelSpacerLabel2 = GetNode<Label>("GridContainer/NoFuelSpacerLabel2");
 
             fuelBar.ValueUpdatedEvent += OnFuelBarValueUpdated;
             ironiumBar.ValueUpdatedEvent += OnIroniumBarValueUpdated;
@@ -167,18 +184,26 @@ namespace CraigStars.Client
         {
             nameLabel.Text = Fleet.Name;
             cargoBar.Cargo = Fleet.Cargo;
+            colonistsBar.Visible = colonistsLabel.Visible = ShowColonists;
+            noColonistsSpacerLabel.Visible = noColonistsSpacerLabel2.Visible = !ShowColonists;
+            fuelLabel.Visible = fuelBar.Visible = ShowColonists;
+            noFuelSpacerLabel.Visible = noFuelSpacerLabel2.Visible = !ShowFuel;
+
             ironiumBar.Cargo = new Cargo(ironium: Fleet.Cargo.Ironium);
             boraniumBar.Cargo = new Cargo(boranium: Fleet.Cargo.Boranium);
             germaniumBar.Cargo = new Cargo(germanium: Fleet.Cargo.Germanium);
             colonistsBar.Cargo = new Cargo(colonists: Fleet.Cargo.Colonists);
             fuelBar.Fuel = Fleet.Fuel;
 
-            cargoBar.Capacity = Fleet.Spec.CargoCapacity;
+            // if we are transferring from another fleet, we don't know their cargo capacity spec
             ironiumBar.Capacity = Fleet.Spec.CargoCapacity;
             boraniumBar.Capacity = Fleet.Spec.CargoCapacity;
             germaniumBar.Capacity = Fleet.Spec.CargoCapacity;
             colonistsBar.Capacity = Fleet.Spec.CargoCapacity;
+
+            cargoBar.Capacity = Fleet.Spec.CargoCapacity;
             fuelBar.Capacity = Fleet.Spec.FuelCapacity;
+
         }
 
     }

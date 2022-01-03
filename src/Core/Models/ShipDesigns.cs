@@ -74,6 +74,32 @@ namespace CraigStars
             }
         };
 
+        public static ShipDesign PickPocketer = new ShipDesign()
+        {
+            Name = "Pick Pocketer",
+            Hull = Techs.MediumFreighter,
+            HullSetNumber = 0,
+            Slots = new List<ShipDesignSlot>()
+            {
+                new ShipDesignSlot(Techs.LongHump6, 1, 1),
+                new ShipDesignSlot(Techs.PickPocketScanner, 2, 1),
+                new ShipDesignSlot(Techs.Crobmnium, 3, 1),
+            }
+        };
+
+        public static ShipDesign RobberBaroner = new ShipDesign()
+        {
+            Name = "Robber Baroner",
+            Hull = Techs.MediumFreighter,
+            HullSetNumber = 0,
+            Slots = new List<ShipDesignSlot>()
+            {
+                new ShipDesignSlot(Techs.LongHump6, 1, 1),
+                new ShipDesignSlot(Techs.RobberBaronScanner, 2, 1),
+                new ShipDesignSlot(Techs.Crobmnium, 3, 1),
+            }
+        };
+
         public static ShipDesign CottonPicker = new ShipDesign()
         {
             Name = "Cotton Picker",

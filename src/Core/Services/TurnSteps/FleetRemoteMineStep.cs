@@ -80,7 +80,7 @@ namespace CraigStars
                     planet.Cargo += mineralOutput;
                     planet.MineYears += numMines;
                     planetService.ReduceMineralConcentration(planet);
-                    planetDiscoverer.DiscoverRemoteMined(player, planet);
+                    planetDiscoverer.DiscoverCargo(player, planet);
                     Message.RemoteMined(player, fleet, planet, mineralOutput);
                 }
             }

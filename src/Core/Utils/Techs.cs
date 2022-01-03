@@ -616,7 +616,7 @@ namespace CraigStars
         {
             HullSlotType = HullSlotType.Scanner,
             Mass = 15,
-            StealCargo = true,
+            CanStealFleetCargo = true,
             ScanRange = 80
         };
         public static readonly TechHullComponent PossumScanner = new TechHullComponent("Possum Scanner", new Cost(3, 0, 3, 18), new TechRequirements(electronics: 5), 50, TechCategory.Scanner)
@@ -698,7 +698,8 @@ namespace CraigStars
         {
             HullSlotType = HullSlotType.Scanner,
             Mass = 20,
-            StealCargo = true,
+            CanStealFleetCargo = true,
+            CanStealPlanetCargo = true,
             ScanRange = 220,
             ScanRangePen = 120
         };

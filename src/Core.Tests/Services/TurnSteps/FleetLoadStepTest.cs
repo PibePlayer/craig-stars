@@ -268,5 +268,96 @@ namespace CraigStars.Tests
             Assert.IsTrue(waypoint.WaitAtWaypoint);
         }
 
+        [Test]
+        public void TestProcessLoadAllForeign()
+        {
+            var (game, gameRunner) = TestUtils.GetTwoPlayerGame();
+            var planet = game.Planets[1];
+            var fleet = game.Fleets[0];
+            var player1 = game.Players[0];
+            var player2 = game.Players[1];
+            fleet.Tokens.Add(new ShipToken(TestUtils.CreateDesign(game, player1, ShipDesigns.Teamster.Clone(game.Players[0])), 1));
+            gameRunner.ComputeSpecs(recompute: true);
+
+            // configure this fleet to load all on the planet
+            var waypoint = fleet.Waypoints[0];
+            waypoint.Task = WaypointTask.Transport;
+            waypoint.Target = planet;
+            waypoint.TransportTasks = new WaypointTransportTasks(ironium: new WaypointTransportTask(WaypointTaskTransportAction.LoadAll), colonists: new WaypointTransportTask(WaypointTaskTransportAction.LoadAll));
+            fleet.Cargo = new Cargo();
+            planet.Cargo = new Cargo(ironium: 100, colonists: 10);
+
+            var step = new FleetLoad0Step(gameRunner.GameProvider, rulesProvider, cargoTransferer, invasionProcessor, fleetService);
+            step.Process();
+
+            // did not work
+            Assert.AreEqual(100, planet.Cargo.Ironium);
+            Assert.AreEqual(0, fleet.Cargo.Ironium);
+            Assert.AreEqual(10, planet.Cargo.Colonists);
+            Assert.AreEqual(0, fleet.Cargo.Colonists);
+        }
+
+        [Test]
+        public void TestProcessLoadAllForeignPlanetSS()
+        {
+            var (game, gameRunner) = TestUtils.GetTwoPlayerGame();
+            var planet = game.Planets[1];
+            var fleet = game.Fleets[0];
+            var player1 = game.Players[0];
+            var player2 = game.Players[1];
+            fleet.Tokens.Add(new ShipToken(TestUtils.CreateDesign(game, player1, ShipDesigns.RobberBaroner.Clone(game.Players[0])), 1));
+            gameRunner.ComputeSpecs(recompute: true);
+
+            // configure this fleet to load all on the planet
+            var waypoint = fleet.Waypoints[0];
+            waypoint.Task = WaypointTask.Transport;
+            waypoint.Target = planet;
+            waypoint.TransportTasks = new WaypointTransportTasks(ironium: new WaypointTransportTask(WaypointTaskTransportAction.LoadAll), colonists: new WaypointTransportTask(WaypointTaskTransportAction.LoadAll));
+            fleet.Cargo = new Cargo();
+            planet.Cargo = new Cargo(ironium: 100, colonists: 10);
+
+            var step = new FleetLoad0Step(gameRunner.GameProvider, rulesProvider, cargoTransferer, invasionProcessor, fleetService);
+            step.Process();
+
+            // stole ironium
+            Assert.AreEqual(0, planet.Cargo.Ironium);
+            Assert.AreEqual(100, fleet.Cargo.Ironium);
+
+            // can't steal people
+            Assert.AreEqual(10, planet.Cargo.Colonists);
+            Assert.AreEqual(0, fleet.Cargo.Colonists);
+        }
+
+        [Test]
+        public void TestProcessLoadAllForeignFleetSS()
+        {
+            var (game, gameRunner) = TestUtils.GetTwoPlayerGame();
+            var stealerFleet = game.Fleets[0];
+            var markFleet = game.Fleets[1];
+            var player1 = game.Players[0];
+            var player2 = game.Players[1];
+            stealerFleet.Tokens.Add(new ShipToken(TestUtils.CreateDesign(game, player1, ShipDesigns.RobberBaroner.Clone(player1)), 1));
+            markFleet.Tokens.Add(new ShipToken(TestUtils.CreateDesign(game, player1, ShipDesigns.Teamster.Clone(player2)), 1));
+            gameRunner.ComputeSpecs(recompute: true);
+
+            // configure this fleet to load all on the planet
+            var waypoint = stealerFleet.Waypoints[0];
+            waypoint.Task = WaypointTask.Transport;
+            waypoint.Target = markFleet;
+            waypoint.TransportTasks = new WaypointTransportTasks(ironium: new WaypointTransportTask(WaypointTaskTransportAction.LoadAll), colonists: new WaypointTransportTask(WaypointTaskTransportAction.LoadAll));
+            stealerFleet.Cargo = new Cargo();
+            markFleet.Cargo = new Cargo(ironium: 100, colonists: 10);
+
+            var step = new FleetLoad0Step(gameRunner.GameProvider, rulesProvider, cargoTransferer, invasionProcessor, fleetService);
+            step.Process();
+
+            // stole ironium
+            Assert.AreEqual(0, markFleet.Cargo.Ironium);
+            Assert.AreEqual(100, stealerFleet.Cargo.Ironium);
+
+            // can't steal people
+            Assert.AreEqual(10, markFleet.Cargo.Colonists);
+            Assert.AreEqual(0, stealerFleet.Cargo.Colonists);
+        }        
     }
 }

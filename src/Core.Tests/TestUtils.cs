@@ -212,7 +212,7 @@ namespace CraigStars.Tests
             {
                 Name = "Brin",
                 Position = new Vector2(0, 0),
-                Cargo = new Cargo(),
+                Cargo = new Cargo(colonists: 250),
                 MineYears = new Mineral(),
                 BaseHab = new Hab(50, 50, 50),
                 Hab = new Hab(50, 50, 50),
@@ -233,7 +233,7 @@ namespace CraigStars.Tests
             {
                 Name = "Bob",
                 Position = new Vector2(200, 200),
-                Cargo = new Cargo(),
+                Cargo = new Cargo(colonists: 250),
                 MineYears = new Mineral(),
                 BaseHab = new Hab(50, 50, 50),
                 Hab = new Hab(50, 50, 50),

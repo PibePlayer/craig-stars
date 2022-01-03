@@ -13,10 +13,10 @@ namespace CraigStars
         static CSLog log = LogProvider.GetLogger(typeof(PlayerOrdersConsumer));
 
         private readonly Game game;
-        private readonly FleetOrderExecutor fleetOrderExecutor;
+        private readonly ImmediateFleetOrderExecutor fleetOrderExecutor;
         private readonly FleetSpecService fleetSpecService;
 
-        public PlayerOrdersConsumer(Game game, FleetOrderExecutor fleetOrderExecutor, FleetSpecService fleetSpecService)
+        public PlayerOrdersConsumer(Game game, ImmediateFleetOrderExecutor fleetOrderExecutor, FleetSpecService fleetSpecService)
         {
             this.game = game;
             this.fleetOrderExecutor = fleetOrderExecutor;
@@ -28,7 +28,7 @@ namespace CraigStars
             var player = game.Players[orders.PlayerNum];
 
             log.Debug("Processing player immmediate cargo transfers, fleet merges, splits, etc");
-            fleetOrderExecutor.ExecuteFleetOrders(player, orders.ImmedateFleetOrders);
+            fleetOrderExecutor.ExecuteImmediateFleetOrders(player, orders.ImmedateFleetOrders);
 
             // save some player config server side
             player.UISettings = orders.UISettings;

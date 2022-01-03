@@ -40,7 +40,7 @@ namespace CraigStars
             container.Register<InvasionProcessor>(Lifestyle.Singleton);
             container.Register<MineFieldDamager>(Lifestyle.Singleton);
             container.Register<MineFieldDecayer>(Lifestyle.Singleton);
-            container.Register<FleetOrderExecutor>(Lifestyle.Singleton);
+            container.Register<ImmediateFleetOrderExecutor>(Lifestyle.Singleton);
             container.Register<BattleEngine>(Lifestyle.Singleton);
             container.Register<ProductionQueueEstimator>(Lifestyle.Singleton);
 
@@ -74,6 +74,7 @@ namespace CraigStars
                 typeof(PlayerHomeworldGenerationStep),
                 typeof(PlayerFleetGenerationStep),
                 typeof(GameStartModeModifierStep)
+                // typeof(ExtraTestStep)
             );
 
             // turn steps

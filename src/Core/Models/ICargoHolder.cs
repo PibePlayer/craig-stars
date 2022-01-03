@@ -12,6 +12,18 @@ namespace CraigStars
         Guid Guid { get; set; }
 
         /// <summary>
+        /// The owner of this ICargo
+        /// </summary>
+        /// <value></value>
+        int PlayerNum { get; set; }
+
+        /// <summary>
+        /// True if this cargo holder is owned by a player
+        /// </summary>
+        /// <value></value>
+        bool Owned { get; }
+
+        /// <summary>
         /// The name of this, for logging and messages
         /// </summary>
         /// <value></value>

@@ -38,6 +38,8 @@ namespace CraigStars
 
         public int Age { get; set; }
         public Cargo Cargo { get; set; } = new Cargo();
+        // true if the player has discovered this fleet with a cargo stealer
+        public bool CargoDiscovered { get; set; } = false;
         [JsonIgnore]
         public int AvailableCapacity { get => Spec.CargoCapacity - Cargo.Total; }
 

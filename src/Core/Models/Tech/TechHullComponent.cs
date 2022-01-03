@@ -48,7 +48,8 @@ namespace CraigStars
         public int ScanRange { get; set; } = NoScanner;
         [DefaultValue(NoScanner)]
         public int ScanRangePen { get; set; } = NoScanner;
-        public bool StealCargo { get; set; }
+        public bool CanStealFleetCargo { get; set; }
+        public bool CanStealPlanetCargo { get; set; }
         public bool Radiating { get; set; }
 
         // bombs

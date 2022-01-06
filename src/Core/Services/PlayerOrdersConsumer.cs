@@ -156,7 +156,7 @@ namespace CraigStars
                 {
                     // if this is waypoint 0, use our empty waypoint 0 with position data
                     // otherwise copy the position from the order waypoint. We'll update targets later
-                    var wp = index == 0 ? fleet.Waypoints[0] : new Waypoint() { Position = orderWp.Position };
+                    var wp = index == 0 ? fleet.Waypoints[0] : new Waypoint() { Position = orderWp.Position.Round() };
 
                     // copy the orders from the orders waypoint
                     wp.OriginalPosition = orderWp.OriginalPosition;

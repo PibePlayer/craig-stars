@@ -43,6 +43,27 @@ namespace CraigStars.Tests
             Assert.AreEqual(fleet.FuelCapacity - 4, fleet.Fuel);
         }
 
+        [Test]
+        public void TestMove2()
+        {
+            var (game, gameRunner) = TestUtils.GetSingleUnitGame();
+            var fleet = game.Fleets[0];
+
+            // move along the x axis
+            game.MoveMapObject(fleet, fleet.Position, new Vector2(0, 0));
+            fleet.Waypoints.Add(Waypoint.PositionWaypoint(new Vector2(1, 1), warpFactor: 1));
+
+            FleetMoveStep step = new FleetMoveStep(gameRunner.GameProvider, rulesProvider, mineFieldDamager, designDiscoverer, fleetService, playerService);
+
+            step.Execute(new(), game.OwnedPlanets.ToList());
+
+            // move at warp 1 actually moves a distance of 1.4
+            // because we move in whole numbers
+            // it doesn't use fuel
+            Assert.AreEqual(new Vector2(1, 1), fleet.Position);
+            Assert.AreEqual(fleet.FuelCapacity, fleet.Fuel);
+        }
+
         /// <summary>
         /// Make sure we arrive at a planet when we complete a move
         /// </summary>

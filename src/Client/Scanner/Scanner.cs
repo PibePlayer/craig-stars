@@ -604,7 +604,7 @@ namespace CraigStars.Client
                 if (Input.IsKeyPressed((int)Godot.KeyList.Shift) || closest == null)
                 {
                     // shift key we just move to a position
-                    activeWaypointArea.GlobalPosition = GetGlobalMousePosition();
+                    activeWaypointArea.GlobalPosition = GetGlobalMousePosition().Round();
                     activeWaypointArea.Waypoint.Position = activeWaypointArea.Position;
                     activeWaypointArea.Waypoint.Target = null;
                 }

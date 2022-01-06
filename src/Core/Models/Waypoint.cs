@@ -131,14 +131,14 @@ namespace CraigStars
             this.target = target;
             if (target != null)
             {
-                Position = target.Position;
+                Position = target.Position.Round();
                 TargetGuid = target.Guid;
             }
             else
             {
                 // note: we must have a position or a target
                 // TODO: throw an exception here?
-                Position = position;
+                Position = position.Round();
                 TargetGuid = null;
             }
             TransportTasks = transportTasks;

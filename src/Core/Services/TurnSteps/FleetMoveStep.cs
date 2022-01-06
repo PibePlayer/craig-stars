@@ -167,6 +167,14 @@ namespace CraigStars
             fleet.PreviousPosition = fleet.Position;
             float dist = wp1.WarpFactor * wp1.WarpFactor;
 
+            // make sure we end up at a whole number
+            Vector2 vectorTravelled = (wp1.Position - fleet.Position).Normalized() * dist;
+            vectorTravelled = new Vector2(
+                (int)(vectorTravelled.x + .5f),
+                (int)(vectorTravelled.y + .5f)
+            );
+            dist = vectorTravelled.Length();
+
             // check for CE engine failure
             if (player.Race.Spec.EngineFailureRate > 0 && wp1.WarpFactor > player.Race.Spec.EngineReliableSpeed
                 && player.Race.Spec.EngineFailureRate >= (float)Rules.Random.NextDouble())
@@ -251,6 +259,7 @@ namespace CraigStars
                 wp0.Target = null;
 
                 fleet.Position += fleet.Heading * dist;
+                fleet.Position = fleet.Position.Round();
                 wp0.Position = fleet.Position;
             }
         }

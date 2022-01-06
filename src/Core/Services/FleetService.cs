@@ -204,7 +204,7 @@ namespace CraigStars
 
             // IFE is applied to drive specifications, just as the helpfile hints.
             // Stars! probably does it outside here once per turn per engine to save time.
-            double engineEfficiency = Math.Ceiling(ifeFactor * engine.FuelUsage[warpFactor - 1]);
+            double engineEfficiency = Math.Ceiling(ifeFactor * engine.FuelUsage[warpFactor]);
 
             // 20000 = 200*100
             // Safe bet is Stars! does all this with integer math tricks.

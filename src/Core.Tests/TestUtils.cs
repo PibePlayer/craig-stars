@@ -335,23 +335,7 @@ namespace CraigStars.Tests
         /// <returns></returns>
         internal static Fleet GetLongRangeScout(Player player)
         {
-            var design = ShipDesigns.LongRangeScount.Clone();
-            design.PlayerNum = player.Num;
-
-            var fleet = new Fleet()
-            {
-                PlayerNum = design.PlayerNum,
-                Tokens = new List<ShipToken>() {
-                  new ShipToken(design, 1)
-                },
-                BattlePlan = player.BattlePlans[0]
-            };
-
-            var fleetSpecService = TestUtils.TestContainer.GetInstance<FleetSpecService>();
-            fleetSpecService.ComputeDesignSpec(player, design);
-            fleetSpecService.ComputeFleetSpec(player, fleet);
-            fleet.Fuel = fleet.FuelCapacity;
-            return fleet;
+            return GetFleet(player, ShipDesigns.LongRangeScount);
         }
 
         /// <summary>
@@ -360,8 +344,13 @@ namespace CraigStars.Tests
         /// <returns></returns>
         internal static Fleet GetStalwartDefender(Player player)
         {
-            var design = ShipDesigns.StalwartDefender.Clone();
-            design.PlayerNum = player.Num;
+            return GetFleet(player, ShipDesigns.StalwartDefender);
+        }
+
+
+        internal static Fleet GetFleet(Player player, ShipDesign sourceDesign)
+        {
+            var design = sourceDesign.Clone(player);
 
             var fleet = new Fleet()
             {

@@ -148,5 +148,33 @@ namespace CraigStars.Tests
             Assert.AreEqual(false, service.WillAttack(fleetScout, attacker, defender.Num));
 
         }
+
+        [Test]
+        public void TestGetBestFuelUsage()
+        {
+            var player = new Player();
+            var fleet = TestUtils.GetFleet(player, ShipDesigns.Teamster);
+
+            fleet.Tokens[0].Design.Slots[0].HullComponent = Techs.QuickJump5;
+            fleet.Tokens[0].Design.Spec.Engine = Techs.QuickJump5;
+
+            // warp 0 and 1 costs nothing
+            Assert.AreEqual(0, service.GetFuelCost(fleet, player, warpFactor: 0, distance: 0));
+            Assert.AreEqual(0, service.GetFuelCost(fleet, player, warpFactor: 1, distance: 100));
+
+            // use some normal fuel at warp 5
+            int fuelUsed = 17; 
+            Assert.AreEqual(fuelUsed, service.GetFuelCost(fleet, player, warpFactor: 5, distance: 25));
+
+            // test the fuel mizer
+            // it should use no fuel at warp 4, a very small amount at warp 5, and 120% at warp 6
+            fleet.Tokens[0].Design.Slots[0].HullComponent = Techs.FuelMizer;
+            fleet.Tokens[0].Design.Spec.Engine = Techs.FuelMizer;
+            Assert.AreEqual(0, service.GetFuelCost(fleet, player, warpFactor: 4, distance: 25));
+            Assert.AreEqual((int)(fuelUsed * .35 + .5), service.GetFuelCost(fleet, player, warpFactor: 5, distance: 25));
+            Assert.AreEqual((int)(fuelUsed * 1.2 + .5), service.GetFuelCost(fleet, player, warpFactor: 6, distance: 25));
+
+
+        }
     }
 }

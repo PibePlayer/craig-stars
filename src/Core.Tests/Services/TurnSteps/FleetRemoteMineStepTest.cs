@@ -110,6 +110,7 @@ namespace CraigStars.Tests
             };
             game.AddMapObject(fleet);
             gameRunner.ComputeSpecs(recompute: true);
+            fleet.Fuel = fleet.FuelCapacity;
 
             // Move to this planet
             fleet.Waypoints.Add(Waypoint.PositionWaypoint(fleet.Position));

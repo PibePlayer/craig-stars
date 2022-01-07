@@ -30,17 +30,6 @@ namespace CraigStars.Client
 
 
         List<HullComponentPanel> hullComponentPanels;
-        int quantityModifier = 1;
-
-        /// <summary>
-        /// Set the quantity modifier for the dialog
-        /// if the user holds shift, we multipy by 10, if they press control we multiply by 100
-        /// both multiplies by 1000
-        /// </summary>
-        public override void _Input(InputEvent @event)
-        {
-            quantityModifier = this.UpdateQuantityModifer(@event, quantityModifier);
-        }
 
         void SubscribeHullComponentEvents()
         {
@@ -78,6 +67,7 @@ namespace CraigStars.Client
         {
             if (ShipDesign != null && Hull != null)
             {
+                int quantityModifier = this.GetQuantityModifer();
                 var slot = ShipDesign.Slots.Find(s => s.HullSlotIndex == hullComponentPanel.Index);
                 if (slot == null)
                 {

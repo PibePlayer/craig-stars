@@ -22,8 +22,6 @@ namespace CraigStars.Client
         Button nextButton;
         CheckBox contributesOnlyLeftoverToResearchCheckbox;
 
-        int quantityModifier = 1;
-
         public override void _Ready()
         {
             base._Ready();
@@ -56,26 +54,6 @@ namespace CraigStars.Client
             if (what == NotificationPredelete)
             {
                 availableItems.ItemActivatedEvent -= OnAddItem;
-            }
-        }
-
-        /// <summary>
-        /// Set the quantity modifier for the dialog
-        /// if the user holds shift, we multipy by 10, if they press control we multiply by 100
-        /// both multiplies by 1000
-        /// </summary>
-        public override void _Input(InputEvent @event)
-        {
-            quantityModifier = this.UpdateQuantityModifer(@event, quantityModifier);
-        }
-
-        protected override void OnVisibilityChanged()
-        {
-            base.OnVisibilityChanged();
-            if (IsVisibleInTree())
-            {
-                // this gets stuck sometimes. not sure why
-                quantityModifier = 1;
             }
         }
 
@@ -152,7 +130,7 @@ namespace CraigStars.Client
         {
             if (item != null)
             {
-                queuedItems.AddItem(item.Clone(), quantityModifier);
+                queuedItems.AddItem(item.Clone(), this.GetQuantityModifer());
             }
         }
 
@@ -161,7 +139,7 @@ namespace CraigStars.Client
             var item = availableItems.GetSelectedItem();
             if (item != null)
             {
-                queuedItems.AddItem(item.Clone(), quantityModifier);
+                queuedItems.AddItem(item.Clone(), this.GetQuantityModifer());
             }
         }
 
@@ -173,7 +151,7 @@ namespace CraigStars.Client
 
         void OnRemoveItem()
         {
-            queuedItems.RemoveItem(quantityModifier);
+            queuedItems.RemoveItem(this.GetQuantityModifer());
         }
 
         void OnItemUp()

@@ -35,8 +35,6 @@ namespace CraigStars.Client
         Button colonistsDestButton;
         Button fuelDestButton;
 
-        int quantityModifier = 1;
-
         /// <summary>
         /// This is the net cargo difference we record when the OK button is pressed
         /// </summary>
@@ -89,25 +87,15 @@ namespace CraigStars.Client
             Connect("popup_hide", this, nameof(OnPopupHide));
         }
 
-        /// <summary>
-        /// Set the quantity modifier for the dialog
-        /// if the user holds shift, we multipy by 10, if they press control we multiply by 100
-        /// both multiplies by 1000
-        /// </summary>
-        public override void _Input(InputEvent @event)
-        {
-            quantityModifier = this.UpdateQuantityModifer(@event, quantityModifier);
-        }
-
         void OnSourceButtonPressed(CargoType type)
         {
             if (type == CargoType.Fuel)
             {
-                TransferFromSource(Cargo.Empty, -quantityModifier);
+                TransferFromSource(Cargo.Empty, -this.GetQuantityModifer());
             }
             else
             {
-                TransferFromSource(Cargo.OfAmount(type, -quantityModifier), 0);
+                TransferFromSource(Cargo.OfAmount(type, -this.GetQuantityModifer()), 0);
             }
         }
 
@@ -115,11 +103,11 @@ namespace CraigStars.Client
         {
             if (type == CargoType.Fuel)
             {
-                TransferFromDest(Cargo.Empty, -quantityModifier);
+                TransferFromDest(Cargo.Empty, -this.GetQuantityModifer());
             }
             else
             {
-                TransferFromDest(Cargo.OfAmount(type, -quantityModifier), 0);
+                TransferFromDest(Cargo.OfAmount(type, -this.GetQuantityModifer()), 0);
 
             }
         }
@@ -129,8 +117,6 @@ namespace CraigStars.Client
         /// </summary>
         void OnAboutToShow()
         {
-            quantityModifier = 1;
-
             // clear out the cargoDiff
             netCargoDiff = new Cargo();
             netFuelDiff = 0;

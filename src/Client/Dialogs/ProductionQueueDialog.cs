@@ -34,8 +34,6 @@ namespace CraigStars.Client
         Label completionEstimateLabel;
         Label costOfQueuedLabel;
 
-        int quantityModifier = 1;
-
         public override void _Ready()
         {
             this.ResolveDependencies();
@@ -109,9 +107,6 @@ namespace CraigStars.Client
             // select the top of the queue on startup
             queuedItems.SelectedItemIndex = 0;
 
-            // this gets stuck sometimes. not sure why
-            quantityModifier = 1;
-
             availableItems.Planet = Planet;
             queuedItems.Planet = Planet;
 
@@ -176,16 +171,6 @@ namespace CraigStars.Client
         }
 
         #region Events 
-
-        /// <summary>
-        /// Set the quantity modifier for the dialog
-        /// if the user holds shift, we multipy by 10, if they press control we multiply by 100
-        /// both multiplies by 1000
-        /// </summary>
-        public override void _Input(InputEvent @event)
-        {
-            quantityModifier = this.UpdateQuantityModifer(@event, quantityModifier);
-        }
 
         /// <summary>
         /// When the ok button is pressed, save all these changes to the other players
@@ -262,7 +247,7 @@ namespace CraigStars.Client
         {
             if (item != null)
             {
-                queuedItems.AddItem(item.Clone(), quantityModifier);
+                queuedItems.AddItem(item.Clone(), this.GetQuantityModifer());
             }
         }
 
@@ -271,7 +256,7 @@ namespace CraigStars.Client
             var item = availableItems.GetSelectedItem();
             if (item != null)
             {
-                queuedItems.AddItem(item.Clone(), quantityModifier);
+                queuedItems.AddItem(item.Clone(), this.GetQuantityModifer());
             }
         }
 
@@ -283,7 +268,7 @@ namespace CraigStars.Client
 
         void OnRemoveItem()
         {
-            queuedItems.RemoveItem(quantityModifier);
+            queuedItems.RemoveItem(this.GetQuantityModifer());
         }
 
         void OnItemUp()

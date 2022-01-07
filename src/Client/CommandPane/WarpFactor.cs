@@ -95,13 +95,10 @@ namespace CraigStars.Client
             {
                 Vector2 mousePosition = mouse.Position;
                 mousePosition = mouse.Position;
-                int warpSpeedFromClick = (int)(Math.Round(mousePosition.x / (panel.RectSize.x - borderWidth) * MaxWarpFactor));
+                int warpSpeedFromClick = Mathf.Clamp((int)Math.Round(mousePosition.x / (panel.RectSize.x - borderWidth) * MaxWarpFactor), 0, MaxWarpFactor);
                 log.Debug($"Mouse clicked {mousePosition} for warp speed {warpSpeedFromClick}");
-                if (warpSpeedFromClick >= MinWarpFactor && warpSpeedFromClick <= MaxWarpFactor)
-                {
-                    WarpSpeed = warpSpeedFromClick;
-                    WarpSpeedChangedEvent?.Invoke(WarpSpeed);
-                }
+                WarpSpeed = warpSpeedFromClick;
+                WarpSpeedChangedEvent?.Invoke(WarpSpeed);
             }
         }
 

@@ -95,6 +95,24 @@ namespace CraigStars.Client
             borderWidth = panelStyleBox.BorderWidthLeft + panelStyleBox.BorderWidthRight;
             borderHeight = panelStyleBox.BorderWidthTop + panelStyleBox.BorderWidthBottom;
             Update();
+
+            SetProcess(false);
+        }
+
+        public override void _Process(float delta)
+        {
+            base._Process(delta);
+            if (updatingValue == false)
+            {
+                SetProcess(false);
+            }
+            else
+            {
+                Vector2 mousePosition = GetLocalMousePosition();
+                int valueFromClick = (int)Mathf.Clamp((int)Math.Round(mousePosition.x / (panel.RectSize.x - borderWidth) * Capacity), 0, Capacity);
+                ValueUpdatedEvent?.Invoke(valueFromClick);
+
+            }
         }
 
         public override void _UnhandledInput(InputEvent @event)
@@ -110,21 +128,11 @@ namespace CraigStars.Client
             if (@event.IsActionPressed("viewport_select"))
             {
                 updatingValue = true;
+                SetProcess(true);
             }
             else if (@event.IsActionReleased("viewport_select"))
             {
                 updatingValue = false;
-            }
-            if (updatingValue && @event is InputEventMouse mouse)
-            {
-                Vector2 mousePosition = mouse.Position;
-                mousePosition = mouse.Position;
-                int valueFromClick = (int)(Math.Round(mousePosition.x / (panel.RectSize.x - borderWidth) * Capacity));
-                if (valueFromClick >= 0 && valueFromClick <= Capacity)
-                {
-                    //log.Debug($"Mouse clicked {mousePosition} for cargo value {valueFromClick}");
-                    ValueUpdatedEvent?.Invoke(valueFromClick);
-                }
             }
         }
 

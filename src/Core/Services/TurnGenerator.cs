@@ -77,6 +77,8 @@ namespace CraigStars
             Game.Players.ForEach(p =>
             {
                 p.Messages.Clear();
+                p.Battles.Clear();
+                p.BattlesByGuid.Clear();
             });
 
             // execute each turn step
